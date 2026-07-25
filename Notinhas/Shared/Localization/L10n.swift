@@ -18,7 +18,6 @@ nonisolated enum L10n {
     ("splash.", "Onboarding"),
     ("app-identity.", "Common"),
     ("permission-row.", "Permissions"),
-    ("crash-report.", "Errors"),
     ("onboarding.", "Onboarding"),
     ("sponsor.", "Onboarding"),
     ("preferences.tab.", "Settings"),
@@ -26,7 +25,6 @@ nonisolated enum L10n {
     ("preferences-capture.", "Capture"),
     ("preferences-shortcuts.", "Shortcuts"),
     ("preferences-cloud-history.", "Cloud"),
-    ("preferences-about.", "Settings"),
     ("preferences-quick-access.", "QuickAccess"),
     ("preferences-history.", "Settings"),
     ("preferences-advanced.", "Settings"),
@@ -8220,33 +8218,6 @@ nonisolated enum L10n {
       "history-background-style.gradient",
       defaultValue: "Gradient",
       comment: "History background style option"
-    )
-  }
-
-  enum WhatsNew {
-    static let title = string(
-      "whats-new.title",
-      defaultValue: "What's new in Notinhas",
-      comment: "Welcome screen title"
-    )
-    static func desc(_ version: String) -> String {
-      format(
-        "whats-new.desc",
-        defaultValue: "Discover the latest features in version %@.",
-        comment: "Welcome screen description",
-        version
-      )
-    }
-
-    static let notarizationTitle = string(
-      "whats-new.notarization.title",
-      defaultValue: "Apple Notarization",
-      comment: "Notarization feature title"
-    )
-    static let notarizationDesc = string(
-      "whats-new.notarization.desc",
-      defaultValue: "Notinhas is now officially registered with the Apple Developer Program and certified by Apple, bypassing Gatekeeper's protections for a secure launch.",
-      comment: "Notarization feature description"
     )
   }
 }

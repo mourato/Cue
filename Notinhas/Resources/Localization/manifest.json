@@ -74,7 +74,6 @@
       "prefixes": [
         "history-background-style.",
         "history-panel-position.",
-        "preferences-about.",
         "preferences-advanced.",
         "preferences-general.",
         "preferences-history.",
@@ -113,12 +112,6 @@
         "app-identity.",
         "appearance.",
         "common."
-      ]
-    },
-    {
-      "file": "Shared/Errors.xcstrings",
-      "prefixes": [
-        "crash-report."
       ]
     },
     {
