@@ -2,8 +2,8 @@
 # uninstall.sh — Completely remove Notinhas and reset ALL related permissions
 #
 # Usage:
-#   ./scripts/uninstall.sh           # Interactive mode (asks for confirmation)
-#   ./scripts/uninstall.sh --force   # Skip confirmation
+#   ./uninstall.sh           # Interactive mode (asks for confirmation)
+#   ./uninstall.sh --force   # Skip confirmation
 #
 # What this script does:
 #   1. Kills the running app
@@ -12,9 +12,8 @@
 #   4. Removes Application Support data (captures, preferences, caches)
 #   5. Removes user preferences (defaults)
 #   6. Removes saved application state
-#   7. Removes Sparkle update caches
-#   8. Removes login items
-#   9. Cleans temp files
+#   7. Removes login items
+#   8. Cleans temp files
 #
 # NOTE: TCC reset (step 2) runs BEFORE app removal (step 3) because tccutil
 #       validates the bundle identifier via LaunchServices at runtime. Once
@@ -219,26 +218,12 @@ if [ -d "$saved_state" ]; then
   success "Removed $saved_state"
 fi
 
-# ─── 8. Remove Sparkle update data ──────────────────────────────
-info "Removing Sparkle update data..."
-for sparkle_dir in \
-  "$HOME/Library/Caches/${BUNDLE_ID}.Sparkle" \
-  "$HOME/Library/Application Support/${BUNDLE_ID}/Sparkle"; do
-  if [ -d "$sparkle_dir" ]; then
-    rm -rf "$sparkle_dir"
-    success "Removed $sparkle_dir"
-  fi
-done
-
-# Also remove Sparkle-related defaults
-defaults delete "${BUNDLE_ID}.Sparkle" 2>/dev/null || true
-
-# ─── 9. Login items ─────────────────────────────────────────────
+# ─── 8. Login items ─────────────────────────────────────────────
 # NOTE: sfltool resetbtm resets ALL apps' login items, not just Notinhas.
 # Skipped intentionally to avoid affecting other applications.
 info "Login items: skipped (no safe per-app reset available)"
 
-# ─── 10. Clean temp files ──────────────────────────────────────
+# ─── 9. Clean temp files ──────────────────────────────────────
 info "Cleaning temp files..."
 for tmp_dir in \
   "/tmp/test-tcc-snapzy" \
@@ -250,7 +235,7 @@ for tmp_dir in \
   fi
 done
 
-# ─── 11. Sandbox containers ─────────────────────────────────────
+# ─── 10. Sandbox containers ─────────────────────────────────────
 # Notinhas does NOT use App Sandbox. If a container exists, it's from
 # macOS internal bookkeeping and requires sudo to remove.
 # We skip this to avoid requiring elevated privileges.
@@ -269,7 +254,7 @@ echo -e "${GREEN}║  ✅ $APP_NAME has been completely uninstalled         ║$
 echo -e "${GREEN}║  ✅ All TCC permissions have been reset              ║${NC}"
 echo -e "${GREEN}╠══════════════════════════════════════════════════════╣${NC}"
 echo -e "${GREEN}║  To reinstall, download from:                       ║${NC}"
-echo -e "${GREEN}║  https://github.com/duongductrong/Notinhas/releases   ║${NC}"
+echo -e "${GREEN}║  https://github.com/mourato/Notinhas/releases         ║${NC}"
 echo -e "${GREEN}╚══════════════════════════════════════════════════════╝${NC}"
 echo ""
 echo -e "${YELLOW}💡 Tip: You may need to log out and back in (or reboot)${NC}"
