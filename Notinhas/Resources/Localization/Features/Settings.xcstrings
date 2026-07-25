@@ -2785,7 +2785,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "App Language"
+            "value": "Language"
           }
         },
         "es": {
@@ -3305,7 +3305,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Audio feedback for captures"
+            "value": "Play sounds for captures"
           }
         },
         "es": {

@@ -7,7 +7,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Open the All-In-One HUD to pick mode, area, and dimensions"
+            "value": "Open the All-In-One toolbar to pick mode, area, and dimensions"
           }
         }
       }
@@ -609,7 +609,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Select a region, mark it up in place, then finish with ⌘S or Enter"
+            "value": "Annotate a selected region in place, then finish with ⌘S or Enter"
           }
         },
         "es": {
@@ -1844,7 +1844,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "HOW TO DISABLE"
+            "value": "How to disable"
           }
         },
         "es": {

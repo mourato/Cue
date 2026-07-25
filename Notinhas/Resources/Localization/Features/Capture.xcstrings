@@ -2970,7 +2970,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Save combined result as part of current edit"
+            "value": "Save updates in place"
           }
         },
         "vi": {
@@ -4796,7 +4796,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Object cutout captures require transparency. Notinhas will save them as PNG even when JPEG is selected."
+            "value": "Object cutouts need transparency, so Notinhas saves them as PNG even when JPEG is selected."
           }
         },
         "es": {
@@ -16698,7 +16698,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "How close a resize edge must be before it snaps while refining an All-In-One area. Applies to resizing only."
+            "value": "How close a resize edge must be to snap during All-In-One area refinement. Applies to resizing only."
           }
         }
       }
