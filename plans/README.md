@@ -711,7 +711,7 @@ Execute with `.agents/skills/plan-execute-review/SKILL.md`. Prefer
 | 075 | Delete orphaned standalone MockupManager window path | P1 | M | — | DONE (`d7d1eb0b`, merge `61c2b91a`; thermo REVISE→fix `50a9c5ba`) |
 | 076 | Retarget Code of Conduct and uninstall branding leftovers | P2 | S | — | DONE (`47f4cfdd`, merge `41729f7d`; thermo APPROVE, no code fixes) |
 | 077 | Re-root CHANGELOG for Notinhas (archive upstream) | P2 | M | — | DONE (`135a1ee0`; thermo APPROVE, no code fixes) |
-| 078 | ADR: retain inherited Snapzy surfaces (no feature deletion) | P3 | S | soft: after 070–077 | TODO |
+| 078 | ADR: retain inherited Snapzy surfaces (no feature deletion) | P3 | S | soft: after 070–077 | DONE (`5536b3d0`; thermo APPROVE + Low fixes `1a2f7308`) |
 
 ### Dependency notes (070–078)
 
