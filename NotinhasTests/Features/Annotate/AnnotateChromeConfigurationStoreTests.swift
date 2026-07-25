@@ -82,6 +82,23 @@ final class AnnotateChromeConfigurationStoreTests: XCTestCase {
     XCTAssertTrue(store.isEnabled(.selection))
   }
 
+  func testPreferencesAnnotateChromeLocalizationKeysResolveWithoutTrapping() {
+    // Regression: preferences-annotate.* had no L10n table mapping and crashed
+    // opening Preferences → Annotate (EXC_BREAKPOINT in L10n.tableName(for:)).
+    let strings = [
+      L10n.PreferencesAnnotate.chromeSection,
+      L10n.PreferencesAnnotate.chromeToolbarSection,
+      L10n.PreferencesAnnotate.chromeBottomSection,
+      L10n.PreferencesAnnotate.chromeDescription,
+      L10n.PreferencesAnnotate.chromeAlwaysOnFootnote,
+      L10n.PreferencesAnnotate.resetChrome,
+    ]
+
+    for value in strings {
+      XCTAssertFalse(value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+    }
+  }
+
   func testAnnotateChromeConfigurationStore_effectiveDrawableToolsRespectsOrderAndEnablement() {
     let defaults = makeIsolatedDefaults()
     let store = makeStore(defaults: defaults)

@@ -2833,6 +2833,136 @@
         }
       }
     },
+    "preferences-capture.chrome-always-on-footnote": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Immer sichtbar: Auswahl, Rückgängig, Wiederholen, Fertig. Zoom, Schwenken, Modus-Tabs und „In App ziehen“ sind nicht anpassbar."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Always visible: Selection, Undo, Redo, Done. Zoom, pan, mode tabs, and Drag to app cannot be customized."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siempre visibles: Selección, Deshacer, Rehacer, Listo. Zoom, desplazamiento, pestañas de modo y Arrastrar a la app no se pueden personalizar."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toujours visibles : Sélection, Annuler, Rétablir, Terminé. Zoom, panoramique, onglets de mode et Glisser vers l’app ne sont pas personnalisables."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "常に表示: 選択、元に戻す、やり直す、完了。ズーム、パン、モードタブ、アプリへドラッグはカスタマイズできません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "항상 표시: 선택, 실행 취소, 다시 실행, 완료. 확대/축소, 이동, 모드 탭, 앱으로 드래그는 사용자화할 수 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Всегда видно: Выбор, Отмена, Повтор, Готово. Масштаб, панорамирование, вкладки режимов и «Перетащить в приложение» не настраиваются."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Luôn hiện: Chọn, Hoàn tác, Làm lại, Xong. Thu phóng, pan, tab chế độ và Kéo sang app không tùy chỉnh được."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "始终可见：选择、撤销、重做、完成。缩放、平移、模式标签和拖到应用不可自定义。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一律可見：選取、復原、重做、完成。縮放、平移、模式分頁與拖到 App 無法自訂。"
+          }
+        }
+      }
+    },
+    "preferences-capture.chrome-description": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Annotate-Werkzeuge und Aktionen neu anordnen sowie ein- oder ausblenden. Auswahl, Rückgängig, Wiederholen und Fertig bleiben immer sichtbar."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reorder and show or hide Annotate tools and actions. Selection, Undo, Redo, and Done always stay visible."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reordena y muestra u oculta herramientas y acciones de Anotar. Selección, Deshacer, Rehacer y Listo siempre permanecen visibles."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réorganisez et affichez ou masquez les outils et actions d’Annoter. Sélection, Annuler, Rétablir et Terminé restent toujours visibles."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "注釈ツールとアクションの順序変更・表示切替ができます。選択、元に戻す、やり直す、完了は常に表示されます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "주석 도구와 동작의 순서를 바꾸고 표시하거나 숨깁니다. 선택, 실행 취소, 다시 실행, 완료는 항상 표시됩니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Меняйте порядок и показывайте или скрывайте инструменты и действия Annotate. Выбор, Отмена, Повтор и Готово всегда остаются видимыми."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sắp xếp lại và hiện/ẩn công cụ cùng thao tác Annotate. Chọn, Hoàn tác, Làm lại và Xong luôn luôn hiện."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "可重新排序并显示或隐藏批注工具与操作。选择、撤销、重做和完成始终可见。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "可重新排序並顯示或隱藏註解工具與操作。選取、復原、重做與完成一律保持可見。"
+          }
+        }
+      }
+    },
     "preferences-capture.combine-save-as-edit-title": {
       "comment": "Annotate preferences toggle title for saving stitched images silently into the current edit",
       "extractionState": "manual",
@@ -6086,6 +6216,71 @@
         }
       }
     },
+    "preferences-capture.reset-chrome": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leiste zurücksetzen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset chrome"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restablecer chrome"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réinitialiser le chrome"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "表示をリセット"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "크롬 재설정"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сбросить панель"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đặt lại thanh công cụ"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重置工具栏"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重設工具列"
+          }
+        }
+      }
+    },
     "preferences-capture.reset-naming-defaults": {
       "extractionState": "stale",
       "localizations": {
@@ -6732,6 +6927,201 @@
           "stringUnit": {
             "state": "translated",
             "value": "音頻"
+          }
+        }
+      }
+    },
+    "preferences-capture.section-chrome": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Editor-Leiste"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Editor chrome"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chrome del editor"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chrome de l’éditeur"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "エディターの表示"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "편집기 크롬"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Панель редактора"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thanh công cụ trình chỉnh sửa"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "编辑器工具栏"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "編輯器工具列"
+          }
+        }
+      }
+    },
+    "preferences-capture.section-chrome-bottom": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Untere Leiste"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bottom bar"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Barra inferior"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Barre inférieure"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下部バー"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "하단 바"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нижняя панель"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thanh dưới"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "底栏"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "底欄"
+          }
+        }
+      }
+    },
+    "preferences-capture.section-chrome-toolbar": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Symbolleiste"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toolbar"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Barra de herramientas"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Barre d’outils"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ツールバー"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "도구 모음"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Панель инструментов"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thanh công cụ"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具栏"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具列"
           }
         }
       }

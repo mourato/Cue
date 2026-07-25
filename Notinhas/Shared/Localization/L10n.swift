@@ -3159,32 +3159,32 @@ nonisolated enum L10n {
       comment: "Annotate preferences setting description for activating Annotate after drag-to-app"
     )
     static let chromeSection = string(
-      "preferences-annotate.section-chrome",
+      "preferences-capture.section-chrome",
       defaultValue: "Editor chrome",
       comment: "Annotate preferences section title for toolbar and bottom-bar customization"
     )
     static let chromeToolbarSection = string(
-      "preferences-annotate.section-chrome-toolbar",
+      "preferences-capture.section-chrome-toolbar",
       defaultValue: "Toolbar",
       comment: "Annotate preferences section title for toolbar customization"
     )
     static let chromeBottomSection = string(
-      "preferences-annotate.section-chrome-bottom",
+      "preferences-capture.section-chrome-bottom",
       defaultValue: "Bottom bar",
       comment: "Annotate preferences section title for bottom-bar customization"
     )
     static let chromeDescription = string(
-      "preferences-annotate.chrome-description",
+      "preferences-capture.chrome-description",
       defaultValue: "Reorder and show or hide Annotate tools and actions. Selection, Undo, Redo, and Done always stay visible.",
       comment: "Annotate preferences description for chrome customization"
     )
     static let chromeAlwaysOnFootnote = string(
-      "preferences-annotate.chrome-always-on-footnote",
+      "preferences-capture.chrome-always-on-footnote",
       defaultValue: "Always visible: Selection, Undo, Redo, Done. Zoom, pan, mode tabs, and Drag to app cannot be customized.",
       comment: "Annotate preferences footnote for non-customizable chrome"
     )
     static let resetChrome = string(
-      "preferences-annotate.reset-chrome",
+      "preferences-capture.reset-chrome",
       defaultValue: "Reset chrome",
       comment: "Annotate preferences button to reset toolbar and bottom-bar customization"
     )
