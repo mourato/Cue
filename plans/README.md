@@ -709,7 +709,7 @@ Execute with `.agents/skills/plan-execute-review/SKILL.md`. Prefer
 | 073 | Remove ghost Updates/CrashReport/About docs | P1 | S | — | DONE (`319ce000`, merge `b65478e2`; thermo APPROVE, no code fixes) |
 | 074 | Prune empty About and crash-report localization scaffolding | P2 | S | — | DONE (`16d9a9e1`; thermo APPROVE; Low WhatsNew CatalogTool extras deferred) |
 | 075 | Delete orphaned standalone MockupManager window path | P1 | M | — | DONE (`d7d1eb0b`, merge `61c2b91a`; thermo REVISE→fix `50a9c5ba`) |
-| 076 | Retarget Code of Conduct and uninstall branding leftovers | P2 | S | — | TODO |
+| 076 | Retarget Code of Conduct and uninstall branding leftovers | P2 | S | — | DONE (`47f4cfdd`, merge `41729f7d`; thermo APPROVE, no code fixes) |
 | 077 | Re-root CHANGELOG for Notinhas (archive upstream) | P2 | M | — | TODO |
 | 078 | ADR: retain inherited Snapzy surfaces (no feature deletion) | P3 | S | soft: after 070–077 | TODO |
 
