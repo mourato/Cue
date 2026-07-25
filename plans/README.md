@@ -707,7 +707,7 @@ Execute with `.agents/skills/plan-execute-review/SKILL.md`. Prefer
 | 071 | Retire Discord release-notify workflow | P2 | S | — (serialize with 070 if both edit `docs/RELEASES.md`) | DONE (`060490e1`, merge `4e198b5b`; thermo APPROVE, no code fixes) |
 | 072 | Remove snapzy-named local object-storage Docker stack | P2 | S | — | DONE (`763f0d99`, merge `6ec5f267`; thermo APPROVE, no code fixes) |
 | 073 | Remove ghost Updates/CrashReport/About docs | P1 | S | — | DONE (`319ce000`, merge `b65478e2`; thermo APPROVE, no code fixes) |
-| 074 | Prune empty About and crash-report localization scaffolding | P2 | S | — | TODO |
+| 074 | Prune empty About and crash-report localization scaffolding | P2 | S | — | DONE (`16d9a9e1`; thermo APPROVE; Low WhatsNew CatalogTool extras deferred) |
 | 075 | Delete orphaned standalone MockupManager window path | P1 | M | — | TODO |
 | 076 | Retarget Code of Conduct and uninstall branding leftovers | P2 | S | — | TODO |
 | 077 | Re-root CHANGELOG for Notinhas (archive upstream) | P2 | M | — | TODO |
