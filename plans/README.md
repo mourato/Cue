@@ -706,7 +706,7 @@ Execute with `.agents/skills/plan-execute-review/SKILL.md`. Prefer
 | 070 | Remove Homebrew cask and release CI cask updates | P1 | S | — | DONE (`63e51d3d`, merge `cf01b615`; thermo APPROVE, no code fixes) |
 | 071 | Retire Discord release-notify workflow | P2 | S | — (serialize with 070 if both edit `docs/RELEASES.md`) | DONE (`060490e1`, merge `4e198b5b`; thermo APPROVE, no code fixes) |
 | 072 | Remove snapzy-named local object-storage Docker stack | P2 | S | — | DONE (`763f0d99`, merge `6ec5f267`; thermo APPROVE, no code fixes) |
-| 073 | Remove ghost Updates/CrashReport/About docs | P1 | S | — | TODO |
+| 073 | Remove ghost Updates/CrashReport/About docs | P1 | S | — | DONE (`319ce000`, merge `b65478e2`; thermo APPROVE, no code fixes) |
 | 074 | Prune empty About and crash-report localization scaffolding | P2 | S | — | TODO |
 | 075 | Delete orphaned standalone MockupManager window path | P1 | M | — | TODO |
 | 076 | Retarget Code of Conduct and uninstall branding leftovers | P2 | S | — | TODO |
