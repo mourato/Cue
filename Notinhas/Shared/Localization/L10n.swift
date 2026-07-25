@@ -5082,11 +5082,6 @@ nonisolated enum L10n {
       defaultValue: "Add background",
       comment: "Tooltip for opening background customization in the annotate editor left dock"
     )
-    static let toggleMockupSidebar = string(
-      "annotate.toggle-mockup-sidebar",
-      defaultValue: "Toggle sidebar",
-      comment: "Tooltip for toggling the sidebar in the standalone mockup window"
-    )
     static let autoRedactSensitiveData = string(
       "annotate.auto-redact-sensitive-data",
       defaultValue: "Auto Redact Sensitive Data",
