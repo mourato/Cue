@@ -194,20 +194,19 @@ enum ShortcutOverlayContentBuilder {
   }
 
   private static func captureItems(manager: KeyboardShortcutManager) -> [ShortcutOverlayItem] {
-    let areaConfig = manager.shortcut(for: .area)
+    let allInOneConfig = manager.shortcut(for: .allInOne)
+    let modeSubtitle = allInOneModeShortcutsSubtitle()
     var items: [ShortcutOverlayItem] = [
-      globalItem(kind: .allInOne, icon: "viewfinder", manager: manager),
-      globalItem(kind: .fullscreen, icon: "rectangle.dashed.and.paperclip", manager: manager),
       ShortcutOverlayItem(
-        id: "global-\(GlobalShortcutKind.area.rawValue)",
-        icon: "rectangle.dashed",
-        title: GlobalShortcutKind.area.displayName,
-        subtitle: L10n.ShortcutOverlay.applicationCapture(
-          CaptureOverlayShortcutSettings.effectiveApplicationCaptureDisplay(parentShortcut: areaConfig)
-        ),
-        isEnabled: manager.isShortcutEnabled(for: .area),
-        display: areaConfig.map { .keycaps($0.displayParts) } ?? .text(L10n.Common.none)
+        id: "global-\(GlobalShortcutKind.allInOne.rawValue)",
+        icon: "viewfinder",
+        title: GlobalShortcutKind.allInOne.displayName,
+        subtitle: modeSubtitle,
+        isEnabled: manager.isShortcutEnabled(for: .allInOne),
+        display: allInOneConfig.map { .keycaps($0.displayParts) } ?? .text(L10n.Common.none)
       ),
+      globalItem(kind: .fullscreen, icon: "rectangle.dashed.and.paperclip", manager: manager),
+      globalItem(kind: .area, icon: "rectangle.dashed", manager: manager),
       globalItem(kind: .areaAnnotate, icon: "pencil.and.scribble", manager: manager),
       globalItem(kind: .activeWindow, icon: "macwindow", manager: manager),
       globalItem(kind: .scrollingCapture, icon: "arrow.up.and.down", manager: manager),
@@ -217,6 +216,16 @@ enum ShortcutOverlayContentBuilder {
     items.append(globalItem(kind: .ocr, icon: "text.viewfinder", manager: manager))
     items.append(globalItem(kind: .smartElement, icon: "dot.viewfinder", manager: manager))
     return items
+  }
+
+  private static func allInOneModeShortcutsSubtitle() -> String? {
+    let modes = AllInOneCaptureMode.availableModes(videoEnabled: VideoModuleAvailability.isEnabled)
+    let parts: [String] = modes.compactMap { mode in
+      guard let shortcut = AllInOneModeShortcutSettings.shortcut(for: mode) else { return nil }
+      return CaptureOverlayShortcut.inlineDisplay(parts: shortcut.displayParts)
+    }
+    guard !parts.isEmpty else { return nil }
+    return L10n.ShortcutOverlay.allInOneModeShortcuts(parts.joined(separator: " "))
   }
 
   private static func recordingItems(manager: KeyboardShortcutManager) -> [ShortcutOverlayItem] {

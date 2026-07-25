@@ -61,12 +61,26 @@ All 19 `GlobalShortcutKind`s with shipping defaults (verified in `KeyboardShortc
 
 ## Overlay shortcuts (in-overlay, not plain global hotkeys)
 
+### Recording application toggle
+
 `CaptureOverlayShortcutSettings` (`Notinhas/Services/Capture/CaptureOverlayShortcutSettings.swift`):
 
-- Two kinds: `applicationCapture` and `applicationRecording`; both default to single key **A** with no modifiers (child mode).
-- Child mode (modifiers == 0): pressed *inside* the area-selection / recording overlay to switch to application-window mode. Menu bar items show it as a suffix of the parent shortcut.
-- Independent mode (modifiers ≠ 0): registered as its own global hotkey (`applicationCaptureHotkeyRef` / `applicationRecordingHotkeyRef`) firing `.captureApplication` / `.recordApplication`.
-- Keys: `shortcuts.area.applicationCapture`, `shortcuts.recording.applicationCapture`.
+- Kind: `applicationRecording`; default single key **A** with no modifiers (child mode).
+- Child mode (modifiers == 0): pressed *inside* the recording overlay to switch to application-window mode. Menu bar items show it as a suffix of the parent shortcut.
+- Independent mode (modifiers ≠ 0): registered as its own global hotkey (`applicationRecordingHotkeyRef`) firing `.recordApplication`.
+- Key: `shortcuts.recording.applicationCapture`.
+
+### All-In-One HUD mode shortcuts (child layer)
+
+`AllInOneModeShortcutSettings` (`Notinhas/Features/Capture/AllInOne/AllInOneModeShortcutSettings.swift`):
+
+- Child-only single keys (no modifiers) active while the All-In-One session HUD is open.
+- One binding per `AllInOneCaptureMode` (`area`, `fullscreen`, `window`, `annotate`, `scrolling`, `timer`, `ocr`, `recording`).
+- Defaults: **R** / **F** / **A** / **M** / **S** / **T** / **O** / **V**.
+- Enable follows the parent All-In-One global shortcut toggle.
+- Keys: `shortcuts.allInOne.mode.<mode>`.
+- Legacy `shortcuts.area.applicationCapture` migrates once into the `.window` binding (child keys only).
+- Config TOML: `shortcuts.overlay.all_in_one.<mode>` (legacy `shortcuts.overlay.area_application_capture` still imports onto `.window`).
 
 ## Recording-behavior notes
 

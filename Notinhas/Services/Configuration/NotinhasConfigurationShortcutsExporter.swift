@@ -18,11 +18,13 @@ extension NotinhasConfigurationExporter {
       writeGlobalShortcut(&writer, kind: kind, manager: manager)
     }
 
-    writeOverlayShortcut(
-      &writer,
-      section: "shortcuts.overlay.area_application_capture",
-      shortcut: CaptureOverlayShortcutSettings.applicationCaptureShortcut
-    )
+    for mode in AllInOneCaptureMode.allCases {
+      writeOverlayShortcut(
+        &writer,
+        section: "shortcuts.overlay.all_in_one.\(mode.rawValue)",
+        shortcut: AllInOneModeShortcutSettings.shortcut(for: mode)
+      )
+    }
     writeOverlayShortcut(
       &writer,
       section: "shortcuts.overlay.recording_application_capture",

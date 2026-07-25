@@ -642,7 +642,8 @@ final class AreaSelectionController: NSObject {
     guard allowsApplicationWindowSelection else { return false }
     switch selectionMode {
     case .screenshot, .scrollingCapture:
-      return CaptureOverlayShortcutSettings.matchesApplicationCaptureShortcut(event)
+      // Application Capture second-layer moved under All-In-One (Window mode).
+      return false
     case .recording:
       return CaptureOverlayShortcutSettings.matchesRecordingApplicationCaptureShortcut(event)
     }
@@ -2758,7 +2759,7 @@ final class AreaSelectionOverlayView: NSView {
 
     let shortcut: CaptureOverlayShortcut? = switch selectionMode {
     case .screenshot, .scrollingCapture:
-      CaptureOverlayShortcutSettings.applicationCaptureShortcut
+      nil
     case .recording:
       CaptureOverlayShortcutSettings.recordingApplicationCaptureShortcut
     }

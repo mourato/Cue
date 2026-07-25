@@ -23,12 +23,28 @@ extension NotinhasConfigurationImporter {
       collectGlobalShortcut(&reader, kind: kind, mutations: &mutations)
     }
 
+    // Legacy: map former Capture Area overlay shortcut onto AIO Window mode.
     collectOverlayShortcut(
       &reader,
       path: ["shortcuts", "overlay", "area_application_capture"],
       mutations: &mutations
-    ) {
-      CaptureOverlayShortcutSettings.setApplicationCaptureShortcut($0)
+    ) { shortcut in
+      if let shortcut, !shortcut.isIndependent {
+        AllInOneModeShortcutSettings.setShortcut(shortcut, for: .window)
+      } else if shortcut == nil {
+        AllInOneModeShortcutSettings.setShortcut(nil, for: .window)
+      }
+    }
+    for mode in AllInOneCaptureMode.allCases {
+      collectOverlayShortcut(
+        &reader,
+        path: ["shortcuts", "overlay", "all_in_one", mode.rawValue],
+        mutations: &mutations
+      ) { shortcut in
+        // AIO mode shortcuts are child-only; strip any imported modifiers.
+        let child = shortcut.map { CaptureOverlayShortcut(keyCode: $0.keyCode, modifiers: 0) }
+        AllInOneModeShortcutSettings.setShortcut(child, for: mode)
+      }
     }
     collectOverlayShortcut(
       &reader,

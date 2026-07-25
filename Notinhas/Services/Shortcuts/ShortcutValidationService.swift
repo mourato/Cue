@@ -143,6 +143,29 @@ final class ShortcutValidationService {
     return .accept(issue: nil)
   }
 
+  func validateAllInOneModeShortcut(
+    _ shortcut: CaptureOverlayShortcut?,
+    for mode: AllInOneCaptureMode
+  ) -> ShortcutValidationDecision {
+    guard let shortcut else { return .accept(issue: nil) }
+
+    if shortcut.isIndependent {
+      return .reject(issue: ShortcutValidationIssue(
+        severity: .error,
+        message: L10n.ShortcutValidation.allInOneModeRequiresSingleKey
+      ))
+    }
+
+    if let conflict = AllInOneModeShortcutSettings.conflictingMode(for: shortcut, excluding: mode) {
+      return .reject(issue: ShortcutValidationIssue(
+        severity: .error,
+        message: L10n.ShortcutValidation.alreadyUsedBy(conflict.compactTitle)
+      ))
+    }
+
+    return .accept(issue: nil)
+  }
+
   private func conflictingGlobalShortcut(
     for config: ShortcutConfig,
     excluding excludedKind: GlobalShortcutKind?
@@ -169,7 +192,7 @@ final class ShortcutValidationService {
     for config: ShortcutConfig,
     excluding excludedKind: CaptureOverlayShortcutKind
   ) -> CaptureOverlayShortcutKind? {
-    [CaptureOverlayShortcutKind.applicationCapture, .applicationRecording].first(where: {
+    [CaptureOverlayShortcutKind.applicationRecording].first(where: {
       $0 != excludedKind
         && CaptureOverlayShortcutSettings.shortcut(for: $0)?.independentShortcutConfig == config
     })
@@ -181,8 +204,6 @@ final class ShortcutValidationService {
 private extension CaptureOverlayShortcutKind {
   var systemConflictKind: GlobalShortcutKind {
     switch self {
-    case .applicationCapture:
-      .area
     case .applicationRecording:
       .recording
     }

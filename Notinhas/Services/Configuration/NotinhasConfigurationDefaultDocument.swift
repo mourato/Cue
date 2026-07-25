@@ -198,11 +198,13 @@ enum NotinhasConfigurationDefaultDocument {
       writeGlobalShortcut(&writer, kind: kind)
     }
 
-    writeOverlayShortcut(
-      &writer,
-      section: "shortcuts.overlay.area_application_capture",
-      shortcut: CaptureOverlayShortcutSettings.defaultApplicationCaptureShortcut
-    )
+    for mode in AllInOneCaptureMode.allCases {
+      writeOverlayShortcut(
+        &writer,
+        section: "shortcuts.overlay.all_in_one.\(mode.rawValue)",
+        shortcut: AllInOneModeShortcutSettings.defaultShortcut(for: mode)
+      )
+    }
     writeOverlayShortcut(
       &writer,
       section: "shortcuts.overlay.recording_application_capture",

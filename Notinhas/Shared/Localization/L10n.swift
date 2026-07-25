@@ -1881,12 +1881,12 @@ nonisolated enum L10n {
       defaultValue: "Inside annotate editor",
       comment: "Subtitle for annotate action shortcuts in overlay"
     )
-    static func applicationCapture(_ shortcut: String) -> String {
+    static func allInOneModeShortcuts(_ summary: String) -> String {
       format(
-        "shortcut-overlay.application-capture",
-        defaultValue: "Application Capture: %@",
-        comment: "Subtitle for the Capture Area shortcut row in the overlay. %@ is the current single-key toggle used inside the area capture overlay.",
-        shortcut
+        "shortcut-overlay.all-in-one-mode-shortcuts",
+        defaultValue: "HUD modes: %@",
+        comment: "Subtitle for All-In-One listing compact mode key bindings. %@ is a short summary like R F A …",
+        summary
       )
     }
 
@@ -2034,6 +2034,12 @@ nonisolated enum L10n {
         displayName
       )
     }
+
+    static let allInOneModeRequiresSingleKey = string(
+      "shortcut-validation.all-in-one-mode-requires-single-key",
+      defaultValue: "All-In-One mode shortcuts must be a single key (no modifiers).",
+      comment: "Validation error when an AIO HUD mode shortcut includes modifiers"
+    )
   }
 
   enum PreferencesGeneral {
@@ -3467,6 +3473,11 @@ nonisolated enum L10n {
       "preferences-shortcuts.capture-all-in-one-description",
       defaultValue: "Open the All-In-One HUD to pick mode, area, and dimensions",
       comment: "Description for the All-In-One capture shortcut"
+    )
+    static let allInOneModeShortcutDescription = string(
+      "preferences-shortcuts.all-in-one-mode-shortcut-description",
+      defaultValue: "Single key while the All-In-One HUD is open.",
+      comment: "Description for child shortcuts that activate AIO toolbar modes"
     )
     static let captureAreaDescription = string(
       "preferences-shortcuts.capture-area-description",

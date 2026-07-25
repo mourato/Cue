@@ -25,6 +25,8 @@ final class AllInOneCaptureCoordinator {
   private var sessionGeneration = UUID()
   private let cursorArbiter = AllInOneCaptureCursorArbiter()
   private var cursorOwnershipTimer: Timer?
+  private var localModeShortcutMonitor: Any?
+  private var globalModeShortcutMonitor: Any?
 
   private init() {}
 
@@ -101,6 +103,7 @@ final class AllInOneCaptureCoordinator {
     installHUDs(using: sessionState!)
     syncHUDDisplayLevel()
     startCursorOwnershipIfNeeded()
+    installModeShortcutMonitorsIfNeeded()
 
     let screenFrames = NSScreen.screens.map(\.frame)
     if let lastRect = CaptureLastSelectionStore.load(userDefaults: .standard, screens: screenFrames) {
@@ -415,6 +418,7 @@ final class AllInOneCaptureCoordinator {
     let ownsInitialSelection = isAwaitingInitialSelection
     isAwaitingInitialSelection = false
     timerScheduler.cancel()
+    removeModeShortcutMonitors()
     stopCursorOwnership()
     viewModel?.setAllInOneSelectionBlocking(false)
     AreaSelectionController.shared.cursorExclusionFrames = { [] }
@@ -443,5 +447,54 @@ final class AllInOneCaptureCoordinator {
     actionHUD = nil
     sessionState = nil
     viewModel = nil
+  }
+
+  // MARK: - Mode shortcuts (child layer)
+
+  private func installModeShortcutMonitorsIfNeeded() {
+    guard localModeShortcutMonitor == nil else { return }
+
+    localModeShortcutMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+      guard let self else { return event }
+      return handleModeShortcut(event) ? nil : event
+    }
+
+    globalModeShortcutMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
+      DispatchQueue.main.async {
+        _ = self?.handleModeShortcut(event)
+      }
+    }
+  }
+
+  private func removeModeShortcutMonitors() {
+    if let localModeShortcutMonitor {
+      NSEvent.removeMonitor(localModeShortcutMonitor)
+      self.localModeShortcutMonitor = nil
+    }
+    if let globalModeShortcutMonitor {
+      NSEvent.removeMonitor(globalModeShortcutMonitor)
+      self.globalModeShortcutMonitor = nil
+    }
+  }
+
+  @discardableResult
+  private func handleModeShortcut(_ event: NSEvent) -> Bool {
+    guard isActive else { return false }
+    guard KeyboardShortcutManager.shared.isShortcutEnabled(for: .allInOne) else { return false }
+    guard !isEditingTextInput else { return false }
+
+    let modes = sessionState?.availableModes
+      ?? AllInOneCaptureMode.availableModes(videoEnabled: VideoModuleAvailability.isEnabled)
+    guard let mode = AllInOneModeShortcutSettings.mode(matching: event, in: modes) else {
+      return false
+    }
+
+    sessionState?.activateMode(mode)
+    return true
+  }
+
+  private var isEditingTextInput: Bool {
+    guard let responder = NSApp.keyWindow?.firstResponder else { return false }
+    return responder is NSTextView || responder is NSText
   }
 }

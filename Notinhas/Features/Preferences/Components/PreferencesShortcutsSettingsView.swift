@@ -15,7 +15,8 @@ struct ShortcutsSettingsView: View {
   @State private var areaShortcut: ShortcutConfig?
   @State private var areaAnnotateShortcut: ShortcutConfig?
   @State private var activeWindowShortcut: ShortcutConfig?
-  @State private var areaApplicationCaptureShortcut: CaptureOverlayShortcut?
+  @State private var allInOneModeShortcuts: [AllInOneCaptureMode: ModeShortcutState]
+  @State private var allInOneModeValidationIssues: [AllInOneCaptureMode: ShortcutValidationIssue] = [:]
   @State private var recordingApplicationCaptureShortcut: CaptureOverlayShortcut?
   @State private var scrollingCaptureShortcut: ShortcutConfig?
   @State private var objectCutoutShortcut: ShortcutConfig?
@@ -41,7 +42,8 @@ struct ShortcutsSettingsView: View {
   @State private var globalShortcutEnabled: [GlobalShortcutKind: Bool]
   @State private var annotateActionEnabled: [AnnotateActionShortcutKind: Bool]
   @State private var globalValidationIssues: [GlobalShortcutKind: ShortcutValidationIssue] = [:]
-  @State private var captureOverlayValidationIssues: [CaptureOverlayShortcutKind: ShortcutValidationIssue] = [:]
+  @State private var captureOverlayValidationIssues: [CaptureOverlayShortcutKind: ShortcutValidationIssue] =
+    [:]
   @State private var annotateActionValidationIssues: [AnnotateActionShortcutKind: ShortcutValidationIssue] = [:]
   @State private var annotateToolValidationIssues: [AnnotationToolType: ShortcutValidationIssue] = [:]
   @State private var shortcutsEnabled: Bool
@@ -63,8 +65,12 @@ struct ShortcutsSettingsView: View {
     _areaShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .area))
     _areaAnnotateShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .areaAnnotate))
     _activeWindowShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .activeWindow))
-    _areaApplicationCaptureShortcut = State(
-      initialValue: CaptureOverlayShortcutSettings.applicationCaptureShortcut
+    _allInOneModeShortcuts = State(
+      initialValue: Dictionary(
+        uniqueKeysWithValues: AllInOneCaptureMode.allCases.map { mode in
+          (mode, ModeShortcutState(shortcut: AllInOneModeShortcutSettings.shortcut(for: mode)))
+        }
+      )
     )
     _recordingApplicationCaptureShortcut = State(
       initialValue: CaptureOverlayShortcutSettings.recordingApplicationCaptureShortcut
@@ -336,41 +342,45 @@ struct ShortcutsSettingsView: View {
             onShortcutChanged: { handleGlobalShortcutChange($0, for: .fullscreen) }
           )
 
-          ShortcutRecorderView(
-            label: L10n.Actions.captureAllInOne,
-            icon: "viewfinder",
-            description: L10n.PreferencesShortcuts.captureAllInOneDescription,
-            shortcut: $allInOneShortcut,
-            defaultShortcut: .defaultAllInOne,
-            isEnabled: globalEnabledBinding(for: .allInOne),
-            validationIssue: globalValidationIssues[.allInOne],
-            onShortcutChanged: { handleGlobalShortcutChange($0, for: .allInOne) }
-          )
-
           VStack(alignment: .leading, spacing: 4) {
             ShortcutRecorderView(
-              label: L10n.Actions.captureArea,
-              icon: "rectangle.dashed",
-              description: L10n.PreferencesShortcuts.captureAreaDescription,
-              shortcut: $areaShortcut,
-              defaultShortcut: .defaultArea,
-              isEnabled: globalEnabledBinding(for: .area),
-              validationIssue: globalValidationIssues[.area],
-              onShortcutChanged: { handleGlobalShortcutChange($0, for: .area) }
+              label: L10n.Actions.captureAllInOne,
+              icon: "viewfinder",
+              description: L10n.PreferencesShortcuts.captureAllInOneDescription,
+              shortcut: $allInOneShortcut,
+              defaultShortcut: .defaultAllInOne,
+              isEnabled: globalEnabledBinding(for: .allInOne),
+              validationIssue: globalValidationIssues[.allInOne],
+              onShortcutChanged: { handleGlobalShortcutChange($0, for: .allInOne) }
             )
 
-            CaptureOverlayShortcutRecorderRow(
-              label: L10n.PreferencesShortcuts.applicationCaptureTitle,
-              description: L10n.PreferencesShortcuts.applicationCaptureDescription,
-              shortcut: $areaApplicationCaptureShortcut,
-              defaultShortcut: CaptureOverlayShortcutSettings.defaultApplicationCaptureShortcut,
-              isEnabled: globalEnabledBinding(for: .area),
-              validationIssue: captureOverlayValidationIssues[.applicationCapture]
-            ) { newShortcut in
-              handleCaptureOverlayShortcutChange(newShortcut, for: .applicationCapture)
+            ForEach(AllInOneCaptureMode.availableModes(videoEnabled: videoModuleEnabled)) { mode in
+              CaptureOverlayShortcutRecorderRow(
+                label: mode.compactTitle,
+                icon: mode.systemImage,
+                description: L10n.PreferencesShortcuts.allInOneModeShortcutDescription,
+                shortcut: allInOneModeShortcutBinding(for: mode),
+                defaultShortcut: AllInOneModeShortcutSettings.defaultShortcut(for: mode),
+                isEnabled: globalEnabledBinding(for: .allInOne),
+                validationIssue: allInOneModeValidationIssues[mode],
+                allowsIndependent: false
+              ) { newShortcut in
+                handleAllInOneModeShortcutChange(newShortcut, for: mode)
+              }
             }
           }
           .padding(.vertical, 2)
+
+          ShortcutRecorderView(
+            label: L10n.Actions.captureArea,
+            icon: "rectangle.dashed",
+            description: L10n.PreferencesShortcuts.captureAreaDescription,
+            shortcut: $areaShortcut,
+            defaultShortcut: .defaultArea,
+            isEnabled: globalEnabledBinding(for: .area),
+            validationIssue: globalValidationIssues[.area],
+            onShortcutChanged: { handleGlobalShortcutChange($0, for: .area) }
+          )
 
           ShortcutRecorderView(
             label: L10n.Actions.captureAreaAnnotate,
@@ -838,26 +848,28 @@ struct ShortcutsSettingsView: View {
 
   private func resetCaptureSection(refresh: Bool = true) {
     fullscreenShortcut = .defaultFullscreen
+    allInOneShortcut = .defaultAllInOne
     areaShortcut = .defaultArea
     areaAnnotateShortcut = .defaultAreaAnnotate
     activeWindowShortcut = .defaultActiveWindowCapture
-    areaApplicationCaptureShortcut = CaptureOverlayShortcutSettings.defaultApplicationCaptureShortcut
     scrollingCaptureShortcut = .defaultScrollingCapture
     objectCutoutShortcut = .defaultObjectCutout
     ocrShortcut = .defaultOCR
     smartElementShortcut = .defaultSmartElement
 
     let captureKinds: [GlobalShortcutKind] = [
-      .fullscreen, .area, .areaAnnotate, .activeWindow, .scrollingCapture, .objectCutout, .ocr, .smartElement,
+      .fullscreen, .allInOne, .area, .areaAnnotate, .activeWindow, .scrollingCapture, .objectCutout, .ocr,
+      .smartElement,
     ]
     for kind in captureKinds {
       globalShortcutEnabled[kind] = true
       manager.setShortcutEnabled(true, for: kind)
       globalValidationIssues.removeValue(forKey: kind)
     }
-    captureOverlayValidationIssues.removeValue(forKey: .applicationCapture)
+    allInOneModeValidationIssues.removeAll()
 
     manager.setFullscreenShortcut(.defaultFullscreen)
+    manager.setAllInOneShortcut(.defaultAllInOne)
     manager.setAreaShortcut(.defaultArea)
     manager.setAreaAnnotateShortcut(.defaultAreaAnnotate)
     manager.setActiveWindowShortcut(.defaultActiveWindowCapture)
@@ -865,7 +877,12 @@ struct ShortcutsSettingsView: View {
     manager.setObjectCutoutShortcut(.defaultObjectCutout)
     manager.setOCRShortcut(.defaultOCR)
     manager.setSmartElementShortcut(.defaultSmartElement)
-    CaptureOverlayShortcutSettings.resetApplicationCaptureShortcut()
+    AllInOneModeShortcutSettings.resetAllModeShortcuts()
+    for mode in AllInOneCaptureMode.allCases {
+      allInOneModeShortcuts[mode] = ModeShortcutState(
+        shortcut: AllInOneModeShortcutSettings.defaultShortcut(for: mode)
+      )
+    }
 
     if refresh {
       manager.refreshShortcutRegistration()
@@ -1209,9 +1226,6 @@ struct ShortcutsSettingsView: View {
     case .accept(let issue):
       captureOverlayValidationIssues[kind] = issue
       switch kind {
-      case .applicationCapture:
-        areaApplicationCaptureShortcut = shortcut
-        CaptureOverlayShortcutSettings.setApplicationCaptureShortcut(shortcut)
       case .applicationRecording:
         recordingApplicationCaptureShortcut = shortcut
         CaptureOverlayShortcutSettings.setRecordingApplicationCaptureShortcut(shortcut)
@@ -1221,6 +1235,33 @@ struct ShortcutsSettingsView: View {
       return true
     case .reject(let issue):
       captureOverlayValidationIssues[kind] = issue
+      return false
+    }
+  }
+
+  private func allInOneModeShortcutBinding(for mode: AllInOneCaptureMode) -> Binding<CaptureOverlayShortcut?> {
+    Binding(
+      get: { allInOneModeShortcuts[mode]?.shortcut },
+      set: { allInOneModeShortcuts[mode] = ModeShortcutState(shortcut: $0) }
+    )
+  }
+
+  private func handleAllInOneModeShortcutChange(
+    _ shortcut: CaptureOverlayShortcut?,
+    for mode: AllInOneCaptureMode
+  ) -> Bool {
+    switch validator.validateAllInOneModeShortcut(shortcut, for: mode) {
+    case .accept(let issue):
+      if let issue {
+        allInOneModeValidationIssues[mode] = issue
+      } else {
+        allInOneModeValidationIssues.removeValue(forKey: mode)
+      }
+      allInOneModeShortcuts[mode] = ModeShortcutState(shortcut: shortcut)
+      AllInOneModeShortcutSettings.setShortcut(shortcut, for: mode)
+      return true
+    case .reject(let issue):
+      allInOneModeValidationIssues[mode] = issue
       return false
     }
   }
@@ -1270,13 +1311,19 @@ struct ShortcutsSettingsView: View {
   }
 }
 
+private struct ModeShortcutState: Equatable {
+  var shortcut: CaptureOverlayShortcut?
+}
+
 private struct CaptureOverlayShortcutRecorderRow: View {
   let label: String
+  var icon: String = "macwindow"
   let description: String
   @Binding var shortcut: CaptureOverlayShortcut?
   let defaultShortcut: CaptureOverlayShortcut?
   let isEnabled: Binding<Bool>
   let validationIssue: ShortcutValidationIssue?
+  var allowsIndependent: Bool = true
   let onShortcutChanged: (CaptureOverlayShortcut?) -> Bool
 
   @State private var isRecording = false
@@ -1285,7 +1332,7 @@ private struct CaptureOverlayShortcutRecorderRow: View {
 
   var body: some View {
     HStack(spacing: 12) {
-      Image(systemName: "macwindow")
+      Image(systemName: icon)
         .font(.title2)
         .foregroundColor(.secondary)
         .frame(width: 28)
@@ -1381,7 +1428,10 @@ private struct CaptureOverlayShortcutRecorderRow: View {
         return nil
       }
 
-      guard let newShortcut = CaptureOverlayShortcut(from: event) else {
+      let newShortcut = allowsIndependent
+        ? CaptureOverlayShortcut(from: event)
+        : CaptureOverlayShortcut(childKeyFrom: event)
+      guard let newShortcut else {
         return nil
       }
 

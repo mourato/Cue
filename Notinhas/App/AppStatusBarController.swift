@@ -480,18 +480,10 @@ final class AppStatusBarController: ObservableObject {
     captureAreaAnnotateItem.isEnabled = viewModel.hasPermission
     menu?.addItem(captureAreaAnnotateItem)
 
-    let applicationCaptureShortcut = CaptureOverlayShortcutSettings.applicationCaptureShortcut
     let applicationCaptureItem = NSMenuItem(
       title: L10n.PreferencesShortcuts.applicationCaptureTitle,
       action: #selector(captureApplicationAction),
       keyEquivalent: ""
-    )
-    configureOverlayMenuItem(
-      applicationCaptureItem,
-      base: L10n.PreferencesShortcuts.applicationCaptureTitle,
-      shortcut: applicationCaptureShortcut,
-      parentKind: .area,
-      using: shortcutManager
     )
     applicationCaptureItem.target = self
     applicationCaptureItem.image = NSImage(systemSymbolName: "macwindow", accessibilityDescription: nil)

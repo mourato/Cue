@@ -42,6 +42,7 @@ enum PreferencesKeys {
   static let shortcutsEnabled = "shortcutsEnabled"
   static let fullscreenShortcut = "fullscreenShortcut"
   static let areaShortcut = "areaShortcut"
+  /// Legacy key retained only for one-time migration into AIO `.window` mode shortcuts.
   static let areaApplicationCaptureShortcut = "shortcuts.area.applicationCapture"
   static let recordingApplicationCaptureShortcut = "shortcuts.recording.applicationCapture"
   static let smartElementShortcut = "smartElementShortcut"

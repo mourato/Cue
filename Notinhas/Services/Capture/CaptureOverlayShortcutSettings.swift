@@ -2,7 +2,7 @@
 //  CaptureOverlayShortcutSettings.swift
 //  Notinhas
 //
-//  Shared persistence for shortcuts used by screenshot and recording application modes.
+//  Shared persistence for shortcuts used by recording application mode overlays.
 //
 
 import AppKit
@@ -54,6 +54,15 @@ struct CaptureOverlayShortcut: Equatable, Codable {
     self.modifiers = modifiers
   }
 
+  /// Child-only recording: accepts a single key without modifiers.
+  init?(childKeyFrom event: NSEvent) {
+    guard event.type == .keyDown, event.keyCode != UInt16(kVK_Escape) else { return nil }
+    guard Self.carbonModifiers(from: event) == 0 else { return nil }
+    guard Self.isAllowedSingleKey(event) else { return nil }
+    keyCode = UInt32(event.keyCode)
+    modifiers = 0
+  }
+
   func matches(_ event: NSEvent) -> Bool {
     guard UInt32(event.keyCode) == keyCode else { return false }
     return Self.carbonModifiers(from: event) == modifiers
@@ -97,13 +106,10 @@ struct CaptureOverlayShortcut: Equatable, Codable {
 }
 
 enum CaptureOverlayShortcutKind: Hashable {
-  case applicationCapture
   case applicationRecording
 
   var displayName: String {
     switch self {
-    case .applicationCapture:
-      L10n.PreferencesShortcuts.applicationCaptureTitle
     case .applicationRecording:
       L10n.PreferencesShortcuts.applicationRecordingTitle
     }
@@ -115,29 +121,10 @@ enum CaptureOverlayShortcutSettings {
   static var defaults: UserDefaults = .standard
   private static let explicitEmptyShortcutData = Data("null".utf8)
 
-  static let defaultApplicationCaptureShortcut = CaptureOverlayShortcut(
-    keyCode: UInt32(kVK_ANSI_A),
-    modifiers: 0
-  )
   static let defaultRecordingApplicationCaptureShortcut = CaptureOverlayShortcut(
     keyCode: UInt32(kVK_ANSI_A),
     modifiers: 0
   )
-
-  static var applicationCaptureShortcut: CaptureOverlayShortcut? {
-    shortcut(
-      forKey: PreferencesKeys.areaApplicationCaptureShortcut,
-      defaultValue: defaultApplicationCaptureShortcut
-    )
-  }
-
-  static var applicationCaptureShortcutDisplay: String {
-    applicationCaptureShortcut?.displayString ?? L10n.Common.none
-  }
-
-  static var applicationCaptureIndependentShortcut: ShortcutConfig? {
-    applicationCaptureShortcut?.independentShortcutConfig
-  }
 
   static var recordingApplicationCaptureShortcut: CaptureOverlayShortcut? {
     shortcut(
@@ -154,20 +141,8 @@ enum CaptureOverlayShortcutSettings {
     recordingApplicationCaptureShortcut?.independentShortcutConfig
   }
 
-  static func effectiveApplicationCaptureDisplay(parentShortcut: ShortcutConfig?) -> String {
-    effectiveDisplay(shortcut: applicationCaptureShortcut, parentShortcut: parentShortcut)
-  }
-
   static func effectiveRecordingApplicationCaptureDisplay(parentShortcut: ShortcutConfig?) -> String {
     effectiveDisplay(shortcut: recordingApplicationCaptureShortcut, parentShortcut: parentShortcut)
-  }
-
-  static func setApplicationCaptureShortcut(_ shortcut: CaptureOverlayShortcut?) {
-    setShortcut(shortcut, forKey: PreferencesKeys.areaApplicationCaptureShortcut)
-  }
-
-  static func resetApplicationCaptureShortcut() {
-    defaults.removeObject(forKey: PreferencesKeys.areaApplicationCaptureShortcut)
   }
 
   static func setRecordingApplicationCaptureShortcut(_ shortcut: CaptureOverlayShortcut?) {
@@ -178,18 +153,12 @@ enum CaptureOverlayShortcutSettings {
     defaults.removeObject(forKey: PreferencesKeys.recordingApplicationCaptureShortcut)
   }
 
-  static func matchesApplicationCaptureShortcut(_ event: NSEvent) -> Bool {
-    applicationCaptureShortcut?.matches(event) ?? false
-  }
-
   static func matchesRecordingApplicationCaptureShortcut(_ event: NSEvent) -> Bool {
     recordingApplicationCaptureShortcut?.matches(event) ?? false
   }
 
   static func shortcut(for kind: CaptureOverlayShortcutKind) -> CaptureOverlayShortcut? {
     switch kind {
-    case .applicationCapture:
-      applicationCaptureShortcut
     case .applicationRecording:
       recordingApplicationCaptureShortcut
     }

@@ -662,7 +662,6 @@ final class KeyboardShortcutManager {
   private var scrollingCaptureHotkeyRef: EventHotKeyRef?
   private var recordingHotkeyRef: EventHotKeyRef?
   private var pauseResumeRecordingHotkeyRef: EventHotKeyRef?
-  private var applicationCaptureHotkeyRef: EventHotKeyRef?
   private var applicationRecordingHotkeyRef: EventHotKeyRef?
   private var annotateHotkeyRef: EventHotKeyRef?
   private var videoEditorHotkeyRef: EventHotKeyRef?
@@ -696,7 +695,6 @@ final class KeyboardShortcutManager {
   private let objectCutoutHotkeyID = EventHotKeyID(signature: OSType(0x5A53_4639), id: 9) // "ZSF9"
   private let shortcutListHotkeyID = EventHotKeyID(signature: OSType(0x5A53_4641), id: 10) // "ZSFA"
   private let historyHotkeyID = EventHotKeyID(signature: OSType(0x5A53_4642), id: 11) // "ZSFB"
-  private let applicationCaptureHotkeyID = EventHotKeyID(signature: OSType(0x5A53_4643), id: 12) // "ZSFC"
   private let applicationRecordingHotkeyID = EventHotKeyID(signature: OSType(0x5A53_4644), id: 13) // "ZSFD"
   private let areaAnnotateHotkeyID = EventHotKeyID(signature: OSType(0x5A53_4645), id: 14) // "ZSFE"
   private let activeWindowHotkeyID = EventHotKeyID(signature: OSType(0x5A53_4646), id: 15) // "ZSFF"
@@ -1406,9 +1404,6 @@ final class KeyboardShortcutManager {
     case activeWindowHotkeyID.id:
       actionName = "active-window"
       action = .captureActiveWindow
-    case applicationCaptureHotkeyID.id:
-      actionName = "application-capture"
-      action = .captureApplication
     case scrollingCaptureHotkeyID.id:
       actionName = "scrolling-capture"
       action = .captureScrolling
@@ -1545,13 +1540,6 @@ final class KeyboardShortcutManager {
       config: shortcut(for: .deleteRecording),
       hotkeyID: deleteRecordingHotkeyID,
       ref: &deleteRecordingHotkeyRef
-    )
-    registerOverlayShortcutIfNeeded(
-      label: "application-capture",
-      parentKind: .area,
-      config: CaptureOverlayShortcutSettings.applicationCaptureIndependentShortcut,
-      hotkeyID: applicationCaptureHotkeyID,
-      ref: &applicationCaptureHotkeyRef
     )
     registerOverlayShortcutIfNeeded(
       label: "application-recording",
@@ -1782,10 +1770,6 @@ final class KeyboardShortcutManager {
     if let ref = deleteRecordingHotkeyRef {
       UnregisterEventHotKey(ref)
       deleteRecordingHotkeyRef = nil
-    }
-    if let ref = applicationCaptureHotkeyRef {
-      UnregisterEventHotKey(ref)
-      applicationCaptureHotkeyRef = nil
     }
     if let ref = applicationRecordingHotkeyRef {
       UnregisterEventHotKey(ref)
