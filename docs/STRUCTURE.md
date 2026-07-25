@@ -18,7 +18,7 @@ Separated feature docs cover each runtime area in depth:
 - [`SHORTCUTS.md`](SHORTCUTS.md) — Global/overlay shortcut registration and conflicts
 - [`PREFERENCES.md`](PREFERENCES.md) — Settings tabs, preference storage, defaults
 - [`APP_LIFECYCLE.md`](APP_LIFECYCLE.md) — Launch sequence, onboarding, menu bar bootstrap
-- [`UPDATES.md`](UPDATES.md) —  updater, channels, release flow
+- [`UPDATES.md`](UPDATES.md) — local diagnostics, logs, manual upgrade notes
 
 ## Runtime Map
 
@@ -59,7 +59,6 @@ flowchart LR
         KS["KeyboardShortcutManager"]
         CL["CloudManager"]
         CFG["NotinhasConfigurationService + AutoImporter + SyncCoordinator"]
-        UP["UpdaterManager"]
         DG["DiagnosticLogger + CrashSentinel"]
         DI["DesktopIconManager"]
     end
@@ -80,7 +79,6 @@ flowchart LR
     D --> F
     D --> G
     D --> KS
-    D --> UP
     F --> CFG
     C --> DG
 
@@ -144,14 +142,12 @@ Notinhas/
   Features/
     Annotate/
     Capture/
-    CrashReport/
     Onboarding/
     Preferences/
     QuickAccess/
     Recording/
     Shortcuts/
     Splash/
-    Updates/
     VideoEditor/
 
   Services/
@@ -179,7 +175,6 @@ Notinhas/
     FileAccess/
     Media/
     Shortcuts/
-    Updates/
     Wallpaper/
 
   Shared/
@@ -237,10 +232,8 @@ NotinhasUITests/
 | `Features/QuickAccess/` | Floating post-capture stack, temp-file persistence UX, drag-to-app, pinned screenshot windows |
 | `Features/Annotate/` | Image editor, export, crop, blur, mockup, cutout-aware editing, inline area annotate |
 | `Features/VideoEditor/` | Trim, zoom, speed (timelapse) segments, background, Smart Camera, GIF/video export |
-| `Features/Preferences/` | General, Capture, Quick Access, Shortcuts, Permissions, History storage/retention, Cloud, Advanced, About tabs |
+| `Features/Preferences/` | General, Capture, Annotate, Quick Access, History, Shortcuts, Permissions, Cloud, Advanced tabs |
 | `Features/Shortcuts/` | Keyboard shortcut cheat-sheet overlay |
-| `Features/Updates/` |  menu binding and update UI bridge |
-| `Features/CrashReport/` | Crash report prompt and diagnostics UX |
 
 ## Service Roots
 
@@ -255,7 +248,6 @@ NotinhasUITests/
 | `Services/Media/` | OCR, QR payload detection, foreground cutout, GIF conversion helpers, WebP encode |
 | `Services/Shortcuts/` | Global shortcuts, conflict detection, system shortcut checks |
 | `Services/Diagnostics/` | Crash sentinel, logs, toasts, cleanup |
-| `Services/Updates/` |  updater bootstrap |
 | `Services/Wallpaper/` | Desktop icon and wallpaper helpers used by capture/editor UX |
 | `Services/Appearance/` | Theme and appearance mode management |
 | `Shared/Localization/` | Shared localization helpers for AppKit, service copy, alerts, toasts, and display labels |
