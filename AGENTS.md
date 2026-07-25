@@ -11,7 +11,8 @@ features unless they directly support that workflow.
 
 Do **not** reintroduce removed upstream integrations: Sparkle auto-updates,
 About/Check for Updates UI, Report a Problem flows, `snapzy://` URL aliases, or
-a public support endpoint.
+a public support endpoint. Inherited Snapzy surfaces retained vs removed channels
+are recorded in `docs/adr/070-retain-inherited-snapzy-surfaces.md`.
 
 ## Project Structure
 
@@ -118,4 +119,6 @@ recording for UI changes.
 ## Distribution
 
 Releases are manual GitHub Releases with `Notinhas-v<version>.dmg`. No Sparkle
-appcast or in-app update channel. User migration notes live in `docs/MIGRATION.md`.
+appcast or in-app update channel; no Homebrew cask or Discord release bot (see
+ADR 070). Optional `install.sh` remains a convenience. User migration notes live
+in `docs/MIGRATION.md`.

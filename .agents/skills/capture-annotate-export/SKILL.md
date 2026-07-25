@@ -58,6 +58,21 @@ Use when the user asks to change Notinhas notes/pins/rects, note editor UX, note
 - Never log API keys or full screenshot bitmaps in diagnostics.
 - ImgBB API key key-name: `notinhas.imgbb.apiKey` (UserDefaults) — do not print values.
 
+## Inherited Surfaces (Retained)
+
+Inherited Snapzy capabilities that **remain** in the tree (not dead-code targets):
+scrolling/OCR/Smart Element/object cutout/All-In-One capture; BYO cloud
+(S3/R2/Google Drive) alongside handoff-oriented ImgBB; annotate watermark,
+combine, and integrated mockup. See
+[`docs/adr/070-retain-inherited-snapzy-surfaces.md`](../../docs/adr/070-retain-inherited-snapzy-surfaces.md).
+
+## Removed Upstream Channels
+
+Do **not** reintroduce: Sparkle auto-updates, About/Check for Updates UI,
+Report a Problem flows, `snapzy://` URL aliases, public support endpoints,
+Homebrew cask distribution, or Discord release bots — per Product Intent and
+[ADR 070](../../docs/adr/070-retain-inherited-snapzy-surfaces.md).
+
 ## Out-of-Scope Pressure Tests
 
 Reject or narrow requests that primarily add: full recording suites, generic shape tool parity for its own sake, or cloud storage platforms unrelated to shipping the brief — unless the user explicitly overrides product intent.

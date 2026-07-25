@@ -1,6 +1,6 @@
 # Cloud Uploads
 
-Bring-your-own-storage cloud uploads for captures: AWS S3, Cloudflare R2, Google Drive. No Notinhas servers, no telemetry — files go straight from the Mac to the user's bucket/drive.
+Bring-your-own-storage cloud uploads for captures: AWS S3, Cloudflare R2, Google Drive. No Notinhas servers, no telemetry — files go straight from the Mac to the user's bucket/drive. Retention policy: [ADR 070 — Retain inherited Snapzy surfaces](adr/070-retain-inherited-snapzy-surfaces.md).
 
 Verified against `Notinhas/Services/Cloud/`, `Notinhas/Features/Preferences/Components/PreferencesCloud*.swift`, and upload call sites at HEAD (`v1.30.0-beta.4`).
 

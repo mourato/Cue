@@ -1,6 +1,6 @@
 # Screenshot Capture Flows
 
-This doc covers the screenshot capture pipeline: capture modes, the area-selection overlay, OCR/QR, object cutout, and Smart Element — from trigger to saved file. Scrolling capture, screen recording, post-capture routing, and the editors have their own docs (see Related docs).
+This doc covers the screenshot capture pipeline: capture modes, the area-selection overlay, OCR/QR, object cutout, and Smart Element — from trigger to saved file. Scrolling capture, screen recording, post-capture routing, and the editors have their own docs (see Related docs). Retention policy for inherited capture modes: [ADR 070 — Retain inherited Snapzy surfaces](adr/070-retain-inherited-snapzy-surfaces.md).
 
 User-facing copy in these flows is localized through `Notinhas/Shared/Localization/L10n.swift` and `Notinhas/Resources/Localization/{Shared,Features}/*.xcstrings`. Privacy permission copy lives in `InfoPlist.strings`. For localization ownership and rules, read [`LOCALIZATION.md`](LOCALIZATION.md).
 
