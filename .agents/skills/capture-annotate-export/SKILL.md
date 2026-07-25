@@ -75,7 +75,7 @@ Homebrew cask distribution, or Discord release bots — per Product Intent and
 
 ## Out-of-Scope Pressure Tests
 
-Reject or narrow requests that primarily add: full recording suites, generic shape tool parity for its own sake, or cloud storage platforms unrelated to shipping the brief — unless the user explicitly overrides product intent.
+Reject or narrow requests that primarily add: full recording suites, generic shape tool parity for its own sake, or *new* cloud storage platforms unrelated to shipping the brief — unless the user explicitly overrides product intent. Do **not** delete ADR 070 retained BYO providers (S3/R2/Google Drive) in dead-code passes.
 
 ## Verification
 

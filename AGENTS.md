@@ -120,5 +120,5 @@ recording for UI changes.
 
 Releases are manual GitHub Releases with `Notinhas-v<version>.dmg`. No Sparkle
 appcast or in-app update channel; no Homebrew cask or Discord release bot (see
-ADR 070). Optional `install.sh` remains a convenience. User migration notes live
+ADR 070). Optional `install.sh` / `uninstall.sh` remain convenience helpers. User migration notes live
 in `docs/MIGRATION.md`.

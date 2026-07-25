@@ -34,10 +34,11 @@ return.
    already removed (plan 075); do not reintroduce a separate mockup app surface.
 4. **Distribution —** manual GitHub Releases with `Notinhas-v<version>.dmg`
    only. **NO** Homebrew cask formula and **NO** Discord release bot or
-   automated community release notifications. Optional `install.sh` remains a
-   convenience for local install from a built `.app` or release artifact.
-5. **`install.sh` — KEEP** as an optional convenience script; it is not the
-   primary distribution channel.
+   automated community release notifications. Optional `install.sh` /
+   `uninstall.sh` remain convenience helpers for local install/wipe — not
+   primary distribution.
+5. **`install.sh` / `uninstall.sh` — KEEP** as optional convenience scripts;
+   they are not the primary distribution channel.
 
 ## Consequences
 
