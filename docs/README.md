@@ -20,6 +20,7 @@ Notinhas optimizes **capture → annotate with numbered pins/notes → clipboard
 | [CONFIGURATION.md](CONFIGURATION.md) | `~/.config/notinhas/config.toml` |
 | [UPDATES.md](UPDATES.md) | Local diagnostics (no Sparkle) |
 | [RELEASES.md](RELEASES.md) | GitHub Release / DMG workflow |
+| [CHANGELOG-upstream-snapzy.md](CHANGELOG-upstream-snapzy.md) | Archived upstream Snapzy changelog (pre-fork) |
 | [UPDATE_TESTING.md](UPDATE_TESTING.md) | Post-build verification |
 | [SECURITY.md](SECURITY.md) | Engineering security notes |
 
