@@ -354,16 +354,18 @@ struct ShortcutsSettingsView: View {
               onShortcutChanged: { handleGlobalShortcutChange($0, for: .allInOne) }
             )
 
-            ForEach(AllInOneCaptureMode.availableModes(videoEnabled: videoModuleEnabled)) { mode in
+            ForEach(Array(AllInOneCaptureMode.availableModes(videoEnabled: videoModuleEnabled).enumerated()), id: \.element) { index, mode in
               CaptureOverlayShortcutRecorderRow(
                 label: mode.compactTitle,
                 icon: mode.systemImage,
-                description: L10n.PreferencesShortcuts.allInOneModeShortcutDescription,
+                description: "",
                 shortcut: allInOneModeShortcutBinding(for: mode),
                 defaultShortcut: AllInOneModeShortcutSettings.defaultShortcut(for: mode),
                 isEnabled: globalEnabledBinding(for: .allInOne),
                 validationIssue: allInOneModeValidationIssues[mode],
-                allowsIndependent: false
+                allowsIndependent: false,
+                isChild: true,
+                isLastChild: index == AllInOneCaptureMode.availableModes(videoEnabled: videoModuleEnabled).count - 1
               ) { newShortcut in
                 handleAllInOneModeShortcutChange(newShortcut, for: mode)
               }
@@ -1324,6 +1326,8 @@ private struct CaptureOverlayShortcutRecorderRow: View {
   let isEnabled: Binding<Bool>
   let validationIssue: ShortcutValidationIssue?
   var allowsIndependent: Bool = true
+  var isChild: Bool = false
+  var isLastChild: Bool = false
   let onShortcutChanged: (CaptureOverlayShortcut?) -> Bool
 
   @State private var isRecording = false
@@ -1331,18 +1335,26 @@ private struct CaptureOverlayShortcutRecorderRow: View {
   @State private var didSuspendGlobalShortcuts = false
 
   var body: some View {
-    HStack(spacing: 12) {
+    HStack(spacing: 8) {
+      if isChild {
+        GuideBranch(isLast: isLastChild)
+          .stroke(Color.secondary.opacity(0.25), lineWidth: 1)
+          .frame(width: 16)
+      }
+
       Image(systemName: icon)
-        .font(.title2)
+        .font(isChild ? .callout : .title2)
         .foregroundColor(.secondary)
-        .frame(width: 28)
+        .frame(width: isChild ? 20 : 28)
 
       VStack(alignment: .leading, spacing: 2) {
         Text(label)
-          .fontWeight(.medium)
-        Text(description)
-          .font(.caption)
-          .foregroundColor(.secondary)
+          .fontWeight(isChild ? .regular : .medium)
+        if !description.isEmpty {
+          Text(description)
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
       }
 
       Spacer()
@@ -1545,5 +1557,30 @@ private struct ReadOnlyShortcutRow: View {
 
   private var modifierTokens: Set<String> {
     ["⌘", "⇧", "⌥", "⌃"]
+  }
+}
+
+// MARK: - Guide Branch Shape
+
+private struct GuideBranch: Shape {
+  let isLast: Bool
+
+  func path(in rect: CGRect) -> Path {
+    var path = Path()
+    let midY = rect.midY
+    let rightX = rect.maxX
+    let leftX = rect.minX
+
+    path.move(to: CGPoint(x: leftX, y: midY))
+    path.addLine(to: CGPoint(x: rightX, y: midY))
+
+    if isLast {
+      path.move(to: CGPoint(x: leftX, y: rect.minY))
+      path.addLine(to: CGPoint(x: leftX, y: midY))
+    } else {
+      path.move(to: CGPoint(x: leftX, y: rect.minY))
+      path.addLine(to: CGPoint(x: leftX, y: rect.maxY))
+    }
+    return path
   }
 }
