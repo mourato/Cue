@@ -508,8 +508,12 @@ final class AllInOneSelectionRefinementController: NSObject {
 
   @discardableResult
   private func handleEscape() -> Bool {
-    onCancel?()
-    tearDown()
+    // `onCancel` owns session teardown (coordinator.cancel → refinement.tearDown).
+    // Do not tear down again here; that races MainActor deinit of this controller.
+    let cancel = onCancel
+    onCancel = nil
+    onRectChanged = nil
+    cancel?()
     return true
   }
 }

@@ -420,6 +420,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
   }
 
   func captureFullscreen() {
+    cancelAllInOneSessionIfNeeded()
     Task {
       let targetDisplayID = ScreenUtility.activeDisplayID()
 
@@ -564,6 +565,14 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
 
   func setAllInOneSelectionBlocking(_ active: Bool) {
     isAreaSelectionActive = active
+  }
+
+  /// Other capture entry points must dismiss a lingering All-In-One session.
+  /// Leaving it active (HUDs / refinement / cursor ownership) and later
+  /// re-entering All-In-One tore down @MainActor SwiftUI state unsafely.
+  private func cancelAllInOneSessionIfNeeded() {
+    guard AllInOneCaptureCoordinator.shared.isSessionActive else { return }
+    AllInOneCaptureCoordinator.shared.cancel()
   }
 
   func captureArea(at rect: CGRect) {
@@ -729,6 +738,8 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
   }
 
   private func startAreaCapture(initialInteractionMode: AreaSelectionInteractionMode) {
+    cancelAllInOneSessionIfNeeded()
+
     // Prevent multiple area captures - only one at a time
     if isAreaSelectionActive {
       DiagnosticLogger.shared.log(.debug, .capture, "captureArea blocked: already active")
@@ -862,6 +873,8 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
     initialScreenRect: CGRect? = nil,
     frozenSession providedSession: FrozenAreaCaptureSession? = nil
   ) {
+    cancelAllInOneSessionIfNeeded()
+
     if isAreaSelectionActive {
       DiagnosticLogger.shared.log(.debug, .capture, "captureAreaAnnotate blocked: already active")
       return
@@ -1841,6 +1854,8 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
   }
 
   func captureScrolling() {
+    cancelAllInOneSessionIfNeeded()
+
     guard !ScrollingCaptureCoordinator.shared.isActive else {
       AppToastManager.shared.show(
         message: L10n.ScrollingCapture.toastSessionAlreadyActive,
@@ -1940,11 +1955,13 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
   #if NOTINHAS_VIDEO_MODULE
     func startRecordingFlow() {
       guard VideoModuleAvailability.isEnabled else { return }
+      cancelAllInOneSessionIfNeeded()
       startRecordingFlow(initialInteractionMode: .manualRegion)
     }
 
     func startApplicationRecordingFlow() {
       guard VideoModuleAvailability.isEnabled else { return }
+      cancelAllInOneSessionIfNeeded()
       startRecordingFlow(initialInteractionMode: .applicationWindow)
     }
 
@@ -2596,6 +2613,8 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
   // MARK: - OCR Capture
 
   func captureOCR() {
+    cancelAllInOneSessionIfNeeded()
+
     // Prevent multiple area captures
     if isAreaSelectionActive {
       DiagnosticLogger.shared.log(.debug, .ocr, "captureOCR blocked: area selection active")

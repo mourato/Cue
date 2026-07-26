@@ -20,6 +20,61 @@ final class AllInOneCaptureCoordinatorTests: XCTestCase {
     XCTAssertFalse(AllInOneCaptureCoordinator.shared.isSessionActive)
   }
 
+  func testCoordinator_cancelAfterHUDSession_doesNotCrashAndClearsActiveFlag() {
+    let coordinator = AllInOneCaptureCoordinator.shared
+    coordinator.seedActiveHUDSessionForTesting()
+    XCTAssertTrue(coordinator.isSessionActive)
+
+    coordinator.cancel()
+
+    XCTAssertFalse(coordinator.isSessionActive)
+
+    // Drain the deferred MainActor release of HUD / session state.
+    let deferredRelease = expectation(description: "deferred All-In-One teardown release")
+    DispatchQueue.main.async {
+      deferredRelease.fulfill()
+    }
+    wait(for: [deferredRelease], timeout: 1.0)
+  }
+
+  func testCoordinator_cancelActiveSessionTwice_isIdempotent() {
+    let coordinator = AllInOneCaptureCoordinator.shared
+    coordinator.seedActiveHUDSessionForTesting()
+
+    coordinator.cancel()
+    coordinator.cancel()
+
+    XCTAssertFalse(coordinator.isSessionActive)
+  }
+
+  func testCoordinator_reseedAfterCancel_replacesSessionWithoutCrash() {
+    let coordinator = AllInOneCaptureCoordinator.shared
+    coordinator.seedActiveHUDSessionForTesting()
+    coordinator.cancel()
+    coordinator.seedActiveHUDSessionForTesting()
+
+    XCTAssertTrue(coordinator.isSessionActive)
+    coordinator.cancel()
+    XCTAssertFalse(coordinator.isSessionActive)
+
+    let deferredRelease = expectation(description: "deferred All-In-One teardown release")
+    DispatchQueue.main.async {
+      deferredRelease.fulfill()
+    }
+    wait(for: [deferredRelease], timeout: 1.0)
+  }
+
+  func testFloatingHUD_clearContent_dropsHostingView() {
+    let window = CaptureFloatingHUDWindow()
+    window.setContent(AnyView(Text("All-In-One")))
+    XCTAssertNotNil(window.contentView)
+
+    window.clearContent()
+
+    XCTAssertNil(window.contentView)
+    window.close()
+  }
+
   func testSessionState_defaultsToAreaMode() {
     let state = AllInOneCaptureSessionState(videoEnabled: false)
     XCTAssertEqual(state.selectedMode, .area)

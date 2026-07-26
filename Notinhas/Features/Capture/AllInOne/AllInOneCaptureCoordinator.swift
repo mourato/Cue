@@ -21,6 +21,7 @@ final class AllInOneCaptureCoordinator {
   private var frozenBackdropHost = AllInOneFrozenBackdropHost()
   private let timerScheduler = AllInOneTimerScheduler()
   private var isActive = false
+  private var isTearingDown = false
   private var isAwaitingInitialSelection = false
   private var sessionGeneration = UUID()
   private let cursorArbiter = AllInOneCaptureCursorArbiter()
@@ -36,7 +37,7 @@ final class AllInOneCaptureCoordinator {
 
   func start(from viewModel: ScreenCaptureViewModel) {
     timerScheduler.cancel()
-    if isActive {
+    if isActive || isTearingDown {
       cancel()
     }
 
@@ -75,6 +76,27 @@ final class AllInOneCaptureCoordinator {
     sessionGeneration = UUID()
     tearDownSession(invalidateFrozenSession: true)
     DiagnosticLogger.shared.log(.info, .capture, "All-In-One capture session cancelled")
+  }
+
+  /// Test seam: builds a live HUD + `ObservableObject` session, then relies on `cancel()`
+  /// for teardown — the path that crashed on All-In-One hotkey re-entry.
+  func seedActiveHUDSessionForTesting() {
+    cancel()
+    isActive = true
+    let state = AllInOneCaptureSessionState(videoEnabled: false)
+    state.currentRect = CGRect(x: 40, y: 50, width: 320, height: 180)
+    state.onCancel = { [weak self] in
+      self?.cancel()
+    }
+    sessionState = state
+
+    let modeWindow = CaptureFloatingHUDWindow()
+    modeWindow.setContent(AnyView(AllInOneCaptureToolbarView(session: state)))
+    modeHUD = modeWindow
+
+    let actionWindow = CaptureFloatingHUDWindow()
+    actionWindow.setContent(AnyView(AllInOneActionToolbarView(session: state)))
+    actionHUD = actionWindow
   }
 
   // MARK: - Private
@@ -414,6 +436,10 @@ final class AllInOneCaptureCoordinator {
   }
 
   private func tearDownSession(invalidateFrozenSession: Bool) {
+    guard !isTearingDown else { return }
+    isTearingDown = true
+    defer { isTearingDown = false }
+
     isActive = false
     let ownsInitialSelection = isAwaitingInitialSelection
     isAwaitingInitialSelection = false
@@ -423,17 +449,20 @@ final class AllInOneCaptureCoordinator {
     viewModel?.setAllInOneSelectionBlocking(false)
     AreaSelectionController.shared.cursorExclusionFrames = { [] }
 
+    // Break observation callbacks before releasing SwiftUI-hosted state.
+    sessionState?.onModeActivated = { _ in }
+    sessionState?.onRectChanged = { _ in }
+    sessionState?.onCancel = {}
+
     refinementController?.onCancel = nil
     refinementController?.onRectChanged = nil
     refinementController?.tearDown()
-    refinementController = nil
 
     frozenBackdropHost.tearDown()
 
     if invalidateFrozenSession {
       frozenSession?.invalidate()
     }
-    frozenSession = nil
 
     if ownsInitialSelection {
       AreaSelectionController.shared.cancelSelection()
@@ -441,12 +470,34 @@ final class AllInOneCaptureCoordinator {
 
     modeHUD?.restoreStandardDisplayLevel()
     actionHUD?.restoreStandardDisplayLevel()
+    modeHUD?.clearContent()
+    actionHUD?.clearContent()
     modeHUD?.close()
     actionHUD?.close()
+
+    // Keep @MainActor-isolated session/HUD objects alive until the next main-queue
+    // turn. Releasing them synchronously inside start()/cancel() on the hotkey stack
+    // has crashed in swift_task_deinitOnExecutor (EXC_BAD_ACCESS at 0x220).
+    let orphanedRefinement = refinementController
+    let orphanedModeHUD = modeHUD
+    let orphanedActionHUD = actionHUD
+    let orphanedSessionState = sessionState
+    let orphanedFrozenSession = frozenSession
+
+    refinementController = nil
     modeHUD = nil
     actionHUD = nil
     sessionState = nil
+    frozenSession = nil
     viewModel = nil
+
+    DispatchQueue.main.async {
+      _ = orphanedRefinement
+      _ = orphanedModeHUD
+      _ = orphanedActionHUD
+      _ = orphanedSessionState
+      _ = orphanedFrozenSession
+    }
   }
 
   // MARK: - Mode shortcuts (child layer)

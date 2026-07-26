@@ -55,6 +55,14 @@ final class CaptureFloatingHUDWindow: NSPanel {
     installPointerTrackingIfNeeded(on: hosting)
   }
 
+  /// Drops SwiftUI hosting before the panel is released so `@MainActor`
+  /// `ObservableObject` graphs are not torn down inside nested coordinator teardown.
+  func clearContent() {
+    hostingView = nil
+    contentView = nil
+    cachedContentSize = nil
+  }
+
   private func installPointerTrackingIfNeeded(on view: NSView) {
     for area in view.trackingAreas {
       view.removeTrackingArea(area)
