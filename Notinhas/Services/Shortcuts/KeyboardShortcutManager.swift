@@ -202,8 +202,13 @@ struct ShortcutConfig: Equatable, Codable {
 
   /// Whether a key event exactly matches this shortcut (keyCode + full modifier set, incl. Fn).
   func matches(event: NSEvent) -> Bool {
-    guard UInt32(event.keyCode) == keyCode else { return false }
-    let flags = event.modifierFlags.intersection(Self.matchableEventModifiers)
+    matches(keyCode: UInt32(event.keyCode), modifierFlags: event.modifierFlags)
+  }
+
+  /// Whether a key event snapshot exactly matches this shortcut.
+  func matches(keyCode: UInt32, modifierFlags: NSEvent.ModifierFlags) -> Bool {
+    guard keyCode == self.keyCode else { return false }
+    let flags = modifierFlags.intersection(Self.matchableEventModifiers)
     var expected: NSEvent.ModifierFlags = []
     if modifiers & UInt32(cmdKey) != 0 {
       expected.insert(.command)
@@ -511,6 +516,22 @@ extension ShortcutConfig {
   private static func unicodeScalarString(_ codePoint: Int) -> String? {
     guard let scalar = UnicodeScalar(codePoint) else { return nil }
     return String(Character(scalar))
+  }
+}
+
+private struct ShortcutKeyEventSnapshot: Sendable {
+  let keyCode: UInt32
+  let modifierFlagsRawValue: UInt
+  let isRepeat: Bool
+
+  init(event: NSEvent) {
+    keyCode = UInt32(event.keyCode)
+    modifierFlagsRawValue = event.modifierFlags.rawValue
+    isRepeat = event.isARepeat
+  }
+
+  var modifierFlags: NSEvent.ModifierFlags {
+    NSEvent.ModifierFlags(rawValue: modifierFlagsRawValue)
   }
 }
 
@@ -1690,17 +1711,13 @@ final class KeyboardShortcutManager {
   private func installFnMonitorsIfNeeded() {
     if fnGlobalMonitor == nil {
       fnGlobalMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
-        MainActor.assumeIsolated {
-          self?.handleFnKeyDown(event)
-        }
+        self?.dispatchFnKeyDownFromMonitor(event)
       }
     }
 
     if fnLocalMonitor == nil {
       fnLocalMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
-        MainActor.assumeIsolated {
-          self?.handleFnKeyDown(event)
-        }
+        self?.dispatchFnKeyDownFromMonitor(event)
         // Passive: never consume the event, unlike Carbon hotkeys.
         return event
       }
@@ -1718,9 +1735,18 @@ final class KeyboardShortcutManager {
     }
   }
 
-  private func handleFnKeyDown(_ event: NSEvent) {
-    guard !event.isARepeat else { return }
-    guard let binding = fnBindings.first(where: { $0.config.matches(event: event) }) else {
+  private nonisolated func dispatchFnKeyDownFromMonitor(_ event: NSEvent) {
+    let snapshot = ShortcutKeyEventSnapshot(event: event)
+    Task { @MainActor [weak self] in
+      self?.handleFnKeyDown(snapshot)
+    }
+  }
+
+  private func handleFnKeyDown(_ event: ShortcutKeyEventSnapshot) {
+    guard !event.isRepeat else { return }
+    guard let binding = fnBindings.first(where: {
+      $0.config.matches(keyCode: event.keyCode, modifierFlags: event.modifierFlags)
+    }) else {
       return
     }
     handleHotkey(id: binding.id)

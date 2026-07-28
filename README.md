@@ -130,6 +130,17 @@ open Notinhas.xcodeproj          # default Notinhas scheme (Video module off)
 
 Debug builds produce `Notinhas Debug.app` (`com.mourato.notinhas.debug`) so TCC grants stay separate from release installs.
 
+Short aliases for common local commands are available through `make`:
+
+```bash
+make b      # interactive Debug/Release build + launch
+make build  # same as make b
+make dmg    # build Release app, ad-hoc sign, and create build/Notinhas-dryrun.dmg
+make test   # run the default XCTest suite
+```
+
+`make dmg` uses `scripts/dry-run-release.sh`. Install `create-dmg` to produce the DMG file; without it, the script still validates the Release archive and local code signing.
+
 ## Documentation
 
 - [Docs map](docs/README.md)

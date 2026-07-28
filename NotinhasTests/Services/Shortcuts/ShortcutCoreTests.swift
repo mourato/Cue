@@ -152,6 +152,17 @@ final class ShortcutCoreTests: XCTestCase {
     XCTAssertFalse(config.matches(event: extraShift))
   }
 
+  func testMatches_keyEventSnapshot_usesSameFnMatchingRules() {
+    let config = ShortcutConfig(
+      keyCode: UInt32(kVK_F3),
+      modifiers: UInt32(cmdKey) | ShortcutConfig.functionCarbonModifier
+    )
+
+    XCTAssertTrue(config.matches(keyCode: UInt32(kVK_F3), modifierFlags: [.command, .function]))
+    XCTAssertFalse(config.matches(keyCode: UInt32(kVK_F3), modifierFlags: [.command]))
+    XCTAssertFalse(config.matches(keyCode: UInt32(kVK_F4), modifierFlags: [.command, .function]))
+  }
+
   func testMatches_wrongKeyCode_doesNotMatch() throws {
     let config = ShortcutConfig(
       keyCode: UInt32(kVK_F3),
