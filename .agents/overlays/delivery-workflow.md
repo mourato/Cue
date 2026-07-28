@@ -7,6 +7,8 @@ precedence: project
 
 # Notinhas delivery checks
 
+- Product-specific identifiers and commands for Notinhas belong in this overlay
+  or repository guidance, not in the portable global `delivery-workflow` skill.
 - Product intent: support the capture → annotate → clipboard-ready handoff.
 - Canonical paths are `Notinhas/` and `NotinhasTests/`.
 - Screen Recording and Accessibility permissions are required for affected capture and accessibility checks.
