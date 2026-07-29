@@ -128,7 +128,8 @@ private final class AppToastViewModel: ObservableObject {
   }
 
   func update(_ presentation: AppToastPresentation, animated: Bool) {
-    let useSpring = animated && FeedbackMotionPolicy.usesSpringAnimation(reduceMotion: false)
+    let reduceMotion = FeedbackMotionPolicy.appKitShouldReduceMotion
+    let useSpring = animated && FeedbackMotionPolicy.usesSpringAnimation(reduceMotion: reduceMotion)
     if useSpring {
       withAnimation(.spring(response: 0.28, dampingFraction: 0.82)) {
         self.presentation = presentation
@@ -264,7 +265,9 @@ final class AppToastManager {
 
     if let panel {
       NSAnimationContext.runAnimationGroup { context in
-        context.duration = 0.16
+        context.duration = FeedbackMotionPolicy.panelFadeDuration(
+          reduceMotion: FeedbackMotionPolicy.appKitShouldReduceMotion
+        )
         panel.animator().alphaValue = 1
       }
     }
@@ -294,7 +297,9 @@ final class AppToastManager {
     guard let panel else { return }
 
     NSAnimationContext.runAnimationGroup { context in
-      context.duration = 0.16
+      context.duration = FeedbackMotionPolicy.panelFadeDuration(
+        reduceMotion: FeedbackMotionPolicy.appKitShouldReduceMotion
+      )
       panel.animator().alphaValue = 0
     } completionHandler: {
       panel.orderOut(nil)

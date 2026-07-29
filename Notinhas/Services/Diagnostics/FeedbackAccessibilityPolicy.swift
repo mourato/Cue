@@ -4,27 +4,25 @@
 //
 //  Accessibility semantics for transient feedback surfaces.
 //  Programmatic VoiceOver announcements are deferred; hosted SwiftUI exposes labels.
+//  Toast labels use the (already localized) message — avoid hardcoded English tone prefixes.
 //
 
 import Foundation
 
 enum FeedbackAccessibilityPolicy {
-  static func toneAccessibilityLabel(for tone: FeedbackTone) -> String {
+  /// Stable semantic token for tests and future announcement routing (not user-facing copy).
+  static func toneAccessibilityToken(for tone: FeedbackTone) -> String {
     switch tone {
-    case .info: "Information"
-    case .success: "Success"
-    case .warning: "Warning"
-    case .error: "Error"
+    case .info: "info"
+    case .success: "success"
+    case .warning: "warning"
+    case .error: "error"
     }
   }
 
-  /// Passive toast label combines tone and message for VoiceOver.
-  static func toastAccessibilityLabel(message: String, tone: FeedbackTone, isProgress: Bool) -> String {
-    let prefix = toneAccessibilityLabel(for: tone)
-    if isProgress {
-      return "\(prefix), in progress. \(message)"
-    }
-    return "\(prefix). \(message)"
+  /// Passive toast label is the localized message from the call site.
+  static func toastAccessibilityLabel(message: String, tone _: FeedbackTone, isProgress _: Bool) -> String {
+    message
   }
 
   /// Progress toasts expose the live message as value; terminal toasts omit value.

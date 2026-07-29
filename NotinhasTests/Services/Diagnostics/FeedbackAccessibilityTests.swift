@@ -31,35 +31,23 @@ final class FeedbackAccessibilityTests: XCTestCase {
     XCTAssertEqual(FeedbackMotionPolicy.panelFadeDuration(reduceMotion: false), 0.16, accuracy: 0.001)
   }
 
-  func testEveryFeedbackToneHasNonEmptyAccessibilityLabel() {
+  func testEveryFeedbackToneHasNonEmptyAccessibilityToken() {
     for tone in FeedbackTone.allCases {
-      let label = FeedbackAccessibilityPolicy.toneAccessibilityLabel(for: tone)
-      XCTAssertFalse(label.isEmpty, "Expected accessibility label for \(tone)")
+      let token = FeedbackAccessibilityPolicy.toneAccessibilityToken(for: tone)
+      XCTAssertFalse(token.isEmpty, "Expected accessibility token for \(tone)")
     }
   }
 
-  func testToastAccessibilityLabelIncludesMessageAndTone() {
+  func testToastAccessibilityLabelUsesLocalizedMessage() {
     let label = FeedbackAccessibilityPolicy.toastAccessibilityLabel(
       message: "Upload complete",
       tone: .success,
       isProgress: false
     )
-    XCTAssertTrue(label.contains("Success"))
-    XCTAssertTrue(label.contains("Upload complete"))
+    XCTAssertEqual(label, "Upload complete")
   }
 
-  func testProgressToastAccessibilitySemanticsDifferFromTerminal() {
-    let progressLabel = FeedbackAccessibilityPolicy.toastAccessibilityLabel(
-      message: "Uploading",
-      tone: .info,
-      isProgress: true
-    )
-    let terminalLabel = FeedbackAccessibilityPolicy.toastAccessibilityLabel(
-      message: "Uploading",
-      tone: .info,
-      isProgress: false
-    )
-    XCTAssertNotEqual(progressLabel, terminalLabel)
+  func testProgressToastAccessibilityValueDiffersFromTerminal() {
     XCTAssertEqual(
       FeedbackAccessibilityPolicy.toastAccessibilityValue(message: "Uploading", isProgress: true),
       "Uploading"

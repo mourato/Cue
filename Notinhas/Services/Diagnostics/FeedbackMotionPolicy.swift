@@ -14,16 +14,14 @@ enum FeedbackMotionPolicy {
     NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
   }
 
-  static func shouldReduceMotion(_ reduceMotion: Bool) -> Bool {
-    reduceMotion || appKitShouldReduceMotion
-  }
-
+  /// Trust the caller-supplied flag (SwiftUI environment or AppKit snapshot).
+  /// Do not re-query AppKit here — that makes unit tests machine-dependent.
   static func usesScaleAnimation(reduceMotion: Bool) -> Bool {
-    !shouldReduceMotion(reduceMotion)
+    !reduceMotion
   }
 
   static func usesSpringAnimation(reduceMotion: Bool) -> Bool {
-    !shouldReduceMotion(reduceMotion)
+    !reduceMotion
   }
 
   static func toastEntranceScale(reduceMotion: Bool, appeared: Bool) -> CGFloat {

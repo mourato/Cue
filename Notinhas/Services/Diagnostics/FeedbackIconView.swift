@@ -28,12 +28,11 @@ struct FeedbackIconView: View {
           .foregroundStyle(style.iconColor)
           .transition(iconTransition)
       case .spinner:
-        if FeedbackMotionPolicy.shouldReduceMotion(reduceMotion) {
+        if reduceMotion {
           Image(systemName: "ellipsis.circle")
             .font(.system(size: fontSize, weight: .semibold))
             .foregroundStyle(style.iconColor)
             .transition(iconTransition)
-            .accessibilityLabel("In progress")
         } else {
           FeedbackSpinnerView(
             colors: style.iconAccentColors,
@@ -44,13 +43,15 @@ struct FeedbackIconView: View {
       }
     }
     .frame(width: fontSize + 8, height: fontSize + 8)
+    // Parent toast / surface owns accessibility copy (localized message).
+    .accessibilityHidden(true)
   }
 
   private var iconTransition: AnyTransition {
-    if FeedbackMotionPolicy.shouldReduceMotion(reduceMotion) {
-      return .opacity
+    if FeedbackMotionPolicy.usesScaleAnimation(reduceMotion: reduceMotion) {
+      return .scale(scale: 0.82).combined(with: .opacity)
     }
-    return .scale(scale: 0.82).combined(with: .opacity)
+    return .opacity
   }
 }
 
@@ -72,7 +73,6 @@ private struct FeedbackSpinnerView: View {
       )
       .frame(width: size, height: size)
       .rotationEffect(.degrees(isSpinning ? 360 : 0))
-      .accessibilityLabel("In progress")
       .onAppear {
         guard !isSpinning else { return }
         withAnimation(.linear(duration: 0.9).repeatForever(autoreverses: false)) {
