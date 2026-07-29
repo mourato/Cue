@@ -6,6 +6,7 @@
 //
 
 import AppKit
+import Carbon.HIToolbox
 import SwiftUI
 
 @MainActor
@@ -33,6 +34,10 @@ final class AllInOneCaptureCoordinator {
 
   var isSessionActive: Bool {
     isActive
+  }
+
+  static func isSelectedModeActivationKey(_ keyCode: UInt16) -> Bool {
+    keyCode == UInt16(kVK_Return) || keyCode == UInt16(kVK_ANSI_KeypadEnter)
   }
 
   func start(from viewModel: ScreenCaptureViewModel) {
@@ -531,8 +536,14 @@ final class AllInOneCaptureCoordinator {
   @discardableResult
   private func handleModeShortcut(_ event: NSEvent) -> Bool {
     guard isActive else { return false }
-    guard KeyboardShortcutManager.shared.isShortcutEnabled(for: .allInOne) else { return false }
     guard !isEditingTextInput else { return false }
+
+    if Self.isSelectedModeActivationKey(event.keyCode) {
+      sessionState?.activateSelectedMode()
+      return true
+    }
+
+    guard KeyboardShortcutManager.shared.isShortcutEnabled(for: .allInOne) else { return false }
 
     let modes = sessionState?.availableModes
       ?? AllInOneCaptureMode.availableModes(videoEnabled: VideoModuleAvailability.isEnabled)

@@ -29,6 +29,10 @@ final class AllInOneCaptureSessionState: ObservableObject {
     onModeActivated(mode)
   }
 
+  func activateSelectedMode() {
+    activateMode(selectedMode)
+  }
+
   func updateRect(_ rect: CGRect) {
     currentRect = rect
     onRectChanged(rect)

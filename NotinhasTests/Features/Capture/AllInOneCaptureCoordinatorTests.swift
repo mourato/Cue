@@ -5,6 +5,7 @@
 //  Unit tests for All-In-One coordinator session state.
 //
 
+import Carbon.HIToolbox
 @testable import Notinhas
 import SwiftUI
 import XCTest
@@ -96,6 +97,17 @@ final class AllInOneCaptureCoordinatorTests: XCTestCase {
     XCTAssertEqual(state.currentRect, rect)
   }
 
+  func testSessionState_activateSelectedMode_invokesSelectedModeAction() {
+    let state = AllInOneCaptureSessionState(videoEnabled: false)
+    var activated: AllInOneCaptureMode?
+    state.selectedMode = .ocr
+    state.onModeActivated = { activated = $0 }
+
+    state.activateSelectedMode()
+
+    XCTAssertEqual(activated, .ocr)
+  }
+
   func testSessionState_activateUnavailableMode_isIgnored() {
     let state = AllInOneCaptureSessionState(videoEnabled: false)
     var activated = false
@@ -105,6 +117,12 @@ final class AllInOneCaptureCoordinatorTests: XCTestCase {
 
     XCTAssertEqual(state.selectedMode, .area)
     XCTAssertFalse(activated)
+  }
+
+  func testSelectedModeActivationKey_matchesReturnAndKeypadEnterOnly() {
+    XCTAssertTrue(AllInOneCaptureCoordinator.isSelectedModeActivationKey(UInt16(kVK_Return)))
+    XCTAssertTrue(AllInOneCaptureCoordinator.isSelectedModeActivationKey(UInt16(kVK_ANSI_KeypadEnter)))
+    XCTAssertFalse(AllInOneCaptureCoordinator.isSelectedModeActivationKey(UInt16(kVK_ANSI_A)))
   }
 
   func testFloatingHUD_canBeRaisedAboveCaptureOverlay() {
