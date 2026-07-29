@@ -17,6 +17,8 @@ struct FeedbackIconView: View {
   let iconMode: FeedbackIconMode
   let fontSize: CGFloat
 
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
   var body: some View {
     ZStack {
       switch iconMode {
@@ -24,16 +26,31 @@ struct FeedbackIconView: View {
         Image(systemName: style.iconName)
           .font(.system(size: fontSize, weight: .semibold))
           .foregroundStyle(style.iconColor)
-          .transition(.scale(scale: 0.82).combined(with: .opacity))
+          .transition(iconTransition)
       case .spinner:
-        FeedbackSpinnerView(
-          colors: style.iconAccentColors,
-          size: fontSize + 4
-        )
-        .transition(.scale(scale: 0.82).combined(with: .opacity))
+        if FeedbackMotionPolicy.shouldReduceMotion(reduceMotion) {
+          Image(systemName: "ellipsis.circle")
+            .font(.system(size: fontSize, weight: .semibold))
+            .foregroundStyle(style.iconColor)
+            .transition(iconTransition)
+            .accessibilityLabel("In progress")
+        } else {
+          FeedbackSpinnerView(
+            colors: style.iconAccentColors,
+            size: fontSize + 4
+          )
+          .transition(iconTransition)
+        }
       }
     }
     .frame(width: fontSize + 8, height: fontSize + 8)
+  }
+
+  private var iconTransition: AnyTransition {
+    if FeedbackMotionPolicy.shouldReduceMotion(reduceMotion) {
+      return .opacity
+    }
+    return .scale(scale: 0.82).combined(with: .opacity)
   }
 }
 
@@ -55,6 +72,7 @@ private struct FeedbackSpinnerView: View {
       )
       .frame(width: size, height: size)
       .rotationEffect(.degrees(isSpinning ? 360 : 0))
+      .accessibilityLabel("In progress")
       .onAppear {
         guard !isSpinning else { return }
         withAnimation(.linear(duration: 0.9).repeatForever(autoreverses: false)) {

@@ -128,7 +128,8 @@ private final class AppToastViewModel: ObservableObject {
   }
 
   func update(_ presentation: AppToastPresentation, animated: Bool) {
-    if animated {
+    let useSpring = animated && FeedbackMotionPolicy.usesSpringAnimation(reduceMotion: false)
+    if useSpring {
       withAnimation(.spring(response: 0.28, dampingFraction: 0.82)) {
         self.presentation = presentation
       }
@@ -336,6 +337,7 @@ final class AppToastManager {
 private struct AppToastView: View {
   @ObservedObject var viewModel: AppToastViewModel
   @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @State private var appeared = false
 
   var body: some View {
@@ -345,6 +347,7 @@ private struct AppToastView: View {
     let usesSolidFallback = FeedbackChromePolicy.usesSolidFallback(
       reduceTransparency: reduceTransparency
     )
+    let isProgress = presentation.iconMode == .spinner
 
     FeedbackSurface(cornerRadius: variant.cornerRadius, style: feedbackStyle) {
       HStack(alignment: .center, spacing: variant.contentSpacing) {
@@ -364,11 +367,37 @@ private struct AppToastView: View {
       .padding(.vertical, variant.verticalPadding)
       .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-    .scaleEffect(appeared ? 1.0 : 0.96)
+    .accessibilityElement(children: .combine)
+    .accessibilityLabel(
+      FeedbackAccessibilityPolicy.toastAccessibilityLabel(
+        message: presentation.message,
+        tone: feedbackStyle.tone,
+        isProgress: isProgress
+      )
+    )
+    .modifier(ToastAccessibilityValueModifier(message: presentation.message, isProgress: isProgress))
+    .scaleEffect(FeedbackMotionPolicy.toastEntranceScale(reduceMotion: reduceMotion, appeared: appeared))
     .onAppear {
-      withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
+      if FeedbackMotionPolicy.usesSpringAnimation(reduceMotion: reduceMotion) {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
+          appeared = true
+        }
+      } else {
         appeared = true
       }
+    }
+  }
+}
+
+private struct ToastAccessibilityValueModifier: ViewModifier {
+  let message: String
+  let isProgress: Bool
+
+  func body(content: Content) -> some View {
+    if let value = FeedbackAccessibilityPolicy.toastAccessibilityValue(message: message, isProgress: isProgress) {
+      content.accessibilityValue(value)
+    } else {
+      content
     }
   }
 }

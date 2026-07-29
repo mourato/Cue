@@ -17,6 +17,7 @@ struct QuickAccessIconButton: View {
   var sizeScale: CGFloat = 1
 
   @Environment(\.isEnabled) private var isEnabled
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @State private var isHovering = false
   @State private var isPressed = false
 
@@ -27,8 +28,11 @@ struct QuickAccessIconButton: View {
   var body: some View {
     Button(action: {
       guard isEnabled else { return }
-      // Immediate visual feedback before action
-      withAnimation(.easeOut(duration: 0.05)) {
+      if FeedbackMotionPolicy.usesScaleAnimation(reduceMotion: reduceMotion) {
+        withAnimation(.easeOut(duration: 0.05)) {
+          isPressed = true
+        }
+      } else {
         isPressed = true
       }
       // Execute action immediately
@@ -40,14 +44,15 @@ struct QuickAccessIconButton: View {
     }) {
       Image(systemName: icon)
         .font(.system(size: metrics.iconFontSize, weight: .bold))
-        .foregroundColor(.white.opacity(isEnabled ? 1 : 0.7))
+        .foregroundColor(.white
+          .opacity(FeedbackLocalStateTokens.quickAccessButtonForegroundOpacity(isEnabled: isEnabled)))
         .frame(width: metrics.touchSize, height: metrics.touchSize)
         .contentShape(Circle())
         .background(
           Circle()
             .fill(buttonBackgroundColor)
         )
-        .scaleEffect(isPressed ? 0.85 : 1.0)
+        .scaleEffect(FeedbackMotionPolicy.quickAccessPressScale(reduceMotion: reduceMotion, isPressed: isPressed))
     }
     .buttonStyle(.plain)
     .onHover { hovering in
@@ -56,7 +61,11 @@ struct QuickAccessIconButton: View {
         NSCursor.arrow.set()
         return
       }
-      withAnimation(.easeInOut(duration: 0.1)) {
+      if FeedbackMotionPolicy.usesScaleAnimation(reduceMotion: reduceMotion) {
+        withAnimation(.easeInOut(duration: 0.1)) {
+          isHovering = hovering
+        }
+      } else {
         isHovering = hovering
       }
       if hovering {
@@ -71,15 +80,16 @@ struct QuickAccessIconButton: View {
   }
 
   private var buttonBackgroundColor: Color {
-    if !isEnabled {
-      Color.black.opacity(0.4)
+    let state: FeedbackQuickAccessButtonState = if !isEnabled {
+      .disabled
     } else if isPressed {
-      Color.white.opacity(0.5)
+      .pressed
     } else if isHovering {
-      Color.white.opacity(0.35)
+      .hover
     } else {
-      Color.black.opacity(0.6)
+      .default
     }
+    return FeedbackLocalStateTokens.quickAccessButtonBackground(for: state)
   }
 }
 

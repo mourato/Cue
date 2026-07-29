@@ -899,17 +899,17 @@ private struct CloudUploadExpandedCardView: View {
         HStack(spacing: 12) {
           gridActionButton(
             icon: copied ? "checkmark" : "doc.on.doc",
-            color: copied ? .green : .white,
+            state: copied ? .copiedSuccess : .default,
             action: copyLink
           )
           gridActionButton(
             icon: "safari",
-            color: .white,
+            state: .default,
             action: { NSWorkspace.shared.open(record.publicURL) }
           )
           gridActionButton(
             icon: "trash",
-            color: .red,
+            state: .destructive,
             action: onDelete
           )
         }
@@ -945,12 +945,14 @@ private struct CloudUploadExpandedCardView: View {
   }
 
   private func gridActionButton(
-    icon: String, color: Color, action: @escaping () -> Void
+    icon: String,
+    state: FeedbackUploadHistoryActionState,
+    action: @escaping () -> Void
   ) -> some View {
     Button(action: action) {
       Image(systemName: icon)
         .font(.system(size: 13, weight: .semibold))
-        .foregroundColor(color)
+        .foregroundColor(FeedbackLocalStateTokens.uploadHistoryActionIconColor(for: state))
         .frame(width: 30, height: 30)
         .background(.regularMaterial, in: Circle())
         .overlay(
@@ -959,6 +961,25 @@ private struct CloudUploadExpandedCardView: View {
         )
     }
     .buttonStyle(.plain)
+    .accessibilityLabel(gridActionAccessibilityLabel(icon: icon, state: state))
+  }
+
+  private func gridActionAccessibilityLabel(icon: String, state: FeedbackUploadHistoryActionState) -> String {
+    switch state {
+    case .copiedSuccess:
+      L10n.Common.copiedToClipboard
+    case .destructive:
+      L10n.PreferencesCloudHistory.removeFromHistory
+    case .default:
+      switch icon {
+      case "doc.on.doc":
+        L10n.PreferencesCloudHistory.copyLink
+      case "safari":
+        L10n.PreferencesCloudHistory.openInBrowser
+      default:
+        icon
+      }
+    }
   }
 
   private func copyLink() {

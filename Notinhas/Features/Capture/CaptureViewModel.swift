@@ -2427,6 +2427,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
     captureDurationMs: String,
     operationStartTime: CFAbsoluteTime
   ) async {
+    // OCR feedback: status-bar processing during capture/recognize; terminal toasts only (no progress handle).
     let processingStartTime = CFAbsoluteTimeGetCurrent()
     async let qrResultTask = detectQRCodes(in: image)
     async let recognizedTextTask = recognizeOCRText(in: image)
@@ -3086,6 +3087,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
   }
 
   private func showCutoutFailureToast(for error: Error) {
+    // Cutout failures are terminal-only; no progress toast handle for this fast-fail path.
     if let cutoutError = error as? ForegroundCutoutError {
       switch cutoutError {
       case .noSubjectDetected:

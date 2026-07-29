@@ -558,6 +558,7 @@ struct AnnotateBottomBarView: View {
     }
 
     isImgBBUploading = true
+    // Long upload: one toast handle with spinner, then update to terminal success/error.
     let progressToast = AppToastManager.shared.show(
       message: NotinhasL10n.imgbbUploading,
       style: .info,
