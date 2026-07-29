@@ -1801,6 +1801,7 @@ final class AnnotateState: ObservableObject {
     let operationID = UUID()
     activeSensitiveRedactionOperationID = operationID
     isSensitiveRedactionScanning = true
+    // Long scan: one toast handle with spinner, then update to terminal success/warning/error.
     sensitiveRedactionToast = AppToastManager.shared.show(
       message: L10n.AnnotateUI.autoRedactionScanning,
       style: .info,
