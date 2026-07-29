@@ -761,7 +761,7 @@ transparency and contrast-sensitive contexts.
 |---|---|---:|---:|---|---|
 | 079 | Extract a native-material FeedbackSurface | P1 | M | — | DONE `dba07a61` + review-fix `b39a7900` |
 | 080 | Coordinate feedback slots and adopt FeedbackSurface in OCR links | P1 | M | 079 | DONE `940144e1` + review-fix `34a838f34586444889b70dcc4c5024c5c8046759` |
-| 081 | Standardize feedback accessibility, motion, and local state tokens | P2 | M | 079, 080 | DONE  + review-fix  |
+| 081 | Standardize feedback accessibility, motion, and local state tokens | P2 | M | 079, 080 | DONE `bda4c1df` + review-fix `31ac7d3c` |
 
 ### Dependency notes (079–081)
 
