@@ -69,4 +69,20 @@ final class FeedbackSurfaceTests: XCTestCase {
     XCTAssertEqual(AppToastStyle.info.iconName, FeedbackStyle(tone: .info).iconName)
     XCTAssertEqual(AppToastStyle.error.feedbackTone, .error)
   }
+
+  func testMaterialChromeUsesLightHUDTextWhileSolidKeepsInvertedPair() {
+    let style = FeedbackStyle(tone: .info)
+    let hudText = style.textColor(usesSolidFallback: false)
+    XCTAssertGreaterThan(hudText.redComponent, 0.9)
+
+    let solidLightComponents = FeedbackAppearanceTokens.solidBackgroundSRGBComponents(isDarkAppearance: false)
+    let solidDarkComponents = FeedbackAppearanceTokens.solidBackgroundSRGBComponents(isDarkAppearance: true)
+    // Solid light-mode chip is dark; dark-mode chip is light (inverted pair).
+    XCTAssertLessThan(solidLightComponents.red, solidDarkComponents.red)
+    XCTAssertGreaterThan(hudText.redComponent, solidLightComponents.red)
+  }
+
+  func testChromePolicyUsesSolidFallbackForReduceTransparencyOrIncreaseContrast() {
+    XCTAssertTrue(FeedbackChromePolicy.usesSolidFallback(reduceTransparency: true))
+  }
 }

@@ -339,12 +339,16 @@ final class AppToastManager {
 
 private struct AppToastView: View {
   @ObservedObject var viewModel: AppToastViewModel
+  @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
   @State private var appeared = false
 
   var body: some View {
     let presentation = viewModel.presentation
     let feedbackStyle = presentation.style.feedbackStyle
     let variant = presentation.variant
+    let usesSolidFallback = FeedbackChromePolicy.usesSolidFallback(
+      reduceTransparency: reduceTransparency
+    )
 
     FeedbackSurface(cornerRadius: variant.cornerRadius, style: feedbackStyle) {
       HStack(alignment: .center, spacing: variant.contentSpacing) {
@@ -356,7 +360,7 @@ private struct AppToastView: View {
 
         Text(presentation.message)
           .font(.system(size: variant.textFontSize, weight: variant.textWeight))
-          .foregroundColor(Color(nsColor: feedbackStyle.textColor))
+          .foregroundColor(Color(nsColor: feedbackStyle.textColor(usesSolidFallback: usesSolidFallback)))
           .lineLimit(variant.lineLimit)
           .multilineTextAlignment(.leading)
       }

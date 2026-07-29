@@ -47,11 +47,24 @@ struct FeedbackStyle: Equatable {
   }
 
   var textColor: NSColor {
-    FeedbackAppearanceTokens.resolvedTextColor
+    textColor(usesSolidFallback: false)
   }
 
   var borderColor: NSColor {
-    FeedbackAppearanceTokens.resolvedBorderColor
+    borderColor(usesSolidFallback: false)
+  }
+
+  /// HUD material uses light chrome; solid accessibility fallback keeps the inverted pair.
+  func textColor(usesSolidFallback: Bool) -> NSColor {
+    usesSolidFallback
+      ? FeedbackAppearanceTokens.resolvedSolidTextColor
+      : FeedbackAppearanceTokens.hudTextColor
+  }
+
+  func borderColor(usesSolidFallback: Bool) -> NSColor {
+    usesSolidFallback
+      ? FeedbackAppearanceTokens.resolvedSolidBorderColor
+      : FeedbackAppearanceTokens.hudBorderColor
   }
 
   var solidBackgroundColor: NSColor {
@@ -65,6 +78,15 @@ struct FeedbackStyle: Equatable {
     case .warning: Color.orange.opacity(0.05)
     case .error: Color.red.opacity(0.05)
     }
+  }
+}
+
+// MARK: - Chrome policy
+
+enum FeedbackChromePolicy {
+  /// Solid fallback when Reduce Transparency or Increase Contrast is active.
+  static func usesSolidFallback(reduceTransparency: Bool) -> Bool {
+    reduceTransparency || NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast
   }
 }
 
@@ -89,11 +111,11 @@ extension AppToastStyle {
   }
 
   var textColor: NSColor {
-    feedbackStyle.textColor
+    feedbackStyle.textColor(usesSolidFallback: true)
   }
 
   var borderColor: NSColor {
-    feedbackStyle.borderColor
+    feedbackStyle.borderColor(usesSolidFallback: true)
   }
 
   var backgroundColor: NSColor {
@@ -112,6 +134,11 @@ extension AppToastStyle {
 // MARK: - Appearance tokens
 
 enum FeedbackAppearanceTokens {
+  /// Light label for `.hudWindow` material (forced dark HUD chrome).
+  static let hudTextColor = NSColor(srgbRed: 0.96, green: 0.96, blue: 0.97, alpha: 1.0)
+
+  static let hudBorderColor = NSColor(srgbRed: 0.82, green: 0.82, blue: 0.84, alpha: 0.25)
+
   /// Neutral solid fallback — dark on Light mode, light on Dark mode.
   static var resolvedSolidBackgroundColor: NSColor {
     NSColor(name: nil) { appearance in
@@ -119,7 +146,7 @@ enum FeedbackAppearanceTokens {
     }
   }
 
-  static var resolvedBorderColor: NSColor {
+  static var resolvedSolidBorderColor: NSColor {
     NSColor(name: nil) { appearance in
       if appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua {
         NSColor(srgbRed: 0.82, green: 0.82, blue: 0.84, alpha: 0.25)
@@ -129,7 +156,7 @@ enum FeedbackAppearanceTokens {
     }
   }
 
-  static var resolvedTextColor: NSColor {
+  static var resolvedSolidTextColor: NSColor {
     NSColor(name: nil) { appearance in
       if appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua {
         NSColor(srgbRed: 0.11, green: 0.11, blue: 0.12, alpha: 1.0)
@@ -137,6 +164,15 @@ enum FeedbackAppearanceTokens {
         NSColor(srgbRed: 0.96, green: 0.96, blue: 0.97, alpha: 1.0)
       }
     }
+  }
+
+  /// Compatibility alias for call sites that still read the solid inverted text token.
+  static var resolvedTextColor: NSColor {
+    resolvedSolidTextColor
+  }
+
+  static var resolvedBorderColor: NSColor {
+    resolvedSolidBorderColor
   }
 
   /// Pure sRGB components for the solid fallback background.

@@ -14,6 +14,8 @@ struct FeedbackSurface<Content: View>: View {
   let material: NSVisualEffectView.Material
   @ViewBuilder let content: () -> Content
 
+  @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+
   init(
     cornerRadius: CGFloat,
     style: FeedbackStyle,
@@ -24,6 +26,10 @@ struct FeedbackSurface<Content: View>: View {
     self.style = style
     self.material = material
     self.content = content
+  }
+
+  private var usesSolidFallback: Bool {
+    FeedbackChromePolicy.usesSolidFallback(reduceTransparency: reduceTransparency)
   }
 
   var body: some View {
@@ -38,7 +44,7 @@ struct FeedbackSurface<Content: View>: View {
       )
       .overlay(
         RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-          .stroke(Color(nsColor: style.borderColor), lineWidth: 0.5)
+          .stroke(Color(nsColor: style.borderColor(usesSolidFallback: usesSolidFallback)), lineWidth: 0.5)
       )
       .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
       .shadow(color: Color.black.opacity(0.22), radius: 12, x: 0, y: 4)

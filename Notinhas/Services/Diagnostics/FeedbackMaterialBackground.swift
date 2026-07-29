@@ -15,7 +15,6 @@ struct FeedbackMaterialBackground: NSViewRepresentable {
   let overlayTint: Color
 
   @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
-  @Environment(\.colorScheme) private var colorScheme
 
   func makeNSView(context _: Context) -> NSView {
     let container = FeedbackMaterialContainerView()
@@ -31,8 +30,7 @@ struct FeedbackMaterialBackground: NSViewRepresentable {
   }
 
   private var usesSolidFallback: Bool {
-    let accessibilityContrast = NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast
-    return reduceTransparency || accessibilityContrast
+    FeedbackChromePolicy.usesSolidFallback(reduceTransparency: reduceTransparency)
   }
 
   private func updateContainer(_ container: FeedbackMaterialContainerView) {
@@ -41,8 +39,7 @@ struct FeedbackMaterialBackground: NSViewRepresentable {
       material: material,
       usesSolidFallback: usesSolidFallback,
       solidBackgroundColor: solidBackgroundColor,
-      overlayTint: overlayTint,
-      colorScheme: colorScheme
+      overlayTint: overlayTint
     )
   }
 }
@@ -55,6 +52,10 @@ private final class FeedbackMaterialContainerView: NSView {
   private let effectView = NSVisualEffectView()
   private let solidView = NSView()
   private let tintView = NSView()
+
+  private var usesSolidFallback = false
+  private var solidBackgroundColor: NSColor = .clear
+  private var overlayTintColor: NSColor = .clear
 
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
@@ -90,20 +91,30 @@ private final class FeedbackMaterialContainerView: NSView {
     fatalError("init(coder:) has not been implemented")
   }
 
+  override func viewDidChangeEffectiveAppearance() {
+    super.viewDidChangeEffectiveAppearance()
+    applyResolvedLayerColors()
+  }
+
   func configure(
     cornerRadius: CGFloat,
     material: NSVisualEffectView.Material,
     usesSolidFallback: Bool,
     solidBackgroundColor: NSColor,
-    overlayTint: Color,
-    colorScheme: ColorScheme
+    overlayTint: Color
   ) {
     self.cornerRadius = cornerRadius
+    self.usesSolidFallback = usesSolidFallback
+    self.solidBackgroundColor = solidBackgroundColor
+    overlayTintColor = NSColor(overlayTint)
+
     applyCornerRadius(to: layer)
     applyCornerRadius(to: effectView.layer)
     applyCornerRadius(to: solidView.layer)
     applyCornerRadius(to: tintView.layer)
 
+    // Keep HUD material on dark chrome so light HUD labels stay readable.
+    effectView.appearance = NSAppearance(named: .darkAqua)
     effectView.material = material
     effectView.state = .active
     effectView.blendingMode = .withinWindow
@@ -111,14 +122,26 @@ private final class FeedbackMaterialContainerView: NSView {
     effectView.isHidden = usesSolidFallback
 
     solidView.wantsLayer = true
-    solidView.layer?.backgroundColor = solidBackgroundColor.cgColor
     solidView.isHidden = !usesSolidFallback
 
     tintView.wantsLayer = true
-    tintView.layer?.backgroundColor = NSColor(overlayTint).cgColor
     tintView.isHidden = usesSolidFallback
 
-    _ = colorScheme
+    applyResolvedLayerColors()
+  }
+
+  private func applyResolvedLayerColors() {
+    let appearance = effectiveAppearance
+    solidView.layer?.backgroundColor = cgColor(for: solidBackgroundColor, appearance: appearance)
+    tintView.layer?.backgroundColor = cgColor(for: overlayTintColor, appearance: appearance)
+  }
+
+  private func cgColor(for color: NSColor, appearance: NSAppearance) -> CGColor {
+    var resolved: CGColor = NSColor.clear.cgColor
+    appearance.performAsCurrentDrawingAppearance {
+      resolved = color.cgColor
+    }
+    return resolved
   }
 
   private func applyCornerRadius(to layer: CALayer?) {
