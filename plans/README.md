@@ -749,4 +749,49 @@ Execute with `.agents/skills/plan-execute-review/SKILL.md`. Prefer
   in this round: rejected — direction retain via 078, not cleanup deletes.
 - Reintroducing Sparkle / About / Report / `snapzy://`: rejected — AGENTS.md.
 
+## Feedback surface standardization (079–081)
+
+Generated 2026-07-29 against commit `205939ae`. Direction: standardize transient
+feedback through a shared native-material surface, coordinated panel slots, and
+accessibility/motion/token policy. `FeedbackSurface` should use macOS native
+`.hudWindow` material by default, with tokenized solid fallback for reduced
+transparency and contrast-sensitive contexts.
+
+| Plan | Title | Priority | Effort | Depends on | Status |
+|---|---|---:|---:|---|---|
+| 079 | Extract a native-material FeedbackSurface | P1 | M | — | DONE `dba07a61` + review-fix `b39a7900` |
+| 080 | Coordinate feedback slots and adopt FeedbackSurface in OCR links | P1 | M | 079 | TODO |
+| 081 | Standardize feedback accessibility, motion, and local state tokens | P2 | M | 079, 080 | TODO |
+
+### Dependency notes (079–081)
+
+- 079 lands first and must preserve the `AppToastManager.show` / `update` public
+  call-site shape while moving visual chrome into shared Diagnostics components.
+- 080 depends on 079 because the OCR link prompt should reuse `FeedbackSurface`
+  while keeping its clickable `NSPanel` behavior.
+- 081 depends on both earlier plans because accessibility, motion, and local
+  state tokens should apply to the final shared surface and slot model.
+
+### Product/design decisions (079–081)
+
+- Use native macOS material for `FeedbackSurface`: default `.hudWindow`, not a
+  purely hardcoded RGB rounded rectangle.
+- Keep a solid fallback for Reduce Transparency / contrast-sensitive contexts.
+- Keep feedback categories distinct: global toast, clickable OCR prompt,
+  menu-bar processing spinner, and local button microfeedback.
+- Coordinate toast/prompt positions through named slots instead of local magic
+  margins such as the OCR prompt's current `bottomMargin = 100`.
+- Do not turn every microinteraction into a toast; align tokens/motion instead.
+
+### Findings considered and rejected (079–081)
+
+- One mega-plan for all toast, prompt, status-bar, and Quick Access changes:
+  rejected — visual foundation, panel behavior, and accessibility rollout have
+  different risk profiles.
+- Keeping `FeedbackSurface` as a solid RGB-only SwiftUI background: rejected —
+  native material is the platform-aligned default for floating macOS feedback.
+- Replacing the status-bar processing spinner with toast progress: rejected —
+  it communicates process state in the menu bar and is a separate feedback type.
+- Converting the OCR link prompt into a passive toast: rejected — links must
+  remain clickable and focusable.
 
