@@ -317,15 +317,11 @@ final class AppToastManager {
       variant: variant
     )
 
-    let x = visibleFrame.midX - size.width / 2
-    let y: CGFloat = switch position {
-    case .topCenter:
-      visibleFrame.maxY - size.height - 36
-    case .bottomCenter:
-      visibleFrame.minY + 36
-    }
-
-    return CGRect(x: x, y: y, width: size.width, height: size.height)
+    return FeedbackPanelPlacement.frame(
+      in: visibleFrame,
+      panelSize: size,
+      slot: position.feedbackPanelSlot
+    )
   }
 
   private func targetScreen() -> NSScreen? {

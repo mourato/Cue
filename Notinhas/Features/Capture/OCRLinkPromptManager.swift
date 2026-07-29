@@ -16,9 +16,6 @@ final class OCRLinkPromptManager {
 
   private static let autoDismissDelay: TimeInterval = 10
   fileprivate static let panelWidth: CGFloat = 380
-  /// Sits above the bottom-center toast slot so a "Copied to Clipboard"
-  /// success toast and this prompt never overlap.
-  private static let bottomMargin: CGFloat = 100
 
   private var panel: NSPanel?
   private var dismissTask: Task<Void, Never>?
@@ -56,12 +53,10 @@ final class OCRLinkPromptManager {
     let fittingSize = hostingView.fittingSize
     let size = CGSize(width: Self.panelWidth, height: max(52, fittingSize.height))
 
-    let visibleFrame = screen.visibleFrame
-    let frame = CGRect(
-      x: visibleFrame.midX - size.width / 2,
-      y: visibleFrame.minY + Self.bottomMargin,
-      width: size.width,
-      height: size.height
+    let frame = FeedbackPanelPlacement.frame(
+      in: screen.visibleFrame,
+      panelSize: size,
+      slot: .bottomCenterRaised
     )
 
     let newPanel = NSPanel(
@@ -151,53 +146,55 @@ private struct OCRLinkPromptView: View {
   let onClose: () -> Void
   let onHoverChange: (Bool) -> Void
 
+  private let feedbackStyle = FeedbackStyle(tone: .info)
+  private let cornerRadius: CGFloat = 10
+
+  @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+
   var body: some View {
-    HStack(alignment: .top, spacing: 10) {
-      Image(systemName: "link.circle.fill")
-        .font(.system(size: 15, weight: .semibold))
-        .foregroundStyle(
-          LinearGradient(
-            colors: [Color.blue, Color.cyan],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-          )
-        )
-        .frame(width: 23, height: 23)
+    let usesSolidFallback = FeedbackChromePolicy.usesSolidFallback(
+      reduceTransparency: reduceTransparency
+    )
+    let textColor = feedbackStyle.textColor(usesSolidFallback: usesSolidFallback)
 
-      VStack(alignment: .leading, spacing: 6) {
-        Text(title)
-          .font(.system(size: 13, weight: .semibold))
-          .foregroundColor(Color(nsColor: AppToastStyle.info.textColor))
+    FeedbackSurface(cornerRadius: cornerRadius, style: feedbackStyle) {
+      HStack(alignment: .top, spacing: 10) {
+        Image(systemName: "link.circle.fill")
+          .font(.system(size: 15, weight: .semibold))
+          .foregroundStyle(feedbackStyle.iconColor)
+          .frame(width: 23, height: 23)
 
-        ForEach(links, id: \.absoluteString) { link in
-          OCRLinkRowButton(link: link) {
-            onOpen(link)
+        VStack(alignment: .leading, spacing: 6) {
+          Text(title)
+            .font(.system(size: 13, weight: .semibold))
+            .foregroundColor(Color(nsColor: textColor))
+
+          ForEach(links, id: \.absoluteString) { link in
+            OCRLinkRowButton(
+              link: link,
+              feedbackStyle: feedbackStyle,
+              usesSolidFallback: usesSolidFallback
+            ) {
+              onOpen(link)
+            }
           }
         }
-      }
-      .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, alignment: .leading)
 
-      Button(action: onClose) {
-        Image(systemName: "xmark")
-          .font(.system(size: 10, weight: .bold))
-          .foregroundColor(Color(nsColor: AppToastStyle.info.textColor).opacity(0.55))
-          .frame(width: 20, height: 20)
-          .contentShape(Rectangle())
+        Button(action: onClose) {
+          Image(systemName: "xmark")
+            .font(.system(size: 10, weight: .bold))
+            .foregroundColor(Color(nsColor: textColor).opacity(0.55))
+            .frame(width: 20, height: 20)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(L10n.Common.close)
       }
-      .buttonStyle(.plain)
-      .accessibilityLabel(L10n.Common.close)
+      .padding(.horizontal, 16)
+      .padding(.vertical, 12)
+      .frame(width: OCRLinkPromptManager.panelWidth, alignment: .leading)
     }
-    .padding(.horizontal, 16)
-    .padding(.vertical, 12)
-    .frame(width: OCRLinkPromptManager.panelWidth, alignment: .leading)
-    .background(
-      RoundedRectangle(cornerRadius: 10, style: .continuous)
-        .fill(Color(nsColor: AppToastStyle.info.backgroundColor))
-    )
-    .overlay(
-      RoundedRectangle(cornerRadius: 10, style: .continuous)
-        .stroke(Color(nsColor: AppToastStyle.info.borderColor), lineWidth: 0.5)
-    )
     .onHover(perform: onHoverChange)
   }
 
@@ -210,11 +207,16 @@ private struct OCRLinkPromptView: View {
 
 private struct OCRLinkRowButton: View {
   let link: URL
+  let feedbackStyle: FeedbackStyle
+  let usesSolidFallback: Bool
   let action: () -> Void
 
   @State private var isHovering = false
 
   var body: some View {
+    let textColor = feedbackStyle.textColor(usesSolidFallback: usesSolidFallback)
+    let accentColor = feedbackStyle.iconAccentColors.last ?? feedbackStyle.iconColor
+
     Button(action: action) {
       HStack(spacing: 6) {
         Text(OCRLinkDetector.displayString(for: link))
@@ -226,12 +228,16 @@ private struct OCRLinkRowButton: View {
           .font(.system(size: 9, weight: .bold))
           .opacity(0.7)
       }
-      .foregroundColor(isHovering ? Color.cyan : Color(nsColor: AppToastStyle.info.textColor).opacity(0.85))
+      .foregroundColor(
+        isHovering
+          ? accentColor
+          : Color(nsColor: textColor).opacity(0.85)
+      )
       .padding(.horizontal, 8)
       .padding(.vertical, 4)
       .background(
         RoundedRectangle(cornerRadius: 6, style: .continuous)
-          .fill(Color(nsColor: AppToastStyle.info.textColor).opacity(isHovering ? 0.14 : 0.07))
+          .fill(Color(nsColor: textColor).opacity(isHovering ? 0.14 : 0.07))
       )
       .contentShape(Rectangle())
     }
