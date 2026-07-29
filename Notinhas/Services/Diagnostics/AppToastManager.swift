@@ -14,58 +14,6 @@ enum AppToastStyle: Equatable {
   case success
   case warning
   case error
-
-  var iconName: String {
-    switch self {
-    case .info: "info.circle.fill"
-    case .success: "checkmark.circle.fill"
-    case .warning: "exclamationmark.triangle.fill"
-    case .error: "xmark.octagon.fill"
-    }
-  }
-
-  /// Vibrant gradient tints per severity — provides visual distinction on the neutral background.
-  var iconGradientColors: [Color] {
-    switch self {
-    case .info: [Color.blue, Color.cyan]
-    case .success: [Color.green, Color.mint]
-    case .warning: [Color.orange, Color.yellow]
-    case .error: [Color.red, Color.pink]
-    }
-  }
-
-  // MARK: - Appearance-adaptive colors (inverted from system theme)
-
-  /// Neutral background — dark on Light mode, light on Dark mode.
-  var backgroundColor: NSColor {
-    NSColor(name: nil) { appearance in
-      if appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua {
-        NSColor(srgbRed: 0.96, green: 0.96, blue: 0.97, alpha: 0.97)
-      } else {
-        NSColor(srgbRed: 0.11, green: 0.11, blue: 0.12, alpha: 0.97)
-      }
-    }
-  }
-
-  var borderColor: NSColor {
-    NSColor(name: nil) { appearance in
-      if appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua {
-        NSColor(srgbRed: 0.82, green: 0.82, blue: 0.84, alpha: 0.25)
-      } else {
-        NSColor(srgbRed: 0.30, green: 0.30, blue: 0.32, alpha: 0.35)
-      }
-    }
-  }
-
-  var textColor: NSColor {
-    NSColor(name: nil) { appearance in
-      if appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua {
-        NSColor(srgbRed: 0.11, green: 0.11, blue: 0.12, alpha: 1.0)
-      } else {
-        NSColor(srgbRed: 0.96, green: 0.96, blue: 0.97, alpha: 1.0)
-      }
-    }
-  }
 }
 
 enum AppToastPosition: Equatable {
@@ -78,7 +26,7 @@ enum AppToastIconMode: Equatable {
   case spinner
 }
 
-enum AppToastVariant: Equatable {
+enum AppToastVariant: Equatable, CaseIterable {
   case regular
   case compact
 
@@ -301,7 +249,7 @@ final class AppToastManager {
       newPanel.level = .statusBar
       newPanel.isOpaque = false
       newPanel.backgroundColor = .clear
-      newPanel.hasShadow = true
+      newPanel.hasShadow = false
       newPanel.hidesOnDeactivate = false
       newPanel.ignoresMouseEvents = true
       newPanel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .transient]
@@ -359,8 +307,15 @@ final class AppToastManager {
   ) -> CGRect? {
     guard let screen = targetScreen() else { return nil }
     let visibleFrame = screen.visibleFrame
-    let maxWidth = min(560, visibleFrame.width - 32)
-    let size = measuredToastSize(for: message, maxWidth: maxWidth, variant: variant)
+    let maxWidth = min(
+      FeedbackToastMetrics.defaultMaxWidth,
+      visibleFrame.width - FeedbackToastMetrics.screenHorizontalInset
+    )
+    let size = FeedbackToastMetrics.measuredToastSize(
+      for: message,
+      maxWidth: maxWidth,
+      variant: variant
+    )
 
     let x = visibleFrame.midX - size.width / 2
     let y: CGFloat = switch position {
@@ -371,25 +326,6 @@ final class AppToastManager {
     }
 
     return CGRect(x: x, y: y, width: size.width, height: size.height)
-  }
-
-  private func measuredToastSize(
-    for message: String,
-    maxWidth: CGFloat,
-    variant: AppToastVariant
-  ) -> CGSize {
-    let font = NSFont.systemFont(ofSize: variant.textFontSize, weight: variant.measurementWeight)
-    let iconFrameWidth = variant.iconFontSize + 8
-    let horizontalChrome = (variant.horizontalPadding * 2) + iconFrameWidth + variant.contentSpacing
-    let maxTextWidth = max(120, maxWidth - horizontalChrome)
-    let attributed = NSAttributedString(string: message, attributes: [.font: font])
-    let textBounds = attributed.boundingRect(
-      with: NSSize(width: maxTextWidth, height: CGFloat.greatestFiniteMagnitude),
-      options: [.usesLineFragmentOrigin, .usesFontLeading]
-    )
-    let width = min(maxWidth, max(variant.minWidth, ceil(textBounds.width + 2) + horizontalChrome))
-    let height = max(variant.minHeight, ceil(textBounds.height) + (variant.verticalPadding * 2))
-    return CGSize(width: width, height: height)
   }
 
   private func targetScreen() -> NSScreen? {
@@ -407,92 +343,32 @@ private struct AppToastView: View {
 
   var body: some View {
     let presentation = viewModel.presentation
+    let feedbackStyle = presentation.style.feedbackStyle
+    let variant = presentation.variant
 
-    HStack(alignment: .center, spacing: variant.contentSpacing) {
-      AppToastIconView(presentation: presentation)
+    FeedbackSurface(cornerRadius: variant.cornerRadius, style: feedbackStyle) {
+      HStack(alignment: .center, spacing: variant.contentSpacing) {
+        FeedbackIconView(
+          style: feedbackStyle,
+          iconMode: presentation.iconMode == .symbol ? .symbol : .spinner,
+          fontSize: variant.iconFontSize
+        )
 
-      Text(presentation.message)
-        .font(.system(size: presentation.variant.textFontSize, weight: presentation.variant.textWeight))
-        .foregroundColor(Color(nsColor: presentation.style.textColor))
-        .lineLimit(presentation.variant.lineLimit)
-        .multilineTextAlignment(.leading)
+        Text(presentation.message)
+          .font(.system(size: variant.textFontSize, weight: variant.textWeight))
+          .foregroundColor(Color(nsColor: feedbackStyle.textColor))
+          .lineLimit(variant.lineLimit)
+          .multilineTextAlignment(.leading)
+      }
+      .padding(.horizontal, variant.horizontalPadding)
+      .padding(.vertical, variant.verticalPadding)
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-    .padding(.horizontal, presentation.variant.horizontalPadding)
-    .padding(.vertical, presentation.variant.verticalPadding)
-    .frame(maxWidth: .infinity, maxHeight: .infinity)
-    .background(
-      RoundedRectangle(cornerRadius: presentation.variant.cornerRadius, style: .continuous)
-        .fill(Color(nsColor: presentation.style.backgroundColor))
-    )
-    .overlay(
-      RoundedRectangle(cornerRadius: presentation.variant.cornerRadius, style: .continuous)
-        .stroke(Color(nsColor: presentation.style.borderColor), lineWidth: 0.5)
-    )
     .scaleEffect(appeared ? 1.0 : 0.96)
     .onAppear {
       withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
         appeared = true
       }
     }
-  }
-
-  private var variant: AppToastVariant {
-    viewModel.presentation.variant
-  }
-}
-
-private struct AppToastIconView: View {
-  let presentation: AppToastPresentation
-
-  var body: some View {
-    ZStack {
-      switch presentation.iconMode {
-      case .symbol:
-        Image(systemName: presentation.style.iconName)
-          .font(.system(size: presentation.variant.iconFontSize, weight: .semibold))
-          .foregroundStyle(
-            LinearGradient(
-              colors: presentation.style.iconGradientColors,
-              startPoint: .topLeading,
-              endPoint: .bottomTrailing
-            )
-          )
-          .transition(.scale(scale: 0.82).combined(with: .opacity))
-      case .spinner:
-        AppToastSpinnerView(
-          colors: presentation.style.iconGradientColors,
-          size: presentation.variant.iconFontSize + 4
-        )
-        .transition(.scale(scale: 0.82).combined(with: .opacity))
-      }
-    }
-    .frame(width: presentation.variant.iconFontSize + 8, height: presentation.variant.iconFontSize + 8)
-  }
-}
-
-private struct AppToastSpinnerView: View {
-  let colors: [Color]
-  let size: CGFloat
-
-  @State private var isSpinning = false
-
-  var body: some View {
-    Circle()
-      .trim(from: 0.18, to: 1)
-      .stroke(
-        AngularGradient(
-          gradient: Gradient(colors: colors.map { $0.opacity(0.15) } + [colors.last ?? .cyan]),
-          center: .center
-        ),
-        style: StrokeStyle(lineWidth: max(2, size * 0.15), lineCap: .round)
-      )
-      .frame(width: size, height: size)
-      .rotationEffect(.degrees(isSpinning ? 360 : 0))
-      .onAppear {
-        guard !isSpinning else { return }
-        withAnimation(.linear(duration: 0.9).repeatForever(autoreverses: false)) {
-          isSpinning = true
-        }
-      }
   }
 }
