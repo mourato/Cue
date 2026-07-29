@@ -89,7 +89,8 @@ final class AppStatusBarControllerTests: XCTestCase {
     controller.didElevateForSettingsForTesting = true
     NSApp.setActivationPolicy(.regular)
 
-    // 2. Create a mock closing window and make it visible
+    // 2. Create a mock closing window. It does not need to be ordered on screen because
+    // the production path excludes the closing window from the visible-window scan.
     let closingWindow = NSWindow(
       contentRect: NSRect(x: 0, y: 0, width: 100, height: 100),
       styleMask: .borderless,
@@ -97,7 +98,6 @@ final class AppStatusBarControllerTests: XCTestCase {
       defer: false
     )
     closingWindow.title = "Settings"
-    closingWindow.orderFront(nil)
     controller.trackedPreferencesWindowForTesting = closingWindow
 
     // 3. Post notification/Simulate close
@@ -111,8 +111,5 @@ final class AppStatusBarControllerTests: XCTestCase {
     XCTAssertEqual(NSApp.activationPolicy(), .accessory)
     XCTAssertFalse(controller.didElevateForSettingsForTesting)
     XCTAssertNil(controller.trackedPreferencesWindowForTesting)
-
-    // 5. Cleanup window to prevent leakage
-    closingWindow.close()
   }
 }

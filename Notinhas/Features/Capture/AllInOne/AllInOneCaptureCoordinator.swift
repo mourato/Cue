@@ -258,7 +258,7 @@ final class AllInOneCaptureCoordinator {
       self?.cursorArbiter.resolvedCursor(at: location)
     }
     let timer = Timer(timeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
-      MainActor.assumeIsolated {
+      Task { @MainActor in
         self?.handleCursorOwnershipTick()
       }
     }

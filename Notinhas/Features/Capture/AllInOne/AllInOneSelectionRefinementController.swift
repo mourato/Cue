@@ -201,7 +201,7 @@ final class AllInOneSelectionRefinementController: NSObject {
   private func startCursorTrackingIfNeeded() {
     guard cursorTrackingTimer == nil else { return }
     let timer = Timer(timeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
-      MainActor.assumeIsolated {
+      Task { @MainActor in
         self?.handleCursorTrackingTick()
       }
     }

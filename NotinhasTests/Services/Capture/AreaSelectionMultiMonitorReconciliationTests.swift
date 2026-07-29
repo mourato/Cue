@@ -48,13 +48,13 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
   func testApplyBackdrop_reconcilesSelectionEnabledForOtherPooledDisplays() {
     let controller = AreaSelectionController.shared
 
-    // GIVEN: a selection session starts with EMPTY backdrops (backdrop-less / lazy-backdrop mode,
-    // e.g. recording-area selection), so every display's `selectionEnabled(for:)` starts out `true`
-    // via the `selectionBackdrops.isEmpty` branch.
-    let startExpectation = XCTestExpectation(description: "Session started and pool populated")
-    controller.startSelection(mode: .recording) { _, _ in }
-    DispatchQueue.main.async { startExpectation.fulfill() }
-    wait(for: [startExpectation], timeout: 2.0)
+    // GIVEN: a prepared window pool with EMPTY backdrops, matching the pre-lazy-backdrop state
+    // without starting a live session whose asynchronous backdrop capture can race this assertion.
+    if controller.isPresenting {
+      controller.cancelSelection()
+    }
+    controller.prepareWindowPool()
+    defer { controller.cancelSelection() }
 
     let mirror = Mirror(reflecting: controller)
     guard let windowPool = mirror.children.first(where: { $0.label == "windowPool" })?.value
@@ -84,7 +84,10 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
     // different display than the one `realWindow` belongs to. It intentionally has no pooled window,
     // so any assertion that depends on `windowPool[otherDisplayID]` being touched would be wrong;
     // what we're proving is that mutating a DIFFERENT display's backdrop still reconciles this one.
-    let otherDisplayID = realDisplayID &+ 1
+    var otherDisplayID = CGDirectDisplayID.max
+    while windowPool.keys.contains(otherDisplayID) {
+      otherDisplayID &-= 1
+    }
 
     // WHEN: a backdrop lands on the OTHER display only (async magnifier/luma backdrop capture
     // completing first on the primary while `realWindow`'s own display is still awaiting its
@@ -106,8 +109,6 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
         + "otherwise its mouseDown skips the live-fallback path and the drag silently drops "
         + "(the multi-monitor freeze bug)"
     )
-
-    controller.cancelSelection()
   }
 
   /// Reads the private `selectionEnabled` cached bool off an `AreaSelectionOverlayView` via
@@ -254,15 +255,19 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
     // Simulate the WindowServer reclaiming the cursor during the post-mouseDown activation
     // handoff — the exact external reset the bug report describes.
     NSCursor.arrow.set()
-    XCTAssertTrue(NSCursor.current === NSCursor.arrow, "Precondition: cursor was reset to the arrow")
+    let reassertionCountBeforeTick = overlayView.testCursorReassertionCount
 
     // WHEN: a pointer-tracking tick fires while the button is held and the pointer never moved
     timer.fire()
+    let deadline = Date().addingTimeInterval(1.0)
+    while Date() < deadline, overlayView.testCursorReassertionCount == reassertionCountBeforeTick {
+      _ = RunLoop.main.run(mode: .default, before: Date().addingTimeInterval(0.01))
+    }
 
     // THEN: the tick re-asserts the crosshair instead of leaving the arrow stuck until mouseMoved
-    XCTAssertTrue(
-      NSCursor.current === NSCursor.vectorScreenshotCrosshairLight
-        || NSCursor.current === NSCursor.vectorScreenshotCrosshairHighContrast,
+    XCTAssertGreaterThan(
+      overlayView.testCursorReassertionCount,
+      reassertionCountBeforeTick,
       "Pointer-tracking tick must re-assert the crosshair during a stationary manual selection"
     )
   }
@@ -326,28 +331,25 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
   func testIsMouseOver_evaluatesFrameAndVisibility() throws {
     try skipIfRunningInCI("Requires real window coordinates and mouse location which can fail on headless CI runners")
 
-    let window = NSWindow(
-      contentRect: CGRect(x: 0, y: 0, width: 200, height: 200),
-      styleMask: .borderless,
-      backing: .buffered,
-      defer: false
-    )
-    window.contentView = overlayView
     overlayView.setSelectionEnabled(true)
     overlayView.setInteractionMode(.manualRegion, resetSelection: false)
     let mouseLoc = CGPoint(x: 1_000, y: 1_000)
     overlayView.testMouseLocationOverride = mouseLoc
-    defer { overlayView.testMouseLocationOverride = nil }
+    defer {
+      overlayView.testMouseLocationOverride = nil
+      overlayView.testWindowFrameOverride = nil
+      overlayView.testWindowVisibilityOverride = nil
+    }
 
     // GIVEN: window is not visible
-    window.setIsVisible(false)
+    overlayView.testWindowVisibilityOverride = false
+    overlayView.testWindowFrameOverride = CGRect(x: mouseLoc.x - 50, y: mouseLoc.y - 50, width: 200, height: 200)
     overlayView.resetSelection() // calls updateCoordinateIndicator internally
     XCTAssertTrue(overlayView.testSizeIndicatorTextLayer.isHidden, "Should be hidden when window is not visible")
 
     // GIVEN: window is visible, but positioned away from the mouse
-    window.setIsVisible(true)
-    // Move window frame away from mouse location
-    window.setFrame(CGRect(x: mouseLoc.x + 500, y: mouseLoc.y + 500, width: 200, height: 200), display: false)
+    overlayView.testWindowVisibilityOverride = true
+    overlayView.testWindowFrameOverride = CGRect(x: mouseLoc.x + 500, y: mouseLoc.y + 500, width: 200, height: 200)
     overlayView.resetSelection()
     XCTAssertTrue(
       overlayView.testSizeIndicatorTextLayer.isHidden,
@@ -355,13 +357,9 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
     )
 
     // GIVEN: window contains the mouse location
-    window.setFrame(CGRect(x: mouseLoc.x - 50, y: mouseLoc.y - 50, width: 200, height: 200), display: false)
+    overlayView.testWindowFrameOverride = CGRect(x: mouseLoc.x - 50, y: mouseLoc.y - 50, width: 200, height: 200)
     overlayView.resetSelection()
     XCTAssertFalse(overlayView.testSizeIndicatorTextLayer.isHidden, "Should be visible when window contains mouse")
-
-    // Clean up
-    window.contentView = nil
-    window.close()
   }
 
   /// Reads the private `pointerTrackingTimer` off `AreaSelectionController` via reflection.

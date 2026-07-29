@@ -195,7 +195,7 @@ final class AreaSelectionController: NSObject {
       object: nil,
       queue: .main
     ) { [weak self] _ in
-      MainActor.assumeIsolated {
+      Task { @MainActor in
         self?.refreshWindowPool()
       }
     }
@@ -577,30 +577,34 @@ final class AreaSelectionController: NSObject {
   private func scheduleSessionWindowsVisibilityAssertion() {
     let sessionID = selectionSessionID
     DispatchQueue.main.async { [weak self] in
-      MainActor.assumeIsolated {
-        guard let self, self.isPresenting, self.selectionSessionID == sessionID else { return }
-        for screen in NSScreen.screens {
-          guard let displayID = screen.displayID,
-                let window = self.windowPool[displayID],
-                !window.isVisible else { continue }
-          DiagnosticLogger.shared.log(
-            .warning,
-            .capture,
-            "Area selection window not visible after activation; re-asserting order",
-            context: [
-              "displayID": "\(displayID)",
-              "isOnActiveSpace": "\(window.isOnActiveSpace)",
-              "alphaValue": "\(window.alphaValue)",
-              "appIsActive": "\(NSApp.isActive)",
-              "screenFrame": "\(screen.frame)",
-              "windowFrame": "\(window.frame)",
-            ]
-          )
-          window.orderFrontRegardless()
-          window.activateKeyboardInputIfNeeded()
-          window.overlayView.refreshCursor()
-        }
+      Task { @MainActor in
+        self?.assertSessionWindowsVisible(sessionID: sessionID)
       }
+    }
+  }
+
+  private func assertSessionWindowsVisible(sessionID: UUID) {
+    guard isPresenting, selectionSessionID == sessionID else { return }
+    for screen in NSScreen.screens {
+      guard let displayID = screen.displayID,
+            let window = windowPool[displayID],
+            !window.isVisible else { continue }
+      DiagnosticLogger.shared.log(
+        .warning,
+        .capture,
+        "Area selection window not visible after activation; re-asserting order",
+        context: [
+          "displayID": "\(displayID)",
+          "isOnActiveSpace": "\(window.isOnActiveSpace)",
+          "alphaValue": "\(window.alphaValue)",
+          "appIsActive": "\(NSApp.isActive)",
+          "screenFrame": "\(screen.frame)",
+          "windowFrame": "\(window.frame)",
+        ]
+      )
+      window.orderFrontRegardless()
+      window.activateKeyboardInputIfNeeded()
+      window.overlayView.refreshCursor()
     }
   }
 
@@ -1047,7 +1051,7 @@ final class AreaSelectionController: NSObject {
   private func startPointerTrackingIfNeeded() {
     guard pointerTrackingTimer == nil else { return }
     let timer = Timer(timeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
-      MainActor.assumeIsolated {
+      Task { @MainActor in
         self?.handlePointerTrackingTick()
       }
     }
@@ -1283,7 +1287,7 @@ final class AreaSelectionController: NSObject {
         object: nil,
         queue: .main
       ) { [weak self] _ in
-        MainActor.assumeIsolated {
+        Task { @MainActor in
           self?.reassertManualSelectionCursor()
         }
       }
@@ -1294,13 +1298,13 @@ final class AreaSelectionController: NSObject {
       switch event.type {
       case .leftMouseDragged:
         let mouseLocation = NSEvent.mouseLocation
-        MainActor.assumeIsolated {
+        Task { @MainActor in
           self?.updateManualSelection(to: mouseLocation)
         }
         return nil
       case .leftMouseUp:
         let mouseLocation = NSEvent.mouseLocation
-        MainActor.assumeIsolated {
+        Task { @MainActor in
           self?.endManualSelection(at: mouseLocation)
         }
         return nil
@@ -1313,18 +1317,18 @@ final class AreaSelectionController: NSObject {
       manualSelectionKeyLocalMonitor = NSEvent.addLocalMonitorForEvents(
         matching: [.keyDown, .keyUp]
       ) { [weak self] event in
-        var handled = false
-        MainActor.assumeIsolated {
-          handled = self?.handleManualSelectionSpaceEvent(event) ?? false
+        guard event.keyCode == 49 else { return event }
+        Task { @MainActor in
+          _ = self?.handleManualSelectionSpaceEvent(event)
         }
-        return handled ? nil : event
+        return nil
       }
     }
     if manualSelectionKeyGlobalMonitor == nil {
       manualSelectionKeyGlobalMonitor = NSEvent.addGlobalMonitorForEvents(
         matching: [.keyDown, .keyUp]
       ) { [weak self] event in
-        MainActor.assumeIsolated {
+        Task { @MainActor in
           _ = self?.handleManualSelectionSpaceEvent(event)
         }
       }
@@ -1339,7 +1343,7 @@ final class AreaSelectionController: NSObject {
       matching: [.leftMouseDragged, .leftMouseUp]
     ) { [weak self] event in
       let mouseLocation = NSEvent.mouseLocation
-      MainActor.assumeIsolated {
+      Task { @MainActor in
         switch event.type {
         case .leftMouseDragged:
           self?.updateManualSelection(to: mouseLocation)
@@ -2072,6 +2076,9 @@ final class AreaSelectionOverlayView: NSView {
   /// The selection drag monitors call this on every drag update to keep the crosshair sticky.
   func reassertCursorDuringDrag() {
     guard isManualSelectionInProgress else { return }
+    #if DEBUG
+      testCursorReassertionCount += 1
+    #endif
     activeCursor.set()
   }
 
@@ -2649,10 +2656,17 @@ final class AreaSelectionOverlayView: NSView {
 
   #if DEBUG
     var testMouseLocationOverride: CGPoint?
+    var testWindowFrameOverride: CGRect?
+    var testWindowVisibilityOverride: Bool?
+    var testCursorReassertionCount = 0
   #endif
 
   private var isMouseOver: Bool {
     #if DEBUG
+      if let testWindowFrameOverride, let testWindowVisibilityOverride {
+        let mouseLocation = testMouseLocationOverride ?? NSEvent.mouseLocation
+        return testWindowVisibilityOverride && testWindowFrameOverride.contains(mouseLocation)
+      }
       if NSClassFromString("XCTestCase") != nil, self.window == nil {
         return true
       }

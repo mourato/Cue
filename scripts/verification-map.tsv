@@ -38,6 +38,10 @@ Notinhas/Features/Annotate/**	xctest	NotinhasTests/CombineImagesLayoutTests	no	A
 Notinhas/Features/Annotate/**	xctest	NotinhasTests/CombineSnappingTests	no	Annotate session export and rendering logic
 Notinhas/Features/Annotate/**	xctest	NotinhasTests/InlineAreaAnnotateSessionTests	no	Annotate session export and rendering logic
 Notinhas/Features/Annotate/**	xctest	NotinhasTests/PersistedCombineSessionTests	no	Annotate session export and rendering logic
+NotinhasTests/App/AppStatusBarControllerTests.swift	xctest	NotinhasTests/AppStatusBarControllerTests	no	App status bar activation policy regression coverage
+Notinhas/Features/Capture/AllInOne/**	xctest	NotinhasTests/AllInOneCaptureCoordinatorTests	yes	All-In-One HUD ordering and capture startup require manual capture smoke
+Notinhas/Features/Capture/AllInOne/**	xctest	NotinhasTests/CaptureFloatingHUDWindowTests	yes	All-In-One HUD ordering and capture startup require manual capture smoke
+Notinhas/Features/Capture/AllInOne/**	xctest	NotinhasTests/CaptureSelectionCursorPolicyTests	yes	All-In-One HUD ordering and capture startup require manual capture smoke
 Notinhas/Services/Capture/**	xctest	NotinhasTests/AXElementInspectorTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
 Notinhas/Services/Capture/**	xctest	NotinhasTests/AllDisplayFrozenSessionPreparerTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
 Notinhas/Services/Capture/**	xctest	NotinhasTests/AreaSelectionBackdropCapturerTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
@@ -79,6 +83,7 @@ Notinhas/Services/Capture/**	xctest	NotinhasTests/SmartElementCaptureControllerT
 Notinhas/Services/Capture/**	xctest	NotinhasTests/SmartElementQueryServiceTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
 Notinhas/Services/Capture/**	xctest	NotinhasTests/SmartElementWindowOwnerResolverTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
 Notinhas/Services/Capture/**	xctest	NotinhasTests/TempCaptureManagerTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+NotinhasTests/Services/Capture/AreaSelectionMultiMonitorReconciliationTests.swift	xctest	NotinhasTests/AreaSelectionMultiMonitorReconciliationTests	no	Capture pointer tracking regression coverage
 Notinhas/Features/Recording/**	video-module	NotinhasTests/MicrophoneAudioCapturerTests	yes	Recording flows require Video module build and manual AV permissions smoke
 Notinhas/Features/Recording/**	video-module	NotinhasTests/RecordingAnnotationStateTests	yes	Recording flows require Video module build and manual AV permissions smoke
 Notinhas/Features/Recording/**	video-module	NotinhasTests/RecordingConfigurationTests	yes	Recording flows require Video module build and manual AV permissions smoke
