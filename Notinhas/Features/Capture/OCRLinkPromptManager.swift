@@ -68,7 +68,7 @@ final class OCRLinkPromptManager {
     newPanel.level = .statusBar
     newPanel.isOpaque = false
     newPanel.backgroundColor = .clear
-    newPanel.hasShadow = true
+    newPanel.hasShadow = false
     newPanel.hidesOnDeactivate = false
     newPanel.ignoresMouseEvents = false
     newPanel.becomesKeyOnlyIfNeeded = true
