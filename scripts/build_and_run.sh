@@ -410,7 +410,7 @@ install_release_app() {
   [[ -d "$APPLICATIONS_DIR" ]] || fail "Applications directory was not found: $APPLICATIONS_DIR"
   [[ -w "$APPLICATIONS_DIR" ]] || fail "Applications directory is not writable: $APPLICATIONS_DIR"
 
-  backup_directory="$(mktemp -d "$APPLICATIONS_DIR/.${APP_NAME}.install-backup.XXXXXX")"
+  backup_directory="$(mktemp -d "${TMPDIR:-/tmp}/${APP_NAME}.install-backup.XXXXXX")"
   if [[ -e "$destination_app" ]]; then
     info "Replacing existing $destination_app..."
     mv "$destination_app" "$backup_directory/$APP_NAME.app"
