@@ -9,8 +9,8 @@ import Foundation
 
 @MainActor
 protocol PreferencesProviding {
-  func setAction(_ action: AfterCaptureAction, for type: CaptureType, enabled: Bool)
-  func isActionEnabled(_ action: AfterCaptureAction, for type: CaptureType) -> Bool
+    func setAction(_ action: AfterCaptureAction, for type: CaptureType, enabled: Bool)
+    func isActionEnabled(_ action: AfterCaptureAction, for type: CaptureType) -> Bool
 }
 
 extension PreferencesManager: PreferencesProviding {}

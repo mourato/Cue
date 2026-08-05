@@ -10,70 +10,70 @@ import GRDB
 
 /// Type of capture stored in history
 enum CaptureHistoryType: String, Codable, Equatable, CaseIterable {
-  case screenshot
-  case video
-  case gif
+    case screenshot
+    case video
+    case gif
 
-  var systemIconName: String {
-    switch self {
-    case .screenshot:
-      "photo"
-    case .video:
-      "film"
-    case .gif:
-      "photo.stack"
+    var systemIconName: String {
+        switch self {
+        case .screenshot:
+            "photo"
+        case .video:
+            "film"
+        case .gif:
+            "photo.stack"
+        }
     }
-  }
 }
 
 /// Record of a capture (screenshot, video, or GIF) persisted locally in history
 struct CaptureHistoryRecord: Identifiable, Codable, Equatable, FetchableRecord, PersistableRecord {
-  let id: UUID
-  var filePath: String
-  var fileName: String
-  let captureType: CaptureHistoryType
-  var fileSize: Int64
-  let capturedAt: Date
-  var width: Int?
-  var height: Int?
-  var duration: TimeInterval?
-  var thumbnailPath: String?
-  var isDeleted: Bool
+    let id: UUID
+    var filePath: String
+    var fileName: String
+    let captureType: CaptureHistoryType
+    var fileSize: Int64
+    let capturedAt: Date
+    var width: Int?
+    var height: Int?
+    var duration: TimeInterval?
+    var thumbnailPath: String?
+    var isDeleted: Bool
 
-  /// Human-readable file size
-  var formattedFileSize: String {
-    HistoryFormatterCache.fileSize.string(fromByteCount: fileSize)
-  }
-
-  /// Formatted capture date
-  var formattedDate: String {
-    HistoryFormatterCache.recordDate.string(from: capturedAt)
-  }
-
-  /// Formatted duration string for display (e.g., "01:30s")
-  var formattedDuration: String? {
-    guard let duration, duration.isFinite, duration >= 0 else {
-      return nil
+    /// Human-readable file size
+    var formattedFileSize: String {
+        HistoryFormatterCache.fileSize().string(fromByteCount: fileSize)
     }
-    let mins = Int(duration) / 60
-    let secs = Int(duration) % 60
-    return String(format: "%02d:%02ds", mins, secs)
-  }
 
-  /// Local thumbnail URL in App Support, if the thumbnail file exists
-  var thumbnailURL: URL? {
-    guard let thumbnailPath else { return nil }
-    let url = URL(fileURLWithPath: thumbnailPath)
-    return FileManager.default.fileExists(atPath: url.path) ? url : nil
-  }
+    /// Formatted capture date
+    var formattedDate: String {
+        HistoryFormatterCache.recordDate().string(from: capturedAt)
+    }
 
-  /// File URL from stored path
-  var fileURL: URL {
-    URL(fileURLWithPath: filePath)
-  }
+    /// Formatted duration string for display (e.g., "01:30s")
+    var formattedDuration: String? {
+        guard let duration, duration.isFinite, duration >= 0 else {
+            return nil
+        }
+        let mins = Int(duration) / 60
+        let secs = Int(duration) % 60
+        return String(format: "%02d:%02ds", mins, secs)
+    }
 
-  /// Whether the underlying file still exists on disk
-  var fileExists: Bool {
-    FileManager.default.fileExists(atPath: filePath)
-  }
+    /// Local thumbnail URL in App Support, if the thumbnail file exists
+    var thumbnailURL: URL? {
+        guard let thumbnailPath else { return nil }
+        let url = URL(fileURLWithPath: thumbnailPath)
+        return FileManager.default.fileExists(atPath: url.path) ? url : nil
+    }
+
+    /// File URL from stored path
+    var fileURL: URL {
+        URL(fileURLWithPath: filePath)
+    }
+
+    /// Whether the underlying file still exists on disk
+    var fileExists: Bool {
+        FileManager.default.fileExists(atPath: filePath)
+    }
 }

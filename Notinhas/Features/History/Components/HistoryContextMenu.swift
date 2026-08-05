@@ -8,105 +8,105 @@
 import SwiftUI
 
 struct HistoryContextMenu: View {
-  let record: CaptureHistoryRecord
-  @ObservedObject private var manager = HistoryFloatingManager.shared
+    let record: CaptureHistoryRecord
+    @ObservedObject private var manager = HistoryFloatingManager.shared
 
-  var body: some View {
-    Button("Open in Finder") {
-      NSWorkspace.shared.activateFileViewerSelecting([record.fileURL])
+    var body: some View {
+        Button("Open in Finder") {
+            NSWorkspace.shared.activateFileViewerSelecting([record.fileURL])
+        }
+
+        Button("Copy") {
+            HistoryWindowController.shared.copyToClipboard([record])
+        }
+
+        Button("Edit") {
+            HistoryWindowController.shared.openItem(record)
+        }
+
+        if CloudManager.shared.isConfigured {
+            Button {
+                manager.uploadToCloud(record)
+            } label: {
+                Label(uploadMenuTitle, systemImage: uploadMenuIcon)
+            }
+            .disabled(manager.cloudUploadState(for: record) != nil)
+        }
+
+        Divider()
+
+        Button("Delete") {
+            HistoryWindowController.shared.deleteRecords([record], asksConfirmation: false)
+        }
     }
 
-    Button("Copy") {
-      HistoryWindowController.shared.copyToClipboard([record])
+    private var uploadMenuTitle: String {
+        switch manager.cloudUploadState(for: record) {
+        case .uploading:
+            L10n.PreferencesHistory.uploadingToCloud
+        case .completed:
+            L10n.PreferencesHistory.uploadedToCloud
+        case nil:
+            L10n.PreferencesHistory.uploadToCloud
+        }
     }
 
-    Button("Edit") {
-      HistoryWindowController.shared.openItem(record)
+    private var uploadMenuIcon: String {
+        switch manager.cloudUploadState(for: record) {
+        case .uploading:
+            "cloud"
+        case .completed:
+            "checkmark.cloud"
+        case nil:
+            "cloud"
+        }
     }
-
-    if CloudManager.shared.isConfigured {
-      Button {
-        manager.uploadToCloud(record)
-      } label: {
-        Label(uploadMenuTitle, systemImage: uploadMenuIcon)
-      }
-      .disabled(manager.cloudUploadState(for: record) != nil)
-    }
-
-    Divider()
-
-    Button("Delete") {
-      HistoryWindowController.shared.deleteRecords([record], asksConfirmation: false)
-    }
-  }
-
-  private var uploadMenuTitle: String {
-    switch manager.cloudUploadState(for: record) {
-    case .uploading:
-      L10n.PreferencesHistory.uploadingToCloud
-    case .completed:
-      L10n.PreferencesHistory.uploadedToCloud
-    case nil:
-      L10n.PreferencesHistory.uploadToCloud
-    }
-  }
-
-  private var uploadMenuIcon: String {
-    switch manager.cloudUploadState(for: record) {
-    case .uploading:
-      "cloud"
-    case .completed:
-      "checkmark.cloud"
-    case nil:
-      "cloud"
-    }
-  }
 }
 
 struct HistoryCloudUploadOverlayView: View {
-  let state: HistoryCloudUploadState
-  @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    let state: HistoryCloudUploadState
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-  var body: some View {
-    ZStack {
-      Rectangle()
-        .fill(Color.black.opacity(0.52))
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .fill(Color.black.opacity(0.52))
 
-      VStack(spacing: 8) {
-        icon
+            VStack(spacing: 8) {
+                icon
 
-        Text(title)
-          .font(.system(size: 11, weight: .semibold))
-          .foregroundColor(.white)
-          .lineLimit(1)
-          .minimumScaleFactor(0.85)
-      }
-      .padding(.horizontal, 10)
+                Text(title)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(.white)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
+            }
+            .padding(.horizontal, 10)
+        }
+        .transition(reduceMotion ? .opacity : .opacity.combined(with: .scale(scale: 0.96)))
     }
-    .transition(reduceMotion ? .opacity : .opacity.combined(with: .scale(scale: 0.96)))
-  }
 
-  @ViewBuilder
-  private var icon: some View {
-    switch state {
-    case .uploading:
-      ProgressView()
-        .progressViewStyle(.circular)
-        .controlSize(.small)
-        .tint(.white)
-    case .completed:
-      Image(systemName: "checkmark.circle.fill")
-        .font(.system(size: 26, weight: .semibold))
-        .foregroundStyle(.white, Color.green)
+    @ViewBuilder
+    private var icon: some View {
+        switch state {
+        case .uploading:
+            ProgressView()
+                .progressViewStyle(.circular)
+                .controlSize(.small)
+                .tint(.white)
+        case .completed:
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 26, weight: .semibold))
+                .foregroundStyle(.white, Color.green)
+        }
     }
-  }
 
-  private var title: String {
-    switch state {
-    case .uploading:
-      L10n.PreferencesHistory.uploadingToCloud
-    case .completed:
-      L10n.PreferencesHistory.uploadedToCloud
+    private var title: String {
+        switch state {
+        case .uploading:
+            L10n.PreferencesHistory.uploadingToCloud
+        case .completed:
+            L10n.PreferencesHistory.uploadedToCloud
+        }
     }
-  }
 }

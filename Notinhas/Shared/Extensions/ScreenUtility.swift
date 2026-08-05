@@ -14,19 +14,19 @@ import AppKit
 /// returns the primary screen.  These helpers detect the **screen the user
 /// is actually interacting with** by using `NSEvent.mouseLocation`.
 enum ScreenUtility {
-  /// The screen the mouse cursor is currently on.
-  /// Falls back to `NSScreen.main` → `NSScreen.screens.first!`.
-  static func activeScreen() -> NSScreen {
-    let mouseLocation = NSEvent.mouseLocation
-    return NSScreen.screens.first(where: { $0.frame.contains(mouseLocation) })
-      ?? NSScreen.main
-      ?? NSScreen.screens.first!
-  }
+    /// The screen the mouse cursor is currently on.
+    /// Falls back to `NSScreen.main` → `NSScreen.screens.first!`.
+    static func activeScreen() -> NSScreen {
+        let mouseLocation = NSEvent.mouseLocation
+        return NSScreen.screens.first(where: { $0.frame.contains(mouseLocation) })
+            ?? NSScreen.main
+            ?? NSScreen.screens.first!
+    }
 
-  /// The `CGDirectDisplayID` of the screen the mouse cursor is currently on.
-  static func activeDisplayID() -> CGDirectDisplayID {
-    let screen = activeScreen()
-    return screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? CGDirectDisplayID
-      ?? CGMainDisplayID()
-  }
+    /// The `CGDirectDisplayID` of the screen the mouse cursor is currently on.
+    static func activeDisplayID() -> CGDirectDisplayID {
+        let screen = activeScreen()
+        return screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? CGDirectDisplayID
+            ?? CGMainDisplayID()
+    }
 }

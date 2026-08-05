@@ -1,0 +1,39 @@
+included:
+  - Notinhas
+  - NotinhasTests
+excluded:
+  - Pods
+  - .build
+  - build
+  - DerivedData
+  - Generated
+opt_in_rules: []
+disabled_rules:
+  - closure_parameter_position
+  - empty_enum_arguments
+  - for_where
+  - force_cast
+  - cyclomatic_complexity
+  - file_length
+  - function_body_length
+  - function_parameter_count
+  - implicit_optional_initialization
+  - identifier_name
+  - is_disjoint
+  - large_tuple
+  - line_length
+  - multiple_closures_with_trailing_closure
+  - no_space_in_method_call
+  - non_optional_string_data_conversion
+  - notification_center_detachment
+  - nesting
+  - static_over_final_class
+  - trailing_comma
+  - type_body_length
+  - type_name
+  - unused_enumerated
+  - unused_optional_binding
+  - void_function_in_ternary
+  - legacy_constant
+warning_threshold: 1
+strict: true

@@ -8,22 +8,22 @@
 import Combine
 
 enum PreferencesTab: Hashable {
-  case general
-  case capture
-  case annotate
-  case quickAccess
-  case history
-  case shortcuts
-  case permissions
-  case cloud
-  case advanced
+    case general
+    case capture
+    case annotate
+    case quickAccess
+    case history
+    case shortcuts
+    case permissions
+    case cloud
+    case advanced
 }
 
 @MainActor
 final class PreferencesNavigationState: ObservableObject {
-  static let shared = PreferencesNavigationState()
+    static let shared = PreferencesNavigationState()
 
-  @Published var selectedTab: PreferencesTab = .general
+    @Published var selectedTab: PreferencesTab = .general
 
-  private init() {}
+    private init() {}
 }

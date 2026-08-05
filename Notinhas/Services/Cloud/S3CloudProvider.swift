@@ -12,448 +12,457 @@ private let logger = Logger(subsystem: "Notinhas", category: "S3CloudProvider")
 
 /// AWS S3 cloud storage provider
 final class S3CloudProvider: CloudProvider {
-  let providerType: CloudProviderType = .awsS3
+    let providerType: CloudProviderType = .awsS3
 
-  private let accessKey: String
-  private let secretKey: String
-  private let bucket: String
-  private let region: String
-  private let endpoint: URL
-  private let customDomain: String?
-  private let session: URLSessionProtocol
-  private let multipartUploader: S3MultipartUploader
+    private let accessKey: String
+    private let secretKey: String
+    private let bucket: String
+    private let region: String
+    private let endpoint: URL
+    private let customDomain: String?
+    private let session: URLSessionProtocol
+    private let multipartUploader: S3MultipartUploader
 
-  init(
-    config: CloudConfiguration,
-    accessKey: String,
-    secretKey: String,
-    session: URLSessionProtocol = URLSession.shared
-  ) {
-    self.session = session
-    self.accessKey = accessKey
-    self.secretKey = secretKey
-    bucket = config.bucket
-    region = config.region.isEmpty ? "us-east-1" : config.region
-    customDomain = config.customDomain
+    init(
+        config: CloudConfiguration,
+        accessKey: String,
+        secretKey: String,
+        session: URLSessionProtocol = URLSession.shared,
+    ) {
+        self.session = session
+        self.accessKey = accessKey
+        self.secretKey = secretKey
+        bucket = config.bucket
+        region = config.region.isEmpty ? "us-east-1" : config.region
+        customDomain = config.customDomain
 
-    if let endpointStr = config.endpoint, !endpointStr.isEmpty {
-      endpoint = URL(string: endpointStr)!
-    } else {
-      // Default S3 endpoint (path-style)
-      endpoint = URL(string: "https://s3.\(region).amazonaws.com")!
+        if let endpointStr = config.endpoint, !endpointStr.isEmpty {
+            endpoint = URL(string: endpointStr)!
+        } else {
+            // Default S3 endpoint (path-style)
+            endpoint = URL(string: "https://s3.\(region).amazonaws.com")!
+        }
+
+        multipartUploader = S3MultipartUploader(
+            accessKey: accessKey,
+            secretKey: secretKey,
+            region: region,
+            endpoint: endpoint,
+            bucket: bucket,
+            session: session,
+        )
     }
 
-    multipartUploader = S3MultipartUploader(
-      accessKey: accessKey,
-      secretKey: secretKey,
-      region: region,
-      endpoint: endpoint,
-      bucket: bucket,
-      session: session
-    )
-  }
+    // MARK: - Upload
 
-  // MARK: - Upload
+    func upload(
+        fileURL: URL,
+        contentType: String,
+        expireTime: CloudExpireTime,
+        existingKey: String? = nil,
+        progress: @escaping @Sendable (Double) -> Void,
+    ) async throws -> CloudUploadResult {
+        guard FileManager.default.fileExists(atPath: fileURL.path) else {
+            throw CloudError.fileNotFound(fileURL)
+        }
 
-  func upload(
-    fileURL: URL,
-    contentType: String,
-    expireTime: CloudExpireTime,
-    existingKey: String? = nil,
-    progress: @escaping @Sendable (Double) -> Void
-  ) async throws -> CloudUploadResult {
-    guard FileManager.default.fileExists(atPath: fileURL.path) else {
-      throw CloudError.fileNotFound(fileURL)
+        let fileAttributes = try? FileManager.default.attributesOfItem(atPath: fileURL.path)
+        let fileSize = fileAttributes?[.size] as? Int64 ?? 0
+        let key = existingKey ?? generateObjectKey(fileName: fileURL.lastPathComponent)
+
+        // Route to multipart uploader if file size exceeds threshold
+        if fileSize > S3MultipartUploader.multipartThreshold {
+            return try await multipartUploader.upload(
+                fileURL: fileURL,
+                key: key,
+                contentType: contentType,
+                expireTime: expireTime,
+                progress: progress,
+            )
+        }
+
+        let fileData = try Data(contentsOf: fileURL)
+
+        // Build PUT request
+        let objectURL = buildObjectURL(key: key)
+        var request = URLRequest(url: objectURL)
+        request.httpMethod = "PUT"
+        request.setValue(contentType, forHTTPHeaderField: "Content-Type")
+        request.setValue("\(fileSize)", forHTTPHeaderField: "Content-Length")
+
+        // Set cache-control based on expire time for CDN-aware caching
+        if let seconds = expireTime.seconds {
+            request.setValue("public, max-age=\(seconds)", forHTTPHeaderField: "Cache-Control")
+        }
+
+        // Compute payload hash
+        let payloadHash = AWSV4Signer.sha256Hex(fileData)
+
+        // Sign the request
+        let signedRequest = try AWSV4Signer.sign(
+            request: request,
+            accessKey: accessKey,
+            secretKey: secretKey,
+            region: region,
+            payloadHash: payloadHash,
+        )
+
+        // Upload with progress tracking
+        let result = try await uploadWithProgress(
+            request: signedRequest,
+            data: fileData,
+            progress: progress,
+        )
+
+        guard let httpResponse = result.response as? HTTPURLResponse else {
+            throw CloudError.invalidResponse
+        }
+
+        guard (200 ... 299).contains(httpResponse.statusCode) else {
+            let body = String(data: result.data, encoding: .utf8) ?? "No response body"
+            logger.error("S3 upload failed: HTTP \(httpResponse.statusCode) — \(body)")
+            throw CloudError.uploadFailed(statusCode: httpResponse.statusCode, message: body)
+        }
+
+        let publicURL = generatePublicURL(for: key)
+        logger.info("S3 upload succeeded: \(key) → \(publicURL.absoluteString)")
+
+        return CloudUploadResult(
+            publicURL: publicURL,
+            key: key,
+            fileSize: fileSize,
+            uploadedAt: Date(),
+        )
     }
 
-    let fileAttributes = try? FileManager.default.attributesOfItem(atPath: fileURL.path)
-    let fileSize = fileAttributes?[.size] as? Int64 ?? 0
-    let key = existingKey ?? generateObjectKey(fileName: fileURL.lastPathComponent)
+    // MARK: - Public URL
 
-    // Route to multipart uploader if file size exceeds threshold
-    if fileSize > S3MultipartUploader.multipartThreshold {
-      return try await multipartUploader.upload(
-        fileURL: fileURL,
-        key: key,
-        contentType: contentType,
-        expireTime: expireTime,
-        progress: progress
-      )
+    func generatePublicURL(for key: String) -> URL {
+        if let domain = customDomain, !domain.isEmpty {
+            let scheme = domain.hasPrefix("http") ? "" : "https://"
+            return URL(string: "\(scheme)\(domain)/\(key)")!
+        }
+        // Default: presigned URL or path-style
+        return buildObjectURL(key: key)
     }
 
-    let fileData = try Data(contentsOf: fileURL)
+    // MARK: - Validate
 
-    // Build PUT request
-    let objectURL = buildObjectURL(key: key)
-    var request = URLRequest(url: objectURL)
-    request.httpMethod = "PUT"
-    request.setValue(contentType, forHTTPHeaderField: "Content-Type")
-    request.setValue("\(fileSize)", forHTTPHeaderField: "Content-Length")
+    func validate() async throws {
+        // HEAD bucket to verify credentials
+        let url = URL(string: "\(endpoint.absoluteString)/\(bucket)")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "HEAD"
 
-    // Set cache-control based on expire time for CDN-aware caching
-    if let seconds = expireTime.seconds {
-      request.setValue("public, max-age=\(seconds)", forHTTPHeaderField: "Cache-Control")
+        let signedRequest = try AWSV4Signer.sign(
+            request: request,
+            accessKey: accessKey,
+            secretKey: secretKey,
+            region: region,
+            payloadHash: AWSV4Signer.sha256Hex(""),
+        )
+
+        let (_, response) = try await session.data(for: signedRequest)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw CloudError.invalidResponse
+        }
+
+        if httpResponse.statusCode == 403 {
+            throw CloudError.invalidCredentials
+        }
+
+        guard (200 ... 404).contains(httpResponse.statusCode) else {
+            throw CloudError.uploadFailed(
+                statusCode: httpResponse.statusCode,
+                message: L10n.CloudOperation.bucketValidationFailed,
+            )
+        }
+
+        logger.info("S3 credentials validated successfully")
     }
 
-    // Compute payload hash
-    let payloadHash = AWSV4Signer.sha256Hex(fileData)
+    // MARK: - Delete
 
-    // Sign the request
-    let signedRequest = try AWSV4Signer.sign(
-      request: request,
-      accessKey: accessKey,
-      secretKey: secretKey,
-      region: region,
-      payloadHash: payloadHash
-    )
+    func delete(key: String) async throws {
+        let objectURL = buildObjectURL(key: key)
+        var request = URLRequest(url: objectURL)
+        request.httpMethod = "DELETE"
 
-    // Upload with progress tracking
-    let result = try await uploadWithProgress(
-      request: signedRequest,
-      data: fileData,
-      progress: progress
-    )
+        let signedRequest = try AWSV4Signer.sign(
+            request: request,
+            accessKey: accessKey,
+            secretKey: secretKey,
+            region: region,
+            payloadHash: AWSV4Signer.sha256Hex(""),
+        )
 
-    guard let httpResponse = result.response as? HTTPURLResponse else {
-      throw CloudError.invalidResponse
+        let (data, response) = try await session.data(for: signedRequest)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw CloudError.invalidResponse
+        }
+
+        // S3 returns 204 on successful delete. 404 is also OK (already deleted / expired).
+        guard (200 ... 299).contains(httpResponse.statusCode) || httpResponse.statusCode == 404 else {
+            let body = String(data: data, encoding: .utf8) ?? "No response body"
+            logger.error("S3 delete failed: HTTP \(httpResponse.statusCode) — \(body)")
+            throw CloudError.uploadFailed(
+                statusCode: httpResponse.statusCode,
+                message: L10n.CloudOperation.deleteFailed(body),
+            )
+        }
+
+        logger.info("S3 delete succeeded: \(key)")
     }
 
-    guard (200 ... 299).contains(httpResponse.statusCode) else {
-      let body = String(data: result.data, encoding: .utf8) ?? "No response body"
-      logger.error("S3 upload failed: HTTP \(httpResponse.statusCode) — \(body)")
-      throw CloudError.uploadFailed(statusCode: httpResponse.statusCode, message: body)
+    // MARK: - Lifecycle Rules
+
+    /// Notinhas lifecycle rule identifier
+    private static let lifecycleRuleID = "snapzy-auto-expire"
+    /// Prefix all Notinhas objects share
+    private static let objectPrefix = "snapzy/"
+
+    func setExpiration(days: Int) async throws {
+        // 1. Get existing rules (excluding our old rule)
+        var existingRules = try await getLifecycleRulesXML()
+        existingRules.removeAll { $0.contains("<ID>\(Self.lifecycleRuleID)</ID>") }
+
+        // 2. Build new Notinhas rule (compact XML — R2 is strict about whitespace)
+        let snapzyRule = "<Rule><ID>\(Self.lifecycleRuleID)</ID><Filter><Prefix>\(Self.objectPrefix)</Prefix></Filter><Status>Enabled</Status><Expiration><Days>\(days)</Days></Expiration></Rule>"
+        existingRules.append(snapzyRule)
+
+        // 3. PUT merged config
+        try await putLifecycleConfiguration(rules: existingRules)
+        logger.info("Lifecycle rule set: expire snapzy/ objects after \(days) days")
     }
 
-    let publicURL = generatePublicURL(for: key)
-    logger.info("S3 upload succeeded: \(key) → \(publicURL.absoluteString)")
+    func removeExpiration() async throws {
+        var existingRules = try await getLifecycleRulesXML()
+        let before = existingRules.count
+        existingRules.removeAll { $0.contains("<ID>\(Self.lifecycleRuleID)</ID>") }
 
-    return CloudUploadResult(
-      publicURL: publicURL,
-      key: key,
-      fileSize: fileSize,
-      uploadedAt: Date()
-    )
-  }
-
-  // MARK: - Public URL
-
-  func generatePublicURL(for key: String) -> URL {
-    if let domain = customDomain, !domain.isEmpty {
-      let scheme = domain.hasPrefix("http") ? "" : "https://"
-      return URL(string: "\(scheme)\(domain)/\(key)")!
-    }
-    // Default: presigned URL or path-style
-    return buildObjectURL(key: key)
-  }
-
-  // MARK: - Validate
-
-  func validate() async throws {
-    // HEAD bucket to verify credentials
-    let url = URL(string: "\(endpoint.absoluteString)/\(bucket)")!
-    var request = URLRequest(url: url)
-    request.httpMethod = "HEAD"
-
-    let signedRequest = try AWSV4Signer.sign(
-      request: request,
-      accessKey: accessKey,
-      secretKey: secretKey,
-      region: region,
-      payloadHash: AWSV4Signer.sha256Hex("")
-    )
-
-    let (_, response) = try await session.data(for: signedRequest)
-
-    guard let httpResponse = response as? HTTPURLResponse else {
-      throw CloudError.invalidResponse
+        if existingRules.isEmpty {
+            // Delete entire lifecycle config if no rules remain
+            try await deleteLifecycleConfiguration()
+        } else if existingRules.count < before {
+            try await putLifecycleConfiguration(rules: existingRules)
+        }
+        logger.info("Lifecycle rule removed for snapzy/ prefix")
     }
 
-    if httpResponse.statusCode == 403 {
-      throw CloudError.invalidCredentials
+    // MARK: - Lifecycle Helpers
+
+    /// Fetch existing lifecycle rules as raw XML strings (one per <Rule>)
+    private func getLifecycleRulesXML() async throws -> [String] {
+        let url = URL(string: "\(endpoint.absoluteString)/\(bucket)?lifecycle")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        let signedRequest = try AWSV4Signer.sign(
+            request: request,
+            accessKey: accessKey,
+            secretKey: secretKey,
+            region: region,
+            payloadHash: AWSV4Signer.sha256Hex(""),
+        )
+
+        let (data, response) = try await session.data(for: signedRequest)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw CloudError.invalidResponse
+        }
+
+        // 404 = no lifecycle config exists yet
+        if httpResponse.statusCode == 404 {
+            return []
+        }
+
+        guard (200 ... 299).contains(httpResponse.statusCode) else {
+            let body = String(data: data, encoding: .utf8) ?? ""
+            if httpResponse.statusCode == 403 {
+                logger
+                    .warning(
+                        "GET lifecycle denied (HTTP 403) — credentials lack lifecycle permissions; treating as empty",
+                    )
+                return []
+            }
+            logger.error("GET lifecycle failed: HTTP \(httpResponse.statusCode) — \(body)")
+            throw CloudError.uploadFailed(
+                statusCode: httpResponse.statusCode,
+                message: L10n.CloudOperation.getLifecycleConfigFailed(body),
+            )
+        }
+
+        // Parse XML to extract individual <Rule>...</Rule> blocks
+        return LifecycleXMLParser.parseRules(from: data)
     }
 
-    guard (200 ... 404).contains(httpResponse.statusCode) else {
-      throw CloudError.uploadFailed(
-        statusCode: httpResponse.statusCode,
-        message: L10n.CloudOperation.bucketValidationFailed
-      )
+    /// PUT a lifecycle configuration with the given rules
+    private func putLifecycleConfiguration(rules: [String]) async throws {
+        let rulesXML = rules.joined()
+        let xmlBody = "<LifecycleConfiguration>\(rulesXML)</LifecycleConfiguration>"
+
+        logger.debug("Lifecycle XML body: \(xmlBody)")
+        let bodyData = xmlBody.data(using: .utf8)!
+        let url = URL(string: "\(endpoint.absoluteString)/\(bucket)?lifecycle")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+        request.setValue("application/xml", forHTTPHeaderField: "Content-Type")
+        request.setValue("\(bodyData.count)", forHTTPHeaderField: "Content-Length")
+
+        // S3 requires Content-MD5 for lifecycle configuration
+        let md5Hash = bodyData.md5Base64()
+        request.setValue(md5Hash, forHTTPHeaderField: "Content-MD5")
+
+        request.httpBody = bodyData
+        let payloadHash = AWSV4Signer.sha256Hex(bodyData)
+        let signedRequest = try AWSV4Signer.sign(
+            request: request,
+            accessKey: accessKey,
+            secretKey: secretKey,
+            region: region,
+            payloadHash: payloadHash,
+        )
+
+        let (data, response) = try await session.data(for: signedRequest)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw CloudError.invalidResponse
+        }
+
+        guard (200 ... 299).contains(httpResponse.statusCode) else {
+            let body = String(data: data, encoding: .utf8) ?? ""
+            if httpResponse.statusCode == 403 {
+                logger
+                    .warning(
+                        "PUT lifecycle denied (HTTP 403) — credentials lack lifecycle permissions; skipping rule update",
+                    )
+                return
+            }
+            logger.error("PUT lifecycle failed: HTTP \(httpResponse.statusCode) — \(body)")
+            throw CloudError.uploadFailed(
+                statusCode: httpResponse.statusCode,
+                message: L10n.CloudOperation.setLifecycleConfigFailed(body),
+            )
+        }
     }
 
-    logger.info("S3 credentials validated successfully")
-  }
+    /// DELETE entire lifecycle configuration from the bucket
+    private func deleteLifecycleConfiguration() async throws {
+        let url = URL(string: "\(endpoint.absoluteString)/\(bucket)?lifecycle")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
 
-  // MARK: - Delete
+        let signedRequest = try AWSV4Signer.sign(
+            request: request,
+            accessKey: accessKey,
+            secretKey: secretKey,
+            region: region,
+            payloadHash: AWSV4Signer.sha256Hex(""),
+        )
 
-  func delete(key: String) async throws {
-    let objectURL = buildObjectURL(key: key)
-    var request = URLRequest(url: objectURL)
-    request.httpMethod = "DELETE"
+        let (data, response) = try await session.data(for: signedRequest)
 
-    let signedRequest = try AWSV4Signer.sign(
-      request: request,
-      accessKey: accessKey,
-      secretKey: secretKey,
-      region: region,
-      payloadHash: AWSV4Signer.sha256Hex("")
-    )
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw CloudError.invalidResponse
+        }
 
-    let (data, response) = try await session.data(for: signedRequest)
-
-    guard let httpResponse = response as? HTTPURLResponse else {
-      throw CloudError.invalidResponse
+        guard (200 ... 299).contains(httpResponse.statusCode) || httpResponse.statusCode == 404 else {
+            let body = String(data: data, encoding: .utf8) ?? ""
+            if httpResponse.statusCode == 403 {
+                logger
+                    .warning(
+                        "DELETE lifecycle denied (HTTP 403) — credentials lack lifecycle permissions; skipping removal",
+                    )
+                return
+            }
+            logger.error("DELETE lifecycle failed: HTTP \(httpResponse.statusCode) — \(body)")
+            throw CloudError.uploadFailed(
+                statusCode: httpResponse.statusCode,
+                message: L10n.CloudOperation.deleteLifecycleConfigFailed(body),
+            )
+        }
     }
 
-    // S3 returns 204 on successful delete. 404 is also OK (already deleted / expired).
-    guard (200 ... 299).contains(httpResponse.statusCode) || httpResponse.statusCode == 404 else {
-      let body = String(data: data, encoding: .utf8) ?? "No response body"
-      logger.error("S3 delete failed: HTTP \(httpResponse.statusCode) — \(body)")
-      throw CloudError.uploadFailed(
-        statusCode: httpResponse.statusCode,
-        message: L10n.CloudOperation.deleteFailed(body)
-      )
+    // MARK: - Helpers
+
+    private func buildObjectURL(key: String) -> URL {
+        // Path-style: https://s3.region.amazonaws.com/bucket/key
+        URL(string: "\(endpoint.absoluteString)/\(bucket)/\(key)")!
     }
 
-    logger.info("S3 delete succeeded: \(key)")
-  }
-
-  // MARK: - Lifecycle Rules
-
-  /// Notinhas lifecycle rule identifier
-  private static let lifecycleRuleID = "snapzy-auto-expire"
-  /// Prefix all Notinhas objects share
-  private static let objectPrefix = "snapzy/"
-
-  func setExpiration(days: Int) async throws {
-    // 1. Get existing rules (excluding our old rule)
-    var existingRules = try await getLifecycleRulesXML()
-    existingRules.removeAll { $0.contains("<ID>\(Self.lifecycleRuleID)</ID>") }
-
-    // 2. Build new Notinhas rule (compact XML — R2 is strict about whitespace)
-    let snapzyRule = "<Rule><ID>\(Self.lifecycleRuleID)</ID><Filter><Prefix>\(Self.objectPrefix)</Prefix></Filter><Status>Enabled</Status><Expiration><Days>\(days)</Days></Expiration></Rule>"
-    existingRules.append(snapzyRule)
-
-    // 3. PUT merged config
-    try await putLifecycleConfiguration(rules: existingRules)
-    logger.info("Lifecycle rule set: expire snapzy/ objects after \(days) days")
-  }
-
-  func removeExpiration() async throws {
-    var existingRules = try await getLifecycleRulesXML()
-    let before = existingRules.count
-    existingRules.removeAll { $0.contains("<ID>\(Self.lifecycleRuleID)</ID>") }
-
-    if existingRules.isEmpty {
-      // Delete entire lifecycle config if no rules remain
-      try await deleteLifecycleConfiguration()
-    } else if existingRules.count < before {
-      try await putLifecycleConfiguration(rules: existingRules)
-    }
-    logger.info("Lifecycle rule removed for snapzy/ prefix")
-  }
-
-  // MARK: - Lifecycle Helpers
-
-  /// Fetch existing lifecycle rules as raw XML strings (one per <Rule>)
-  private func getLifecycleRulesXML() async throws -> [String] {
-    let url = URL(string: "\(endpoint.absoluteString)/\(bucket)?lifecycle")!
-    var request = URLRequest(url: url)
-    request.httpMethod = "GET"
-
-    let signedRequest = try AWSV4Signer.sign(
-      request: request,
-      accessKey: accessKey,
-      secretKey: secretKey,
-      region: region,
-      payloadHash: AWSV4Signer.sha256Hex("")
-    )
-
-    let (data, response) = try await session.data(for: signedRequest)
-
-    guard let httpResponse = response as? HTTPURLResponse else {
-      throw CloudError.invalidResponse
+    private func generateObjectKey(fileName: String) -> String {
+        let timestamp = Int(Date().timeIntervalSince1970)
+        let uuid = UUID().uuidString.prefix(8).lowercased()
+        let ext = (fileName as NSString).pathExtension
+        let name = (fileName as NSString).deletingPathExtension
+            .replacingOccurrences(of: " ", with: "-")
+            .lowercased()
+        return "snapzy/\(timestamp)-\(uuid)-\(name).\(ext)"
     }
 
-    // 404 = no lifecycle config exists yet
-    if httpResponse.statusCode == 404 {
-      return []
+    // MARK: - Upload with Progress
+
+    private func uploadWithProgress(
+        request: URLRequest,
+        data: Data,
+        progress: @escaping @Sendable (Double) -> Void,
+    ) async throws -> (data: Data, response: URLResponse) {
+        try await withCheckedThrowingContinuation { continuation in
+            let delegate = UploadProgressDelegate(progress: progress) { result in
+                continuation.resume(with: result)
+            }
+            let session = URLSession(configuration: .default, delegate: delegate, delegateQueue: nil)
+            let task = session.uploadTask(with: request, from: data)
+            delegate.task = task
+            task.resume()
+        }
     }
-
-    guard (200 ... 299).contains(httpResponse.statusCode) else {
-      let body = String(data: data, encoding: .utf8) ?? ""
-      if httpResponse.statusCode == 403 {
-        logger.warning("GET lifecycle denied (HTTP 403) — credentials lack lifecycle permissions; treating as empty")
-        return []
-      }
-      logger.error("GET lifecycle failed: HTTP \(httpResponse.statusCode) — \(body)")
-      throw CloudError.uploadFailed(
-        statusCode: httpResponse.statusCode,
-        message: L10n.CloudOperation.getLifecycleConfigFailed(body)
-      )
-    }
-
-    // Parse XML to extract individual <Rule>...</Rule> blocks
-    return LifecycleXMLParser.parseRules(from: data)
-  }
-
-  /// PUT a lifecycle configuration with the given rules
-  private func putLifecycleConfiguration(rules: [String]) async throws {
-    let rulesXML = rules.joined()
-    let xmlBody = "<LifecycleConfiguration>\(rulesXML)</LifecycleConfiguration>"
-
-    logger.debug("Lifecycle XML body: \(xmlBody)")
-    let bodyData = xmlBody.data(using: .utf8)!
-    let url = URL(string: "\(endpoint.absoluteString)/\(bucket)?lifecycle")!
-    var request = URLRequest(url: url)
-    request.httpMethod = "PUT"
-    request.setValue("application/xml", forHTTPHeaderField: "Content-Type")
-    request.setValue("\(bodyData.count)", forHTTPHeaderField: "Content-Length")
-
-    // S3 requires Content-MD5 for lifecycle configuration
-    let md5Hash = bodyData.md5Base64()
-    request.setValue(md5Hash, forHTTPHeaderField: "Content-MD5")
-
-    request.httpBody = bodyData
-    let payloadHash = AWSV4Signer.sha256Hex(bodyData)
-    let signedRequest = try AWSV4Signer.sign(
-      request: request,
-      accessKey: accessKey,
-      secretKey: secretKey,
-      region: region,
-      payloadHash: payloadHash
-    )
-
-    let (data, response) = try await session.data(for: signedRequest)
-
-    guard let httpResponse = response as? HTTPURLResponse else {
-      throw CloudError.invalidResponse
-    }
-
-    guard (200 ... 299).contains(httpResponse.statusCode) else {
-      let body = String(data: data, encoding: .utf8) ?? ""
-      if httpResponse.statusCode == 403 {
-        logger.warning("PUT lifecycle denied (HTTP 403) — credentials lack lifecycle permissions; skipping rule update")
-        return
-      }
-      logger.error("PUT lifecycle failed: HTTP \(httpResponse.statusCode) — \(body)")
-      throw CloudError.uploadFailed(
-        statusCode: httpResponse.statusCode,
-        message: L10n.CloudOperation.setLifecycleConfigFailed(body)
-      )
-    }
-  }
-
-  /// DELETE entire lifecycle configuration from the bucket
-  private func deleteLifecycleConfiguration() async throws {
-    let url = URL(string: "\(endpoint.absoluteString)/\(bucket)?lifecycle")!
-    var request = URLRequest(url: url)
-    request.httpMethod = "DELETE"
-
-    let signedRequest = try AWSV4Signer.sign(
-      request: request,
-      accessKey: accessKey,
-      secretKey: secretKey,
-      region: region,
-      payloadHash: AWSV4Signer.sha256Hex("")
-    )
-
-    let (data, response) = try await session.data(for: signedRequest)
-
-    guard let httpResponse = response as? HTTPURLResponse else {
-      throw CloudError.invalidResponse
-    }
-
-    guard (200 ... 299).contains(httpResponse.statusCode) || httpResponse.statusCode == 404 else {
-      let body = String(data: data, encoding: .utf8) ?? ""
-      if httpResponse.statusCode == 403 {
-        logger.warning("DELETE lifecycle denied (HTTP 403) — credentials lack lifecycle permissions; skipping removal")
-        return
-      }
-      logger.error("DELETE lifecycle failed: HTTP \(httpResponse.statusCode) — \(body)")
-      throw CloudError.uploadFailed(
-        statusCode: httpResponse.statusCode,
-        message: L10n.CloudOperation.deleteLifecycleConfigFailed(body)
-      )
-    }
-  }
-
-  // MARK: - Helpers
-
-  private func buildObjectURL(key: String) -> URL {
-    // Path-style: https://s3.region.amazonaws.com/bucket/key
-    URL(string: "\(endpoint.absoluteString)/\(bucket)/\(key)")!
-  }
-
-  private func generateObjectKey(fileName: String) -> String {
-    let timestamp = Int(Date().timeIntervalSince1970)
-    let uuid = UUID().uuidString.prefix(8).lowercased()
-    let ext = (fileName as NSString).pathExtension
-    let name = (fileName as NSString).deletingPathExtension
-      .replacingOccurrences(of: " ", with: "-")
-      .lowercased()
-    return "snapzy/\(timestamp)-\(uuid)-\(name).\(ext)"
-  }
-
-  // MARK: - Upload with Progress
-
-  private func uploadWithProgress(
-    request: URLRequest,
-    data: Data,
-    progress: @escaping @Sendable (Double) -> Void
-  ) async throws -> (data: Data, response: URLResponse) {
-    try await withCheckedThrowingContinuation { continuation in
-      let delegate = UploadProgressDelegate(progress: progress) { result in
-        continuation.resume(with: result)
-      }
-      let session = URLSession(configuration: .default, delegate: delegate, delegateQueue: nil)
-      let task = session.uploadTask(with: request, from: data)
-      delegate.task = task
-      task.resume()
-    }
-  }
 }
 
 // MARK: - Upload Progress Delegate
 
 private final class UploadProgressDelegate: NSObject, URLSessionTaskDelegate,
-  URLSessionDataDelegate, @unchecked Sendable {
-  private let progressHandler: @Sendable (Double) -> Void
-  private let completion: (Result<(data: Data, response: URLResponse), Error>) -> Void
-  private var responseData = Data()
-  weak var task: URLSessionUploadTask?
+    URLSessionDataDelegate, @unchecked Sendable {
+    private let progressHandler: @Sendable (Double) -> Void
+    private let completion: (Result<(data: Data, response: URLResponse), Error>) -> Void
+    private var responseData = Data()
+    weak var task: URLSessionUploadTask?
 
-  init(
-    progress: @escaping @Sendable (Double) -> Void,
-    completion: @escaping (Result<(data: Data, response: URLResponse), Error>) -> Void
-  ) {
-    progressHandler = progress
-    self.completion = completion
-    super.init()
-  }
-
-  func urlSession(
-    _: URLSession,
-    task _: URLSessionTask,
-    didSendBodyData _: Int64,
-    totalBytesSent: Int64,
-    totalBytesExpectedToSend: Int64
-  ) {
-    guard totalBytesExpectedToSend > 0 else { return }
-    let progress = Double(totalBytesSent) / Double(totalBytesExpectedToSend)
-    progressHandler(min(progress, 1.0))
-  }
-
-  func urlSession(_: URLSession, dataTask _: URLSessionDataTask, didReceive data: Data) {
-    responseData.append(data)
-  }
-
-  func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-    if let error {
-      completion(.failure(CloudError.networkError(error)))
-    } else if let response = task.response {
-      completion(.success((data: responseData, response: response)))
-    } else {
-      completion(.failure(CloudError.invalidResponse))
+    init(
+        progress: @escaping @Sendable (Double) -> Void,
+        completion: @escaping (Result<(data: Data, response: URLResponse), Error>) -> Void,
+    ) {
+        progressHandler = progress
+        self.completion = completion
+        super.init()
     }
-    session.invalidateAndCancel()
-  }
+
+    func urlSession(
+        _: URLSession,
+        task _: URLSessionTask,
+        didSendBodyData _: Int64,
+        totalBytesSent: Int64,
+        totalBytesExpectedToSend: Int64,
+    ) {
+        guard totalBytesExpectedToSend > 0 else { return }
+        let progress = Double(totalBytesSent) / Double(totalBytesExpectedToSend)
+        progressHandler(min(progress, 1.0))
+    }
+
+    func urlSession(_: URLSession, dataTask _: URLSessionDataTask, didReceive data: Data) {
+        responseData.append(data)
+    }
+
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        if let error {
+            completion(.failure(CloudError.networkError(error)))
+        } else if let response = task.response {
+            completion(.success((data: responseData, response: response)))
+        } else {
+            completion(.failure(CloudError.invalidResponse))
+        }
+        session.invalidateAndCancel()
+    }
 }

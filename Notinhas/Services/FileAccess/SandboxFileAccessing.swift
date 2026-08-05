@@ -8,8 +8,8 @@
 import Foundation
 
 protocol SandboxFileAccessing {
-  func resolvedExportDirectoryURL() -> URL
-  func beginAccessingURL(_ targetURL: URL) -> SandboxFileAccessManager.ScopedAccess
+    func resolvedExportDirectoryURL() -> URL
+    func beginAccessingURL(_ targetURL: URL) -> SandboxFileAccessManager.ScopedAccess
 }
 
 extension SandboxFileAccessManager: SandboxFileAccessing {}

@@ -99,4 +99,13 @@ docs/**	docs		no	Documentation routing review
 .agents/overlays/**	docs		no	Overlay routing review
 AGENTS.md	docs		no	Repository guidance review
 plans/**	docs		no	Plan metadata review
+.github/**	ci		no	CI workflow validation is part of the delivery baseline
+.swiftformat	format		no	SwiftFormat policy validation is part of the delivery baseline
+.swiftlint.yml	lint		no	SwiftLint policy validation is part of the delivery baseline
+Makefile	tooling		no	Canonical project command validation is part of the delivery baseline
+Notinhas.xcodeproj/**	build		no	Owned Xcode configuration validation is part of the delivery baseline
+NotinhasTests/Features/Recording/**	video-module		yes	Recording tests require the Video configuration and manual AV permission smoke
+NotinhasTests/Features/VideoEditor/**	video-module		yes	Video Editor tests require the Video configuration and manual export smoke
+NotinhasTests/Services/Capture/**	xctest		yes	Capture tests may need manual Screen Recording and Accessibility smoke
+NotinhasTests/**	xctest		no	Default XCTest suite covers owned test-source changes
 Notinhas/**	manual-required		required	No mapped XCTest selector for this application path

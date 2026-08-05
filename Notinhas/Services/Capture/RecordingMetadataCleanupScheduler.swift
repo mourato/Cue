@@ -1,56 +1,56 @@
 #if NOTINHAS_VIDEO_MODULE
 //
-//  RecordingMetadataCleanupScheduler.swift
-//  Notinhas
+    //  RecordingMetadataCleanupScheduler.swift
+    //  Notinhas
 //
-//  Periodically prunes orphaned recording metadata entries.
+    //  Periodically prunes orphaned recording metadata entries.
 //
 
-  import Foundation
-  import os.log
+    import Foundation
+    import os.log
 
-  private let recordingMetadataCleanupLogger = Logger(
-    subsystem: "Notinhas",
-    category: "RecordingMetadataCleanup"
-  )
+    private let recordingMetadataCleanupLogger = Logger(
+        subsystem: "Notinhas",
+        category: "RecordingMetadataCleanup",
+    )
 
-  @MainActor
-  final class RecordingMetadataCleanupScheduler {
-    static let shared = RecordingMetadataCleanupScheduler()
+    @MainActor
+    final class RecordingMetadataCleanupScheduler {
+        static let shared = RecordingMetadataCleanupScheduler()
 
-    private let cleanupInterval: TimeInterval = 30 * 60 // 30 minutes
-    private var timer: Timer?
+        private let cleanupInterval: TimeInterval = 30 * 60 // 30 minutes
+        private var timer: Timer?
 
-    private init() {}
+        private init() {}
 
-    func start() {
-      performCleanup()
+        func start() {
+            performCleanup()
 
-      timer?.invalidate()
-      timer = Timer.scheduledTimer(withTimeInterval: cleanupInterval, repeats: true) { _ in
-        Task { @MainActor in
-          RecordingMetadataCleanupScheduler.shared.performCleanup()
+            timer?.invalidate()
+            timer = Timer.scheduledTimer(withTimeInterval: cleanupInterval, repeats: true) { _ in
+                Task { @MainActor in
+                    RecordingMetadataCleanupScheduler.shared.performCleanup()
+                }
+            }
         }
-      }
-    }
 
-    func stop() {
-      timer?.invalidate()
-      timer = nil
-    }
-
-    private func performCleanup() {
-      DispatchQueue.global(qos: .utility).async {
-        Task { @MainActor in
-          do {
-            try RecordingMetadataStore.performOrphanCleanup()
-          } catch {
-            recordingMetadataCleanupLogger.error(
-              "Failed to prune orphaned recording metadata: \(error.localizedDescription, privacy: .public)"
-            )
-          }
+        func stop() {
+            timer?.invalidate()
+            timer = nil
         }
-      }
+
+        private func performCleanup() {
+            DispatchQueue.global(qos: .utility).async {
+                Task { @MainActor in
+                    do {
+                        try RecordingMetadataStore.performOrphanCleanup()
+                    } catch {
+                        recordingMetadataCleanupLogger.error(
+                            "Failed to prune orphaned recording metadata: \(error.localizedDescription, privacy: .public)",
+                        )
+                    }
+                }
+            }
+        }
     }
-  }
 #endif

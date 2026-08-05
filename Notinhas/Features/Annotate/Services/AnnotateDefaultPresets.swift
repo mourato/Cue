@@ -9,20 +9,20 @@ import Foundation
 
 /// Container for default mockup presets
 enum DefaultPresets {
-  /// All built-in presets
-  static let all: [MockupPreset] = [
-    .flat,
-    .leftTilt,
-    .rightTilt,
-    .topView,
-    .isometricLeft,
-    .isometricRight,
-    .heroShot,
-    .dramatic,
-  ]
+    /// All built-in presets
+    static let all: [MockupPreset] = [
+        .flat,
+        .leftTilt,
+        .rightTilt,
+        .topView,
+        .isometricLeft,
+        .isometricRight,
+        .heroShot,
+        .dramatic,
+    ]
 
-  /// Get preset by name
-  static func preset(named name: String) -> MockupPreset? {
-    all.first { $0.name == name }
-  }
+    /// Get preset by name
+    static func preset(named name: String) -> MockupPreset? {
+        all.first { $0.name == name }
+    }
 }

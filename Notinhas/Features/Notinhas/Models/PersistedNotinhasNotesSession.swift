@@ -8,9 +8,9 @@
 import Foundation
 
 nonisolated struct PersistedNotinhasNotesSession: Codable, Equatable {
-  var notes: [NotinhasVisualNote]
+    var notes: [NotinhasVisualNote]
 
-  init(notes: [NotinhasVisualNote] = []) {
-    self.notes = notes
-  }
+    init(notes: [NotinhasVisualNote] = []) {
+        self.notes = notes
+    }
 }

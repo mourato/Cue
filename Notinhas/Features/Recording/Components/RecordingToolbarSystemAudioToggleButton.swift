@@ -1,56 +1,56 @@
 #if NOTINHAS_VIDEO_MODULE
 //
-//  ToolbarSystemAudioToggleButton.swift
-//  Notinhas
+    //  ToolbarSystemAudioToggleButton.swift
+    //  Notinhas
 //
-//  System audio quick toggle for the recording toolbar
-//  Styled to match Apple's native macOS recording toolbar
+    //  System audio quick toggle for the recording toolbar
+    //  Styled to match Apple's native macOS recording toolbar
 //
 
-  import SwiftUI
+    import SwiftUI
 
-  struct ToolbarSystemAudioToggleButton: View {
-    @ObservedObject var state: RecordingToolbarState
-    @State private var isHovered = false
+    struct ToolbarSystemAudioToggleButton: View {
+        @ObservedObject var state: RecordingToolbarState
+        @State private var isHovered = false
 
-    private let speakerIconSize = ToolbarConstants.iconSize - 1
+        private let speakerIconSize = ToolbarConstants.iconSize - 1
 
-    private var systemName: String {
-      state.captureAudio ? "speaker.wave.2.fill" : "speaker.slash.fill"
+        private var systemName: String {
+            state.captureAudio ? "speaker.wave.2.fill" : "speaker.slash.fill"
+        }
+
+        private var statusText: String {
+            state.captureAudio ? L10n.Common.on : L10n.Common.off
+        }
+
+        private var helpText: String {
+            "\(L10n.RecordingToolbar.systemAudio): \(statusText)"
+        }
+
+        var body: some View {
+            Button {
+                state.captureAudio.toggle()
+            } label: {
+                ToolbarIconButtonLabel(
+                    systemName: systemName,
+                    iconSize: speakerIconSize,
+                    isHovered: isHovered,
+                )
+            }
+            .buttonStyle(.plain)
+            .onHover { isHovered = $0 }
+            .help(helpText)
+            .accessibilityLabel(L10n.RecordingToolbar.systemAudio)
+            .accessibilityValue(statusText)
+        }
     }
 
-    private var statusText: String {
-      state.captureAudio ? L10n.Common.on : L10n.Common.off
+    #Preview {
+        HStack(spacing: 4) {
+            ToolbarSystemAudioToggleButton(state: RecordingToolbarState())
+        }
+        .padding(10)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 14))
     }
-
-    private var helpText: String {
-      "\(L10n.RecordingToolbar.systemAudio): \(statusText)"
-    }
-
-    var body: some View {
-      Button {
-        state.captureAudio.toggle()
-      } label: {
-        ToolbarIconButtonLabel(
-          systemName: systemName,
-          iconSize: speakerIconSize,
-          isHovered: isHovered
-        )
-      }
-      .buttonStyle(.plain)
-      .onHover { isHovered = $0 }
-      .help(helpText)
-      .accessibilityLabel(L10n.RecordingToolbar.systemAudio)
-      .accessibilityValue(statusText)
-    }
-  }
-
-  #Preview {
-    HStack(spacing: 4) {
-      ToolbarSystemAudioToggleButton(state: RecordingToolbarState())
-    }
-    .padding(10)
-    .background(.ultraThinMaterial)
-    .clipShape(RoundedRectangle(cornerRadius: 14))
-  }
 #endif

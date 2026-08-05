@@ -16,11 +16,11 @@ import Foundation
 /// Public surface of `SmartElementQueryService` consumed by the controller.
 /// Existing `SmartElementQueryService` already matches this shape.
 protocol SmartElementQueryProviding: AnyObject {
-  var elementDetectedPublisher: AnyPublisher<CGRect?, Never> { get }
-  func updateMouseLocation(pid: Int32?)
-  func cancelPendingQueries()
-  @discardableResult
-  func ensureAccessibilityPermission() -> Bool
+    var elementDetectedPublisher: AnyPublisher<CGRect?, Never> { get }
+    func updateMouseLocation(pid: Int32?)
+    func cancelPendingQueries()
+    @discardableResult
+    func ensureAccessibilityPermission() -> Bool
 }
 
 extension SmartElementQueryService: SmartElementQueryProviding {}
@@ -29,13 +29,13 @@ extension SmartElementQueryService: SmartElementQueryProviding {}
 
 /// Identifies the topmost on-screen non-Notinhas window at a screen point.
 struct SmartElementWindowOwner: Equatable {
-  let pid: Int32
-  let windowID: CGWindowID
-  let bundleIdentifier: String?
+    let pid: Int32
+    let windowID: CGWindowID
+    let bundleIdentifier: String?
 }
 
 protocol SmartElementWindowOwnerResolving: AnyObject {
-  func resolveOwner(at point: CGPoint) -> SmartElementWindowOwner?
+    func resolveOwner(at point: CGPoint) -> SmartElementWindowOwner?
 }
 
 // MARK: - Capture Sink
@@ -45,34 +45,34 @@ protocol SmartElementWindowOwnerResolving: AnyObject {
 /// the controller hands off the right rect without writing a real file.
 @MainActor
 protocol SmartElementCapturePerforming: AnyObject {
-  func captureRect(_ rect: CGRect) async
+    func captureRect(_ rect: CGRect) async
 }
 
 // MARK: - Overlay Window
 
 @MainActor
 protocol SmartElementOverlayWindowProviding: AnyObject {
-  var displayID: CGDirectDisplayID? { get }
-  var frame: CGRect { get }
-  var currentHighlightRect: CGRect? { get }
-  var eventDelegate: SmartElementOverlayWindowDelegate? { get set }
-  func setFrame(_ frameRect: NSRect, display flag: Bool)
-  func orderFrontRegardless()
-  func orderOut(_ sender: Any?)
-  func close()
-  func makeKey()
-  func makeFirstResponder(_ responder: NSResponder?) -> Bool
-  func updateBounds(_ screenFrame: CGRect)
-  func updateHighlight(_ rect: CGRect?)
+    var displayID: CGDirectDisplayID? { get }
+    var frame: CGRect { get }
+    var currentHighlightRect: CGRect? { get }
+    var eventDelegate: SmartElementOverlayWindowDelegate? { get set }
+    func setFrame(_ frameRect: NSRect, display flag: Bool)
+    func orderFrontRegardless()
+    func orderOut(_ sender: Any?)
+    func close()
+    func makeKey()
+    func makeFirstResponder(_ responder: NSResponder?) -> Bool
+    func updateBounds(_ screenFrame: CGRect)
+    func updateHighlight(_ rect: CGRect?)
 }
 
 @MainActor
 protocol SmartElementOverlayWindowDelegate: AnyObject {
-  func smartElementOverlayWindow(_ window: SmartElementOverlayWindowProviding, mouseMovedAt point: CGPoint)
-  func smartElementOverlayWindow(_ window: SmartElementOverlayWindowProviding, mouseDownAt point: CGPoint)
-  func smartElementOverlayWindowDidCancel(_ window: SmartElementOverlayWindowProviding)
+    func smartElementOverlayWindow(_ window: SmartElementOverlayWindowProviding, mouseMovedAt point: CGPoint)
+    func smartElementOverlayWindow(_ window: SmartElementOverlayWindowProviding, mouseDownAt point: CGPoint)
+    func smartElementOverlayWindowDidCancel(_ window: SmartElementOverlayWindowProviding)
 }
 
 protocol SmartElementWindowListSource {
-  func copyOnScreenWindowInfo() -> [[String: Any]]
+    func copyOnScreenWindowInfo() -> [[String: Any]]
 }

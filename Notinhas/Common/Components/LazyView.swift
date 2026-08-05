@@ -12,13 +12,13 @@ import SwiftUI
 /// This prevents expensive initialization (onAppear, @ObservedObject subscriptions)
 /// from running for views that aren't yet visible.
 struct LazyView<Content: View>: View {
-  let build: () -> Content
+    let build: () -> Content
 
-  init(_ build: @autoclosure @escaping () -> Content) {
-    self.build = build
-  }
+    init(_ build: @autoclosure @escaping () -> Content) {
+        self.build = build
+    }
 
-  var body: some View {
-    build()
-  }
+    var body: some View {
+        build()
+    }
 }

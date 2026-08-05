@@ -9,13 +9,13 @@ import Foundation
 
 @MainActor
 final class AppEnvironment {
-  let screenCaptureViewModel: ScreenCaptureViewModel
+    let screenCaptureViewModel: ScreenCaptureViewModel
 
-  init(screenCaptureViewModel: ScreenCaptureViewModel) {
-    self.screenCaptureViewModel = screenCaptureViewModel
-  }
+    init(screenCaptureViewModel: ScreenCaptureViewModel) {
+        self.screenCaptureViewModel = screenCaptureViewModel
+    }
 
-  static func live() -> AppEnvironment {
-    AppEnvironment(screenCaptureViewModel: ScreenCaptureViewModel())
-  }
+    static func live() -> AppEnvironment {
+        AppEnvironment(screenCaptureViewModel: ScreenCaptureViewModel())
+    }
 }

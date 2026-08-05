@@ -23,6 +23,7 @@ jobs:
         run: brew install swiftformat
 
       - name: Validate Formatting
-        run: |
-          # swiftformat --lint .
-          echo "SwiftFormat validation is disabled (commented out)."
+        run: swiftformat Notinhas NotinhasTests --lint
+
+      - name: Validate SwiftLint
+        run: brew install swiftlint && swiftlint lint --config .swiftlint.yml Notinhas NotinhasTests

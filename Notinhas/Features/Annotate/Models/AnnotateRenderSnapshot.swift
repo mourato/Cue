@@ -14,36 +14,36 @@ import AppKit
 /// Contract: the referenced `NSImage` instances are treated as immutable during render
 /// (state replaces rather than mutates them post-load).
 struct AnnotateRenderSnapshot {
-  var sourceImage: NSImage
-  var editorMode: AnnotateState.EditorMode
-  var isCombineMode: Bool
-  var effectiveContentBounds: CGRect
-  var cropRect: CGRect?
-  var annotations: [AnnotationItem]
-  var notinhasNotes: [NotinhasVisualNote]
-  var notinhasPanelSide: NotinhasNotesPanelSide
-  var embeddedImages: [UUID: NSImage]
-  var embeddedCGImages: [UUID: CGImage]
+    var sourceImage: NSImage
+    var editorMode: AnnotateState.EditorMode
+    var isCombineMode: Bool
+    var effectiveContentBounds: CGRect
+    var cropRect: CGRect?
+    var annotations: [AnnotationItem]
+    var notinhasNotes: [NotinhasVisualNote]
+    var notinhasPanelSide: NotinhasNotesPanelSide
+    var embeddedImages: [UUID: NSImage]
+    var embeddedCGImages: [UUID: CGImage]
 
-  var backgroundStyle: BackgroundStyle
-  var isBlurredBackgroundEffectActive: Bool
-  var blurredBackgroundEffect: BlurredBackgroundEffect
-  /// Wallpaper/blurred background for the active `backgroundStyle` URL, resolved on main
-  /// (cache + sandbox access + blur are main-bound). Nil for `.none`/`.gradient`/preset URLs.
-  var resolvedBackgroundImage: NSImage?
+    var backgroundStyle: BackgroundStyle
+    var isBlurredBackgroundEffectActive: Bool
+    var blurredBackgroundEffect: BlurredBackgroundEffect
+    /// Wallpaper/blurred background for the active `backgroundStyle` URL, resolved on main
+    /// (cache + sandbox access + blur are main-bound). Nil for `.none`/`.gradient`/preset URLs.
+    var resolvedBackgroundImage: NSImage?
 
-  var padding: CGFloat
-  var cornerRadius: CGFloat
-  var shadowIntensity: CGFloat
-  var imageAlignment: ImageAlignment
-  var aspectRatio: AspectRatioOption
-  var aspectRatioOrientation: AspectRatioOrientation
+    var padding: CGFloat
+    var cornerRadius: CGFloat
+    var shadowIntensity: CGFloat
+    var imageAlignment: ImageAlignment
+    var aspectRatio: AspectRatioOption
+    var aspectRatioOrientation: AspectRatioOrientation
 
-  var mockupRotationX: CGFloat
-  var mockupRotationY: CGFloat
-  var mockupRotationZ: CGFloat
-  var mockupPerspective: CGFloat
-  var mockupShadowRadius: CGFloat
-  var mockupShadowOffsetX: CGFloat
-  var mockupShadowOffsetY: CGFloat
+    var mockupRotationX: CGFloat
+    var mockupRotationY: CGFloat
+    var mockupRotationZ: CGFloat
+    var mockupPerspective: CGFloat
+    var mockupShadowRadius: CGFloat
+    var mockupShadowOffsetX: CGFloat
+    var mockupShadowOffsetY: CGFloat
 }

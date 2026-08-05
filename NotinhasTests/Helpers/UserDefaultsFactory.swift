@@ -8,15 +8,15 @@
 import Foundation
 
 enum UserDefaultsFactory {
-  static func make(
-    file _: StaticString = #filePath,
-    line _: UInt = #line
-  ) -> UserDefaults {
-    let suiteName = "NotinhasTests.\(UUID().uuidString)"
-    guard let defaults = UserDefaults(suiteName: suiteName) else {
-      fatalError("Failed to create UserDefaults with suiteName \(suiteName)")
+    static func make(
+        file _: StaticString = #filePath,
+        line _: UInt = #line,
+    ) -> UserDefaults {
+        let suiteName = "NotinhasTests.\(UUID().uuidString)"
+        guard let defaults = UserDefaults(suiteName: suiteName) else {
+            fatalError("Failed to create UserDefaults with suiteName \(suiteName)")
+        }
+        defaults.removePersistentDomain(forName: suiteName)
+        return defaults
     }
-    defaults.removePersistentDomain(forName: suiteName)
-    return defaults
-  }
 }

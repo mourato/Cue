@@ -8,18 +8,18 @@
 import SwiftUI
 
 struct AnnotateEditorSideDock<Content: View>: View {
-  private let content: Content
+    private let content: Content
 
-  init(@ViewBuilder content: () -> Content) {
-    self.content = content()
-  }
-
-  var body: some View {
-    ScrollView(.vertical, showsIndicators: true) {
-      content
-        .padding(Spacing.md)
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
     }
-    .frame(width: 240)
-    .frame(maxHeight: .infinity)
-  }
+
+    var body: some View {
+        ScrollView(.vertical, showsIndicators: true) {
+            content
+                .padding(Spacing.md)
+        }
+        .frame(width: 240)
+        .frame(maxHeight: .infinity)
+    }
 }

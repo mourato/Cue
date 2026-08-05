@@ -11,142 +11,142 @@ import SwiftUI
 // MARK: - Toolbar Constants
 
 enum ToolbarConstants {
-  static let iconButtonSize: CGFloat = 32
-  static let iconSize: CGFloat = 15
-  static let buttonCornerRadius: CGFloat = 8
-  static let toolbarCornerRadius: CGFloat = 14
-  static let dividerHeight: CGFloat = 20
-  static let itemSpacing: CGFloat = 4
-  static let groupSpacing: CGFloat = 2
-  static let horizontalPadding: CGFloat = 6
-  static let verticalPadding: CGFloat = 6
-  static let hoverAnimation: Animation = .easeInOut(duration: 0.15)
-  static let pressAnimation: Animation = .easeInOut(duration: 0.1)
+    static let iconButtonSize: CGFloat = 32
+    static let iconSize: CGFloat = 15
+    static let buttonCornerRadius: CGFloat = 8
+    static let toolbarCornerRadius: CGFloat = 14
+    static let dividerHeight: CGFloat = 20
+    static let itemSpacing: CGFloat = 4
+    static let groupSpacing: CGFloat = 2
+    static let horizontalPadding: CGFloat = 6
+    static let verticalPadding: CGFloat = 6
+    static let hoverAnimation: Animation = .easeInOut(duration: 0.15)
+    static let pressAnimation: Animation = .easeInOut(duration: 0.1)
 }
 
 // MARK: - Recording Toolbar Divider
 
 struct RecordingToolbarDivider: View {
-  var body: some View {
-    Rectangle()
-      .fill(Color.primary.opacity(0.15))
-      .frame(width: 1, height: ToolbarConstants.dividerHeight)
-      .padding(.horizontal, 4)
-  }
+    var body: some View {
+        Rectangle()
+            .fill(Color.primary.opacity(0.15))
+            .frame(width: 1, height: ToolbarConstants.dividerHeight)
+            .padding(.horizontal, 4)
+    }
 }
 
 #if NOTINHAS_VIDEO_MODULE
 
-  // MARK: - Native Toolbar Button Style (for icon buttons)
+    // MARK: - Native Toolbar Button Style (for icon buttons)
 
-  struct NativeToolbarButtonStyle: ButtonStyle {
-    var isActive: Bool = false
+    struct NativeToolbarButtonStyle: ButtonStyle {
+        var isActive: Bool = false
 
-    func makeBody(configuration: Configuration) -> some View {
-      configuration.label
-        .opacity(configuration.isPressed ? 0.6 : 1.0)
-        .animation(ToolbarConstants.pressAnimation, value: configuration.isPressed)
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .opacity(configuration.isPressed ? 0.6 : 1.0)
+                .animation(ToolbarConstants.pressAnimation, value: configuration.isPressed)
+        }
     }
-  }
 
-  // MARK: - Record Button Style (native text style, no colored background)
+    // MARK: - Record Button Style (native text style, no colored background)
 
-  struct RecordButtonStyle: ButtonStyle {
-    @State private var isHovered = false
+    struct RecordButtonStyle: ButtonStyle {
+        @State private var isHovered = false
 
-    func makeBody(configuration: Configuration) -> some View {
-      configuration.label
-        .font(.system(size: 13, weight: .regular))
-        .foregroundColor(.primary)
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .background(
-          RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
-            .fill(Color.primary.opacity(configuration.isPressed ? 0.12 : 0))
-        )
-        .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
-        .animation(ToolbarConstants.pressAnimation, value: configuration.isPressed)
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .font(.system(size: 13, weight: .regular))
+                .foregroundColor(.primary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(
+                    RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
+                        .fill(Color.primary.opacity(configuration.isPressed ? 0.12 : 0)),
+                )
+                .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
+                .animation(ToolbarConstants.pressAnimation, value: configuration.isPressed)
+        }
     }
-  }
 
-  // MARK: - Options Button Style (text with chevron, native look)
+    // MARK: - Options Button Style (text with chevron, native look)
 
-  struct OptionsButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-      configuration.label
-        .font(.system(size: 13, weight: .regular))
-        .foregroundColor(.primary)
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .background(
-          RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
-            .fill(Color.primary.opacity(configuration.isPressed ? 0.12 : 0))
-        )
-        .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
-        .animation(ToolbarConstants.pressAnimation, value: configuration.isPressed)
+    struct OptionsButtonStyle: ButtonStyle {
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .font(.system(size: 13, weight: .regular))
+                .foregroundColor(.primary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(
+                    RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
+                        .fill(Color.primary.opacity(configuration.isPressed ? 0.12 : 0)),
+                )
+                .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
+                .animation(ToolbarConstants.pressAnimation, value: configuration.isPressed)
+        }
     }
-  }
 
-  struct ToolbarIconButtonLabel: View {
-    let systemName: String
-    var iconSize: CGFloat = ToolbarConstants.iconSize
-    let isHovered: Bool
+    struct ToolbarIconButtonLabel: View {
+        let systemName: String
+        var iconSize: CGFloat = ToolbarConstants.iconSize
+        let isHovered: Bool
 
-    var body: some View {
-      Image(systemName: systemName)
-        .font(.system(size: iconSize, weight: .medium))
-        .foregroundColor(.primary.opacity(isHovered ? 1.0 : 0.85))
-        .frame(
-          width: ToolbarConstants.iconButtonSize,
-          height: ToolbarConstants.iconButtonSize
-        )
-        .background(
-          RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
-            .fill(Color.primary.opacity(isHovered ? 0.1 : 0))
-        )
-        .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
-        .animation(ToolbarConstants.hoverAnimation, value: isHovered)
+        var body: some View {
+            Image(systemName: systemName)
+                .font(.system(size: iconSize, weight: .medium))
+                .foregroundColor(.primary.opacity(isHovered ? 1.0 : 0.85))
+                .frame(
+                    width: ToolbarConstants.iconButtonSize,
+                    height: ToolbarConstants.iconButtonSize,
+                )
+                .background(
+                    RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
+                        .fill(Color.primary.opacity(isHovered ? 0.1 : 0)),
+                )
+                .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
+                .animation(ToolbarConstants.hoverAnimation, value: isHovered)
+        }
     }
-  }
 
-  // MARK: - Stop Button Style (native monochrome, no red pill)
+    // MARK: - Stop Button Style (native monochrome, no red pill)
 
-  struct StopButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-      configuration.label
-        .font(.system(size: 13, weight: .regular))
-        .foregroundColor(.primary)
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .background(
-          RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
-            .fill(Color.primary.opacity(configuration.isPressed ? 0.12 : 0))
-        )
-        .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
-        .animation(ToolbarConstants.pressAnimation, value: configuration.isPressed)
+    struct StopButtonStyle: ButtonStyle {
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .font(.system(size: 13, weight: .regular))
+                .foregroundColor(.primary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(
+                    RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
+                        .fill(Color.primary.opacity(configuration.isPressed ? 0.12 : 0)),
+                )
+                .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
+                .animation(ToolbarConstants.pressAnimation, value: configuration.isPressed)
+        }
     }
-  }
 
-  // MARK: - Previews
+    // MARK: - Previews
 
-  #Preview("Record Button") {
-    HStack {
-      Button(L10n.RecordingToolbar.options) {}
-        .buttonStyle(OptionsButtonStyle())
-      Button(L10n.RecordingToolbar.record) {}
-        .buttonStyle(RecordButtonStyle())
+    #Preview("Record Button") {
+        HStack {
+            Button(L10n.RecordingToolbar.options) {}
+                .buttonStyle(OptionsButtonStyle())
+            Button(L10n.RecordingToolbar.record) {}
+                .buttonStyle(RecordButtonStyle())
+        }
+        .padding()
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: ToolbarConstants.toolbarCornerRadius))
     }
-    .padding()
-    .background(.ultraThinMaterial)
-    .clipShape(RoundedRectangle(cornerRadius: ToolbarConstants.toolbarCornerRadius))
-  }
 
-  #Preview("Toolbar Divider") {
-    HStack {
-      Text(L10n.PreferencesQuickAccess.left)
-      RecordingToolbarDivider()
-      Text(L10n.PreferencesQuickAccess.right)
+    #Preview("Toolbar Divider") {
+        HStack {
+            Text(L10n.PreferencesQuickAccess.left)
+            RecordingToolbarDivider()
+            Text(L10n.PreferencesQuickAccess.right)
+        }
+        .padding()
     }
-    .padding()
-  }
 #endif

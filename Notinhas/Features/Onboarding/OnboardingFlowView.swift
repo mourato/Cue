@@ -8,15 +8,15 @@
 import SwiftUI
 
 enum OnboardingFlowView {
-  private static let onboardingCompletedKey = PreferencesKeys.onboardingCompleted
+    private static let onboardingCompletedKey = PreferencesKeys.onboardingCompleted
 
-  static var hasCompletedOnboarding: Bool {
-    UserDefaults.standard.bool(forKey: onboardingCompletedKey)
-  }
+    static var hasCompletedOnboarding: Bool {
+        UserDefaults.standard.bool(forKey: onboardingCompletedKey)
+    }
 
-  static func resetOnboarding() {
-    UserDefaults.standard.set(false, forKey: onboardingCompletedKey)
-    UserDefaults.standard.set(false, forKey: PreferencesKeys.splashSkipped)
-    UserDefaults.standard.removeObject(forKey: PreferencesKeys.splashSkipOnceAfterOnboardingRelaunch)
-  }
+    static func resetOnboarding() {
+        UserDefaults.standard.set(false, forKey: onboardingCompletedKey)
+        UserDefaults.standard.set(false, forKey: PreferencesKeys.splashSkipped)
+        UserDefaults.standard.removeObject(forKey: PreferencesKeys.splashSkipOnceAfterOnboardingRelaunch)
+    }
 }

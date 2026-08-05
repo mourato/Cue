@@ -11,34 +11,34 @@ import Foundation
 
 @MainActor
 final class AllInOneCaptureSessionState: ObservableObject {
-  @Published var selectedMode: AllInOneCaptureMode = .area
-  @Published var currentRect: CGRect?
-  @Published private(set) var availableModes: [AllInOneCaptureMode]
+    @Published var selectedMode: AllInOneCaptureMode = .area
+    @Published var currentRect: CGRect?
+    @Published private(set) var availableModes: [AllInOneCaptureMode]
 
-  var onModeActivated: (AllInOneCaptureMode) -> Void = { _ in }
-  var onRectChanged: (CGRect) -> Void = { _ in }
-  var onCancel: () -> Void = {}
+    var onModeActivated: (AllInOneCaptureMode) -> Void = { _ in }
+    var onRectChanged: (CGRect) -> Void = { _ in }
+    var onCancel: () -> Void = {}
 
-  init(videoEnabled: Bool = VideoModuleAvailability.isEnabled) {
-    availableModes = AllInOneCaptureMode.availableModes(videoEnabled: videoEnabled)
-  }
+    init(videoEnabled: Bool = VideoModuleAvailability.isEnabled) {
+        availableModes = AllInOneCaptureMode.availableModes(videoEnabled: videoEnabled)
+    }
 
-  func activateMode(_ mode: AllInOneCaptureMode) {
-    guard availableModes.contains(mode) else { return }
-    selectedMode = mode
-    onModeActivated(mode)
-  }
+    func activateMode(_ mode: AllInOneCaptureMode) {
+        guard availableModes.contains(mode) else { return }
+        selectedMode = mode
+        onModeActivated(mode)
+    }
 
-  func activateSelectedMode() {
-    activateMode(selectedMode)
-  }
+    func activateSelectedMode() {
+        activateMode(selectedMode)
+    }
 
-  func updateRect(_ rect: CGRect) {
-    currentRect = rect
-    onRectChanged(rect)
-  }
+    func updateRect(_ rect: CGRect) {
+        currentRect = rect
+        onRectChanged(rect)
+    }
 
-  func cancel() {
-    onCancel()
-  }
+    func cancel() {
+        onCancel()
+    }
 }

@@ -1,80 +1,80 @@
 #if NOTINHAS_VIDEO_MODULE
 //
-//  RecordingToolbarView.swift
-//  Notinhas
+    //  RecordingToolbarView.swift
+    //  Notinhas
 //
-//  Pre-record toolbar with options menu and record/cancel buttons
-//  Styled to match Apple's native macOS recording toolbar aesthetic
+    //  Pre-record toolbar with options menu and record/cancel buttons
+    //  Styled to match Apple's native macOS recording toolbar aesthetic
 //
-//  Layout: [✕] | [📷] | [□ □] | [🎙 🔊] | [Options▾] [Record]
+    //  Layout: [✕] | [📷] | [□ □] | [🎙 🔊] | [Options▾] [Record]
 //
 
-  import SwiftUI
+    import SwiftUI
 
-  struct RecordingToolbarView: View {
-    @ObservedObject var state: RecordingToolbarState
-    let onRecord: () -> Void
-    let onCapture: () -> Void
-    let onCancel: () -> Void
+    struct RecordingToolbarView: View {
+        @ObservedObject var state: RecordingToolbarState
+        let onRecord: () -> Void
+        let onCapture: () -> Void
+        let onCancel: () -> Void
 
-    var body: some View {
-      HStack(spacing: ToolbarConstants.itemSpacing) {
-        // Close button
-        ToolbarIconButton(
-          systemName: "xmark",
-          action: onCancel,
-          accessibilityLabel: L10n.RecordingToolbar.cancelRecording
-        )
+        var body: some View {
+            HStack(spacing: ToolbarConstants.itemSpacing) {
+                // Close button
+                ToolbarIconButton(
+                    systemName: "xmark",
+                    action: onCancel,
+                    accessibilityLabel: L10n.RecordingToolbar.cancelRecording,
+                )
 
-        RecordingToolbarDivider()
+                RecordingToolbarDivider()
 
-        // Capture screenshot button
-        ToolbarIconButton(
-          systemName: "camera",
-          action: onCapture,
-          accessibilityLabel: L10n.RecordingToolbar.captureScreenshot
-        )
+                // Capture screenshot button
+                ToolbarIconButton(
+                    systemName: "camera",
+                    action: onCapture,
+                    accessibilityLabel: L10n.RecordingToolbar.captureScreenshot,
+                )
 
-        RecordingToolbarDivider()
+                RecordingToolbarDivider()
 
-        // Capture mode toggle (fullscreen / area)
-        ToolbarCaptureAreaToggle(state: state)
+                // Capture mode toggle (fullscreen / area)
+                ToolbarCaptureAreaToggle(state: state)
 
-        RecordingToolbarDivider()
+                RecordingToolbarDivider()
 
-        // Audio quick controls
-        HStack(spacing: ToolbarConstants.groupSpacing) {
-          ToolbarMicToggleButton(state: state)
-          ToolbarSystemAudioToggleButton(state: state)
+                // Audio quick controls
+                HStack(spacing: ToolbarConstants.groupSpacing) {
+                    ToolbarMicToggleButton(state: state)
+                    ToolbarSystemAudioToggleButton(state: state)
+                }
+
+                RecordingToolbarDivider()
+
+                // Options menu (text button with chevron)
+                ToolbarOptionsMenu(state: state)
+
+                // Record button group: [Record <badge>] [▼]
+                HStack(spacing: 1) {
+                    RecordButtonWithBadge(state: state, onRecord: onRecord)
+
+                    ToolbarOutputModeDropdown(state: state)
+                }
+                .fixedSize()
+            }
+            .padding(.horizontal, ToolbarConstants.horizontalPadding)
+            .padding(.vertical, ToolbarConstants.verticalPadding)
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel(L10n.RecordingToolbar.toolbarAccessibility)
         }
-
-        RecordingToolbarDivider()
-
-        // Options menu (text button with chevron)
-        ToolbarOptionsMenu(state: state)
-
-        // Record button group: [Record <badge>] [▼]
-        HStack(spacing: 1) {
-          RecordButtonWithBadge(state: state, onRecord: onRecord)
-
-          ToolbarOutputModeDropdown(state: state)
-        }
-        .fixedSize()
-      }
-      .padding(.horizontal, ToolbarConstants.horizontalPadding)
-      .padding(.vertical, ToolbarConstants.verticalPadding)
-      .accessibilityElement(children: .contain)
-      .accessibilityLabel(L10n.RecordingToolbar.toolbarAccessibility)
     }
-  }
 
-  #Preview {
-    RecordingToolbarView(
-      state: RecordingToolbarState(),
-      onRecord: {},
-      onCapture: {},
-      onCancel: {}
-    )
-    .padding()
-  }
+    #Preview {
+        RecordingToolbarView(
+            state: RecordingToolbarState(),
+            onRecord: {},
+            onCapture: {},
+            onCancel: {},
+        )
+        .padding()
+    }
 #endif

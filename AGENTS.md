@@ -69,13 +69,17 @@ unrelated product skills from other apps.
   — changed-surface local verification planner/runner. Maps touched paths to
   XCTest selectors, shell checks, and manual gates via
   `scripts/verification-map.tsv`; writes reports under `build/verification/`.
-  Default is `--plan-only`. Use `--strict` for conservative failures on unmapped
-  or manual-required paths. This narrows deterministic feedback; it does not
-  replace the full test suite or manual gates when the surface requires them.
-- `swiftformat <paths…>` — format Swift in place (install once:
-  `brew install swiftformat`). Rules live in `.swiftformat` (two-space indent,
-  120-column maximum). Scope paths as needed, e.g. `swiftformat Notinhas
-  NotinhasTests` or `swiftformat Notinhas/Features/Notinhas`.
+  Default is `--plan-only`. Use `--strict` to fail on unmapped paths; in
+  plan-only mode, manual-required paths remain visible handoff gates without
+  making the mapping check fail. Strict execute mode still fails until those
+  manual gates are completed. This narrows deterministic feedback; it does
+  not replace the full test suite or manual gates when the surface requires
+  them.
+- `make format-check` / `make format-fix` — validate or apply the SwiftFormat
+  6.2 four-space policy from `.swiftformat` (120-column maximum).
+- `make lint` / `make lint-changed` / `make lint-fix` — fail-closed SwiftLint
+  checks for owned app/tests or the changed Swift surface.
+- `make agent-check` — run format, lint, and strict `verify-local` planning.
 
 Screen Recording and Accessibility permissions are required for affected
 manual checks. Test capture, annotation, clipboard output, and permission
@@ -96,11 +100,13 @@ Recording/VideoEditor XCTests: `./scripts/run-tests.sh --video-module`.
 
 ## Code and Tests
 
-Use Swift 5.9 conventions: `UpperCamelCase` types, `lowerCamelCase` members,
-descriptive file names, and `// MARK:` in large types. Keep UI work on the
-main actor; move capture, file, and image processing off it. Add XCTest cases
-in the matching `NotinhasTests/` area, named by behavior—for example,
-`testPinNoteExportKeepsMarkerOrder()`.
+Use Swift 6.2 conventions: `UpperCamelCase` types, `lowerCamelCase` members,
+descriptive file names, and `// MARK:` in large types. The project uses
+complete strict concurrency with nonisolated-by-default targets; keep SwiftUI,
+AppKit, and lifecycle entry points explicitly `@MainActor`, and move capture,
+file, and image processing off it through value snapshots or focused adapters.
+Add XCTest cases in the matching `NotinhasTests/` area, named by behavior—for
+example, `testPinNoteExportKeepsMarkerOrder()`.
 
 Remaining `Snapzy` / `snapzy` strings in source are **legacy compatibility**
 (readers, migration, or rejection tests) — do not expand them into active product branding.

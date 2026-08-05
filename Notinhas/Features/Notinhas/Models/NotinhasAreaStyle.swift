@@ -8,13 +8,13 @@
 import Foundation
 
 nonisolated enum NotinhasAreaStyle: String, Codable, CaseIterable, Equatable, Identifiable {
-  case outline
-  case tinted
-  case hatched
+    case outline
+    case tinted
+    case hatched
 
-  var id: String {
-    rawValue
-  }
+    var id: String {
+        rawValue
+    }
 
-  static let `default` = NotinhasAreaStyle.outline
+    static let `default` = NotinhasAreaStyle.outline
 }

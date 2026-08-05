@@ -12,82 +12,82 @@ import SwiftUI
 
 /// Maximized NSWindow with transparent titlebar and traffic lights for splash/onboarding
 final class SplashWindow: NSWindow {
-  init(screen: NSScreen) {
-    // Size to ~85% of visible screen (max 1200×800) for a normal window feel
-    let windowSize = NSSize(
-      width: min(screen.visibleFrame.width * 0.85, 1200),
-      height: min(screen.visibleFrame.height * 0.85, 800)
-    )
-    let origin = NSPoint(
-      x: screen.visibleFrame.midX - windowSize.width / 2,
-      y: screen.visibleFrame.midY - windowSize.height / 2
-    )
-    super.init(
-      contentRect: NSRect(origin: origin, size: windowSize),
-      styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
-      backing: .buffered,
-      defer: false
-    )
-    configureWindow()
-    setupOpaqueBackground()
-  }
+    init(screen: NSScreen) {
+        // Size to ~85% of visible screen (max 1200×800) for a normal window feel
+        let windowSize = NSSize(
+            width: min(screen.visibleFrame.width * 0.85, 1200),
+            height: min(screen.visibleFrame.height * 0.85, 800),
+        )
+        let origin = NSPoint(
+            x: screen.visibleFrame.midX - windowSize.width / 2,
+            y: screen.visibleFrame.midY - windowSize.height / 2,
+        )
+        super.init(
+            contentRect: NSRect(origin: origin, size: windowSize),
+            styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
+            backing: .buffered,
+            defer: false,
+        )
+        configureWindow()
+        setupOpaqueBackground()
+    }
 
-  private func configureWindow() {
-    titlebarAppearsTransparent = true
-    titleVisibility = .hidden
-    backgroundColor = NSColor(
-      name: nil,
-      dynamicProvider: { appearance in
-        appearance.bestMatch(from: [.darkAqua]) == .darkAqua
-          ? NSColor(srgbRed: 28 / 255, green: 28 / 255, blue: 30 / 255, alpha: 1) // #1C1C1E
-          : NSColor(srgbRed: 242 / 255, green: 242 / 255, blue: 247 / 255, alpha: 1) // #F2F2F7
-      }
-    )
-    isOpaque = true
-    level = .normal
-    hasShadow = true
-    isReleasedWhenClosed = false
-    minSize = NSSize(width: 700, height: 500)
-    collectionBehavior = [.managed, .participatesInCycle]
-    animationBehavior = .none
+    private func configureWindow() {
+        titlebarAppearsTransparent = true
+        titleVisibility = .hidden
+        backgroundColor = NSColor(
+            name: nil,
+            dynamicProvider: { appearance in
+                appearance.bestMatch(from: [.darkAqua]) == .darkAqua
+                    ? NSColor(srgbRed: 28 / 255, green: 28 / 255, blue: 30 / 255, alpha: 1) // #1C1C1E
+                    : NSColor(srgbRed: 242 / 255, green: 242 / 255, blue: 247 / 255, alpha: 1) // #F2F2F7
+            },
+        )
+        isOpaque = true
+        level = .normal
+        hasShadow = true
+        isReleasedWhenClosed = false
+        minSize = NSSize(width: 700, height: 500)
+        collectionBehavior = [.managed, .participatesInCycle]
+        animationBehavior = .none
 
-    // Start invisible for fade-in animation
-    alphaValue = 0
-  }
+        // Start invisible for fade-in animation
+        alphaValue = 0
+    }
 
-  private func setupOpaqueBackground() {
-    let container = NSView()
-    container.wantsLayer = true
+    private func setupOpaqueBackground() {
+        let container = NSView()
+        container.wantsLayer = true
 
-    // Let NSWindow.backgroundColor (set in configureWindow) paint the entire
-    // window including the transparent titlebar area. No extra layer color needed —
-    // this ensures traffic lights sit on the same surface as content.
+        // Let NSWindow.backgroundColor (set in configureWindow) paint the entire
+        // window including the transparent titlebar area. No extra layer color needed —
+        // this ensures traffic lights sit on the same surface as content.
 
-    contentView = container
-  }
+        contentView = container
+    }
 
-  /// Attach SwiftUI content on top of blur background
-  func attachContent(_ view: some View) {
-    guard let container = contentView else { return }
-    let hostingView = NSHostingView(rootView: view)
-    hostingView.autoresizingMask = [.width, .height]
-    hostingView.frame = container.bounds
-    hostingView.layer?.backgroundColor = .clear
-    container.addSubview(hostingView)
-  }
+    /// Attach SwiftUI content on top of blur background
+    func attachContent(_ view: some View) {
+        guard let container = contentView else { return }
+        let hostingView = NSHostingView(rootView: view)
+        hostingView.autoresizingMask = [.width, .height]
+        hostingView.frame = container.bounds
+        hostingView.layer?.backgroundColor = .clear
+        container.addSubview(hostingView)
+    }
 
-  override var canBecomeKey: Bool {
-    true
-  }
+    override var canBecomeKey: Bool {
+        true
+    }
 
-  override var canBecomeMain: Bool {
-    true
-  }
+    override var canBecomeMain: Bool {
+        true
+    }
 
-  override func layoutIfNeeded() {
-    super.layoutIfNeeded()
-    layoutTrafficLights()
-  }
+    override func layoutIfNeeded() {
+        super.layoutIfNeeded()
+        layoutTrafficLights()
+    }
 }
 
 // MARK: - SplashWindowController
@@ -95,148 +95,151 @@ final class SplashWindow: NSWindow {
 /// Manages splash window lifecycle — hosts the unified splash + onboarding flow
 @MainActor
 final class SplashWindowController: NSObject, NSWindowDelegate {
-  static let shared = SplashWindowController()
+    static let shared = SplashWindowController()
 
-  private var splashWindow: SplashWindow?
+    private var splashWindow: SplashWindow?
 
-  override private init() {}
+    override private init() {}
 
-  /// Show splash with integrated onboarding flow.
-  /// - Parameter forceOnboarding: When true, always show onboarding steps (used by "Restart Onboarding")
-  func show(forceOnboarding: Bool = false) {
-    showWindow(forceOnboarding: forceOnboarding)
-  }
-
-  func showConfigurationAccess() {
-    showWindow(
-      forceOnboarding: false,
-      initialScreen: .configAccess,
-      onboardingSteps: [.configAccess]
-    )
-  }
-
-  private func showWindow(
-    forceOnboarding: Bool,
-    initialScreen: SplashScreen = .splash,
-    onboardingSteps: [SplashScreen]? = nil
-  ) {
-    guard let screen = NSScreen.main else {
-      DiagnosticLogger.shared.log(.warning, .ui, "Splash skipped because main screen is unavailable")
-      return
-    }
-    let defaults = UserDefaults.standard
-    let isStandardStartup = initialScreen == .splash
-
-    if isStandardStartup,
-       !forceOnboarding,
-       defaults.bool(forKey: PreferencesKeys.splashSkipOnceAfterOnboardingRelaunch),
-       OnboardingFlowView.hasCompletedOnboarding {
-      DiagnosticLogger.shared.log(.debug, .ui, "Splash skipped once after onboarding relaunch")
-      defaults.removeObject(forKey: PreferencesKeys.splashSkipOnceAfterOnboardingRelaunch)
-      return
+    /// Show splash with integrated onboarding flow.
+    /// - Parameter forceOnboarding: When true, always show onboarding steps (used by "Restart Onboarding")
+    func show(forceOnboarding: Bool = false) {
+        showWindow(forceOnboarding: forceOnboarding)
     }
 
-    // Skip splash entirely when user opted out and onboarding is complete
-    if isStandardStartup,
-       !forceOnboarding,
-       OnboardingFlowView.hasCompletedOnboarding,
-       defaults.bool(forKey: PreferencesKeys.splashSkipped) {
-      DiagnosticLogger.shared.log(.debug, .ui, "Splash skipped by user preference")
-      return
+    func showConfigurationAccess() {
+        showWindow(
+            forceOnboarding: false,
+            initialScreen: .configAccess,
+            onboardingSteps: [.configAccess],
+        )
     }
 
-    // Show app in Cmd+Tab switcher
-    NSApp.setActivationPolicy(.regular)
+    private func showWindow(
+        forceOnboarding: Bool,
+        initialScreen: SplashScreen = .splash,
+        onboardingSteps: [SplashScreen]? = nil,
+    ) {
+        guard let screen = NSScreen.main else {
+            DiagnosticLogger.shared.log(.warning, .ui, "Splash skipped because main screen is unavailable")
+            return
+        }
+        let defaults = UserDefaults.standard
+        let isStandardStartup = initialScreen == .splash
 
-    let window = SplashWindow(screen: screen)
-    window.delegate = self
-    splashWindow = window
+        if isStandardStartup,
+           !forceOnboarding,
+           defaults.bool(forKey: PreferencesKeys.splashSkipOnceAfterOnboardingRelaunch),
+           OnboardingFlowView.hasCompletedOnboarding {
+            DiagnosticLogger.shared.log(.debug, .ui, "Splash skipped once after onboarding relaunch")
+            defaults.removeObject(forKey: PreferencesKeys.splashSkipOnceAfterOnboardingRelaunch)
+            return
+        }
 
-    let needsOnboarding = forceOnboarding || !OnboardingFlowView.hasCompletedOnboarding
-    DiagnosticLogger.shared.log(
-      .info,
-      .ui,
-      "Splash window presenting",
-      context: [
-        "forceOnboarding": forceOnboarding ? "true" : "false",
-        "needsOnboarding": needsOnboarding ? "true" : "false",
-        "initialScreen": "\(initialScreen)",
-      ]
-    )
+        // Skip splash entirely when user opted out and onboarding is complete
+        if isStandardStartup,
+           !forceOnboarding,
+           OnboardingFlowView.hasCompletedOnboarding,
+           defaults.bool(forKey: PreferencesKeys.splashSkipped) {
+            DiagnosticLogger.shared.log(.debug, .ui, "Splash skipped by user preference")
+            return
+        }
 
-    attachContent(
-      to: window,
-      needsOnboarding: needsOnboarding,
-      initialScreen: initialScreen,
-      onboardingSteps: onboardingSteps
-    )
+        // Show app in Cmd+Tab switcher
+        NSApp.setActivationPolicy(.regular)
 
-    // Show window and activate
-    window.makeKeyAndOrderFront(nil)
-    NSApp.activate(ignoringOtherApps: true)
+        let window = SplashWindow(screen: screen)
+        window.delegate = self
+        splashWindow = window
 
-    // Fade in
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-      self?.animateIn()
+        let needsOnboarding = forceOnboarding || !OnboardingFlowView.hasCompletedOnboarding
+        DiagnosticLogger.shared.log(
+            .info,
+            .ui,
+            "Splash window presenting",
+            context: [
+                "forceOnboarding": forceOnboarding ? "true" : "false",
+                "needsOnboarding": needsOnboarding ? "true" : "false",
+                "initialScreen": "\(initialScreen)",
+            ],
+        )
+
+        attachContent(
+            to: window,
+            needsOnboarding: needsOnboarding,
+            initialScreen: initialScreen,
+            onboardingSteps: onboardingSteps,
+        )
+
+        // Show window and activate
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+
+        // Fade in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            self?.animateIn()
+        }
     }
-  }
 
-  private func attachContent(
-    to window: SplashWindow,
-    needsOnboarding: Bool,
-    initialScreen: SplashScreen,
-    onboardingSteps: [SplashScreen]?
-  ) {
-    let rootView = SplashOnboardingRootView(
-      needsOnboarding: needsOnboarding,
-      initialScreen: initialScreen,
-      onboardingSteps: onboardingSteps,
-      onDismiss: { [weak self] in
-        self?.dismiss()
-      }
-    )
-    window.attachContent(rootView)
-  }
-
-  private func animateIn() {
-    guard let window = splashWindow else { return }
-    NSAnimationContext.runAnimationGroup { context in
-      context.duration = 0.5
-      context.timingFunction = CAMediaTimingFunction(name: .easeOut)
-      window.animator().alphaValue = 1.0
+    private func attachContent(
+        to window: SplashWindow,
+        needsOnboarding: Bool,
+        initialScreen: SplashScreen,
+        onboardingSteps: [SplashScreen]?,
+    ) {
+        let rootView = SplashOnboardingRootView(
+            needsOnboarding: needsOnboarding,
+            initialScreen: initialScreen,
+            onboardingSteps: onboardingSteps,
+            onDismiss: { [weak self] in
+                self?.dismiss()
+            },
+        )
+        window.attachContent(rootView)
     }
-  }
 
-  /// Fade out splash window and clean up
-  func dismiss() {
-    guard let window = splashWindow else { return }
-    DiagnosticLogger.shared.log(.info, .ui, "Splash window dismiss requested")
-
-    NSAnimationContext.runAnimationGroup { context in
-      context.duration = 0.4
-      context.timingFunction = CAMediaTimingFunction(name: .easeIn)
-      window.animator().alphaValue = 0
-    } completionHandler: { [weak self] in
-      window.orderOut(nil)
-      window.close()
-      MainActor.assumeIsolated {
-        self?.splashWindow = nil
-
-        // Revert to menu-bar-only mode (hide from Cmd+Tab switcher) if no other normal windows are visible
-        NSApp.revertActivationPolicyToAccessoryIfNeeded(excluding: window)
-        DiagnosticLogger.shared.log(.debug, .ui, "Splash window dismissed")
-      }
+    private func animateIn() {
+        guard let window = splashWindow else { return }
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0.5
+            context.timingFunction = CAMediaTimingFunction(name: .easeOut)
+            window.animator().alphaValue = 1.0
+        }
     }
-  }
 
-  // MARK: - NSWindowDelegate
+    /// Fade out splash window and clean up
+    func dismiss() {
+        guard let window = splashWindow else { return }
+        DiagnosticLogger.shared.log(.info, .ui, "Splash window dismiss requested")
 
-  nonisolated func windowWillClose(_ notification: Notification) {
-    MainActor.assumeIsolated {
-      let closingWindow = notification.object as? NSWindow
-      self.splashWindow = nil
-      NSApp.revertActivationPolicyToAccessoryIfNeeded(excluding: closingWindow)
-      DiagnosticLogger.shared.log(.debug, .ui, "Splash window closed")
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0.4
+            context.timingFunction = CAMediaTimingFunction(name: .easeIn)
+            window.animator().alphaValue = 0
+        } completionHandler: { [weak self] in
+            window.orderOut(nil)
+            window.close()
+            MainActor.assumeIsolated {
+                self?.splashWindow = nil
+
+                // Revert to menu-bar-only mode (hide from Cmd+Tab switcher) if no other normal windows are visible
+                NSApp.revertActivationPolicyToAccessoryIfNeeded(excluding: window)
+                DiagnosticLogger.shared.log(.debug, .ui, "Splash window dismissed")
+            }
+        }
     }
-  }
+
+    // MARK: - NSWindowDelegate
+
+    nonisolated func windowWillClose(_ notification: Notification) {
+        let closingWindowNumber = (notification.object as? NSWindow)?.windowNumber
+        MainActor.assumeIsolated {
+            let closingWindow = closingWindowNumber.flatMap { windowNumber in
+                NSApp.windows.first { $0.windowNumber == windowNumber }
+            }
+            self.splashWindow = nil
+            NSApp.revertActivationPolicyToAccessoryIfNeeded(excluding: closingWindow)
+            DiagnosticLogger.shared.log(.debug, .ui, "Splash window closed")
+        }
+    }
 }

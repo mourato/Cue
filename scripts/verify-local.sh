@@ -351,8 +351,24 @@ build_commands() {
   RESOLVED_COMMANDS=()
 
   if [[ "$FULL" -eq 1 ]]; then
+    RESOLVED_COMMANDS+=("make format-check")
+    RESOLVED_COMMANDS+=("make lint")
     RESOLVED_COMMANDS+=("${RUN_TESTS}")
     return 0
+  fi
+
+  local needs_swift_quality=0
+  local changed_path
+  for changed_path in "${CHANGED_PATHS[@]}"; do
+    if [[ "$changed_path" == *.swift || "$changed_path" == ".swiftformat" || \
+          "$changed_path" == ".swiftlint.yml" || "$changed_path" == "Makefile" ]]; then
+      needs_swift_quality=1
+      break
+    fi
+  done
+  if [[ "$needs_swift_quality" -eq 1 ]]; then
+    RESOLVED_COMMANDS+=("make format-check")
+    RESOLVED_COMMANDS+=("make lint")
   fi
 
   if [[ ${#SHELL_SCRIPTS[@]} -gt 0 ]]; then
@@ -501,7 +517,10 @@ print_report_stdout() {
 }
 
 strict_failure() {
-  [[ ${#UNMAPPED_PATHS[@]} -gt 0 || ${#MANUAL_ITEMS[@]} -gt 0 ]]
+  # Plan-only strict validates that every path is mapped while retaining
+  # manual-required items as visible handoff gates. Execute mode still fails
+  # when those manual gates remain incomplete.
+  [[ ${#UNMAPPED_PATHS[@]} -gt 0 || ( "$EXECUTE" -eq 1 && ${#MANUAL_ITEMS[@]} -gt 0 ) ]]
 }
 
 run_commands() {

@@ -9,18 +9,18 @@ import CoreGraphics
 import Foundation
 
 nonisolated struct QRCodeDetection: Equatable, Sendable {
-  let payload: String
-  let boundingBox: CGRect
-  let classification: QRPayloadClassification
+    let payload: String
+    let boundingBox: CGRect
+    let classification: QRPayloadClassification
 }
 
 nonisolated struct QRCodeDetectionResult: Equatable, Sendable {
-  let detections: [QRCodeDetection]
-  let unsupportedPayloadCount: Int
+    let detections: [QRCodeDetection]
+    let unsupportedPayloadCount: Int
 
-  var hasCopyablePayloads: Bool {
-    !detections.isEmpty
-  }
+    var hasCopyablePayloads: Bool {
+        !detections.isEmpty
+    }
 
-  static let empty = QRCodeDetectionResult(detections: [], unsupportedPayloadCount: 0)
+    static let empty = QRCodeDetectionResult(detections: [], unsupportedPayloadCount: 0)
 }

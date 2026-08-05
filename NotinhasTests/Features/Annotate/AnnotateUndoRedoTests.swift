@@ -14,121 +14,121 @@ import CoreGraphics
 import XCTest
 
 final class AnnotateUndoRedoTests: XCTestCase {
-  @MainActor private static var retainedAnnotateStates: [AnnotateState] = []
+    @MainActor private static var retainedAnnotateStates: [AnnotateState] = []
 
-  @MainActor
-  private func makeAnnotateState() -> AnnotateState {
-    let state = AnnotateState()
-    Self.retainedAnnotateStates.append(state)
-    return state
-  }
+    @MainActor
+    private func makeAnnotateState() -> AnnotateState {
+        let state = AnnotateState()
+        Self.retainedAnnotateStates.append(state)
+        return state
+    }
 
-  @MainActor
-  private func makeRectangle() -> AnnotationItem {
-    AnnotationItem(
-      type: .rectangle,
-      bounds: CGRect(x: 10, y: 10, width: 40, height: 40),
-      properties: AnnotationProperties()
-    )
-  }
+    @MainActor
+    private func makeRectangle() -> AnnotationItem {
+        AnnotationItem(
+            type: .rectangle,
+            bounds: CGRect(x: 10, y: 10, width: 40, height: 40),
+            properties: AnnotationProperties(),
+        )
+    }
 
-  @MainActor
-  func testSaveStateEnablesUndoAndMarksUnsavedChanges() {
-    let state = makeAnnotateState()
-    XCTAssertFalse(state.canUndo)
-    XCTAssertFalse(state.canRedo)
+    @MainActor
+    func testSaveStateEnablesUndoAndMarksUnsavedChanges() {
+        let state = makeAnnotateState()
+        XCTAssertFalse(state.canUndo)
+        XCTAssertFalse(state.canRedo)
 
-    state.saveState()
+        state.saveState()
 
-    XCTAssertTrue(state.canUndo)
-    XCTAssertFalse(state.canRedo)
-    XCTAssertTrue(state.hasUnsavedChanges)
-  }
+        XCTAssertTrue(state.canUndo)
+        XCTAssertFalse(state.canRedo)
+        XCTAssertTrue(state.hasUnsavedChanges)
+    }
 
-  @MainActor
-  func testUndoRestoresPriorAnnotationSnapshotAndEnablesRedo() {
-    let state = makeAnnotateState()
+    @MainActor
+    func testUndoRestoresPriorAnnotationSnapshotAndEnablesRedo() {
+        let state = makeAnnotateState()
 
-    state.saveState()
-    state.annotations = [makeRectangle()]
+        state.saveState()
+        state.annotations = [makeRectangle()]
 
-    XCTAssertEqual(state.annotations.count, 1)
+        XCTAssertEqual(state.annotations.count, 1)
 
-    state.undo()
+        state.undo()
 
-    XCTAssertTrue(state.annotations.isEmpty)
-    XCTAssertFalse(state.canUndo)
-    XCTAssertTrue(state.canRedo)
-  }
+        XCTAssertTrue(state.annotations.isEmpty)
+        XCTAssertFalse(state.canUndo)
+        XCTAssertTrue(state.canRedo)
+    }
 
-  @MainActor
-  func testRedoReappliesUndoneAnnotationSnapshot() {
-    let state = makeAnnotateState()
+    @MainActor
+    func testRedoReappliesUndoneAnnotationSnapshot() {
+        let state = makeAnnotateState()
 
-    state.saveState()
-    let rectangle = makeRectangle()
-    state.annotations = [rectangle]
+        state.saveState()
+        let rectangle = makeRectangle()
+        state.annotations = [rectangle]
 
-    state.undo()
-    XCTAssertTrue(state.annotations.isEmpty)
+        state.undo()
+        XCTAssertTrue(state.annotations.isEmpty)
 
-    state.redo()
+        state.redo()
 
-    XCTAssertEqual(state.annotations.count, 1)
-    XCTAssertEqual(state.annotations.first?.id, rectangle.id)
-    XCTAssertTrue(state.canUndo)
-    XCTAssertFalse(state.canRedo)
-  }
+        XCTAssertEqual(state.annotations.count, 1)
+        XCTAssertEqual(state.annotations.first?.id, rectangle.id)
+        XCTAssertTrue(state.canUndo)
+        XCTAssertFalse(state.canRedo)
+    }
 
-  @MainActor
-  func testUndoWithoutCheckpointIsNoOp() {
-    let state = makeAnnotateState()
-    state.annotations = [makeRectangle()]
+    @MainActor
+    func testUndoWithoutCheckpointIsNoOp() {
+        let state = makeAnnotateState()
+        state.annotations = [makeRectangle()]
 
-    state.undo()
+        state.undo()
 
-    XCTAssertEqual(state.annotations.count, 1)
-    XCTAssertFalse(state.canUndo)
-    XCTAssertFalse(state.canRedo)
-  }
+        XCTAssertEqual(state.annotations.count, 1)
+        XCTAssertFalse(state.canUndo)
+        XCTAssertFalse(state.canRedo)
+    }
 
-  @MainActor
-  func testNewCheckpointAfterUndoInvalidatesRedoStack() {
-    let state = makeAnnotateState()
+    @MainActor
+    func testNewCheckpointAfterUndoInvalidatesRedoStack() {
+        let state = makeAnnotateState()
 
-    state.saveState()
-    state.annotations = [makeRectangle()]
+        state.saveState()
+        state.annotations = [makeRectangle()]
 
-    state.undo()
-    XCTAssertTrue(state.canRedo)
+        state.undo()
+        XCTAssertTrue(state.canRedo)
 
-    // A fresh checkpoint (new mutating action) must clear the redo stack.
-    state.saveState()
+        // A fresh checkpoint (new mutating action) must clear the redo stack.
+        state.saveState()
 
-    XCTAssertFalse(state.canRedo)
-    XCTAssertTrue(state.canUndo)
-  }
+        XCTAssertFalse(state.canRedo)
+        XCTAssertTrue(state.canUndo)
+    }
 
-  @MainActor
-  func testSequentialCheckpointsUndoInReverseOrder() {
-    let state = makeAnnotateState()
-    let first = makeRectangle()
-    let second = AnnotationItem(
-      type: .oval,
-      bounds: CGRect(x: 60, y: 60, width: 30, height: 30),
-      properties: AnnotationProperties()
-    )
+    @MainActor
+    func testSequentialCheckpointsUndoInReverseOrder() {
+        let state = makeAnnotateState()
+        let first = makeRectangle()
+        let second = AnnotationItem(
+            type: .oval,
+            bounds: CGRect(x: 60, y: 60, width: 30, height: 30),
+            properties: AnnotationProperties(),
+        )
 
-    state.saveState()
-    state.annotations = [first]
-    state.saveState()
-    state.annotations = [first, second]
+        state.saveState()
+        state.annotations = [first]
+        state.saveState()
+        state.annotations = [first, second]
 
-    state.undo()
-    XCTAssertEqual(state.annotations.map(\.id), [first.id])
+        state.undo()
+        XCTAssertEqual(state.annotations.map(\.id), [first.id])
 
-    state.undo()
-    XCTAssertTrue(state.annotations.isEmpty)
-    XCTAssertFalse(state.canUndo)
-  }
+        state.undo()
+        XCTAssertTrue(state.annotations.isEmpty)
+        XCTAssertFalse(state.canUndo)
+    }
 }

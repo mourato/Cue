@@ -8,20 +8,20 @@
 import SwiftUI
 
 struct AllInOneActionToolbarView: View {
-  @ObservedObject var session: AllInOneCaptureSessionState
+    @ObservedObject var session: AllInOneCaptureSessionState
 
-  var body: some View {
-    if session.selectedMode.showsDimensionsBar, let rect = session.currentRect {
-      AllInOneDimensionsBarView(rect: rect) { updated in
-        session.updateRect(updated)
-      }
+    var body: some View {
+        if session.selectedMode.showsDimensionsBar, let rect = session.currentRect {
+            AllInOneDimensionsBarView(rect: rect) { updated in
+                session.updateRect(updated)
+            }
+        }
     }
-  }
 }
 
 #Preview {
-  let session = AllInOneCaptureSessionState()
-  session.currentRect = CGRect(x: 100, y: 200, width: 640, height: 360)
-  return AllInOneActionToolbarView(session: session)
-    .padding()
+    let session = AllInOneCaptureSessionState()
+    session.currentRect = CGRect(x: 100, y: 200, width: 640, height: 360)
+    return AllInOneActionToolbarView(session: session)
+        .padding()
 }

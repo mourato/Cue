@@ -8,176 +8,176 @@
 import Foundation
 
 enum QuickAccessActionDisplayStyle: String, Codable {
-  case primary
-  case corner
+    case primary
+    case corner
 }
 
 enum QuickAccessActionSurface: Equatable {
-  case overlay
-  case contextMenu
+    case overlay
+    case contextMenu
 }
 
 enum QuickAccessActionSlot: String, CaseIterable, Codable, Hashable, Identifiable {
-  case centerTop
-  case centerBottom
-  case topTrailing
-  case topLeading
-  case bottomLeading
-  case bottomTrailing
+    case centerTop
+    case centerBottom
+    case topTrailing
+    case topLeading
+    case bottomLeading
+    case bottomTrailing
 
-  var id: String {
-    rawValue
-  }
-
-  static let centerSlots: [QuickAccessActionSlot] = [
-    .centerTop,
-    .centerBottom,
-  ]
-
-  static let cornerSlots: [QuickAccessActionSlot] = [
-    .topTrailing,
-    .topLeading,
-    .bottomLeading,
-    .bottomTrailing,
-  ]
-
-  static let defaultAssignments: [QuickAccessActionSlot: QuickAccessActionKind] = [
-    .centerTop: .copy,
-    .centerBottom: .saveOrOpen,
-    .topTrailing: .dismiss,
-    .topLeading: .delete,
-    .bottomLeading: .edit,
-    .bottomTrailing: .uploadToImgBB,
-  ]
-
-  var isCenterSlot: Bool {
-    Self.centerSlots.contains(self)
-  }
-
-  var settingsTitle: String {
-    switch self {
-    case .centerTop:
-      L10n.PreferencesQuickAccess.slotCenterTop
-    case .centerBottom:
-      L10n.PreferencesQuickAccess.slotCenterBottom
-    case .topTrailing:
-      L10n.PreferencesQuickAccess.slotTopRight
-    case .topLeading:
-      L10n.PreferencesQuickAccess.slotTopLeft
-    case .bottomLeading:
-      L10n.PreferencesQuickAccess.slotBottomLeft
-    case .bottomTrailing:
-      L10n.PreferencesQuickAccess.slotBottomRight
+    var id: String {
+        rawValue
     }
-  }
+
+    static let centerSlots: [QuickAccessActionSlot] = [
+        .centerTop,
+        .centerBottom,
+    ]
+
+    static let cornerSlots: [QuickAccessActionSlot] = [
+        .topTrailing,
+        .topLeading,
+        .bottomLeading,
+        .bottomTrailing,
+    ]
+
+    static let defaultAssignments: [QuickAccessActionSlot: QuickAccessActionKind] = [
+        .centerTop: .copy,
+        .centerBottom: .saveOrOpen,
+        .topTrailing: .dismiss,
+        .topLeading: .delete,
+        .bottomLeading: .edit,
+        .bottomTrailing: .uploadToImgBB,
+    ]
+
+    var isCenterSlot: Bool {
+        Self.centerSlots.contains(self)
+    }
+
+    var settingsTitle: String {
+        switch self {
+        case .centerTop:
+            L10n.PreferencesQuickAccess.slotCenterTop
+        case .centerBottom:
+            L10n.PreferencesQuickAccess.slotCenterBottom
+        case .topTrailing:
+            L10n.PreferencesQuickAccess.slotTopRight
+        case .topLeading:
+            L10n.PreferencesQuickAccess.slotTopLeft
+        case .bottomLeading:
+            L10n.PreferencesQuickAccess.slotBottomLeft
+        case .bottomTrailing:
+            L10n.PreferencesQuickAccess.slotBottomRight
+        }
+    }
 }
 
 enum QuickAccessActionKind: String, CaseIterable, Codable, Hashable, Identifiable {
-  case copy
-  case saveOrOpen
-  case dismiss
-  case delete
-  case edit
-  case uploadToCloud
-  case uploadToImgBB
-  case pinToScreen
+    case copy
+    case saveOrOpen
+    case dismiss
+    case delete
+    case edit
+    case uploadToCloud
+    case uploadToImgBB
+    case pinToScreen
 
-  var id: String {
-    rawValue
-  }
-
-  static let defaultOrder: [QuickAccessActionKind] = [
-    .copy,
-    .saveOrOpen,
-    .dismiss,
-    .delete,
-    .edit,
-    .uploadToCloud,
-    .uploadToImgBB,
-    .pinToScreen,
-  ]
-
-  static let defaultEnabledActions = Set(defaultOrder)
-
-  var displayStyle: QuickAccessActionDisplayStyle {
-    switch self {
-    case .copy, .saveOrOpen:
-      .primary
-    case .dismiss, .delete, .edit, .uploadToCloud, .uploadToImgBB, .pinToScreen:
-      .corner
+    var id: String {
+        rawValue
     }
-  }
 
-  var settingsTitle: String {
-    switch self {
-    case .copy:
-      L10n.Common.copy
-    case .saveOrOpen:
-      L10n.PreferencesQuickAccess.saveOrOpenAction
-    case .dismiss:
-      L10n.Common.close
-    case .delete:
-      L10n.Common.deleteAction
-    case .edit:
-      L10n.PreferencesQuickAccess.editAction
-    case .uploadToCloud:
-      L10n.AnnotateUI.uploadToCloud
-    case .uploadToImgBB:
-      NotinhasL10n.uploadToImgBB
-    case .pinToScreen:
-      L10n.PreferencesQuickAccess.pinToScreenAction
+    static let defaultOrder: [QuickAccessActionKind] = [
+        .copy,
+        .saveOrOpen,
+        .dismiss,
+        .delete,
+        .edit,
+        .uploadToCloud,
+        .uploadToImgBB,
+        .pinToScreen,
+    ]
+
+    static let defaultEnabledActions = Set(defaultOrder)
+
+    var displayStyle: QuickAccessActionDisplayStyle {
+        switch self {
+        case .copy, .saveOrOpen:
+            .primary
+        case .dismiss, .delete, .edit, .uploadToCloud, .uploadToImgBB, .pinToScreen:
+            .corner
+        }
     }
-  }
 
-  var settingsPlacementTitle: String {
-    switch displayStyle {
-    case .primary:
-      L10n.PreferencesQuickAccess.primaryActionBadge
-    case .corner:
-      L10n.PreferencesQuickAccess.cornerActionBadge
+    var settingsTitle: String {
+        switch self {
+        case .copy:
+            L10n.Common.copy
+        case .saveOrOpen:
+            L10n.PreferencesQuickAccess.saveOrOpenAction
+        case .dismiss:
+            L10n.Common.close
+        case .delete:
+            L10n.Common.deleteAction
+        case .edit:
+            L10n.PreferencesQuickAccess.editAction
+        case .uploadToCloud:
+            L10n.AnnotateUI.uploadToCloud
+        case .uploadToImgBB:
+            NotinhasL10n.uploadToImgBB
+        case .pinToScreen:
+            L10n.PreferencesQuickAccess.pinToScreenAction
+        }
     }
-  }
 
-  var isContextMenuDestructiveGroup: Bool {
-    switch self {
-    case .dismiss, .delete:
-      true
-    case .copy, .saveOrOpen, .edit, .uploadToCloud, .uploadToImgBB, .pinToScreen:
-      false
+    var settingsPlacementTitle: String {
+        switch displayStyle {
+        case .primary:
+            L10n.PreferencesQuickAccess.primaryActionBadge
+        case .corner:
+            L10n.PreferencesQuickAccess.cornerActionBadge
+        }
     }
-  }
 
-  static func contextMenuOrder(from actions: [QuickAccessActionKind]) -> [QuickAccessActionKind] {
-    let regularActions = actions.filter { !$0.isContextMenuDestructiveGroup }
-    let destructiveActions = actions.filter(\.isContextMenuDestructiveGroup)
-    return regularActions + destructiveActions
-  }
-
-  var systemImage: String {
-    switch self {
-    case .copy:
-      "doc.on.doc"
-    case .saveOrOpen:
-      "square.and.arrow.down"
-    case .dismiss:
-      "xmark"
-    case .delete:
-      "trash"
-    case .edit:
-      "pencil"
-    case .uploadToCloud:
-      "cloud"
-    case .uploadToImgBB:
-      "icloud.and.arrow.up"
-    case .pinToScreen:
-      "pin"
+    var isContextMenuDestructiveGroup: Bool {
+        switch self {
+        case .dismiss, .delete:
+            true
+        case .copy, .saveOrOpen, .edit, .uploadToCloud, .uploadToImgBB, .pinToScreen:
+            false
+        }
     }
-  }
 
-  static func fromStoredRawValue(_ rawValue: String) -> QuickAccessActionKind? {
-    if rawValue == "uploadToImgur" {
-      return .uploadToImgBB
+    static func contextMenuOrder(from actions: [QuickAccessActionKind]) -> [QuickAccessActionKind] {
+        let regularActions = actions.filter { !$0.isContextMenuDestructiveGroup }
+        let destructiveActions = actions.filter(\.isContextMenuDestructiveGroup)
+        return regularActions + destructiveActions
     }
-    return QuickAccessActionKind(rawValue: rawValue)
-  }
+
+    var systemImage: String {
+        switch self {
+        case .copy:
+            "doc.on.doc"
+        case .saveOrOpen:
+            "square.and.arrow.down"
+        case .dismiss:
+            "xmark"
+        case .delete:
+            "trash"
+        case .edit:
+            "pencil"
+        case .uploadToCloud:
+            "cloud"
+        case .uploadToImgBB:
+            "icloud.and.arrow.up"
+        case .pinToScreen:
+            "pin"
+        }
+    }
+
+    static func fromStoredRawValue(_ rawValue: String) -> QuickAccessActionKind? {
+        if rawValue == "uploadToImgur" {
+            return .uploadToImgBB
+        }
+        return QuickAccessActionKind(rawValue: rawValue)
+    }
 }

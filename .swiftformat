@@ -1,8 +1,8 @@
 # Format Options
---indent 2
+--indent 4
 --maxwidth 120
 --linebreaks lf
---swiftversion 5.9
+--swiftversion 6.2
 --semicolons never
 
 # Rules to Disable

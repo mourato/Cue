@@ -10,274 +10,274 @@ import AVFoundation
 import SwiftUI
 
 struct PermissionsSettingsView: View {
-  @ObservedObject private var screenCaptureManager = ScreenCaptureManager.shared
-  @ObservedObject private var identityManager = AppIdentityManager.shared
-  @State private var microphoneGranted = false
-  @State private var accessibilityGranted = false
-  @State private var saveFolderGranted = false
-  @State private var isChecking = false
-  @State private var hasAppeared = false
-  @State private var videoModuleEnabled = VideoModuleAvailability.isEnabled
+    @ObservedObject private var screenCaptureManager = ScreenCaptureManager.shared
+    @ObservedObject private var identityManager = AppIdentityManager.shared
+    @State private var microphoneGranted = false
+    @State private var accessibilityGranted = false
+    @State private var saveFolderGranted = false
+    @State private var isChecking = false
+    @State private var hasAppeared = false
+    @State private var videoModuleEnabled = VideoModuleAvailability.isEnabled
 
-  private let fileAccessManager = SandboxFileAccessManager.shared
+    private let fileAccessManager = SandboxFileAccessManager.shared
 
-  /// System Settings URLs
-  private let screenRecordingURL =
-    "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture"
-  private let microphoneURL =
-    "x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone"
-  private let accessibilityURL =
-    "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
-  private let filesAndFoldersURL =
-    "x-apple.systempreferences:com.apple.preference.security?Privacy_FilesAndFolders"
+    /// System Settings URLs
+    private let screenRecordingURL =
+        "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture"
+    private let microphoneURL =
+        "x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone"
+    private let accessibilityURL =
+        "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
+    private let filesAndFoldersURL =
+        "x-apple.systempreferences:com.apple.preference.security?Privacy_FilesAndFolders"
 
-  var body: some View {
-    Form {
-      Section(L10n.Preferences.permissionsTab) {
-        Text(L10n.PreferencesPermissions.intro)
-          .font(.caption)
-          .foregroundColor(.secondary)
+    var body: some View {
+        Form {
+            Section(L10n.Preferences.permissionsTab) {
+                Text(L10n.PreferencesPermissions.intro)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
 
-        permissionRow(
-          icon: "rectangle.inset.filled.and.person.filled",
-          name: L10n.Onboarding.screenRecording,
-          description: screenRecordingDescription,
-          statusLabel: screenRecordingStatusLabel,
-          statusIcon: screenRecordingStatusIcon,
-          statusColor: screenRecordingStatusColor,
-          isRequired: true,
-          settingsURL: screenRecordingURL
-        )
+                permissionRow(
+                    icon: "rectangle.inset.filled.and.person.filled",
+                    name: L10n.Onboarding.screenRecording,
+                    description: screenRecordingDescription,
+                    statusLabel: screenRecordingStatusLabel,
+                    statusIcon: screenRecordingStatusIcon,
+                    statusColor: screenRecordingStatusColor,
+                    isRequired: true,
+                    settingsURL: screenRecordingURL,
+                )
 
-        permissionRow(
-          icon: "folder.fill",
-          name: L10n.Onboarding.saveFolder,
-          description: L10n.Onboarding.requiredForCaptures,
-          statusLabel: saveFolderGranted ? L10n.PermissionRow.granted : L10n.Common.notGranted,
-          statusIcon: saveFolderGranted ? "checkmark.circle.fill" : "xmark.circle.fill",
-          statusColor: saveFolderGranted ? .green : .orange,
-          isRequired: true,
-          settingsURL: filesAndFoldersURL
-        )
+                permissionRow(
+                    icon: "folder.fill",
+                    name: L10n.Onboarding.saveFolder,
+                    description: L10n.Onboarding.requiredForCaptures,
+                    statusLabel: saveFolderGranted ? L10n.PermissionRow.granted : L10n.Common.notGranted,
+                    statusIcon: saveFolderGranted ? "checkmark.circle.fill" : "xmark.circle.fill",
+                    statusColor: saveFolderGranted ? .green : .orange,
+                    isRequired: true,
+                    settingsURL: filesAndFoldersURL,
+                )
 
-        if videoModuleEnabled {
-          permissionRow(
-            icon: "mic.fill",
-            name: L10n.Onboarding.microphone,
-            description: L10n.Onboarding.optionalForVoiceRecording,
-            statusLabel: microphoneGranted ? L10n.PermissionRow.granted : L10n.Common.notGranted,
-            statusIcon: microphoneGranted ? "checkmark.circle.fill" : "xmark.circle.fill",
-            statusColor: microphoneGranted ? .green : .orange,
-            isRequired: false,
-            settingsURL: microphoneURL
-          )
-        }
+                if videoModuleEnabled {
+                    permissionRow(
+                        icon: "mic.fill",
+                        name: L10n.Onboarding.microphone,
+                        description: L10n.Onboarding.optionalForVoiceRecording,
+                        statusLabel: microphoneGranted ? L10n.PermissionRow.granted : L10n.Common.notGranted,
+                        statusIcon: microphoneGranted ? "checkmark.circle.fill" : "xmark.circle.fill",
+                        statusColor: microphoneGranted ? .green : .orange,
+                        isRequired: false,
+                        settingsURL: microphoneURL,
+                    )
+                }
 
-        permissionRow(
-          icon: "hand.raised.fill",
-          name: L10n.Onboarding.accessibility,
-          description: L10n.Onboarding.optionalForGlobalShortcuts,
-          statusLabel: accessibilityGranted ? L10n.PermissionRow.granted : L10n.Common.notGranted,
-          statusIcon: accessibilityGranted ? "checkmark.circle.fill" : "xmark.circle.fill",
-          statusColor: accessibilityGranted ? .green : .orange,
-          isRequired: false,
-          settingsURL: accessibilityURL
-        )
+                permissionRow(
+                    icon: "hand.raised.fill",
+                    name: L10n.Onboarding.accessibility,
+                    description: L10n.Onboarding.optionalForGlobalShortcuts,
+                    statusLabel: accessibilityGranted ? L10n.PermissionRow.granted : L10n.Common.notGranted,
+                    statusIcon: accessibilityGranted ? "checkmark.circle.fill" : "xmark.circle.fill",
+                    statusColor: accessibilityGranted ? .green : .orange,
+                    isRequired: false,
+                    settingsURL: accessibilityURL,
+                )
 
-        if !identityManager.health.isHealthy {
-          VStack(alignment: .leading, spacing: 6) {
-            Text(L10n.Onboarding.buildIdentityNeedsAttention)
-              .font(.caption)
-              .fontWeight(.semibold)
-              .foregroundColor(.orange)
+                if !identityManager.health.isHealthy {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(L10n.Onboarding.buildIdentityNeedsAttention)
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.orange)
 
-            ForEach(identityManager.health.issues, id: \.self) { issue in
-              Text("• \(issue.description)")
-                .font(.caption)
-                .foregroundColor(.secondary)
+                        ForEach(identityManager.health.issues, id: \.self) { issue in
+                            Text("• \(issue.description)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+
+                HStack {
+                    Spacer()
+                    Button {
+                        checkAllPermissions()
+                    } label: {
+                        HStack(spacing: 4) {
+                            if isChecking {
+                                ProgressView()
+                                    .controlSize(.small)
+                            } else {
+                                Image(systemName: "arrow.clockwise")
+                            }
+                            Text(L10n.Onboarding.refreshStatus)
+                        }
+                    }
+                    .disabled(isChecking)
+                }
+                .padding(.top, 4)
             }
-          }
-          .padding(.vertical, 4)
         }
-
-        HStack {
-          Spacer()
-          Button {
+        .formStyle(.grouped)
+        .onAppear {
+            hasAppeared = true
             checkAllPermissions()
-          } label: {
-            HStack(spacing: 4) {
-              if isChecking {
-                ProgressView()
-                  .controlSize(.small)
-              } else {
-                Image(systemName: "arrow.clockwise")
-              }
-              Text(L10n.Onboarding.refreshStatus)
+        }
+        .onDisappear {
+            hasAppeared = false
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            guard hasAppeared else { return }
+            checkAllPermissions()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .videoModuleAvailabilityDidChange)) { _ in
+            videoModuleEnabled = VideoModuleAvailability.isEnabled
+        }
+    }
+
+    // MARK: - Permission Row Component
+
+    private func permissionRow(
+        icon: String,
+        name: String,
+        description: String,
+        statusLabel: String,
+        statusIcon: String,
+        statusColor: Color,
+        isRequired: Bool,
+        settingsURL: String,
+    ) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.title2)
+                .foregroundColor(.secondary)
+                .frame(width: 28)
+
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 6) {
+                    Text(name)
+                        .fontWeight(.medium)
+                    if isRequired {
+                        StatusBadge(
+                            label: L10n.PermissionRow.required,
+                            systemImage: "exclamationmark.circle.fill",
+                            tint: .orange,
+                        )
+                        .help(L10n.PermissionRow.required)
+                    }
+                }
+                Text(description)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
-          }
-          .disabled(isChecking)
-        }
-        .padding(.top, 4)
-      }
-    }
-    .formStyle(.grouped)
-    .onAppear {
-      hasAppeared = true
-      checkAllPermissions()
-    }
-    .onDisappear {
-      hasAppeared = false
-    }
-    .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
-      guard hasAppeared else { return }
-      checkAllPermissions()
-    }
-    .onReceive(NotificationCenter.default.publisher(for: .videoModuleAvailabilityDidChange)) { _ in
-      videoModuleEnabled = VideoModuleAvailability.isEnabled
-    }
-  }
 
-  // MARK: - Permission Row Component
+            Spacer()
 
-  private func permissionRow(
-    icon: String,
-    name: String,
-    description: String,
-    statusLabel: String,
-    statusIcon: String,
-    statusColor: Color,
-    isRequired: Bool,
-    settingsURL: String
-  ) -> some View {
-    HStack(spacing: 12) {
-      Image(systemName: icon)
-        .font(.title2)
-        .foregroundColor(.secondary)
-        .frame(width: 28)
-
-      VStack(alignment: .leading, spacing: 2) {
-        HStack(spacing: 6) {
-          Text(name)
-            .fontWeight(.medium)
-          if isRequired {
             StatusBadge(
-              label: L10n.PermissionRow.required,
-              systemImage: "exclamationmark.circle.fill",
-              tint: .orange
+                label: statusLabel,
+                systemImage: statusIcon,
+                tint: statusColor,
             )
-            .help(L10n.PermissionRow.required)
-          }
+
+            Button(L10n.Common.openSettings) {
+                openSystemSettings(settingsURL)
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
         }
-        Text(description)
-          .font(.caption)
-          .foregroundColor(.secondary)
-      }
-
-      Spacer()
-
-      StatusBadge(
-        label: statusLabel,
-        systemImage: statusIcon,
-        tint: statusColor
-      )
-
-      Button(L10n.Common.openSettings) {
-        openSystemSettings(settingsURL)
-      }
-      .buttonStyle(.bordered)
-      .controlSize(.small)
+        .padding(.vertical, 4)
     }
-    .padding(.vertical, 4)
-  }
 
-  // MARK: - Permission Checking
+    // MARK: - Permission Checking
 
-  private func checkAllPermissions() {
-    isChecking = true
+    private func checkAllPermissions() {
+        isChecking = true
 
-    checkMicrophonePermission()
-    checkAccessibilityPermission()
-    checkSaveFolderPermission()
+        checkMicrophonePermission()
+        checkAccessibilityPermission()
+        checkSaveFolderPermission()
 
-    Task {
-      await checkScreenRecordingPermission()
-      await MainActor.run {
-        isChecking = false
-      }
+        Task {
+            await checkScreenRecordingPermission()
+            await MainActor.run {
+                isChecking = false
+            }
+        }
     }
-  }
 
-  private func checkScreenRecordingPermission() async {
-    AppIdentityManager.shared.refresh()
-    await screenCaptureManager.checkPermission()
-  }
-
-  private func checkMicrophonePermission() {
-    let status = AVCaptureDevice.authorizationStatus(for: .audio)
-    microphoneGranted = (status == .authorized)
-  }
-
-  private func checkAccessibilityPermission() {
-    accessibilityGranted = AXIsProcessTrusted()
-  }
-
-  private func checkSaveFolderPermission() {
-    fileAccessManager.ensureExportLocationInitialized()
-    saveFolderGranted = fileAccessManager.hasPersistedExportPermission
-  }
-
-  private var screenRecordingDescription: String {
-    switch screenCaptureManager.permissionStatus {
-    case .granted:
-      L10n.Onboarding.requiredForCaptures
-    case .notGranted:
-      L10n.Onboarding.requiredForCaptures
-    case .grantedButUnavailableDueToAppIdentity:
-      L10n.Onboarding.screenRecordingIdentityBlocked
+    private func checkScreenRecordingPermission() async {
+        AppIdentityManager.shared.refresh()
+        await screenCaptureManager.checkPermission()
     }
-  }
 
-  private var screenRecordingStatusLabel: String {
-    switch screenCaptureManager.permissionStatus {
-    case .granted:
-      L10n.PermissionRow.granted
-    case .notGranted:
-      L10n.Common.notGranted
-    case .grantedButUnavailableDueToAppIdentity:
-      L10n.Onboarding.unavailable
+    private func checkMicrophonePermission() {
+        let status = AVCaptureDevice.authorizationStatus(for: .audio)
+        microphoneGranted = (status == .authorized)
     }
-  }
 
-  private var screenRecordingStatusIcon: String {
-    switch screenCaptureManager.permissionStatus {
-    case .granted:
-      "checkmark.circle.fill"
-    case .notGranted:
-      "xmark.circle.fill"
-    case .grantedButUnavailableDueToAppIdentity:
-      "exclamationmark.triangle.fill"
+    private func checkAccessibilityPermission() {
+        accessibilityGranted = AXIsProcessTrusted()
     }
-  }
 
-  private var screenRecordingStatusColor: Color {
-    switch screenCaptureManager.permissionStatus {
-    case .granted:
-      .green
-    case .notGranted, .grantedButUnavailableDueToAppIdentity:
-      .orange
+    private func checkSaveFolderPermission() {
+        fileAccessManager.ensureExportLocationInitialized()
+        saveFolderGranted = fileAccessManager.hasPersistedExportPermission
     }
-  }
 
-  // MARK: - System Settings Navigation
-
-  private func openSystemSettings(_ urlString: String) {
-    if let url = URL(string: urlString) {
-      NSWorkspace.shared.open(url)
+    private var screenRecordingDescription: String {
+        switch screenCaptureManager.permissionStatus {
+        case .granted:
+            L10n.Onboarding.requiredForCaptures
+        case .notGranted:
+            L10n.Onboarding.requiredForCaptures
+        case .grantedButUnavailableDueToAppIdentity:
+            L10n.Onboarding.screenRecordingIdentityBlocked
+        }
     }
-  }
+
+    private var screenRecordingStatusLabel: String {
+        switch screenCaptureManager.permissionStatus {
+        case .granted:
+            L10n.PermissionRow.granted
+        case .notGranted:
+            L10n.Common.notGranted
+        case .grantedButUnavailableDueToAppIdentity:
+            L10n.Onboarding.unavailable
+        }
+    }
+
+    private var screenRecordingStatusIcon: String {
+        switch screenCaptureManager.permissionStatus {
+        case .granted:
+            "checkmark.circle.fill"
+        case .notGranted:
+            "xmark.circle.fill"
+        case .grantedButUnavailableDueToAppIdentity:
+            "exclamationmark.triangle.fill"
+        }
+    }
+
+    private var screenRecordingStatusColor: Color {
+        switch screenCaptureManager.permissionStatus {
+        case .granted:
+            .green
+        case .notGranted, .grantedButUnavailableDueToAppIdentity:
+            .orange
+        }
+    }
+
+    // MARK: - System Settings Navigation
+
+    private func openSystemSettings(_ urlString: String) {
+        if let url = URL(string: urlString) {
+            NSWorkspace.shared.open(url)
+        }
+    }
 }
 
 #Preview {
-  PermissionsSettingsView()
-    .frame(width: 600, height: 400)
+    PermissionsSettingsView()
+        .frame(width: 600, height: 400)
 }

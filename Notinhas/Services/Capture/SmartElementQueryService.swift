@@ -11,7 +11,7 @@
 //
 
 import AppKit
-import ApplicationServices
+@preconcurrency import ApplicationServices
 import Combine
 import Foundation
 
@@ -22,190 +22,191 @@ import Foundation
 /// internal Combine pipeline uses `DispatchQueue.main` as its scheduler
 /// so the query closure also fires on the main thread.
 final class SmartElementQueryService {
-  static let shared = SmartElementQueryService()
+    /// The singleton is accessed by both the AX query queue and main-thread UI callbacks.
+    nonisolated(unsafe) static let shared = SmartElementQueryService()
 
-  // MARK: - Public Publisher
+    // MARK: - Public Publisher
 
-  /// Emits the detected element rect in AppKit bottom-left global coordinates.
-  /// Emits nil to clear the highlight (no element, permission denied, cancelled).
-  var elementDetectedPublisher: AnyPublisher<CGRect?, Never> {
-    detectedSubject.eraseToAnyPublisher()
-  }
-
-  // MARK: - Dependencies
-
-  private let snapshotProvider: AXSnapshotProviding
-  private let permissionChecker: () -> Bool
-  private let debounceMilliseconds: Int
-
-  // MARK: - State
-
-  private let inputSubject = PassthroughSubject<(CGPoint, Int32?), Never>()
-  private let detectedSubject = PassthroughSubject<CGRect?, Never>()
-  private var cancellables = Set<AnyCancellable>()
-  private var lastEmittedRect: CGRect?
-  private var hasEmittedAtLeastOnce = false
-  // Permission-denied warning is intentionally logged once per process lifetime
-  // (not per selection session) to avoid flooding diagnostics while the user
-  // keeps re-entering smart-element mode without granting access.
-  private var hasLoggedPermissionDenied = false
-  private(set) var permissionDeniedLogCount = 0
-
-  // MARK: - Init
-
-  init(
-    snapshotProvider: AXSnapshotProviding = AXAccessibilitySnapshotProvider(),
-    permissionChecker: @escaping () -> Bool = { AXIsProcessTrusted() },
-    debounceMilliseconds: Int = 25
-  ) {
-    self.snapshotProvider = snapshotProvider
-    self.permissionChecker = permissionChecker
-    self.debounceMilliseconds = debounceMilliseconds
-    bindPipeline()
-  }
-
-  private func bindPipeline() {
-    inputSubject
-      .throttle(for: .milliseconds(debounceMilliseconds), scheduler: DispatchQueue.main, latest: true)
-      .receive(on: DispatchQueue.global(qos: .userInteractive))
-      .sink { [weak self] point, pid in
-        self?.queryElement(at: point, pid: pid)
-      }
-      .store(in: &cancellables)
-  }
-
-  // MARK: - Public API
-
-  /// Push the current cursor location (read here so callers never have to fetch it).
-  func updateMouseLocation(pid: Int32? = nil) {
-    guard let location = CGEvent(source: nil)?.location else { return }
-    inputSubject.send((location, pid))
-  }
-
-  /// Push an explicit point through the debounced input pipeline.
-  /// Internal so tests can exercise the debounce/dedup without depending on
-  /// the real cursor position. Not part of the production call surface.
-  func pushInputForTesting(point: CGPoint, pid: Int32?) {
-    inputSubject.send((point, pid))
-  }
-
-  /// Clear the current highlight and forget the last emission so the next query
-  /// will always emit (even if it matches the previous rect).
-  func cancelPendingQueries() {
-    lastEmittedRect = nil
-    hasEmittedAtLeastOnce = false
-    detectedSubject.send(nil)
-  }
-
-  /// Prompt the user for Accessibility permission if not already granted.
-  /// Returns `true` if permission is already granted at call time.
-  ///
-  /// Deliberately calls `AXIsProcessTrusted()` directly (not the injected
-  /// `permissionChecker`) — the system prompt must reflect real TCC trust,
-  /// not a test fake. Tests that need to assert prompt behavior should
-  /// instead exercise the `queryElement` path, which uses the injectable
-  /// checker.
-  @discardableResult
-  func ensureAccessibilityPermission() -> Bool {
-    if AXIsProcessTrusted() {
-      return true
-    }
-    let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
-    _ = AXIsProcessTrustedWithOptions(options)
-    DiagnosticLogger.shared.log(
-      .warning,
-      .capture,
-      "Smart element capture: accessibility prompt shown"
-    )
-    return false
-  }
-
-  // MARK: - Query
-
-  /// Direct query entry point. Public to the test target via `@testable import`;
-  /// production callers go through `updateMouseLocation(pid:)` so the input is
-  /// debounced. Tests may call this directly to bypass timing.
-  func queryElement(at point: CGPoint, pid: Int32?) {
-    guard permissionChecker() else {
-      logPermissionDeniedOnce()
-      emit(nil)
-      return
+    /// Emits the detected element rect in AppKit bottom-left global coordinates.
+    /// Emits nil to clear the highlight (no element, permission denied, cancelled).
+    var elementDetectedPublisher: AnyPublisher<CGRect?, Never> {
+        detectedSubject.eraseToAnyPublisher()
     }
 
-    DiagnosticLogger.shared.log(.debug, .capture, "queryElement(at: \(point), pid: \(pid ?? -1))")
+    // MARK: - Dependencies
 
-    guard let raw = snapshotProvider.snapshot(at: point, pid: pid) else {
-      DiagnosticLogger.shared.log(.debug, .capture, "snapshotProvider.snapshot returned nil")
-      emit(nil)
-      return
+    private let snapshotProvider: AXSnapshotProviding
+    private let permissionChecker: () -> Bool
+    private let debounceMilliseconds: Int
+
+    // MARK: - State
+
+    private let inputSubject = PassthroughSubject<(CGPoint, Int32?), Never>()
+    private let detectedSubject = PassthroughSubject<CGRect?, Never>()
+    private var cancellables = Set<AnyCancellable>()
+    private var lastEmittedRect: CGRect?
+    private var hasEmittedAtLeastOnce = false
+    // Permission-denied warning is intentionally logged once per process lifetime
+    // (not per selection session) to avoid flooding diagnostics while the user
+    // keeps re-entering smart-element mode without granting access.
+    private var hasLoggedPermissionDenied = false
+    private(set) var permissionDeniedLogCount = 0
+
+    // MARK: - Init
+
+    init(
+        snapshotProvider: AXSnapshotProviding = AXAccessibilitySnapshotProvider(),
+        permissionChecker: @escaping () -> Bool = { AXIsProcessTrusted() },
+        debounceMilliseconds: Int = 25,
+    ) {
+        self.snapshotProvider = snapshotProvider
+        self.permissionChecker = permissionChecker
+        self.debounceMilliseconds = debounceMilliseconds
+        bindPipeline()
     }
 
-    DiagnosticLogger.shared.log(
-      .debug,
-      .capture,
-      "snapshot returned element: role=\(raw.role ?? "nil") size=\(raw.size)"
-    )
-
-    guard let meaningful = AXElementInspector.findMeaningful(raw) else {
-      DiagnosticLogger.shared.log(
-        .debug,
-        .capture,
-        "Smart element capture: no meaningful element after walk",
-        context: ["rawRole": raw.role ?? "nil", "rawSize": "\(raw.size)"]
-      )
-      emit(nil)
-      return
+    private func bindPipeline() {
+        inputSubject
+            .throttle(for: .milliseconds(debounceMilliseconds), scheduler: DispatchQueue.main, latest: true)
+            .receive(on: DispatchQueue.global(qos: .userInteractive))
+            .sink { [weak self] point, pid in
+                self?.queryElement(at: point, pid: pid)
+            }
+            .store(in: &cancellables)
     }
 
-    guard let flippedRect = AXElementInspector.screenRect(forTopLeftRect: meaningful.rect) else {
-      DiagnosticLogger.shared.log(
-        .warning,
-        .capture,
-        "Smart element capture: no screen contains AX rect",
-        context: ["axRect": "\(meaningful.rect)"]
-      )
-      emit(nil)
-      return
+    // MARK: - Public API
+
+    /// Push the current cursor location (read here so callers never have to fetch it).
+    func updateMouseLocation(pid: Int32? = nil) {
+        guard let location = CGEvent(source: nil)?.location else { return }
+        inputSubject.send((location, pid))
     }
 
-    DiagnosticLogger.shared.log(
-      .debug,
-      .capture,
-      "Smart element capture: emit",
-      context: [
-        "role": meaningful.role ?? "nil",
-        "axRect": "\(meaningful.rect)",
-        "flippedRect": "\(flippedRect)",
-      ]
-    )
-    emit(flippedRect)
-  }
-
-  private func emit(_ rect: CGRect?) {
-    let block = { [weak self] in
-      guard let self else { return }
-      if hasEmittedAtLeastOnce, rect == lastEmittedRect {
-        return
-      }
-      hasEmittedAtLeastOnce = true
-      lastEmittedRect = rect
-      detectedSubject.send(rect)
+    /// Push an explicit point through the debounced input pipeline.
+    /// Internal so tests can exercise the debounce/dedup without depending on
+    /// the real cursor position. Not part of the production call surface.
+    func pushInputForTesting(point: CGPoint, pid: Int32?) {
+        inputSubject.send((point, pid))
     }
-    if Thread.isMainThread {
-      block()
-    } else {
-      DispatchQueue.main.async(execute: block)
-    }
-  }
 
-  private func logPermissionDeniedOnce() {
-    guard !hasLoggedPermissionDenied else { return }
-    hasLoggedPermissionDenied = true
-    permissionDeniedLogCount += 1
-    DiagnosticLogger.shared.log(
-      .warning,
-      .capture,
-      "Smart element capture: accessibility not trusted; emitting nil"
-    )
-  }
+    /// Clear the current highlight and forget the last emission so the next query
+    /// will always emit (even if it matches the previous rect).
+    func cancelPendingQueries() {
+        lastEmittedRect = nil
+        hasEmittedAtLeastOnce = false
+        detectedSubject.send(nil)
+    }
+
+    /// Prompt the user for Accessibility permission if not already granted.
+    /// Returns `true` if permission is already granted at call time.
+    ///
+    /// Deliberately calls `AXIsProcessTrusted()` directly (not the injected
+    /// `permissionChecker`) — the system prompt must reflect real TCC trust,
+    /// not a test fake. Tests that need to assert prompt behavior should
+    /// instead exercise the `queryElement` path, which uses the injectable
+    /// checker.
+    @discardableResult
+    func ensureAccessibilityPermission() -> Bool {
+        if AXIsProcessTrusted() {
+            return true
+        }
+        let options = ["AXTrustedCheckOptionPrompt": true] as CFDictionary
+        _ = AXIsProcessTrustedWithOptions(options)
+        DiagnosticLogger.shared.log(
+            .warning,
+            .capture,
+            "Smart element capture: accessibility prompt shown",
+        )
+        return false
+    }
+
+    // MARK: - Query
+
+    /// Direct query entry point. Public to the test target via `@testable import`;
+    /// production callers go through `updateMouseLocation(pid:)` so the input is
+    /// debounced. Tests may call this directly to bypass timing.
+    func queryElement(at point: CGPoint, pid: Int32?) {
+        guard permissionChecker() else {
+            logPermissionDeniedOnce()
+            emit(nil)
+            return
+        }
+
+        DiagnosticLogger.shared.log(.debug, .capture, "queryElement(at: \(point), pid: \(pid ?? -1))")
+
+        guard let raw = snapshotProvider.snapshot(at: point, pid: pid) else {
+            DiagnosticLogger.shared.log(.debug, .capture, "snapshotProvider.snapshot returned nil")
+            emit(nil)
+            return
+        }
+
+        DiagnosticLogger.shared.log(
+            .debug,
+            .capture,
+            "snapshot returned element: role=\(raw.role ?? "nil") size=\(raw.size)",
+        )
+
+        guard let meaningful = AXElementInspector.findMeaningful(raw) else {
+            DiagnosticLogger.shared.log(
+                .debug,
+                .capture,
+                "Smart element capture: no meaningful element after walk",
+                context: ["rawRole": raw.role ?? "nil", "rawSize": "\(raw.size)"],
+            )
+            emit(nil)
+            return
+        }
+
+        guard let flippedRect = AXElementInspector.screenRect(forTopLeftRect: meaningful.rect) else {
+            DiagnosticLogger.shared.log(
+                .warning,
+                .capture,
+                "Smart element capture: no screen contains AX rect",
+                context: ["axRect": "\(meaningful.rect)"],
+            )
+            emit(nil)
+            return
+        }
+
+        DiagnosticLogger.shared.log(
+            .debug,
+            .capture,
+            "Smart element capture: emit",
+            context: [
+                "role": meaningful.role ?? "nil",
+                "axRect": "\(meaningful.rect)",
+                "flippedRect": "\(flippedRect)",
+            ],
+        )
+        emit(flippedRect)
+    }
+
+    private func emit(_ rect: CGRect?) {
+        let block = { [weak self] in
+            guard let self else { return }
+            if hasEmittedAtLeastOnce, rect == lastEmittedRect {
+                return
+            }
+            hasEmittedAtLeastOnce = true
+            lastEmittedRect = rect
+            detectedSubject.send(rect)
+        }
+        if Thread.isMainThread {
+            block()
+        } else {
+            DispatchQueue.main.async(execute: block)
+        }
+    }
+
+    private func logPermissionDeniedOnce() {
+        guard !hasLoggedPermissionDenied else { return }
+        hasLoggedPermissionDenied = true
+        permissionDeniedLogCount += 1
+        DiagnosticLogger.shared.log(
+            .warning,
+            .capture,
+            "Smart element capture: accessibility not trusted; emitting nil",
+        )
+    }
 }

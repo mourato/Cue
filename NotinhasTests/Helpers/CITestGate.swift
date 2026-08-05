@@ -22,15 +22,15 @@
 import XCTest
 
 extension XCTestCase {
-  /// Skip the calling test when running under CI. Interaction / nondeterministic
-  /// tests must call this as their first statement.
-  func skipIfRunningInCI(
-    _ message: String = "interaction/nondeterministic test skipped in CI",
-    file: StaticString = #filePath,
-    line: UInt = #line
-  ) throws {
-    let environment = ProcessInfo.processInfo.environment
-    let isRunningInCI = environment["CI"] != nil || environment["GITHUB_ACTIONS"] != nil
-    try XCTSkipIf(isRunningInCI, message, file: file, line: line)
-  }
+    /// Skip the calling test when running under CI. Interaction / nondeterministic
+    /// tests must call this as their first statement.
+    func skipIfRunningInCI(
+        _ message: String = "interaction/nondeterministic test skipped in CI",
+        file: StaticString = #filePath,
+        line: UInt = #line,
+    ) throws {
+        let environment = ProcessInfo.processInfo.environment
+        let isRunningInCI = environment["CI"] != nil || environment["GITHUB_ACTIONS"] != nil
+        try XCTSkipIf(isRunningInCI, message, file: file, line: line)
+    }
 }

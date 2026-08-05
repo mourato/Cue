@@ -8,19 +8,19 @@
 import CoreGraphics
 
 enum OCREngine: String {
-  case vision
+    case vision
 }
 
 struct OCRTextLine {
-  let text: String
-  let confidence: Float
-  let boundingBox: CGRect
+    let text: String
+    let confidence: Float
+    let boundingBox: CGRect
 }
 
 struct OCRResult {
-  let engine: OCREngine
-  let profileID: String
-  let text: String
-  let lines: [OCRTextLine]
-  let averageConfidence: Float
+    let engine: OCREngine
+    let profileID: String
+    let text: String
+    let lines: [OCRTextLine]
+    let averageConfidence: Float
 }

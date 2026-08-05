@@ -7,12 +7,10 @@ if [ -z "$STAGED_SWIFT_FILES" ]; then
 fi
 
 if which swiftformat >/dev/null; then
-  echo "SwiftFormat pre-commit formatting is disabled (commented out)."
-  # echo "Formatting staged Swift files..."
-  # # Format each staged file
-  # echo "$STAGED_SWIFT_FILES" | xargs swiftformat
-  # # Re-stage formatted files
-  # echo "$STAGED_SWIFT_FILES" | xargs git add
+  echo "Validating staged Swift files..."
+  mapfile -t staged_swift_files <<< "$STAGED_SWIFT_FILES"
+  swiftformat "${staged_swift_files[@]}" --lint
 else
-  echo "warning: SwiftFormat is not installed. Skipping pre-commit formatting."
+  echo "error: SwiftFormat is required for Swift commits." >&2
+  exit 1
 fi

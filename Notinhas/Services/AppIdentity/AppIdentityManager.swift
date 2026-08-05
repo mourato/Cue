@@ -10,121 +10,121 @@ import Foundation
 import Security
 
 enum AppBundleIdentity {
-  #if DEBUG
-    static let expected = "com.mourato.notinhas.debug"
-  #else
-    static let expected = "com.mourato.notinhas"
-  #endif
+    #if DEBUG
+        static let expected = "com.mourato.notinhas.debug"
+    #else
+        static let expected = "com.mourato.notinhas"
+    #endif
 }
 
 enum AppIdentityIssue: Equatable, Hashable {
-  case unexpectedBundleIdentifier(String?)
-  case invalidBundleSignature
-  case outsideApplications(URL)
-  case quarantined
+    case unexpectedBundleIdentifier(String?)
+    case invalidBundleSignature
+    case outsideApplications(URL)
+    case quarantined
 
-  var description: String {
-    switch self {
-    case .unexpectedBundleIdentifier(let bundleIdentifier):
-      let currentIdentifier = bundleIdentifier ?? "missing"
-      return L10n.AppIdentity.unexpectedBundleIdentifier(currentIdentifier)
-    case .invalidBundleSignature:
-      return L10n.AppIdentity.invalidSignature
-    case .outsideApplications(let bundleURL):
-      return L10n.AppIdentity.outsideApplications(bundleURL.path)
-    case .quarantined:
-      return L10n.AppIdentity.quarantined
+    var description: String {
+        switch self {
+        case .unexpectedBundleIdentifier(let bundleIdentifier):
+            let currentIdentifier = bundleIdentifier ?? "missing"
+            return L10n.AppIdentity.unexpectedBundleIdentifier(currentIdentifier)
+        case .invalidBundleSignature:
+            return L10n.AppIdentity.invalidSignature
+        case .outsideApplications(let bundleURL):
+            return L10n.AppIdentity.outsideApplications(bundleURL.path)
+        case .quarantined:
+            return L10n.AppIdentity.quarantined
+        }
     }
-  }
 }
 
 struct AppIdentityHealth: Equatable {
-  let bundleURL: URL
-  let issues: [AppIdentityIssue]
+    let bundleURL: URL
+    let issues: [AppIdentityIssue]
 
-  var isHealthy: Bool {
-    issues.isEmpty
-  }
-
-  var summary: String {
-    if issues.isEmpty {
-      return L10n.AppIdentity.healthy
+    var isHealthy: Bool {
+        issues.isEmpty
     }
 
-    return issues.map(\.description).joined(separator: " ")
-  }
+    var summary: String {
+        if issues.isEmpty {
+            return L10n.AppIdentity.healthy
+        }
+
+        return issues.map(\.description).joined(separator: " ")
+    }
 }
 
 @MainActor
 final class AppIdentityManager: ObservableObject {
-  static let shared = AppIdentityManager()
+    static let shared = AppIdentityManager()
 
-  @Published private(set) var health = AppIdentityHealth(
-    bundleURL: Bundle.main.bundleURL,
-    issues: []
-  )
+    @Published private(set) var health = AppIdentityHealth(
+        bundleURL: Bundle.main.bundleURL,
+        issues: [],
+    )
 
-  private init() {
-    refresh()
-  }
-
-  func refresh() {
-    health = Self.evaluate()
-  }
-
-  private static func evaluate() -> AppIdentityHealth {
-    let bundleURL = Bundle.main.bundleURL.standardizedFileURL
-    var issues: [AppIdentityIssue] = []
-    let quarantined = isQuarantined(bundleURL)
-
-    if Bundle.main.bundleIdentifier != AppBundleIdentity.expected {
-      issues.append(.unexpectedBundleIdentifier(Bundle.main.bundleIdentifier))
+    private init() {
+        refresh()
     }
 
-    // Quarantine flag check: Only flag as an issue if the app is running from
-    // outside standard Applications folders. Some install paths use command-line
-    // `mv`/`cp` which preserves the quarantine xattr even after the app is placed
-    // in /Applications. Since the app is Apple Notarized, macOS Gatekeeper handles
-    // the quarantine-to-clearance flow automatically on first launch. Flagging
-    // quarantine inside /Applications would be a false positive that blocks
-    // permissions after reinstalls or upgrades (see issue #337).
-    if quarantined {
-      let homePath = NSHomeDirectory()
-      let isInsideApplications =
-        bundleURL.path.hasPrefix("/Applications/")
-          || bundleURL.path.hasPrefix("\(homePath)/Applications/")
-      if !isInsideApplications {
-        issues.append(.outsideApplications(bundleURL))
-        issues.append(.quarantined)
-      }
+    func refresh() {
+        health = Self.evaluate()
     }
 
-    // Skip strict signature validation in debug builds — Xcode uses ad-hoc
-    // signing which always fails kSecCSStrictValidate, blocking the entire
-    // permission flow during development.
-    #if !DEBUG
-      if !hasValidBundleSignature(bundleURL) {
-        issues.append(.invalidBundleSignature)
-      }
-    #endif
+    private static func evaluate() -> AppIdentityHealth {
+        let bundleURL = Bundle.main.bundleURL.standardizedFileURL
+        var issues: [AppIdentityIssue] = []
+        let quarantined = isQuarantined(bundleURL)
 
-    return AppIdentityHealth(bundleURL: bundleURL, issues: issues)
-  }
+        if Bundle.main.bundleIdentifier != AppBundleIdentity.expected {
+            issues.append(.unexpectedBundleIdentifier(Bundle.main.bundleIdentifier))
+        }
 
-  private static func isQuarantined(_ bundleURL: URL) -> Bool {
-    let values = try? bundleURL.resourceValues(forKeys: [.quarantinePropertiesKey])
-    return values?.quarantineProperties != nil
-  }
+        // Quarantine flag check: Only flag as an issue if the app is running from
+        // outside standard Applications folders. Some install paths use command-line
+        // `mv`/`cp` which preserves the quarantine xattr even after the app is placed
+        // in /Applications. Since the app is Apple Notarized, macOS Gatekeeper handles
+        // the quarantine-to-clearance flow automatically on first launch. Flagging
+        // quarantine inside /Applications would be a false positive that blocks
+        // permissions after reinstalls or upgrades (see issue #337).
+        if quarantined {
+            let homePath = NSHomeDirectory()
+            let isInsideApplications =
+                bundleURL.path.hasPrefix("/Applications/")
+                    || bundleURL.path.hasPrefix("\(homePath)/Applications/")
+            if !isInsideApplications {
+                issues.append(.outsideApplications(bundleURL))
+                issues.append(.quarantined)
+            }
+        }
 
-  private static func hasValidBundleSignature(_ bundleURL: URL) -> Bool {
-    var staticCode: SecStaticCode?
-    let createStatus = SecStaticCodeCreateWithPath(bundleURL as CFURL, SecCSFlags(), &staticCode)
-    guard createStatus == errSecSuccess, let staticCode else {
-      return false
+        // Skip strict signature validation in debug builds — Xcode uses ad-hoc
+        // signing which always fails kSecCSStrictValidate, blocking the entire
+        // permission flow during development.
+        #if !DEBUG
+            if !hasValidBundleSignature(bundleURL) {
+                issues.append(.invalidBundleSignature)
+            }
+        #endif
+
+        return AppIdentityHealth(bundleURL: bundleURL, issues: issues)
     }
 
-    let flags = SecCSFlags(rawValue: kSecCSCheckAllArchitectures | kSecCSCheckNestedCode | kSecCSStrictValidate)
-    let verifyStatus = SecStaticCodeCheckValidity(staticCode, flags, nil)
-    return verifyStatus == errSecSuccess
-  }
+    private static func isQuarantined(_ bundleURL: URL) -> Bool {
+        let values = try? bundleURL.resourceValues(forKeys: [.quarantinePropertiesKey])
+        return values?.quarantineProperties != nil
+    }
+
+    private static func hasValidBundleSignature(_ bundleURL: URL) -> Bool {
+        var staticCode: SecStaticCode?
+        let createStatus = SecStaticCodeCreateWithPath(bundleURL as CFURL, SecCSFlags(), &staticCode)
+        guard createStatus == errSecSuccess, let staticCode else {
+            return false
+        }
+
+        let flags = SecCSFlags(rawValue: kSecCSCheckAllArchitectures | kSecCSCheckNestedCode | kSecCSStrictValidate)
+        let verifyStatus = SecStaticCodeCheckValidity(staticCode, flags, nil)
+        return verifyStatus == errSecSuccess
+    }
 }

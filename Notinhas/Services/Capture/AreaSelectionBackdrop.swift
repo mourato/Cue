@@ -11,84 +11,84 @@ import Foundation
 typealias AreaSelectionResultCompletion = (AreaSelectionResult?) -> Void
 
 nonisolated enum AreaSelectionInteractionMode {
-  case manualRegion
-  case applicationWindow
+    case manualRegion
+    case applicationWindow
 }
 
 nonisolated struct AreaSelectionBackdrop {
-  let displayID: CGDirectDisplayID
-  let image: CGImage
-  let scaleFactor: CGFloat
-  let isVisible: Bool
+    let displayID: CGDirectDisplayID
+    let image: CGImage
+    let scaleFactor: CGFloat
+    let isVisible: Bool
 
-  init(displayID: CGDirectDisplayID, image: CGImage, scaleFactor: CGFloat, isVisible: Bool = true) {
-    self.displayID = displayID
-    self.image = image
-    self.scaleFactor = scaleFactor
-    self.isVisible = isVisible
-  }
+    init(displayID: CGDirectDisplayID, image: CGImage, scaleFactor: CGFloat, isVisible: Bool = true) {
+        self.displayID = displayID
+        self.image = image
+        self.scaleFactor = scaleFactor
+        self.isVisible = isVisible
+    }
 }
 
 nonisolated struct WindowCaptureTarget: Equatable, Sendable {
-  let windowID: CGWindowID
-  let frame: CGRect
-  let displayID: CGDirectDisplayID
-  let title: String?
-  let bundleIdentifier: String?
-  let ownerPID: Int32?
+    let windowID: CGWindowID
+    let frame: CGRect
+    let displayID: CGDirectDisplayID
+    let title: String?
+    let bundleIdentifier: String?
+    let ownerPID: Int32?
 }
 
 nonisolated enum AreaSelectionTarget: Equatable {
-  case rect(CGRect)
-  case window(WindowCaptureTarget)
+    case rect(CGRect)
+    case window(WindowCaptureTarget)
 
-  var rect: CGRect {
-    switch self {
-    case .rect(let rect):
-      rect
-    case .window(let target):
-      target.frame
+    var rect: CGRect {
+        switch self {
+        case .rect(let rect):
+            rect
+        case .window(let target):
+            target.frame
+        }
     }
-  }
 
-  var windowTarget: WindowCaptureTarget? {
-    switch self {
-    case .rect:
-      nil
-    case .window(let target):
-      target
+    var windowTarget: WindowCaptureTarget? {
+        switch self {
+        case .rect:
+            nil
+        case .window(let target):
+            target
+        }
     }
-  }
 }
 
 nonisolated struct AreaSelectionApplicationConfiguration {
-  let prefetchedContentTask: ShareableContentPrefetchTask?
-  let excludeOwnApplication: Bool
+    let prefetchedContentTask: ShareableContentPrefetchTask?
+    let excludeOwnApplication: Bool
 }
 
 nonisolated struct AreaSelectionResult {
-  let target: AreaSelectionTarget
-  let displayID: CGDirectDisplayID
-  let mode: SelectionMode
-  let displayIDs: Set<CGDirectDisplayID>
+    let target: AreaSelectionTarget
+    let displayID: CGDirectDisplayID
+    let mode: SelectionMode
+    let displayIDs: Set<CGDirectDisplayID>
 
-  init(
-    target: AreaSelectionTarget,
-    displayID: CGDirectDisplayID,
-    mode: SelectionMode,
-    displayIDs: Set<CGDirectDisplayID>? = nil
-  ) {
-    self.target = target
-    self.displayID = displayID
-    self.mode = mode
-    self.displayIDs = displayIDs ?? [displayID]
-  }
+    init(
+        target: AreaSelectionTarget,
+        displayID: CGDirectDisplayID,
+        mode: SelectionMode,
+        displayIDs: Set<CGDirectDisplayID>? = nil,
+    ) {
+        self.target = target
+        self.displayID = displayID
+        self.mode = mode
+        self.displayIDs = displayIDs ?? [displayID]
+    }
 
-  var rect: CGRect {
-    target.rect
-  }
+    var rect: CGRect {
+        target.rect
+    }
 
-  var spansMultipleDisplays: Bool {
-    displayIDs.count > 1
-  }
+    var spansMultipleDisplays: Bool {
+        displayIDs.count > 1
+    }
 }
