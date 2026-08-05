@@ -38,6 +38,17 @@ The optional Video module is part of the gate: use `make build-video` and
 configuration through the canonical scripts. The default app uses `make build`
 and `make test`.
 
+## Validation toolchain
+
+Observed on 2026-08-05:
+
+| Tool | Version/details |
+| --- | --- |
+| Swift compiler | Swift 6.4 (`swift-driver` 1.168.4; target `arm64-apple-macosx27.0.0`) — the installed compiler used to validate the Swift 6.2 language baseline |
+| Xcode | 27.0 (`27A5218g`) |
+| SwiftFormat | 0.62.1 |
+| SwiftLint | 0.65.0 |
+
 ## Agent command tiers
 
 - Focused: `make format-check`, `make lint-changed`, and the relevant XCTest
