@@ -6,7 +6,7 @@
 > Update the plan ledger only after the complete app/test/Video/guidance gate
 > and review pass.
 >
-> **Drift check (run first)**: `git diff --stat b4348db6..HEAD -- Notinhas
+> **Drift check (run first)**: `git diff --stat 39e0bb13..HEAD -- Notinhas
 > NotinhasTests Notinhas.xcodeproj scripts Makefile .github AGENTS.md .agents
 > docs/adr plans`
 
@@ -18,7 +18,7 @@
 - Depends on: Completed plans 001–081; preserve the current `verify-local`
   contract
 - Category: migration / tooling / concurrency
-- Planned at: commit `b4348db6`, 2026-08-05
+- **Planned at**: commit `39e0bb13`, 2026-08-05
 
 ## Execution profile
 

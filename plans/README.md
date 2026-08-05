@@ -799,7 +799,7 @@ transparency and contrast-sensitive contexts.
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 |---|---|---:|---:|---|---|
-| [082](082-establish-swift-6-2-agent-baseline.md) | Establish the Swift 6.2 agent baseline | P0 | L | 001–081 | TODO |
+| [082](082-establish-swift-6-2-agent-baseline.md) | Establish the Swift 6.2 agent baseline | P0 | L | 001–081 | DONE (b0f7d7c2; thermo fixes c5b9b02c/a1fffacb; toolchain docs 496d23b2; full gates passed in isolated run, visual reruns environment-stalled) |
 
 Plan 082 supersedes the historical assumption that Notinhas has no separate
 lint step. It keeps `verify-local.sh`, build/test scripts, and manual-required
