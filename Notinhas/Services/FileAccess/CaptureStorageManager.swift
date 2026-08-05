@@ -99,6 +99,8 @@ final class CaptureStorageManager {
             }
 
             var totalSize: Int64 = 0
+            // Swift 6.2 rejects DirectoryEnumerator.makeIterator() in this
+            // async context, so materialize the worker-local enumeration here.
             for case let fileURL as URL in enumerator.allObjects {
                 guard
                     let values = try? fileURL.resourceValues(forKeys: [.fileSizeKey, .isRegularFileKey]),

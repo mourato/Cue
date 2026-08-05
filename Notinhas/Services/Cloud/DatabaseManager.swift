@@ -55,6 +55,9 @@ enum DatabaseInitializationError: LocalizedError {
 /// Manages the SQLite database connection and schema migrations
 final class DatabaseManager: @unchecked Sendable {
     private static let stateLock = NSLock()
+    // These slots intentionally remain nonisolated for background database
+    // callers; every read, write, and reset is protected by stateLock. The
+    // focused exception avoids actor-hopping the shared GRDB initialization.
     private nonisolated(unsafe) static var sharedInstance: DatabaseManager?
     private nonisolated(unsafe) static var sharedFailure: DatabaseInitializationError?
     private static let databaseFileNames = [

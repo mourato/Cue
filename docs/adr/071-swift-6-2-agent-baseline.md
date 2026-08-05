@@ -18,10 +18,12 @@ indentation with the existing 120-column and generated/Pods/build exclusions.
 SwiftLint owns the `Notinhas` and `NotinhasTests` surfaces through
 `.swiftlint.yml`; checks are fail-closed and have separate full, changed, and
 autofix commands. The focused baseline opts into `empty_string` and
-`first_where`, both verified clean on the owned app and test surfaces. No lint
-rule is disabled to hide a migration diagnostic; only high-churn size/style
-rules and documented legacy compatibility exceptions are outside this focused
-baseline.
+`first_where`, both verified clean on the owned app and test surfaces. The
+configuration preserves named pre-existing repository debt and compatibility
+exceptions in `disabled_rules` (including high-churn style/size and legacy
+rules); touched or new code must not expand those exceptions. Unrelated legacy
+violations are not broad-cleaned as part of this baseline, and no new disabled
+rule is used to silence a Swift 6.2 migration diagnostic.
 
 The migration permits mechanical formatting and concurrency corrections in
 owned source/tests. Capture, OCR, export, persistence, Video behavior, public
