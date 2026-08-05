@@ -1,7 +1,7 @@
 .claude
-.agent1
+.codex
 
-sparkle_private_key.pem
+.DS_Store
 
 # Packages/**/*.build
 .build
@@ -12,8 +12,3 @@ sparkle_private_key.pem
 # Secrets - never commit
 Snapzy/Config/Secrets.xcconfig
 *.xcuserstate
-
-/plans
-
-.codex
-.DS_Store
