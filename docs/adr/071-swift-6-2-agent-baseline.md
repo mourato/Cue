@@ -17,8 +17,11 @@ SwiftFormat is pinned by repository policy to Swift 6.2 syntax and four-space
 indentation with the existing 120-column and generated/Pods/build exclusions.
 SwiftLint owns the `Notinhas` and `NotinhasTests` surfaces through
 `.swiftlint.yml`; checks are fail-closed and have separate full, changed, and
-autofix commands. No lint rule is disabled to hide a migration diagnostic;
-only high-churn size/style rules are outside this focused baseline.
+autofix commands. The focused baseline opts into `empty_string` and
+`first_where`, both verified clean on the owned app and test surfaces. No lint
+rule is disabled to hide a migration diagnostic; only high-churn size/style
+rules and documented legacy compatibility exceptions are outside this focused
+baseline.
 
 The migration permits mechanical formatting and concurrency corrections in
 owned source/tests. Capture, OCR, export, persistence, Video behavior, public

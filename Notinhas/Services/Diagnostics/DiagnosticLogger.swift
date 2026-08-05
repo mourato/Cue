@@ -9,108 +9,48 @@ import AppKit
 import Foundation
 import IOKit
 
-final class DiagnosticLogger {
-    nonisolated(unsafe) static let shared = DiagnosticLogger()
-
-    // MARK: - Configuration
-
+/// Serializes all mutable file-handle state for `DiagnosticLogger`.
+/// The facade can be called from any queue; this state is only read or mutated
+/// by work submitted to `writeQueue`, so the focused unchecked boundary does
+/// not expose the handle or queue to callers.
+private final class DiagnosticLoggerState: @unchecked Sendable {
     private let logDirectoryName = NotinhasStoragePaths.destinationLogsFolderName
     private let filePrefix = NotinhasStoragePaths.destinationLogFilePrefix
     private let fileExtension = "txt"
-
-    // MARK: - State
-
     private let writeQueue = DispatchQueue(label: "com.mourato.notinhas.diagnosticlogger", qos: .utility)
     private var currentFileHandle: FileHandle?
     private var currentDateString: String?
     private var hasWrittenSessionHeader = false
 
-    private init() {}
-
-    // MARK: - Public API
-
-    nonisolated var isEnabled: Bool {
-        UserDefaults.standard.object(forKey: PreferencesKeys.diagnosticsEnabled) as? Bool ?? true
-    }
-
-    /// Start a new session — writes the system context header.
-    func startSession() {
-        guard isEnabled else { return }
-        writeQueue.async { [weak self] in
-            self?.writeSessionHeader()
-        }
-    }
-
-    /// Log a diagnostic entry with source location and optional context.
-    /// Backward-compatible: existing calls like `log(.info, .capture, "msg")` still compile.
-    /// Thread-safe: all file state is confined to a private serial queue.
-    nonisolated func log(
-        _ level: DiagnosticLogLevel,
-        _ category: DiagnosticLogCategory,
-        _ message: String,
-        context: [String: String]? = nil,
-        file: String = #fileID,
-        function: String = #function,
-        line: Int = #line,
-    ) {
-        guard isEnabled else { return }
-        let entry = DiagnosticLogEntry(
-            level: level,
-            category: category,
-            message: message,
-            context: context,
-            file: file,
-            function: function,
-            line: line,
-        )
-        writeQueue.async { [weak self] in
-            self?.writeEntry(entry)
-        }
-    }
-
-    /// Convenience for logging errors — auto-extracts localizedDescription, NSError domain/code, and underlying error.
-    nonisolated func logError(
-        _ category: DiagnosticLogCategory,
-        _ error: Error,
-        _ message: String = "",
-        context: [String: String]? = nil,
-        file: String = #fileID,
-        function: String = #function,
-        line: Int = #line,
-    ) {
-        let nsError = error as NSError
-        var ctx = context ?? [:]
-        ctx["domain"] = nsError.domain
-        ctx["code"] = String(nsError.code)
-        if let underlying = nsError.userInfo[NSUnderlyingErrorKey] as? Error {
-            ctx["underlying"] = underlying.localizedDescription
-        }
-
-        let prefix = message.isEmpty ? "" : "\(message): "
-        log(
-            .error,
-            category,
-            "\(prefix)\(error.localizedDescription)",
-            context: ctx,
-            file: file,
-            function: function,
-            line: line,
-        )
-    }
-
-    /// The directory where log files are stored.
     var logDirectoryURL: URL {
         FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first!
             .appendingPathComponent("Logs")
             .appendingPathComponent(logDirectoryName)
     }
 
-    /// Path to today's log file.
     var currentLogFileURL: URL {
         logDirectoryURL.appendingPathComponent(logFileName(for: Date()))
     }
 
-    // MARK: - File Management
+    func enqueueSessionHeader() {
+        writeQueue.async { [self] in
+            writeSessionHeader()
+        }
+    }
+
+    func enqueue(_ entry: DiagnosticLogEntry) {
+        writeQueue.async { [self] in
+            writeEntry(entry)
+        }
+    }
+
+    func closeHandles() {
+        writeQueue.sync {
+            try? currentFileHandle?.close()
+            currentFileHandle = nil
+            currentDateString = nil
+        }
+    }
 
     private func logDateString(for date: Date) -> String {
         let fmt = DateFormatter()
@@ -159,8 +99,6 @@ final class DiagnosticLogger {
         currentDateString = dateString
         return handle
     }
-
-    // MARK: - Writing
 
     private func writeEntry(_ entry: DiagnosticLogEntry) {
         guard let handle = fileHandle(for: entry.timestamp) else { return }
@@ -228,7 +166,8 @@ final class DiagnosticLogger {
         // Sandbox detection
         let isSandboxed = info.environment["APP_SANDBOX_CONTAINER_ID"] != nil
 
-        // Previous crash
+        // CrashSentinel's lock-protected state makes this background read safe
+        // to perform concurrently with launch/termination lifecycle writes.
         let didCrash = CrashSentinel.shared.didCrashLastSession
 
         let dateFmt = DateFormatter()
@@ -313,15 +252,94 @@ final class DiagnosticLogger {
         } catch {}
         return "disk unknown"
     }
+}
 
-    // MARK: - Cleanup
+final class DiagnosticLogger: Sendable {
+    static let shared = DiagnosticLogger()
+
+    private let state = DiagnosticLoggerState()
+
+    private init() {}
+
+    // MARK: - Public API
+
+    var isEnabled: Bool {
+        UserDefaults.standard.object(forKey: PreferencesKeys.diagnosticsEnabled) as? Bool ?? true
+    }
+
+    /// Start a new session — writes the system context header.
+    func startSession() {
+        guard isEnabled else { return }
+        state.enqueueSessionHeader()
+    }
+
+    /// Log a diagnostic entry with source location and optional context.
+    /// Backward-compatible: existing calls like `log(.info, .capture, "msg")` still compile.
+    /// Thread-safe: all file state is confined to a private serial queue.
+    func log(
+        _ level: DiagnosticLogLevel,
+        _ category: DiagnosticLogCategory,
+        _ message: String,
+        context: [String: String]? = nil,
+        file: String = #fileID,
+        function: String = #function,
+        line: Int = #line,
+    ) {
+        guard isEnabled else { return }
+        let entry = DiagnosticLogEntry(
+            level: level,
+            category: category,
+            message: message,
+            context: context,
+            file: file,
+            function: function,
+            line: line,
+        )
+        state.enqueue(entry)
+    }
+
+    /// Convenience for logging errors — auto-extracts localizedDescription, NSError domain/code, and underlying error.
+    func logError(
+        _ category: DiagnosticLogCategory,
+        _ error: Error,
+        _ message: String = "",
+        context: [String: String]? = nil,
+        file: String = #fileID,
+        function: String = #function,
+        line: Int = #line,
+    ) {
+        let nsError = error as NSError
+        var ctx = context ?? [:]
+        ctx["domain"] = nsError.domain
+        ctx["code"] = String(nsError.code)
+        if let underlying = nsError.userInfo[NSUnderlyingErrorKey] as? Error {
+            ctx["underlying"] = underlying.localizedDescription
+        }
+
+        let prefix = message.isEmpty ? "" : "\(message): "
+        log(
+            .error,
+            category,
+            "\(prefix)\(error.localizedDescription)",
+            context: ctx,
+            file: file,
+            function: function,
+            line: line,
+        )
+    }
+
+    /// The directory where log files are stored.
+    var logDirectoryURL: URL {
+        state.logDirectoryURL
+    }
+
+    /// Path to today's log file.
+    var currentLogFileURL: URL {
+        state.currentLogFileURL
+    }
 
     /// Close any open file handles (call before cleanup).
     func closeHandles() {
-        writeQueue.sync {
-            try? currentFileHandle?.close()
-            currentFileHandle = nil
-            currentDateString = nil
-        }
+        state.closeHandles()
     }
 }

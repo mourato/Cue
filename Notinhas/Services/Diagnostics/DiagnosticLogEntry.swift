@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Log Level
 
-enum DiagnosticLogLevel: String {
+enum DiagnosticLogLevel: String, Sendable {
     case debug = "DBG"
     case info = "INF"
     case warning = "WRN"
@@ -19,7 +19,7 @@ enum DiagnosticLogLevel: String {
 
 // MARK: - Log Category
 
-enum DiagnosticLogCategory: String {
+enum DiagnosticLogCategory: String, Sendable {
     case system = "SYSTEM"
     case capture = "CAPTURE"
     case recording = "RECORDING"
@@ -40,7 +40,7 @@ enum DiagnosticLogCategory: String {
 
 // MARK: - Log Entry
 
-nonisolated struct DiagnosticLogEntry {
+nonisolated struct DiagnosticLogEntry: Sendable {
     let timestamp: Date
     let level: DiagnosticLogLevel
     let category: DiagnosticLogCategory

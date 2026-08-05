@@ -17,13 +17,12 @@ import Foundation
 
 /// Resolves the AX element under the cursor and publishes its rect.
 ///
-/// Threading: all public methods must be called from the main thread.
-/// AX APIs are not safe to call off-main (researcher-01 §8), and the
-/// internal Combine pipeline uses `DispatchQueue.main` as its scheduler
-/// so the query closure also fires on the main thread.
+/// Threading: the service is main-actor isolated. AX APIs are not safe to call
+/// off-main (researcher-01 §8), and the internal Combine pipeline schedules
+/// its query closure back onto the same actor.
+@MainActor
 final class SmartElementQueryService {
-    /// The singleton is accessed by both the AX query queue and main-thread UI callbacks.
-    nonisolated(unsafe) static let shared = SmartElementQueryService()
+    static let shared = SmartElementQueryService()
 
     // MARK: - Public Publisher
 
@@ -68,9 +67,11 @@ final class SmartElementQueryService {
     private func bindPipeline() {
         inputSubject
             .throttle(for: .milliseconds(debounceMilliseconds), scheduler: DispatchQueue.main, latest: true)
-            .receive(on: DispatchQueue.global(qos: .userInteractive))
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] point, pid in
-                self?.queryElement(at: point, pid: pid)
+                Task { @MainActor [weak self] in
+                    self?.queryElement(at: point, pid: pid)
+                }
             }
             .store(in: &cancellables)
     }
@@ -183,20 +184,12 @@ final class SmartElementQueryService {
     }
 
     private func emit(_ rect: CGRect?) {
-        let block = { [weak self] in
-            guard let self else { return }
-            if hasEmittedAtLeastOnce, rect == lastEmittedRect {
-                return
-            }
-            hasEmittedAtLeastOnce = true
-            lastEmittedRect = rect
-            detectedSubject.send(rect)
+        if hasEmittedAtLeastOnce, rect == lastEmittedRect {
+            return
         }
-        if Thread.isMainThread {
-            block()
-        } else {
-            DispatchQueue.main.async(execute: block)
-        }
+        hasEmittedAtLeastOnce = true
+        lastEmittedRect = rect
+        detectedSubject.send(rect)
     }
 
     private func logPermissionDeniedOnce() {

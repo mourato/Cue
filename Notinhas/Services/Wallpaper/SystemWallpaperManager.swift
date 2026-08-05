@@ -9,6 +9,10 @@ import AppKit
 import Combine
 import Foundation
 
+private struct WallpaperImageSnapshot: Sendable {
+    let cgImage: CGImage
+}
+
 @MainActor
 class SystemWallpaperManager: ObservableObject {
     static let shared = SystemWallpaperManager()
@@ -24,7 +28,6 @@ class SystemWallpaperManager: ObservableObject {
     private let thumbnailSize: CGFloat = 96 // 48pt grid item @2x retina
     private var loadingURLs = Set<URL>()
     private var pendingThumbnailCompletions: [URL: [(NSImage?) -> Void]] = [:]
-    private let cacheQueue = DispatchQueue(label: "wallpaper.thumbnail.cache", qos: .userInitiated)
 
     // MARK: - Preview Cache (Canvas Display Optimization)
 
@@ -196,7 +199,7 @@ class SystemWallpaperManager: ObservableObject {
                 continue
             }
 
-            let fileExists = withSecurityScopedAccess(to: resolvedURL) {
+            let fileExists = Self.withSecurityScopedAccess(to: resolvedURL) {
                 FileManager.default.fileExists(atPath: resolvedURL.path)
             }
 
@@ -206,7 +209,7 @@ class SystemWallpaperManager: ObservableObject {
 
             var bookmarkEntry = entry
             if isStale,
-               let refreshedBookmarkData = try? withSecurityScopedAccess(to: resolvedURL, {
+               let refreshedBookmarkData = try? Self.withSecurityScopedAccess(to: resolvedURL, {
                    try resolvedURL.bookmarkData(
                        options: .withSecurityScope,
                        includingResourceValuesForKeys: nil,
@@ -251,7 +254,10 @@ class SystemWallpaperManager: ObservableObject {
         url.deletingPathExtension().lastPathComponent
     }
 
-    private func withSecurityScopedAccess<T>(to url: URL, _ operation: () throws -> T) rethrows -> T {
+    private nonisolated static func withSecurityScopedAccess<T>(
+        to url: URL,
+        _ operation: () throws -> T,
+    ) rethrows -> T {
         let didStartAccessing = url.startAccessingSecurityScopedResource()
         defer {
             if didStartAccessing {
@@ -279,53 +285,41 @@ class SystemWallpaperManager: ObservableObject {
         }
 
         // Prevent duplicate loads while preserving every caller's callback.
-        var shouldStartLoad = false
-        cacheQueue.sync {
-            if loadingURLs.contains(url) {
-                pendingThumbnailCompletions[url, default: []].append(completion)
-            } else {
-                loadingURLs.insert(url)
-                pendingThumbnailCompletions[url] = [completion]
-                shouldStartLoad = true
-            }
-        }
-
-        guard shouldStartLoad else {
+        guard !loadingURLs.contains(url) else {
+            pendingThumbnailCompletions[url, default: []].append(completion)
             return
         }
 
+        loadingURLs.insert(url)
+        pendingThumbnailCompletions[url] = [completion]
+        let maxSize = thumbnailSize
+
         // Load and downsample on background thread
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            guard let self else { return }
+        DispatchQueue.global(qos: .userInitiated).async { [url, maxSize] in
+            let snapshot = Self.createDownsampledImageSnapshot(from: url, maxSize: maxSize)
 
-            let thumbnail = createDownsampledThumbnail(from: url)
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                let thumbnail = snapshot.map(Self.makeImage)
+                if let thumbnail {
+                    thumbnailCache.setObject(thumbnail, forKey: url as NSURL)
+                }
 
-            if let thumbnail {
-                thumbnailCache.setObject(thumbnail, forKey: url as NSURL)
-            }
-
-            let completions: [(NSImage?) -> Void] = cacheQueue.sync {
-                let completions = self.pendingThumbnailCompletions.removeValue(forKey: url) ?? []
-                _ = self.loadingURLs.remove(url)
-                return completions
-            }
-
-            DispatchQueue.main.async {
+                let completions = pendingThumbnailCompletions.removeValue(forKey: url) ?? []
+                loadingURLs.remove(url)
                 completions.forEach { $0(thumbnail) }
             }
         }
-    }
-
-    /// Create downsampled thumbnail using ImageIO (memory efficient)
-    private func createDownsampledThumbnail(from url: URL) -> NSImage? {
-        createDownsampledImage(from: url, maxSize: thumbnailSize)
     }
 
     /// Create downsampled image using ImageIO (memory efficient)
     /// - Parameters:
     ///   - url: Source image URL
     ///   - maxSize: Maximum pixel dimension for the output
-    private func createDownsampledImage(from url: URL, maxSize: CGFloat) -> NSImage? {
+    private nonisolated static func createDownsampledImageSnapshot(
+        from url: URL,
+        maxSize: CGFloat,
+    ) -> WallpaperImageSnapshot? {
         withSecurityScopedAccess(to: url) {
             let options: [CFString: Any] = [
                 kCGImageSourceShouldCache: false,
@@ -357,8 +351,16 @@ class SystemWallpaperManager: ObservableObject {
                 return nil
             }
 
-            return NSImage(cgImage: cgImage, size: NSSize(width: cgImage.width, height: cgImage.height))
+            return WallpaperImageSnapshot(cgImage: cgImage)
         }
+    }
+
+    @MainActor
+    private static func makeImage(from snapshot: WallpaperImageSnapshot) -> NSImage {
+        NSImage(
+            cgImage: snapshot.cgImage,
+            size: NSSize(width: snapshot.cgImage.width, height: snapshot.cgImage.height),
+        )
     }
 
     // MARK: - Preview Image Loading (Canvas Display)
@@ -373,16 +375,16 @@ class SystemWallpaperManager: ObservableObject {
         }
 
         // Load and downsample on background thread
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            guard let self else { return }
+        let maxSize = previewSize
+        DispatchQueue.global(qos: .userInitiated).async { [url, maxSize] in
+            let snapshot = Self.createDownsampledImageSnapshot(from: url, maxSize: maxSize)
 
-            let preview = createDownsampledImage(from: url, maxSize: previewSize)
-
-            if let preview {
-                previewCache.setObject(preview, forKey: url as NSURL)
-            }
-
-            DispatchQueue.main.async {
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                let preview = snapshot.map(Self.makeImage)
+                if let preview {
+                    previewCache.setObject(preview, forKey: url as NSURL)
+                }
                 completion(preview)
             }
         }

@@ -38,6 +38,7 @@ final class CountingAXSnapshotProvider: AXSnapshotProviding {
     }
 }
 
+@MainActor
 final class FakeSmartElementQueryProvider: SmartElementQueryProviding {
     let subject = PassthroughSubject<CGRect?, Never>()
     var permissionGranted = true

@@ -297,11 +297,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func runNotinhasIdentityMigration() throws -> NotinhasIdentityMigrationResult {
         guard Thread.isMainThread else {
-            return try NotinhasIdentityMigrationService.shared.runIfNeeded()
+            return try NotinhasIdentityMigrationService().runIfNeeded()
         }
 
         return try DispatchQueue.global(qos: .userInitiated).sync {
-            try NotinhasIdentityMigrationService.shared.runIfNeeded()
+            try NotinhasIdentityMigrationService().runIfNeeded()
         }
     }
 
@@ -342,7 +342,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         continue
                     }
                     do {
-                        try NotinhasIdentityMigrationService.shared.skipMigration()
+                        try NotinhasIdentityMigrationService().skipMigration()
                         DiagnosticLogger.shared.log(
                             .warning,
                             .lifecycle,

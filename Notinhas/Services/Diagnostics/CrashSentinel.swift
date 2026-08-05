@@ -7,15 +7,51 @@
 
 import Foundation
 
-final class CrashSentinel {
-    nonisolated(unsafe) static let shared = CrashSentinel()
-
+private final class CrashSentinelState: @unchecked Sendable {
+    private let lock = NSLock()
     private let sessionActiveKey = PreferencesKeys.diagnosticsSessionActive
+    private var didCrashLastSession = false
+
+    /// The lock serializes the in-memory flag and its UserDefaults marker so
+    /// startup, termination, and diagnostic-header reads see one state.
+    var lastSessionCrashed: Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        return didCrashLastSession
+    }
+
+    @discardableResult
+    func checkAndReset() -> Bool {
+        lock.lock()
+        defer { lock.unlock() }
+
+        didCrashLastSession = UserDefaults.standard.bool(forKey: sessionActiveKey)
+        UserDefaults.standard.set(true, forKey: sessionActiveKey)
+        return didCrashLastSession
+    }
+
+    func markTerminated() {
+        lock.lock()
+        defer { lock.unlock() }
+
+        didCrashLastSession = false
+        UserDefaults.standard.set(false, forKey: sessionActiveKey)
+    }
+}
+
+final class CrashSentinel: Sendable {
+    static let shared = CrashSentinel()
+
+    private let state: CrashSentinelState
 
     /// Whether the previous session ended abnormally (crash / force-quit)
-    private(set) var didCrashLastSession: Bool = false
+    var didCrashLastSession: Bool {
+        state.lastSessionCrashed
+    }
 
-    private init() {}
+    private init(state: CrashSentinelState = CrashSentinelState()) {
+        self.state = state
+    }
 
     // MARK: - Lifecycle
 
@@ -23,17 +59,11 @@ final class CrashSentinel {
     /// Returns `true` if the previous session crashed.
     @discardableResult
     func checkAndReset() -> Bool {
-        let wasActive = UserDefaults.standard.bool(forKey: sessionActiveKey)
-        didCrashLastSession = wasActive
-
-        // Mark new session as active
-        UserDefaults.standard.set(true, forKey: sessionActiveKey)
-
-        return didCrashLastSession
+        state.checkAndReset()
     }
 
     /// Call on clean termination (`applicationWillTerminate`).
     func markTerminated() {
-        UserDefaults.standard.set(false, forKey: sessionActiveKey)
+        state.markTerminated()
     }
 }

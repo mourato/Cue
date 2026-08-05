@@ -15,6 +15,7 @@ import Foundation
 
 /// Public surface of `SmartElementQueryService` consumed by the controller.
 /// Existing `SmartElementQueryService` already matches this shape.
+@MainActor
 protocol SmartElementQueryProviding: AnyObject {
     var elementDetectedPublisher: AnyPublisher<CGRect?, Never> { get }
     func updateMouseLocation(pid: Int32?)

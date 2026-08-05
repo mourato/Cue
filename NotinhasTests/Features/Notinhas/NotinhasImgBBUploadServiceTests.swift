@@ -108,9 +108,35 @@ final class NotinhasImgBBUploadServiceTests: XCTestCase {
     }
 }
 
+private final class MockImgBBRequestHandlerState: @unchecked Sendable {
+    typealias Handler = (URLRequest) throws -> (HTTPURLResponse, Data)
+
+    private let lock = NSLock()
+    private var storedHandler: Handler?
+
+    /// Serializes test setup/teardown with URLProtocol callback reads. The
+    /// handler itself is invoked after the lock is released.
+    var handler: Handler? {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return storedHandler
+        }
+        set {
+            lock.lock()
+            storedHandler = newValue
+            lock.unlock()
+        }
+    }
+}
+
 private final class MockImgBBURLProtocol: URLProtocol {
-    /// URLProtocol invokes this hook from a nonisolated SDK callback.
-    nonisolated(unsafe) static var requestHandler: ((URLRequest) throws -> (HTTPURLResponse, Data))?
+    private static let handlerState = MockImgBBRequestHandlerState()
+
+    static var requestHandler: MockImgBBRequestHandlerState.Handler? {
+        get { handlerState.handler }
+        set { handlerState.handler = newValue }
+    }
 
     override class func canInit(with _: URLRequest) -> Bool {
         true

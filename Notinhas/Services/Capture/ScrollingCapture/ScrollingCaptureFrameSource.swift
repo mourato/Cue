@@ -11,6 +11,42 @@ import CoreMedia
 import Foundation
 @preconcurrency import ScreenCaptureKit
 
+private final class ScrollingCapturePublicationState: @unchecked Sendable {
+    private let lock = NSLock()
+    private var generation: UInt64 = 0
+    private var lastPublishedAt: TimeInterval = 0
+    private var nextSequenceNumber = 0
+
+    /// The lock serializes the stream callback's throttle/sequence state with
+    /// start-time resets; image conversion never runs while the lock is held.
+    func beginPublication(at capturedAt: TimeInterval, minimumInterval: TimeInterval) -> UInt64? {
+        lock.lock()
+        defer { lock.unlock() }
+
+        guard capturedAt - lastPublishedAt >= minimumInterval else { return nil }
+        return generation
+    }
+
+    func finishPublication(generation pendingGeneration: UInt64, capturedAt: TimeInterval) -> Int? {
+        lock.lock()
+        defer { lock.unlock() }
+
+        guard pendingGeneration == generation else { return nil }
+        lastPublishedAt = capturedAt
+        nextSequenceNumber += 1
+        return nextSequenceNumber
+    }
+
+    func reset() {
+        lock.lock()
+        defer { lock.unlock() }
+
+        generation &+= 1
+        lastPublishedAt = 0
+        nextSequenceNumber = 0
+    }
+}
+
 @MainActor
 final class ScrollingCaptureFrameSource: NSObject {
     private let sampleQueue = DispatchQueue(
@@ -21,8 +57,7 @@ final class ScrollingCaptureFrameSource: NSObject {
     private let ciContext: CIContext
 
     private var stream: SCStream?
-    private nonisolated(unsafe) var lastPublishedAt: TimeInterval = 0
-    private nonisolated(unsafe) var nextSequenceNumber = 0
+    private nonisolated let publicationState = ScrollingCapturePublicationState()
     private var onFrame: ((ScrollingCaptureFrame) -> Void)?
     private var onFailure: ((String) -> Void)?
 
@@ -41,8 +76,7 @@ final class ScrollingCaptureFrameSource: NSObject {
 
         onFrame = frameHandler
         onFailure = failureHandler
-        lastPublishedAt = 0
-        nextSequenceNumber = 0
+        publicationState.reset()
 
         let configuration = ScreenCaptureManager.shared.makeAreaStreamConfiguration(
             from: context,
@@ -102,7 +136,10 @@ extension ScrollingCaptureFrameSource: SCStreamOutput {
             }
 
             let now = ProcessInfo.processInfo.systemUptime
-            guard now - lastPublishedAt >= minimumPublishInterval else { return }
+            guard let pendingPublication = publicationState.beginPublication(
+                at: now,
+                minimumInterval: minimumPublishInterval,
+            ) else { return }
 
             let imageRect = CGRect(
                 x: 0,
@@ -115,10 +152,12 @@ extension ScrollingCaptureFrameSource: SCStreamOutput {
                 return
             }
 
-            lastPublishedAt = now
-            nextSequenceNumber += 1
+            guard let sequenceNumber = publicationState.finishPublication(
+                generation: pendingPublication,
+                capturedAt: now,
+            ) else { return }
             let frame = ScrollingCaptureFrame(
-                sequenceNumber: nextSequenceNumber,
+                sequenceNumber: sequenceNumber,
                 image: cgImage,
                 capturedAt: now,
                 motionScore: nil,

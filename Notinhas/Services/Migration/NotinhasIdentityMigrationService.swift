@@ -133,7 +133,6 @@ struct LiveNotinhasIdentityKeychainAdapter: NotinhasIdentityKeychainAdapting {
     }
 }
 
-@MainActor
 final class NotinhasIdentityMigrationService {
     struct Configuration {
         var homeDirectory: URL
@@ -190,8 +189,6 @@ final class NotinhasIdentityMigrationService {
             }
         }
     }
-
-    static let shared = NotinhasIdentityMigrationService()
 
     private let configurationProvider: () -> Configuration?
     private let completedKey = PreferencesKeys.notinhasIdentityMigrationCompleted

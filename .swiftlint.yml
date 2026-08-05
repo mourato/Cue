@@ -7,7 +7,9 @@ excluded:
   - build
   - DerivedData
   - Generated
-opt_in_rules: []
+opt_in_rules:
+  - empty_string
+  - first_where
 disabled_rules:
   - closure_parameter_position
   - empty_enum_arguments
