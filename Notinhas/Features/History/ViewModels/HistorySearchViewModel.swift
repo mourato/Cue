@@ -36,24 +36,34 @@ final class HistorySearchViewModel: ObservableObject {
             timeSource,
         )
         .receive(on: DispatchQueue.global(qos: .userInitiated))
-        .map { records, searchText, selectedFilter, selectedTimeFilter in
-            let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-            let now = Date()
-
-            return records.filter { record in
-                let matchesType = selectedFilter == nil || record.captureType == selectedFilter
-                let matchesTime = selectedTimeFilter == .all || selectedTimeFilter.includes(
-                    record.capturedAt,
-                    relativeTo: now,
-                )
-                let matchesSearch = query.isEmpty || record.fileName.localizedCaseInsensitiveContains(query)
-                return matchesType && matchesTime && matchesSearch
-            }
-        }
+        .map(Self.filterRecords)
         .receive(on: RunLoop.main)
         .sink { [weak self] filtered in
             self?.filteredRecords = filtered
         }
         .store(in: &cancellables)
+    }
+
+    private nonisolated static func filterRecords(
+        _ input: (
+            [CaptureHistoryRecord],
+            String,
+            CaptureHistoryType?,
+            HistoryFloatingTimeFilter,
+        ),
+    ) -> [CaptureHistoryRecord] {
+        let (records, searchText, selectedFilter, selectedTimeFilter) = input
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let now = Date()
+
+        return records.filter { record in
+            let matchesType = selectedFilter == nil || record.captureType == selectedFilter
+            let matchesTime = selectedTimeFilter == .all || selectedTimeFilter.includes(
+                record.capturedAt,
+                relativeTo: now,
+            )
+            let matchesSearch = query.isEmpty || record.fileName.localizedCaseInsensitiveContains(query)
+            return matchesType && matchesTime && matchesSearch
+        }
     }
 }

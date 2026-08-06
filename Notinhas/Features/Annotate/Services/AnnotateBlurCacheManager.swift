@@ -243,7 +243,7 @@ final class BlurCacheManager {
         }
     }
 
-    private static func renderBlurToImage(
+    private nonisolated static func renderBlurToImage(
         bounds: CGRect,
         sourceCGImage: CGImage,
         sourceSize: CGSize,
