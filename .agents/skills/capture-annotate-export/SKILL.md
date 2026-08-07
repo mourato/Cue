@@ -12,8 +12,8 @@ Canonical owner for Notinhas visual-handoff behavior: capture an area, place num
 ## Scope Boundary
 
 - Own the Notinhas module (`Notinhas/Features/Notinhas/`) and its thin hooks into Capture/Annotate export/clipboard.
-- Delegate menu-bar shell details to the global `menubar` and
-  `macos-app-engineering` skills, with their Notinhas overlays.
+- Delegate menu-bar shell details to the global `macos-app-engineering` skill
+  with the Notinhas overlay.
 - Delegate generic Swift style, concurrency, tests, and delivery commands to their skills.
 - Do **not** use this skill to grow broad screen recording, generic markup toolbelts, or unrelated cloud features unless the change directly serves the handoff loop.
 - Screen recording and Video Editor are **optional** inherited features, gated

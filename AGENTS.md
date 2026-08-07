@@ -32,8 +32,8 @@ renaming, moving, or rewriting upstream code merely to match a new design.
 ## Skills
 
 Global macOS capabilities provide the portable rules for
-`accessibility-audit`, `apple-design`, `code-quality`, `delivery-workflow`,
-`macos-app-engineering`, `menubar`, and `swift-conventions`. When one of these
+`swiftui-accessibility-audit`, `apple-design`, `code-quality`,
+`delivery-workflow`, `macos-app-engineering`, and `swift-conventions`. When one of these
 global skills is active, load its matching `.agents/overlays/<skill-name>.md`
 companion after the global skill; the overlay supplies Notinhas facts and must
 not weaken global safety, privacy, or repository-integrity rules. Do not create

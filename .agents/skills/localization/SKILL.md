@@ -23,5 +23,5 @@ Use when adding or changing user-visible strings, tooltips, permission toasts, o
 
 ## Related
 
-- AX labels → `accessibility-audit`
+- AX labels → `swiftui-accessibility-audit`
 - Docs ownership → `documentation`

@@ -1,11 +1,11 @@
 ---
 kind: project-overlay
-extends: menubar
+extends: swiftui-accessibility-audit
 project: Notinhas
 precedence: project
 ---
 
-# Notinhas menu-bar checks
+# Notinhas accessibility checks
 
 - Product intent: support the capture → annotate → clipboard-ready handoff.
 - Canonical paths are `Notinhas/` and `NotinhasTests/`.
