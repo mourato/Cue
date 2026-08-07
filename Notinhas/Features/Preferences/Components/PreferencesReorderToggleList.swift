@@ -298,6 +298,7 @@ struct PreferencesReorderToggleRow<Accessory: View, BodyDragPreview: View>: View
 
             Toggle("", isOn: $isEnabled)
                 .labelsHidden()
+                .accessibilityLabel(title)
                 .disabled(!canToggle)
         }
 
