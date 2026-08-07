@@ -21,14 +21,14 @@ enum AllInOneCaptureMode: String, CaseIterable, Identifiable, Equatable {
         rawValue
     }
 
+    static let defaultOrder: [AllInOneCaptureMode] = [
+        .area, .fullscreen, .window, .annotate, .scrolling, .timer, .ocr, .recording,
+    ]
+
+    static let defaultEnabledModes: Set<AllInOneCaptureMode> = Set(defaultOrder)
+
     static func availableModes(videoEnabled: Bool) -> [AllInOneCaptureMode] {
-        var modes: [AllInOneCaptureMode] = [
-            .area, .fullscreen, .window, .annotate, .scrolling, .timer, .ocr,
-        ]
-        if videoEnabled {
-            modes.append(.recording)
-        }
-        return modes
+        defaultOrder.filter { videoEnabled || $0 != .recording }
     }
 
     var systemImage: String {

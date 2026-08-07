@@ -17127,6 +17127,50 @@
         }
       }
     },
+    "preferences-capture.section-all-in-one-modes": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All-In-One Modes"
+          }
+        }
+      }
+    },
+    "preferences-capture.all-in-one-modes-description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose which modes appear in the All-In-One toolbar and drag to change their order."
+          }
+        }
+      }
+    },
+    "preferences-capture.reset-all-in-one-modes": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset All-In-One Modes"
+          }
+        }
+      }
+    },
+    "preferences-capture.all-in-one-modes-minimum-footnote": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At least one non-Video mode must remain enabled."
+          }
+        }
+      }
+    },
     "preferences-capture.section-screenshot-behavior": {
       "extractionState": "manual",
       "localizations": {

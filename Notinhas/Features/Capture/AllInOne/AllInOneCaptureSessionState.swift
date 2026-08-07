@@ -19,8 +19,14 @@ final class AllInOneCaptureSessionState: ObservableObject {
     var onRectChanged: (CGRect) -> Void = { _ in }
     var onCancel: () -> Void = {}
 
-    init(videoEnabled: Bool = VideoModuleAvailability.isEnabled) {
-        availableModes = AllInOneCaptureMode.availableModes(videoEnabled: videoEnabled)
+    init(availableModes: [AllInOneCaptureMode]) {
+        let modes = availableModes.isEmpty ? [.area] : availableModes
+        self.availableModes = modes
+        selectedMode = modes[0]
+    }
+
+    convenience init(videoEnabled: Bool = VideoModuleAvailability.isEnabled) {
+        self.init(availableModes: AllInOneCaptureMode.availableModes(videoEnabled: videoEnabled))
     }
 
     func activateMode(_ mode: AllInOneCaptureMode) {

@@ -51,7 +51,11 @@ final class AllInOneCaptureCoordinator {
         let generation = UUID()
         sessionGeneration = generation
 
-        let state = AllInOneCaptureSessionState()
+        let configuredModes = AllInOneCaptureModeConfigurationStore.shared.orderedModes(
+            videoEnabled: VideoModuleAvailability.isEnabled,
+            includeDisabled: false,
+        )
+        let state = AllInOneCaptureSessionState(availableModes: configuredModes)
         state.onModeActivated = { [weak self] mode in
             self?.activate(mode)
         }

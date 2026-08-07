@@ -83,6 +83,12 @@ final class AllInOneCaptureCoordinatorTests: XCTestCase {
         XCTAssertEqual(state.availableModes, AllInOneCaptureMode.availableModes(videoEnabled: false))
     }
 
+    func testSessionState_selectsFirstConfiguredMode() {
+        let state = AllInOneCaptureSessionState(availableModes: [.ocr, .area])
+        XCTAssertEqual(state.selectedMode, .ocr)
+        XCTAssertEqual(state.availableModes, [.ocr, .area])
+    }
+
     func testSessionState_activateMode_updatesSelectionAndInvokesAction() {
         let state = AllInOneCaptureSessionState(videoEnabled: false)
         let rect = CGRect(x: 40, y: 50, width: 320, height: 180)
