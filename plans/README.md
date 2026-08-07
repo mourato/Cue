@@ -806,3 +806,23 @@ lint step. It keeps `verify-local.sh`, build/test scripts, and manual-required
 profiles as the project authorities while adding a fail-closed SwiftFormat and
 SwiftLint contract, including the Video configurations and behavior-preserving
 Swift 6.2 source rewrites.
+
+## All-In-One mode customization (083)
+
+| Plan | Title | Priority | Effort | Depends on | Status |
+|---|---|---:|---:|---|---|
+| [083](083-customize-all-in-one-modes.md) | Customize All-In-One modes and order | P1 | M | 035–041 | TODO |
+
+### Product decisions (083)
+
+- Preferences → Capture gets a reorder/toggle/reset section modeled on Quick
+  Actions, reusing `PreferencesReorderToggleList`.
+- Removing a mode hides it only from the All-In-One HUD; standalone menus,
+  global shortcuts, and deep links stay unchanged.
+- Hidden All-In-One child shortcuts remain persisted but are inert until the
+  mode is re-enabled.
+- All available modes, including Recording when Video is enabled, can be
+  freely reordered. Recording disappears when Video is off without losing its
+  saved position.
+- At least one non-Video mode remains enabled; reset restores the default order
+  and enables all modes.
