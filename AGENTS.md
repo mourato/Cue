@@ -51,35 +51,15 @@ unrelated product skills from other apps.
 ## Build, Test, and Run
 
 - `open Notinhas.xcodeproj` — develop and run in Xcode (`⌘R`).
-- `./scripts/build_and_run.sh` — canonical build and launch for the isolated debug app.
-- `./scripts/launch.sh` — legacy compatibility wrapper that forwards to
-  `./scripts/build_and_run.sh --logs`; prefer the canonical command for all options.
-- `./scripts/run-tests.sh` — run the XCTest suite with results in `build/`
-  (default **Notinhas** scheme). Use `--video-module` (or `ENABLE_VIDEO_MODULE=1`)
-  for Recording/VideoEditor XCTests via **Notinhas Video** / **Debug+Video**.
-  Use `--skip-visual` (or `NOTINHAS_SKIP_VISUAL_TESTS=1`) locally to skip suites
-  that flash real capture overlays / Quick Access panels on screen; still run the
-  full suite (or those suites alone) when changing those areas.
-- `./scripts/plan-preflight.sh plans/NNN-*.md --scope <path> [--new-file <path>]`
-  — read-only preflight for implementation plans (dependency, scope, drift, and
-  worktree checks). Write JSON evidence under `build/plan-preflight/` when
-  needed. A passing preflight does not replace code review or manual
-  capture/TCC/WindowServer validation.
-- `./scripts/verify-local.sh --base <ref> [--plan-only] [--execute] [--strict]`
-  — changed-surface local verification planner/runner. Maps touched paths to
-  XCTest selectors, shell checks, and manual gates via
-  `scripts/verification-map.tsv`; writes reports under `build/verification/`.
-  Default is `--plan-only`. Use `--strict` to fail on unmapped paths; in
-  plan-only mode, manual-required paths remain visible handoff gates without
-  making the mapping check fail. Strict execute mode still fails until those
-  manual gates are completed. This narrows deterministic feedback; it does
-  not replace the full test suite or manual gates when the surface requires
-  them.
-- `make format-check` / `make format-fix` — validate or apply the SwiftFormat
-  6.2 four-space policy from `.swiftformat` (120-column maximum).
-- `make lint` / `make lint-changed` / `make lint-fix` — fail-closed SwiftLint
-  checks for owned app/tests or the changed Swift surface.
-- `make agent-check` — run format, lint, and strict `verify-local` planning.
+- `./scripts/build_and_run.sh` — canonical isolated debug build and launch.
+- `./scripts/launch.sh` — legacy wrapper; use `build_and_run.sh` for options.
+- `./scripts/run-tests.sh [--video-module] [--skip-visual]` — XCTest suite.
+- `./scripts/plan-preflight.sh plans/NNN-*.md --scope <path>` — read-only plan
+  preflight; use `--new-file <path>` when needed.
+- `./scripts/verify-local.sh --base <ref> [--plan-only|--execute] [--strict]`
+  — changed-surface verification through `scripts/verification-map.tsv`.
+- `make format-check`, `make lint-changed`, and `make agent-check` — focused
+  local gates; use the full variants before merge.
 
 Screen Recording and Accessibility permissions are required for affected
 manual checks. Test capture, annotation, clipboard output, and permission
@@ -87,16 +67,10 @@ prompts on macOS whenever they change.
 
 ### Optional Video Module
 
-Recording and Video Editor are optional. They compile only when
-`NOTINHAS_VIDEO_MODULE` is set (scheme **Notinhas Video** with **Debug+Video** /
-**Release+Video**). The default **Notinhas** scheme keeps the module off.
-`./scripts/build_and_run.sh` prompts interactively or accepts `--video-module`,
-`--no-video-module`, or `ENABLE_VIDEO_MODULE=1|0`. At runtime,
-`videoModule.enabled` defaults to off; when the module is compiled in, turn it
-on under **Preferences → Advanced** (`VideoModuleAvailability`). Notinhas
-capture → annotate → export does not require the Video module.
-`./scripts/run-tests.sh` uses the default **Notinhas** scheme (module off). For
-Recording/VideoEditor XCTests: `./scripts/run-tests.sh --video-module`.
+Recording and Video Editor compile only with `NOTINHAS_VIDEO_MODULE` or
+`--video-module` using **Notinhas Video** / **Debug+Video**. The default
+**Notinhas** scheme keeps the module off. Enable it at runtime under
+**Preferences → Advanced**; capture → annotate → export does not require it.
 
 ## Code and Tests
 
@@ -113,14 +87,19 @@ Remaining `Snapzy` / `snapzy` strings in source are **legacy compatibility**
 
 ## Fork and Contribution Workflow
 
-`origin` is `mourato/Notinhas`; `upstream` is `duongductrong/Snapzy`. Before
-starting substantial work, run `git fetch upstream`. Bring upstream changes in
-as focused merge or rebase commits, resolve conflicts without deleting
-Notinhas modules, and validate the affected flow afterward. Keep commits
-atomic and Conventional (`feat: add numbered callouts`, `fix: copy annotation
-to clipboard`). Pull requests state the user outcome, validation performed,
-upstream conflicts or compatibility risks, and include screenshots or a short
-recording for UI changes.
+`origin` is `mourato/Notinhas`; `upstream` is `duongductrong/Snapzy`. For
+upstream work, fetch it first, integrate focused changes without deleting
+Notinhas modules, and validate the affected flow afterward. UI changes include
+screenshots or a short recording in the handoff.
+
+## Completion
+
+A task is complete when:
+
+- The changed surface, risk/lane, and `reuse → extend → create` decision are recorded.
+- Behavior changes pass `make test` and `make agent-check`; guidance changes pass `make guidance-check`.
+- Capture, TCC, WindowServer, or permission changes include the required manual check; visual changes include screenshots or a recording.
+- The handoff records commands and results, assumptions, manual gates, and known baseline failures.
 
 ## Distribution
 
