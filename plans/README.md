@@ -811,7 +811,7 @@ Swift 6.2 source rewrites.
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 |---|---|---:|---:|---|---|
-| [083](083-customize-all-in-one-modes.md) | Customize All-In-One modes and order | P1 | M | 035–041 | TODO |
+| [083](083-customize-all-in-one-modes.md) | Customize All-In-One modes and order | P1 | M | 035–041 | DONE (merge `6c432c7e`; review fix `6f4f1c98`; thermo APPROVE after fix; full/default/Video gates pass; manual Preferences/HUD smoke PENDING) |
 
 ### Product decisions (083)
 
