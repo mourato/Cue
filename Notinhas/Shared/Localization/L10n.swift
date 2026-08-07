@@ -2582,6 +2582,26 @@ nonisolated enum L10n {
             defaultValue: "Selection",
             comment: "Capture preferences section title",
         )
+        static let allInOneModesSection = string(
+            "preferences-capture.section-all-in-one-modes",
+            defaultValue: "All-In-One Modes",
+            comment: "Capture preferences section title",
+        )
+        static let allInOneModesDescription = string(
+            "preferences-capture.all-in-one-modes-description",
+            defaultValue: "Choose which modes appear in the All-In-One toolbar and drag to change their order.",
+            comment: "All-In-One mode customization description",
+        )
+        static let resetAllInOneModes = string(
+            "preferences-capture.reset-all-in-one-modes",
+            defaultValue: "Reset All-In-One Modes",
+            comment: "All-In-One mode customization reset action",
+        )
+        static let allInOneModesMinimumFootnote = string(
+            "preferences-capture.all-in-one-modes-minimum-footnote",
+            defaultValue: "At least one non-Video mode must remain enabled.",
+            comment: "All-In-One mode customization invariant",
+        )
         static let screenshotBehaviorSection = string(
             "preferences-capture.section-screenshot-behavior",
             defaultValue: "Screenshot Behavior",

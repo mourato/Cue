@@ -114,4 +114,26 @@ final class AllInOneModeShortcutSettingsTests: XCTestCase {
         let window = try XCTUnwrap(AllInOneModeShortcutSettings.shortcut(for: .window))
         XCTAssertEqual(window, AllInOneModeShortcutSettings.defaultShortcut(for: .window))
     }
+
+    func testMatching_ignoresStoredShortcutForHiddenMode() throws {
+        AllInOneModeShortcutSettings.setShortcut(
+            CaptureOverlayShortcut(keyCode: UInt32(kVK_ANSI_Z), modifiers: 0),
+            for: .recording,
+        )
+        let event = try XCTUnwrap(NSEvent.keyEvent(
+            with: .keyDown,
+            location: .zero,
+            modifierFlags: [],
+            timestamp: 0,
+            windowNumber: 0,
+            context: nil,
+            characters: "z",
+            charactersIgnoringModifiers: "z",
+            isARepeat: false,
+            keyCode: UInt16(kVK_ANSI_Z),
+        ))
+
+        XCTAssertNil(AllInOneModeShortcutSettings.mode(matching: event, in: [.area]))
+        XCTAssertNotNil(AllInOneModeShortcutSettings.shortcut(for: .recording))
+    }
 }

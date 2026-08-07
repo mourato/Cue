@@ -63,6 +63,8 @@ enum PreferencesKeys {
     static let scrollingCaptureShowHints = "scrollingCapture.showHints"
     static let captureAllInOneLastAreaRect = "capture.allInOne.lastAreaRect"
     static let captureAllInOneAspectRatioLocked = "capture.allInOne.aspectRatioLocked"
+    static let captureAllInOneModeOrder = "capture.allInOne.modeOrder.v1"
+    static let captureAllInOneEnabledModes = "capture.allInOne.enabledModes.v1"
     static let captureSelectionSnapDistance = "capture.selection.snapDistance"
     static let captureSelectionColorSensitivity = "capture.selection.colorSensitivity"
     static let backgroundCutoutAutoCropEnabled = "backgroundCutout.autoCropEnabled"

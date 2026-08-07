@@ -25,7 +25,7 @@ Reference for the Settings window: tab structure, every section, and how prefere
 
 ### Capture (`PreferencesCaptureSettingsView.swift`)
 
-One unified **Capture** pane with seven sections in user-flow order. When the
+One unified **Capture** pane with eight sections in user-flow order. When the
 optional Video module is compiled in and enabled at runtime, a segmented control
 shows **Capture** and **Recording**; with Video off, the unified Capture form
 renders directly without an inner picker.
@@ -41,6 +41,11 @@ renders directly without an inner picker.
   - All-In-One Selection Snapping: snap distance (`capture.selection.snapDistance`)
     and color edge sensitivity (`capture.selection.colorSensitivity`) — applies to
     All-In-One resize refinement only.
+- **All-In-One Modes**: reorder and enable toolbar modes using
+  `capture.allInOne.modeOrder.v1` and `capture.allInOne.enabledModes.v1`.
+  Reset restores the default order and enables every mode. Recording appears
+  only when Video is available, while its saved position and enabled state are
+  retained. At least one non-Video mode must remain enabled.
 - **Screenshot Behavior**:
   - Freeze Area (`screenshot.freezeArea`), Show Cursor (`screenshot.showCursor`).
 - **Specialized Capture**:

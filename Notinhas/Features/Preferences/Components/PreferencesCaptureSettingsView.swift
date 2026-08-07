@@ -242,6 +242,8 @@ struct CaptureSettingsView: View {
                         }
                     }
 
+                    PreferencesAllInOneModeCustomizationView(videoModuleEnabled: videoModuleEnabled)
+
                     Section(L10n.PreferencesCapture.screenshotBehaviorSection) {
                         SettingRow(
                             icon: "snowflake",
