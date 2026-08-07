@@ -29,12 +29,6 @@
             configure()
         }
 
-        override func layoutIfNeeded() {
-            super.layoutIfNeeded()
-
-            layoutTrafficLights()
-        }
-
         private func configure() {
             applyTheme()
 

@@ -300,6 +300,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         window?.makeKeyAndOrderFront(nil)
         window?.makeMain()
         NSApp.activate(ignoringOtherApps: true)
+        window?.layoutTrafficLights()
     }
 
     func windowDidBecomeKey(_ notification: Notification) {

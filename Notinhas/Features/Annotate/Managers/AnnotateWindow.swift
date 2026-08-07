@@ -107,11 +107,6 @@ class AnnotateWindow: NSWindow {
         level = (isKeyWindow || isMainWindow) ? Self.activeEditorLevel : restingLevel
     }
 
-    override func layoutIfNeeded() {
-        super.layoutIfNeeded()
-        layoutTrafficLights()
-    }
-
     override func performKeyEquivalent(with event: NSEvent) -> Bool {
         guard event.type == .keyDown else {
             return super.performKeyEquivalent(with: event)

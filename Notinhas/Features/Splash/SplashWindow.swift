@@ -83,11 +83,6 @@ final class SplashWindow: NSWindow {
     override var canBecomeMain: Bool {
         true
     }
-
-    override func layoutIfNeeded() {
-        super.layoutIfNeeded()
-        layoutTrafficLights()
-    }
 }
 
 // MARK: - SplashWindowController
@@ -174,6 +169,7 @@ final class SplashWindowController: NSObject, NSWindowDelegate {
         // Show window and activate
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+        window.layoutTrafficLights()
 
         // Fade in
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in

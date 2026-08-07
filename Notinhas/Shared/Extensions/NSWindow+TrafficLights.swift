@@ -19,7 +19,11 @@ struct TrafficLightConfiguration {
 }
 
 extension NSWindow {
-    /// Position traffic light buttons to align with custom toolbar items
+    /// Position traffic light buttons after the window is presented.
+    ///
+    /// Keep this out of `NSWindow.layoutIfNeeded()`: AppKit invokes that
+    /// override from its display-cycle callback, where Swift 6 executor
+    /// bridging can crash before the override body runs.
     /// - Parameter config: Configuration for positioning (uses defaults if not specified)
     func layoutTrafficLights(config: TrafficLightConfiguration = .default) {
         guard let closeButton = standardWindowButton(.closeButton),
