@@ -5,6 +5,7 @@
 #   ./scripts/run-tests.sh
 #   ./scripts/run-tests.sh --video-module
 #   ./scripts/run-tests.sh --skip-visual
+#   ./scripts/run-tests.sh --with-visual
 #   ./scripts/run-tests.sh -only-testing:NotinhasTests/SomeTests
 #   ./scripts/run-tests.sh --open-result
 
@@ -37,8 +38,12 @@ VIDEO_MODULE_EXPLICIT=0
 if [[ -n "$ENABLE_VIDEO_MODULE" ]]; then
   VIDEO_MODULE_EXPLICIT=1
 fi
-# Skip suites that order real overlays/panels onto the display (local focus aid).
-SKIP_VISUAL_TESTS="${NOTINHAS_SKIP_VISUAL_TESTS:-0}"
+# Keep the default test run quiet: no suites that order real overlays/panels
+# onto the display. Pass --with-visual (or set NOTINHAS_SKIP_VISUAL_TESTS=0)
+# for an intentional UI integration run.
+QUIET_TESTS="${NOTINHAS_QUIET_TESTS:-1}"
+export NOTINHAS_QUIET_TESTS="$QUIET_TESTS"
+SKIP_VISUAL_TESTS="${NOTINHAS_SKIP_VISUAL_TESTS:-1}"
 # XCTest identifiers that flash fullscreen capture overlays, floating panels, or Dock policy.
 # Keep in sync with delivery-workflow / testing-xctest skills when adding new on-screen hosts.
 VISUAL_TEST_IDENTIFIERS=(
@@ -119,15 +124,18 @@ Options:
   --no-video-module      Explicit default: Notinhas scheme without Video module.
   --skip-visual          Skip XCTest suites that flash real overlays/panels on screen
                          (area selection, Quick Access panel, status-bar activation).
-                         Not a merge-gate substitute — run without this flag (or only the
-                         visual suites) when those areas change.
+                         This is the default.
+  --with-visual          Include the on-screen overlay/panel suites explicitly.
+                         Audio remains muted while running under XCTest.
   -h, --help             Show this help.
 
 Environment:
   ENABLE_VIDEO_MODULE                 Set to 1 or 0 to enable/disable the Video module non-interactively.
   LOCAL_CODE_SIGN_IDENTITY            Local signing identity. Default: Prisma Local Code Signing.
   LOCAL_ENABLE_HARDENED_RUNTIME       Local hardened-runtime setting. Default: NO.
+  NOTINHAS_QUIET_TESTS                 Keep test-side effects quiet. Default: 1.
   NOTINHAS_SKIP_VISUAL_TESTS          Set to 1 for the same effect as --skip-visual.
+  NOTINHAS_ALLOW_TEST_SOUNDS          Set to 1 only for an intentional audio integration run.
   NOTINHAS_ALLOW_SCREEN_CAPTURE_IN_TESTS
                                       Set to 1 to use live CGWindowListCreateImage backdrop
                                       captures in XCTest (default: synthetic, no Screen Recording TCC).
@@ -136,6 +144,7 @@ Examples:
   $0
   $0 --video-module
   $0 --skip-visual
+  $0 --with-visual
   ENABLE_VIDEO_MODULE=1 $0
   NOTINHAS_SKIP_VISUAL_TESTS=1 $0
   $0 -only-testing:NotinhasTests/CaptureOutputNamingTests
@@ -204,6 +213,10 @@ while [ $# -gt 0 ]; do
       ;;
     --skip-visual)
       SKIP_VISUAL_TESTS=1
+      shift
+      ;;
+    --with-visual)
+      SKIP_VISUAL_TESTS=0
       shift
       ;;
     -h|--help)

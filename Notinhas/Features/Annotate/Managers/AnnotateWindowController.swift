@@ -938,7 +938,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
             }
         }
 
-        if beepOnFailure {
+        if beepOnFailure, !SoundManager.isPlaybackSuppressedForTests {
             NSSound.beep()
         }
         return false

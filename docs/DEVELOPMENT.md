@@ -63,15 +63,24 @@ Unit tests live in `NotinhasTests/`, a peer folder of `Notinhas/`.
 
 ```bash
 ./scripts/run-tests.sh
-./scripts/run-tests.sh --skip-visual   # skip on-screen overlay/panel suites (local focus)
+./scripts/run-tests.sh --with-visual   # explicit on-screen overlay/panel suites
 ./scripts/run-tests.sh --video-module   # optional Recording/VideoEditor XCTests
 ```
+
+The default test command is quiet: the app's interactive host stays inactive,
+visual overlay/panel suites are skipped, and app sounds are muted. Use
+`--with-visual` only for an intentional UI integration run. Keep
+`NOTINHAS_ALLOW_TEST_SOUNDS=1` unset except for an intentional audio
+integration run.
 
 Or directly:
 
 ```bash
 xcodebuild test -project Notinhas.xcodeproj -scheme Notinhas -configuration Debug
 ```
+
+Use `./scripts/run-tests.sh` for the quiet default; direct `xcodebuild test`
+does not apply the repository's visual-suite skip list.
 
 ## Plan preflight (read-only)
 

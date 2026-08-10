@@ -33,7 +33,7 @@ enum QuickAccessSound {
     /// Play the sound effect asynchronously (non-blocking)
     /// - Parameter reduceMotion: When true, sounds are disabled for accessibility
     func play(reduceMotion: Bool = false) {
-        guard !reduceMotion else { return }
+        guard !reduceMotion, !SoundManager.isPlaybackSuppressedForTests else { return }
         let soundsEnabled = UserDefaults.standard.object(forKey: PreferencesKeys.playSounds) as? Bool ?? true
         guard soundsEnabled else { return }
         let soundName = soundName

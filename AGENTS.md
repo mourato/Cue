@@ -53,7 +53,10 @@ unrelated product skills from other apps.
 - `open Notinhas.xcodeproj` — develop and run in Xcode (`⌘R`).
 - `./scripts/build_and_run.sh` — canonical isolated debug build and launch.
 - `./scripts/launch.sh` — legacy wrapper; use `build_and_run.sh` for options.
-- `./scripts/run-tests.sh [--video-module] [--skip-visual]` — XCTest suite.
+- `./scripts/run-tests.sh [--video-module]` — quiet XCTest suite by default:
+  no on-screen overlay/panel suites and no app sounds. Use `--with-visual`
+  only for an intentional UI integration run; use `NOTINHAS_ALLOW_TEST_SOUNDS=1`
+  only for an intentional audio integration run.
 - `./scripts/plan-preflight.sh plans/NNN-*.md --scope <path>` — read-only plan
   preflight; use `--new-file <path>` when needed.
 - `./scripts/verify-local.sh --base <ref> [--plan-only|--execute] [--strict]`
@@ -71,6 +74,16 @@ Recording and Video Editor compile only with `NOTINHAS_VIDEO_MODULE` or
 `--video-module` using **Notinhas Video** / **Debug+Video**. The default
 **Notinhas** scheme keeps the module off. Enable it at runtime under
 **Preferences → Advanced**; capture → annotate → export does not require it.
+
+### Test isolation
+
+Agents must use the default quiet test command. The XCTest host does not start
+the interactive app, visual overlay/panel suites are opt-in, and app sound
+playback is suppressed during tests. Keep
+`NOTINHAS_ALLOW_SCREEN_CAPTURE_IN_TESTS=1`,
+`NOTINHAS_ALLOW_TEST_SOUNDS=1`, and
+`NOTINHAS_RUN_MICROPHONE_INTEGRATION=1` unset unless the task explicitly
+requires that integration surface.
 
 ## Code and Tests
 

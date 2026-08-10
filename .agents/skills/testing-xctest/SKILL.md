@@ -24,6 +24,7 @@ Use when adding or changing automated tests under `NotinhasTests/`.
 ```bash
 ./scripts/run-tests.sh
 ./scripts/run-tests.sh --skip-visual
+./scripts/run-tests.sh --with-visual
 ./scripts/run-tests.sh -only-testing:NotinhasTests/NotinhasNoteGeometryTests
 ./scripts/verify-local.sh --base main --plan-only
 ./scripts/verify-local.sh --base main --plan-only --strict
@@ -36,10 +37,13 @@ report; `--strict` fails instead of treating them as fully verified. The command
 `./scripts/run-tests.sh` for XCTest execution and does not replace full-suite or manual
 UI/TCC/WindowServer gates when overlays, permissions, or unmapped surfaces change.
 
-`--skip-visual` / `NOTINHAS_SKIP_VISUAL_TESTS=1` skips host suites that flash real
-area-selection overlays, Quick Access panels, or status-bar activation onto the
-display. Prefer it while working on unrelated tasks; do not use it as the sole
-gate when those UI surfaces change.
+`./scripts/run-tests.sh` is quiet by default: it skips host suites that flash
+real area-selection overlays, Quick Access panels, or status-bar activation
+onto the display, and app sound playback is suppressed under XCTest.
+`--skip-visual` / `NOTINHAS_SKIP_VISUAL_TESTS=1` keeps that behavior explicit;
+`--with-visual` opts into the on-screen suites for an intentional UI
+integration run. Keep `NOTINHAS_ALLOW_TEST_SOUNDS=1` unset except for an
+intentional audio integration run.
 
 Splash/onboarding during tests is **not** a skip-list issue: `AppLaunchPolicy`
 must keep the interactive host off under XCTest. Do not “fix” onboarding by

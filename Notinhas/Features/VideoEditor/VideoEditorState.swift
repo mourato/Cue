@@ -441,6 +441,7 @@
             assetURL = editorAssetURL
             asset = AVAsset(url: editorAssetURL)
             player = AVPlayer(playerItem: AVPlayerItem(asset: asset))
+            player.isMuted = SoundManager.isPlaybackSuppressedForTests
             zoomTransitionDuration = Self.loadZoomTransitionDuration()
             recordingMetadata = initialMetadata
 
