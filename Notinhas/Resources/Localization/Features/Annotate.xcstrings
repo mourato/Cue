@@ -1,6 +1,124 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "annotate.add-wallpaper": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Add wallpaper" } }
+      }
+    },
+    "annotate.move-canvas": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Move canvas" } }
+      }
+    },
+    "annotate.annotation-canvas": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Annotation canvas" } }
+      }
+    },
+    "annotate.canvas-accessibility-hint": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Use the toolbar to choose a tool. Arrow keys move a selected annotation." } }
+      }
+    },
+    "annotate.canvas-zoom": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Zoom %d%%" } }
+      }
+    },
+    "annotate.image-data-load-failed": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Couldn't read that image. Try dropping it again." } }
+      }
+    },
+    "annotate.image-import-failed": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Couldn't import that image. Try another file." } }
+      }
+    },
+    "annotate.unsupported-image-type": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "That file type isn't supported. Drop a PNG, JPG, GIF, TIFF, BMP, or HEIC image." } }
+      }
+    },
+    "annotate.gradient-pink-orange": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Pink and orange gradient" } } }
+    },
+    "annotate.gradient-blue-purple": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Blue and purple gradient" } } }
+    },
+    "annotate.gradient-green-blue": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Green and blue gradient" } } }
+    },
+    "annotate.gradient-orange-red": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Orange and red gradient" } } }
+    },
+    "annotate.gradient-purple-pink": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Purple and pink gradient" } } }
+    },
+    "annotate.gradient-blue-green": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Blue and green gradient" } } }
+    },
+    "annotate.gradient-yellow-orange": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Yellow and orange gradient" } } }
+    },
+    "annotate.gradient-cyan-blue": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Cyan and blue gradient" } } }
+    },
+    "annotate.alignment-top-left": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Top left" } } }
+    },
+    "annotate.alignment-top": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Top" } } }
+    },
+    "annotate.alignment-top-right": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Top right" } } }
+    },
+    "annotate.alignment-left": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Left" } } }
+    },
+    "annotate.alignment-center": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Center" } } }
+    },
+    "annotate.alignment-right": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Right" } } }
+    },
+    "annotate.alignment-bottom-left": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Bottom left" } } }
+    },
+    "annotate.alignment-bottom": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Bottom" } } }
+    },
+    "annotate.alignment-bottom-right": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Bottom right" } } }
+    },
+    "annotate.notinhas.note-row-label": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Note %d: %@, %@" } } }
+    },
+    "annotate.notinhas.color-yellow": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Yellow" } } }
+    },
+    "annotate.notinhas.color-gray": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Gray" } } }
+    },
+    "annotate.notinhas.color-white": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "White" } } }
+    },
+    "annotate.notinhas.color-dark-gray": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Dark gray" } } }
+    },
+    "annotate.notinhas.color-medium-gray": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Medium gray" } } }
+    },
+    "annotate.notinhas.color-light-gray": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Light gray" } } }
+    },
+    "annotate.notinhas.color-pink": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Pink" } } }
+    },
+    "annotate.notinhas.color-near-white": {
+      "localizations": { "en": { "stringUnit": { "state": "translated", "value": "Near white" } } }
+    },
     "annotate.notinhas.note-tool": {
       "localizations": {
         "en": {

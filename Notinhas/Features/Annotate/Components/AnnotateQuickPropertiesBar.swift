@@ -590,6 +590,8 @@ private struct QuickToolPicker: View {
                 .disabled(!isEnabled)
                 .opacity(isEnabled ? 1 : 0.4)
                 .help(tool.displayName)
+                .accessibilityLabel(tool.displayName)
+                .accessibilityValue(selectedTool == tool ? L10n.Notinhas.selected : "")
             }
         }
         .frame(width: width, alignment: .leading)
@@ -635,6 +637,7 @@ private struct QuickPropertiesColorPopoverControl: View {
                 }
                 .buttonStyle(.plain)
                 .help(title)
+                .accessibilityLabel(title)
                 .popover(isPresented: $showsPopover, arrowEdge: .bottom) {
                     QuickPropertiesColorPopover(
                         title: title,
@@ -659,6 +662,12 @@ private struct QuickPropertiesColorPopoverControl: View {
                     }
                     .buttonStyle(.plain)
                     .help(L10n.Common.favorite)
+                    .accessibilityLabel(title)
+                    .accessibilityValue(
+                        AnnotateColorPaletteStore.colorsMatch(selectedColor, color)
+                            ? L10n.Notinhas.selected
+                            : "",
+                    )
                     .annotateColorDraggable(color, sourceFavoriteRole: role)
                 }
             }
@@ -867,31 +876,35 @@ private struct QuickPropertiesColorPopover: View {
     }
 
     private var draftFavoriteColorButton: some View {
-        QuickPropertiesColorSwatch(
-            color: draftCustomColor,
-            isSelected: true,
-            size: 22,
-        )
-        .contentShape(Circle())
-        .onTapGesture {
+        Button {
             selectedColor = draftCustomColor
+        } label: {
+            QuickPropertiesColorSwatch(
+                color: draftCustomColor,
+                isSelected: true,
+                size: 22,
+            )
         }
+        .buttonStyle(.plain)
         .frame(width: 24, height: 24)
         .help(L10n.Common.custom)
+        .accessibilityLabel(L10n.Common.custom)
     }
 
     private var draftCustomColorButton: some View {
-        QuickPropertiesColorSwatch(
-            color: draftCustomColor,
-            isSelected: AnnotateColorPaletteStore.colorsMatch(selectedColor, draftCustomColor),
-            size: 22,
-        )
-        .contentShape(Circle())
-        .onTapGesture {
+        Button {
             selectedColor = draftCustomColor
+        } label: {
+            QuickPropertiesColorSwatch(
+                color: draftCustomColor,
+                isSelected: AnnotateColorPaletteStore.colorsMatch(selectedColor, draftCustomColor),
+                size: 22,
+            )
         }
+        .buttonStyle(.plain)
         .frame(width: 24, height: 24)
         .help(L10n.Common.custom)
+        .accessibilityLabel(L10n.Common.custom)
     }
 
     private var colorPickerPanel: some View {
@@ -1142,14 +1155,17 @@ private struct QuickPropertiesPaletteColorButton: View {
 
     private var content: some View {
         ZStack(alignment: .topTrailing) {
-            QuickPropertiesColorSwatch(
-                color: color,
-                isSelected: isSelected,
-                size: 22,
-            )
-            .contentShape(Circle())
-            .onTapGesture(perform: onSelect)
+            Button(action: onSelect) {
+                QuickPropertiesColorSwatch(
+                    color: color,
+                    isSelected: isSelected,
+                    size: 22,
+                )
+            }
+            .buttonStyle(.plain)
             .help(title)
+            .accessibilityLabel(title)
+            .accessibilityValue(isSelected ? L10n.Notinhas.selected : "")
             .annotateColorDraggable(color, sourceFavoriteRole: sourceFavoriteRole)
 
             if let overlayAction {
@@ -1167,6 +1183,7 @@ private struct QuickPropertiesPaletteColorButton: View {
                 .buttonStyle(.plain)
                 .offset(x: 5, y: -5)
                 .help(overlayHelp)
+                .accessibilityLabel(overlayHelp)
             }
 
             if isDropTargeted {
@@ -1186,32 +1203,33 @@ private struct QuickPropertiesFavoriteEmptyDropTarget: View {
     @State private var isTargeted = false
 
     var body: some View {
-        HStack(spacing: 6) {
-            Image(systemName: isTargeted ? "arrow.down" : "plus")
-                .font(.system(size: 10, weight: .semibold))
-                .foregroundColor(isTargeted ? .accentColor : .secondary)
-                .frame(width: 24, height: 24)
-                .background(Circle()
-                    .fill(isTargeted ? Color.accentColor.opacity(0.1) : SidebarColors.itemDefault.opacity(0.55)))
-                .overlay(
-                    Circle()
-                        .stroke(
-                            isTargeted ? Color.accentColor.opacity(0.65) : Color.secondary.opacity(0.35),
-                            style: StrokeStyle(lineWidth: 1, dash: [3, 2]),
-                        ),
-                )
+        Button(action: onTap) {
+            HStack(spacing: 6) {
+                Image(systemName: isTargeted ? "arrow.down" : "plus")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundColor(isTargeted ? .accentColor : .secondary)
+                    .frame(width: 24, height: 24)
+                    .background(Circle()
+                        .fill(isTargeted ? Color.accentColor.opacity(0.1) : SidebarColors.itemDefault.opacity(0.55)))
+                    .overlay(
+                        Circle()
+                            .stroke(
+                                isTargeted ? Color.accentColor.opacity(0.65) : Color.secondary.opacity(0.35),
+                                style: StrokeStyle(lineWidth: 1, dash: [3, 2]),
+                            ),
+                    )
 
-            Text(L10n.Common.dragColorsHere)
-                .font(Typography.labelSmall)
-                .lineLimit(1)
+                Text(L10n.Common.dragColorsHere)
+                    .font(Typography.labelSmall)
+                    .lineLimit(1)
+            }
+            .foregroundColor(isTargeted ? .accentColor : SidebarColors.labelSecondary)
+            .frame(maxWidth: .infinity, minHeight: 38, alignment: .leading)
+            .contentShape(Rectangle())
         }
-        .foregroundColor(isTargeted ? .accentColor : SidebarColors.labelSecondary)
-        .frame(maxWidth: .infinity, minHeight: 38, alignment: .leading)
-        .contentShape(Rectangle())
+        .buttonStyle(.plain)
         .help(L10n.Common.custom)
         .accessibilityLabel(L10n.Common.custom)
-        .onTapGesture(perform: onTap)
-        .accessibilityAddTraits(.isButton)
         .onDrop(of: AnnotateColorDragPayload.supportedContentTypes, isTargeted: $isTargeted) { providers in
             AnnotateColorDragPayload.load(from: providers) { payload in
                 guard let payload else { return }
@@ -1228,30 +1246,31 @@ private struct QuickPropertiesFavoriteDropSlot: View {
     @State private var isTargeted = false
 
     var body: some View {
-        Image(systemName: isTargeted ? "arrow.down" : "plus")
-            .font(.system(size: 9, weight: .semibold))
-            .foregroundColor(isTargeted ? .accentColor : .secondary)
-            .frame(width: 22, height: 22)
-            .background(Circle().fill(SidebarColors.itemDefault.opacity(0.55)))
-            .overlay(
-                Circle()
-                    .stroke(
-                        isTargeted ? Color.accentColor.opacity(0.65) : Color.secondary.opacity(0.35),
-                        style: StrokeStyle(lineWidth: 1, dash: [3, 2]),
-                    ),
-            )
-            .frame(width: 24, height: 24)
-            .help(L10n.Common.custom)
-            .contentShape(Circle())
-            .onTapGesture(perform: onTap)
-            .accessibilityLabel(L10n.Common.custom)
-            .accessibilityAddTraits(.isButton)
-            .onDrop(of: AnnotateColorDragPayload.supportedContentTypes, isTargeted: $isTargeted) { providers in
-                AnnotateColorDragPayload.load(from: providers) { payload in
-                    guard let payload else { return }
-                    onDropPayload(payload)
-                }
+        Button(action: onTap) {
+            Image(systemName: isTargeted ? "arrow.down" : "plus")
+                .font(.system(size: 9, weight: .semibold))
+                .foregroundColor(isTargeted ? .accentColor : .secondary)
+                .frame(width: 22, height: 22)
+                .background(Circle().fill(SidebarColors.itemDefault.opacity(0.55)))
+                .overlay(
+                    Circle()
+                        .stroke(
+                            isTargeted ? Color.accentColor.opacity(0.65) : Color.secondary.opacity(0.35),
+                            style: StrokeStyle(lineWidth: 1, dash: [3, 2]),
+                        ),
+                )
+                .frame(width: 24, height: 24)
+        }
+        .buttonStyle(.plain)
+        .help(L10n.Common.custom)
+        .contentShape(Circle())
+        .accessibilityLabel(L10n.Common.custom)
+        .onDrop(of: AnnotateColorDragPayload.supportedContentTypes, isTargeted: $isTargeted) { providers in
+            AnnotateColorDragPayload.load(from: providers) { payload in
+                guard let payload else { return }
+                onDropPayload(payload)
             }
+        }
     }
 }
 
@@ -1437,6 +1456,8 @@ private struct QuickTextPresentationControl: View {
                     }
                     .buttonStyle(.plain)
                     .help(presentation.helpText)
+                    .accessibilityLabel(presentation.helpText)
+                    .accessibilityValue(selectedPresentation == presentation ? L10n.Notinhas.selected : "")
                 }
             }
         }
@@ -1455,6 +1476,7 @@ private struct QuickWatermarkTextControl: View {
         QuickPropertiesGroup(title: L10n.Common.text, spacing: groupSpacing) {
             TextField("", text: $text)
                 .textFieldStyle(.plain)
+                .accessibilityLabel(L10n.Common.text)
                 .font(Typography.labelSmall)
                 .foregroundColor(SidebarColors.labelPrimary)
                 .lineLimit(1)
@@ -1508,6 +1530,8 @@ private struct QuickWatermarkStyleControl: View {
                     }
                     .buttonStyle(.plain)
                     .help(style.displayName)
+                    .accessibilityLabel(style.displayName)
+                    .accessibilityValue(selectedStyle == style ? L10n.Notinhas.selected : "")
                 }
             }
         }
@@ -1666,6 +1690,8 @@ private struct QuickBlurTypeControl: View {
                     }
                     .buttonStyle(.plain)
                     .help(blurType.displayName)
+                    .accessibilityLabel(blurType.displayName)
+                    .accessibilityValue(selectedType == blurType ? L10n.Notinhas.selected : "")
                 }
             }
         }
@@ -1701,6 +1727,11 @@ private struct QuickAutoRedactControl: View {
             .opacity((!state.hasImage || state.isSensitiveRedactionScanning || state.editorMode != .annotate || state
                     .isCropInteractionActive) ? 0.4 : 1)
             .help(
+                state.isSensitiveRedactionScanning
+                    ? L10n.AnnotateUI.autoRedactionScanning
+                    : L10n.AnnotateUI.autoRedactSensitiveData,
+            )
+            .accessibilityLabel(
                 state.isSensitiveRedactionScanning
                     ? L10n.AnnotateUI.autoRedactionScanning
                     : L10n.AnnotateUI.autoRedactSensitiveData,
@@ -1748,6 +1779,8 @@ private struct QuickArrowStyleControl: View {
                         }
                         .buttonStyle(.plain)
                         .help(style.displayName)
+                        .accessibilityLabel(style.displayName)
+                        .accessibilityValue(selectedStyle == style ? L10n.Notinhas.selected : "")
                     }
 
                     if showsBendDirection {
@@ -1815,6 +1848,8 @@ private struct QuickArrowStyleControl: View {
                         }
                         .buttonStyle(.plain)
                         .help(type.displayName)
+                        .accessibilityLabel(type.displayName)
+                        .accessibilityValue(selectedType == type ? L10n.Notinhas.selected : "")
                     }
                 }
             }
@@ -1858,6 +1893,8 @@ private struct QuickArrowStyleControl: View {
                     }
                     .buttonStyle(.plain)
                     .help(head.displayName)
+                    .accessibilityLabel(head.displayName)
+                    .accessibilityValue(selection.wrappedValue == head ? L10n.Notinhas.selected : "")
                 }
             }
         }

@@ -138,6 +138,19 @@ nonisolated enum GradientPreset: String, CaseIterable, Identifiable, Sendable {
         rawValue
     }
 
+    var displayName: String {
+        switch self {
+        case .pinkOrange: L10n.AnnotateUI.gradientPinkOrange
+        case .bluePurple: L10n.AnnotateUI.gradientBluePurple
+        case .greenBlue: L10n.AnnotateUI.gradientGreenBlue
+        case .orangeRed: L10n.AnnotateUI.gradientOrangeRed
+        case .purplePink: L10n.AnnotateUI.gradientPurplePink
+        case .blueGreen: L10n.AnnotateUI.gradientBlueGreen
+        case .yellowOrange: L10n.AnnotateUI.gradientYellowOrange
+        case .cyanBlue: L10n.AnnotateUI.gradientCyanBlue
+        }
+    }
+
     var colors: [Color] {
         switch self {
         case .pinkOrange: [.pink, .orange]

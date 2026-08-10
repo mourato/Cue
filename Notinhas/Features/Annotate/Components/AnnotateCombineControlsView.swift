@@ -81,6 +81,7 @@ struct AnnotateCombineControlsView: View {
                     .buttonStyle(.borderless)
                     .disabled(index == 0)
                     .help(L10n.Combine.moveEarlier)
+                    .accessibilityLabel(L10n.Combine.moveEarlier)
 
                     Button {
                         state.moveCombineImage(at: index, by: 1)
@@ -90,6 +91,7 @@ struct AnnotateCombineControlsView: View {
                     .buttonStyle(.borderless)
                     .disabled(index == state.combineImageCount - 1)
                     .help(L10n.Combine.moveLater)
+                    .accessibilityLabel(L10n.Combine.moveLater)
                 }
                 .padding(.horizontal, Spacing.sm)
                 .padding(.vertical, 6)

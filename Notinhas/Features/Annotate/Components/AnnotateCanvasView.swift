@@ -5,6 +5,7 @@
 //  Canvas view displaying the image with annotations
 //
 
+import AppKit
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -207,6 +208,10 @@ struct AnnotateCanvasView: View {
             .padding(.bottom, 20)
             .transition(.move(edge: .bottom).combined(with: .opacity))
             .animation(.easeInOut(duration: 0.3), value: showDropError)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(dropErrorMessage)
+            .accessibilityAddTraits(.isStaticText)
+            .accessibilitySortPriority(10)
     }
 
     /// Show error message temporarily
@@ -216,6 +221,11 @@ struct AnnotateCanvasView: View {
             withAnimation {
                 showDropError = true
             }
+            NSAccessibility.post(
+                element: NSApp,
+                notification: .announcementRequested,
+                userInfo: [.announcement: message],
+            )
             try? await Task.sleep(nanoseconds: 2_500_000_000) // 2.5 seconds
             withAnimation {
                 showDropError = false
@@ -380,6 +390,32 @@ struct AnnotateCanvasView: View {
                 baseCanvasSize: newMetrics.baseCanvasSize,
                 fitScale: newMetrics.fitScale,
             )
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(L10n.AnnotateUI.annotationCanvas)
+        .accessibilityValue(L10n.AnnotateUI.canvasZoom(Int(state.zoomLevel * 100)))
+        .accessibilityHint(L10n.AnnotateUI.canvasAccessibilityHint)
+        .accessibilityAdjustableAction { direction in
+            switch direction {
+            case .increment:
+                state.zoomLevel = state.clampedZoom(state.zoomLevel + 0.25)
+            case .decrement:
+                state.zoomLevel = state.clampedZoom(state.zoomLevel - 0.25)
+            @unknown default:
+                break
+            }
+        }
+        .accessibilityAction(named: L10n.Common.deleteAction) {
+            guard state.hasSelectedAnnotations else { return }
+            state.deleteSelectedAnnotation()
+        }
+        .accessibilityAction(named: L10n.Common.apply) {
+            guard state.isCropInteractionActive else { return }
+            state.confirmCropInteraction()
+        }
+        .accessibilityAction(named: L10n.Common.cancel) {
+            guard state.isCropInteractionActive else { return }
+            state.cancelCrop()
         }
     }
 
@@ -595,7 +631,7 @@ struct AnnotateCanvasView: View {
             let didAccept = AnnotateImageDropLoader.load(from: provider) { droppedImage in
                 guard let droppedImage else {
                     Task { @MainActor in
-                        showError("Failed to load image data")
+                        showError(L10n.AnnotateUI.imageDataLoadFailed)
                     }
                     return
                 }
@@ -606,7 +642,7 @@ struct AnnotateCanvasView: View {
                         sourceURL: nil,
                         sourceData: droppedImage.data,
                     ) {
-                        showError("Failed to import image")
+                        showError(L10n.AnnotateUI.imageImportFailed)
                     }
                 }
             }
@@ -616,7 +652,7 @@ struct AnnotateCanvasView: View {
         }
 
         // No valid provider found
-        showError("Unsupported file type")
+        showError(L10n.AnnotateUI.unsupportedImageType)
         return false
     }
 

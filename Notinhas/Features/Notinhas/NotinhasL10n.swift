@@ -30,6 +30,14 @@ enum NotinhasL10n {
     static let colorGreen = L10n.Notinhas.colorGreen
     static let colorPurple = L10n.Notinhas.colorPurple
     static let colorBlack = L10n.Notinhas.colorBlack
+    static let colorYellow = L10n.Notinhas.colorYellow
+    static let colorGray = L10n.Notinhas.colorGray
+    static let colorWhite = L10n.Notinhas.colorWhite
+    static let colorDarkGray = L10n.Notinhas.colorDarkGray
+    static let colorMediumGray = L10n.Notinhas.colorMediumGray
+    static let colorLightGray = L10n.Notinhas.colorLightGray
+    static let colorPink = L10n.Notinhas.colorPink
+    static let colorNearWhite = L10n.Notinhas.colorNearWhite
     static let settingsSection = L10n.Notinhas.settingsSection
     static let panelSideTitle = L10n.Notinhas.panelSideTitle
     static let panelSideDescription = L10n.Notinhas.panelSideDescription

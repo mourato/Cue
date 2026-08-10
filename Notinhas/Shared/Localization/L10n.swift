@@ -3301,6 +3301,17 @@ nonisolated enum L10n {
             defaultValue: "Area",
             comment: "Notinhas area target",
         )
+        static func noteRowLabel(number: Int, text: String, target: String) -> String {
+            format(
+                "annotate.notinhas.note-row-label",
+                defaultValue: "Note %d: %@, %@",
+                comment: "Accessibility label for a Notinhas side-panel row. The placeholders are the note number, note text, and target type.",
+                number,
+                text,
+                target,
+            )
+        }
+
         static let areaStyleOutline = string(
             "annotate.notinhas.area-style-outline",
             defaultValue: "Outline",
@@ -3411,6 +3422,46 @@ nonisolated enum L10n {
             "annotate.notinhas.color-black",
             defaultValue: "Black",
             comment: "Notinhas palette color name",
+        )
+        static let colorYellow = string(
+            "annotate.notinhas.color-yellow",
+            defaultValue: "Yellow",
+            comment: "Annotate palette color name",
+        )
+        static let colorGray = string(
+            "annotate.notinhas.color-gray",
+            defaultValue: "Gray",
+            comment: "Annotate palette color name",
+        )
+        static let colorWhite = string(
+            "annotate.notinhas.color-white",
+            defaultValue: "White",
+            comment: "Annotate palette color name",
+        )
+        static let colorDarkGray = string(
+            "annotate.notinhas.color-dark-gray",
+            defaultValue: "Dark gray",
+            comment: "Annotate palette color name",
+        )
+        static let colorMediumGray = string(
+            "annotate.notinhas.color-medium-gray",
+            defaultValue: "Medium gray",
+            comment: "Annotate palette color name",
+        )
+        static let colorLightGray = string(
+            "annotate.notinhas.color-light-gray",
+            defaultValue: "Light gray",
+            comment: "Annotate palette color name",
+        )
+        static let colorPink = string(
+            "annotate.notinhas.color-pink",
+            defaultValue: "Pink",
+            comment: "Annotate palette color name",
+        )
+        static let colorNearWhite = string(
+            "annotate.notinhas.color-near-white",
+            defaultValue: "Near white",
+            comment: "Annotate palette color name",
         )
         static let areaStrokeWidthLabel = string(
             "annotate.notinhas.area-stroke-width",
@@ -5123,6 +5174,135 @@ nonisolated enum L10n {
             "annotate.rotate-right",
             defaultValue: "Rotate right 90°",
             comment: "Tooltip for rotating the source image 90° clockwise",
+        )
+        static let addWallpaper = string(
+            "annotate.add-wallpaper",
+            defaultValue: "Add wallpaper",
+            comment: "Accessibility label for adding a custom annotate wallpaper",
+        )
+        static let moveCanvas = string(
+            "annotate.move-canvas",
+            defaultValue: "Move canvas",
+            comment: "Accessibility label for toggling interactive canvas panning",
+        )
+        static let annotationCanvas = string(
+            "annotate.annotation-canvas",
+            defaultValue: "Annotation canvas",
+            comment: "Accessibility label for the main annotate editing canvas",
+        )
+        static let canvasAccessibilityHint = string(
+            "annotate.canvas-accessibility-hint",
+            defaultValue: "Use the toolbar to choose a tool. Arrow keys move a selected annotation.",
+            comment: "Accessibility hint for the annotate canvas",
+        )
+        static func canvasZoom(_ percent: Int) -> String {
+            format(
+                "annotate.canvas-zoom",
+                defaultValue: "Zoom %d%%",
+                comment: "Accessibility value for the annotate canvas zoom level",
+                percent,
+            )
+        }
+
+        static let imageDataLoadFailed = string(
+            "annotate.image-data-load-failed",
+            defaultValue: "Couldn't read that image. Try dropping it again.",
+            comment: "Error shown when a dropped image cannot be read",
+        )
+        static let imageImportFailed = string(
+            "annotate.image-import-failed",
+            defaultValue: "Couldn't import that image. Try another file.",
+            comment: "Error shown when a dropped image cannot be imported",
+        )
+        static let unsupportedImageType = string(
+            "annotate.unsupported-image-type",
+            defaultValue: "That file type isn't supported. Drop a PNG, JPG, GIF, TIFF, BMP, or HEIC image.",
+            comment: "Error shown when a dropped file is not a supported image type",
+        )
+        static let gradientPinkOrange = string(
+            "annotate.gradient-pink-orange",
+            defaultValue: "Pink and orange gradient",
+            comment: "Accessibility label for the pink and orange annotate gradient preset",
+        )
+        static let gradientBluePurple = string(
+            "annotate.gradient-blue-purple",
+            defaultValue: "Blue and purple gradient",
+            comment: "Accessibility label for the blue and purple annotate gradient preset",
+        )
+        static let gradientGreenBlue = string(
+            "annotate.gradient-green-blue",
+            defaultValue: "Green and blue gradient",
+            comment: "Accessibility label for the green and blue annotate gradient preset",
+        )
+        static let gradientOrangeRed = string(
+            "annotate.gradient-orange-red",
+            defaultValue: "Orange and red gradient",
+            comment: "Accessibility label for the orange and red annotate gradient preset",
+        )
+        static let gradientPurplePink = string(
+            "annotate.gradient-purple-pink",
+            defaultValue: "Purple and pink gradient",
+            comment: "Accessibility label for the purple and pink annotate gradient preset",
+        )
+        static let gradientBlueGreen = string(
+            "annotate.gradient-blue-green",
+            defaultValue: "Blue and green gradient",
+            comment: "Accessibility label for the blue and green annotate gradient preset",
+        )
+        static let gradientYellowOrange = string(
+            "annotate.gradient-yellow-orange",
+            defaultValue: "Yellow and orange gradient",
+            comment: "Accessibility label for the yellow and orange annotate gradient preset",
+        )
+        static let gradientCyanBlue = string(
+            "annotate.gradient-cyan-blue",
+            defaultValue: "Cyan and blue gradient",
+            comment: "Accessibility label for the cyan and blue annotate gradient preset",
+        )
+        static let alignmentTopLeft = string(
+            "annotate.alignment-top-left",
+            defaultValue: "Top left",
+            comment: "Annotate image alignment option",
+        )
+        static let alignmentTop = string(
+            "annotate.alignment-top",
+            defaultValue: "Top",
+            comment: "Annotate image alignment option",
+        )
+        static let alignmentTopRight = string(
+            "annotate.alignment-top-right",
+            defaultValue: "Top right",
+            comment: "Annotate image alignment option",
+        )
+        static let alignmentLeft = string(
+            "annotate.alignment-left",
+            defaultValue: "Left",
+            comment: "Annotate image alignment option",
+        )
+        static let alignmentCenter = string(
+            "annotate.alignment-center",
+            defaultValue: "Center",
+            comment: "Annotate image alignment option",
+        )
+        static let alignmentRight = string(
+            "annotate.alignment-right",
+            defaultValue: "Right",
+            comment: "Annotate image alignment option",
+        )
+        static let alignmentBottomLeft = string(
+            "annotate.alignment-bottom-left",
+            defaultValue: "Bottom left",
+            comment: "Annotate image alignment option",
+        )
+        static let alignmentBottom = string(
+            "annotate.alignment-bottom",
+            defaultValue: "Bottom",
+            comment: "Annotate image alignment option",
+        )
+        static let alignmentBottomRight = string(
+            "annotate.alignment-bottom-right",
+            defaultValue: "Bottom right",
+            comment: "Annotate image alignment option",
         )
         static let toggleSidebar = string(
             "annotate.toggle-sidebar",

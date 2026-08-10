@@ -64,6 +64,8 @@ struct CropToolbarView: View {
         }
         .buttonStyle(.plain)
         .help(L10n.AnnotateUI.toggleCropOrientation)
+        .accessibilityLabel(L10n.AnnotateUI.toggleCropOrientation)
+        .accessibilityValue(state.isCropPortraitOrientation ? L10n.Combine.vertical : L10n.Combine.horizontal)
     }
 
     // MARK: - Grid Toggle
@@ -83,6 +85,8 @@ struct CropToolbarView: View {
         }
         .buttonStyle(.plain)
         .help(L10n.AnnotateUI.toggleRuleOfThirdsGrid)
+        .accessibilityLabel(L10n.AnnotateUI.toggleRuleOfThirdsGrid)
+        .accessibilityValue(state.showCropGrid ? L10n.Common.enabled : L10n.Common.disabled)
     }
 }
 

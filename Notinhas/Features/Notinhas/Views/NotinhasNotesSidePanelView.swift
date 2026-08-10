@@ -29,24 +29,39 @@ struct NotinhasNotesSidePanelView: View {
     private func sidePanelRow(note: NotinhasVisualNote, displayNumber: Int) -> some View {
         let isSelected = note.id == selectedNoteID
         HStack(alignment: .top, spacing: 8) {
-            Text("\(displayNumber)")
-                .font(.system(size: 11, weight: .bold, design: .rounded))
-                .foregroundStyle(.white)
-                .frame(width: 20, height: 20)
-                .background(Circle().fill(Color.accentColor))
+            Button {
+                onSelect(note.id)
+            } label: {
+                HStack(alignment: .top, spacing: 8) {
+                    Text("\(displayNumber)")
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
+                        .frame(width: 20, height: 20)
+                        .background(Circle().fill(Color.accentColor))
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(note.text.isEmpty ? NotinhasL10n.emptyNoteLabel : note.text)
-                    .font(.system(size: 12))
-                    .foregroundStyle(note.text.isEmpty ? .secondary : .primary)
-                    .lineLimit(3)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(note.text.isEmpty ? NotinhasL10n.emptyNoteLabel : note.text)
+                            .font(.system(size: 12))
+                            .foregroundStyle(note.text.isEmpty ? .secondary : .primary)
+                            .lineLimit(3)
 
-                Text(note.target.kindLabel)
-                    .font(.system(size: 10, weight: .medium))
-                    .foregroundStyle(.secondary)
+                        Text(note.target.kindLabel)
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Spacer(minLength: 0)
+                }
             }
-
-            Spacer(minLength: 0)
+            .buttonStyle(.plain)
+            .accessibilityLabel(
+                L10n.Notinhas.noteRowLabel(
+                    number: displayNumber,
+                    text: note.text.isEmpty ? NotinhasL10n.emptyNoteLabel : note.text,
+                    target: note.target.kindLabel,
+                ),
+            )
+            .accessibilityValue(isSelected ? NotinhasL10n.selected : "")
 
             Button(role: .destructive) {
                 onDelete(note.id)
@@ -55,14 +70,13 @@ struct NotinhasNotesSidePanelView: View {
             }
             .buttonStyle(.borderless)
             .help(NotinhasL10n.deleteNote)
+            .accessibilityLabel(NotinhasL10n.deleteNote)
         }
         .padding(8)
         .background(
             RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .fill(isSelected ? Color.accentColor.opacity(0.15) : Color.clear),
         )
-        .contentShape(Rectangle())
-        .onTapGesture { onSelect(note.id) }
     }
 }
 

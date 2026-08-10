@@ -162,6 +162,7 @@ struct AnnotateSidebarView: View, Equatable {
         }
         .buttonStyle(.plain)
         .help(L10n.AnnotateUI.resetCanvasEffectsHelp)
+        .accessibilityLabel(L10n.AnnotateUI.resetCanvasEffectsHelp)
     }
 
     private var presetDropdownButton: some View {
@@ -199,6 +200,9 @@ struct AnnotateSidebarView: View, Equatable {
         .buttonStyle(.plain)
         .frame(maxWidth: .infinity)
         .help(L10n.AnnotateUI.applySavedStylePreset)
+        .accessibilityLabel(
+            state.selectedCanvasPreset?.name ?? L10n.AnnotateUI.selectPreset,
+        )
         .popover(isPresented: $isPresetDropdownPresented, arrowEdge: .bottom) {
             presetDropdownContent
         }
@@ -285,6 +289,12 @@ struct AnnotateSidebarView: View, Equatable {
                     ? L10n.AnnotateUI.clearDefaultPresetHelp
                     : L10n.AnnotateUI.setDefaultPresetHelp,
             )
+            .accessibilityLabel(
+                state.isDefaultCanvasPreset(preset)
+                    ? L10n.AnnotateUI.clearDefaultPresetHelp
+                    : L10n.AnnotateUI.setDefaultPresetHelp,
+            )
+            .frame(minWidth: 28, minHeight: 28)
 
             Button {
                 handleDeletePreset(preset)
@@ -296,6 +306,8 @@ struct AnnotateSidebarView: View, Equatable {
             }
             .buttonStyle(.plain)
             .help(L10n.AnnotateUI.deletePresetHelp)
+            .accessibilityLabel(L10n.AnnotateUI.deletePresetHelp)
+            .frame(minWidth: 28, minHeight: 28)
         }
         .padding(.horizontal, Spacing.sm)
         .padding(.vertical, 6)
@@ -327,6 +339,7 @@ struct AnnotateSidebarView: View, Equatable {
         }
         .buttonStyle(.plain)
         .help(L10n.AnnotateUI.updateSelectedPresetHelp)
+        .accessibilityLabel(L10n.AnnotateUI.updateSelectedPresetHelp)
     }
 
     private func handleCreatePreset() {
@@ -611,6 +624,8 @@ struct AnnotateSidebarView: View, Equatable {
         .controlSize(.mini)
         .fixedSize(horizontal: true, vertical: false)
         .help(L10n.AnnotateUI.toggleAspectRatioOrientation)
+        .accessibilityLabel(L10n.AnnotateUI.toggleAspectRatioOrientation)
+        .accessibilityValue(state.aspectRatioOrientation == .vertical ? L10n.Combine.vertical : L10n.Combine.horizontal)
     }
 }
 
@@ -665,8 +680,17 @@ struct CompactColorSwatchGrid: View {
     @ObservedObject private var paletteStore = AnnotateColorPaletteStore.shared
     @State private var draftCustomColor = Color.red
 
-    private let colors: [Color] = [
-        .red, .orange, .yellow, .green, .blue, .purple, .pink, .gray, .white, .black,
+    private let colors: [(color: Color, name: String)] = [
+        (.red, NotinhasL10n.colorRed),
+        (.orange, NotinhasL10n.colorOrange),
+        (.yellow, NotinhasL10n.colorYellow),
+        (.green, NotinhasL10n.colorGreen),
+        (.blue, NotinhasL10n.colorBlue),
+        (.purple, NotinhasL10n.colorPurple),
+        (.pink, NotinhasL10n.colorPink),
+        (.gray, NotinhasL10n.colorGray),
+        (.white, NotinhasL10n.colorWhite),
+        (.black, NotinhasL10n.colorBlack),
     ]
 
     var body: some View {
@@ -678,15 +702,24 @@ struct CompactColorSwatchGrid: View {
                 ),
                 spacing: GridConfig.gap,
             ) {
-                ForEach(colors, id: \.self) { color in
+                ForEach(colors, id: \.name) { entry in
                     Button {
-                        selectedColor = color
+                        selectedColor = entry.color
                     } label: {
                         Circle()
-                            .fill(color)
-                            .colorSwatchStyle(isSelected: AnnotateColorPaletteStore.colorsMatch(selectedColor, color))
+                            .fill(entry.color)
+                            .colorSwatchStyle(isSelected: AnnotateColorPaletteStore.colorsMatch(
+                                selectedColor,
+                                entry.color,
+                            ))
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel(entry.name)
+                    .accessibilityValue(
+                        AnnotateColorPaletteStore.colorsMatch(selectedColor, entry.color)
+                            ? NotinhasL10n.selected
+                            : "",
+                    )
                 }
 
                 ForEach(paletteStore.customColors, id: \.self) { color in
@@ -742,6 +775,7 @@ struct CompactSliderRow: View {
                 Spacer()
                 TextField("", text: $textValue)
                     .font(Typography.labelSmall)
+                    .accessibilityLabel(label)
                     .foregroundColor(SidebarColors.labelSecondary.opacity(0.9))
                     .multilineTextAlignment(.trailing)
                     .textFieldStyle(.plain)

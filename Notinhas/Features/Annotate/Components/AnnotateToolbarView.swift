@@ -45,6 +45,7 @@ struct AnnotateToolbarView: View {
                     NotificationCenter.default.post(name: .annotateAddImage, object: window)
                 }
                 .help(L10n.Combine.pickerTitle)
+                .accessibilityLabel(L10n.Combine.pickerTitle)
 
                 ToolbarDivider()
             }
@@ -126,6 +127,7 @@ struct AnnotateToolbarView: View {
                 state.rotateImage(clockwise: false)
             }
             .help(L10n.AnnotateUI.rotateLeft)
+            .accessibilityLabel(L10n.AnnotateUI.rotateLeft)
             .disabled(!state.canRotateImage)
             .opacity(state.canRotateImage ? 1 : 0.4)
 
@@ -134,6 +136,7 @@ struct AnnotateToolbarView: View {
                 state.rotateImage(clockwise: true)
             }
             .help(L10n.AnnotateUI.rotateRight)
+            .accessibilityLabel(L10n.AnnotateUI.rotateRight)
             .disabled(!state.canRotateImage)
             .opacity(state.canRotateImage ? 1 : 0.4)
 
@@ -174,6 +177,15 @@ struct AnnotateToolbarView: View {
         .disabled(!state.canUseBackgroundCutout || !state.hasImage || state.isCutoutProcessing)
         .opacity((!state.canUseBackgroundCutout || !state.hasImage) ? 0.4 : 1)
         .help(
+            state.canUseBackgroundCutout
+                ? (state.isCutoutApplied
+                    ? L10n.AnnotateUI.backgroundRemovedClickToRestore
+                    : (backgroundCutoutAutoCropEnabled
+                        ? L10n.AnnotateUI.removeBackgroundAutoCropsWhenSafe
+                        : L10n.AnnotateUI.removeBackgroundAutoCropDisabledInSettings))
+                : L10n.AnnotateUI.requiresMacOS14OrLater,
+        )
+        .accessibilityLabel(
             state.canUseBackgroundCutout
                 ? (state.isCutoutApplied
                     ? L10n.AnnotateUI.backgroundRemovedClickToRestore
@@ -291,6 +303,7 @@ struct AnnotateToolbarView: View {
             }
             .buttonStyle(.bordered)
             .overlayTooltip(restoreTitle, edge: .below)
+            .accessibilityLabel(restoreTitle)
 
             Button(L10n.Common.cancel) {
                 state.cancelCrop()

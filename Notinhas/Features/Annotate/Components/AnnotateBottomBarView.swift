@@ -193,7 +193,9 @@ struct AnnotateBottomBarView: View {
         .foregroundColor(state.isCanvasPanningMode ? .accentColor : .secondary)
         .background(state.isCanvasPanningMode ? Color.accentColor.opacity(0.16) : Color.primary.opacity(0.08))
         .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-        .help("Move canvas")
+        .help(L10n.AnnotateUI.moveCanvas)
+        .accessibilityLabel(L10n.AnnotateUI.moveCanvas)
+        .accessibilityValue(state.isCanvasPanningMode ? L10n.Common.enabled : L10n.Common.disabled)
         .disabled(!state.canPanInteractively)
     }
 

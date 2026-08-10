@@ -36,6 +36,8 @@ struct GradientPresetButton: View {
                 .sidebarItemStyle(isSelected: isSelected)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(preset.displayName)
+        .accessibilityValue(isSelected ? L10n.Notinhas.selected : "")
     }
 }
 
@@ -63,6 +65,8 @@ struct WallpaperPresetButton: View {
                 .sidebarItemStyle(isSelected: isSelected)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(preset.displayName)
+        .accessibilityValue(isSelected ? L10n.Notinhas.selected : "")
     }
 }
 
@@ -93,6 +97,8 @@ struct CustomWallpaperButton: View {
                 .sidebarItemStyle(isSelected: isSelected)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("\(L10n.Common.custom): \(url.lastPathComponent)")
+            .accessibilityValue(isSelected ? L10n.Notinhas.selected : "")
 
             if isHovering {
                 Button(action: onRemove) {
@@ -104,6 +110,7 @@ struct CustomWallpaperButton: View {
                 }
                 .buttonStyle(.plain)
                 .help(L10n.AnnotateUI.removeCustomWallpaper)
+                .accessibilityLabel(L10n.AnnotateUI.removeCustomWallpaper)
                 .offset(x: -4, y: -4)
                 .transition(.opacity.combined(with: .scale(scale: 0.8)))
             }
@@ -141,6 +148,7 @@ struct AddWallpaperButton: View {
                 .actionButtonStyle()
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(L10n.AnnotateUI.addWallpaper)
     }
 }
 
@@ -168,6 +176,8 @@ struct DefaultWallpaperButton: View {
             .sidebarItemStyle(isSelected: isSelected)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(item.name)
+        .accessibilityValue(isSelected ? L10n.Notinhas.selected : "")
         .onAppear {
             loadCachedThumbnail()
         }
@@ -237,6 +247,8 @@ struct BlurredBackgroundEffectButton: View {
         }
         .buttonStyle(.plain)
         .help(effect.displayName)
+        .accessibilityLabel(effect.displayName)
+        .accessibilityValue(isSelected ? L10n.Notinhas.selected : "")
     }
 
     @ViewBuilder
@@ -278,21 +290,38 @@ struct ColorSwatchGrid: View {
     @ObservedObject private var paletteStore = AnnotateColorPaletteStore.shared
     @State private var draftCustomColor = Color.red
 
-    private let colors: [[Color]] = [
-        [.red, .orange, .yellow, .green, .blue, .purple, .pink],
-        [.gray, .white, .black, Color(white: 0.3), Color(white: 0.5), Color(white: 0.7), Color(white: 0.9)],
+    private let colors: [[(color: Color, name: String)]] = [
+        [
+            (.red, NotinhasL10n.colorRed),
+            (.orange, NotinhasL10n.colorOrange),
+            (.yellow, NotinhasL10n.colorYellow),
+            (.green, NotinhasL10n.colorGreen),
+            (.blue, NotinhasL10n.colorBlue),
+            (.purple, NotinhasL10n.colorPurple),
+            (.pink, NotinhasL10n.colorPink),
+        ],
+        [
+            (.gray, NotinhasL10n.colorGray),
+            (.white, NotinhasL10n.colorWhite),
+            (.black, NotinhasL10n.colorBlack),
+            (Color(white: 0.3), NotinhasL10n.colorDarkGray),
+            (Color(white: 0.5), NotinhasL10n.colorMediumGray),
+            (Color(white: 0.7), NotinhasL10n.colorLightGray),
+            (Color(white: 0.9), NotinhasL10n.colorNearWhite),
+        ],
     ]
 
     var body: some View {
         VStack(spacing: Spacing.sm) {
             ForEach(0 ..< colors.count, id: \.self) { row in
                 HStack(spacing: Spacing.sm) {
-                    ForEach(0 ..< colors[row].count, id: \.self) { col in
+                    ForEach(colors[row], id: \.name) { entry in
                         ColorSwatch(
-                            color: colors[row][col],
-                            isSelected: AnnotateColorPaletteStore.colorsMatch(selectedColor, colors[row][col]),
+                            color: entry.color,
+                            name: entry.name,
+                            isSelected: AnnotateColorPaletteStore.colorsMatch(selectedColor, entry.color),
                         ) {
-                            selectedColor = colors[row][col]
+                            selectedColor = entry.color
                         }
                     }
                 }
@@ -340,6 +369,7 @@ struct ColorSwatchGrid: View {
 
 struct ColorSwatch: View {
     let color: Color
+    let name: String
     let isSelected: Bool
     let action: () -> Void
 
@@ -350,6 +380,8 @@ struct ColorSwatch: View {
                 .colorSwatchStyle(isSelected: isSelected)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(name)
+        .accessibilityValue(isSelected ? L10n.Notinhas.selected : "")
     }
 }
 
@@ -365,6 +397,8 @@ struct AnnotateColorSwatchButton: View {
             swatch
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(L10n.Common.color)
+        .accessibilityValue(isSelected ? L10n.Notinhas.selected : "")
         .overlay(alignment: .topTrailing) {
             deleteButton
         }
@@ -953,6 +987,8 @@ struct AlignmentCell: View {
         }
         .buttonStyle(.plain)
         .onHover { isHovering = $0 }
+        .accessibilityLabel(alignment.accessibilityName)
+        .accessibilityValue(isSelected ? L10n.Notinhas.selected : "")
     }
 
     private var backgroundColor: Color {
@@ -963,5 +999,21 @@ struct AlignmentCell: View {
             return SidebarColors.itemHover
         }
         return Color.secondary.opacity(0.3)
+    }
+}
+
+private extension ImageAlignment {
+    var accessibilityName: String {
+        switch self {
+        case .topLeft: L10n.AnnotateUI.alignmentTopLeft
+        case .top: L10n.AnnotateUI.alignmentTop
+        case .topRight: L10n.AnnotateUI.alignmentTopRight
+        case .left: L10n.AnnotateUI.alignmentLeft
+        case .center: L10n.AnnotateUI.alignmentCenter
+        case .right: L10n.AnnotateUI.alignmentRight
+        case .bottomLeft: L10n.AnnotateUI.alignmentBottomLeft
+        case .bottom: L10n.AnnotateUI.alignmentBottom
+        case .bottomRight: L10n.AnnotateUI.alignmentBottomRight
+        }
     }
 }
