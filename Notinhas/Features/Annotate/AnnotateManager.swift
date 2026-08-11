@@ -106,7 +106,7 @@ final class AnnotateManager {
     }
 
     /// Open annotation window for a quick access item
-    func openAnnotation(for item: QuickAccessItem) {
+    func openAnnotation(for item: QuickAccessItem, pendingCommitRecovery: Bool = false) {
         // Check if already open for this item
         if let existing = windowControllers[item.id] {
             existing.showWindow()
@@ -126,7 +126,11 @@ final class AnnotateManager {
         if let sessionData, sessionCache[item.id] == nil {
             sessionCache[item.id] = sessionData
         }
-        let controller = AnnotateWindowController(item: item, sessionData: sessionData)
+        let controller = AnnotateWindowController(
+            item: item,
+            sessionData: sessionData,
+            pendingCommitRecovery: pendingCommitRecovery,
+        )
         windowControllers[item.id] = controller
         DiagnosticLogger.shared.log(.info, .action, "Annotate window opened for item \(item.id)")
 
@@ -176,7 +180,11 @@ final class AnnotateManager {
     }
 
     /// Open annotation window directly from a file URL (used by post-capture auto-open)
-    func openAnnotation(url: URL, sessionData: AnnotationSessionData? = nil) {
+    func openAnnotation(
+        url: URL,
+        sessionData: AnnotationSessionData? = nil,
+        pendingCommitRecovery: Bool = false,
+    ) {
         guard NSScreen.screens.isEmpty == false else {
             DiagnosticLogger.shared.log(.error, .action, "Annotate open failed: no screens available")
             return
@@ -184,7 +192,10 @@ final class AnnotateManager {
 
         // If Quick Access has this item, reuse it to link the annotation window
         if let existingItem = QuickAccessManager.shared.items.first(where: { $0.url == url }) {
-            openAnnotation(for: existingItem)
+            if let sessionData {
+                sessionCache[existingItem.id] = sessionData
+            }
+            openAnnotation(for: existingItem, pendingCommitRecovery: pendingCommitRecovery)
             return
         }
 
@@ -192,7 +203,11 @@ final class AnnotateManager {
         becomeRegularApp()
 
         let restoredSessionData = sessionData ?? AnnotationSessionStore.shared.load(for: url)
-        let controller = AnnotateWindowController(url: url, sessionData: restoredSessionData)
+        let controller = AnnotateWindowController(
+            url: url,
+            sessionData: restoredSessionData,
+            pendingCommitRecovery: pendingCommitRecovery,
+        )
         let controllerId = UUID()
         windowControllers[controllerId] = controller
         DiagnosticLogger.shared.log(.info, .action, "Annotate window opened for URL \(url.lastPathComponent)")

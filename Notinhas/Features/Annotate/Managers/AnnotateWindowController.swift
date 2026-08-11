@@ -105,7 +105,11 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
     /// Captured on first open, reused across saves for session caching.
     private var originalImageData: Data?
 
-    init(item: QuickAccessItem, sessionData: AnnotationSessionData? = nil) {
+    init(
+        item: QuickAccessItem,
+        sessionData: AnnotationSessionData? = nil,
+        pendingCommitRecovery: Bool = false,
+    ) {
         quickAccessItemId = item.id
         sourceFileAccess = fileAccessManager.beginAccessingURL(item.url)
 
@@ -158,6 +162,10 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                 cloudKey: item.cloudKey,
                 isCloudStale: item.isCloudStale,
             )
+        }
+
+        if pendingCommitRecovery {
+            state.hasUnsavedChanges = true
         }
 
         // Fixed window size for consistent experience
@@ -238,7 +246,11 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
     }
 
     /// URL-only initializer for post-capture auto-open flow
-    init(url: URL, sessionData: AnnotationSessionData? = nil) {
+    init(
+        url: URL,
+        sessionData: AnnotationSessionData? = nil,
+        pendingCommitRecovery: Bool = false,
+    ) {
         quickAccessItemId = nil
         sourceFileAccess = SandboxFileAccessManager.shared.beginAccessingURL(url)
 
@@ -280,6 +292,10 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                 ?? NSImage(size: NSSize(width: 400, height: 300))
             originalImageData = Self.readFileData(from: url)
             state = AnnotateState(image: image, url: url)
+        }
+
+        if pendingCommitRecovery {
+            state.hasUnsavedChanges = true
         }
 
         let windowWidth: CGFloat = 1200
@@ -685,6 +701,10 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
             Task.detached(priority: .userInitiated) {
                 guard let renderSnapshot else {
                     DiagnosticLogger.shared.log(.error, .annotate, "Save-and-close skipped: no render snapshot")
+                    await Self.presentBackgroundCommitFailure(
+                        sourceURL: sourceURL,
+                        sessionSnapshot: sessionSnapshot,
+                    )
                     return
                 }
 
@@ -695,6 +715,10 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
 
                 guard let renderedImage else {
                     DiagnosticLogger.shared.log(.error, .annotate, "Save-and-close render failed; file not saved")
+                    await Self.presentBackgroundCommitFailure(
+                        sourceURL: sourceURL,
+                        sessionSnapshot: sessionSnapshot,
+                    )
                     return
                 }
 
@@ -716,12 +740,18 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                     }
                 }
 
-                _ = await Self.persistRenderedFileOffMain(
+                let didPersist = await Self.persistRenderedFileOffMain(
                     image: renderedImage,
                     sourceURL: sourceURL,
                     sessionSnapshot: sessionSnapshot,
                     copyEditedCapture: true,
                 )
+                if !didPersist {
+                    await Self.presentBackgroundCommitFailure(
+                        sourceURL: sourceURL,
+                        sessionSnapshot: sessionSnapshot,
+                    )
+                }
             }
         } else {
             AnnotateExporter.saveAs(state: state, closeWindow: true)
@@ -1104,12 +1134,18 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
 
             // Save to disk in background
             Task.detached(priority: .userInitiated) {
-                _ = await Self.persistRenderedFileOffMain(
+                let didPersist = await Self.persistRenderedFileOffMain(
                     image: renderedImage,
                     sourceURL: sourceURL,
                     sessionSnapshot: sessionSnapshot,
                     copyEditedCapture: true,
                 )
+                if !didPersist {
+                    await Self.presentBackgroundCommitFailure(
+                        sourceURL: sourceURL,
+                        sessionSnapshot: sessionSnapshot,
+                    )
+                }
             }
         } else {
             performSaveAs()
@@ -1270,12 +1306,18 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         let sourceURL = state.sourceURL
         forceClose()
         Task.detached(priority: .userInitiated) {
-            _ = await Self.persistRenderedFileOffMain(
+            let didPersist = await Self.persistRenderedFileOffMain(
                 image: renderedImage,
                 sourceURL: sourceURL,
                 sessionSnapshot: sessionSnapshot,
                 copyEditedCapture: false,
             )
+            if !didPersist {
+                await Self.presentBackgroundCommitFailure(
+                    sourceURL: sourceURL,
+                    sessionSnapshot: sessionSnapshot,
+                )
+            }
         }
     }
 
@@ -1553,5 +1595,31 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
             )
         }
         return true
+    }
+
+    private static func presentBackgroundCommitFailure(
+        sourceURL: URL?,
+        sessionSnapshot: AnnotationSessionData?,
+    ) {
+        AppToastManager.shared.show(
+            message: L10n.AnnotateUI.saveFailedMessage,
+            style: .error,
+            duration: 5,
+        )
+
+        guard let sourceURL, let sessionSnapshot else {
+            DiagnosticLogger.shared.log(
+                .error,
+                .annotate,
+                "Annotate background commit recovery unavailable: missing source URL or session snapshot",
+            )
+            return
+        }
+
+        AnnotateManager.shared.openAnnotation(
+            url: sourceURL,
+            sessionData: sessionSnapshot,
+            pendingCommitRecovery: true,
+        )
     }
 }
