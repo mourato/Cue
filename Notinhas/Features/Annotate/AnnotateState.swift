@@ -2340,6 +2340,18 @@ final class AnnotateState: ObservableObject {
         pushUndoSnapshot(currentSnapshot(), annotationCount: annotations.count)
     }
 
+    @discardableResult
+    func createTextAnnotation(bounds: CGRect, properties: AnnotationProperties) -> UUID {
+        saveState()
+        let item = AnnotationItem(type: .text(""), bounds: bounds, properties: properties)
+        annotations.append(item)
+        useAutomaticTextWidth(for: item.id)
+        prepareTextCalloutTail(for: item.id)
+        selectedAnnotationId = item.id
+        beginTextEditing(id: item.id, recordsUndo: false)
+        return item.id
+    }
+
     /// Pushes an undo checkpoint with a custom Notinhas notes array without mutating live state.
     /// Used so move-commit can record pre-move geometry without flickering published notes.
     func saveNotinhasNotesUndoCheckpoint(_ notes: [NotinhasVisualNote]) {

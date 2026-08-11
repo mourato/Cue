@@ -925,23 +925,41 @@ final class AnnotateCoreTests: XCTestCase {
     }
 
     @MainActor
-    func testAnnotateState_undoAfterNewTextCreationRemovesTextAnnotation() {
+    func testAnnotateState_undoAfterNewTextCreationRemovesTextAnnotation() throws {
         let state = makeAnnotateState()
+        let bounds = CGRect(x: 20, y: 20, width: 120, height: 32)
+        let properties = AnnotationProperties(fontSize: 18)
 
-        state.saveState()
-        let annotation = AnnotationItem(
-            type: .text("Hello"),
-            bounds: CGRect(x: 20, y: 20, width: 120, height: 32),
-            properties: AnnotationProperties(fontSize: 18),
+        let annotationID = state.createTextAnnotation(
+            bounds: bounds,
+            properties: properties,
         )
-        state.annotations.append(annotation)
-        state.selectedAnnotationId = annotation.id
-        state.beginTextEditing(id: annotation.id, recordsUndo: false)
+        XCTAssertEqual(state.annotations.count, 1)
+        XCTAssertEqual(state.selectedAnnotationId, annotationID)
+        XCTAssertEqual(state.editingTextAnnotationId, annotationID)
+        guard case .text("") = try XCTUnwrap(state.annotations.first).type else {
+            return XCTFail("Expected a new empty text annotation")
+        }
+
+        state.updateAnnotationText(id: annotationID, text: "Hello")
         state.commitTextEditing()
+
+        XCTAssertEqual(state.annotations.count, 1)
+        guard case .text("Hello") = try XCTUnwrap(state.annotations.first).type else {
+            return XCTFail("Expected committed text annotation")
+        }
 
         state.undo()
 
         XCTAssertTrue(state.annotations.isEmpty)
+
+        state.redo()
+
+        let redone = try XCTUnwrap(state.annotations.first)
+        guard case .text(let redoneText) = redone.type else {
+            return XCTFail("Expected text annotation after redo")
+        }
+        XCTAssertEqual(redoneText, "Hello")
     }
 
     @MainActor
