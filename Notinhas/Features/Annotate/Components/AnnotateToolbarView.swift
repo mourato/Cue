@@ -24,6 +24,10 @@ struct AnnotateToolbarView: View {
             // Add spacer for traffic lights
             Spacer().frame(width: 0)
 
+            sidebarButton
+
+            ToolbarDivider()
+
             // Undo/Redo
             undoRedoGroup
 
@@ -77,6 +81,24 @@ struct AnnotateToolbarView: View {
         }
     }
 
+    private var sidebarButton: some View {
+        let sidebarTitle = L10n.AnnotateUI.toggleSidebar
+        let sidebarKeys = AnnotateOverlayTooltipKeys.actionKeys(
+            for: .toggleSidebar,
+            manager: annotateShortcutManager,
+        )
+
+        return ToolbarButton(
+            icon: "sidebar.left",
+            isSelected: state.leftDock == .background,
+            highlightColor: .blue,
+        ) {
+            state.toggleSidebarVisibility()
+        }
+        .overlayTooltip(sidebarTitle, keys: sidebarKeys, edge: .below)
+        .accessibilityLabel(accessibilityTitle(sidebarTitle, keys: sidebarKeys))
+    }
+
     // MARK: - Tool Groups
 
     private var captureToolsGroup: some View {
@@ -105,22 +127,6 @@ struct AnnotateToolbarView: View {
             }
             .overlayTooltip(cropTitle, keys: cropKeys, edge: .below)
             .accessibilityLabel(accessibilityTitle(cropTitle, keys: cropKeys))
-
-        case .addBackground:
-            let sidebarTitle = L10n.AnnotateUI.toggleSidebar
-            let sidebarKeys = AnnotateOverlayTooltipKeys.actionKeys(
-                for: .toggleSidebar,
-                manager: annotateShortcutManager,
-            )
-            ToolbarButton(
-                icon: "rectangle.on.rectangle",
-                isSelected: state.leftDock == .background,
-                highlightColor: .blue,
-            ) {
-                state.toggleSidebarVisibility()
-            }
-            .overlayTooltip(sidebarTitle, keys: sidebarKeys, edge: .below)
-            .accessibilityLabel(accessibilityTitle(sidebarTitle, keys: sidebarKeys))
 
         case .rotateLeft:
             ToolbarButton(icon: "rotate.left", isSelected: false) {

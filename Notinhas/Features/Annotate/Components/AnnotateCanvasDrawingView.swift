@@ -907,14 +907,49 @@ final class DrawingCanvasNSView: NSView {
             drawingDragDistance = max(drawingDragDistance, distance)
         }
 
+        let drawingPoint = constrainedDrawingPoint(
+            for: state.selectedTool,
+            start: dragStart ?? imagePoint,
+            end: imagePoint,
+            shiftHeld: event.modifierFlags.contains(.shift),
+        )
         switch state.selectedTool {
         case .pencil, .highlighter:
             currentPath.append(imagePoint)
             invalidateLiveLayers()
         default:
-            currentPath = [imagePoint]
+            currentPath = [drawingPoint]
             invalidateLiveLayers()
         }
+    }
+
+    override func flagsChanged(with event: NSEvent) {
+        guard isDrawing,
+              let start = dragStart,
+              state.selectedTool == .line || state.selectedTool == .arrow else {
+            super.flagsChanged(with: event)
+            return
+        }
+
+        let displayPoint = convert(event.locationInWindow, from: nil)
+        let imagePoint = interactionPoint(from: displayPoint)
+        currentPath = [constrainedDrawingPoint(
+            for: state.selectedTool,
+            start: start,
+            end: imagePoint,
+            shiftHeld: event.modifierFlags.contains(.shift),
+        )]
+        invalidateLiveLayers()
+    }
+
+    private func constrainedDrawingPoint(
+        for tool: AnnotationToolType,
+        start: CGPoint,
+        end: CGPoint,
+        shiftHeld: Bool,
+    ) -> CGPoint {
+        guard shiftHeld, tool == .line || tool == .arrow else { return end }
+        return AnnotationAngleSnapping.snap45(end, from: start)
     }
 
     /// Applies a resize gesture to the gesture-local copy only. Mirrors the
@@ -1110,12 +1145,18 @@ final class DrawingCanvasNSView: NSView {
         // Capture path before clearing to avoid race condition
         let tool = state.selectedTool
         let pathToSave = currentPath
+        let drawingEnd = constrainedDrawingPoint(
+            for: tool,
+            start: start,
+            end: imagePoint,
+            shiftHeld: event.modifierFlags.contains(.shift),
+        )
 
-        if shouldCommitDrawing(tool: tool, start: start, end: imagePoint, path: pathToSave) {
+        if shouldCommitDrawing(tool: tool, start: start, end: drawingEnd, path: pathToSave) {
             // Commit synchronously: deferring to a Task lets a frame render where the
             // stroke preview is already gone but the annotation is not yet appended,
             // which reads as a flicker on completion.
-            createAnnotation(tool: tool, from: start, to: imagePoint, path: pathToSave)
+            createAnnotation(tool: tool, from: start, to: drawingEnd, path: pathToSave)
         }
 
         resetDrawingInteraction()
@@ -1683,6 +1724,7 @@ final class DrawingCanvasNSView: NSView {
                 watermarkOpacity: previewProperties.opacity,
                 watermarkRotationDegrees: previewProperties.rotationDegrees,
                 watermarkFontSize: previewProperties.fontSize,
+                magnification: previewProperties.magnification,
             )
         }
     }

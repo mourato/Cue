@@ -59,6 +59,10 @@ enum AnnotationFactory {
         context: CreationContext,
     ) -> AnnotationItem? {
         let properties = context.properties
+        let isMagnifyDrag = hypot(end.x - start.x, end.y - start.y) > MagnifyGeometry.dragThreshold
+        let magnifyBounds = isMagnifyDrag
+            ? MagnifyGeometry.destinationBounds(center: end)
+            : MagnifyGeometry.lensBounds(from: start, to: end)
 
         let type: AnnotationType?
 
@@ -98,6 +102,12 @@ enum AnnotationFactory {
 
         case .line:
             type = .line(start: start, end: end)
+
+        case .magnify:
+            type = .magnify(
+                sourceCenter: isMagnifyDrag ? start : CGPoint(x: magnifyBounds.midX, y: magnifyBounds.midY),
+                showsSourceCircle: isMagnifyDrag,
+            )
 
         case .pencil:
             guard path.count > 1 else { return nil }
@@ -159,6 +169,8 @@ enum AnnotationFactory {
                 width: abs(end.x - start.x),
                 height: abs(end.y - start.y),
             ))
+        case .magnify:
+            bounds = magnifyBounds
         default:
             bounds = CGRect(
                 x: min(start.x, end.x),

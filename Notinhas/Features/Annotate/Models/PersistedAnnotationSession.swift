@@ -200,7 +200,8 @@ struct PersistedAnnotationType: Codable, Equatable {
     enum Kind: String, Codable {
         case path, rectangle, filledRectangle, oval, arrow, line, text, highlight, blur, counter, watermark,
              embeddedImage,
-             spotlight
+             spotlight,
+             magnify
     }
 
     var kind: Kind
@@ -208,6 +209,8 @@ struct PersistedAnnotationType: Codable, Equatable {
     var arrow: PersistedArrowGeometry?
     var lineStart: CGPoint?
     var lineEnd: CGPoint?
+    var magnifySourceCenter: CGPoint?
+    var magnifyShowsSourceCircle: Bool?
     var text: String?
     var blurType: String?
     var counterValue: Int?
@@ -251,6 +254,10 @@ struct PersistedAnnotationType: Codable, Equatable {
             embeddedImageAssetId = assetId
         case .spotlight:
             kind = .spotlight
+        case .magnify(let sourceCenter, let showsSourceCircle):
+            kind = .magnify
+            magnifySourceCenter = sourceCenter
+            magnifyShowsSourceCircle = showsSourceCircle
         }
     }
 
@@ -284,6 +291,12 @@ struct PersistedAnnotationType: Codable, Equatable {
             return .embeddedImage(embeddedImageAssetId)
         case .spotlight:
             return .spotlight
+        case .magnify:
+            guard let magnifySourceCenter else { return nil }
+            return .magnify(
+                sourceCenter: magnifySourceCenter,
+                showsSourceCircle: magnifyShowsSourceCircle ?? false,
+            )
         }
     }
 }

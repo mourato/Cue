@@ -27,6 +27,10 @@ struct AnnotationPropertiesSection: View {
                 strokeWidthSlider
             }
 
+            if isMagnifyAnnotation {
+                magnificationSlider
+            }
+
             // Fill color (for shapes)
             if supportsFillColor {
                 fillColorPicker
@@ -39,6 +43,14 @@ struct AnnotationPropertiesSection: View {
     private var isTextAnnotation: Bool {
         guard let ann = annotation else { return false }
         if case .text = ann.type {
+            return true
+        }
+        return false
+    }
+
+    private var isMagnifyAnnotation: Bool {
+        guard let ann = annotation else { return false }
+        if case .magnify = ann.type {
             return true
         }
         return false
@@ -72,6 +84,14 @@ struct AnnotationPropertiesSection: View {
             label: L10n.Common.stroke,
             value: strokeWidthBinding,
             range: 1 ... 20,
+        )
+    }
+
+    private var magnificationSlider: some View {
+        CompactSliderRow(
+            label: L10n.AnnotateUI.magnifyZoom,
+            value: magnificationBinding,
+            range: AnnotationProperties.magnificationRange,
         )
     }
 
@@ -116,6 +136,16 @@ struct AnnotationPropertiesSection: View {
             set: { newColor in
                 guard let id = state.selectedAnnotationId else { return }
                 state.updateAnnotationProperties(id: id, fillColor: newColor, recordsUndo: true)
+            },
+        )
+    }
+
+    private var magnificationBinding: Binding<CGFloat> {
+        Binding(
+            get: { annotation?.properties.magnification ?? MagnifyGeometry.defaultMagnification },
+            set: { newMagnification in
+                guard let id = state.selectedAnnotationId else { return }
+                state.updateAnnotationProperties(id: id, magnification: newMagnification, recordsUndo: true)
             },
         )
     }

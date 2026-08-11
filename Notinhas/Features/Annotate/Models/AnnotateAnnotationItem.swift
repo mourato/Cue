@@ -1136,6 +1136,111 @@ nonisolated struct ArrowGeometry: Equatable {
     }
 }
 
+/// Geometry shared by the magnify tool's preview, committed item, hit-test,
+/// resize behavior, and export renderer.
+nonisolated enum MagnifyGeometry {
+    static let defaultMagnification: CGFloat = 2
+    static let defaultDiameter: CGFloat = 120
+    static let minimumDiameter: CGFloat = 40
+    static let dragThreshold: CGFloat = 6
+
+    static func lensBounds(from start: CGPoint, to end: CGPoint) -> CGRect {
+        let deltaX = end.x - start.x
+        let deltaY = end.y - start.y
+        let dragSize = max(abs(deltaX), abs(deltaY))
+        guard dragSize > 1 else {
+            return CGRect(
+                x: start.x - defaultDiameter / 2,
+                y: start.y - defaultDiameter / 2,
+                width: defaultDiameter,
+                height: defaultDiameter,
+            )
+        }
+
+        let diameter = max(minimumDiameter, dragSize)
+        return CGRect(
+            x: deltaX < 0 ? start.x - diameter : start.x,
+            y: deltaY < 0 ? start.y - diameter : start.y,
+            width: diameter,
+            height: diameter,
+        )
+    }
+
+    static func squareBounds(in bounds: CGRect) -> CGRect {
+        let squareSize = max(minimumDiameter, min(abs(bounds.width), abs(bounds.height)))
+        return CGRect(
+            x: bounds.midX - squareSize / 2,
+            y: bounds.midY - squareSize / 2,
+            width: squareSize,
+            height: squareSize,
+        )
+    }
+
+    static func lensSquare(in bounds: CGRect) -> CGRect {
+        squareBounds(in: bounds)
+    }
+
+    static func destinationBounds(center: CGPoint, diameter: CGFloat = defaultDiameter) -> CGRect {
+        let resolvedDiameter = max(minimumDiameter, diameter)
+        return CGRect(
+            x: center.x - resolvedDiameter / 2,
+            y: center.y - resolvedDiameter / 2,
+            width: resolvedDiameter,
+            height: resolvedDiameter,
+        )
+    }
+
+    static func sourceDisplayBounds(
+        lensBounds: CGRect,
+        sourceCenter: CGPoint,
+        magnification: CGFloat,
+    ) -> CGRect {
+        let diameter = lensSquare(in: lensBounds).width / max(magnification, 1)
+        let resolvedDiameter = max(1, diameter)
+        return CGRect(
+            x: sourceCenter.x - resolvedDiameter / 2,
+            y: sourceCenter.y - resolvedDiameter / 2,
+            width: resolvedDiameter,
+            height: resolvedDiameter,
+        )
+    }
+
+    static func sourceRect(
+        lensBounds: CGRect,
+        sourceCenter: CGPoint,
+        sourceBounds: CGRect,
+        magnification: CGFloat = defaultMagnification,
+    ) -> CGRect {
+        guard !sourceBounds.isEmpty else { return .zero }
+        let side = min(
+            sourceBounds.width,
+            sourceBounds.height,
+            max(lensSquare(in: lensBounds).width / max(magnification, 1), 1),
+        )
+        let origin = CGPoint(
+            x: min(max(sourceCenter.x - side / 2, sourceBounds.minX), sourceBounds.maxX - side),
+            y: min(max(sourceCenter.y - side / 2, sourceBounds.minY), sourceBounds.maxY - side),
+        )
+        return CGRect(origin: origin, size: CGSize(width: side, height: side))
+    }
+}
+
+/// Nearest 45-degree angle used by line and arrow drawing when Shift is held.
+nonisolated enum AnnotationAngleSnapping {
+    static func snap45(_ point: CGPoint, from start: CGPoint) -> CGPoint {
+        let dx = point.x - start.x
+        let dy = point.y - start.y
+        let distance = hypot(dx, dy)
+        guard distance > 0 else { return point }
+
+        let snappedAngle = (atan2(dy, dx) / (.pi / 4)).rounded() * (.pi / 4)
+        return CGPoint(
+            x: start.x + cos(snappedAngle) * distance,
+            y: start.y + sin(snappedAngle) * distance,
+        )
+    }
+}
+
 /// Single annotation element on the canvas
 struct AnnotationItem: Identifiable, Equatable {
     let id: UUID
@@ -1199,6 +1304,13 @@ extension AnnotationItem {
             copy.type = .path(points.map { Self.remapPoint($0, from: oldBounds, to: normalizedBounds) })
         case .highlight(let points):
             copy.type = .highlight(points.map { Self.remapPoint($0, from: oldBounds, to: normalizedBounds) })
+        case .magnify(let sourceCenter, let showsSourceCircle):
+            let squareBounds = MagnifyGeometry.squareBounds(in: normalizedBounds)
+            copy.type = .magnify(
+                sourceCenter: Self.remapPoint(sourceCenter, from: oldBounds, to: squareBounds),
+                showsSourceCircle: showsSourceCircle,
+            )
+            copy.bounds = squareBounds
         case .counter:
             let diameter = max(normalizedBounds.width, normalizedBounds.height)
             let controlValue = AnnotationProperties.controlValue(forCounterDiameter: diameter)
@@ -1295,6 +1407,7 @@ nonisolated enum AnnotationType: Equatable {
     case watermark(String)
     case embeddedImage(UUID)
     case spotlight
+    case magnify(sourceCenter: CGPoint, showsSourceCircle: Bool)
 
     /// Corresponding toolbar tool type for this annotation
     var toolType: AnnotationToolType {
@@ -1312,6 +1425,7 @@ nonisolated enum AnnotationType: Equatable {
         case .watermark: .watermark
         case .embeddedImage: .selection
         case .spotlight: .spotlight
+        case .magnify: .magnify
         }
     }
 
@@ -1340,11 +1454,16 @@ nonisolated enum AnnotationType: Equatable {
     var supportsQuickStrokeWidth: Bool {
         supportsQuickPropertiesBar && toolType.supportsQuickStrokeWidth
     }
+
+    var supportsQuickMagnification: Bool {
+        supportsQuickPropertiesBar && toolType.supportsQuickMagnification
+    }
 }
 
 /// Visual properties for an annotation
 nonisolated struct AnnotationProperties: Equatable {
     static let controlValueRange: ClosedRange<CGFloat> = 1 ... 20
+    static let magnificationRange: ClosedRange<CGFloat> = 1.25 ... 8
 
     var strokeColor: Color
     var fillColor: Color
@@ -1358,6 +1477,7 @@ nonisolated struct AnnotationProperties: Equatable {
     var spotlightOpacity: CGFloat
     var textPresentation: TextPresentation
     var calloutTailTarget: CGPoint?
+    var magnification: CGFloat
 
     init(
         strokeColor: Color = .red,
@@ -1372,6 +1492,7 @@ nonisolated struct AnnotationProperties: Equatable {
         spotlightOpacity: CGFloat = 0.5,
         textPresentation: TextPresentation = .plain,
         calloutTailTarget: CGPoint? = nil,
+        magnification: CGFloat = MagnifyGeometry.defaultMagnification,
     ) {
         self.strokeColor = strokeColor
         self.fillColor = fillColor
@@ -1385,10 +1506,15 @@ nonisolated struct AnnotationProperties: Equatable {
         self.spotlightOpacity = spotlightOpacity
         self.textPresentation = textPresentation
         self.calloutTailTarget = calloutTailTarget
+        self.magnification = Self.clampedMagnification(magnification)
     }
 
     static func clampedControlValue(_ value: CGFloat) -> CGFloat {
         min(max(value, controlValueRange.lowerBound), controlValueRange.upperBound)
+    }
+
+    static func clampedMagnification(_ value: CGFloat) -> CGFloat {
+        min(max(value, magnificationRange.lowerBound), magnificationRange.upperBound)
     }
 
     static func counterDiameter(for controlValue: CGFloat) -> CGFloat {
@@ -1468,6 +1594,8 @@ extension AnnotationItem {
             let counterBounds = bounds.isEmpty ? Self
                 .counterBounds(center: bounds.origin, properties: properties) : bounds
             return Self.normalizedBounds(counterBounds)
+        case .magnify:
+            return MagnifyGeometry.squareBounds(in: bounds)
         default:
             return Self.normalizedBounds(bounds)
         }
@@ -1484,6 +1612,15 @@ extension AnnotationItem {
             max(6, properties.strokeWidth / 2)
         }
         var result = resizeBounds.insetBy(dx: -padding, dy: -padding)
+        if case .magnify(let sourceCenter, true) = type {
+            result = result.union(
+                MagnifyGeometry.sourceDisplayBounds(
+                    lensBounds: resizeBounds,
+                    sourceCenter: sourceCenter,
+                    magnification: properties.magnification,
+                ).insetBy(dx: -padding, dy: -padding),
+            )
+        }
         if case .text = type,
            properties.textPresentation == .callout,
            let tailTarget = properties.calloutTailTarget {
@@ -1555,6 +1692,21 @@ extension AnnotationItem {
             let counterBounds = bounds.isEmpty ? Self
                 .counterBounds(center: bounds.origin, properties: properties) : bounds
             return pointInEllipse(point, in: counterBounds.insetBy(dx: -baseTolerance, dy: -baseTolerance))
+
+        case .magnify(let sourceCenter, let showsSourceCircle):
+            let lensHit = pointInEllipse(
+                point,
+                in: MagnifyGeometry.lensSquare(in: bounds).insetBy(dx: -baseTolerance, dy: -baseTolerance),
+            )
+            guard showsSourceCircle else { return lensHit }
+            return lensHit || pointInEllipse(
+                point,
+                in: MagnifyGeometry.sourceDisplayBounds(
+                    lensBounds: bounds,
+                    sourceCenter: sourceCenter,
+                    magnification: properties.magnification,
+                ).insetBy(dx: -baseTolerance, dy: -baseTolerance),
+            )
         }
     }
 

@@ -43,20 +43,6 @@ private enum QuickPropertiesDensity {
         }
     }
 
-    var selectionStyleControlWidth: CGFloat {
-        switch self {
-        case .regular: 224
-        case .compact: 192
-        }
-    }
-
-    var selectionToolPickerWidth: CGFloat {
-        switch self {
-        case .regular: 176
-        case .compact: 148
-        }
-    }
-
     var watermarkStyleControlWidth: CGFloat {
         switch self {
         case .regular: 142
@@ -103,15 +89,6 @@ struct AnnotateQuickPropertiesBar: View {
     private let strokeColors: [Color] = [.red, .orange, .yellow, .green, .blue, .purple, .white, .black]
     private let fillColors: [Color] = [.clear, .red, .orange, .yellow, .green, .blue, .purple, .white, .black]
     private let textBackgroundColors: [Color] = [.clear, .white, .black, .yellow, .blue]
-    private let selectionStyleTools: [AnnotationToolType] = [
-        .selection,
-        .rectangle,
-        .arrow,
-        .text,
-        .watermark,
-        .highlighter,
-    ]
-
     var body: some View {
         // Horizontal ViewThatFits(regular→compact) no longer works once the active
         // row wraps: regular reports a fitting width after wrapping, so compact was
@@ -135,6 +112,7 @@ struct AnnotateQuickPropertiesBar: View {
         let showTextFontSize = state.quickPropertiesSupportsTextFontSize
         let showWatermark = state.quickPropertiesSupportsWatermark
         let showBlurType = state.quickPropertiesSupportsBlurType
+        let showMagnification = state.quickPropertiesSupportsMagnification
         let showStrokeWidth = state.quickPropertiesSupportsStrokeWidth
         let showCornerRadius = state.quickPropertiesSupportsCornerRadius
         let showArrowStyle = state.quickPropertiesSupportsArrowStyle
@@ -144,11 +122,11 @@ struct AnnotateQuickPropertiesBar: View {
             || showTextFontSize
             || showWatermark
             || showBlurType
+            || showMagnification
             || showStrokeWidth
             || showCornerRadius
             || showArrowStyle
-        let showSelectionStyle = state.quickPropertiesShowsSelectionStyle && !hasEditableStyleControls
-        let showSelectionInfo = state.quickPropertiesSelectedAnnotationCount > 0 && showSelectionStyle
+        let showSelectionInfo = state.quickPropertiesSelectedAnnotationCount > 0 && !hasEditableStyleControls
         let hasBeforeTextPresentation = showStrokeColor || showFill
         let hasBeforeTextBackground = hasBeforeTextPresentation || showTextPresentation
         let hasBeforeTextFontSize = hasBeforeTextBackground || showTextBackground
@@ -158,7 +136,8 @@ struct AnnotateQuickPropertiesBar: View {
         let hasBeforeWatermarkRotation = hasBeforeWatermarkOpacity || showWatermark
         let hasBeforeBlurType = hasBeforeWatermarkRotation || showWatermark
         let hasBeforeSpotlightOpacity = hasBeforeBlurType || showBlurType
-        let hasBeforeStrokeWidth = hasBeforeSpotlightOpacity || state.quickPropertiesSupportsSpotlightOpacity
+        let hasBeforeMagnification = hasBeforeSpotlightOpacity || state.quickPropertiesSupportsSpotlightOpacity
+        let hasBeforeStrokeWidth = hasBeforeMagnification || showMagnification
         let hasBeforeCornerRadius = hasBeforeStrokeWidth || showStrokeWidth
         let hasBeforeArrowStyle = hasBeforeCornerRadius || showCornerRadius
 
@@ -179,24 +158,6 @@ struct AnnotateQuickPropertiesBar: View {
                     count: state.quickPropertiesSelectedAnnotationCount,
                     groupSpacing: density.groupSpacing,
                 )
-            }
-
-            activePropertySlot(
-                isVisible: showSelectionStyle,
-                isEnabled: state.editorMode == .annotate,
-                showsLeadingDivider: showSelectionInfo,
-                width: density.selectionStyleControlWidth,
-            ) {
-                QuickSelectionStyleControl(
-                    selectedTool: state.selectedTool,
-                    tools: selectionStyleTools,
-                    isEnabled: state.editorMode == .annotate,
-                    width: density.selectionToolPickerWidth,
-                    buttonWidth: density.controlButtonWidth,
-                    groupSpacing: density.groupSpacing,
-                ) { tool in
-                    state.activateTool(tool)
-                }
             }
 
             activePropertySlot(
@@ -366,6 +327,19 @@ struct AnnotateQuickPropertiesBar: View {
             }
 
             activePropertySlot(
+                isVisible: showMagnification,
+                isEnabled: state.quickPropertiesSupportsMagnification,
+                showsLeadingDivider: hasBeforeMagnification,
+                width: nil,
+            ) {
+                QuickMagnificationControl(
+                    value: state.quickMagnificationBinding,
+                    sliderWidth: density.sliderWidth,
+                    groupSpacing: density.groupSpacing,
+                )
+            }
+
+            activePropertySlot(
                 isVisible: showStrokeWidth,
                 isEnabled: state.quickPropertiesSupportsStrokeWidth,
                 showsLeadingDivider: hasBeforeStrokeWidth,
@@ -425,21 +399,6 @@ struct AnnotateQuickPropertiesBar: View {
         HStack(spacing: density.rowSpacing) {
             idleContextChip(density: density)
                 .frame(width: density.contextChipWidth, alignment: .leading)
-
-            if state.quickPropertiesShowsSelectionStyle {
-                stableSlot(isEnabled: state.editorMode == .annotate, width: density.selectionStyleControlWidth) {
-                    QuickSelectionStyleControl(
-                        selectedTool: state.selectedTool,
-                        tools: selectionStyleTools,
-                        isEnabled: state.editorMode == .annotate,
-                        width: density.selectionToolPickerWidth,
-                        buttonWidth: density.controlButtonWidth,
-                        groupSpacing: density.groupSpacing,
-                    ) { tool in
-                        state.activateTool(tool)
-                    }
-                }
-            }
         }
         .fixedSize(horizontal: true, vertical: false)
         .padding(.horizontal, density.horizontalPadding)
@@ -528,73 +487,6 @@ struct AnnotateQuickPropertiesBar: View {
             )
             .help(title)
             .accessibilityLabel(title)
-    }
-}
-
-private struct QuickSelectionStyleControl: View {
-    let selectedTool: AnnotationToolType
-    let tools: [AnnotationToolType]
-    let isEnabled: Bool
-    let width: CGFloat
-    let buttonWidth: CGFloat
-    let groupSpacing: CGFloat
-    let action: (AnnotationToolType) -> Void
-
-    var body: some View {
-        QuickPropertiesGroup(title: L10n.Common.style, spacing: groupSpacing) {
-            QuickToolPicker(
-                selectedTool: selectedTool,
-                tools: tools,
-                isEnabled: isEnabled,
-                width: width,
-                buttonWidth: buttonWidth,
-                action: action,
-            )
-        }
-    }
-}
-
-private struct QuickToolPicker: View {
-    let selectedTool: AnnotationToolType
-    let tools: [AnnotationToolType]
-    let isEnabled: Bool
-    let width: CGFloat
-    let buttonWidth: CGFloat
-    let action: (AnnotationToolType) -> Void
-
-    var body: some View {
-        HStack(spacing: 5) {
-            ForEach(tools, id: \.self) { tool in
-                Button {
-                    action(tool)
-                } label: {
-                    Image(systemName: tool.icon)
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundColor(selectedTool == tool ? .accentColor : .secondary)
-                        .frame(width: buttonWidth, height: 26)
-                        .background(
-                            RoundedRectangle(cornerRadius: 7)
-                                .fill(selectedTool == tool ? Color.accentColor.opacity(0.16) : SidebarColors
-                                    .itemDefault),
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 7)
-                                .stroke(
-                                    selectedTool == tool ? Color.accentColor.opacity(0.45) : Color.secondary
-                                        .opacity(0.14),
-                                    lineWidth: 1,
-                                ),
-                        )
-                }
-                .buttonStyle(.plain)
-                .disabled(!isEnabled)
-                .opacity(isEnabled ? 1 : 0.4)
-                .help(tool.displayName)
-                .accessibilityLabel(tool.displayName)
-                .accessibilityValue(selectedTool == tool ? L10n.Notinhas.selected : "")
-            }
-        }
-        .frame(width: width, alignment: .leading)
     }
 }
 
@@ -1386,6 +1278,36 @@ private struct QuickStrokeWidthControl: View {
                     .lineLimit(1)
                     .monospacedDigit()
                     .frame(width: 28, alignment: .trailing)
+            }
+        }
+    }
+}
+
+private struct QuickMagnificationControl: View {
+    @Binding var value: CGFloat
+    let sliderWidth: CGFloat
+    let groupSpacing: CGFloat
+
+    var body: some View {
+        QuickPropertiesGroup(title: L10n.AnnotateUI.magnifyZoom, spacing: groupSpacing) {
+            HStack(spacing: 6) {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+
+                SteppedSliderControl(
+                    value: $value,
+                    step: 0.25,
+                    in: AnnotationProperties.magnificationRange,
+                    sliderWidth: sliderWidth,
+                )
+
+                Text(String(format: "%.2g×", Double(value)))
+                    .font(Typography.labelSmall)
+                    .foregroundColor(SidebarColors.labelSecondary)
+                    .lineLimit(1)
+                    .monospacedDigit()
+                    .frame(width: 34, alignment: .trailing)
             }
         }
     }

@@ -14,9 +14,10 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
     case selection
     case done
 
+    case addBackground
+
     // Top chrome (customizable)
     case crop
-    case addBackground
     case rotateLeft
     case rotateRight
     case backgroundCutout
@@ -28,6 +29,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
     case oval
     case arrow
     case line
+    case magnify
     case text
     case highlighter
     case blur
@@ -49,11 +51,10 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         rawValue
     }
 
-    static let alwaysOnItems: Set<AnnotateChromeItem> = [.undo, .redo, .selection, .done]
+    static let alwaysOnItems: Set<AnnotateChromeItem> = [.undo, .redo, .selection, .done, .addBackground]
 
     static let defaultToolbarOrder: [AnnotateChromeItem] = [
         .crop,
-        .addBackground,
         .rotateLeft,
         .rotateRight,
         .rectangle,
@@ -61,6 +62,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         .oval,
         .arrow,
         .line,
+        .magnify,
         .text,
         .highlighter,
         .blur,
@@ -98,7 +100,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         switch self {
         case .crop, .addBackground, .rotateLeft, .rotateRight:
             .captureChrome
-        case .rectangle, .filledRectangle, .oval, .arrow, .line, .text, .highlighter,
+        case .rectangle, .filledRectangle, .oval, .arrow, .line, .magnify, .text, .highlighter,
              .blur, .spotlight, .notinhasNote, .watermark, .pencil, .backgroundCutout:
             .drawingOrCutout
         case .saveAs:
@@ -117,6 +119,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         case .oval: .oval
         case .arrow: .arrow
         case .line: .line
+        case .magnify: .magnify
         case .text: .text
         case .highlighter: .highlighter
         case .blur: .blur
@@ -139,6 +142,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         case .oval: self = .oval
         case .arrow: self = .arrow
         case .line: self = .line
+        case .magnify: self = .magnify
         case .text: self = .text
         case .highlighter: self = .highlighter
         case .blur: self = .blur
@@ -168,6 +172,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         case .oval: L10n.Annotate.ovalTool
         case .arrow: L10n.Annotate.arrowTool
         case .line: L10n.Annotate.lineTool
+        case .magnify: L10n.Annotate.magnifyTool
         case .text: L10n.Annotate.textTool
         case .highlighter: L10n.Annotate.highlighterTool
         case .blur: L10n.Annotate.blurTool
@@ -192,7 +197,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         case .selection: "cursorarrow"
         case .done: "checkmark.circle"
         case .crop: "crop"
-        case .addBackground: "rectangle.on.rectangle"
+        case .addBackground: "sidebar.left"
         case .rotateLeft: "rotate.left"
         case .rotateRight: "rotate.right"
         case .backgroundCutout: "wand.and.stars"
@@ -202,6 +207,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         case .oval: "circle"
         case .arrow: "arrow.up.right"
         case .line: "line.diagonal"
+        case .magnify: "magnifyingglass"
         case .text: "character.textbox"
         case .highlighter: "highlighter"
         case .blur: "eye.slash"

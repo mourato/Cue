@@ -584,6 +584,10 @@ final class AnnotateExporter {
             embeddedCGImageProvider: { assetId in
                 snapshot.embeddedCGImages[assetId]
             },
+            sourceDisplayOffset: CGPoint(
+                x: destX - effectiveBounds.origin.x,
+                y: destY - effectiveBounds.origin.y,
+            ),
         )
         for annotation in snapshot.annotations.renderOrdered {
             if case .spotlight = annotation.type {
@@ -1109,6 +1113,10 @@ final class AnnotateExporter {
             embeddedCGImageProvider: { assetId in
                 snapshot.embeddedCGImages[assetId]
             },
+            sourceDisplayOffset: CGPoint(
+                x: -effectiveBounds.origin.x,
+                y: -effectiveBounds.origin.y,
+            ),
         )
         for annotation in snapshot.annotations.renderOrdered {
             if let cropRect = snapshot.cropRect {

@@ -16,6 +16,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
     case oval
     case arrow
     case line
+    case magnify
     case text
     case highlighter
     case blur
@@ -34,7 +35,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
     /// Shared by the full Annotate window and inline area-annotate overlay so the
     /// two surfaces stay in sync when tools are added.
     static let drawableTools: [AnnotationToolType] = [
-        .rectangle, .filledRectangle, .oval, .arrow, .line, .text, .highlighter,
+        .rectangle, .filledRectangle, .oval, .arrow, .line, .magnify, .text, .highlighter,
         .blur, .spotlight, .notinhasNote, .watermark, .pencil,
     ]
 
@@ -59,6 +60,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
         case .oval: "circle"
         case .arrow: "arrow.up.right"
         case .line: "line.diagonal"
+        case .magnify: "magnifyingglass"
         case .text: "character.textbox"
         case .highlighter: "highlighter"
         case .blur: "eye.slash"
@@ -81,6 +83,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
         case .oval: "o"
         case .arrow: "a"
         case .line: "l"
+        case .magnify: "g"
         case .text: "t"
         case .highlighter: "h"
         case .blur: "b"
@@ -103,6 +106,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
         case .oval: L10n.Annotate.ovalTool
         case .arrow: L10n.Annotate.arrowTool
         case .line: L10n.Annotate.lineTool
+        case .magnify: L10n.Annotate.magnifyTool
         case .text: L10n.Annotate.textTool
         case .highlighter: L10n.Annotate.highlighterTool
         case .blur: L10n.Annotate.blurTool
@@ -117,7 +121,8 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
 
     var supportsQuickPropertiesBar: Bool {
         switch self {
-        case .rectangle, .filledRectangle, .oval, .arrow, .line, .text, .highlighter, .blur, .spotlight, .counter,
+        case .rectangle, .filledRectangle, .oval, .arrow, .line, .magnify, .text, .highlighter,
+             .blur, .spotlight, .counter,
              .notinhasNote, .watermark, .pencil:
             true
         case .selection, .crop, .mockup:
@@ -132,14 +137,15 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
         switch self {
         case .rectangle, .filledRectangle, .oval, .arrow, .line, .blur, .spotlight, .watermark:
             true
-        case .selection, .crop, .text, .highlighter, .counter, .pencil, .mockup, .notinhasNote:
+        case .selection, .crop, .text, .highlighter, .counter, .pencil, .mockup, .notinhasNote, .magnify:
             false
         }
     }
 
     var supportsQuickStrokeColor: Bool {
         switch self {
-        case .rectangle, .filledRectangle, .oval, .arrow, .line, .text, .highlighter, .counter, .watermark, .pencil,
+        case .rectangle, .filledRectangle, .oval, .arrow, .line, .magnify, .text, .highlighter,
+             .counter, .watermark, .pencil,
              .notinhasNote:
             true
         case .selection, .crop, .blur, .spotlight, .mockup:
@@ -153,18 +159,24 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
 
     var supportsQuickStrokeWidth: Bool {
         switch self {
-        case .rectangle, .filledRectangle, .oval, .arrow, .line, .highlighter, .blur, .counter, .pencil, .notinhasNote:
+        case .rectangle, .filledRectangle, .oval, .arrow, .line, .magnify, .highlighter,
+             .blur, .counter, .pencil, .notinhasNote:
             true
         case .selection, .crop, .text, .watermark, .spotlight, .mockup:
             false
         }
     }
 
+    var supportsQuickMagnification: Bool {
+        self == .magnify
+    }
+
     var supportsQuickCornerRadius: Bool {
         switch self {
         case .rectangle, .filledRectangle, .text, .spotlight:
             true
-        case .selection, .crop, .oval, .arrow, .line, .highlighter, .blur, .counter, .watermark, .pencil, .mockup,
+        case .selection, .crop, .oval, .arrow, .line, .magnify, .highlighter,
+             .blur, .counter, .watermark, .pencil, .mockup,
              .notinhasNote:
             false
         }

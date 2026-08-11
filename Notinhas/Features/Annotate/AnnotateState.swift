@@ -83,6 +83,7 @@ final class AnnotateState: ObservableObject {
         var rotationDegrees: CGFloat
         var watermarkStyle: String
         var spotlightOpacity: CGFloat?
+        var magnification: CGFloat?
 
         init?(_ properties: AnnotationProperties) {
             guard let strokeColor = RGBAColor(color: properties.strokeColor),
@@ -100,6 +101,7 @@ final class AnnotateState: ObservableObject {
             rotationDegrees = properties.rotationDegrees
             watermarkStyle = properties.watermarkStyle.rawValue
             spotlightOpacity = properties.spotlightOpacity
+            magnification = properties.magnification
         }
 
         var annotationProperties: AnnotationProperties {
@@ -114,6 +116,7 @@ final class AnnotateState: ObservableObject {
                 rotationDegrees: rotationDegrees,
                 watermarkStyle: WatermarkStyle(rawValue: watermarkStyle) ?? .single,
                 spotlightOpacity: spotlightOpacity ?? 0.5,
+                magnification: magnification ?? MagnifyGeometry.defaultMagnification,
             )
         }
     }
@@ -2653,6 +2656,16 @@ final class AnnotateState: ObservableObject {
                 AnnotateImageRotation.rotatePoint($0, oldSize: oldSize, clockwise: clockwise)
             })
 
+        case .magnify(let sourceCenter, let showsSourceCircle):
+            rotated.type = .magnify(
+                sourceCenter: AnnotateImageRotation.rotatePoint(
+                    sourceCenter,
+                    oldSize: oldSize,
+                    clockwise: clockwise,
+                ),
+                showsSourceCircle: showsSourceCircle,
+            )
+
         case .text:
             rotated.bounds = AnnotateImageRotation.rotateLayoutRectPreservingSize(
                 annotation.bounds,
@@ -3167,6 +3180,7 @@ final class AnnotateState: ObservableObject {
         rotationDegrees: CGFloat? = nil,
         watermarkStyle: WatermarkStyle? = nil,
         spotlightOpacity: CGFloat? = nil,
+        magnification: CGFloat? = nil,
         recordsUndo: Bool = false,
     ) {
         guard let index = annotations.firstIndex(where: { $0.id == id }) else { return }
@@ -3187,6 +3201,7 @@ final class AnnotateState: ObservableObject {
             rotationDegrees: rotationDegrees,
             watermarkStyle: watermarkStyle,
             spotlightOpacity: spotlightOpacity,
+            magnification: magnification,
         ) else { return }
 
         if recordsUndo {
@@ -3237,6 +3252,9 @@ final class AnnotateState: ObservableObject {
             annotations[index].properties.spotlightOpacity = AnnotationProperties
                 .clampedSpotlightOpacity(spotlightOpacity)
         }
+        if let magnification {
+            annotations[index].properties.magnification = AnnotationProperties.clampedMagnification(magnification)
+        }
         hasUnsavedChanges = true
     }
 
@@ -3279,6 +3297,7 @@ final class AnnotateState: ObservableObject {
         rotationDegrees: CGFloat? = nil,
         watermarkStyle: WatermarkStyle? = nil,
         spotlightOpacity: CGFloat? = nil,
+        magnification: CGFloat? = nil,
     ) -> Bool {
         let properties = annotation.properties
         let colorUpdate = normalizedColorUpdate(
@@ -3313,6 +3332,10 @@ final class AnnotateState: ObservableObject {
         }
         if let rotationDegrees,
            properties.rotationDegrees != AnnotationProperties.clampedRotationDegrees(rotationDegrees) {
+            return true
+        }
+        if let magnification,
+           properties.magnification != AnnotationProperties.clampedMagnification(magnification) {
             return true
         }
         if let watermarkStyle,
@@ -3726,6 +3749,7 @@ final class AnnotateState: ObservableObject {
         sanitized.opacity = AnnotationProperties.clampedOpacity(properties.opacity)
         sanitized.rotationDegrees = AnnotationProperties.clampedRotationDegrees(properties.rotationDegrees)
         sanitized.spotlightOpacity = AnnotationProperties.clampedSpotlightOpacity(properties.spotlightOpacity)
+        sanitized.magnification = AnnotationProperties.clampedMagnification(properties.magnification)
         if tool == .filledRectangle {
             sanitized.fillColor = sanitized.strokeColor
         }
@@ -4060,6 +4084,7 @@ final class AnnotateState: ObservableObject {
         rotationDegrees: CGFloat? = nil,
         watermarkStyle: WatermarkStyle? = nil,
         spotlightOpacity: CGFloat? = nil,
+        magnification: CGFloat? = nil,
     ) {
         var properties = defaultAnnotationProperties(for: tool)
 
@@ -4098,6 +4123,9 @@ final class AnnotateState: ObservableObject {
         }
         if let spotlightOpacity {
             properties.spotlightOpacity = AnnotationProperties.clampedSpotlightOpacity(spotlightOpacity)
+        }
+        if let magnification {
+            properties.magnification = AnnotationProperties.clampedMagnification(magnification)
         }
 
         let sanitized = sanitizedAnnotationProperties(properties, for: tool)
@@ -4197,6 +4225,7 @@ final class AnnotateState: ObservableObject {
         rotationDegrees: CGFloat? = nil,
         watermarkStyle: WatermarkStyle? = nil,
         spotlightOpacity: CGFloat? = nil,
+        magnification: CGFloat? = nil,
         recordsUndo: Bool = false,
         matching predicate: ((AnnotationType) -> Bool)? = nil,
     ) -> Bool {
@@ -4217,6 +4246,7 @@ final class AnnotateState: ObservableObject {
                 rotationDegrees: rotationDegrees,
                 watermarkStyle: watermarkStyle,
                 spotlightOpacity: spotlightOpacity,
+                magnification: magnification,
             )
         })
 
@@ -4241,6 +4271,7 @@ final class AnnotateState: ObservableObject {
                 rotationDegrees: rotationDegrees,
                 watermarkStyle: watermarkStyle,
                 spotlightOpacity: spotlightOpacity,
+                magnification: magnification,
             )
         }
         return true
@@ -4741,21 +4772,6 @@ final class AnnotateState: ObservableObject {
         quickPropertiesSelectionAnnotations.count
     }
 
-    var quickPropertiesShowsSelectionStyle: Bool {
-        guard editorMode == .annotate,
-              selectedTool != .crop else {
-            return false
-        }
-
-        if quickPropertiesSelectionAnnotations.isEmpty {
-            return selectedTool == .selection
-        }
-
-        return quickPropertiesSelectionAnnotations.allSatisfy { annotation in
-            annotation.type.toolType == .selection || !annotation.type.supportsQuickPropertiesBar
-        }
-    }
-
     var showsQuickPropertiesBar: Bool {
         quickPropertiesMode != .hidden
     }
@@ -4798,6 +4814,13 @@ final class AnnotateState: ObservableObject {
             return quickSelectionAnySupport { $0.supportsQuickStrokeWidth }
         }
         return quickPropertiesTool?.supportsQuickStrokeWidth ?? false
+    }
+
+    var quickPropertiesSupportsMagnification: Bool {
+        if !quickPropertiesSelectionAnnotations.isEmpty {
+            return quickSelectionAnySupport { $0.supportsQuickMagnification }
+        }
+        return quickPropertiesTool?.supportsQuickMagnification ?? false
     }
 
     var quickStrokeWidthLabel: String {
@@ -4996,6 +5019,28 @@ final class AnnotateState: ObservableObject {
                     matching: { $0.supportsQuickStrokeWidth },
                 ) {
                     rememberAnnotationStrokeWidth(newWidth, for: quickPropertiesTool)
+                }
+            },
+        )
+    }
+
+    var quickMagnificationBinding: Binding<CGFloat> {
+        Binding(
+            get: { [weak self] in
+                guard let self else { return MagnifyGeometry.defaultMagnification }
+                return quickSelectionTargets(matching: { $0.supportsQuickMagnification }).first?.properties
+                    .magnification
+                    ?? defaultAnnotationProperties(for: quickPropertiesTool).magnification
+            },
+            set: { [weak self] newMagnification in
+                guard let self else { return }
+                let clamped = AnnotationProperties.clampedMagnification(newMagnification)
+                if !updateQuickSelectionProperties(
+                    magnification: clamped,
+                    recordsUndo: true,
+                    matching: { $0.supportsQuickMagnification },
+                ) {
+                    updateDefaultAnnotationProperties(for: .magnify, magnification: clamped)
                 }
             },
         )

@@ -548,6 +548,7 @@ private struct DragFallbackSignature: Equatable {
             String(quantize(properties.opacity)),
             String(quantize(properties.rotationDegrees)),
             properties.watermarkStyle.rawValue,
+            String(quantize(properties.magnification)),
         ].joined(separator: "|")
     }
 
@@ -580,6 +581,8 @@ private struct DragFallbackSignature: Equatable {
             return "embeddedImage|\(assetId.uuidString)"
         case .spotlight:
             return "spotlight"
+        case .magnify(let sourceCenter, let showsSourceCircle):
+            return "magnify|\(pointSignature(sourceCenter))|\(showsSourceCircle)"
         }
     }
 

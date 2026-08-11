@@ -23,6 +23,7 @@ nonisolated struct AnnotationRenderer {
     var interactiveEmbeddedImageAnnotationId: UUID?
     var embeddedImageProvider: ((UUID) -> NSImage?)?
     var embeddedCGImageProvider: ((UUID) -> CGImage?)?
+    var sourceDisplayOffset: CGPoint
 
     init(
         context: CGContext,
@@ -35,6 +36,7 @@ nonisolated struct AnnotationRenderer {
         interactiveEmbeddedImageAnnotationId: UUID? = nil,
         embeddedImageProvider: ((UUID) -> NSImage?)? = nil,
         embeddedCGImageProvider: ((UUID) -> CGImage?)? = nil,
+        sourceDisplayOffset: CGPoint = .zero,
     ) {
         self.context = context
         self.editingTextId = editingTextId
@@ -49,6 +51,7 @@ nonisolated struct AnnotationRenderer {
         self.interactiveEmbeddedImageAnnotationId = interactiveEmbeddedImageAnnotationId
         self.embeddedImageProvider = embeddedImageProvider
         self.embeddedCGImageProvider = embeddedCGImageProvider
+        self.sourceDisplayOffset = sourceDisplayOffset
     }
 
     func draw(_ annotation: AnnotationItem) {
@@ -120,6 +123,16 @@ nonisolated struct AnnotationRenderer {
         case .spotlight:
             // Spotlight is rendered as a unified overlay pass, skip per-item drawing
             break
+
+        case .magnify(let sourceCenter, let showsSourceCircle):
+            drawMagnify(
+                bounds: annotation.bounds,
+                sourceCenter: sourceCenter,
+                showsSourceCircle: showsSourceCircle,
+                magnification: annotation.properties.magnification,
+                strokeWidth: annotation.properties.strokeWidth,
+                strokeColor: annotation.properties.strokeColor,
+            )
         }
     }
 
@@ -141,6 +154,7 @@ nonisolated struct AnnotationRenderer {
         watermarkOpacity: CGFloat = 0.22,
         watermarkRotationDegrees: CGFloat = -24,
         watermarkFontSize: CGFloat = 36,
+        magnification: CGFloat = MagnifyGeometry.defaultMagnification,
     ) {
         context.setStrokeColor(NSColor(strokeColor).cgColor)
         context.setLineWidth(strokeWidth)
@@ -211,6 +225,22 @@ nonisolated struct AnnotationRenderer {
                     startHead: arrowStartHead,
                     endHead: arrowEndHead,
                 ),
+                strokeWidth: strokeWidth,
+                strokeColor: strokeColor,
+            )
+
+        case .magnify:
+            let currentPoint = currentPath.last ?? start
+            let isMagnifyDrag = hypot(currentPoint.x - start.x, currentPoint.y - start.y)
+                > MagnifyGeometry.dragThreshold
+            let lensBounds = isMagnifyDrag
+                ? MagnifyGeometry.destinationBounds(center: currentPoint)
+                : MagnifyGeometry.lensBounds(from: start, to: currentPoint)
+            drawMagnify(
+                bounds: lensBounds,
+                sourceCenter: isMagnifyDrag ? start : CGPoint(x: lensBounds.midX, y: lensBounds.midY),
+                showsSourceCircle: isMagnifyDrag,
+                magnification: magnification,
                 strokeWidth: strokeWidth,
                 strokeColor: strokeColor,
             )
@@ -582,6 +612,106 @@ nonisolated struct AnnotationRenderer {
             operation: .sourceOver,
             fraction: 1.0,
         )
+        context.restoreGState()
+    }
+
+    private func drawMagnify(
+        bounds: CGRect,
+        sourceCenter: CGPoint,
+        showsSourceCircle: Bool,
+        magnification: CGFloat,
+        strokeWidth: CGFloat,
+        strokeColor: Color,
+    ) {
+        let lensRect = MagnifyGeometry.lensSquare(in: bounds)
+        guard lensRect.width > 0, lensRect.height > 0 else { return }
+
+        if showsSourceCircle {
+            let displaySourceCenter = CGPoint(
+                x: sourceCenter.x + sourceDisplayOffset.x,
+                y: sourceCenter.y + sourceDisplayOffset.y,
+            )
+            let sourceDisplayRect = MagnifyGeometry.sourceDisplayBounds(
+                lensBounds: lensRect,
+                sourceCenter: displaySourceCenter,
+                magnification: magnification,
+            )
+            let sourceVector = CGPoint(
+                x: lensRect.midX - displaySourceCenter.x,
+                y: lensRect.midY - displaySourceCenter.y,
+            )
+            let distance = hypot(sourceVector.x, sourceVector.y)
+            if distance > 1 {
+                let unit = CGPoint(x: sourceVector.x / distance, y: sourceVector.y / distance)
+                let startPoint = CGPoint(
+                    x: displaySourceCenter.x + unit.x * sourceDisplayRect.width / 2,
+                    y: displaySourceCenter.y + unit.y * sourceDisplayRect.height / 2,
+                )
+                let endPoint = CGPoint(
+                    x: lensRect.midX - unit.x * lensRect.width / 2,
+                    y: lensRect.midY - unit.y * lensRect.height / 2,
+                )
+                context.saveGState()
+                context.setStrokeColor(NSColor(strokeColor).withAlphaComponent(0.7).cgColor)
+                context.setLineWidth(max(1, strokeWidth / 2))
+                context.setLineDash(phase: 0, lengths: [4, 3])
+                context.move(to: startPoint)
+                context.addLine(to: endPoint)
+                context.strokePath()
+                context.restoreGState()
+            }
+
+            context.saveGState()
+            context.setFillColor(NSColor.white.withAlphaComponent(0.2).cgColor)
+            context.setStrokeColor(NSColor(strokeColor).withAlphaComponent(0.8).cgColor)
+            context.setLineWidth(max(1, strokeWidth))
+            context.fillEllipse(in: sourceDisplayRect)
+            context.strokeEllipse(
+                in: sourceDisplayRect.insetBy(
+                    dx: max(1, strokeWidth / 2),
+                    dy: max(1, strokeWidth / 2),
+                ),
+            )
+            context.restoreGState()
+        }
+
+        context.saveGState()
+        context.setShadow(
+            offset: CGSize(width: 0, height: -3),
+            blur: 8,
+            color: NSColor.black.withAlphaComponent(0.32).cgColor,
+        )
+        context.setFillColor(NSColor.white.withAlphaComponent(0.96).cgColor)
+        context.fillEllipse(in: lensRect)
+        context.restoreGState()
+
+        if let sourceImage {
+            let sourceRect = MagnifyGeometry.sourceRect(
+                lensBounds: lensRect,
+                sourceCenter: sourceCenter,
+                sourceBounds: CGRect(origin: .zero, size: sourceImage.size),
+                magnification: magnification,
+            )
+            if !sourceRect.isEmpty {
+                context.saveGState()
+                context.addEllipse(in: lensRect)
+                context.clip()
+                context.interpolationQuality = .high
+                sourceImage.draw(
+                    in: lensRect,
+                    from: sourceRect,
+                    operation: .sourceOver,
+                    fraction: 1,
+                )
+                context.restoreGState()
+            }
+        }
+
+        context.saveGState()
+        context.setStrokeColor(NSColor(strokeColor).cgColor)
+        context.setLineWidth(max(2, strokeWidth))
+        context.setLineCap(.round)
+        context.strokeEllipse(in: lensRect.insetBy(dx: max(1, strokeWidth / 2), dy: max(1, strokeWidth / 2)))
         context.restoreGState()
     }
 
