@@ -870,3 +870,48 @@ the broad `AnnotateState` decomposition candidate.
 - Portable chrome/config import-export abstraction: deferred — Plan 069 already
   owns Annotate chrome customization, and current product intent does not yet
   require cross-machine config portability.
+
+## Annotate commit safety and narrow state seams (086–088)
+
+Generated 2026-08-11 against commit `f67a3ab9` after reconciling the completed
+084–085 commit-tail work with the current controller, persistence, and XCTest
+surfaces. Execute **086 → 087**; Plan 088 is an independent, small state/test
+workstream and may be executed in a separate worktree, but serialize any
+merges that edit the same test file. Code review remains a host-chat gate.
+
+| Plan | Title | Priority | Effort | Depends on | Status |
+|---|---|---:|---:|---|---|
+| [086](086-annotate-cloud-commit-gate.md) | Block cloud re-upload after a failed local commit | P1 | S | 085 | DONE (`af7e2e99`; review clean; manual cloud failure check pending) |
+| [087](087-annotate-background-commit-recovery.md) | Make background Annotate commit failures recoverable | P1 | M | 085; serialize after 086 | DONE (`16ab7542`; review clean; manual recovery checks pending) |
+| [088](088-annotate-text-creation-undo.md) | Preserve Undo when creating text from the Annotate canvas | P1 | S | — | DONE (`74aa6f1b`; review clean; manual editor check pending) |
+
+### Dependency notes (086–088)
+
+- **086** is the narrow cloud safety gate: successful local rendered-file
+  persistence must precede upload, old-object cleanup, cloud mutation, and
+  close. It intentionally does not consolidate the two cloud workflows.
+- **087** consumes the Boolean already returned by Plan 085 and adds recovery
+  for normal local Save/Copy/Save-and-Close. It is technically independent of
+  086, but must be merged after it because both edit the Annotate controller;
+  it must preserve successful instant-close behavior and existing sidecar
+  signature rules.
+- **088** fixes one concrete mutable-collection escape hatch in `AnnotateState`
+  and is independent of the cloud/commit controller work. It is not a broad
+  state decomposition.
+
+### Findings considered and rejected (086–088)
+
+- RenderSnapshot host stall: no plan now — the current `build/ci-test.log`
+  completes with `** TEST SUCCEEDED **`; the earlier interruption lacks a
+  reproducible runner/Xcode/environment signature. Reopen only after a new
+  captured failure with timeout and xcresult evidence.
+- Wholesale `AnnotateState` split: deferred — the type is 5,355 lines with
+  many callers, but the audit found one high-confidence creation transaction
+  that can be isolated safely first (088).
+- Cloud re-upload coordinator/protocol: rejected for this round — Save and
+  Copy retain intentionally different upload-failure clipboard fallbacks; 086
+  adds only the shared safety precondition.
+- New retry queue or pending-sidecar format: rejected — 087 can recover through
+  the existing in-memory/session snapshot and `AnnotateManager` restore path;
+  add durable pending commits only if real failures show that path is
+  insufficient.
