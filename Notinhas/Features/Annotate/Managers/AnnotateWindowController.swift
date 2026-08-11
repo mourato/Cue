@@ -716,15 +716,11 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                     }
                 }
 
-                // Save to file (encode off-main; scoped write + history on main)
-                guard let sourceURL,
-                      await AnnotateExporter.saveToFileOffMain(image: renderedImage, sourceURL: sourceURL)
-                else { return }
-
-                await Self.persistCommittedSessionOffMain(sessionSnapshot, for: sourceURL)
-                await PostCaptureActionHandler.shared.copyEditedCaptureToClipboardIfEnabled(
-                    for: .screenshot,
-                    url: sourceURL,
+                _ = await Self.persistRenderedFileOffMain(
+                    image: renderedImage,
+                    sourceURL: sourceURL,
+                    sessionSnapshot: sessionSnapshot,
+                    copyEditedCapture: true,
                 )
             }
         } else {
@@ -1104,17 +1100,15 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
             }
 
             // Close window instantly
-            let capturedState = state
             forceClose()
 
             // Save to disk in background
             Task.detached(priority: .userInitiated) {
-                guard await AnnotateExporter.saveToFile(image: renderedImage, state: capturedState),
-                      let sourceURL else { return }
-                await Self.persistCommittedSessionOffMain(sessionSnapshot, for: sourceURL)
-                await PostCaptureActionHandler.shared.copyEditedCaptureToClipboardIfEnabled(
-                    for: .screenshot,
-                    url: sourceURL,
+                _ = await Self.persistRenderedFileOffMain(
+                    image: renderedImage,
+                    sourceURL: sourceURL,
+                    sessionSnapshot: sessionSnapshot,
+                    copyEditedCapture: true,
                 )
             }
         } else {
@@ -1273,13 +1267,15 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         }
 
         // Close instantly, save in background
-        let capturedState = state
         let sourceURL = state.sourceURL
         forceClose()
         Task.detached(priority: .userInitiated) {
-            guard await AnnotateExporter.saveToFile(image: renderedImage, state: capturedState),
-                  let sourceURL else { return }
-            await Self.persistCommittedSessionOffMain(sessionSnapshot, for: sourceURL)
+            _ = await Self.persistRenderedFileOffMain(
+                image: renderedImage,
+                sourceURL: sourceURL,
+                sessionSnapshot: sessionSnapshot,
+                copyEditedCapture: false,
+            )
         }
     }
 
@@ -1540,5 +1536,26 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         let shouldPersist = await MainActor.run { AnnotationSessionStore.shared.shouldPersist(for: sourceURL) }
         guard shouldPersist else { return }
         _ = await AnnotationSessionStore.shared.persistOffMain(snapshot, for: sourceURL)
+    }
+
+    private nonisolated static func persistRenderedFileOffMain(
+        image: NSImage?,
+        sourceURL: URL?,
+        sessionSnapshot: AnnotationSessionData?,
+        copyEditedCapture: Bool,
+    ) async -> Bool {
+        guard let image,
+              let sourceURL,
+              await AnnotateExporter.saveToFileOffMain(image: image, sourceURL: sourceURL)
+        else { return false }
+
+        await persistCommittedSessionOffMain(sessionSnapshot, for: sourceURL)
+        if copyEditedCapture {
+            await PostCaptureActionHandler.shared.copyEditedCaptureToClipboardIfEnabled(
+                for: .screenshot,
+                url: sourceURL,
+            )
+        }
+        return true
     }
 }

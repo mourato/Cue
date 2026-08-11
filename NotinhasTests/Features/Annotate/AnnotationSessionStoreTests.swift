@@ -149,6 +149,28 @@ final class AnnotationSessionStoreTests: XCTestCase {
         XCTAssertEqual(loaded.notinhasNotes?.notes.first?.pinControlValue, 6)
     }
 
+    func testPersistOffMainAndLoad_roundTripsAnnotationsAndNotinhasNotes() async throws {
+        let sourceURL = try writeSourceImage(named: "off-main.png")
+        var sessionData = try makeSessionData()
+        sessionData.notinhasNotes = PersistedNotinhasNotesSession(notes: [
+            NotinhasVisualNote(
+                text: "Increase contrast",
+                target: .point(CGPoint(x: 40, y: 60)),
+                color: RGBAColor(red: 1, green: 0, blue: 0, alpha: 1),
+                pinControlValue: 6,
+                creationOrder: 1,
+            ),
+        ])
+
+        let persisted = await store.persistOffMain(sessionData, for: sourceURL)
+        XCTAssertTrue(persisted)
+
+        let loaded = try XCTUnwrap(store.load(for: sourceURL))
+        XCTAssertEqual(loaded.annotations.count, sessionData.annotations.count)
+        XCTAssertEqual(loaded.notinhasNotes?.notes.count, 1)
+        XCTAssertEqual(loaded.notinhasNotes?.notes.first?.text, "Increase contrast")
+    }
+
     func testPersistedSession_ignoresMalformedNotinhasPayload() throws {
         let sessionData = try makeSessionData()
         let manifest = PersistedAnnotationSession(

@@ -106,4 +106,22 @@ final class AnnotateExporterTests: XCTestCase {
         let data = AnnotateExporter.imageData(from: empty, for: "png")
         XCTAssertNil(data)
     }
+
+    func testSaveToFileOffMain_writesReadableRenderedImage() async throws {
+        let sourceURL = tempDir.appendingPathComponent("rendered.png")
+        let sourceImage = try XCTUnwrap(TestImageFactory.solidColor(width: 8, height: 6))
+        let source = NSImage(cgImage: sourceImage, size: NSSize(width: 8, height: 6))
+        try XCTUnwrap(AnnotateExporter.imageData(from: source, for: "png")).write(to: sourceURL)
+
+        let renderedCGImage = try XCTUnwrap(TestImageFactory.solidColor(width: 18, height: 12))
+        let renderedImage = NSImage(cgImage: renderedCGImage, size: NSSize(width: 18, height: 12))
+
+        let didSave = await AnnotateExporter.saveToFileOffMain(image: renderedImage, sourceURL: sourceURL)
+        XCTAssertTrue(didSave)
+
+        let savedImage = try XCTUnwrap(NSImage(contentsOf: sourceURL))
+        let savedCGImage = try XCTUnwrap(AnnotateExporter.bestCGImage(from: savedImage))
+        XCTAssertEqual(savedCGImage.width, 18)
+        XCTAssertEqual(savedCGImage.height, 12)
+    }
 }
