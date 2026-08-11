@@ -85,6 +85,8 @@ struct ToolbarButton: View {
                 }
         }
         .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityValue(isSelected ? NotinhasL10n.selected : "")
         .onHover { isHovering = $0 }
     }
 
