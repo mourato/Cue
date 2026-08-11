@@ -1314,12 +1314,13 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         let renderedImage = AnnotateExporter.renderFinalImage(state: state)
 
         // Save to disk first (so cloud upload reads the updated file)
-        if let renderedImage {
-            let didSaveRenderedImage = AnnotateExporter.saveToFile(image: renderedImage, state: state)
-            if didSaveRenderedImage {
-                Self.persistCommittedSession(sessionSnapshot, for: sourceURL)
-            }
+        guard let renderedImage,
+              AnnotateExporter.saveToFile(image: renderedImage, state: state)
+        else {
+            showSaveErrorAlert()
+            return
         }
+        Self.persistCommittedSession(sessionSnapshot, for: sourceURL)
 
         let oldCloudKey = state.cloudKey
         let capturedState = state
@@ -1358,9 +1359,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
 
                 // Update QuickAccess item: thumbnail first, then setCloudURL to reset stale
                 if let itemId {
-                    if let renderedImage {
-                        QuickAccessManager.shared.updateItemThumbnail(id: itemId, image: renderedImage)
-                    }
+                    QuickAccessManager.shared.updateItemThumbnail(id: itemId, image: renderedImage)
                     QuickAccessManager.shared.setCloudURL(id: itemId, url: result.publicURL, key: result.key)
                 }
 
@@ -1386,7 +1385,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                 )
                 // Fall back to local save only
                 capturedState.markAsSaved()
-                if let renderedImage, let itemId {
+                if let itemId {
                     QuickAccessManager.shared.updateItemThumbnail(id: itemId, image: renderedImage)
                 }
                 await PostCaptureActionHandler.shared.copyEditedCaptureToClipboardIfEnabled(
@@ -1408,12 +1407,13 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         let renderedImage = AnnotateExporter.renderFinalImage(state: state)
 
         // Save to disk first
-        if let renderedImage {
-            let didSaveRenderedImage = AnnotateExporter.saveToFile(image: renderedImage, state: state)
-            if didSaveRenderedImage {
-                Self.persistCommittedSession(sessionSnapshot, for: sourceURL)
-            }
+        guard let renderedImage,
+              AnnotateExporter.saveToFile(image: renderedImage, state: state)
+        else {
+            showSaveErrorAlert()
+            return
         }
+        Self.persistCommittedSession(sessionSnapshot, for: sourceURL)
 
         let oldCloudKey = state.cloudKey
         let capturedState = state
@@ -1452,9 +1452,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
 
                 // Update QuickAccess item: thumbnail first, then setCloudURL to reset stale
                 if let itemId {
-                    if let renderedImage {
-                        QuickAccessManager.shared.updateItemThumbnail(id: itemId, image: renderedImage)
-                    }
+                    QuickAccessManager.shared.updateItemThumbnail(id: itemId, image: renderedImage)
                     QuickAccessManager.shared.setCloudURL(id: itemId, url: result.publicURL, key: result.key)
                 }
 
@@ -1479,11 +1477,9 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                     context: ["fileName": sourceURL.lastPathComponent, "mode": "copy"],
                 )
                 // Fall back: copy image to clipboard, close
-                if let renderedImage {
-                    ClipboardHelper.copyImage(renderedImage)
-                }
+                ClipboardHelper.copyImage(renderedImage)
                 capturedState.markAsSaved()
-                if let renderedImage, let itemId {
+                if let itemId {
                     QuickAccessManager.shared.updateItemThumbnail(id: itemId, image: renderedImage)
                 }
                 SoundManager.play("Pop")
