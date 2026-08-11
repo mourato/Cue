@@ -102,6 +102,149 @@ final class AnnotateCoreTests: XCTestCase {
         )
     }
 
+    func testAnnotateCommitRoutingSaveAndClosePrefersCombineDialogOverCloud() {
+        XCTAssertEqual(
+            AnnotateCommitRouting.route(
+                for: .saveAndClose,
+                hasImage: false,
+                combineSaveNeedsDialog: true,
+                protectsSourceFromImplicitCombineWrite: false,
+                requiresCloudOverwriteConfirmation: true,
+            ),
+            .combineDialog,
+        )
+    }
+
+    func testAnnotateCommitRoutingSaveAndCloseUsesCloudReuploadWhenNeeded() {
+        XCTAssertEqual(
+            AnnotateCommitRouting.route(
+                for: .saveAndClose,
+                hasImage: true,
+                combineSaveNeedsDialog: false,
+                protectsSourceFromImplicitCombineWrite: false,
+                requiresCloudOverwriteConfirmation: true,
+            ),
+            .cloudReuploadAndClose,
+        )
+    }
+
+    func testAnnotateCommitRoutingSaveAndCloseUsesNormalSaveOtherwise() {
+        XCTAssertEqual(
+            AnnotateCommitRouting.route(
+                for: .saveAndClose,
+                hasImage: true,
+                combineSaveNeedsDialog: false,
+                protectsSourceFromImplicitCombineWrite: false,
+                requiresCloudOverwriteConfirmation: false,
+            ),
+            .saveAndClose,
+        )
+    }
+
+    func testAnnotateCommitRoutingSaveNoImageIsNoOp() {
+        XCTAssertEqual(
+            AnnotateCommitRouting.route(
+                for: .save,
+                hasImage: false,
+                combineSaveNeedsDialog: true,
+                protectsSourceFromImplicitCombineWrite: false,
+                requiresCloudOverwriteConfirmation: true,
+            ),
+            .noOp,
+        )
+    }
+
+    func testAnnotateCommitRoutingSavePrefersCombineDialogOverCloud() {
+        XCTAssertEqual(
+            AnnotateCommitRouting.route(
+                for: .save,
+                hasImage: true,
+                combineSaveNeedsDialog: true,
+                protectsSourceFromImplicitCombineWrite: false,
+                requiresCloudOverwriteConfirmation: true,
+            ),
+            .combineDialog,
+        )
+    }
+
+    func testAnnotateCommitRoutingSaveUsesCloudReuploadWhenNeeded() {
+        XCTAssertEqual(
+            AnnotateCommitRouting.route(
+                for: .save,
+                hasImage: true,
+                combineSaveNeedsDialog: false,
+                protectsSourceFromImplicitCombineWrite: false,
+                requiresCloudOverwriteConfirmation: true,
+            ),
+            .cloudReuploadAndClose,
+        )
+    }
+
+    func testAnnotateCommitRoutingSaveUsesNormalSaveOtherwise() {
+        XCTAssertEqual(
+            AnnotateCommitRouting.route(
+                for: .save,
+                hasImage: true,
+                combineSaveNeedsDialog: false,
+                protectsSourceFromImplicitCombineWrite: false,
+                requiresCloudOverwriteConfirmation: false,
+            ),
+            .save,
+        )
+    }
+
+    func testAnnotateCommitRoutingCopyNoImageIsNoOp() {
+        XCTAssertEqual(
+            AnnotateCommitRouting.route(
+                for: .copy,
+                hasImage: false,
+                combineSaveNeedsDialog: false,
+                protectsSourceFromImplicitCombineWrite: true,
+                requiresCloudOverwriteConfirmation: true,
+            ),
+            .noOp,
+        )
+    }
+
+    func testAnnotateCommitRoutingCopyProtectsManualCombineSourceBeforeCloud() {
+        XCTAssertEqual(
+            AnnotateCommitRouting.route(
+                for: .copy,
+                hasImage: true,
+                combineSaveNeedsDialog: false,
+                protectsSourceFromImplicitCombineWrite: true,
+                requiresCloudOverwriteConfirmation: true,
+            ),
+            .copyWithoutSourceWrite,
+        )
+    }
+
+    func testAnnotateCommitRoutingCopyUsesCloudReuploadWhenNeeded() {
+        XCTAssertEqual(
+            AnnotateCommitRouting.route(
+                for: .copy,
+                hasImage: true,
+                combineSaveNeedsDialog: false,
+                protectsSourceFromImplicitCombineWrite: false,
+                requiresCloudOverwriteConfirmation: true,
+            ),
+            .cloudReuploadAndCopy,
+        )
+    }
+
+    func testAnnotateCommitRoutingCopyUsesNormalCopyOtherwise() {
+        XCTAssertEqual(
+            AnnotateCommitRouting.route(
+                for: .copy,
+                hasImage: true,
+                combineSaveNeedsDialog: false,
+                protectsSourceFromImplicitCombineWrite: false,
+                requiresCloudOverwriteConfirmation: false,
+            ),
+            .copy,
+        )
+    }
+
     private class MockAnnotateWindow: AnnotateWindow {
         var stubbedIsKeyWindow = false
         var stubbedIsMainWindow = false

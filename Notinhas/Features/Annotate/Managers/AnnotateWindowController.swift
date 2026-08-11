@@ -34,6 +34,64 @@ enum AnnotateDragCompletionPolicy {
     }
 }
 
+enum AnnotateCommitAction: Equatable {
+    case saveAndClose
+    case save
+    case copy
+}
+
+enum AnnotateCommitRoute: Equatable {
+    case noOp
+    case combineDialog
+    case cloudReuploadAndClose
+    case cloudReuploadAndCopy
+    case saveAndClose
+    case save
+    case copyWithoutSourceWrite
+    case copy
+}
+
+enum AnnotateCommitRouting {
+    static func route(
+        for action: AnnotateCommitAction,
+        hasImage: Bool,
+        combineSaveNeedsDialog: Bool,
+        protectsSourceFromImplicitCombineWrite: Bool,
+        requiresCloudOverwriteConfirmation: Bool,
+    ) -> AnnotateCommitRoute {
+        switch action {
+        case .saveAndClose:
+            if combineSaveNeedsDialog {
+                return .combineDialog
+            }
+            if requiresCloudOverwriteConfirmation {
+                return .cloudReuploadAndClose
+            }
+            return .saveAndClose
+
+        case .save:
+            guard hasImage else { return .noOp }
+            if combineSaveNeedsDialog {
+                return .combineDialog
+            }
+            if requiresCloudOverwriteConfirmation {
+                return .cloudReuploadAndClose
+            }
+            return .save
+
+        case .copy:
+            guard hasImage else { return .noOp }
+            if protectsSourceFromImplicitCombineWrite {
+                return .copyWithoutSourceWrite
+            }
+            if requiresCloudOverwriteConfirmation {
+                return .cloudReuploadAndCopy
+            }
+            return .copy
+        }
+    }
+}
+
 /// Manages annotation window lifecycle and content
 @MainActor
 final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
@@ -576,21 +634,24 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
     }
 
     private func performSaveAndClose() {
-        // Combine coherence: if a ⌘S would show the "Save Combined Image" dialog (pref OFF or
-        // manual session), the close-save path must show it too instead of silently overwriting.
-        if combineSaveNeedsDialog {
+        switch AnnotateCommitRouting.route(
+            for: .saveAndClose,
+            hasImage: state.hasImage,
+            combineSaveNeedsDialog: combineSaveNeedsDialog,
+            protectsSourceFromImplicitCombineWrite: protectsSourceFromImplicitCombineWrite,
+            requiresCloudOverwriteConfirmation: requiresCloudOverwriteConfirmation,
+        ) {
+        case .combineDialog:
             performCombineSave()
-            return
-        }
-
-        // Cloud gate: if the rendered output differs from the uploaded file, require overwrite confirmation.
-        if requiresCloudOverwriteConfirmation {
+        case .cloudReuploadAndClose:
             showCloudOverwriteAlert { [weak self] in
                 self?.performCloudReUploadAndClose()
             }
+        case .saveAndClose:
+            executeSaveAndClose()
+        case .noOp, .cloudReuploadAndCopy, .save, .copyWithoutSourceWrite, .copy:
             return
         }
-        executeSaveAndClose()
     }
 
     private func executeSaveAndClose() {
@@ -997,23 +1058,26 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
     /// Silent save — renders once, updates thumbnail instantly, closes window, saves in background
     /// If previously uploaded to cloud, gate behind overwrite confirmation.
     private func performSave() {
-        guard state.hasImage else { return }
-
-        if combineSaveNeedsDialog {
-            performCombineSave()
+        switch AnnotateCommitRouting.route(
+            for: .save,
+            hasImage: state.hasImage,
+            combineSaveNeedsDialog: combineSaveNeedsDialog,
+            protectsSourceFromImplicitCombineWrite: protectsSourceFromImplicitCombineWrite,
+            requiresCloudOverwriteConfirmation: requiresCloudOverwriteConfirmation,
+        ) {
+        case .noOp:
             return
-        }
-        // Otherwise (pref ON + capture-origin combine session, or not combine at all): fall
-        // through and save silently, exactly like a normal annotation edit.
-
-        // Cloud gate: if the rendered output differs from the uploaded file, require overwrite confirmation.
-        if requiresCloudOverwriteConfirmation {
+        case .combineDialog:
+            performCombineSave()
+        case .cloudReuploadAndClose:
             showCloudOverwriteAlert { [weak self] in
                 self?.performCloudReUploadAndClose()
             }
+        case .save:
+            executeSave()
+        case .saveAndClose, .cloudReuploadAndCopy, .copyWithoutSourceWrite, .copy:
             return
         }
-        executeSave()
     }
 
     private func executeSave() {
@@ -1149,24 +1213,24 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
     /// Copy = render once, copy to clipboard, update thumbnail, close, save in background.
     /// If previously uploaded to cloud and output changed, gate behind overwrite confirmation.
     private func performCopy() {
-        guard state.hasImage else { return }
-
-        // Manual combine session: copy only. Skip the cloud-overwrite gate — its re-upload
-        // path writes the stitched render to sourceURL (the user's picked file). executeCopy()
-        // enforces the same protection (clipboard + close, no write).
-        if protectsSourceFromImplicitCombineWrite {
-            executeCopy()
+        switch AnnotateCommitRouting.route(
+            for: .copy,
+            hasImage: state.hasImage,
+            combineSaveNeedsDialog: combineSaveNeedsDialog,
+            protectsSourceFromImplicitCombineWrite: protectsSourceFromImplicitCombineWrite,
+            requiresCloudOverwriteConfirmation: requiresCloudOverwriteConfirmation,
+        ) {
+        case .noOp:
             return
-        }
-
-        // Cloud gate: if the rendered output differs from the uploaded file, require overwrite confirmation.
-        if requiresCloudOverwriteConfirmation {
+        case .copyWithoutSourceWrite, .copy:
+            executeCopy()
+        case .cloudReuploadAndCopy:
             showCloudOverwriteAlert { [weak self] in
                 self?.performCloudReUploadCopyAndClose()
             }
+        case .combineDialog, .cloudReuploadAndClose, .saveAndClose, .save:
             return
         }
-        executeCopy()
     }
 
     private func executeCopy() {
