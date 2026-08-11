@@ -837,7 +837,7 @@ the broad `AnnotateState` decomposition candidate.
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 |---|---|---:|---:|---|---|
-| [084](084-annotate-commit-routing.md) | Make Annotate commit routing explicit and testable | P1 | M | — | TODO |
+| [084](084-annotate-commit-routing.md) | Make Annotate commit routing explicit and testable | P1 | M | — | DONE (`d58e82c8`; review clean) |
 | [085](085-annotate-local-commit-tail.md) | Consolidate Annotate's local rendered-file commit tail | P1 | M | 084 | TODO |
 
 ### Dependency notes (084–085)

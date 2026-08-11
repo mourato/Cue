@@ -21,7 +21,7 @@
 - **Risk**: MED
 - **Depends on**: [Plan 084](084-annotate-commit-routing.md)
 - **Category**: tech-debt
-- **Planned at**: commit `de1779c5`, 2026-08-10
+- **Planned at**: commit `d58e82c8`, 2026-08-10
 
 ## Execution profile
 
