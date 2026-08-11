@@ -83,6 +83,23 @@ final class AnnotateExportSaveTests: XCTestCase {
         XCTAssertEqual(rendered.size.height, 160, accuracy: 0.0001)
     }
 
+    func testRenderFinalImageWithMagnifyAnnotationDoesNotCrash() throws {
+        let state = makeAnnotateState()
+        try state.loadImage(makeImage(width: 160, height: 160))
+        state.annotations = [
+            AnnotationItem(
+                type: .magnify(sourceCenter: CGPoint(x: 80, y: 80), showsSourceCircle: true),
+                bounds: CGRect(x: 20, y: 20, width: 80, height: 80),
+                properties: AnnotationProperties(),
+            ),
+        ]
+
+        let rendered = try XCTUnwrap(AnnotateExporter.renderFinalImage(state: state))
+
+        XCTAssertEqual(rendered.size.width, 160, accuracy: 0.0001)
+        XCTAssertEqual(rendered.size.height, 160, accuracy: 0.0001)
+    }
+
     func testRenderFinalImageUsesCombinedBoundsGapAndPadding() throws {
         let state = makeAnnotateState()
         try state.loadImage(makeImage(width: 200, height: 100))

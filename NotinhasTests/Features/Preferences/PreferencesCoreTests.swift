@@ -83,6 +83,42 @@ final class PreferencesCoreTests: XCTestCase {
         XCTAssertEqual(tabs.count, 9)
     }
 
+    func testPreferencesNumericPickerValue_sanitizesAndBoundsCustomInput() {
+        XCTAssertEqual(
+            PreferencesNumericPickerValue.sanitizedText("1,5 seconds", allowsFraction: true),
+            "1.5",
+        )
+        XCTAssertEqual(
+            PreferencesNumericPickerValue.sanitizedText("12.5", allowsFraction: false),
+            "125",
+        )
+        XCTAssertEqual(
+            PreferencesNumericPickerValue.normalizedValue(
+                from: "99",
+                range: 0.5 ... 5.0,
+                step: 0.5,
+            ),
+            5.0,
+        )
+        XCTAssertEqual(
+            PreferencesNumericPickerValue.normalizedValue(
+                from: "invalid",
+                range: 1 ... 20,
+                step: 1,
+            ),
+            nil,
+        )
+        XCTAssertEqual(
+            PreferencesNumericPickerValue.normalizedValue(
+                from: "50",
+                range: 0.2 ... 1.0,
+                step: 0.05,
+                inputScale: 100,
+            ),
+            0.5,
+        )
+    }
+
     private func makeDefaults(
         file: StaticString = #filePath,
         line: UInt = #line,

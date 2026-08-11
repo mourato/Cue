@@ -3,7 +3,7 @@
 //  NotinhasTests
 //
 //  Characterization tests for `AnnotationFactory.createAnnotation` successful
-//  creation paths (shape/line/pencil/blur). Counter, spotlight, highlighter,
+//  creation paths (shape/line/magnify/pencil/blur). Counter, spotlight, highlighter,
 //  watermark and arrow creation are already covered in AnnotateCoreTests, so
 //  this file only fills the remaining tool gaps.
 //
@@ -101,6 +101,66 @@ final class AnnotateAnnotationFactoryTests: XCTestCase {
         XCTAssertEqual(lineStart, start)
         XCTAssertEqual(lineEnd, end)
         XCTAssertEqual(annotation.bounds, CGRect(x: 12, y: 18, width: 36, height: 34))
+    }
+
+    func testCreateMagnifyClickUsesDefaultSquareAndSourceCenter() throws {
+        let center = CGPoint(x: 150, y: 100)
+        let annotation = try XCTUnwrap(AnnotationFactory.createAnnotation(
+            tool: .magnify,
+            from: center,
+            to: center,
+            path: [],
+            context: makeContext(),
+        ))
+
+        XCTAssertEqual(
+            annotation.bounds,
+            CGRect(x: 90, y: 40, width: MagnifyGeometry.defaultDiameter, height: MagnifyGeometry.defaultDiameter),
+        )
+        XCTAssertEqual(annotation.type, .magnify(sourceCenter: center, showsSourceCircle: false))
+    }
+
+    func testCreateMagnifyDragUsesSquareBounds() throws {
+        let annotation = try XCTUnwrap(AnnotationFactory.createAnnotation(
+            tool: .magnify,
+            from: CGPoint(x: 10, y: 20),
+            to: CGPoint(x: 70, y: 60),
+            path: [],
+            context: makeContext(),
+        ))
+
+        XCTAssertEqual(
+            annotation.bounds,
+            MagnifyGeometry.destinationBounds(center: CGPoint(x: 70, y: 60)),
+        )
+        XCTAssertEqual(
+            annotation.type,
+            .magnify(sourceCenter: CGPoint(x: 10, y: 20), showsSourceCircle: true),
+        )
+    }
+
+    func testMagnifyPersistenceKeepsSourceCenter() {
+        let sourceCenter = CGPoint(x: 80, y: 120)
+        let type = AnnotationType.magnify(sourceCenter: sourceCenter, showsSourceCircle: true)
+        let persisted = PersistedAnnotationType(annotationType: type)
+
+        XCTAssertEqual(persisted.kind, .magnify)
+        XCTAssertEqual(persisted.annotationType, type)
+    }
+
+    func testMagnifySourceRectShrinksWhenZoomIncreases() {
+        let bounds = CGRect(x: 100, y: 100, width: 120, height: 120)
+        let sourceBounds = CGRect(x: 0, y: 0, width: 400, height: 400)
+
+        let sourceRect = MagnifyGeometry.sourceRect(
+            lensBounds: bounds,
+            sourceCenter: CGPoint(x: 200, y: 200),
+            sourceBounds: sourceBounds,
+            magnification: 4,
+        )
+
+        XCTAssertEqual(sourceRect.size, CGSize(width: 30, height: 30))
+        XCTAssertEqual(AnnotationProperties.clampedMagnification(99), 8)
     }
 
     func testCreatePencilPreservesPathPointsInOrder() throws {

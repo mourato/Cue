@@ -24,6 +24,8 @@ final class AnnotateChromeConfigurationStoreTests: XCTestCase {
         XCTAssertTrue(store.isEnabled(.watermark))
         XCTAssertTrue(store.isEnabled(.selection))
         XCTAssertTrue(store.isEnabled(.undo))
+        XCTAssertTrue(store.isEnabled(.addBackground))
+        XCTAssertFalse(store.toolbarItemOrder.contains(.addBackground))
     }
 
     func testAnnotateChromeConfigurationStore_filtersUnknownIdsAndAppendsMissingItems() {
@@ -32,6 +34,7 @@ final class AnnotateChromeConfigurationStoreTests: XCTestCase {
             [
                 AnnotateChromeItem.watermark.rawValue,
                 "future-item",
+                AnnotateChromeItem.addBackground.rawValue,
                 AnnotateChromeItem.rectangle.rawValue,
             ],
             forKey: PreferencesKeys.annotateChromeToolbarOrder,
@@ -42,6 +45,7 @@ final class AnnotateChromeConfigurationStoreTests: XCTestCase {
         XCTAssertEqual(store.toolbarItemOrder.first, .watermark)
         XCTAssertTrue(store.toolbarItemOrder.contains(.rectangle))
         XCTAssertTrue(store.toolbarItemOrder.contains(.saveAs))
+        XCTAssertFalse(store.toolbarItemOrder.contains(.addBackground))
         XCTAssertEqual(store.toolbarItemOrder.count, AnnotateChromeItem.defaultToolbarOrder.count)
     }
 
@@ -50,7 +54,7 @@ final class AnnotateChromeConfigurationStoreTests: XCTestCase {
         let store = makeStore(defaults: defaults)
 
         store.setEnabled(.watermark, enabled: false)
-        store.moveToolbarItem(from: IndexSet(integer: 4), to: 1)
+        store.moveToolbarItem(from: IndexSet(integer: 3), to: 1)
 
         XCTAssertFalse(store.isEnabled(.watermark))
         XCTAssertEqual(store.toolbarItemOrder[1], .rectangle)
@@ -104,7 +108,7 @@ final class AnnotateChromeConfigurationStoreTests: XCTestCase {
         let store = makeStore(defaults: defaults)
 
         store.setEnabled(.watermark, enabled: false)
-        store.moveToolbarItem(from: IndexSet(integer: 13), to: 4)
+        store.moveToolbarItem(from: IndexSet(integer: 13), to: 3)
 
         XCTAssertEqual(store.effectiveDrawableTools().first, .notinhasNote)
         XCTAssertFalse(store.effectiveDrawableTools().contains(.watermark))

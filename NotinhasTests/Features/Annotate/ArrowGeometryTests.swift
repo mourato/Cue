@@ -10,6 +10,26 @@ import CoreGraphics
 import XCTest
 
 final class ArrowGeometryTests: XCTestCase {
+    func testShiftAngleSnappingUsesNearest45DegreeIncrement() {
+        let snapped = AnnotationAngleSnapping.snap45(
+            CGPoint(x: 97, y: 82),
+            from: CGPoint(x: 10, y: 10),
+        )
+
+        XCTAssertEqual(snapped.x - 10, snapped.y - 10, accuracy: 0.001)
+        XCTAssertEqual(hypot(snapped.x - 10, snapped.y - 10), hypot(87, 72), accuracy: 0.001)
+    }
+
+    func testShiftAngleSnappingPreservesHorizontal180DegreeLine() {
+        let snapped = AnnotationAngleSnapping.snap45(
+            CGPoint(x: 5, y: 99),
+            from: CGPoint(x: 100, y: 100),
+        )
+
+        XCTAssertEqual(snapped.y, 100, accuracy: 0.001)
+        XCTAssertLessThan(snapped.x, 100)
+    }
+
     // MARK: - sampledPoints / deduplication
 
     func testStraightLine_pointsAreStartAndEnd() {

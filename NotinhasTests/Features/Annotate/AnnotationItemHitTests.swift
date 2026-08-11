@@ -129,6 +129,27 @@ final class AnnotationItemHitTests: XCTestCase {
         XCTAssertFalse(item.containsPoint(CGPoint(x: 100, y: 100)))
     }
 
+    func testMagnify_containsPoint_insideCircle() {
+        let item = AnnotationItem(
+            type: .magnify(sourceCenter: CGPoint(x: 50, y: 50), showsSourceCircle: false),
+            bounds: CGRect(x: 0, y: 0, width: 100, height: 100),
+            properties: AnnotationProperties(),
+        )
+
+        XCTAssertTrue(item.containsPoint(CGPoint(x: 50, y: 50)))
+        XCTAssertFalse(item.containsPoint(CGPoint(x: 0, y: 0)))
+    }
+
+    func testMagnify_containsPoint_insideSourceCircle() {
+        let item = AnnotationItem(
+            type: .magnify(sourceCenter: CGPoint(x: 20, y: 20), showsSourceCircle: true),
+            bounds: CGRect(x: 100, y: 100, width: 100, height: 100),
+            properties: AnnotationProperties(magnification: 2),
+        )
+
+        XCTAssertTrue(item.containsPoint(CGPoint(x: 20, y: 20)))
+    }
+
     // MARK: - selectionBounds / resizeBounds
 
     func testResizeBounds_straightArrow_returnsGeometryBounds() {
