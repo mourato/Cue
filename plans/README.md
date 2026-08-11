@@ -829,7 +829,7 @@ Swift 6.2 source rewrites.
 
 ## Annotate commit architecture (084–085)
 
-Generated 2026-08-10 against commit `de1779c5` after a focused architecture
+Generated 2026-08-10 against commit `32c052a8` after a focused architecture
 reconciliation. This round keeps the existing render snapshot, exporter,
 sidecar store, post-capture handler, and Quick Access owners. It does not
 reopen shared selection plans 061/062, All-In-One mode customization 083, or

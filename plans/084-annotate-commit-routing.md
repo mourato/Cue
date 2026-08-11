@@ -9,7 +9,7 @@
 > you and told you they maintain the index.
 >
 > **Drift check (run first)**:
-> `git diff --stat de1779c5..HEAD -- Notinhas/Features/Annotate/Managers/AnnotateWindowController.swift NotinhasTests/Features/Annotate/AnnotateCoreTests.swift plans/README.md`
+> `git diff --stat 32c052a8..HEAD -- Notinhas/Features/Annotate/Managers/AnnotateWindowController.swift NotinhasTests/Features/Annotate/AnnotateCoreTests.swift`
 > If any listed path changed since this plan was written, compare the
 > "Current state" excerpts against the live code before proceeding. On a
 > mismatch, treat it as a STOP condition.
@@ -21,7 +21,7 @@
 - **Risk**: MED
 - **Depends on**: none
 - **Category**: tech-debt
-- **Planned at**: commit `de1779c5`, 2026-08-10
+- **Planned at**: commit `32c052a8`, 2026-08-10
 
 ## Execution profile
 
@@ -102,12 +102,12 @@ this plan.
 
 | Purpose | Command | Expected on success |
 |---|---|---|
-| Drift | `git diff --stat de1779c5..HEAD -- Notinhas/Features/Annotate/Managers/AnnotateWindowController.swift NotinhasTests/Features/Annotate/AnnotateCoreTests.swift plans/README.md` | Empty output on the clean baseline, or a reviewed drift report before proceeding |
+| Drift | `git diff --stat 32c052a8..HEAD -- Notinhas/Features/Annotate/Managers/AnnotateWindowController.swift NotinhasTests/Features/Annotate/AnnotateCoreTests.swift` | Empty output on the clean baseline, or a reviewed drift report before proceeding |
 | Focused tests | `./scripts/run-tests.sh --skip-visual -only-testing:NotinhasTests/AnnotateCoreTests` | Exit 0; routing and existing Annotate core tests pass |
 | Formatting | `make format-check` | Exit 0; no SwiftFormat violations |
 | Changed-file lint | `make lint-changed` | Exit 0; no changed Swift lint violations |
 | Project gate | `make agent-check` | Exit 0; planner/check reports no unhandled changed surface |
-| Plan surface | `./scripts/verify-local.sh --base de1779c5 --plan-only` | Exit 0; reports the focused XCTest selector and any `manual-required` application check |
+| Plan surface | `./scripts/verify-local.sh --base 32c052a8 --plan-only` | Exit 0; reports the focused XCTest selector and any `manual-required` application check |
 | Full default suite | `make test` | Exit 0; no new failures |
 
 ## Suggested executor toolkit
@@ -248,7 +248,7 @@ three independent `if` ladders.
 ### Step 4: Run delivery checks and record the plan status
 
 Run the focused tests, formatter, changed-file lint, `make agent-check`,
-`./scripts/verify-local.sh --base de1779c5 --plan-only`, and `make test`.
+`./scripts/verify-local.sh --base 32c052a8 --plan-only`, and `make test`.
 The verification planner may report a manual-required Annotate application
 surface; keep that report visible rather than suppressing it.
 
@@ -280,7 +280,7 @@ files listed in Scope until the executor commits.
       methods still own their side effects and Save As fallback.
 - [ ] `./scripts/run-tests.sh --skip-visual -only-testing:NotinhasTests/AnnotateCoreTests` exits 0.
 - [ ] `make format-check`, `make lint-changed`, `make agent-check`, and `make test` exit 0.
-- [ ] `./scripts/verify-local.sh --base de1779c5 --plan-only` exits 0 and its
+- [ ] `./scripts/verify-local.sh --base 32c052a8 --plan-only` exits 0 and its
       manual-required output is recorded.
 - [ ] No files outside Scope are modified; `plans/README.md` status row is
       updated after delivery.
