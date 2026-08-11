@@ -108,12 +108,15 @@ struct QuickAccessSettingsView: View {
 
                         Spacer()
 
-                        SteppedSliderControl(value: $manager.autoDismissDelay, step: 1, in: 3 ... 30, sliderWidth: 72)
-
-                        Text("\(Int(manager.autoDismissDelay))s")
-                            .frame(width: 35)
-                            .monospacedDigit()
-                            .foregroundColor(.secondary)
+                        PreferencesNumericPicker(
+                            value: $manager.autoDismissDelay,
+                            range: 3 ... 30,
+                            presets: [5, 10, 20, 30],
+                            step: 1,
+                            accessibilityTitle: L10n.PreferencesQuickAccess.closeAfter,
+                            unit: "s",
+                            valueLabel: { "\(Int($0))s" },
+                        )
                     }
                     .padding(.vertical, 4)
                 }
@@ -153,18 +156,16 @@ struct QuickAccessSettingsView: View {
                         title: L10n.PreferencesQuickAccess.swipeSensitivityTitle,
                         description: L10n.PreferencesQuickAccess.swipeSensitivityDescription,
                     ) {
-                        HStack(spacing: 8) {
-                            SteppedSliderControl(
-                                value: $manager.swipeSensitivity,
-                                step: 0.25,
-                                in: 0.5 ... 3.0,
-                                sliderWidth: 72,
-                            )
-                            Text("\(Int(manager.swipeSensitivity * 100))%")
-                                .frame(width: 42)
-                                .monospacedDigit()
-                                .foregroundColor(.secondary)
-                        }
+                        PreferencesNumericPicker(
+                            value: $manager.swipeSensitivity,
+                            range: 0.5 ... 3.0,
+                            presets: [0.5, 1.0, 1.5, 2.0, 3.0],
+                            step: 0.25,
+                            accessibilityTitle: L10n.PreferencesQuickAccess.swipeSensitivityTitle,
+                            unit: "%",
+                            customInputScale: 100,
+                            valueLabel: { "\(Int($0 * 100))%" },
+                        )
                     }
                 }
             }

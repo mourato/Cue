@@ -85,7 +85,7 @@ enum NotinhasNoteRenderer {
         AnnotationNumberedBadgeDrawer.draw(
             value: displayNumber,
             in: circleRect,
-            fillColor: color.withAlphaComponent(0.92),
+            fillColor: color.withAlphaComponent(1),
             in: context,
         )
 
@@ -139,7 +139,7 @@ enum NotinhasNoteRenderer {
         AnnotationNumberedBadgeDrawer.draw(
             value: displayNumber,
             in: circleRect,
-            fillColor: color.withAlphaComponent(0.92),
+            fillColor: color.withAlphaComponent(1),
             in: context,
         )
 

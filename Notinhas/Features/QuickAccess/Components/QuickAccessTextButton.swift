@@ -13,6 +13,7 @@ struct QuickAccessTextButton: View {
     let action: () -> Void
 
     @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isHovering = false
 
     var body: some View {
@@ -33,8 +34,12 @@ struct QuickAccessTextButton: View {
                 isHovering = false
                 return
             }
-            withAnimation(.easeInOut(duration: 0.15)) {
+            if reduceMotion {
                 isHovering = hovering
+            } else {
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    isHovering = hovering
+                }
             }
         }
     }

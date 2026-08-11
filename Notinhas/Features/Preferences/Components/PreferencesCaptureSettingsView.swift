@@ -215,14 +215,19 @@ struct CaptureSettingsView: View {
                             title: L10n.PreferencesCapture.selectionSnapDistanceTitle,
                             description: L10n.PreferencesCapture.selectionSnapDistanceDescription,
                         ) {
-                            Stepper(
-                                value: $captureSelectionSnapDistance,
-                                in: CaptureSelectionSnappingConfiguration.snapDistanceRange,
+                            PreferencesNumericPicker(
+                                value: Binding(
+                                    get: { Double(captureSelectionSnapDistance) },
+                                    set: { captureSelectionSnapDistance = Int($0.rounded()) },
+                                ),
+                                range: Double(CaptureSelectionSnappingConfiguration.snapDistanceRange.lowerBound)
+                                    ... Double(CaptureSelectionSnappingConfiguration.snapDistanceRange.upperBound),
+                                presets: [2, 5, 10, 15],
                                 step: 1,
-                            ) {
-                                Text("\(captureSelectionSnapDistance) px")
-                                    .monospacedDigit()
-                            }
+                                accessibilityTitle: L10n.PreferencesCapture.selectionSnapDistanceTitle,
+                                unit: "px",
+                                valueLabel: { "\(Int($0)) px" },
+                            )
                         }
 
                         SettingRow(
@@ -535,18 +540,15 @@ struct CaptureSettingsView: View {
                                 title: L10n.PreferencesCapture.highlightSizeTitle,
                                 description: L10n.PreferencesCapture.highlightSizeDescription(Int(mouseHighlightSize)),
                             ) {
-                                HStack(spacing: 8) {
-                                    SteppedSliderControl(
-                                        value: $mouseHighlightSize,
-                                        step: 2,
-                                        in: 30 ... 100,
-                                        sliderWidth: 72,
-                                    )
-                                    Text("\(Int(mouseHighlightSize)) px")
-                                        .frame(width: 42, alignment: .trailing)
-                                        .monospacedDigit()
-                                        .foregroundColor(.secondary)
-                                }
+                                PreferencesNumericPicker(
+                                    value: $mouseHighlightSize,
+                                    range: 30 ... 100,
+                                    presets: [40, 50, 75, 100],
+                                    step: 2,
+                                    accessibilityTitle: L10n.PreferencesCapture.highlightSizeTitle,
+                                    unit: "px",
+                                    valueLabel: { "\(Int($0)) px" },
+                                )
                             }
 
                             SettingRow(
@@ -556,18 +558,15 @@ struct CaptureSettingsView: View {
                                     String(format: "%.1f", mouseHighlightAnimDuration),
                                 ),
                             ) {
-                                HStack(spacing: 8) {
-                                    SteppedSliderControl(
-                                        value: $mouseHighlightAnimDuration,
-                                        step: 0.1,
-                                        in: 0.3 ... 2.0,
-                                        sliderWidth: 72,
-                                    )
-                                    Text(String(format: "%.1f s", mouseHighlightAnimDuration))
-                                        .frame(width: 42, alignment: .trailing)
-                                        .monospacedDigit()
-                                        .foregroundColor(.secondary)
-                                }
+                                PreferencesNumericPicker(
+                                    value: $mouseHighlightAnimDuration,
+                                    range: 0.3 ... 2.0,
+                                    presets: [0.3, 0.7, 1.0, 1.5, 2.0],
+                                    step: 0.1,
+                                    accessibilityTitle: L10n.PreferencesCapture.animationDurationTitle,
+                                    unit: "s",
+                                    valueLabel: { String(format: "%.1f s", $0) },
+                                )
                             }
 
                             SettingRow(
@@ -600,18 +599,16 @@ struct CaptureSettingsView: View {
                                 description: L10n.PreferencesCapture
                                     .opacityDescription(Int(mouseHighlightOpacity * 100)),
                             ) {
-                                HStack(spacing: 8) {
-                                    SteppedSliderControl(
-                                        value: $mouseHighlightOpacity,
-                                        step: 0.05,
-                                        in: 0.2 ... 1.0,
-                                        sliderWidth: 72,
-                                    )
-                                    Text("\(Int(mouseHighlightOpacity * 100))%")
-                                        .frame(width: 42, alignment: .trailing)
-                                        .monospacedDigit()
-                                        .foregroundColor(.secondary)
-                                }
+                                PreferencesNumericPicker(
+                                    value: $mouseHighlightOpacity,
+                                    range: 0.2 ... 1.0,
+                                    presets: [0.25, 0.5, 0.75, 1.0],
+                                    step: 0.05,
+                                    accessibilityTitle: L10n.PreferencesCapture.opacityTitle,
+                                    unit: "%",
+                                    customInputScale: 100,
+                                    valueLabel: { "\(Int($0 * 100))%" },
+                                )
                             }
 
                             HStack {
@@ -633,18 +630,15 @@ struct CaptureSettingsView: View {
                                 title: L10n.PreferencesCapture.fontSizeTitle,
                                 description: L10n.PreferencesCapture.fontSizeDescription(Int(keystrokeFontSize)),
                             ) {
-                                HStack(spacing: 8) {
-                                    SteppedSliderControl(
-                                        value: $keystrokeFontSize,
-                                        step: 1,
-                                        in: 12 ... 32,
-                                        sliderWidth: 72,
-                                    )
-                                    Text("\(Int(keystrokeFontSize)) pt")
-                                        .frame(width: 42, alignment: .trailing)
-                                        .monospacedDigit()
-                                        .foregroundColor(.secondary)
-                                }
+                                PreferencesNumericPicker(
+                                    value: $keystrokeFontSize,
+                                    range: 12 ... 32,
+                                    presets: [12, 16, 20, 24, 32],
+                                    step: 1,
+                                    accessibilityTitle: L10n.PreferencesCapture.fontSizeTitle,
+                                    unit: "pt",
+                                    valueLabel: { "\(Int($0)) pt" },
+                                )
                             }
 
                             SettingRow(
@@ -669,18 +663,15 @@ struct CaptureSettingsView: View {
                                     String(format: "%.1f", keystrokeDisplayDuration),
                                 ),
                             ) {
-                                HStack(spacing: 8) {
-                                    SteppedSliderControl(
-                                        value: $keystrokeDisplayDuration,
-                                        step: 0.5,
-                                        in: 0.5 ... 5.0,
-                                        sliderWidth: 72,
-                                    )
-                                    Text(String(format: "%.1f s", keystrokeDisplayDuration))
-                                        .frame(width: 42, alignment: .trailing)
-                                        .monospacedDigit()
-                                        .foregroundColor(.secondary)
-                                }
+                                PreferencesNumericPicker(
+                                    value: $keystrokeDisplayDuration,
+                                    range: 0.5 ... 5.0,
+                                    presets: [0.5, 1.0, 1.5, 2.5, 5.0],
+                                    step: 0.5,
+                                    accessibilityTitle: L10n.PreferencesCapture.displayDurationTitle,
+                                    unit: "s",
+                                    valueLabel: { String(format: "%.1f s", $0) },
+                                )
                             }
 
                             HStack {

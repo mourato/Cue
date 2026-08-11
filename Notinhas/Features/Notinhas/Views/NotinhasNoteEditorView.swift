@@ -70,6 +70,7 @@ struct NotinhasNoteEditorView: View {
             .lineLimit(3 ... 6)
             .frame(minHeight: 60)
             .focused($isFocused)
+            .accessibilityLabel(NotinhasL10n.noteEditorTitle)
             .onSubmit(onCommit)
     }
 

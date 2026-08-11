@@ -58,6 +58,7 @@ struct QuickAccessIconButton: View {
                 ))
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(helpText ?? L10n.Common.open)
         .onHover { hovering in
             guard isEnabled else {
                 isHovering = false
@@ -105,7 +106,7 @@ struct QuickAccessCornerButtonMetrics {
 
     /// Edge extent from card corner for a given scale (`touchSize + padding`).
     static func edgeExtent(forScale scale: CGFloat) -> CGFloat {
-        (baseTouchSize + basePadding) * scale
+        max(baseTouchSize, baseTouchSize * scale) + basePadding * scale
     }
 
     /// Largest scale that keeps opposite corner buttons from overlapping on a card.
@@ -135,7 +136,7 @@ struct QuickAccessCornerButtonMetrics {
     }
 
     var touchSize: CGFloat {
-        Self.baseTouchSize * scale
+        max(Self.baseTouchSize, Self.baseTouchSize * scale)
     }
 
     var padding: CGFloat {

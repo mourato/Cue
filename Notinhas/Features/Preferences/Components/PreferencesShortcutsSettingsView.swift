@@ -709,7 +709,7 @@ struct ShortcutsSettingsView: View {
 
                     ShortcutRecorderView(
                         label: L10n.AnnotateUI.toggleSidebar,
-                        icon: "rectangle.on.rectangle",
+                        icon: "sidebar.left",
                         shortcut: $toggleSidebarShortcut,
                         defaultShortcut: AnnotateShortcutManager.defaultToggleSidebar,
                         isEnabled: annotateActionEnabledBinding(for: .toggleSidebar),

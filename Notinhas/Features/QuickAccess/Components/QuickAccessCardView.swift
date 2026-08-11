@@ -32,7 +32,8 @@ struct QuickAccessCardView: View {
     @State private var cardScreenFrame: CGRect = .zero
     @ObservedObject private var imgbbCredentialStore = NotinhasImgBBCredentialStore.shared
     private let imgbbUploadCoordinator = NotinhasUploadCoordinator()
-    @Environment(\.accessibilityReduceMotion) var reduceMotion
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @FocusState private var isCardFocused: Bool
 
     private let cornerRadius: CGFloat = 16
 
@@ -74,7 +75,7 @@ struct QuickAccessCardView: View {
             } message: {
                 Text(imgbbUploadError ?? "")
             }
-            .animation(QuickAccessAnimations.hoverOverlay, value: isHovering)
+            .animation(reduceMotion ? nil : QuickAccessAnimations.hoverOverlay, value: isHovering)
     }
 
     private var cardSurface: some View {
@@ -103,15 +104,15 @@ struct QuickAccessCardView: View {
                     .transition(.opacity)
             }
 
-            // Hover overlay with staggered buttons (hidden while swiping so it does not
+            // Hover/focus overlay with staggered buttons (hidden while swiping so it does not
             // visually fight the swipe gesture).
-            if isHovering, !isSwiping, canPerformCardActions, hasVisibleOverlayActions {
+            if showsCardActions, !isSwiping, canPerformCardActions, hasVisibleOverlayActions {
                 hoverOverlay
                     .transition(reduceMotion ? .opacity : .opacity.combined(with: .scale(scale: 0.95)))
             }
 
-            // Corner buttons (only visible on hover, hidden during cloud upload and swipe).
-            if isHovering, !isSwiping, canPerformCardActions, !cornerOverlayActions.isEmpty {
+            // Corner buttons (visible on hover or keyboard focus, hidden during cloud upload and swipe).
+            if showsCardActions, !isSwiping, canPerformCardActions, !cornerOverlayActions.isEmpty {
                 cornerButtons
             }
         }
@@ -129,9 +130,22 @@ struct QuickAccessCardView: View {
             cardShape
                 .stroke(Color.white.opacity(0.2), lineWidth: 1),
         )
+        .overlay(
+            cardShape
+                .stroke(isCardFocused ? Color.accentColor : .clear, lineWidth: 2),
+        )
         .opacity(cardOpacity)
         .offset(x: reduceMotion ? 0 : swipeOffset)
         .rotationEffect(.degrees(reduceMotion ? 0 : Double(swipeOffset) * 0.03))
+        .focusable()
+        .focused($isCardFocused)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(item.isVideo ? L10n.CaptureKind.recording : L10n.CaptureKind.screenshot)
+        .accessibilityHint(editActionTitle)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityAction(named: Text(editActionTitle)) {
+            handleDoubleClick()
+        }
         .onHover { hovering in
             applyHovering(hovering)
         }
@@ -171,8 +185,12 @@ struct QuickAccessCardView: View {
     // MARK: - Hover
 
     private func applyHovering(_ hovering: Bool) {
-        withAnimation(QuickAccessAnimations.hoverOverlay) {
+        if reduceMotion {
             isHovering = hovering
+        } else {
+            withAnimation(QuickAccessAnimations.hoverOverlay) {
+                isHovering = hovering
+            }
         }
         onHover?(hovering)
 
@@ -261,6 +279,10 @@ struct QuickAccessCardView: View {
 
     private var canPerformCardActions: Bool {
         item.processingState == .idle && !isCloudUploading
+    }
+
+    private var showsCardActions: Bool {
+        isHovering || isCardFocused
     }
 
     private var cardShape: RoundedRectangle {
@@ -583,19 +605,23 @@ struct QuickAccessCardView: View {
     }
 
     private var pinIndicator: some View {
-        Image(systemName: "pin.fill")
-            .font(.system(size: 10, weight: .bold))
-            .foregroundColor(.white)
-            .frame(width: 20, height: 20)
-            .background(Circle().fill(Color.black.opacity(0.6)))
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .padding(6)
-            .contentShape(Circle())
-            .onTapGesture {
-                manager.togglePin(id: item.id)
-            }
-            .help(item.isPinned ? L10n.PreferencesQuickAccess.unpinAction : L10n.PreferencesQuickAccess
-                .pinToScreenAction)
+        Button {
+            manager.togglePin(id: item.id)
+        } label: {
+            Image(systemName: "pin.fill")
+                .font(.system(size: 10, weight: .bold))
+                .foregroundColor(.white)
+                .frame(width: 20, height: 20)
+                .background(Circle().fill(Color.black.opacity(0.6)))
+        }
+        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .padding(6)
+        .contentShape(Circle())
+        .help(item.isPinned ? L10n.PreferencesQuickAccess.unpinAction : L10n.PreferencesQuickAccess
+            .pinToScreenAction)
+        .accessibilityLabel(item.isPinned ? L10n.PreferencesQuickAccess.unpinAction : L10n.PreferencesQuickAccess
+            .pinToScreenAction)
     }
 
     private var hoverOverlay: some View {

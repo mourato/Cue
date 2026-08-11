@@ -58,7 +58,7 @@ private extension AnnotateChromeCustomizationView {
                         set: { chromeStore.setEnabled(item, enabled: $0) },
                     )
                 },
-                canReorder: { _ in true },
+                canReorder: { $0.isCustomizable },
                 canToggle: { $0.isCustomizable },
                 onMove: onMove,
                 resetTitle: showsReset ? L10n.PreferencesAnnotate.resetChrome : nil,

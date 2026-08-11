@@ -144,22 +144,19 @@ struct AdvancedSettingsView: View {
                     title: L10n.PreferencesAdvanced.logRetentionTitle,
                     description: L10n.PreferencesAdvanced.logRetentionDescription(diagnosticsRetentionDays),
                 ) {
-                    HStack(spacing: 8) {
-                        Text("\(diagnosticsRetentionDays)d")
-                            .frame(width: 36, alignment: .trailing)
-                            .monospacedDigit()
-                            .foregroundColor(.secondary)
-                        Stepper(
-                            "",
-                            value: Binding(
-                                get: { diagnosticsRetentionDays },
-                                set: { diagnosticsRetentionDays = $0 },
-                            ),
-                            in: LogCleanupScheduler.retentionDaysRange,
-                        )
-                        .labelsHidden()
-                    }
-                    .frame(width: 120, alignment: .trailing)
+                    PreferencesNumericPicker(
+                        value: Binding(
+                            get: { Double(diagnosticsRetentionDays) },
+                            set: { diagnosticsRetentionDays = Int($0.rounded()) },
+                        ),
+                        range: Double(LogCleanupScheduler.retentionDaysRange.lowerBound)
+                            ... Double(LogCleanupScheduler.retentionDaysRange.upperBound),
+                        presets: [1, 3, 7, 14, 30],
+                        step: 1,
+                        accessibilityTitle: L10n.PreferencesAdvanced.logRetentionTitle,
+                        unit: "days",
+                        valueLabel: { "\(Int($0)) days" },
+                    )
                 }
 
                 SettingRow(icon: "folder", title: L10n.PreferencesAdvanced.logFilesTitle, description: logSizeText) {

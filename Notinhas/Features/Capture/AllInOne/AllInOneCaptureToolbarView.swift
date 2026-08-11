@@ -44,11 +44,11 @@ private struct AllInOneCaptureToolbarModeButton: View {
 
                 Text(mode.compactTitle)
                     .font(.system(size: 10, weight: .medium))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.75)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
             }
             .foregroundStyle(foregroundStyle)
-            .frame(width: 54, height: 46)
+            .frame(minWidth: 54, minHeight: 46)
             .background(background)
             .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
         }

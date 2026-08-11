@@ -288,7 +288,7 @@ enum ShortcutOverlayContentBuilder {
         case .copyAndClose:
             (L10n.ShortcutOverlay.copyAndClose, "doc.on.doc")
         case .toggleSidebar:
-            (L10n.AnnotateUI.toggleSidebar, "rectangle.on.rectangle")
+            (L10n.AnnotateUI.toggleSidebar, "sidebar.left")
         case .togglePin:
             (L10n.ShortcutOverlay.togglePin, "pin")
         case .cloudUpload:

@@ -51,6 +51,13 @@ struct NotinhasNotesSidePanelView: View {
                     }
 
                     Spacer(minLength: 0)
+
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(Color.accentColor)
+                            .accessibilityHidden(true)
+                    }
                 }
             }
             .buttonStyle(.plain)
@@ -62,6 +69,7 @@ struct NotinhasNotesSidePanelView: View {
                 ),
             )
             .accessibilityValue(isSelected ? NotinhasL10n.selected : "")
+            .accessibilityAddTraits(isSelected ? .isSelected : [])
 
             Button(role: .destructive) {
                 onDelete(note.id)
