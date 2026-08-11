@@ -692,7 +692,6 @@ final class DrawingCanvasNSView: NSView {
             // Only create new text annotation when not already editing one
             // (if we were editing, commitTextEditing() above already handled it)
             Task { @MainActor in
-                state.saveState()
                 createTextAnnotation(at: imagePoint)
             }
             resetDrawingInteraction()
@@ -1462,13 +1461,7 @@ final class DrawingCanvasNSView: NSView {
             width: initialBounds.width,
             height: initialBounds.height,
         )
-        // Start with empty text - user will type in the overlay
-        let item = AnnotationItem(type: .text(""), bounds: bounds, properties: properties)
-        state.annotations.append(item)
-        state.useAutomaticTextWidth(for: item.id)
-        state.prepareTextCalloutTail(for: item.id)
-        state.selectedAnnotationId = item.id
-        state.beginTextEditing(id: item.id, recordsUndo: false) // Enter edit mode immediately
+        state.createTextAnnotation(bounds: bounds, properties: properties)
     }
 
     // MARK: - Drawing
