@@ -7619,6 +7619,11 @@
         }
       }
     },
+    "annotate.magnify-zoom": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Zoom" } }
+      }
+    },
     "annotate.spotlight-opacity": {
       "extractionState": "stale",
       "localizations": {
@@ -8787,6 +8792,11 @@
             "value": "直線"
           }
         }
+      }
+    },
+    "annotate.tool.magnify": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Magnify" } }
       }
     },
     "annotate.tool.mockup": {

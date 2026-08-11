@@ -13,6 +13,7 @@
     {
       "file": "Features/Capture.xcstrings",
       "prefixes": [
+        "all-in-one.",
         "after-capture.",
         "capture-kind.",
         "capture-storage.",

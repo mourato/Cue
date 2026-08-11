@@ -1278,6 +1278,11 @@ nonisolated enum L10n {
             defaultValue: "Custom",
             comment: "Generic custom option label",
         )
+        static let unlimited = string(
+            "common.unlimited",
+            defaultValue: "Unlimited",
+            comment: "Generic option label for an unbounded numeric setting",
+        )
         static let unsaved = string(
             "common.unsaved",
             defaultValue: "Unsaved",
@@ -3213,12 +3218,12 @@ nonisolated enum L10n {
         )
         static let chromeDescription = string(
             "preferences-capture.chrome-description",
-            defaultValue: "Reorder and show or hide Annotate tools and actions. Selection, Undo, Redo, and Done always stay visible.",
+            defaultValue: "Reorder and show or hide Annotate tools and actions. Sidebar, Selection, Undo, Redo, and Done always stay visible.",
             comment: "Annotate preferences description for chrome customization",
         )
         static let chromeAlwaysOnFootnote = string(
             "preferences-capture.chrome-always-on-footnote",
-            defaultValue: "Always visible: Selection, Undo, Redo, Done. Zoom, pan, mode tabs, and Drag to app cannot be customized.",
+            defaultValue: "Always visible: Sidebar, Selection, Undo, Redo, Done. Zoom, pan, mode tabs, and Drag to app cannot be customized.",
             comment: "Annotate preferences footnote for non-customizable chrome",
         )
         static let resetChrome = string(
@@ -5726,6 +5731,11 @@ nonisolated enum L10n {
             defaultValue: "Darkness",
             comment: "Label for spotlight darkness controls",
         )
+        static let magnifyZoom = string(
+            "annotate.magnify-zoom",
+            defaultValue: "Zoom",
+            comment: "Label for magnification controls",
+        )
         static let straight = string(
             "annotate.straight",
             defaultValue: "Straight",
@@ -7444,6 +7454,11 @@ nonisolated enum L10n {
         static let lineTool = string(
             "annotate.tool.line",
             defaultValue: "Line",
+            comment: "Annotation tool display name",
+        )
+        static let magnifyTool = string(
+            "annotate.tool.magnify",
+            defaultValue: "Magnify",
             comment: "Annotation tool display name",
         )
         static let textTool = string(
