@@ -144,6 +144,7 @@ make test   # run the default XCTest suite
 ## Documentation
 
 - [Docs map](docs/README.md)
+- [Product references](docs/REFERENCES.md)
 - [Migration from Snapzy](docs/MIGRATION.md)
 - [Project structure](docs/STRUCTURE.md)
 - [App lifecycle](docs/APP_LIFECYCLE.md)

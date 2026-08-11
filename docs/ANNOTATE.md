@@ -94,7 +94,7 @@ The `.accessory` activation-policy revert is deferred to a later runloop turn (s
 
 ## Editor chrome customization
 
-- Preferences → Annotate: reorder and show/hide toolbar and bottom-bar actions (`AnnotateChromeConfigurationStore`, keys `annotate.chrome.*`). Always-on anchors: Undo/Redo (leading), Selection (before drawing tools), Done (trailing). Cutout shares order with drawing tools. Cloud upload in the bottom bar still requires cloud configuration and Quick Access cloud action enablement.
+- Preferences → Annotate: reorder and show/hide toolbar and bottom-bar actions (`AnnotateChromeConfigurationStore`, keys `annotate.chrome.*`). Always-on anchors: Sidebar, Undo/Redo (leading), Selection (before drawing tools), Done (trailing). Cutout shares order with drawing tools. Cloud upload in the bottom bar still requires cloud configuration and Quick Access cloud action enablement.
 - Inline area-annotate (`InlineAreaControlDeck`) uses the same drawing-tool order/enable subset from the store.
 
 ## Backgrounds & Mockups

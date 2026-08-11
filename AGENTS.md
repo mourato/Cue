@@ -45,6 +45,8 @@ guidance governance and routing policy.
 `project-standards` owns guidance governance (where docs live, skill template, anti-drift).
 `capture-annotate-export` owns the visual handoff loop (capture → pins/notes → clipboard export).
 `plan-execute-review` owns execution of plans and its review pipeline.
+Read [`docs/ui.md`](docs/ui.md) before changing user-facing UI; update it when
+the change establishes a reusable visual rule or invariant.
 Keep Notinhas behavior guidance aligned with Product Intent above; do not reintroduce
 unrelated product skills from other apps.
 

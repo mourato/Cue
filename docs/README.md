@@ -23,6 +23,8 @@ Notinhas optimizes **capture → annotate with numbered pins/notes → clipboard
 | [CHANGELOG-upstream-snapzy.md](CHANGELOG-upstream-snapzy.md) | Archived upstream Snapzy changelog (pre-fork) |
 | [UPDATE_TESTING.md](UPDATE_TESTING.md) | Post-build verification |
 | [SECURITY.md](SECURITY.md) | Engineering security notes |
+| [REFERENCES.md](REFERENCES.md) | Product benchmark and open-source references |
+| [ui.md](ui.md) | Current UI contract, tokens, states, and update triggers |
 
 ## Capture and editors
 
