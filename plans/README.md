@@ -826,3 +826,47 @@ Swift 6.2 source rewrites.
   saved position.
 - At least one non-Video mode remains enabled; reset restores the default order
   and enables all modes.
+
+## Annotate commit architecture (084–085)
+
+Generated 2026-08-10 against commit `de1779c5` after a focused architecture
+reconciliation. This round keeps the existing render snapshot, exporter,
+sidecar store, post-capture handler, and Quick Access owners. It does not
+reopen shared selection plans 061/062, All-In-One mode customization 083, or
+the broad `AnnotateState` decomposition candidate.
+
+| Plan | Title | Priority | Effort | Depends on | Status |
+|---|---|---:|---:|---|---|
+| [084](084-annotate-commit-routing.md) | Make Annotate commit routing explicit and testable | P1 | M | — | TODO |
+| [085](085-annotate-local-commit-tail.md) | Consolidate Annotate's local rendered-file commit tail | P1 | M | 084 | TODO |
+
+### Dependency notes (084–085)
+
+- Execute **084 → 085**. Plan 084 locks the precedence rules before Plan 085
+  changes asynchronous file-write ownership.
+- Keep cloud re-upload, Save As, manual-combine dialog semantics, and Quick
+  Access thumbnail ownership outside both plans.
+- Both plans touch the Annotate controller; serialize implementation and
+  review rather than running them in parallel.
+
+### Reconciliation decisions (084–085)
+
+- Reuse `AnnotateRenderSnapshot`, `AnnotateExporter.saveToFileOffMain`,
+  `AnnotationSessionStore.persistOffMain`, and
+  `PostCaptureActionHandler.copyEditedCaptureToClipboardIfEnabled`.
+- Keep the first extraction local to `AnnotateWindowController`; a generic
+  `AnnotateCommitCoordinator` or protocol is not justified by a second owner.
+- Shared selection/chrome remains covered by completed plans 061/062; no new
+  selection architecture plan was created.
+- All-In-One mode dispatch/customization remains covered by completed plans
+  035–041 and 083; no duplicate mode-architecture plan was created.
+
+### Findings considered and rejected (084–085)
+
+- Wholesale `AnnotateState` split: deferred — the 5,355-line type needs a
+  narrower seam and caller map before an executable refactor can be specified.
+- Cloud re-upload consolidation: deferred — upload failure, old-object
+  cleanup, state mutation, and clipboard fallback differ between Save and Copy.
+- Portable chrome/config import-export abstraction: deferred — Plan 069 already
+  owns Annotate chrome customization, and current product intent does not yet
+  require cross-machine config portability.
