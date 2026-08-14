@@ -1503,7 +1503,13 @@ private struct InlineAreaPropertiesBar: View {
     let popoverEdge: Edge
     let onContentWidthChange: (CGFloat) -> Void
 
-    private let strokeColors: [Color] = [.red, .orange, .yellow, .green, .blue, .purple, .white, .black]
+    private var strokeColors: [Color] {
+        if state.quickPropertiesTool == .notinhasNote {
+            return NotinhasPaletteColor.allCases.map(\.rgba.color)
+        }
+        return [.red, .orange, .yellow, .green, .blue, .purple, .white, .black]
+    }
+
     private let fillColors: [Color] = [.clear, .red, .orange, .yellow, .green, .blue, .purple, .white, .black]
     private let textBackgroundColors: [Color] = [.clear, .white, .black, .yellow, .blue]
 

@@ -40,6 +40,9 @@ second canonical design-system document.
   selected, and disabled must remain distinguishable in Light and Dark.
 - Numbered pins/notes are the product identity. Preserve their ordering,
   editing, rendering, and export semantics when changing editor chrome.
+- Notinhas notes use the fixed palette in `NotinhasPaletteColor`; each palette
+  color owns its explicit numeral ink color. Do not derive note numeral color
+  from luminance or replace the palette with system colors.
 - Use one owner for each scrollable surface. Avoid nested decorative panels
   that compete with the capture or annotation canvas.
 

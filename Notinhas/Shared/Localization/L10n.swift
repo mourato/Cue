@@ -3423,6 +3423,11 @@ nonisolated enum L10n {
             defaultValue: "Purple",
             comment: "Notinhas palette color name",
         )
+        static let colorMagenta = string(
+            "annotate.notinhas.color-magenta",
+            defaultValue: "Magenta",
+            comment: "Notinhas palette color name",
+        )
         static let colorBlack = string(
             "annotate.notinhas.color-black",
             defaultValue: "Black",

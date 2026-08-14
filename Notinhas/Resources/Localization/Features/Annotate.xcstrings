@@ -349,6 +349,16 @@
         }
       }
     },
+    "annotate.notinhas.color-magenta": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Magenta"
+          }
+        }
+      }
+    },
     "annotate.notinhas.color-black": {
       "localizations": {
         "en": {

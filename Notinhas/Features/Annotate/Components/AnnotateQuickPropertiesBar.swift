@@ -86,7 +86,13 @@ private enum QuickPropertiesDensity {
 struct AnnotateQuickPropertiesBar: View {
     @ObservedObject var state: AnnotateState
 
-    private let strokeColors: [Color] = [.red, .orange, .yellow, .green, .blue, .purple, .white, .black]
+    private var strokeColors: [Color] {
+        if state.quickPropertiesTool == .notinhasNote {
+            return NotinhasPaletteColor.allCases.map(\.rgba.color)
+        }
+        return [.red, .orange, .yellow, .green, .blue, .purple, .white, .black]
+    }
+
     private let fillColors: [Color] = [.clear, .red, .orange, .yellow, .green, .blue, .purple, .white, .black]
     private let textBackgroundColors: [Color] = [.clear, .white, .black, .yellow, .blue]
     var body: some View {

@@ -16,6 +16,7 @@ nonisolated enum NotinhasPaletteColor: String, CaseIterable, Identifiable, Hasha
     case blue
     case green
     case purple
+    case magenta
     case black
 
     var id: String {
@@ -25,18 +26,24 @@ nonisolated enum NotinhasPaletteColor: String, CaseIterable, Identifiable, Hasha
     var rgba: RGBAColor {
         switch self {
         case .red:
-            RGBAColor(red: 0.95, green: 0.23, blue: 0.21, alpha: 1)
+            RGBAColor(red: 0.850980, green: 0.207843, blue: 0.188235, alpha: 1)
         case .orange:
-            RGBAColor(red: 0.98, green: 0.55, blue: 0.09, alpha: 1)
+            RGBAColor(red: 0.929412, green: 0.517647, blue: 0.074510, alpha: 1)
         case .blue:
-            RGBAColor(red: 0.20, green: 0.60, blue: 0.95, alpha: 1)
+            RGBAColor(red: 0, green: 0.462745, blue: 0.870588, alpha: 1)
         case .green:
-            RGBAColor(red: 0.30, green: 0.69, blue: 0.31, alpha: 1)
+            RGBAColor(red: 0.368627, green: 0.858824, blue: 0.654902, alpha: 1)
         case .purple:
-            RGBAColor(red: 0.61, green: 0.35, blue: 0.71, alpha: 1)
+            RGBAColor(red: 0.592157, green: 0.278431, blue: 1, alpha: 1)
+        case .magenta:
+            RGBAColor(red: 0.909804, green: 0.090196, blue: 0.541176, alpha: 1)
         case .black:
             RGBAColor(red: 0.13, green: 0.13, blue: 0.13, alpha: 1)
         }
+    }
+
+    var numeralColor: NSColor {
+        self == .green ? .black : .white
     }
 
     var localizedName: String {
@@ -51,6 +58,8 @@ nonisolated enum NotinhasPaletteColor: String, CaseIterable, Identifiable, Hasha
             NotinhasL10n.colorGreen
         case .purple:
             NotinhasL10n.colorPurple
+        case .magenta:
+            NotinhasL10n.colorMagenta
         case .black:
             NotinhasL10n.colorBlack
         }

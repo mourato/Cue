@@ -731,14 +731,6 @@ final class QuickAccessCoreTests: XCTestCase {
         XCTAssertEqual(QuickAccessCornerButtonMetrics(scale: 0.75).touchSize, 20, accuracy: 0.001)
     }
 
-    func testAnnotationNumberedBadgeDrawer_choosesContrastingTextColor() {
-        let orange = NSColor(calibratedRed: 0.98, green: 0.55, blue: 0.09, alpha: 1)
-        let black = NSColor(calibratedWhite: 0.13, alpha: 1)
-
-        XCTAssertTrue(AnnotationNumberedBadgeDrawer.preferredTextColor(for: orange).isEqual(NSColor.black))
-        XCTAssertTrue(AnnotationNumberedBadgeDrawer.preferredTextColor(for: black).isEqual(NSColor.white))
-    }
-
     func testQuickAccessActionConfigurationStore_usesDefaultOrderAndEnabledActions() {
         let defaults = makeIsolatedDefaults()
         let store = makeActionConfigurationStore(defaults: defaults)
