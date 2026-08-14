@@ -29,6 +29,7 @@ enum NotinhasL10n {
     static let colorBlue = L10n.Notinhas.colorBlue
     static let colorGreen = L10n.Notinhas.colorGreen
     static let colorPurple = L10n.Notinhas.colorPurple
+    static let colorMagenta = L10n.Notinhas.colorMagenta
     static let colorBlack = L10n.Notinhas.colorBlack
     static let colorYellow = L10n.Notinhas.colorYellow
     static let colorGray = L10n.Notinhas.colorGray

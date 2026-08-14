@@ -48,6 +48,7 @@ enum NotinhasNoteRenderer {
                 center: center,
                 color: note.color.nsColor,
                 displayNumber: displayNumber,
+                textColor: NotinhasPaletteColor.matching(note.color)?.numeralColor ?? .white,
                 pinRadius: pinRadius,
                 isSelected: isSelected,
                 in: context,
@@ -59,6 +60,7 @@ enum NotinhasNoteRenderer {
                 color: note.color.nsColor,
                 strokeWidth: note.areaStrokeWidth,
                 displayNumber: displayNumber,
+                textColor: NotinhasPaletteColor.matching(note.color)?.numeralColor ?? .white,
                 pinRadius: pinRadius,
                 in: context,
             )
@@ -69,6 +71,7 @@ enum NotinhasNoteRenderer {
         center: CGPoint,
         color: NSColor,
         displayNumber: Int,
+        textColor: NSColor = .white,
         pinRadius: CGFloat = defaultPinRadius,
         isSelected: Bool,
         in context: CGContext,
@@ -87,6 +90,7 @@ enum NotinhasNoteRenderer {
             in: circleRect,
             fillColor: color.withAlphaComponent(1),
             in: context,
+            textColor: textColor,
         )
 
         if isSelected {
@@ -104,6 +108,7 @@ enum NotinhasNoteRenderer {
         color: NSColor,
         strokeWidth: CGFloat = NotinhasVisualNote.defaultAreaStrokeWidth,
         displayNumber: Int,
+        textColor: NSColor = .white,
         pinRadius: CGFloat = defaultPinRadius,
         in context: CGContext,
     ) {
@@ -141,6 +146,7 @@ enum NotinhasNoteRenderer {
             in: circleRect,
             fillColor: color.withAlphaComponent(1),
             in: context,
+            textColor: textColor,
         )
 
         context.restoreGState()

@@ -1295,7 +1295,9 @@ final class DrawingCanvasNSView: NSView {
     // MARK: - Notinhas Notes
 
     private func defaultNotinhasColor() -> RGBAColor {
-        RGBAColor(color: state.strokeColor) ?? RGBAColor(red: 1, green: 0, blue: 0, alpha: 1)
+        let selectedColor = RGBAColor(color: state.quickStrokeColorBinding.wrappedValue)
+        return NotinhasPaletteColor.matching(selectedColor ?? NotinhasPaletteColor.red.rgba)?.rgba
+            ?? NotinhasPaletteColor.red.rgba
     }
 
     private func notinhasImageBounds() -> CGRect {

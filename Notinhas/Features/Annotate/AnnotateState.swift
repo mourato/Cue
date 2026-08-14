@@ -3959,7 +3959,10 @@ final class AnnotateState: ObservableObject {
             return properties
         }
         if tool != .watermark {
-            var properties = AnnotationProperties(strokeColor: sharedAnnotationColor ?? .red)
+            let defaultStrokeColor = tool == .notinhasNote
+                ? NotinhasPaletteColor.red.rgba.color
+                : (sharedAnnotationColor ?? .red)
+            var properties = AnnotationProperties(strokeColor: defaultStrokeColor)
             if tool == .blur {
                 properties.strokeWidth = AnnotationProperties.controlValueRange.lowerBound
             }
