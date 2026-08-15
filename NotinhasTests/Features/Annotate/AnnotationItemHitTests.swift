@@ -201,4 +201,16 @@ final class AnnotationItemHitTests: XCTestCase {
         )
         XCTAssertTrue(item.supportsResize)
     }
+
+    func testRectangleSideResizeMovesOnlyTheSelectedEdge() {
+        let original = CGRect(x: 20, y: 30, width: 80, height: 60)
+
+        let resized = DrawingCanvasNSView.resizedBounds(
+            from: original,
+            handle: .right,
+            to: CGPoint(x: 130, y: 60),
+        )
+
+        XCTAssertEqual(resized, CGRect(x: 20, y: 30, width: 110, height: 60))
+    }
 }

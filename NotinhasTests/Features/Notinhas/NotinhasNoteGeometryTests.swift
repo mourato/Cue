@@ -67,6 +67,41 @@ final class NotinhasNoteGeometryTests: XCTestCase {
         XCTAssertEqual(minimumRect.height, NotinhasNoteGeometry.minimumRectSize)
     }
 
+    func testResizeHandleCentersIncludeEachSideMidpoint() {
+        let centers = NotinhasNoteGeometry.resizeHandleCenters(
+            for: CGRect(x: 20, y: 30, width: 80, height: 60),
+        )
+
+        XCTAssertEqual(centers.count, 8)
+        XCTAssertEqual(centers.first { $0.0 == .top }?.1, CGPoint(x: 60, y: 90))
+        XCTAssertEqual(centers.first { $0.0 == .right }?.1, CGPoint(x: 100, y: 60))
+        XCTAssertEqual(centers.first { $0.0 == .bottom }?.1, CGPoint(x: 60, y: 30))
+        XCTAssertEqual(centers.first { $0.0 == .left }?.1, CGPoint(x: 20, y: 60))
+    }
+
+    func testResizedRectSideHandleMovesOnlyOneEdge() {
+        let target = NotinhasNoteTarget.rect(CGRect(x: 20, y: 30, width: 80, height: 60))
+
+        let top = NotinhasNoteGeometry.resized(
+            target,
+            handle: .top,
+            to: CGPoint(x: 60, y: 110),
+            within: CGRect(x: 0, y: 0, width: 200, height: 200),
+        )
+        let left = NotinhasNoteGeometry.resized(
+            target,
+            handle: .left,
+            to: CGPoint(x: 0, y: 60),
+            within: CGRect(x: 0, y: 0, width: 200, height: 200),
+        )
+
+        guard case .rect(let topRect) = top, case .rect(let leftRect) = left else {
+            return XCTFail("Expected rectangle targets")
+        }
+        XCTAssertEqual(topRect, CGRect(x: 20, y: 30, width: 80, height: 80))
+        XCTAssertEqual(leftRect, CGRect(x: 0, y: 30, width: 100, height: 60))
+    }
+
     func testDisplayNumberUsesCreationOrderAmongRenderableNotes() {
         let first = NotinhasVisualNote(text: "One", target: .point(.zero), color: red, creationOrder: 1)
         let second = NotinhasVisualNote(

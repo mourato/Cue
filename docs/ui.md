@@ -40,6 +40,9 @@ second canonical design-system document.
   selected, and disabled must remain distinguishable in Light and Dark.
 - Numbered pins/notes are the product identity. Preserve their ordering,
   editing, rendering, and export semantics when changing editor chrome.
+- Selected rectangles, including note rectangles, expose corner and midpoint
+  side handles; a side drag changes one dimension while keeping the opposite
+  edge fixed and respecting the minimum size.
 - The **Uploads** preferences tab owns both hosting-provider configuration and
   image upload encoding controls. Upload optimization creates a temporary
   derivative for the provider; it never changes the local capture or the

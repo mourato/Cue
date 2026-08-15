@@ -478,12 +478,7 @@ final class DrawingCanvasNSView: NSView {
 
         case .text:
             let bounds = inDisplayCoordinates ? imageToDisplay(annotation.resizeBounds) : annotation.resizeBounds
-            var handles: [(ResizeHandle, CGRect)] = [
-                (.topLeft, handleRect(at: CGPoint(x: bounds.minX, y: bounds.maxY))),
-                (.topRight, handleRect(at: CGPoint(x: bounds.maxX, y: bounds.maxY))),
-                (.bottomLeft, handleRect(at: CGPoint(x: bounds.minX, y: bounds.minY))),
-                (.bottomRight, handleRect(at: CGPoint(x: bounds.maxX, y: bounds.minY))),
-            ]
+            var handles = standardResizeHandleRects(for: bounds)
             if annotation.properties.textPresentation == .callout,
                let tailTarget = annotation.properties.calloutTailTarget {
                 let point = inDisplayCoordinates ? imageToDisplay(tailTarget) : tailTarget
@@ -500,15 +495,35 @@ final class DrawingCanvasNSView: NSView {
                 (.lineEnd, handleRect(at: endPoint)),
             ]
 
+        case .rectangle, .filledRectangle:
+            let bounds = inDisplayCoordinates ? imageToDisplay(annotation.resizeBounds) : annotation.resizeBounds
+            return standardResizeHandleRects(for: bounds, includingSides: true)
+
         default:
             let bounds = inDisplayCoordinates ? imageToDisplay(annotation.resizeBounds) : annotation.resizeBounds
-            return [
-                (.topLeft, handleRect(at: CGPoint(x: bounds.minX, y: bounds.maxY))),
-                (.topRight, handleRect(at: CGPoint(x: bounds.maxX, y: bounds.maxY))),
-                (.bottomLeft, handleRect(at: CGPoint(x: bounds.minX, y: bounds.minY))),
-                (.bottomRight, handleRect(at: CGPoint(x: bounds.maxX, y: bounds.minY))),
-            ]
+            return standardResizeHandleRects(for: bounds)
         }
+    }
+
+    private func standardResizeHandleRects(
+        for bounds: CGRect,
+        includingSides: Bool = false,
+    ) -> [(ResizeHandle, CGRect)] {
+        var handles: [(ResizeHandle, CGRect)] = [
+            (.topLeft, handleRect(at: CGPoint(x: bounds.minX, y: bounds.maxY))),
+            (.topRight, handleRect(at: CGPoint(x: bounds.maxX, y: bounds.maxY))),
+            (.bottomLeft, handleRect(at: CGPoint(x: bounds.minX, y: bounds.minY))),
+            (.bottomRight, handleRect(at: CGPoint(x: bounds.maxX, y: bounds.minY))),
+        ]
+        guard includingSides else { return handles }
+
+        handles += [
+            (.top, handleRect(at: CGPoint(x: bounds.midX, y: bounds.maxY))),
+            (.bottom, handleRect(at: CGPoint(x: bounds.midX, y: bounds.minY))),
+            (.left, handleRect(at: CGPoint(x: bounds.minX, y: bounds.midY))),
+            (.right, handleRect(at: CGPoint(x: bounds.maxX, y: bounds.midY))),
+        ]
+        return handles
     }
 
     private func handleRect(at center: CGPoint) -> CGRect {
@@ -1184,6 +1199,20 @@ final class DrawingCanvasNSView: NSView {
         currentPoint: CGPoint,
         proportional: Bool = false,
     ) -> CGRect {
+        Self.resizedBounds(
+            from: originalBounds,
+            handle: handle,
+            to: currentPoint,
+            proportional: proportional,
+        )
+    }
+
+    static func resizedBounds(
+        from originalBounds: CGRect,
+        handle: ResizeHandle,
+        to currentPoint: CGPoint,
+        proportional: Bool = false,
+    ) -> CGRect {
         let minSize: CGFloat = 20
         var newBounds = originalBounds
 
@@ -1199,12 +1228,26 @@ final class DrawingCanvasNSView: NSView {
             let clampedY = max(currentPoint.y, originalBounds.minY + minSize)
             newBounds.size.width = clampedX - originalBounds.minX
             newBounds.size.height = clampedY - originalBounds.minY
+        case .top:
+            let clampedY = max(currentPoint.y, originalBounds.minY + minSize)
+            newBounds.size.height = clampedY - originalBounds.minY
+        case .left:
+            let clampedX = min(currentPoint.x, originalBounds.maxX - minSize)
+            newBounds.origin.x = clampedX
+            newBounds.size.width = originalBounds.maxX - clampedX
+        case .right:
+            let clampedX = max(currentPoint.x, originalBounds.minX + minSize)
+            newBounds.size.width = clampedX - originalBounds.minX
         case .bottomLeft:
             let clampedX = min(currentPoint.x, originalBounds.maxX - minSize)
             let clampedY = min(currentPoint.y, originalBounds.maxY - minSize)
             newBounds.origin.x = clampedX
             newBounds.origin.y = clampedY
             newBounds.size.width = originalBounds.maxX - clampedX
+            newBounds.size.height = originalBounds.maxY - clampedY
+        case .bottom:
+            let clampedY = min(currentPoint.y, originalBounds.maxY - minSize)
+            newBounds.origin.y = clampedY
             newBounds.size.height = originalBounds.maxY - clampedY
         case .bottomRight:
             let clampedX = max(currentPoint.x, originalBounds.minX + minSize)
@@ -1242,6 +1285,20 @@ final class DrawingCanvasNSView: NSView {
         case .bottomRight:
             newBounds.origin.x = originalBounds.minX
             newBounds.origin.y = originalBounds.maxY - newBounds.height
+        case .top:
+            newBounds.size.width = newBounds.height * aspectRatio
+            newBounds.origin.x = originalBounds.midX - newBounds.width / 2
+        case .bottom:
+            newBounds.size.width = newBounds.height * aspectRatio
+            newBounds.origin.x = originalBounds.midX - newBounds.width / 2
+            newBounds.origin.y = originalBounds.maxY - newBounds.height
+        case .left:
+            newBounds.size.height = newBounds.width / aspectRatio
+            newBounds.origin.y = originalBounds.midY - newBounds.height / 2
+            newBounds.origin.x = originalBounds.maxX - newBounds.width
+        case .right:
+            newBounds.size.height = newBounds.width / aspectRatio
+            newBounds.origin.y = originalBounds.midY - newBounds.height / 2
         default:
             break
         }
@@ -1946,8 +2003,15 @@ final class DrawingCanvasNSView: NSView {
            let selectedId = state.notinhasSelectedNoteID,
            let note = state.notinhasNotes.first(where: { $0.id == selectedId }),
            case .rect = note.target,
-           hitTestNotinhasResizeHandle(at: displayPoint, for: note) != nil {
-            NSCursor.crosshair.set()
+           let handle = hitTestNotinhasResizeHandle(at: displayPoint, for: note) {
+            switch handle {
+            case .top, .bottom:
+                NSCursor.resizeUpDown.set()
+            case .left, .right:
+                NSCursor.resizeLeftRight.set()
+            default:
+                NSCursor.crosshair.set()
+            }
             return
         }
 

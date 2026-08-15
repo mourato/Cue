@@ -10,7 +10,9 @@ import Foundation
 
 nonisolated enum NotinhasNoteGeometry {
     enum ResizeHandle: Equatable {
-        case topLeft, topRight, bottomLeft, bottomRight
+        case topLeft, top, topRight
+        case left, right
+        case bottomLeft, bottom, bottomRight
     }
 
     static let pinDiameter: CGFloat = 28
@@ -66,8 +68,12 @@ nonisolated enum NotinhasNoteGeometry {
         let standardized = rect.standardized
         return [
             (.topLeft, CGPoint(x: standardized.minX, y: standardized.maxY)),
+            (.top, CGPoint(x: standardized.midX, y: standardized.maxY)),
             (.topRight, CGPoint(x: standardized.maxX, y: standardized.maxY)),
+            (.left, CGPoint(x: standardized.minX, y: standardized.midY)),
+            (.right, CGPoint(x: standardized.maxX, y: standardized.midY)),
             (.bottomLeft, CGPoint(x: standardized.minX, y: standardized.minY)),
+            (.bottom, CGPoint(x: standardized.midX, y: standardized.minY)),
             (.bottomRight, CGPoint(x: standardized.maxX, y: standardized.minY)),
         ]
     }
@@ -94,11 +100,19 @@ nonisolated enum NotinhasNoteGeometry {
         case .topLeft:
             minX = min(clampedPoint.x, maxX - minimumWidth)
             maxY = max(clampedPoint.y, minY + minimumHeight)
+        case .top:
+            maxY = max(clampedPoint.y, minY + minimumHeight)
         case .topRight:
             maxX = max(clampedPoint.x, minX + minimumWidth)
             maxY = max(clampedPoint.y, minY + minimumHeight)
+        case .left:
+            minX = min(clampedPoint.x, maxX - minimumWidth)
+        case .right:
+            maxX = max(clampedPoint.x, minX + minimumWidth)
         case .bottomLeft:
             minX = min(clampedPoint.x, maxX - minimumWidth)
+            minY = min(clampedPoint.y, maxY - minimumHeight)
+        case .bottom:
             minY = min(clampedPoint.y, maxY - minimumHeight)
         case .bottomRight:
             maxX = max(clampedPoint.x, minX + minimumWidth)
