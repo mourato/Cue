@@ -7199,61 +7199,61 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Wolke"
+            "value": "Uploads"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cloud"
+            "value": "Uploads"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nube"
+            "value": "Cargas"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nuage"
+            "value": "Téléversements"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "クラウド"
+            "value": "アップロード"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "구름"
+            "value": "업로드"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Облако"
+            "value": "Загрузки"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cloud"
+            "value": "Tải lên"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "云"
+            "value": "上传"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "雲"
+            "value": "上傳"
           }
         }
       }

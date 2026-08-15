@@ -44,7 +44,20 @@ flowchart LR
 - Protection password (`CloudPasswordService`): optional; SHA-256 hash in Keychain; min 4 characters; gates Edit / Import / Export of the config. Forgot password → reset configuration (`cloudPasswordEnabled` / `cloudPasswordSkipped` flags).
 - Encrypted transfer archives (`CloudCredentialTransferService`): `.notinhascloud` files — AES-GCM-256 with PBKDF2-SHA256 key derivation, 300,000 iterations; passphrase ≥ 12 characters. ImgBB credentials are intentionally excluded from this archive format.
 
-## ImgBB image sharing (Preferences → Cloud)
+## Image upload preparation (Preferences → Uploads)
+
+All image upload paths share the same derivative policy:
+
+- **Optimize image uploads** is enabled by default.
+- The longest physical pixel edge is limited to **2048 px** by default, so Retina captures are measured by their real pixel dimensions rather than logical screen points.
+- **WebP** is the default format. JPEG and PNG are also available.
+- **JPEG quality** accepts exact values from 50% to 100% in 1% steps. The same quality value is used for WebP.
+- JPEG selections automatically use WebP for images with transparency.
+- The original local capture is never overwritten. Cloud providers receive a temporary derivative with the original base filename, which is removed after the upload succeeds or fails. Disabling optimization sends file-backed originals unchanged; in-memory Annotate renders use a full-size lossless PNG because they have no source file encoding to pass through.
+
+The policy applies to ImgBB, S3, Cloudflare R2, and Google Drive image uploads. Videos and unsupported image types pass through unchanged.
+
+## ImgBB image sharing (Preferences → Uploads)
 
 - Separate from bucket storage providers and Cloud Upload History.
 - Manual uploads only from Annotate and Quick Access; link copy behavior is unchanged.
@@ -52,10 +65,11 @@ flowchart LR
 - Cloud storage reset does not clear ImgBB; clearing the ImgBB key is explicit in the Image Sharing section.
 - Protected edit/clear reuses the existing Cloud protection password when one is set.
 
-## Configuration UI (Settings → Cloud)
+## Configuration UI (Settings → Uploads)
 
 `PreferencesCloudSettingsView.swift` (+ import/export sheets):
 
+- Image Uploads: optimization toggle, format, maximum physical pixel dimension, and exact JPEG/WebP quality.
 - Provider picker (AWS S3 / Cloudflare R2 / Google Drive).
 - S3/R2: access key + secret key, bucket, region (S3) or endpoint (R2), optional custom domain.
 - Google Drive: client ID + secret + OAuth authorize, folder name.
@@ -90,7 +104,7 @@ flowchart LR
 
 ## Related docs
 
-- [PREFERENCES.md](PREFERENCES.md) — Cloud tab + after-capture matrix (auto-upload removal)
+- [PREFERENCES.md](PREFERENCES.md) — Uploads tab + after-capture matrix (auto-upload removal)
 - [SHORTCUTS.md](SHORTCUTS.md) — ⇧⌘L and `notinhas://open/cloud-uploads`
 - [QUICK_ACCESS.md](QUICK_ACCESS.md) — card action slots
 - [ANNOTATE.md](ANNOTATE.md) — ⌘U upload + re-upload flow

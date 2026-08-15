@@ -14,37 +14,52 @@ final class NotinhasUploadCoordinator: ObservableObject {
         self.uploadService = uploadService
     }
 
-    func upload(
-        finalImage: NSImage,
-        maxDimension: CGFloat,
+    func upload(finalImage: NSImage, apiKey: String) async -> String? {
+        guard let imageSnapshot = finalImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+            lastErrorMessage = NotinhasL10n.imgbbInvalidImageData
+            return nil
+        }
+
+        let settings = NotinhasUploadEncodingSettings.current()
+        return await performUpload(apiKey: apiKey) {
+            try await Task.detached(priority: .userInitiated) {
+                try NotinhasUploadImageEncoder.encode(image: imageSnapshot, settings: settings)
+            }.value
+        }
+    }
+
+    func upload(fileURL: URL, apiKey: String) async -> String? {
+        let settings = NotinhasUploadEncodingSettings.current()
+        return await performUpload(apiKey: apiKey) {
+            try await Task.detached(priority: .userInitiated) {
+                try NotinhasUploadImageEncoder.encode(fileURL: fileURL, settings: settings)
+            }.value
+        }
+    }
+
+    private func performUpload(
         apiKey: String,
+        encoding: @escaping @Sendable () async throws -> NotinhasEncodedImage,
     ) async -> String? {
         isUploading = true
         lastErrorMessage = nil
         defer { isUploading = false }
 
-        let preparedImage = downscaled(finalImage, maximumDimension: maxDimension)
-
         do {
-            let result = try await uploadService.upload(image: preparedImage, apiKey: apiKey)
+            let encodedImage = try await encoding()
+            let result = try await uploadService.upload(image: encodedImage, apiKey: apiKey)
             lastUploadedURL = result.link
             return result.link
+        } catch let error as NotinhasUploadEncodingError {
+            if case .invalidImageData = error {
+                lastErrorMessage = NotinhasL10n.imgbbInvalidImageData
+            } else {
+                lastErrorMessage = error.localizedDescription
+            }
+            return nil
         } catch {
             lastErrorMessage = error.localizedDescription
             return nil
         }
-    }
-
-    private func downscaled(_ image: NSImage, maximumDimension: CGFloat) -> NSImage {
-        let largestDimension = max(image.size.width, image.size.height)
-        guard largestDimension > maximumDimension, largestDimension > 0 else { return image }
-
-        let scale = maximumDimension / largestDimension
-        let targetSize = NSSize(width: image.size.width * scale, height: image.size.height * scale)
-        let scaled = NSImage(size: targetSize)
-        scaled.lockFocus()
-        image.draw(in: NSRect(origin: .zero, size: targetSize))
-        scaled.unlockFocus()
-        return scaled
     }
 }

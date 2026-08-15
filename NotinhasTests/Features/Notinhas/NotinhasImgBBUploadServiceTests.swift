@@ -1,4 +1,3 @@
-import AppKit
 @testable import Notinhas
 import XCTest
 
@@ -35,6 +34,7 @@ final class NotinhasImgBBUploadServiceTests: XCTestCase {
           "status": 200
         }
         """
+        let image = makeTestImage()
         MockImgBBURLProtocol.requestHandler = { request in
             XCTAssertEqual(request.url?.absoluteString, "https://api.imgbb.com/1/upload")
             XCTAssertEqual(request.httpMethod, "POST")
@@ -50,7 +50,6 @@ final class NotinhasImgBBUploadServiceTests: XCTestCase {
         }
 
         let service = makeService()
-        let image = makeTestImage()
         let result = try await service.upload(image: image, apiKey: "test-api-key")
 
         XCTAssertEqual(result.link, "https://i.ibb.co/example/image.png")
@@ -98,13 +97,8 @@ final class NotinhasImgBBUploadServiceTests: XCTestCase {
         return NotinhasImgBBUploadService(session: session)
     }
 
-    private func makeTestImage() -> NSImage {
-        let image = NSImage(size: NSSize(width: 10, height: 10))
-        image.lockFocus()
-        NSColor.red.setFill()
-        NSRect(x: 0, y: 0, width: 10, height: 10).fill()
-        image.unlockFocus()
-        return image
+    private func makeTestImage() -> NotinhasEncodedImage {
+        NotinhasEncodedImage(data: Data("image-payload".utf8), fileExtension: "webp", contentType: "image/webp")
     }
 }
 

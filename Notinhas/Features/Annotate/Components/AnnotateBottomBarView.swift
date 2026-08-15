@@ -575,7 +575,6 @@ struct AnnotateBottomBarView: View {
             defer { isImgBBUploading = false }
             let link = await imgbbUploadCoordinator.upload(
                 finalImage: renderedImage,
-                maxDimension: 2048,
                 apiKey: apiKey,
             )
             if let link {

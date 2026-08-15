@@ -1372,43 +1372,43 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cloud-Speicher ist nicht konfiguriert. Bitte richten Sie Ihre Anmeldeinformationen unter „Einstellungen“ -> „Cloud“ ein."
+            "value": "Cloud-Speicher ist nicht konfiguriert. Bitte richten Sie Ihre Anmeldeinformationen unter „Einstellungen“ -> „Uploads“ ein."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cloud storage is not configured. Please set up your credentials in Preferences -> Cloud."
+            "value": "Cloud storage is not configured. Please set up your credentials in Preferences -> Uploads."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "El almacenamiento en la nube no está configurado. Configure sus credenciales en Preferencias -> Nube."
+            "value": "El almacenamiento en la nube no está configurado. Configure sus credenciales en Preferencias -> Cargas."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Le stockage cloud n'est pas configuré. Veuillez configurer vos informations d'identification dans Préférences -> Cloud."
+            "value": "Le stockage cloud n'est pas configuré. Veuillez configurer vos informations d'identification dans Préférences -> Téléversements."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "クラウドストレージが設定されていません。 [設定] -> [クラウド] で認証情報を設定してください。"
+            "value": "クラウドストレージが設定されていません。 [設定] -> [アップロード] で認証情報を設定してください。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "클라우드 저장소가 구성되지 않았습니다. 환경설정 -> 클라우드에서 자격 증명을 설정하세요."
+            "value": "클라우드 저장소가 구성되지 않았습니다. 환경설정 -> 업로드에서 자격 증명을 설정하세요."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Облачное хранилище не настроено. Пожалуйста, настройте свои учетные данные в «Настройки» -> «Облако»."
+            "value": "Облачное хранилище не настроено. Пожалуйста, настройте свои учетные данные в «Настройки» -> «Загрузки»."
           }
         },
         "vi": {
@@ -1420,13 +1420,13 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "未配置云存储。请在“首选项”->“云”中设置您的凭据。"
+            "value": "未配置云存储。请在“首选项”->“上传”中设置您的凭据。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "未配置雲存儲。請在“首選項”->“雲”中設置您的憑據。"
+            "value": "未配置雲存儲。請在“首選項”->“上傳”中設置您的憑據。"
           }
         }
       }
@@ -12672,6 +12672,106 @@
           "stringUnit": {
             "state": "translated",
             "value": "雲上傳歷史"
+          }
+        }
+      }
+    },
+    "cloud-settings.upload-settings-section": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Image Uploads"
+          }
+        }
+      }
+    },
+    "cloud-settings.upload-settings-description": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose how image uploads are resized and encoded. Local captures are not changed."
+          }
+        }
+      }
+    },
+    "cloud-settings.optimize-image-uploads-title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Optimize image uploads"
+          }
+        }
+      }
+    },
+    "cloud-settings.optimize-image-uploads-description": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create a smaller upload copy while keeping the local image unchanged."
+          }
+        }
+      }
+    },
+    "cloud-settings.upload-image-format-title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Image format"
+          }
+        }
+      }
+    },
+    "cloud-settings.upload-image-format-description": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Format used for optimized image uploads."
+          }
+        }
+      }
+    },
+    "cloud-settings.upload-maximum-dimension-title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maximum dimension"
+          }
+        }
+      }
+    },
+    "cloud-settings.upload-maximum-dimension-description": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Limit the longest edge in pixels."
+          }
+        }
+      }
+    },
+    "cloud-settings.upload-jpeg-quality-title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "JPEG quality"
+          }
+        }
+      }
+    },
+    "cloud-settings.upload-jpeg-quality-description": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Higher values preserve more detail and use more space. WebP uses the same quality value; transparent images use WebP when JPEG is selected."
           }
         }
       }

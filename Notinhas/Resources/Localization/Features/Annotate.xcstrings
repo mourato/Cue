@@ -424,7 +424,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Add an ImgBB API key in Preferences → Cloud before uploading."
+            "value": "Add an ImgBB API key in Preferences → Uploads before uploading."
           }
         }
       }
@@ -3085,61 +3085,61 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bitte richten Sie Ihre Cloud-Anmeldeinformationen unter „Einstellungen“ -> „Cloud“ ein, bevor Sie hochladen."
+            "value": "Bitte richten Sie Ihre Cloud-Anmeldeinformationen unter „Einstellungen“ -> „Uploads“ ein, bevor Sie hochladen."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Please set up your cloud credentials in Preferences -> Cloud before uploading."
+            "value": "Please set up your cloud credentials in Preferences -> Uploads before uploading."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Configure sus credenciales de nube en Preferencias -> Nube antes de cargar."
+            "value": "Configure sus credenciales de nube en Preferencias -> Cargas antes de cargar."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Veuillez configurer vos informations d'identification cloud dans Préférences -> Cloud avant le téléchargement."
+            "value": "Veuillez configurer vos informations d'identification cloud dans Préférences -> Téléversements avant le téléchargement."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "アップロードする前に、[設定] -> [クラウド] でクラウド認証情報を設定してください。"
+            "value": "アップロードする前に、[設定] -> [アップロード] でクラウド認証情報を設定してください。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "업로드하기 전에 환경설정 -> 클라우드에서 클라우드 자격 증명을 설정하세요."
+            "value": "업로드하기 전에 환경설정 -> 업로드에서 클라우드 자격 증명을 설정하세요."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Перед загрузкой настройте свои облачные учетные данные в «Настройки» -> «Облако»."
+            "value": "Перед загрузкой настройте свои облачные учетные данные в «Настройки» -> «Загрузки»."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vui lòng thiết lập thông tin đăng nhập Cloud trong Cài đặt → Cloud trước khi tải lên."
+            "value": "Vui lòng thiết lập thông tin đăng nhập Cloud trong Cài đặt → Tải lên trước khi tải lên."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "上传前，请在“首选项”->“云”中设置您的云凭据。"
+            "value": "上传前，请在“首选项”->“上传”中设置您的云凭据。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "上傳前，請在“首選項”->“雲”中設置您的雲憑據。"
+            "value": "上傳前，請在“首選項”->“上傳”中設置您的雲憑據。"
           }
         }
       }

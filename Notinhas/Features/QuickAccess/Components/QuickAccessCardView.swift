@@ -762,7 +762,7 @@ struct QuickAccessCardView: View {
 
     private func uploadToImgBB() {
         guard let apiKey = NotinhasImgBBConfiguration.apiKey else { return }
-        guard !isImgBBUploading, let image = NSImage(contentsOf: item.url) else {
+        guard !isImgBBUploading, FileManager.default.fileExists(atPath: item.url.path) else {
             imgbbUploadError = NotinhasL10n.imgbbInvalidImageData
             return
         }
@@ -775,11 +775,7 @@ struct QuickAccessCardView: View {
                 manager.resumeCountdownForActivity(item.id)
             }
 
-            let link = await imgbbUploadCoordinator.upload(
-                finalImage: image,
-                maxDimension: 2048,
-                apiKey: apiKey,
-            )
+            let link = await imgbbUploadCoordinator.upload(fileURL: item.url, apiKey: apiKey)
             guard let link else {
                 imgbbUploadError = imgbbUploadCoordinator.lastErrorMessage ?? NotinhasL10n.imgbbUploadFailed
                 return

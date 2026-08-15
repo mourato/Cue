@@ -180,7 +180,7 @@ nonisolated enum L10n {
         )
         static let cloudTab = string(
             "preferences.tab.cloud",
-            defaultValue: "Cloud",
+            defaultValue: "Uploads",
             comment: "Preferences tab title",
         )
         static let advancedTab = string(
@@ -3360,7 +3360,7 @@ nonisolated enum L10n {
         )
         static let imgbbMissingAPIKey = string(
             "annotate.notinhas.imgbb-missing-api-key",
-            defaultValue: "Add an ImgBB API key in Preferences → Cloud before uploading.",
+            defaultValue: "Add an ImgBB API key in Preferences → Uploads before uploading.",
             comment: "ImgBB missing API key error",
         )
         static let imgbbInvalidImageData = string(
@@ -4234,7 +4234,7 @@ nonisolated enum L10n {
     enum CloudOperation {
         static let notConfigured = string(
             "cloud-operation.not-configured",
-            defaultValue: "Cloud storage is not configured. Please set up your credentials in Preferences -> Cloud.",
+            defaultValue: "Cloud storage is not configured. Please set up your credentials in Preferences -> Uploads.",
             comment: "Error shown when a cloud operation is attempted without cloud configuration",
         )
         static let invalidCredentials = string(
@@ -4656,6 +4656,56 @@ nonisolated enum L10n {
             defaultValue: "Stored securely in Keychain",
             comment: "Status text shown when cloud credentials are stored securely in the Keychain",
         )
+        static let uploadSettingsSection = string(
+            "cloud-settings.upload-settings-section",
+            defaultValue: "Image Uploads",
+            comment: "Section title for image upload encoding settings",
+        )
+        static let uploadSettingsDescription = string(
+            "cloud-settings.upload-settings-description",
+            defaultValue: "Choose how image uploads are resized and encoded. Local captures are not changed.",
+            comment: "Description for image upload encoding settings",
+        )
+        static let optimizeImageUploadsTitle = string(
+            "cloud-settings.optimize-image-uploads-title",
+            defaultValue: "Optimize image uploads",
+            comment: "Title for the image upload optimization toggle",
+        )
+        static let optimizeImageUploadsDescription = string(
+            "cloud-settings.optimize-image-uploads-description",
+            defaultValue: "Create a smaller upload copy while keeping the local image unchanged.",
+            comment: "Description for the image upload optimization toggle",
+        )
+        static let uploadImageFormatTitle = string(
+            "cloud-settings.upload-image-format-title",
+            defaultValue: "Image format",
+            comment: "Title for the optimized image upload format picker",
+        )
+        static let uploadImageFormatDescription = string(
+            "cloud-settings.upload-image-format-description",
+            defaultValue: "Format used for optimized image uploads.",
+            comment: "Description for the optimized image upload format picker",
+        )
+        static let uploadMaximumDimensionTitle = string(
+            "cloud-settings.upload-maximum-dimension-title",
+            defaultValue: "Maximum dimension",
+            comment: "Title for the maximum image upload dimension setting",
+        )
+        static let uploadMaximumDimensionDescription = string(
+            "cloud-settings.upload-maximum-dimension-description",
+            defaultValue: "Limit the longest edge in pixels.",
+            comment: "Description for the maximum image upload dimension setting",
+        )
+        static let uploadJPEGQualityTitle = string(
+            "cloud-settings.upload-jpeg-quality-title",
+            defaultValue: "JPEG quality",
+            comment: "Title for the JPEG/WebP image upload quality setting",
+        )
+        static let uploadJPEGQualityDescription = string(
+            "cloud-settings.upload-jpeg-quality-description",
+            defaultValue: "Higher values preserve more detail and use more space. WebP uses the same quality value; transparent images use WebP when JPEG is selected.",
+            comment: "Description for the JPEG/WebP image upload quality setting",
+        )
         static let imageSharingSection = string(
             "cloud-settings.image-sharing-section",
             defaultValue: "Image Sharing",
@@ -5029,7 +5079,7 @@ nonisolated enum L10n {
         )
         static let cloudNotConfiguredMessage = string(
             "annotate.cloud-not-configured-message",
-            defaultValue: "Please set up your cloud credentials in Preferences -> Cloud before uploading.",
+            defaultValue: "Please set up your cloud credentials in Preferences -> Uploads before uploading.",
             comment: "Alert message shown when annotate cloud upload is unavailable because cloud is not configured",
         )
         static let inlineUploadFailedTitle = string(

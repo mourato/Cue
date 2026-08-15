@@ -115,9 +115,9 @@ renders directly without an inner picker.
   - Accessibility → `Privacy_Accessibility`
 - Shows `grantedButUnavailableDueToAppIdentity` when `AppIdentityManager` reports issues (see [APP_LIFECYCLE.md](APP_LIFECYCLE.md)).
 
-### Cloud (`PreferencesCloudSettingsView.swift`)
+### Uploads (`PreferencesCloudSettingsView.swift`)
 
-Provider configuration, credentials, expiration, usage stats, Cloud Uploads window position, and the separate **Image Sharing** ImgBB section. ImgBB is external image sharing for manual Annotate/Quick Access uploads; it is not a `CloudProvider`, does not appear in Cloud Upload History, and is not included in encrypted `.notinhascloud` archives. The ImgBB API key is stored in Keychain (migrated from legacy `notinhas.imgbb.apiKey` UserDefaults). Summary only here — full reference in [CLOUD.md](CLOUD.md).
+Image upload optimization, provider configuration, credentials, expiration, usage stats, Cloud Uploads window position, and the separate **Image Sharing** ImgBB section. Optimized image uploads use a temporary derivative; local captures remain unchanged. The ImgBB API key is stored in Keychain (migrated from legacy `notinhas.imgbb.apiKey` UserDefaults). Summary only here — full reference in [CLOUD.md](CLOUD.md).
 
 ### Advanced (`PreferencesAdvancedSettingsView.swift`)
 
@@ -146,7 +146,7 @@ flowchart LR
 ## Related docs
 
 - [SHORTCUTS.md](SHORTCUTS.md) — shortcut mechanics, defaults, conflicts
-- [CLOUD.md](CLOUD.md) — Cloud tab + uploads window
+- [CLOUD.md](CLOUD.md) — Uploads tab + cloud resources and uploads window
 - [UPDATES.md](UPDATES.md) — local diagnostics and manual upgrade notes
 - [APP_LIFECYCLE.md](APP_LIFECYCLE.md) — seeded defaults, activation policy, onboarding
 - [CONFIGURATION.md](CONFIGURATION.md) — TOML backup/sync of these prefs

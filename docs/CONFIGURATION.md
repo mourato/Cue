@@ -53,13 +53,14 @@ The TOML file covers portable app preferences:
 - Quick Access: visibility, position, countdown behavior, gesture toggles, trackpad swipe mode, swipe left/right actions, hide card when window open, animation style, action order, enabled actions, card slots.
 - History: retention, maximum count, floating panel layout and filter.
 - Cloud metadata: provider, bucket, region, endpoint, custom domain, expiration, and upload window position.
+- Image upload settings: optimization toggle, derivative format, maximum physical pixel dimension, and JPEG/WebP quality under `[uploads]`.
 - Annotate preferences.
 - Global, overlay, Annotate tool, and Annotate action shortcuts.
 
 The export intentionally excludes secrets and machine-private state:
 
 - Cloud access key and secret key are not exported. They remain in Keychain.
-- ImgBB API keys are not exported. They remain in Keychain and are configured separately in Preferences → Cloud.
+- ImgBB API keys are not exported. They remain in Keychain and are configured separately in Preferences → Uploads.
 - Cloud credential archive transfer stays in the existing encrypted cloud
   import/export flow.
 - Cloud configured/password-protection state is not exported because it depends
@@ -113,6 +114,12 @@ export_location = "~/Desktop"
 check_automatically = true
 download_automatically = false
 channel = "stable" # "stable" | "beta" — invalid values are rejected on import
+
+[uploads]
+optimize_images = true
+image_format = "webp" # "webp" | "jpeg" | "png"
+maximum_dimension = 2048
+jpeg_quality = 0.9 # 0.5 ... 1.0
 
 [capture]
 hide_desktop_icons = false

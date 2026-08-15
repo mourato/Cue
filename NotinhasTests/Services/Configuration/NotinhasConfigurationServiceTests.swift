@@ -394,6 +394,10 @@ final class NotinhasConfigurationServiceTests: XCTestCase {
 
         XCTAssertEqual(document.value(at: "capture", "screenshot", "selection_snap_distance")?.intValue, 5)
         XCTAssertEqual(document.value(at: "capture", "screenshot", "selection_color_sensitivity")?.intValue, 3)
+        XCTAssertEqual(document.value(at: "uploads", "optimize_images")?.boolValue, true)
+        XCTAssertEqual(document.value(at: "uploads", "image_format")?.stringValue, "webp")
+        XCTAssertEqual(document.value(at: "uploads", "maximum_dimension")?.intValue, 2048)
+        XCTAssertEqual(document.value(at: "uploads", "jpeg_quality")?.doubleValue, 0.9)
     }
 
     func testExportIncludesSelectionSnappingKeys() throws {
@@ -406,6 +410,22 @@ final class NotinhasConfigurationServiceTests: XCTestCase {
 
         XCTAssertEqual(document.value(at: "capture", "screenshot", "selection_snap_distance")?.intValue, 8)
         XCTAssertEqual(document.value(at: "capture", "screenshot", "selection_color_sensitivity")?.intValue, 2)
+    }
+
+    func testExportIncludesImageUploadSettings() throws {
+        let defaults = UserDefaultsFactory.make()
+        defaults.set(false, forKey: PreferencesKeys.uploadOptimizeImages)
+        defaults.set("jpeg", forKey: PreferencesKeys.uploadImageFormat)
+        defaults.set(2560, forKey: PreferencesKeys.uploadMaximumDimension)
+        defaults.set(0.73, forKey: PreferencesKeys.uploadJPEGQuality)
+
+        let source = NotinhasConfigurationExporter.exportTOML(defaults: defaults)
+        let document = try SimpleTOMLParser.parse(source)
+
+        XCTAssertEqual(document.value(at: "uploads", "optimize_images")?.boolValue, false)
+        XCTAssertEqual(document.value(at: "uploads", "image_format")?.stringValue, "jpeg")
+        XCTAssertEqual(document.value(at: "uploads", "maximum_dimension")?.intValue, 2560)
+        XCTAssertEqual(document.value(at: "uploads", "jpeg_quality")?.doubleValue, 0.73)
     }
 
     private func temporaryHomeDirectory() -> URL {

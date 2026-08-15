@@ -26,6 +26,7 @@ enum NotinhasConfigurationExporter {
         writeQuickAccess(&writer)
         writeHistory(&writer, defaults: defaults)
         writeCloud(&writer, defaults: defaults)
+        writeUploads(&writer, defaults: defaults)
         writeAnnotate(&writer, defaults: defaults)
         writeShortcuts(&writer)
 
@@ -242,6 +243,15 @@ enum NotinhasConfigurationExporter {
             )
         }
         writer.value("uploads_window_position", CloudUploadFloatingPosition.stored(userDefaults: defaults).rawValue)
+    }
+
+    private static func writeUploads(_ writer: inout SimpleTOMLWriter, defaults: UserDefaults) {
+        let settings = NotinhasUploadEncodingSettings.current(defaults: defaults)
+        writer.section("uploads")
+        writer.value("optimize_images", settings.optimizeImages)
+        writer.value("image_format", settings.imageFormat.rawValue)
+        writer.value("maximum_dimension", settings.maximumDimension)
+        writer.value("jpeg_quality", settings.jpegQuality)
     }
 
     private static func writeAnnotate(_ writer: inout SimpleTOMLWriter, defaults: UserDefaults) {
