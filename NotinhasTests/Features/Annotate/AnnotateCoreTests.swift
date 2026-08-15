@@ -1943,16 +1943,38 @@ final class AnnotateCoreTests: XCTestCase {
         let state = makeAnnotateState()
         state.activateTool(.rectangle)
 
-        state.quickStrokeColorBinding.wrappedValue = .blue
+        let selectedColor = NotinhasPaletteColor.blue.rgba.color
+        state.quickStrokeColorBinding.wrappedValue = selectedColor
 
-        assertColorsMatch(state.annotationCreationProperties(for: .rectangle).strokeColor, .blue)
-        assertColorsMatch(state.annotationCreationProperties(for: .arrow).strokeColor, .blue)
-        assertColorsMatch(state.annotationCreationProperties(for: .text).strokeColor, .blue)
-        assertColorsMatch(state.annotationCreationProperties(for: .filledRectangle).strokeColor, .blue)
-        assertColorsMatch(state.annotationCreationProperties(for: .filledRectangle).fillColor, .blue)
+        assertColorsMatch(state.annotationCreationProperties(for: .rectangle).strokeColor, selectedColor)
+        assertColorsMatch(state.annotationCreationProperties(for: .arrow).strokeColor, selectedColor)
+        assertColorsMatch(state.annotationCreationProperties(for: .text).strokeColor, selectedColor)
+        assertColorsMatch(state.annotationCreationProperties(for: .filledRectangle).strokeColor, selectedColor)
+        assertColorsMatch(state.annotationCreationProperties(for: .filledRectangle).fillColor, selectedColor)
+        assertColorsMatch(state.annotationCreationProperties(for: .notinhasNote).strokeColor, selectedColor)
 
         state.activateTool(.arrow)
-        assertColorsMatch(state.quickStrokeColorBinding.wrappedValue, .blue)
+        assertColorsMatch(state.quickStrokeColorBinding.wrappedValue, selectedColor)
+    }
+
+    @MainActor
+    func testNotinhasToolbarColorUpdatesShapeDefaultsAndPersists() {
+        let defaults = UserDefaultsFactory.make()
+        let selectedColor = NotinhasPaletteColor.magenta.rgba.color
+        let state = makeAnnotateState(defaults: defaults)
+
+        state.activateTool(.notinhasNote)
+        state.quickStrokeColorBinding.wrappedValue = selectedColor
+        assertColorsMatch(state.quickStrokeColorBinding.wrappedValue, selectedColor)
+
+        state.activateTool(.rectangle)
+        assertColorsMatch(state.quickStrokeColorBinding.wrappedValue, selectedColor)
+        state.activateTool(.line)
+        assertColorsMatch(state.quickStrokeColorBinding.wrappedValue, selectedColor)
+
+        let reloadedState = makeAnnotateState(defaults: defaults)
+        reloadedState.activateTool(.notinhasNote)
+        assertColorsMatch(reloadedState.quickStrokeColorBinding.wrappedValue, selectedColor)
     }
 
     @MainActor
