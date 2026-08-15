@@ -48,6 +48,15 @@ The script builds **Notinhas Debug.app** at:
 ```
 
 Debug uses bundle ID `com.mourato.notinhas.debug` so TCC grants stay separate from release `com.mourato.notinhas`.
+Debug builds deliberately do not declare image document types, so they do not appear in Finder's **Open With** menu. Open an image explicitly during development with `open -a "Notinhas Debug" path/to/image.png` when needed.
+
+If old duplicate Notinhas entries remain after upgrading, keep the installed app at `/Applications/Notinhas.app` and run:
+
+```bash
+./scripts/clean-launch-services.sh
+```
+
+The script unregisters stale Notinhas and Notinhas Debug paths, then registers only the canonical installed app. It does not delete app bundles or affect other applications.
 
 Reset local Debug permissions:
 
