@@ -3839,6 +3839,10 @@ final class AnnotateState: ObservableObject {
         }
     }
 
+    func rememberNotinhasColor(_ color: RGBAColor) {
+        rememberAnnotationPrimaryColor(color.color, for: .notinhasNote)
+    }
+
     private func rememberAnnotationStrokeWidth(_ strokeWidth: CGFloat, for tool: AnnotationToolType?) {
         guard !isQuickPropertiesSyncEnabled else {
             rememberSharedAnnotationStrokeWidth(strokeWidth)
@@ -3960,7 +3964,7 @@ final class AnnotateState: ObservableObject {
         }
         if tool != .watermark {
             let defaultStrokeColor = tool == .notinhasNote
-                ? NotinhasPaletteColor.red.rgba.color
+                ? (sharedAnnotationColor ?? NotinhasPaletteColor.red.rgba.color)
                 : (sharedAnnotationColor ?? .red)
             var properties = AnnotationProperties(strokeColor: defaultStrokeColor)
             if tool == .blur {
@@ -4951,6 +4955,7 @@ final class AnnotateState: ObservableObject {
                         guard note.color != rgba else { return }
                         note.color = rgba
                         notinhasUpdateNote(note)
+                        rememberNotinhasColor(rgba)
                     } else {
                         rememberAnnotationPrimaryColor(newColor, for: .notinhasNote)
                     }

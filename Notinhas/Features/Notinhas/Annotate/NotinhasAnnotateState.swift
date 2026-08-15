@@ -40,6 +40,9 @@ extension AnnotateState {
             saveNotinhasNotesUndoCheckpoint(checkpointNotes)
         }
         notinhasNotes[index] = committed
+        if committed.color != openingSnapshot.color {
+            rememberNotinhasColor(committed.color)
+        }
     }
 
     /// Mutates color, area style, and stroke width without creating an undo checkpoint.

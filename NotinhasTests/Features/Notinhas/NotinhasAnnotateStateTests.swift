@@ -291,4 +291,22 @@ final class NotinhasAnnotateStateTests: XCTestCase {
         XCTAssertEqual(state.notinhasNotes[0].color, draft.color)
         XCTAssertEqual(state.notinhasNotes[0].pinControlValue, 8)
     }
+
+    func testCommitNoteEditRemembersColorForNextAnnotation() {
+        let defaults = UserDefaultsFactory.make()
+        let state = AnnotateState(defaults: defaults)
+        let original = makeNote()
+        state.notinhasNotes = [original]
+        var draft = original
+        draft.color = NotinhasPaletteColor.green.rgba
+
+        state.notinhasCommitNoteEdit(draft: draft, openingSnapshot: original)
+
+        let reloadedState = AnnotateState(defaults: defaults)
+        reloadedState.activateTool(.rectangle)
+        XCTAssertEqual(
+            RGBAColor(color: reloadedState.quickStrokeColorBinding.wrappedValue),
+            NotinhasPaletteColor.green.rgba,
+        )
+    }
 }
