@@ -111,6 +111,21 @@ extension AnnotateState {
         )
     }
 
+    func notinhasUpdateResizingNote(
+        to imagePoint: CGPoint,
+        imageBounds: CGRect,
+        handle: NotinhasNoteGeometry.ResizeHandle,
+    ) {
+        guard notinhasMovingNoteID != nil,
+              let original = notinhasMoveOriginalTarget else { return }
+        notinhasMovePreviewTarget = NotinhasNoteGeometry.resized(
+            original,
+            handle: handle,
+            to: imagePoint,
+            within: imageBounds,
+        )
+    }
+
     /// Resolved target for canvas drawing and hit tests while a move gesture is active.
     func notinhasResolvedTarget(for noteID: UUID) -> NotinhasNoteTarget? {
         guard let note = notinhasNotes.first(where: { $0.id == noteID }) else { return nil }

@@ -9,6 +9,10 @@ import CoreGraphics
 import Foundation
 
 nonisolated enum NotinhasNoteGeometry {
+    enum ResizeHandle: Equatable {
+        case topLeft, topRight, bottomLeft, bottomRight
+    }
+
     static let pinDiameter: CGFloat = 28
     static let dragThreshold: CGFloat = 8
     static let minimumRectSize: CGFloat = 24
@@ -56,6 +60,52 @@ nonisolated enum NotinhasNoteGeometry {
             }
             return .rect(translated)
         }
+    }
+
+    static func resizeHandleCenters(for rect: CGRect) -> [(ResizeHandle, CGPoint)] {
+        let standardized = rect.standardized
+        return [
+            (.topLeft, CGPoint(x: standardized.minX, y: standardized.maxY)),
+            (.topRight, CGPoint(x: standardized.maxX, y: standardized.maxY)),
+            (.bottomLeft, CGPoint(x: standardized.minX, y: standardized.minY)),
+            (.bottomRight, CGPoint(x: standardized.maxX, y: standardized.minY)),
+        ]
+    }
+
+    static func resized(
+        _ target: NotinhasNoteTarget,
+        handle: ResizeHandle,
+        to point: CGPoint,
+        within bounds: CGRect,
+    ) -> NotinhasNoteTarget {
+        guard case .rect(let rect) = target else { return target }
+
+        let original = rect.standardized
+        let imageBounds = bounds.standardized
+        let minimumWidth = min(minimumRectSize, imageBounds.width)
+        let minimumHeight = min(minimumRectSize, imageBounds.height)
+        let clampedPoint = clampedPoint(point, within: imageBounds)
+        var minX = original.minX
+        var minY = original.minY
+        var maxX = original.maxX
+        var maxY = original.maxY
+
+        switch handle {
+        case .topLeft:
+            minX = min(clampedPoint.x, maxX - minimumWidth)
+            maxY = max(clampedPoint.y, minY + minimumHeight)
+        case .topRight:
+            maxX = max(clampedPoint.x, minX + minimumWidth)
+            maxY = max(clampedPoint.y, minY + minimumHeight)
+        case .bottomLeft:
+            minX = min(clampedPoint.x, maxX - minimumWidth)
+            minY = min(clampedPoint.y, maxY - minimumHeight)
+        case .bottomRight:
+            maxX = max(clampedPoint.x, minX + minimumWidth)
+            minY = min(clampedPoint.y, maxY - minimumHeight)
+        }
+
+        return .rect(CGRect(x: minX, y: minY, width: maxX - minX, height: maxY - minY))
     }
 
     static func clampedRect(from start: CGPoint, to end: CGPoint, within bounds: CGRect) -> CGRect {

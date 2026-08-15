@@ -156,6 +156,7 @@ final class DrawingCanvasNSView: NSView {
     private var stateObservers = Set<AnyCancellable>()
     private var notinhasMoveStartPoint: CGPoint?
     private var notinhasIsMovingNote = false
+    private var notinhasResizeHandle: NotinhasNoteGeometry.ResizeHandle?
 
     init(state: AnnotateState) {
         self.state = state
@@ -635,6 +636,22 @@ final class DrawingCanvasNSView: NSView {
                 gestureDidMutate = false
                 return
             }
+        }
+
+        if state.selectedTool == .notinhasNote,
+           let selectedId = state.notinhasSelectedNoteID,
+           let note = state.notinhasNotes.first(where: { $0.id == selectedId }),
+           let handle = hitTestNotinhasResizeHandle(at: displayPoint, for: note) {
+            if state.notinhasEditingNoteID != nil {
+                state.notinhasCloseEditor(discardIfEmpty: false, revertLiveAppearance: true)
+            }
+            state.notinhasSelectNote(id: note.id, beginEditing: false)
+            state.notinhasBeginMovingNote(id: note.id)
+            notinhasMoveStartPoint = imagePoint
+            notinhasResizeHandle = handle
+            notinhasIsMovingNote = false
+            invalidateNotinhasNotesLayer()
+            return
         }
 
         if handleNotinhasMouseDown(at: imagePoint) {
@@ -1307,15 +1324,45 @@ final class DrawingCanvasNSView: NSView {
     private func clearNotinhasMoveGestureLocals() {
         notinhasMoveStartPoint = nil
         notinhasIsMovingNote = false
+        notinhasResizeHandle = nil
+    }
+
+    private func hitTestNotinhasResizeHandle(
+        at displayPoint: CGPoint,
+        for note: NotinhasVisualNote,
+    ) -> NotinhasNoteGeometry.ResizeHandle? {
+        guard case .rect(let rect) = note.target else { return nil }
+        for (handle, center) in NotinhasNoteGeometry.resizeHandleCenters(for: rect) {
+            if handleRect(at: imageToDisplay(center)).contains(displayPoint) {
+                return handle
+            }
+        }
+        return nil
+    }
+
+    private func drawNotinhasResizeHandles(for rect: CGRect, in context: CGContext) {
+        context.setFillColor(NSColor.white.cgColor)
+        context.setStrokeColor(NSColor.systemBlue.cgColor)
+        context.setLineWidth(1)
+        for (_, center) in NotinhasNoteGeometry.resizeHandleCenters(for: rect) {
+            let handle = handleRect(at: center)
+            context.fill(handle)
+            context.stroke(handle)
+        }
     }
 
     private func handleNotinhasMouseDown(at imagePoint: CGPoint) -> Bool {
         if state.notinhasEditingNoteID != nil {
-            // Click-away matches Cancel: revert live appearance and discard uncommitted text.
-            state.notinhasCloseEditor(discardIfEmpty: true, revertLiveAppearance: true)
-            clearNotinhasMoveGestureLocals()
+            // Blank-canvas click-away matches Cancel; a note hit closes the panel and continues
+            // into the same gesture so the note can move without a second click.
+            if state.notinhasNote(at: imagePoint) == nil {
+                state.notinhasCloseEditor(discardIfEmpty: true, revertLiveAppearance: true)
+                clearNotinhasMoveGestureLocals()
+                invalidateDrawing()
+                return true
+            }
+            state.notinhasCloseEditor(discardIfEmpty: false, revertLiveAppearance: true)
             invalidateDrawing()
-            return true
         }
 
         guard state.selectedTool == .notinhasNote else { return false }
@@ -1348,11 +1395,19 @@ final class DrawingCanvasNSView: NSView {
                 notinhasIsMovingNote = true
             }
             if notinhasIsMovingNote {
-                state.notinhasUpdateMovingNote(
-                    to: imagePoint,
-                    imageBounds: notinhasImageBounds(),
-                    from: startPoint,
-                )
+                if let handle = notinhasResizeHandle {
+                    state.notinhasUpdateResizingNote(
+                        to: imagePoint,
+                        imageBounds: notinhasImageBounds(),
+                        handle: handle,
+                    )
+                } else {
+                    state.notinhasUpdateMovingNote(
+                        to: imagePoint,
+                        imageBounds: notinhasImageBounds(),
+                        from: startPoint,
+                    )
+                }
                 invalidateNotinhasNotesLayer()
                 return true
             }
@@ -1375,7 +1430,7 @@ final class DrawingCanvasNSView: NSView {
                 state.notinhasCommitMovingNote()
             } else {
                 state.notinhasCancelMovingNote()
-                if let selectedID = state.notinhasSelectedNoteID {
+                if notinhasResizeHandle == nil, let selectedID = state.notinhasSelectedNoteID {
                     state.notinhasSelectNote(id: selectedID, beginEditing: true)
                 }
             }
@@ -1421,6 +1476,10 @@ final class DrawingCanvasNSView: NSView {
                 in: context,
                 imageBounds: notinhasImageBounds(),
             )
+            if note.id == state.notinhasSelectedNoteID,
+               case .rect(let rect) = displayNote.target {
+                drawNotinhasResizeHandles(for: rect, in: context)
+            }
         }
 
         if let draft = state.notinhasDraftNote {
@@ -1882,6 +1941,15 @@ final class DrawingCanvasNSView: NSView {
     private func updateCursor(for event: NSEvent) {
         let displayPoint = convert(event.locationInWindow, from: nil)
         let imagePoint = displayToImage(displayPoint)
+
+        if state.selectedTool == .notinhasNote,
+           let selectedId = state.notinhasSelectedNoteID,
+           let note = state.notinhasNotes.first(where: { $0.id == selectedId }),
+           case .rect = note.target,
+           hitTestNotinhasResizeHandle(at: displayPoint, for: note) != nil {
+            NSCursor.crosshair.set()
+            return
+        }
 
         // Check resize handles first for single selection.
         if state.selectedAnnotationIds.count == 1,

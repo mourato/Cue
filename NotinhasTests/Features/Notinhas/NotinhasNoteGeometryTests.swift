@@ -40,6 +40,33 @@ final class NotinhasNoteGeometryTests: XCTestCase {
         XCTAssertEqual(rect.width, 20)
     }
 
+    func testResizedRectMovesOnlyTheSelectedCornerAndKeepsMinimumSize() {
+        let target = NotinhasNoteTarget.rect(CGRect(x: 20, y: 30, width: 80, height: 60))
+        let resized = NotinhasNoteGeometry.resized(
+            target,
+            handle: .bottomRight,
+            to: CGPoint(x: 70, y: 50),
+            within: CGRect(x: 0, y: 0, width: 200, height: 200),
+        )
+
+        guard case .rect(let rect) = resized else {
+            return XCTFail("Expected rect target")
+        }
+        XCTAssertEqual(rect, CGRect(x: 20, y: 50, width: 50, height: 40))
+
+        let tooSmall = NotinhasNoteGeometry.resized(
+            target,
+            handle: .topLeft,
+            to: CGPoint(x: 95, y: 35),
+            within: CGRect(x: 0, y: 0, width: 200, height: 200),
+        )
+        guard case .rect(let minimumRect) = tooSmall else {
+            return XCTFail("Expected rect target")
+        }
+        XCTAssertEqual(minimumRect.width, NotinhasNoteGeometry.minimumRectSize)
+        XCTAssertEqual(minimumRect.height, NotinhasNoteGeometry.minimumRectSize)
+    }
+
     func testDisplayNumberUsesCreationOrderAmongRenderableNotes() {
         let first = NotinhasVisualNote(text: "One", target: .point(.zero), color: red, creationOrder: 1)
         let second = NotinhasVisualNote(

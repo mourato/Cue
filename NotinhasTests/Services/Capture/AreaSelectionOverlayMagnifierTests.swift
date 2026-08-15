@@ -10,6 +10,7 @@ import AppKit
 @testable import Notinhas
 import XCTest
 
+@MainActor
 final class AreaSelectionOverlayMagnifierTests: AreaSelectionOverlayTestCase {
     func testMagnifierZoom_scrollWheelAndLimits() {
         // GIVEN: A valid backdrop

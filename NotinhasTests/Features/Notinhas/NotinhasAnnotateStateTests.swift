@@ -77,6 +77,29 @@ final class NotinhasAnnotateStateTests: XCTestCase {
         XCTAssertEqual(state.notinhasNotes[0].target, note.target)
     }
 
+    func testResizingRectNoteCreatesOneUndoCheckpoint() {
+        let state = makeState()
+        let note = NotinhasVisualNote(
+            target: .rect(CGRect(x: 20, y: 30, width: 80, height: 60)),
+            color: RGBAColor(red: 1, green: 0, blue: 0, alpha: 1),
+            creationOrder: 1,
+        )
+        state.notinhasNotes = [note]
+        let bounds = CGRect(x: 0, y: 0, width: 200, height: 200)
+
+        state.notinhasBeginMovingNote(id: note.id)
+        state.notinhasUpdateResizingNote(
+            to: CGPoint(x: 70, y: 50),
+            imageBounds: bounds,
+            handle: .bottomRight,
+        )
+        state.notinhasCommitMovingNote()
+
+        XCTAssertEqual(state.notinhasNotes[0].target, .rect(CGRect(x: 20, y: 50, width: 50, height: 40)))
+        state.undo()
+        XCTAssertEqual(state.notinhasNotes[0].target, note.target)
+    }
+
     func testMovingNotePreviewDoesNotPublishUntilCommit() {
         let state = makeState()
         let note = makeNote()
