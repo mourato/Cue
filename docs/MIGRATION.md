@@ -54,6 +54,8 @@ After installing Notinhas you must:
 
 Remove stale Snapzy entries if they confuse the list. Debug builds (`Notinhas Debug.app`, `com.mourato.notinhas.debug`) require separate grants from release installs.
 
+If Finder or another app shows duplicate Notinhas entries under **Open With**, close Notinhas, keep the desired release app at `/Applications/Notinhas.app`, and run `./scripts/clean-launch-services.sh` from the repository. Debug builds no longer claim image files, so new Debug entries will not be added.
+
 ```bash
 tccutil reset ScreenCapture com.mourato.notinhas
 tccutil reset Accessibility com.mourato.notinhas

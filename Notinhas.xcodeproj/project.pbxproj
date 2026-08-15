@@ -515,7 +515,7 @@
 				ENABLE_USER_SELECTED_FILES = readwrite;
 				EXECUTABLE_NAME = Notinhas;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Notinhas/Resources/Info.plist;
+				INFOPLIST_FILE = Notinhas/Resources/Info-Debug.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Notinhas Debug";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_LSUIElement = YES;
@@ -597,7 +597,7 @@
 				ENABLE_USER_SELECTED_FILES = readwrite;
 				EXECUTABLE_NAME = Notinhas;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Notinhas/Resources/Info.plist;
+				INFOPLIST_FILE = Notinhas/Resources/Info-Debug.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Notinhas Debug";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_LSUIElement = YES;
@@ -818,8 +818,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/groue/GRDB.swift.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 7.0.0;
+				kind = exactVersion;
+				version = 7.10.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
