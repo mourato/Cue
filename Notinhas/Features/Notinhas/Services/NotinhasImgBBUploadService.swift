@@ -1,4 +1,3 @@
-import AppKit
 import Foundation
 
 enum NotinhasImgBBUploadError: LocalizedError, Equatable {
@@ -35,13 +34,13 @@ actor NotinhasImgBBUploadService {
         self.session = session
     }
 
-    func upload(image: NSImage, apiKey: String) async throws -> NotinhasImgBBUploadResult {
+    func upload(image: NotinhasEncodedImage, apiKey: String) async throws -> NotinhasImgBBUploadResult {
         let trimmedAPIKey = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedAPIKey.isEmpty else {
             throw NotinhasImgBBUploadError.missingAPIKey
         }
 
-        guard let pngData = image.pngData() else {
+        guard !image.data.isEmpty else {
             throw NotinhasImgBBUploadError.invalidImageData
         }
 
@@ -52,7 +51,7 @@ actor NotinhasImgBBUploadService {
         request.httpBody = makeMultipartBody(
             boundary: boundary,
             apiKey: trimmedAPIKey,
-            base64Image: pngData.base64EncodedString(),
+            image: image,
         )
 
         let (data, response) = try await session.data(for: request)
@@ -75,7 +74,7 @@ actor NotinhasImgBBUploadService {
         return result
     }
 
-    private func makeMultipartBody(boundary: String, apiKey: String, base64Image: String) -> Data {
+    private func makeMultipartBody(boundary: String, apiKey: String, image: NotinhasEncodedImage) -> Data {
         var body = Data()
         let lineBreak = "\r\n"
 
@@ -84,8 +83,12 @@ actor NotinhasImgBBUploadService {
         body.append("\(apiKey)\(lineBreak)")
 
         body.append("--\(boundary)\(lineBreak)")
-        body.append("Content-Disposition: form-data; name=\"image\"\(lineBreak)\(lineBreak)")
-        body.append("\(base64Image)\(lineBreak)")
+        body.append(
+            "Content-Disposition: form-data; name=\"image\"; filename=\"image.\(image.fileExtension)\"\(lineBreak)",
+        )
+        body.append("Content-Type: \(image.contentType)\(lineBreak)\(lineBreak)")
+        body.append(image.data)
+        body.append(lineBreak)
 
         body.append("--\(boundary)--\(lineBreak)")
         return body
@@ -114,15 +117,5 @@ private extension Data {
     mutating func append(_ string: String) {
         guard let data = string.data(using: .utf8) else { return }
         append(data)
-    }
-}
-
-private extension NSImage {
-    func pngData() -> Data? {
-        guard let tiff = tiffRepresentation,
-              let bitmap = NSBitmapImageRep(data: tiff) else {
-            return nil
-        }
-        return bitmap.representation(using: .png, properties: [:])
     }
 }

@@ -60,6 +60,7 @@ enum NotinhasConfigurationImporter {
         collectQuickAccess(&reader, mutations: &mutations)
         collectHistory(&reader, defaults: defaults, mutations: &mutations)
         collectCloud(&reader, defaults: defaults, mutations: &mutations)
+        collectUploads(&reader, defaults: defaults, mutations: &mutations)
         collectAnnotate(&reader, defaults: defaults, mutations: &mutations)
         collectShortcuts(&reader, mutations: &mutations)
 
@@ -571,6 +572,43 @@ enum NotinhasConfigurationImporter {
             mutations: &mutations,
         ) {
             defaults.set($0, forKey: PreferencesKeys.cloudUploadsFloatingPosition)
+        }
+    }
+
+    private static func collectUploads(
+        _ reader: inout NotinhasConfigurationReader,
+        defaults: UserDefaults,
+        mutations: inout [() -> Void],
+    ) {
+        collectBool(&reader, "uploads", "optimize_images", mutations: &mutations) {
+            defaults.set($0, forKey: PreferencesKeys.uploadOptimizeImages)
+        }
+        collectEnumString(
+            &reader,
+            "uploads",
+            "image_format",
+            allowed: NotinhasUploadImageFormat.allCases.map(\.rawValue),
+            mutations: &mutations,
+        ) {
+            defaults.set($0, forKey: PreferencesKeys.uploadImageFormat)
+        }
+        collectInt(
+            &reader,
+            "uploads",
+            "maximum_dimension",
+            range: 512 ... 8192,
+            mutations: &mutations,
+        ) {
+            defaults.set($0, forKey: PreferencesKeys.uploadMaximumDimension)
+        }
+        collectDouble(
+            &reader,
+            "uploads",
+            "jpeg_quality",
+            range: 0.5 ... 1.0,
+            mutations: &mutations,
+        ) {
+            defaults.set($0, forKey: PreferencesKeys.uploadJPEGQuality)
         }
     }
 

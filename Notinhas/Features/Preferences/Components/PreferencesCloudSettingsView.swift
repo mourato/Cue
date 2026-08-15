@@ -45,6 +45,14 @@ struct CloudSettingsView: View {
     @ObservedObject private var usageService = CloudUsageService.shared
     @AppStorage(PreferencesKeys.cloudUploadsFloatingPosition)
     private var uploadsWindowPosition: CloudUploadFloatingPosition = .defaultPosition
+    @AppStorage(PreferencesKeys.uploadOptimizeImages)
+    private var optimizeImageUploads = true
+    @AppStorage(PreferencesKeys.uploadImageFormat)
+    private var uploadImageFormat = NotinhasUploadImageFormat.webp.rawValue
+    @AppStorage(PreferencesKeys.uploadMaximumDimension)
+    private var uploadMaximumDimension = Double(NotinhasUploadEncodingSettings.defaultMaximumDimension)
+    @AppStorage(PreferencesKeys.uploadJPEGQuality)
+    private var uploadJPEGQuality = NotinhasUploadEncodingSettings.defaultJPEGQuality
 
     @State private var isEditing = false
     @State private var showResetConfirmation = false
@@ -97,6 +105,7 @@ struct CloudSettingsView: View {
                 )
             }
 
+            uploadSettingsSection
             imgbbSettingsSection
             uploadsWindowSection
         }
@@ -293,6 +302,81 @@ struct CloudSettingsView: View {
                 .foregroundColor(.red)
             }
             .padding(.top, 4)
+        }
+    }
+
+    private var uploadSettingsSection: some View {
+        Section(L10n.CloudSettings.uploadSettingsSection) {
+            Text(L10n.CloudSettings.uploadSettingsDescription)
+                .font(.system(size: 12))
+                .foregroundColor(.secondary)
+
+            SettingRow(
+                icon: "arrow.down.right.and.arrow.up.left",
+                title: L10n.CloudSettings.optimizeImageUploadsTitle,
+                description: L10n.CloudSettings.optimizeImageUploadsDescription,
+            ) {
+                Toggle("", isOn: $optimizeImageUploads)
+                    .labelsHidden()
+                    .accessibilityLabel(Text(L10n.CloudSettings.optimizeImageUploadsTitle))
+                    .accessibilityValue(Text(optimizeImageUploads ? L10n.Common.on : L10n.Common.off))
+                    .accessibilityHint(Text(L10n.CloudSettings.optimizeImageUploadsDescription))
+            }
+
+            SettingRow(
+                icon: "photo",
+                title: L10n.CloudSettings.uploadImageFormatTitle,
+                description: L10n.CloudSettings.uploadImageFormatDescription,
+            ) {
+                Picker("", selection: $uploadImageFormat) {
+                    ForEach(NotinhasUploadImageFormat.allCases) { format in
+                        Text(format.displayName).tag(format.rawValue)
+                    }
+                }
+                .labelsHidden()
+                .pickerStyle(.menu)
+                .fixedSize()
+                .frame(width: 100, alignment: .trailing)
+                .disabled(!optimizeImageUploads)
+                .accessibilityLabel(Text(L10n.CloudSettings.uploadImageFormatTitle))
+                .accessibilityValue(Text(NotinhasUploadImageFormat(rawValue: uploadImageFormat)?.displayName ?? "WebP"))
+                .accessibilityHint(Text(L10n.CloudSettings.uploadImageFormatDescription))
+            }
+
+            SettingRow(
+                icon: "ruler",
+                title: L10n.CloudSettings.uploadMaximumDimensionTitle,
+                description: L10n.CloudSettings.uploadMaximumDimensionDescription,
+            ) {
+                PreferencesNumericPicker(
+                    value: $uploadMaximumDimension,
+                    range: 512 ... 8192,
+                    presets: [1280, 1600, 2048, 2560, 3840],
+                    step: 1,
+                    accessibilityTitle: L10n.CloudSettings.uploadMaximumDimensionTitle,
+                    unit: "px",
+                    valueLabel: { "\(Int($0.rounded())) px" },
+                )
+                .disabled(!optimizeImageUploads)
+            }
+
+            SettingRow(
+                icon: "slider.horizontal.3",
+                title: L10n.CloudSettings.uploadJPEGQualityTitle,
+                description: L10n.CloudSettings.uploadJPEGQualityDescription,
+            ) {
+                PreferencesNumericPicker(
+                    value: $uploadJPEGQuality,
+                    range: 0.5 ... 1.0,
+                    presets: [0.75, 0.8, 0.85, 0.9, 0.95],
+                    step: 0.01,
+                    accessibilityTitle: L10n.CloudSettings.uploadJPEGQualityTitle,
+                    unit: "%",
+                    customInputScale: 100,
+                    valueLabel: { "\(Int(($0 * 100).rounded()))%" },
+                )
+                .disabled(!optimizeImageUploads)
+            }
         }
     }
 

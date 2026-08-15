@@ -173,4 +173,10 @@ enum PreferencesKeys {
     static let cloudUsageStatsCache = "cloud.usageStatsCache"
     static let cloudUploadsFloatingPosition = "cloud.uploads.floatingPosition"
     static let cloudGoogleFolderId = "cloud.google.folderId"
+
+    // Uploads
+    static let uploadOptimizeImages = "uploads.optimizeImages"
+    static let uploadImageFormat = "uploads.imageFormat"
+    static let uploadMaximumDimension = "uploads.maximumDimension"
+    static let uploadJPEGQuality = "uploads.jpegQuality"
 }

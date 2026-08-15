@@ -38,6 +38,43 @@ final class NotinhasConfigurationImporterTests: XCTestCase {
         #endif
     }
 
+    func testImportAppliesImageUploadSettings() {
+        let defaults = UserDefaultsFactory.make()
+        let source = """
+        schema_version = 1
+
+        [uploads]
+        optimize_images = false
+        image_format = "jpeg"
+        maximum_dimension = 2560
+        jpeg_quality = 0.73
+        """
+
+        let result = NotinhasConfigurationImporter.importTOML(source, defaults: defaults)
+
+        XCTAssertFalse(result.hasErrors)
+        XCTAssertEqual(defaults.object(forKey: PreferencesKeys.uploadOptimizeImages) as? Bool, false)
+        XCTAssertEqual(defaults.string(forKey: PreferencesKeys.uploadImageFormat), "jpeg")
+        XCTAssertEqual(defaults.object(forKey: PreferencesKeys.uploadMaximumDimension) as? Int, 2560)
+        XCTAssertEqual(defaults.object(forKey: PreferencesKeys.uploadJPEGQuality) as? Double, 0.73)
+    }
+
+    func testImportRejectsImageUploadSettingsOutsideSupportedRanges() {
+        let defaults = UserDefaultsFactory.make()
+        let source = """
+        schema_version = 1
+
+        [uploads]
+        maximum_dimension = 256
+        jpeg_quality = 1.1
+        """
+
+        let result = NotinhasConfigurationImporter.importTOML(source, defaults: defaults)
+
+        XCTAssertTrue(result.hasErrors)
+        XCTAssertEqual(result.appliedChangeCount, 0)
+    }
+
     func testImportRejectsUnsupportedSchemaBeforeMutatingDefaults() {
         let defaults = UserDefaultsFactory.make()
         defaults.set("png", forKey: PreferencesKeys.screenshotFormat)

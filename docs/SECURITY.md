@@ -28,7 +28,7 @@ TCC grants do not migrate from legacy Snapzy bundle IDs — see [MIGRATION.md](M
 ## Secrets
 
 - Cloud credentials: Keychain service `com.mourato.notinhas.cloud`
-- ImgBB API key: Keychain item `com.mourato.notinhas.cloud.imgbbAPIKey` (configured in Preferences → Cloud; legacy `notinhas.imgbb.apiKey` UserDefaults is migrated on read)
+- ImgBB API key: Keychain item `com.mourato.notinhas.cloud.imgbbAPIKey` (configured in Preferences → Uploads; legacy `notinhas.imgbb.apiKey` UserDefaults is migrated on read)
 - Never commit keys, `.p12` files, or webhook URLs
 
 ## Deep links

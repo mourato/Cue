@@ -232,7 +232,7 @@ NotinhasUITests/
 | `Features/QuickAccess/` | Floating post-capture stack, temp-file persistence UX, drag-to-app, pinned screenshot windows |
 | `Features/Annotate/` | Image editor, export, crop, blur, mockup, cutout-aware editing, inline area annotate |
 | `Features/VideoEditor/` | Trim, zoom, speed (timelapse) segments, background, Smart Camera, GIF/video export |
-| `Features/Preferences/` | General, Capture, Annotate, Quick Access, History, Shortcuts, Permissions, Cloud, Advanced tabs |
+| `Features/Preferences/` | General, Capture, Annotate, Quick Access, History, Shortcuts, Permissions, Uploads, Advanced tabs |
 | `Features/Shortcuts/` | Keyboard shortcut cheat-sheet overlay |
 
 ## Service Roots

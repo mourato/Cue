@@ -619,7 +619,25 @@ final class CloudManager: ObservableObject {
             throw CloudError.notConfigured
         }
 
-        let contentType = mimeType(for: fileURL)
+        isUploading = true
+        uploadProgress = 0
+        defer {
+            isUploading = false
+        }
+
+        let settings = NotinhasUploadEncodingSettings.current()
+        let preparedUpload: NotinhasPreparedUpload
+        do {
+            preparedUpload = try await NotinhasUploadImageEncoder.prepare(fileURL: fileURL, settings: settings)
+        } catch {
+            // Preserve the upload path if an optional derivative cannot be created.
+            DiagnosticLogger.shared.logError(.cloud, error, "Cloud upload optimization failed; using original")
+            preparedUpload = .original(fileURL)
+        }
+        defer { preparedUpload.cleanup() }
+
+        let uploadURL = preparedUpload.url
+        let contentType = mimeType(for: uploadURL)
         DiagnosticLogger.shared.log(
             .info,
             .cloud,
@@ -634,15 +652,9 @@ final class CloudManager: ObservableObject {
             ),
         )
 
-        isUploading = true
-        uploadProgress = 0
-        defer {
-            isUploading = false
-        }
-
         do {
             let result = try await provider.upload(
-                fileURL: fileURL,
+                fileURL: uploadURL,
                 contentType: contentType,
                 expireTime: config.expireTime,
                 existingKey: existingKey,
@@ -670,7 +682,7 @@ final class CloudManager: ObservableObject {
 
             // Generate thumbnail for image or video uploads
             if contentType.hasPrefix("image/") {
-                saveThumbnail(from: fileURL, recordId: recordId)
+                saveThumbnail(from: uploadURL, recordId: recordId)
             } else if contentType.hasPrefix("video/") {
                 saveVideoThumbnail(from: fileURL, recordId: recordId)
             }
