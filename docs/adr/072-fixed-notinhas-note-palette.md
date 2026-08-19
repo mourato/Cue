@@ -33,10 +33,18 @@ ink.
 
 The notes experience is visually stable and matches the approved palette,
 including the new Magenta choice. Custom or historical colors do not receive
-adaptive ink, so a future custom-color feature would need an explicit ink rule.
+adaptive ink, so colors outside the fixed Notes slots fall back to white
+numeral ink.
+
+Annotate tool color pickers and the Notes editor share
+`AnnotateBuiltInColorPalette` as the built-in dictionary. Named overlaps keep
+the Notes hex values above; annotate-only extras (for example yellow and white)
+are merged without duplicating RGB. User customs continue to live in
+`AnnotateColorPaletteStore`.
 
 ## Affected surfaces
 
 - `NotinhasPaletteColor`
-- Notinhas note editor and quick color controls
+- `AnnotateBuiltInColorPalette`
+- Notinhas note editor and annotate color pickers
 - numbered note canvas/export rendering

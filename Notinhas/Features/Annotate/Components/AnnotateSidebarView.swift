@@ -680,18 +680,7 @@ struct CompactColorSwatchGrid: View {
     @ObservedObject private var paletteStore = AnnotateColorPaletteStore.shared
     @State private var draftCustomColor = Color.red
 
-    private let colors: [(color: Color, name: String)] = [
-        (.red, NotinhasL10n.colorRed),
-        (.orange, NotinhasL10n.colorOrange),
-        (.yellow, NotinhasL10n.colorYellow),
-        (.green, NotinhasL10n.colorGreen),
-        (.blue, NotinhasL10n.colorBlue),
-        (.purple, NotinhasL10n.colorPurple),
-        (.pink, NotinhasL10n.colorPink),
-        (.gray, NotinhasL10n.colorGray),
-        (.white, NotinhasL10n.colorWhite),
-        (.black, NotinhasL10n.colorBlack),
-    ]
+    private let colors = AnnotateBuiltInColorPalette.namedCanvasEntries
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {

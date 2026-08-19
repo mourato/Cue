@@ -290,32 +290,19 @@ struct ColorSwatchGrid: View {
     @ObservedObject private var paletteStore = AnnotateColorPaletteStore.shared
     @State private var draftCustomColor = Color.red
 
-    private let colors: [[(color: Color, name: String)]] = [
-        [
-            (.red, NotinhasL10n.colorRed),
-            (.orange, NotinhasL10n.colorOrange),
-            (.yellow, NotinhasL10n.colorYellow),
-            (.green, NotinhasL10n.colorGreen),
-            (.blue, NotinhasL10n.colorBlue),
-            (.purple, NotinhasL10n.colorPurple),
-            (.pink, NotinhasL10n.colorPink),
-        ],
-        [
-            (.gray, NotinhasL10n.colorGray),
-            (.white, NotinhasL10n.colorWhite),
-            (.black, NotinhasL10n.colorBlack),
-            (Color(white: 0.3), NotinhasL10n.colorDarkGray),
-            (Color(white: 0.5), NotinhasL10n.colorMediumGray),
-            (Color(white: 0.7), NotinhasL10n.colorLightGray),
-            (Color(white: 0.9), NotinhasL10n.colorNearWhite),
-        ],
-    ]
+    private var colorRows: [[(color: Color, name: String)]] {
+        let entries = AnnotateBuiltInColorPalette.namedCanvasEntries
+        let rowSize = 7
+        return stride(from: 0, to: entries.count, by: rowSize).map { start in
+            Array(entries[start ..< min(start + rowSize, entries.count)])
+        }
+    }
 
     var body: some View {
         VStack(spacing: Spacing.sm) {
-            ForEach(0 ..< colors.count, id: \.self) { row in
+            ForEach(Array(colorRows.enumerated()), id: \.offset) { _, row in
                 HStack(spacing: Spacing.sm) {
-                    ForEach(colors[row], id: \.name) { entry in
+                    ForEach(row, id: \.name) { entry in
                         ColorSwatch(
                             color: entry.color,
                             name: entry.name,

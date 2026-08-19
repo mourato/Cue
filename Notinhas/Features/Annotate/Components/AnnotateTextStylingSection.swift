@@ -124,7 +124,7 @@ struct TextStylingSection: View {
     // MARK: - Color Definitions
 
     private var backgroundColors: [Color] {
-        [.white, .black, .yellow, .blue]
+        AnnotateBuiltInColorPalette.annotationColors
     }
 
     private func backgroundColorBinding(for annotation: AnnotationItem) -> Binding<Color> {
