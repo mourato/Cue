@@ -5,6 +5,7 @@
 //  Shift square/circle constrain, Option-drag duplicate, and annotation clipboard.
 //
 
+import AppKit
 import CoreGraphics
 @testable import Notinhas
 import XCTest
@@ -110,5 +111,117 @@ final class AnnotateModifierGestureTests: XCTestCase {
         XCTAssertEqual(pasted.bounds.origin.x, original.bounds.origin.x + 12, accuracy: 0.001)
         XCTAssertEqual(pasted.bounds.origin.y, original.bounds.origin.y + 12, accuracy: 0.001)
         XCTAssertEqual(state.selectedAnnotationIds, [pasted.id])
+    }
+
+    @MainActor
+    func testCopyWithEmptySelectionClearsAnnotationClipboard() {
+        let state = makeAnnotateState()
+        let original = AnnotationItem(
+            type: .rectangle,
+            bounds: CGRect(x: 0, y: 0, width: 20, height: 20),
+            properties: AnnotationProperties(),
+        )
+        state.annotations = [original]
+        state.setSelectedAnnotationIds([original.id])
+        state.copySelectedAnnotationsToClipboard()
+        XCTAssertTrue(state.hasAnnotationClipboard)
+
+        state.deselectAnnotation()
+        state.copySelectedAnnotationsToClipboard()
+
+        XCTAssertFalse(state.hasAnnotationClipboard)
+    }
+
+    @MainActor
+    func testRepeatedPasteAccumulatesOffset() throws {
+        let state = makeAnnotateState()
+        let original = AnnotationItem(
+            type: .rectangle,
+            bounds: CGRect(x: 10, y: 20, width: 40, height: 30),
+            properties: AnnotationProperties(),
+        )
+        state.annotations = [original]
+        state.setSelectedAnnotationIds([original.id])
+        state.copySelectedAnnotationsToClipboard()
+
+        state.pasteAnnotationsFromClipboard()
+        state.pasteAnnotationsFromClipboard()
+
+        XCTAssertEqual(state.annotations.count, 3)
+        let pasted = state.annotations
+            .filter { $0.id != original.id }
+            .sorted { $0.bounds.origin.x < $1.bounds.origin.x }
+        XCTAssertEqual(pasted.count, 2)
+        XCTAssertEqual(pasted[0].bounds.origin.x, 22, accuracy: 0.001)
+        XCTAssertEqual(pasted[0].bounds.origin.y, 32, accuracy: 0.001)
+        XCTAssertEqual(pasted[1].bounds.origin.x, 34, accuracy: 0.001)
+        XCTAssertEqual(pasted[1].bounds.origin.y, 44, accuracy: 0.001)
+    }
+
+    @MainActor
+    func testDuplicateWithoutMoveUsesSingleUndoCheckpoint() throws {
+        let state = makeAnnotateState()
+        let original = AnnotationItem(
+            type: .rectangle,
+            bounds: CGRect(x: 0, y: 0, width: 30, height: 20),
+            properties: AnnotationProperties(),
+        )
+        state.annotations = [original]
+        state.setSelectedAnnotationIds([original.id])
+
+        let cloneIds = state.duplicateAnnotations(withIds: [original.id])
+        XCTAssertEqual(state.annotations.count, 2)
+        XCTAssertTrue(state.canUndo)
+
+        state.undo()
+
+        XCTAssertEqual(state.annotations.count, 1)
+        XCTAssertEqual(state.annotations.first?.id, original.id)
+        XCTAssertFalse(cloneIds.contains(original.id))
+    }
+
+    @MainActor
+    func testDuplicateDetailMapsAnchorCloneID() throws {
+        let state = makeAnnotateState()
+        let lower = AnnotationItem(
+            type: .rectangle,
+            bounds: CGRect(x: 0, y: 0, width: 20, height: 20),
+            properties: AnnotationProperties(),
+        )
+        let upper = AnnotationItem(
+            type: .rectangle,
+            bounds: CGRect(x: 40, y: 40, width: 20, height: 20),
+            properties: AnnotationProperties(),
+        )
+        state.annotations = [lower, upper]
+        state.setSelectedAnnotationIds([lower.id, upper.id])
+
+        let detail = state.duplicateAnnotationsDetail(withIds: [lower.id, upper.id], anchorOriginalId: upper.id)
+
+        XCTAssertEqual(detail.cloneIds.count, 2)
+        let anchorClone = try XCTUnwrap(detail.anchorCloneId)
+        XCTAssertNotEqual(anchorClone, upper.id)
+        XCTAssertTrue(detail.cloneIds.contains(anchorClone))
+    }
+
+    @MainActor
+    func testDuplicateEmbeddedImageUsesDistinctAssetID() throws {
+        let state = makeAnnotateState()
+        state.loadImage(NSImage(size: NSSize(width: 200, height: 200)), url: nil)
+        state.importImage(NSImage(size: NSSize(width: 50, height: 50)))
+
+        let embedded = try XCTUnwrap(state.annotations.last)
+        guard case .embeddedImage(let originalAssetId) = embedded.type else {
+            return XCTFail("Expected embedded image annotation")
+        }
+
+        let cloneIds = state.duplicateAnnotations(withIds: [embedded.id], anchorOriginalId: embedded.id)
+        let clone = try XCTUnwrap(state.annotations.first { cloneIds.contains($0.id) })
+        guard case .embeddedImage(let cloneAssetId) = clone.type else {
+            return XCTFail("Expected duplicated embedded image annotation")
+        }
+
+        XCTAssertNotEqual(cloneAssetId, originalAssetId)
+        XCTAssertNotNil(state.embeddedImage(for: cloneAssetId))
     }
 }

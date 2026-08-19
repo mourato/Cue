@@ -682,9 +682,12 @@ final class DrawingCanvasNSView: NSView {
         // Selection uses image coordinates
         if state.selectedTool == .selection {
             if let annotation = hitTestAnnotation(at: imagePoint) {
+                let optionDuplicate = event.modifierFlags.contains(.option)
                 // Start the gesture first so selection publishers skip full redraw while dragging.
                 beginAnnotationDrag(anchor: annotation, at: imagePoint)
-                if !state.isAnnotationSelected(annotation.id) {
+                if optionDuplicate {
+                    state.setSelectedAnnotationIds(draggingAnnotationIds)
+                } else if !state.isAnnotationSelected(annotation.id) {
                     _ = state.selectAnnotation(at: imagePoint)
                 }
                 state.selectedTool = annotation.type.toolType
@@ -702,9 +705,14 @@ final class DrawingCanvasNSView: NSView {
         if state.selectedTool != .crop,
            let annotation = hitTestAnnotation(at: imagePoint),
            !Self.shouldPrioritizeCanvasMarkup(over: annotation, selectedTool: state.selectedTool) {
+            let optionDuplicate = event.modifierFlags.contains(.option)
             // Gesture locals first so selection/@Published sinks skip full redraw at drag start.
             beginAnnotationDrag(anchor: annotation, at: imagePoint)
-            state.selectedAnnotationId = annotation.id
+            if optionDuplicate {
+                state.setSelectedAnnotationIds(draggingAnnotationIds)
+            } else {
+                state.selectedAnnotationId = annotation.id
+            }
             state.selectedTool = annotation.type.toolType
             return
         }
@@ -765,15 +773,24 @@ final class DrawingCanvasNSView: NSView {
             [annotation.id]
         }
 
+        var dragAnchorId = annotation.id
         if NSEvent.modifierFlags.contains(.option) {
-            activeIds = state.duplicateAnnotations(withIds: activeIds)
+            let duplicateResult = state.duplicateAnnotationsDetail(
+                withIds: activeIds,
+                anchorOriginalId: annotation.id,
+            )
+            activeIds = duplicateResult.cloneIds
+            if let anchorCloneId = duplicateResult.anchorCloneId {
+                dragAnchorId = anchorCloneId
+            }
             guard !activeIds.isEmpty else { return }
         }
 
         isDraggingAnnotation = true
-        draggingAnnotationId = annotation.id
+        draggingAnnotationId = dragAnchorId
         draggingAnnotationIds = activeIds
-        let anchorBounds = annotation.resizeBounds
+        let dragAnchor = state.annotations.first(where: { $0.id == dragAnchorId }) ?? annotation
+        let anchorBounds = dragAnchor.resizeBounds
         dragOffset = CGPoint(
             x: imagePoint.x - anchorBounds.origin.x,
             y: imagePoint.y - anchorBounds.origin.y,
@@ -1167,8 +1184,8 @@ final class DrawingCanvasNSView: NSView {
                     guard let local = gestureLocalItems[id] else { continue }
                     state.updateAnnotationBounds(id: id, bounds: local.resizeBounds)
                 }
+                state.saveState()
             }
-            state.saveState()
             isDraggingAnnotation = false
             draggingAnnotationId = nil
             draggingAnnotationIds = []

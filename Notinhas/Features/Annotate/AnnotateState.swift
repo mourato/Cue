@@ -5304,7 +5304,10 @@ final class AnnotateState: ObservableObject {
     func copySelectedAnnotationsToClipboard() {
         guard editingTextAnnotationId == nil else { return }
         let items = selectedAnnotations
-        guard !items.isEmpty else { return }
+        guard !items.isEmpty else {
+            annotationClipboard = []
+            return
+        }
         annotationClipboard = items.map(PersistedAnnotationItem.init)
     }
 
@@ -5313,26 +5316,46 @@ final class AnnotateState: ObservableObject {
         guard !annotationClipboard.isEmpty else { return }
 
         saveState()
-        appendClonedAnnotations(from: annotationClipboard, offset: Self.annotationPasteOffset)
+        let newIds = appendClonedAnnotations(from: annotationClipboard, offset: Self.annotationPasteOffset).newIds
+        guard !newIds.isEmpty else { return }
+
+        annotationClipboard = annotations.filter { newIds.contains($0.id) }.map(PersistedAnnotationItem.init)
     }
 
     @discardableResult
-    func duplicateAnnotations(withIds ids: Set<UUID>) -> Set<UUID> {
+    func duplicateAnnotations(withIds ids: Set<UUID>, anchorOriginalId: UUID? = nil) -> Set<UUID> {
+        duplicateAnnotationsDetail(withIds: ids, anchorOriginalId: anchorOriginalId).cloneIds
+    }
+
+    func duplicateAnnotationsDetail(
+        withIds ids: Set<UUID>,
+        anchorOriginalId: UUID? = nil,
+    ) -> (cloneIds: Set<UUID>, anchorCloneId: UUID?) {
         let sources = annotations.filter { ids.contains($0.id) }
-        guard !sources.isEmpty else { return [] }
+        guard !sources.isEmpty else { return ([], nil) }
 
         saveState()
-        return appendClonedAnnotations(from: sources.map(PersistedAnnotationItem.init), offset: .zero)
+        let result = appendClonedAnnotations(from: sources.map(PersistedAnnotationItem.init), offset: .zero)
+        let resolvedAnchorId = anchorOriginalId ?? sources.first?.id
+        let anchorCloneId = resolvedAnchorId.flatMap { result.idMapping[$0] }
+        return (result.newIds, anchorCloneId)
+    }
+
+    private struct ClonedAnnotationBatch {
+        var newIds: Set<UUID>
+        var idMapping: [UUID: UUID]
     }
 
     @discardableResult
     private func appendClonedAnnotations(
         from persistedItems: [PersistedAnnotationItem],
         offset: CGSize,
-    ) -> Set<UUID> {
+    ) -> ClonedAnnotationBatch {
         var newIds: Set<UUID> = []
+        var idMapping: [UUID: UUID] = [:]
 
         for persisted in persistedItems {
+            let originalId = persisted.id
             guard let source = persisted.annotationItem else { continue }
             let newId = UUID()
             guard var clone = clonedAnnotation(from: source, newId: newId) else { continue }
@@ -5345,16 +5368,17 @@ final class AnnotateState: ObservableObject {
             if isCombineMode, combineMode == .freeCanvas, case .embeddedImage = clone.type {
                 freeCombineBoundsByAnnotationID[clone.id] = clone.bounds
             }
+            idMapping[originalId] = newId
             newIds.insert(newId)
         }
 
-        guard !newIds.isEmpty else { return [] }
+        guard !newIds.isEmpty else { return ClonedAnnotationBatch(newIds: [], idMapping: [:]) }
 
         setSelectedAnnotationIds(newIds)
         selectedTool = .selection
         refreshCombineLayout()
         hasUnsavedChanges = true
-        return newIds
+        return ClonedAnnotationBatch(newIds: newIds, idMapping: idMapping)
     }
 
     private func clonedAnnotation(from source: AnnotationItem, newId: UUID) -> AnnotationItem? {

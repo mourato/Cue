@@ -178,8 +178,8 @@ class AnnotateWindow: NSWindow {
             if isTextInputActive || interactionState?.editingTextAnnotationId != nil {
                 return super.performKeyEquivalent(with: event)
             }
+            interactionState?.copySelectedAnnotationsToClipboard()
             if interactionState?.hasSelectedAnnotations == true {
-                interactionState?.copySelectedAnnotationsToClipboard()
                 return true
             }
             return super.performKeyEquivalent(with: event)
