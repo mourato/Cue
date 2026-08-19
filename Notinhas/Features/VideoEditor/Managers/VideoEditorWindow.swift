@@ -46,8 +46,6 @@
 
             // Register as managed window for normal Cmd+` cycling
             collectionBehavior = [.managed, .participatesInCycle]
-
-            applyCornerRadius()
         }
 
         func applyActiveEditorLevel() {

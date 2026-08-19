@@ -65,14 +65,6 @@ class AnnotateWindow: NSWindow {
 
         // Register as managed window for normal Cmd+` cycling
         collectionBehavior = [.managed, .participatesInCycle]
-
-        // Increase window corner radius
-        configureCornerRadius()
-    }
-
-    /// Configure custom corner radius for the window
-    private func configureCornerRadius() {
-        applyCornerRadius()
     }
 
     /// Apply current theme from ThemeManager
