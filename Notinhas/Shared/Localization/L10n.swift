@@ -5072,6 +5072,16 @@ nonisolated enum L10n {
     }
 
     enum AnnotateUI {
+        static let shapeStyleSolid = string(
+            "annotate.shape-style-solid",
+            defaultValue: "Solid fill",
+            comment: "Shape fill style: opaque fill with outline",
+        )
+        static let shapeStyle = string(
+            "annotate.shape-style",
+            defaultValue: "Style",
+            comment: "Quick-properties label for rectangle/circle fill style",
+        )
         static let cloudNotConfiguredTitle = string(
             "annotate.cloud-not-configured-title",
             defaultValue: "Cloud Not Configured",
@@ -7491,15 +7501,10 @@ nonisolated enum L10n {
             defaultValue: "Rectangle",
             comment: "Annotation tool display name",
         )
-        static let filledRectangleTool = string(
-            "annotate.tool.filled-rectangle",
-            defaultValue: "Filled Rectangle",
-            comment: "Annotation tool display name",
-        )
-        static let ovalTool = string(
-            "annotate.tool.oval",
-            defaultValue: "Oval",
-            comment: "Annotation tool display name",
+        static let circleTool = string(
+            "annotate.tool.circle",
+            defaultValue: "Circle",
+            comment: "Annotation tool display name for ellipse/circle shape",
         )
         static let arrowTool = string(
             "annotate.tool.arrow",

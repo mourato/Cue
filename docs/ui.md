@@ -47,9 +47,14 @@ second canonical design-system document.
   image upload encoding controls. Upload optimization creates a temporary
   derivative for the provider; it never changes the local capture or the
   annotation source.
-- Notinhas notes use the fixed palette in `NotinhasPaletteColor`; each palette
-  color owns its explicit numeral ink color. Do not derive note numeral color
-  from luminance or replace the palette with system colors.
+- Rectangle and Circle tools share `AnnotationShapeFillStyle`
+  (outline / solid / tinted / hatched) with a single stroke color. Notes areas
+  use the same enum but omit solid in the picker.
+- Notinhas notes share the built-in annotate color dictionary in
+  `AnnotateBuiltInColorPalette`, which keeps `NotinhasPaletteColor` hex values
+  for named overlaps and still owns numeral ink via palette matching. Do not
+  derive note numeral color from luminance or replace Notes hex slots with
+  system colors. User-added customs remain in `AnnotateColorPaletteStore`.
 - Use one owner for each scrollable surface. Avoid nested decorative panels
   that compete with the capture or annotation canvas.
 

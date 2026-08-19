@@ -31,9 +31,9 @@ struct AnnotationPropertiesSection: View {
                 magnificationSlider
             }
 
-            // Fill color (for shapes)
-            if supportsFillColor {
-                fillColorPicker
+            // Shape fill style (rectangle / circle)
+            if supportsShapeFillStyle {
+                shapeFillStylePicker
             }
         }
     }
@@ -56,10 +56,10 @@ struct AnnotationPropertiesSection: View {
         return false
     }
 
-    private var supportsFillColor: Bool {
+    private var supportsShapeFillStyle: Bool {
         guard let ann = annotation else { return false }
         switch ann.type {
-        case .rectangle, .oval: return true
+        case .rectangle, .circle: return true
         default: return false
         }
     }
@@ -74,7 +74,7 @@ struct AnnotationPropertiesSection: View {
 
             ColorPickerRow(
                 selectedColor: strokeColorBinding,
-                colors: [.red, .orange, .yellow, .green, .blue, .purple, .white, .black],
+                colors: AnnotateBuiltInColorPalette.annotationColors,
             )
         }
     }
@@ -95,16 +95,30 @@ struct AnnotationPropertiesSection: View {
         )
     }
 
-    private var fillColorPicker: some View {
+    private var shapeFillStylePicker: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(L10n.Common.fill)
+            Text(L10n.AnnotateUI.shapeStyle)
                 .font(.system(size: 10))
                 .foregroundColor(.secondary)
 
-            ColorPickerRow(
-                selectedColor: fillColorBinding,
-                colors: [.clear, .red, .orange, .yellow, .green, .blue, .purple, .white],
-            )
+            HStack(spacing: 6) {
+                ForEach(AnnotationShapeFillStyle.allCases) { style in
+                    NotinhasAreaStylePreviewButton(
+                        style: style,
+                        isSelected: annotation?.properties.shapeFillStyle == style,
+                        color: annotation?.properties.strokeColor ?? .red,
+                        action: {
+                            guard let id = state.selectedAnnotationId else { return }
+                            state.updateAnnotationProperties(
+                                id: id,
+                                shapeFillStyle: style,
+                                recordsUndo: true,
+                            )
+                        },
+                    )
+                }
+                Spacer(minLength: 0)
+            }
         }
     }
 
@@ -126,16 +140,6 @@ struct AnnotationPropertiesSection: View {
             set: { newWidth in
                 guard let id = state.selectedAnnotationId else { return }
                 state.updateAnnotationProperties(id: id, strokeWidth: newWidth, recordsUndo: true)
-            },
-        )
-    }
-
-    private var fillColorBinding: Binding<Color> {
-        Binding(
-            get: { annotation?.properties.fillColor ?? .clear },
-            set: { newColor in
-                guard let id = state.selectedAnnotationId else { return }
-                state.updateAnnotationProperties(id: id, fillColor: newColor, recordsUndo: true)
             },
         )
     }

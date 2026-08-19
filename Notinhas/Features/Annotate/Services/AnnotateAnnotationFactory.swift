@@ -70,11 +70,8 @@ enum AnnotationFactory {
         case .rectangle:
             type = .rectangle
 
-        case .filledRectangle:
-            type = .filledRectangle
-
-        case .oval:
-            type = .oval
+        case .circle:
+            type = .circle
 
         case .arrow:
             let initialStyle = context.arrowStyle

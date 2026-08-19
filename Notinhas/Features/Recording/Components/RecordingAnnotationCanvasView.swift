@@ -130,6 +130,7 @@
                 path: currentPath,
                 strokeColor: state.strokeColor,
                 strokeWidth: state.strokeWidth,
+                shapeFillStyle: state.shapeFillStyle,
             ) {
                 state.appendAnnotation(item, tool: state.selectedTool)
             }

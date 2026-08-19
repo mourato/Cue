@@ -300,10 +300,10 @@ enum ShortcutOverlayContentBuilder {
 
     private static func toolContextSubtitle(for tool: AnnotationToolType) -> String {
         let recordingTools: Set<AnnotationToolType> = [
-            .selection, .rectangle, .oval, .arrow, .line, .pencil, .highlighter,
+            .selection, .rectangle, .circle, .arrow, .line, .pencil, .highlighter,
         ]
         let screenshotTools: Set<AnnotationToolType> = [
-            .selection, .rectangle, .oval, .arrow, .line, .text,
+            .selection, .rectangle, .circle, .arrow, .line, .text,
             .highlighter, .blur, .notinhasNote, .pencil,
         ]
 

@@ -12,8 +12,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
     case selection
     case crop
     case rectangle
-    case filledRectangle
-    case oval
+    case circle
     case arrow
     case line
     case magnify
@@ -35,14 +34,14 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
     /// Shared by the full Annotate window and inline area-annotate overlay so the
     /// two surfaces stay in sync when tools are added.
     static let drawableTools: [AnnotationToolType] = [
-        .rectangle, .filledRectangle, .oval, .arrow, .line, .magnify, .text, .highlighter,
+        .rectangle, .circle, .arrow, .line, .magnify, .text, .highlighter,
         .blur, .spotlight, .notinhasNote, .watermark, .pencil,
     ]
 
     static let inlineAnnotateTools: [AnnotationToolType] = [.selection] + drawableTools
 
     private static let inlineShapeToolSet: Set<AnnotationToolType> = [
-        .rectangle, .filledRectangle, .oval, .arrow, .line,
+        .rectangle, .circle, .arrow, .line,
     ]
 
     static let inlineToolGroups: [[AnnotationToolType]] = [
@@ -51,13 +50,22 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
         drawableTools.filter { !inlineShapeToolSet.contains($0) },
     ]
 
+    /// Tools that use the shared shape fill-style control.
+    var supportsShapeFillStyle: Bool {
+        switch self {
+        case .rectangle, .circle:
+            true
+        default:
+            false
+        }
+    }
+
     var icon: String {
         switch self {
         case .selection: "cursorarrow"
         case .crop: "crop"
         case .rectangle: "rectangle"
-        case .filledRectangle: "rectangle.fill"
-        case .oval: "circle"
+        case .circle: "circle"
         case .arrow: "arrow.up.right"
         case .line: "line.diagonal"
         case .magnify: "magnifyingglass"
@@ -79,8 +87,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
         case .selection: "v"
         case .crop: "c"
         case .rectangle: "r"
-        case .filledRectangle: "f"
-        case .oval: "o"
+        case .circle: "o"
         case .arrow: "a"
         case .line: "l"
         case .magnify: "g"
@@ -102,8 +109,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
         case .selection: L10n.Annotate.selectionTool
         case .crop: L10n.Annotate.cropTool
         case .rectangle: L10n.Annotate.rectangleTool
-        case .filledRectangle: L10n.Annotate.filledRectangleTool
-        case .oval: L10n.Annotate.ovalTool
+        case .circle: L10n.Annotate.circleTool
         case .arrow: L10n.Annotate.arrowTool
         case .line: L10n.Annotate.lineTool
         case .magnify: L10n.Annotate.magnifyTool
@@ -121,7 +127,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
 
     var supportsQuickPropertiesBar: Bool {
         switch self {
-        case .rectangle, .filledRectangle, .oval, .arrow, .line, .magnify, .text, .highlighter,
+        case .rectangle, .circle, .arrow, .line, .magnify, .text, .highlighter,
              .blur, .spotlight, .counter,
              .notinhasNote, .watermark, .pencil:
             true
@@ -135,7 +141,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
     /// flow, and freehand tools keep their existing path-count behavior.
     var requiresDragToCreateAnnotation: Bool {
         switch self {
-        case .rectangle, .filledRectangle, .oval, .arrow, .line, .blur, .spotlight, .watermark:
+        case .rectangle, .circle, .arrow, .line, .blur, .spotlight, .watermark:
             true
         case .selection, .crop, .text, .highlighter, .counter, .pencil, .mockup, .notinhasNote, .magnify:
             false
@@ -144,7 +150,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
 
     var supportsQuickStrokeColor: Bool {
         switch self {
-        case .rectangle, .filledRectangle, .oval, .arrow, .line, .magnify, .text, .highlighter,
+        case .rectangle, .circle, .arrow, .line, .magnify, .text, .highlighter,
              .counter, .watermark, .pencil,
              .notinhasNote:
             true
@@ -159,7 +165,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
 
     var supportsQuickStrokeWidth: Bool {
         switch self {
-        case .rectangle, .filledRectangle, .oval, .arrow, .line, .magnify, .highlighter,
+        case .rectangle, .circle, .arrow, .line, .magnify, .highlighter,
              .blur, .counter, .pencil, .notinhasNote:
             true
         case .selection, .crop, .text, .watermark, .spotlight, .mockup:
@@ -173,12 +179,24 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
 
     var supportsQuickCornerRadius: Bool {
         switch self {
-        case .rectangle, .filledRectangle, .text, .spotlight:
+        case .rectangle, .text, .spotlight:
             true
-        case .selection, .crop, .oval, .arrow, .line, .magnify, .highlighter,
+        case .selection, .crop, .circle, .arrow, .line, .magnify, .highlighter,
              .blur, .counter, .watermark, .pencil, .mockup,
              .notinhasNote:
             false
+        }
+    }
+
+    /// Maps legacy persisted tool ids onto current cases.
+    static func migrating(fromRawValue rawValue: String) -> AnnotationToolType? {
+        switch rawValue {
+        case "filledRectangle":
+            return .rectangle
+        case "oval":
+            return .circle
+        default:
+            return AnnotationToolType(rawValue: rawValue)
         }
     }
 }

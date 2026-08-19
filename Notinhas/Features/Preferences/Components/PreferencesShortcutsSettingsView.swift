@@ -1306,12 +1306,12 @@ struct ShortcutsSettingsView: View {
 
     /// Recording annotation supports a subset of tools
     private static let recordingTools: Set<AnnotationToolType> = [
-        .selection, .rectangle, .oval, .arrow, .line, .pencil, .highlighter,
+        .selection, .rectangle, .circle, .arrow, .line, .pencil, .highlighter,
     ]
 
     /// Screenshot annotation tools (all configurable except crop handled separately)
     private static let screenshotTools: Set<AnnotationToolType> = [
-        .selection, .rectangle, .oval, .arrow, .line, .text,
+        .selection, .rectangle, .circle, .arrow, .line, .text,
         .highlighter, .blur, .notinhasNote, .pencil,
     ]
 

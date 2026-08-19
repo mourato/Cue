@@ -49,6 +49,7 @@
         @Published var selectedAnnotationId: UUID?
         @Published var strokeColor: Color = .red
         @Published var strokeWidth: CGFloat = 3
+        @Published var shapeFillStyle: AnnotationShapeFillStyle = .outline
         @Published var isAnnotationEnabled: Bool = false {
             didSet {
                 if !isAnnotationEnabled {
@@ -63,7 +64,7 @@
         private var cleanupTimer: Timer?
 
         static let availableTools: [AnnotationToolType] = [
-            .selection, .rectangle, .oval, .arrow, .line, .pencil, .highlighter,
+            .selection, .rectangle, .circle, .arrow, .line, .pencil, .highlighter,
         ]
 
         static let clearModePresets: [AnnotationClearMode] = [

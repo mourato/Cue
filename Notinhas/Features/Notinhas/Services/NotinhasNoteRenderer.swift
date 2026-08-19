@@ -121,6 +121,12 @@ enum NotinhasNoteRenderer {
             context.setStrokeColor(color.withAlphaComponent(0.95).cgColor)
             context.setLineWidth(lineWidth)
             context.stroke(standardized)
+        case .solid:
+            context.setFillColor(color.withAlphaComponent(1).cgColor)
+            context.fill(standardized)
+            context.setStrokeColor(color.withAlphaComponent(0.95).cgColor)
+            context.setLineWidth(lineWidth)
+            context.stroke(standardized)
         case .tinted:
             context.setFillColor(color.withAlphaComponent(0.18).cgColor)
             context.fill(standardized)
@@ -131,7 +137,7 @@ enum NotinhasNoteRenderer {
             context.setStrokeColor(color.withAlphaComponent(0.95).cgColor)
             context.setLineWidth(lineWidth)
             context.stroke(standardized)
-            drawHatch(in: standardized, color: color, context: context)
+            AnnotationShapeFillStyleDrawing.drawHatch(in: standardized, color: color, context: context)
         }
 
         let pinCenter = NotinhasNoteGeometry.pinCenter(for: standardized)
@@ -149,22 +155,6 @@ enum NotinhasNoteRenderer {
             textColor: textColor,
         )
 
-        context.restoreGState()
-    }
-
-    private static func drawHatch(in rect: CGRect, color: NSColor, context: CGContext) {
-        context.saveGState()
-        context.clip(to: rect)
-        context.setStrokeColor(color.withAlphaComponent(0.35).cgColor)
-        context.setLineWidth(1)
-        let spacing: CGFloat = 8
-        var offset: CGFloat = rect.minX - rect.height
-        while offset < rect.maxX + rect.height {
-            context.move(to: CGPoint(x: offset, y: rect.minY))
-            context.addLine(to: CGPoint(x: offset + rect.height, y: rect.maxY))
-            offset += spacing
-        }
-        context.strokePath()
         context.restoreGState()
     }
 }

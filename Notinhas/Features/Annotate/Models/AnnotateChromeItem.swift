@@ -25,8 +25,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
 
     // Drawing tools (customizable)
     case rectangle
-    case filledRectangle
-    case oval
+    case circle
     case arrow
     case line
     case magnify
@@ -58,8 +57,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         .rotateLeft,
         .rotateRight,
         .rectangle,
-        .filledRectangle,
-        .oval,
+        .circle,
         .arrow,
         .line,
         .magnify,
@@ -100,7 +98,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         switch self {
         case .crop, .addBackground, .rotateLeft, .rotateRight:
             .captureChrome
-        case .rectangle, .filledRectangle, .oval, .arrow, .line, .magnify, .text, .highlighter,
+        case .rectangle, .circle, .arrow, .line, .magnify, .text, .highlighter,
              .blur, .spotlight, .notinhasNote, .watermark, .pencil, .backgroundCutout:
             .drawingOrCutout
         case .saveAs:
@@ -115,8 +113,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         case .selection: .selection
         case .crop: .crop
         case .rectangle: .rectangle
-        case .filledRectangle: .filledRectangle
-        case .oval: .oval
+        case .circle: .circle
         case .arrow: .arrow
         case .line: .line
         case .magnify: .magnify
@@ -138,8 +135,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         case .selection: self = .selection
         case .crop: self = .crop
         case .rectangle: self = .rectangle
-        case .filledRectangle: self = .filledRectangle
-        case .oval: self = .oval
+        case .circle: self = .circle
         case .arrow: self = .arrow
         case .line: self = .line
         case .magnify: self = .magnify
@@ -152,6 +148,18 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         case .pencil: self = .pencil
         case .counter, .mockup:
             return nil
+        }
+    }
+
+    /// Maps legacy chrome ids onto current cases.
+    static func migrating(fromRawValue rawValue: String) -> AnnotateChromeItem? {
+        switch rawValue {
+        case "filledRectangle":
+            return .rectangle
+        case "oval":
+            return .circle
+        default:
+            return AnnotateChromeItem(rawValue: rawValue)
         }
     }
 
@@ -168,8 +176,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         case .backgroundCutout: L10n.AnnotateUI.backgroundCutoutTitle
         case .saveAs: L10n.Common.saveAs
         case .rectangle: L10n.Annotate.rectangleTool
-        case .filledRectangle: L10n.Annotate.filledRectangleTool
-        case .oval: L10n.Annotate.ovalTool
+        case .circle: L10n.Annotate.circleTool
         case .arrow: L10n.Annotate.arrowTool
         case .line: L10n.Annotate.lineTool
         case .magnify: L10n.Annotate.magnifyTool
@@ -203,8 +210,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         case .backgroundCutout: "wand.and.stars"
         case .saveAs: "square.and.arrow.down"
         case .rectangle: "rectangle"
-        case .filledRectangle: "rectangle.fill"
-        case .oval: "circle"
+        case .circle: "circle"
         case .arrow: "arrow.up.right"
         case .line: "line.diagonal"
         case .magnify: "magnifyingglass"

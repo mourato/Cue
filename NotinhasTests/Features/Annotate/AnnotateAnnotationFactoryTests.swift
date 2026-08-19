@@ -59,28 +59,28 @@ final class AnnotateAnnotationFactoryTests: XCTestCase {
     func testCreateFilledRectangleCarriesTypeAndProperties() throws {
         let properties = AnnotationProperties(strokeColor: .blue, fillColor: .green, strokeWidth: 5)
         let annotation = try XCTUnwrap(AnnotationFactory.createAnnotation(
-            tool: .filledRectangle,
+            tool: .rectangle,
             from: CGPoint(x: 0, y: 0),
             to: CGPoint(x: 40, y: 30),
             path: [],
             context: makeContext(properties: properties),
         ))
 
-        XCTAssertEqual(annotation.type, .filledRectangle)
+        XCTAssertEqual(annotation.type, .rectangle)
         XCTAssertEqual(annotation.bounds, CGRect(x: 0, y: 0, width: 40, height: 30))
         XCTAssertEqual(annotation.properties.strokeWidth, 5)
     }
 
     func testCreateOvalUsesNormalizedDragBounds() throws {
         let annotation = try XCTUnwrap(AnnotationFactory.createAnnotation(
-            tool: .oval,
+            tool: .circle,
             from: CGPoint(x: 5, y: 5),
             to: CGPoint(x: 55, y: 35),
             path: [],
             context: makeContext(),
         ))
 
-        XCTAssertEqual(annotation.type, .oval)
+        XCTAssertEqual(annotation.type, .circle)
         XCTAssertEqual(annotation.bounds, CGRect(x: 5, y: 5, width: 50, height: 30))
     }
 

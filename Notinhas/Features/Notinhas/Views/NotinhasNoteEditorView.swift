@@ -16,6 +16,7 @@ struct NotinhasNoteEditorView: View {
     var onPanelDragEnded: (() -> Void)?
 
     @FocusState private var isFocused: Bool
+    @State private var showsColorPopover = false
 
     private let panelShape = RoundedRectangle(cornerRadius: 12, style: .continuous)
 
@@ -118,23 +119,8 @@ struct NotinhasNoteEditorView: View {
     }
 
     private var colorMenu: some View {
-        // Compact chip label mirrors area-style buttons; Menu avoids the wide menu Picker.
-        Menu {
-            Picker(selection: paletteSelection) {
-                ForEach(NotinhasPaletteColor.allCases) { swatch in
-                    Label {
-                        Text(swatch.localizedName)
-                    } icon: {
-                        // `Image(nsImage:)` survives AppKit menu bridging; SwiftUI `Circle` icons do not.
-                        Image(nsImage: swatch.menuImage())
-                    }
-                    .tag(Optional(swatch))
-                }
-            } label: {
-                EmptyView()
-            }
-            .labelsHidden()
-            .pickerStyle(.inline)
+        Button {
+            showsColorPopover.toggle()
         } label: {
             Image(nsImage: NotinhasPaletteColor.makeSwatchImage(color: color.nsColor, diameter: 18))
                 .resizable()
@@ -151,19 +137,32 @@ struct NotinhasNoteEditorView: View {
                         .stroke(Color.primary.opacity(0.12), lineWidth: 1)
                 }
         }
-        .menuStyle(.borderlessButton)
         .buttonStyle(.plain)
         .fixedSize()
         .accessibilityLabel(NotinhasL10n.noteEditorColorButton)
-        .accessibilityValue(NotinhasPaletteColor.matching(color)?.localizedName ?? NotinhasL10n.selected)
+        .accessibilityValue(
+            AnnotateBuiltInColorPalette.annotationEntries
+                .first { AnnotateColorPaletteStore.colorsMatch($0.color, color.color) }?
+                .accessibilityName
+                ?? NotinhasPaletteColor.matching(color)?.localizedName
+                ?? NotinhasL10n.selected
+        )
+        .popover(isPresented: $showsColorPopover, arrowEdge: .bottom) {
+            ColorPickerRow(
+                selectedColor: colorBinding,
+                colors: AnnotateBuiltInColorPalette.annotationColors,
+            )
+            .padding(12)
+            .frame(width: 220)
+        }
     }
 
-    private var paletteSelection: Binding<NotinhasPaletteColor?> {
+    private var colorBinding: Binding<Color> {
         Binding(
-            get: { NotinhasPaletteColor.matching(color) },
-            set: { selection in
-                guard let selection else { return }
-                color = selection.rgba
+            get: { color.color },
+            set: { newColor in
+                guard let rgba = RGBAColor(color: newColor) else { return }
+                color = rgba
             },
         )
     }
@@ -176,7 +175,7 @@ struct NotinhasNoteEditorView: View {
                 .allowsHitTesting(false)
 
             HStack(spacing: 6) {
-                ForEach(NotinhasAreaStyle.allCases) { style in
+                ForEach(AnnotationShapeFillStyle.notinhasCases) { style in
                     NotinhasAreaStylePreviewButton(
                         style: style,
                         isSelected: areaStyle == style,

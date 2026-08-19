@@ -49,6 +49,10 @@
             toolButtons
             divider
             colorPickers
+            if state.selectedTool.supportsShapeFillStyle {
+                divider
+                shapeFillStylePickers
+            }
             divider
             widthPickers
             divider
@@ -106,6 +110,19 @@
                         )
                 }
                 .buttonStyle(.plain)
+            }
+        }
+
+        // MARK: - Shape Fill Style
+
+        private var shapeFillStylePickers: some View {
+            ForEach(AnnotationShapeFillStyle.allCases) { style in
+                NotinhasAreaStylePreviewButton(
+                    style: style,
+                    isSelected: state.shapeFillStyle == style,
+                    color: state.strokeColor,
+                    action: { state.shapeFillStyle = style },
+                )
             }
         }
 

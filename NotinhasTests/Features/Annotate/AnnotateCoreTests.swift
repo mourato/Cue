@@ -1204,7 +1204,7 @@ final class AnnotateCoreTests: XCTestCase {
     }
 
     func testAnnotationToolCreationPolicy_requiresDragExceptClickPlacementTools() {
-        for tool in [AnnotationToolType.rectangle, .filledRectangle, .oval, .arrow, .line, .blur, .watermark] {
+        for tool in [AnnotationToolType.rectangle, .circle, .arrow, .line, .blur, .watermark] {
             XCTAssertTrue(
                 tool.requiresDragToCreateAnnotation,
                 "\(tool) should not create a new item from an empty click.",
@@ -1897,18 +1897,18 @@ final class AnnotateCoreTests: XCTestCase {
         XCTAssertFalse(AnnotationToolType.drawableTools.contains(.counter))
         XCTAssertTrue(AnnotationToolType.drawableTools.contains(.notinhasNote))
         XCTAssertTrue(AnnotationToolType.watermark.supportsQuickPropertiesBar)
-        XCTAssertTrue(AnnotationToolType.filledRectangle.supportsQuickStrokeColor)
-        XCTAssertFalse(AnnotationToolType.filledRectangle.supportsQuickFillColor)
+        XCTAssertTrue(AnnotationToolType.rectangle.supportsQuickStrokeColor)
+        XCTAssertFalse(AnnotationToolType.rectangle.supportsQuickFillColor)
         XCTAssertFalse(AnnotationToolType.rectangle.supportsQuickFillColor)
         XCTAssertTrue(AnnotationToolType.rectangle.supportsQuickCornerRadius)
-        XCTAssertFalse(AnnotationToolType.oval.supportsQuickCornerRadius)
+        XCTAssertFalse(AnnotationToolType.circle.supportsQuickCornerRadius)
     }
 
     @MainActor
     func testFilledRectangleQuickColorUpdatesStrokeAndFill() throws {
         let state = makeAnnotateState()
         let annotation = AnnotationItem(
-            type: .filledRectangle,
+            type: .rectangle,
             bounds: CGRect(x: 0, y: 0, width: 80, height: 40),
             properties: AnnotationProperties(strokeColor: .red, fillColor: .green),
         )
@@ -1927,13 +1927,13 @@ final class AnnotateCoreTests: XCTestCase {
     @MainActor
     func testFilledRectangleDefaultColorAppliesToStrokeAndFill() {
         let state = makeAnnotateState()
-        state.activateTool(.filledRectangle)
+        state.activateTool(.rectangle)
 
         XCTAssertFalse(state.quickPropertiesSupportsFill)
 
         state.quickStrokeColorBinding.wrappedValue = .purple
 
-        let properties = state.annotationCreationProperties(for: .filledRectangle)
+        let properties = state.annotationCreationProperties(for: .rectangle)
         XCTAssertEqual(properties.strokeColor, .purple)
         XCTAssertEqual(properties.fillColor, .purple)
     }
@@ -1949,8 +1949,8 @@ final class AnnotateCoreTests: XCTestCase {
         assertColorsMatch(state.annotationCreationProperties(for: .rectangle).strokeColor, selectedColor)
         assertColorsMatch(state.annotationCreationProperties(for: .arrow).strokeColor, selectedColor)
         assertColorsMatch(state.annotationCreationProperties(for: .text).strokeColor, selectedColor)
-        assertColorsMatch(state.annotationCreationProperties(for: .filledRectangle).strokeColor, selectedColor)
-        assertColorsMatch(state.annotationCreationProperties(for: .filledRectangle).fillColor, selectedColor)
+        assertColorsMatch(state.annotationCreationProperties(for: .rectangle).strokeColor, selectedColor)
+        assertColorsMatch(state.annotationCreationProperties(for: .rectangle).fillColor, selectedColor)
         assertColorsMatch(state.annotationCreationProperties(for: .notinhasNote).strokeColor, selectedColor)
 
         state.activateTool(.arrow)
@@ -1989,8 +1989,8 @@ final class AnnotateCoreTests: XCTestCase {
         reloadedState.activateTool(.rectangle)
 
         assertColorsMatch(reloadedState.quickStrokeColorBinding.wrappedValue, .purple)
-        assertColorsMatch(reloadedState.annotationCreationProperties(for: .filledRectangle).strokeColor, .purple)
-        assertColorsMatch(reloadedState.annotationCreationProperties(for: .filledRectangle).fillColor, .purple)
+        assertColorsMatch(reloadedState.annotationCreationProperties(for: .rectangle).strokeColor, .purple)
+        assertColorsMatch(reloadedState.annotationCreationProperties(for: .rectangle).fillColor, .purple)
     }
 
     @MainActor
@@ -2009,7 +2009,7 @@ final class AnnotateCoreTests: XCTestCase {
         let updated = try XCTUnwrap(state.annotations.first)
         assertColorsMatch(updated.properties.strokeColor, .green)
         assertColorsMatch(state.annotationCreationProperties(for: .line).strokeColor, .green)
-        assertColorsMatch(state.annotationCreationProperties(for: .filledRectangle).fillColor, .green)
+        assertColorsMatch(state.annotationCreationProperties(for: .rectangle).fillColor, .green)
     }
 
     @MainActor
@@ -2020,7 +2020,7 @@ final class AnnotateCoreTests: XCTestCase {
         state.quickStrokeWidthBinding.wrappedValue = 9
 
         XCTAssertEqual(state.annotationCreationProperties(for: .rectangle).strokeWidth, 9)
-        XCTAssertEqual(state.annotationCreationProperties(for: .filledRectangle).strokeWidth, 9)
+        XCTAssertEqual(state.annotationCreationProperties(for: .rectangle).strokeWidth, 9)
         XCTAssertEqual(state.annotationCreationProperties(for: .arrow).strokeWidth, 9)
         XCTAssertEqual(state.annotationCreationProperties(for: .blur).strokeWidth, 9)
         XCTAssertEqual(state.annotationCreationProperties(for: .pencil).strokeWidth, 9)
@@ -2037,9 +2037,9 @@ final class AnnotateCoreTests: XCTestCase {
         state.quickCornerRadiusBinding.wrappedValue = 12
 
         XCTAssertEqual(state.annotationCreationProperties(for: .rectangle).cornerRadius, 12)
-        XCTAssertEqual(state.annotationCreationProperties(for: .filledRectangle).cornerRadius, 12)
+        XCTAssertEqual(state.annotationCreationProperties(for: .rectangle).cornerRadius, 12)
 
-        state.activateTool(.filledRectangle)
+        state.activateTool(.rectangle)
         XCTAssertEqual(state.quickCornerRadiusBinding.wrappedValue, 12)
     }
 
@@ -2118,7 +2118,7 @@ final class AnnotateCoreTests: XCTestCase {
 
         XCTAssertEqual(reloadedState.annotationCreationProperties(for: .line).strokeWidth, 11)
         XCTAssertEqual(reloadedState.annotationCreationProperties(for: .blur).strokeWidth, 11)
-        XCTAssertEqual(reloadedState.annotationCreationProperties(for: .filledRectangle).cornerRadius, 7)
+        XCTAssertEqual(reloadedState.annotationCreationProperties(for: .rectangle).cornerRadius, 7)
         XCTAssertEqual(reloadedState.annotationCreationProperties(for: .text).fontSize, 32)
         XCTAssertEqual(reloadedState.annotationCreationProperties(for: .watermark).fontSize, 32)
         XCTAssertEqual(reloadedState.annotationCreationProperties(for: .watermark).opacity, 0.4)
@@ -2165,9 +2165,9 @@ final class AnnotateCoreTests: XCTestCase {
         XCTAssertEqual(state.annotationCreationProperties(for: .arrow).cornerRadius, 0)
         assertColorsMatch(state.annotationCreationProperties(for: .arrow).strokeColor, .green)
 
-        XCTAssertEqual(state.annotationCreationProperties(for: .filledRectangle).strokeWidth, 3)
-        XCTAssertEqual(state.annotationCreationProperties(for: .filledRectangle).cornerRadius, 0)
-        assertColorsMatch(state.annotationCreationProperties(for: .filledRectangle).strokeColor, .red)
+        XCTAssertEqual(state.annotationCreationProperties(for: .rectangle).strokeWidth, 3)
+        XCTAssertEqual(state.annotationCreationProperties(for: .rectangle).cornerRadius, 0)
+        assertColorsMatch(state.annotationCreationProperties(for: .rectangle).strokeColor, .red)
     }
 
     @MainActor
@@ -2284,7 +2284,7 @@ final class AnnotateCoreTests: XCTestCase {
         independentState.activateTool(.arrow)
         independentState.quickStrokeColorBinding.wrappedValue = .green
         independentState.quickStrokeWidthBinding.wrappedValue = 5
-        independentState.activateTool(.filledRectangle)
+        independentState.activateTool(.rectangle)
         independentState.quickCornerRadiusBinding.wrappedValue = 4
         independentState.activateTool(.watermark)
         independentState.quickWatermarkOpacityBinding.wrappedValue = 0.55
@@ -2296,7 +2296,7 @@ final class AnnotateCoreTests: XCTestCase {
         XCTAssertEqual(syncedState.annotationCreationProperties(for: .rectangle).strokeWidth, 9)
         XCTAssertEqual(syncedState.annotationCreationProperties(for: .arrow).strokeWidth, 9)
         XCTAssertEqual(syncedState.annotationCreationProperties(for: .rectangle).cornerRadius, 12)
-        XCTAssertEqual(syncedState.annotationCreationProperties(for: .filledRectangle).cornerRadius, 12)
+        XCTAssertEqual(syncedState.annotationCreationProperties(for: .rectangle).cornerRadius, 12)
         XCTAssertEqual(syncedState.annotationCreationProperties(for: .watermark).opacity, 0.4)
         XCTAssertEqual(syncedState.annotationCreationProperties(for: .watermark).rotationDegrees, -12)
         assertColorsMatch(syncedState.annotationCreationProperties(for: .rectangle).strokeColor, .blue)

@@ -45,6 +45,12 @@ struct NotinhasAreaStylePreviewButton: View {
             rect
                 .stroke(color, lineWidth: 2)
                 .frame(width: 18, height: 14)
+        case .solid:
+            ZStack {
+                rect.fill(color)
+                rect.stroke(color, lineWidth: 1.5)
+            }
+            .frame(width: 18, height: 14)
         case .tinted:
             ZStack {
                 rect.fill(color.opacity(0.22))
@@ -80,11 +86,13 @@ private struct NotinhasHatchPreview: View {
     }
 }
 
-private extension NotinhasAreaStyle {
+private extension AnnotationShapeFillStyle {
     var localizedName: String {
         switch self {
         case .outline:
             NotinhasL10n.areaStyleOutline
+        case .solid:
+            L10n.AnnotateUI.shapeStyleSolid
         case .tinted:
             NotinhasL10n.areaStyleTinted
         case .hatched:

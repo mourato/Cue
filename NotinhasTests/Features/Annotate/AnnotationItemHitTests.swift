@@ -30,7 +30,7 @@ final class AnnotationItemHitTests: XCTestCase {
 
     func testOval_containsPoint_inside() {
         let item = AnnotationItem(
-            type: .oval,
+            type: .circle,
             bounds: CGRect(x: 0, y: 0, width: 100, height: 50),
             properties: AnnotationProperties(),
         )
@@ -39,7 +39,7 @@ final class AnnotationItemHitTests: XCTestCase {
 
     func testOval_containsPoint_outside() {
         let item = AnnotationItem(
-            type: .oval,
+            type: .circle,
             bounds: CGRect(x: 0, y: 0, width: 100, height: 50),
             properties: AnnotationProperties(),
         )

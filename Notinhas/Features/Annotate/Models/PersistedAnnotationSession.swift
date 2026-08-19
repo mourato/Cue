@@ -187,18 +187,22 @@ struct PersistedAnnotationItem: Codable, Equatable {
 
     var annotationItem: AnnotationItem? {
         guard let annotationType = type.annotationType else { return nil }
+        var props = properties.annotationProperties
+        if type.migratesToSolidFill {
+            props.shapeFillStyle = .solid
+        }
         return AnnotationItem(
             id: id,
             type: annotationType,
             bounds: bounds,
-            properties: properties.annotationProperties,
+            properties: props,
         )
     }
 }
 
 struct PersistedAnnotationType: Codable, Equatable {
     enum Kind: String, Codable {
-        case path, rectangle, filledRectangle, oval, arrow, line, text, highlight, blur, counter, watermark,
+        case path, rectangle, filledRectangle, oval, circle, arrow, line, text, highlight, blur, counter, watermark,
              embeddedImage,
              spotlight,
              magnify
@@ -216,6 +220,11 @@ struct PersistedAnnotationType: Codable, Equatable {
     var counterValue: Int?
     var embeddedImageAssetId: UUID?
 
+    /// Legacy filled rectangles migrate to rectangle + solid fill style.
+    var migratesToSolidFill: Bool {
+        kind == .filledRectangle
+    }
+
     init(annotationType: AnnotationType) {
         switch annotationType {
         case .path(let points):
@@ -223,10 +232,8 @@ struct PersistedAnnotationType: Codable, Equatable {
             self.points = points
         case .rectangle:
             kind = .rectangle
-        case .filledRectangle:
-            kind = .filledRectangle
-        case .oval:
-            kind = .oval
+        case .circle:
+            kind = .circle
         case .arrow(let geometry):
             kind = .arrow
             arrow = PersistedArrowGeometry(geometry: geometry)
@@ -265,12 +272,10 @@ struct PersistedAnnotationType: Codable, Equatable {
         switch kind {
         case .path:
             return .path(points ?? [])
-        case .rectangle:
+        case .rectangle, .filledRectangle:
             return .rectangle
-        case .filledRectangle:
-            return .filledRectangle
-        case .oval:
-            return .oval
+        case .oval, .circle:
+            return .circle
         case .arrow:
             return arrow.map { .arrow($0.arrowGeometry) }
         case .line:

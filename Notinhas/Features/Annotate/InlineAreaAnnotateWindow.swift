@@ -1503,15 +1503,9 @@ private struct InlineAreaPropertiesBar: View {
     let popoverEdge: Edge
     let onContentWidthChange: (CGFloat) -> Void
 
-    private var strokeColors: [Color] {
-        if state.quickPropertiesTool == .notinhasNote {
-            return NotinhasPaletteColor.allCases.map(\.rgba.color)
-        }
-        return [.red, .orange, .yellow, .green, .blue, .purple, .white, .black]
-    }
-
-    private let fillColors: [Color] = [.clear, .red, .orange, .yellow, .green, .blue, .purple, .white, .black]
-    private let textBackgroundColors: [Color] = [.clear, .white, .black, .yellow, .blue]
+    private let strokeColors = AnnotateBuiltInColorPalette.annotationColors
+    private let fillColors = AnnotateBuiltInColorPalette.fillColors
+    private let textBackgroundColors = AnnotateBuiltInColorPalette.fillColors
 
     var body: some View {
         ZStack(alignment: .leading) {
@@ -1527,6 +1521,21 @@ private struct InlineAreaPropertiesBar: View {
                             role: .annotationStroke,
                             popoverEdge: popoverEdge,
                         )
+                    }
+
+                    if state.quickPropertiesSupportsShapeFillStyle {
+                        HStack(spacing: 4) {
+                            ForEach(AnnotationShapeFillStyle.allCases) { style in
+                                NotinhasAreaStylePreviewButton(
+                                    style: style,
+                                    isSelected: state.quickShapeFillStyleBinding.wrappedValue == style,
+                                    color: state.quickStrokeColorBinding.wrappedValue,
+                                    action: { state.quickShapeFillStyleBinding.wrappedValue = style },
+                                )
+                            }
+                        }
+                        .accessibilityElement(children: .contain)
+                        .accessibilityLabel(L10n.AnnotateUI.shapeStyle)
                     }
 
                     if state.quickPropertiesSupportsFill {

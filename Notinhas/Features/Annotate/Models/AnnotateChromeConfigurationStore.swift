@@ -180,7 +180,7 @@ final class AnnotateChromeConfigurationStore: ObservableObject {
         var ordered: [AnnotateChromeItem] = []
 
         for rawID in rawIDs ?? [] {
-            guard let item = AnnotateChromeItem(rawValue: rawID),
+            guard let item = AnnotateChromeItem.migrating(fromRawValue: rawID),
                   isAllowed(item),
                   !seen.contains(item) else { continue }
             ordered.append(item)
@@ -200,7 +200,7 @@ final class AnnotateChromeConfigurationStore: ObservableObject {
             return AnnotateChromeItem.defaultEnabledItems
         }
 
-        var enabled = Set(rawIDs.compactMap(AnnotateChromeItem.init(rawValue:)))
+        var enabled = Set(rawIDs.compactMap(AnnotateChromeItem.migrating(fromRawValue:)))
         enabled.formUnion(AnnotateChromeItem.alwaysOnItems)
         return enabled
     }

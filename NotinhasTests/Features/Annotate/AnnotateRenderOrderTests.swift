@@ -50,7 +50,7 @@ final class AnnotateRenderOrderTests: XCTestCase {
         let blurA = makeItem(.blur(.pixelated))
         let rectA = makeItem(.rectangle)
         let blurB = makeItem(.blur(.gaussian))
-        let rectB = makeItem(.oval)
+        let rectB = makeItem(.circle)
 
         let ordered = [blurA, rectA, blurB, rectB].renderOrdered
 

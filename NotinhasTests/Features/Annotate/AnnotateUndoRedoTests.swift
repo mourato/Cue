@@ -114,7 +114,7 @@ final class AnnotateUndoRedoTests: XCTestCase {
         let state = makeAnnotateState()
         let first = makeRectangle()
         let second = AnnotationItem(
-            type: .oval,
+            type: .circle,
             bounds: CGRect(x: 60, y: 60, width: 30, height: 30),
             properties: AnnotationProperties(),
         )

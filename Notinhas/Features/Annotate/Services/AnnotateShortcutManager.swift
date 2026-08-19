@@ -50,7 +50,7 @@ final class AnnotateShortcutManager: ObservableObject {
 
     /// Tools that support shortcuts (excludes mockup - internal only)
     static let configurableTools: [AnnotationToolType] = [
-        .crop, .selection, .rectangle, .filledRectangle, .oval, .arrow,
+        .crop, .selection, .rectangle, .circle, .arrow,
         .line, .magnify, .text, .highlighter, .blur, .spotlight, .notinhasNote, .watermark, .pencil,
     ]
 
@@ -90,6 +90,7 @@ final class AnnotateShortcutManager: ObservableObject {
         loadShortcuts()
         loadDisabledToolShortcuts()
         migrateCounterAbsorptionShortcutsIfNeeded()
+        migrateFilledRectangleAndOvalShortcutsIfNeeded()
         loadActionShortcuts()
         loadDisabledActionShortcuts()
     }
@@ -297,12 +298,32 @@ final class AnnotateShortcutManager: ObservableObject {
         UserDefaults.standard.set(true, forKey: counterAbsorptionMigrationKey)
     }
 
+    private func migrateFilledRectangleAndOvalShortcutsIfNeeded() {
+        let filledKey = keyPrefix + "filledRectangle"
+        let ovalKey = keyPrefix + "oval"
+        let circleKey = keyPrefix + AnnotationToolType.circle.rawValue
+
+        // Drop filled-rectangle shortcut; Rectangle remains on `r`.
+        UserDefaults.standard.removeObject(forKey: filledKey)
+
+        if UserDefaults.standard.object(forKey: circleKey) == nil,
+           let ovalStored = UserDefaults.standard.string(forKey: ovalKey) {
+            UserDefaults.standard.set(ovalStored, forKey: circleKey)
+            if let char = ovalStored.first {
+                shortcuts[.circle] = char
+            } else {
+                shortcuts.removeValue(forKey: .circle)
+            }
+        }
+        UserDefaults.standard.removeObject(forKey: ovalKey)
+    }
+
     private func loadDisabledToolShortcuts() {
         guard let rawValues = UserDefaults.standard.array(forKey: disabledToolShortcutsKey) as? [String] else {
             disabledToolShortcuts = []
             return
         }
-        disabledToolShortcuts = Set(rawValues.compactMap(AnnotationToolType.init(rawValue:)))
+        disabledToolShortcuts = Set(rawValues.compactMap(AnnotationToolType.migrating(fromRawValue:)))
     }
 
     private func saveShortcut(for tool: AnnotationToolType) {

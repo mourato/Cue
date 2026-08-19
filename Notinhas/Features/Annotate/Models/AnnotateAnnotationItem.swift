@@ -1396,8 +1396,7 @@ extension [AnnotationItem] {
 nonisolated enum AnnotationType: Equatable {
     case path([CGPoint])
     case rectangle
-    case filledRectangle
-    case oval
+    case circle
     case arrow(ArrowGeometry)
     case line(start: CGPoint, end: CGPoint)
     case text(String)
@@ -1414,8 +1413,7 @@ nonisolated enum AnnotationType: Equatable {
         switch self {
         case .path: .pencil
         case .rectangle: .rectangle
-        case .filledRectangle: .filledRectangle
-        case .oval: .oval
+        case .circle: .circle
         case .arrow: .arrow
         case .line: .line
         case .text: .text
@@ -1478,6 +1476,7 @@ nonisolated struct AnnotationProperties: Equatable {
     var textPresentation: TextPresentation
     var calloutTailTarget: CGPoint?
     var magnification: CGFloat
+    var shapeFillStyle: AnnotationShapeFillStyle
 
     init(
         strokeColor: Color = .red,
@@ -1493,6 +1492,7 @@ nonisolated struct AnnotationProperties: Equatable {
         textPresentation: TextPresentation = .plain,
         calloutTailTarget: CGPoint? = nil,
         magnification: CGFloat = MagnifyGeometry.defaultMagnification,
+        shapeFillStyle: AnnotationShapeFillStyle = .outline,
     ) {
         self.strokeColor = strokeColor
         self.fillColor = fillColor
@@ -1507,6 +1507,7 @@ nonisolated struct AnnotationProperties: Equatable {
         self.textPresentation = textPresentation
         self.calloutTailTarget = calloutTailTarget
         self.magnification = Self.clampedMagnification(magnification)
+        self.shapeFillStyle = shapeFillStyle
     }
 
     static func clampedControlValue(_ value: CGFloat) -> CGFloat {
@@ -1654,10 +1655,10 @@ extension AnnotationItem {
         let tolerance = baseTolerance + properties.strokeWidth / 2
 
         switch type {
-        case .rectangle, .filledRectangle, .blur(_), .watermark, .embeddedImage, .spotlight:
+        case .rectangle, .blur(_), .watermark, .embeddedImage, .spotlight:
             return bounds.contains(point)
 
-        case .oval:
+        case .circle:
             return pointInEllipse(point, in: bounds)
 
         case .arrow(let geometry):

@@ -198,6 +198,7 @@ final class AnnotateState: ObservableObject {
     @Published var strokeColor: Color = .red
     @Published var fillColor: Color = .clear
     @Published var rectangleCornerRadius: CGFloat = 0
+    @Published var shapeFillStyle: AnnotationShapeFillStyle = .outline
     @Published var blurType: BlurType = .pixelated
     @Published var arrowStyle: ArrowStyle = .straight
     @Published var arrowType: ArrowType = .tapered
@@ -2685,7 +2686,7 @@ final class AnnotateState: ObservableObject {
                 clockwise: clockwise,
             )
 
-        case .rectangle, .filledRectangle, .oval, .blur, .counter, .watermark, .embeddedImage, .spotlight:
+        case .rectangle, .circle, .blur, .counter, .watermark, .embeddedImage, .spotlight:
             // Bounds-only annotations: the rotated `bounds` above is the full transform we need.
             // Watermark `rotationDegrees` is user-controlled and clamped to ±45°, so we leave it
             // unchanged while moving the watermark region with the canvas.
@@ -3193,6 +3194,7 @@ final class AnnotateState: ObservableObject {
         watermarkStyle: WatermarkStyle? = nil,
         spotlightOpacity: CGFloat? = nil,
         magnification: CGFloat? = nil,
+        shapeFillStyle: AnnotationShapeFillStyle? = nil,
         recordsUndo: Bool = false,
     ) {
         guard let index = annotations.firstIndex(where: { $0.id == id }) else { return }
@@ -3214,6 +3216,7 @@ final class AnnotateState: ObservableObject {
             watermarkStyle: watermarkStyle,
             spotlightOpacity: spotlightOpacity,
             magnification: magnification,
+            shapeFillStyle: shapeFillStyle,
         ) else { return }
 
         if recordsUndo {
@@ -3267,6 +3270,9 @@ final class AnnotateState: ObservableObject {
         if let magnification {
             annotations[index].properties.magnification = AnnotationProperties.clampedMagnification(magnification)
         }
+        if let shapeFillStyle {
+            annotations[index].properties.shapeFillStyle = shapeFillStyle
+        }
         hasUnsavedChanges = true
     }
 
@@ -3290,7 +3296,11 @@ final class AnnotateState: ObservableObject {
         strokeColor: Color?,
         fillColor: Color?,
     ) -> (strokeColor: Color?, fillColor: Color?) {
-        if case .filledRectangle = annotation.type,
+        if case .rectangle = annotation.type,
+           let color = strokeColor ?? fillColor {
+            return (color, color)
+        }
+        if case .circle = annotation.type,
            let color = strokeColor ?? fillColor {
             return (color, color)
         }
@@ -3310,6 +3320,7 @@ final class AnnotateState: ObservableObject {
         watermarkStyle: WatermarkStyle? = nil,
         spotlightOpacity: CGFloat? = nil,
         magnification: CGFloat? = nil,
+        shapeFillStyle: AnnotationShapeFillStyle? = nil,
     ) -> Bool {
         let properties = annotation.properties
         let colorUpdate = normalizedColorUpdate(
@@ -3356,6 +3367,10 @@ final class AnnotateState: ObservableObject {
         }
         if let spotlightOpacity,
            properties.spotlightOpacity != AnnotationProperties.clampedSpotlightOpacity(spotlightOpacity) {
+            return true
+        }
+        if let shapeFillStyle,
+           properties.shapeFillStyle != shapeFillStyle {
             return true
         }
         return false
@@ -3762,7 +3777,7 @@ final class AnnotateState: ObservableObject {
         sanitized.rotationDegrees = AnnotationProperties.clampedRotationDegrees(properties.rotationDegrees)
         sanitized.spotlightOpacity = AnnotationProperties.clampedSpotlightOpacity(properties.spotlightOpacity)
         sanitized.magnification = AnnotationProperties.clampedMagnification(properties.magnification)
-        if tool == .filledRectangle {
+        if tool.supportsShapeFillStyle {
             sanitized.fillColor = sanitized.strokeColor
         }
         return sanitized
@@ -3915,7 +3930,7 @@ final class AnnotateState: ObservableObject {
         for tool in AnnotationToolType.allCases where tool.supportsQuickStrokeColor {
             var properties = defaultAnnotationProperties(for: tool)
             properties.strokeColor = color
-            if tool == .filledRectangle {
+            if tool == .rectangle {
                 properties.fillColor = color
             }
             annotationToolProperties[tool] = properties
@@ -3971,8 +3986,9 @@ final class AnnotateState: ObservableObject {
                 properties.strokeWidth = AnnotationProperties.controlValueRange.lowerBound
             }
             applySharedParameterDefaults(to: &properties, for: tool)
-            if tool == .filledRectangle {
+            if tool.supportsShapeFillStyle {
                 properties.fillColor = properties.strokeColor
+                properties.shapeFillStyle = .outline
             }
             return properties
         }
@@ -4001,7 +4017,7 @@ final class AnnotateState: ObservableObject {
 
         if tool.supportsQuickStrokeColor {
             properties.strokeColor = sharedProperties.strokeColor
-            if tool == .filledRectangle {
+            if tool.supportsShapeFillStyle {
                 properties.fillColor = sharedProperties.strokeColor
             }
         }
@@ -4071,8 +4087,9 @@ final class AnnotateState: ObservableObject {
         if tool == .text, shouldUseRecommendedTextFontSize {
             properties.fontSize = recommendedTextFontSize()
         }
-        if tool == .filledRectangle {
+        if tool.supportsShapeFillStyle {
             properties.fillColor = properties.strokeColor
+            properties.shapeFillStyle = shapeFillStyle
         }
         return properties
     }
@@ -4104,13 +4121,14 @@ final class AnnotateState: ObservableObject {
         watermarkStyle: WatermarkStyle? = nil,
         spotlightOpacity: CGFloat? = nil,
         magnification: CGFloat? = nil,
+        shapeFillStyle: AnnotationShapeFillStyle? = nil,
     ) {
         var properties = defaultAnnotationProperties(for: tool)
 
         if let strokeWidth {
             properties.strokeWidth = AnnotationProperties.clampedControlValue(strokeWidth)
         }
-        if tool == .filledRectangle,
+        if tool.supportsShapeFillStyle,
            let color = strokeColor ?? fillColor {
             properties.strokeColor = color
             properties.fillColor = color
@@ -4146,6 +4164,9 @@ final class AnnotateState: ObservableObject {
         if let magnification {
             properties.magnification = AnnotationProperties.clampedMagnification(magnification)
         }
+        if let shapeFillStyle {
+            properties.shapeFillStyle = shapeFillStyle
+        }
 
         let sanitized = sanitizedAnnotationProperties(properties, for: tool)
         annotationToolProperties[tool] = sanitized
@@ -4179,6 +4200,9 @@ final class AnnotateState: ObservableObject {
         strokeWidth = properties.strokeWidth
         if tool.supportsQuickCornerRadius {
             rectangleCornerRadius = properties.cornerRadius
+        }
+        if tool.supportsShapeFillStyle {
+            shapeFillStyle = properties.shapeFillStyle
         }
         if tool == .spotlight {
             spotlightOpacity = properties.spotlightOpacity
@@ -4313,6 +4337,50 @@ final class AnnotateState: ObservableObject {
         }
 
         return quickPropertiesTool == .arrow
+    }
+
+    var quickPropertiesSupportsShapeFillStyle: Bool {
+        guard editorMode == .annotate,
+              selectedTool != .crop else {
+            return false
+        }
+
+        let selected = quickPropertiesSelectionAnnotations
+        if !selected.isEmpty {
+            return selected.contains { $0.type.toolType.supportsShapeFillStyle }
+        }
+
+        return quickPropertiesTool?.supportsShapeFillStyle ?? false
+    }
+
+    var quickShapeFillStyleBinding: Binding<AnnotationShapeFillStyle> {
+        Binding(
+            get: {
+                if let selected = self.quickPropertiesSelectionAnnotations.first(where: {
+                    $0.type.toolType.supportsShapeFillStyle
+                }) {
+                    return selected.properties.shapeFillStyle
+                }
+                return self.shapeFillStyle
+            },
+            set: { newStyle in
+                self.shapeFillStyle = newStyle
+                let selected = self.quickPropertiesSelectionAnnotations.filter {
+                    $0.type.toolType.supportsShapeFillStyle
+                }
+                if !selected.isEmpty {
+                    for annotation in selected {
+                        self.updateAnnotationProperties(
+                            id: annotation.id,
+                            shapeFillStyle: newStyle,
+                            recordsUndo: true,
+                        )
+                    }
+                } else if let tool = self.quickPropertiesTool, tool.supportsShapeFillStyle {
+                    self.updateDefaultAnnotationProperties(for: tool, shapeFillStyle: newStyle)
+                }
+            },
+        )
     }
 
     var quickPropertiesSupportsArrowBendDirection: Bool {

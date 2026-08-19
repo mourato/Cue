@@ -56,6 +56,7 @@ struct PersistedAnnotationProperties: Codable, Equatable {
     var textPresentation: String?
     var calloutTailTarget: CGPoint?
     var magnification: CGFloat?
+    var shapeFillStyle: String?
 
     init(properties: AnnotationProperties) {
         strokeColor = RGBAColor(color: properties.strokeColor) ?? RGBAColor(red: 1, green: 0, blue: 0, alpha: 1)
@@ -71,6 +72,7 @@ struct PersistedAnnotationProperties: Codable, Equatable {
         textPresentation = properties.textPresentation.rawValue
         calloutTailTarget = properties.calloutTailTarget
         magnification = properties.magnification
+        shapeFillStyle = properties.shapeFillStyle.rawValue
     }
 
     var annotationProperties: AnnotationProperties {
@@ -88,6 +90,7 @@ struct PersistedAnnotationProperties: Codable, Equatable {
             textPresentation: TextPresentation(rawValue: textPresentation ?? "") ?? .plain,
             calloutTailTarget: calloutTailTarget,
             magnification: magnification ?? MagnifyGeometry.defaultMagnification,
+            shapeFillStyle: AnnotationShapeFillStyle(rawValue: shapeFillStyle ?? "") ?? .outline,
         )
     }
 }

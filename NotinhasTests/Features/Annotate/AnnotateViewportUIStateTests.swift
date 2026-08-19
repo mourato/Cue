@@ -220,10 +220,10 @@ final class AnnotateViewportUIStateTests: XCTestCase {
         state.annotations = [annotation]
         state.selectedAnnotationId = annotation.id
 
-        state.activateTool(.oval)
+        state.activateTool(.circle)
 
         XCTAssertNil(state.selectedAnnotationId)
-        XCTAssertEqual(state.selectedTool, .oval)
+        XCTAssertEqual(state.selectedTool, .circle)
     }
 
     @MainActor

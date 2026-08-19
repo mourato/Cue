@@ -71,15 +71,23 @@ nonisolated struct AnnotationRenderer {
 
         switch annotation.type {
         case .rectangle:
-            context.addPath(roundedRectPath(in: annotation.bounds, cornerRadius: annotation.properties.cornerRadius))
-            context.strokePath()
+            AnnotationShapeFillStyleDrawing.drawRoundedRect(
+                in: annotation.bounds,
+                cornerRadius: annotation.properties.cornerRadius,
+                style: annotation.properties.shapeFillStyle,
+                color: NSColor(annotation.properties.strokeColor),
+                strokeWidth: annotation.properties.strokeWidth,
+                in: context,
+            )
 
-        case .filledRectangle:
-            context.addPath(roundedRectPath(in: annotation.bounds, cornerRadius: annotation.properties.cornerRadius))
-            context.drawPath(using: .fillStroke)
-
-        case .oval:
-            context.strokeEllipse(in: annotation.bounds)
+        case .circle:
+            AnnotationShapeFillStyleDrawing.drawEllipse(
+                in: annotation.bounds,
+                style: annotation.properties.shapeFillStyle,
+                color: NSColor(annotation.properties.strokeColor),
+                strokeWidth: annotation.properties.strokeWidth,
+                in: context,
+            )
 
         case .arrow(let geometry):
             drawArrow(
@@ -149,6 +157,7 @@ nonisolated struct AnnotationRenderer {
         arrowStartHead: ArrowEndpointStyle = .none,
         arrowEndHead: ArrowEndpointStyle = .arrow,
         rectangleCornerRadius: CGFloat = 0,
+        shapeFillStyle: AnnotationShapeFillStyle = .outline,
         watermarkText: String = "Notinhas",
         watermarkStyle: WatermarkStyle = .diagonal,
         watermarkOpacity: CGFloat = 0.22,
@@ -177,22 +186,25 @@ nonisolated struct AnnotationRenderer {
         case .rectangle:
             let currentPoint = currentPath.last ?? start
             let rect = makeRect(from: start, to: currentPoint)
-            context.addPath(roundedRectPath(in: rect, cornerRadius: rectangleCornerRadius))
-            context.strokePath()
+            AnnotationShapeFillStyleDrawing.drawRoundedRect(
+                in: rect,
+                cornerRadius: rectangleCornerRadius,
+                style: shapeFillStyle,
+                color: NSColor(strokeColor),
+                strokeWidth: strokeWidth,
+                in: context,
+            )
 
-        case .filledRectangle:
+        case .circle:
             let currentPoint = currentPath.last ?? start
             let rect = makeRect(from: start, to: currentPoint)
-            let resolvedFillColor = fillColor == .clear ? strokeColor.opacity(1) : fillColor
-            context.setFillColor(NSColor(resolvedFillColor).cgColor)
-            context.addPath(roundedRectPath(in: rect, cornerRadius: rectangleCornerRadius))
-            context.drawPath(using: .fillStroke)
-            context.setFillColor(NSColor.clear.cgColor)
-
-        case .oval:
-            let currentPoint = currentPath.last ?? start
-            let rect = makeRect(from: start, to: currentPoint)
-            context.strokeEllipse(in: rect)
+            AnnotationShapeFillStyleDrawing.drawEllipse(
+                in: rect,
+                style: shapeFillStyle,
+                color: NSColor(strokeColor),
+                strokeWidth: strokeWidth,
+                in: context,
+            )
 
         case .line:
             let currentPoint = currentPath.last ?? start

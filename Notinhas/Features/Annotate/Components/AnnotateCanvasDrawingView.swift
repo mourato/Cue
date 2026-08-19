@@ -495,7 +495,7 @@ final class DrawingCanvasNSView: NSView {
                 (.lineEnd, handleRect(at: endPoint)),
             ]
 
-        case .rectangle, .filledRectangle:
+        case .rectangle:
             let bounds = inDisplayCoordinates ? imageToDisplay(annotation.resizeBounds) : annotation.resizeBounds
             return standardResizeHandleRects(for: bounds, includingSides: true)
 
@@ -1830,6 +1830,7 @@ final class DrawingCanvasNSView: NSView {
                 arrowStartHead: state.arrowStartHead,
                 arrowEndHead: state.arrowEndHead,
                 rectangleCornerRadius: previewProperties.cornerRadius,
+                shapeFillStyle: previewProperties.shapeFillStyle,
                 watermarkText: state.watermarkText,
                 watermarkStyle: previewProperties.watermarkStyle,
                 watermarkOpacity: previewProperties.opacity,

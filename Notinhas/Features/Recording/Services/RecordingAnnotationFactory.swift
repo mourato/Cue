@@ -18,11 +18,13 @@
             path: [CGPoint],
             strokeColor: Color,
             strokeWidth: CGFloat,
+            shapeFillStyle: AnnotationShapeFillStyle = .outline,
         ) -> AnnotationItem? {
             let properties = AnnotationProperties(
                 strokeColor: strokeColor,
-                fillColor: .clear,
+                fillColor: strokeColor,
                 strokeWidth: strokeWidth,
+                shapeFillStyle: tool.supportsShapeFillStyle ? shapeFillStyle : .outline,
             )
 
             let type: AnnotationType?
@@ -30,8 +32,8 @@
             switch tool {
             case .rectangle:
                 type = .rectangle
-            case .oval:
-                type = .oval
+            case .circle:
+                type = .circle
             case .arrow:
                 type = .arrow(ArrowGeometry(start: start, end: end, style: .straight))
             case .line:

@@ -86,15 +86,9 @@ private enum QuickPropertiesDensity {
 struct AnnotateQuickPropertiesBar: View {
     @ObservedObject var state: AnnotateState
 
-    private var strokeColors: [Color] {
-        if state.quickPropertiesTool == .notinhasNote {
-            return NotinhasPaletteColor.allCases.map(\.rgba.color)
-        }
-        return [.red, .orange, .yellow, .green, .blue, .purple, .white, .black]
-    }
-
-    private let fillColors: [Color] = [.clear, .red, .orange, .yellow, .green, .blue, .purple, .white, .black]
-    private let textBackgroundColors: [Color] = [.clear, .white, .black, .yellow, .blue]
+    private let strokeColors = AnnotateBuiltInColorPalette.annotationColors
+    private let fillColors = AnnotateBuiltInColorPalette.fillColors
+    private let textBackgroundColors = AnnotateBuiltInColorPalette.fillColors
     var body: some View {
         // Horizontal ViewThatFits(regular→compact) no longer works once the active
         // row wraps: regular reports a fitting width after wrapping, so compact was
@@ -122,6 +116,7 @@ struct AnnotateQuickPropertiesBar: View {
         let showStrokeWidth = state.quickPropertiesSupportsStrokeWidth
         let showCornerRadius = state.quickPropertiesSupportsCornerRadius
         let showArrowStyle = state.quickPropertiesSupportsArrowStyle
+        let showShapeFillStyle = state.quickPropertiesSupportsShapeFillStyle
         let hasEditableStyleControls = showStrokeColor
             || showFill
             || showTextBackground
@@ -132,6 +127,7 @@ struct AnnotateQuickPropertiesBar: View {
             || showStrokeWidth
             || showCornerRadius
             || showArrowStyle
+            || showShapeFillStyle
         let showSelectionInfo = state.quickPropertiesSelectedAnnotationCount > 0 && !hasEditableStyleControls
         let hasBeforeTextPresentation = showStrokeColor || showFill
         let hasBeforeTextBackground = hasBeforeTextPresentation || showTextPresentation
@@ -146,6 +142,7 @@ struct AnnotateQuickPropertiesBar: View {
         let hasBeforeStrokeWidth = hasBeforeMagnification || showMagnification
         let hasBeforeCornerRadius = hasBeforeStrokeWidth || showStrokeWidth
         let hasBeforeArrowStyle = hasBeforeCornerRadius || showCornerRadius
+        let hasBeforeShapeFillStyle = hasBeforeArrowStyle || showArrowStyle
 
         return QuickPropertiesFlowLayout(
             horizontalSpacing: density.rowSpacing,
@@ -392,6 +389,19 @@ struct AnnotateQuickPropertiesBar: View {
                     showsBendDirection: state.quickPropertiesSupportsArrowBendDirection,
                     showsEndpoints: state.quickPropertiesSupportsArrowEndpoints,
                     buttonWidth: density.controlButtonWidth,
+                    groupSpacing: density.groupSpacing,
+                )
+            }
+
+            activePropertySlot(
+                isVisible: showShapeFillStyle,
+                isEnabled: state.quickPropertiesSupportsShapeFillStyle,
+                showsLeadingDivider: hasBeforeShapeFillStyle,
+                width: nil,
+            ) {
+                QuickShapeFillStyleControl(
+                    selectedStyle: state.quickShapeFillStyleBinding,
+                    color: state.quickStrokeColorBinding.wrappedValue,
                     groupSpacing: density.groupSpacing,
                 )
             }
@@ -1664,6 +1674,27 @@ private struct QuickAutoRedactControl: View {
                     ? L10n.AnnotateUI.autoRedactionScanning
                     : L10n.AnnotateUI.autoRedactSensitiveData,
             )
+        }
+    }
+}
+
+private struct QuickShapeFillStyleControl: View {
+    @Binding var selectedStyle: AnnotationShapeFillStyle
+    let color: Color
+    let groupSpacing: CGFloat
+
+    var body: some View {
+        QuickPropertiesGroup(title: L10n.AnnotateUI.shapeStyle, spacing: groupSpacing) {
+            HStack(spacing: 5) {
+                ForEach(AnnotationShapeFillStyle.allCases) { style in
+                    NotinhasAreaStylePreviewButton(
+                        style: style,
+                        isSelected: selectedStyle == style,
+                        color: color,
+                        action: { selectedStyle = style },
+                    )
+                }
+            }
         }
     }
 }

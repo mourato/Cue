@@ -548,6 +548,7 @@ private struct DragFallbackSignature: Equatable {
             String(quantize(properties.opacity)),
             String(quantize(properties.rotationDegrees)),
             properties.watermarkStyle.rawValue,
+            properties.shapeFillStyle.rawValue,
             String(quantize(properties.magnification)),
         ].joined(separator: "|")
     }
@@ -558,10 +559,8 @@ private struct DragFallbackSignature: Equatable {
             return "path|\(points.map(pointSignature).joined(separator: ";"))"
         case .rectangle:
             return "rectangle"
-        case .filledRectangle:
-            return "filledRectangle"
-        case .oval:
-            return "oval"
+        case .circle:
+            return "circle"
         case .arrow(let geometry):
             let controlPoint = geometry.resolvedControlPoint.map(pointSignature) ?? "nil"
             return "arrow|\(pointSignature(geometry.start))|\(pointSignature(geometry.end))|\(geometry.style.rawValue)|\(controlPoint)"
