@@ -1225,7 +1225,7 @@ nonisolated enum MagnifyGeometry {
     }
 }
 
-/// Nearest 45-degree angle used by line and arrow drawing when Shift is held.
+/// Angle and aspect helpers used while drawing with Shift held.
 nonisolated enum AnnotationAngleSnapping {
     static func snap45(_ point: CGPoint, from start: CGPoint) -> CGPoint {
         let dx = point.x - start.x
@@ -1237,6 +1237,19 @@ nonisolated enum AnnotationAngleSnapping {
         return CGPoint(
             x: start.x + cos(snappedAngle) * distance,
             y: start.y + sin(snappedAngle) * distance,
+        )
+    }
+
+    /// Corner-anchored square constraint for rectangle and circle creation.
+    static func snapSquareCorner(_ point: CGPoint, from start: CGPoint) -> CGPoint {
+        let dx = point.x - start.x
+        let dy = point.y - start.y
+        let side = max(abs(dx), abs(dy))
+        guard side > 0 else { return point }
+
+        return CGPoint(
+            x: start.x + (dx < 0 ? -side : side),
+            y: start.y + (dy < 0 ? -side : side),
         )
     }
 }
@@ -1327,6 +1340,15 @@ extension AnnotationItem {
         }
 
         return copy
+    }
+
+    func translatedBy(dx: CGFloat, dy: CGFloat) -> AnnotationItem {
+        guard dx != 0 || dy != 0 else { return self }
+        let translatedBounds = CGRect(
+            origin: CGPoint(x: bounds.origin.x + dx, y: bounds.origin.y + dy),
+            size: bounds.size,
+        )
+        return applyingResizeBounds(translatedBounds)
     }
 
     private static func remapPoint(_ point: CGPoint, from oldBounds: CGRect, to newBounds: CGRect) -> CGPoint {

@@ -5291,6 +5291,104 @@ final class AnnotateState: ObservableObject {
             break
         }
     }
+
+    // MARK: - Duplicate / Clipboard
+
+    private var annotationClipboard: [PersistedAnnotationItem] = []
+    private static let annotationPasteOffset = CGSize(width: 12, height: 12)
+
+    var hasAnnotationClipboard: Bool {
+        !annotationClipboard.isEmpty
+    }
+
+    func copySelectedAnnotationsToClipboard() {
+        guard editingTextAnnotationId == nil else { return }
+        let items = selectedAnnotations
+        guard !items.isEmpty else { return }
+        annotationClipboard = items.map(PersistedAnnotationItem.init)
+    }
+
+    func pasteAnnotationsFromClipboard() {
+        guard editingTextAnnotationId == nil else { return }
+        guard !annotationClipboard.isEmpty else { return }
+
+        saveState()
+        appendClonedAnnotations(from: annotationClipboard, offset: Self.annotationPasteOffset)
+    }
+
+    @discardableResult
+    func duplicateAnnotations(withIds ids: Set<UUID>) -> Set<UUID> {
+        let sources = annotations.filter { ids.contains($0.id) }
+        guard !sources.isEmpty else { return [] }
+
+        saveState()
+        return appendClonedAnnotations(from: sources.map(PersistedAnnotationItem.init), offset: .zero)
+    }
+
+    @discardableResult
+    private func appendClonedAnnotations(
+        from persistedItems: [PersistedAnnotationItem],
+        offset: CGSize,
+    ) -> Set<UUID> {
+        var newIds: Set<UUID> = []
+
+        for persisted in persistedItems {
+            guard let source = persisted.annotationItem else { continue }
+            let newId = UUID()
+            guard var clone = clonedAnnotation(from: source, newId: newId) else { continue }
+
+            if offset.width != 0 || offset.height != 0 {
+                clone = clone.translatedBy(dx: offset.width, dy: offset.height)
+            }
+
+            annotations.append(clone)
+            if isCombineMode, combineMode == .freeCanvas, case .embeddedImage = clone.type {
+                freeCombineBoundsByAnnotationID[clone.id] = clone.bounds
+            }
+            newIds.insert(newId)
+        }
+
+        guard !newIds.isEmpty else { return [] }
+
+        setSelectedAnnotationIds(newIds)
+        selectedTool = .selection
+        refreshCombineLayout()
+        hasUnsavedChanges = true
+        return newIds
+    }
+
+    private func clonedAnnotation(from source: AnnotationItem, newId: UUID) -> AnnotationItem? {
+        var persisted = PersistedAnnotationItem(item: source)
+        persisted.id = newId
+
+        switch source.type {
+        case .counter:
+            persisted.type.counterValue = nextCounterValue()
+        case .embeddedImage(let assetId):
+            let newAssetId = UUID()
+            cloneEmbeddedImageAsset(from: assetId, to: newAssetId)
+            persisted.type.embeddedImageAssetId = newAssetId
+        default:
+            break
+        }
+
+        return persisted.annotationItem
+    }
+
+    private func cloneEmbeddedImageAsset(from sourceId: UUID, to newId: UUID) {
+        if let image = embeddedImageAssets[sourceId] {
+            embeddedImageAssets[newId] = image
+        }
+        if let sourceData = embeddedImageSourceData[sourceId] {
+            embeddedImageSourceData[newId] = sourceData
+        }
+        if let snapshotData = embeddedImageSnapshotCacheData[sourceId] {
+            embeddedImageSnapshotCacheData[newId] = snapshotData
+        }
+        if let cachedImage = embeddedImageCGImageCache[sourceId] {
+            embeddedImageCGImageCache[newId] = cachedImage
+        }
+    }
 }
 
 nonisolated enum AnnotateTextLayout {

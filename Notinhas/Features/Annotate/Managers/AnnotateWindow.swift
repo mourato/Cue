@@ -173,11 +173,27 @@ class AnnotateWindow: NSWindow {
             return true
         }
 
-        // Cmd+V - Paste image into current annotate canvas.
+        // Cmd+C - Copy selected annotations to the in-app clipboard.
+        if event.keyCode == 8, flags == .command {
+            if isTextInputActive || interactionState?.editingTextAnnotationId != nil {
+                return super.performKeyEquivalent(with: event)
+            }
+            if interactionState?.hasSelectedAnnotations == true {
+                interactionState?.copySelectedAnnotationsToClipboard()
+                return true
+            }
+            return super.performKeyEquivalent(with: event)
+        }
+
+        // Cmd+V - Paste annotations when available, otherwise paste image into canvas.
         if event.keyCode == 9, flags == .command {
             // Allow normal text paste while editing text annotations.
-            if isTextInputActive {
+            if isTextInputActive || interactionState?.editingTextAnnotationId != nil {
                 return super.performKeyEquivalent(with: event)
+            }
+            if interactionState?.hasAnnotationClipboard == true {
+                interactionState?.pasteAnnotationsFromClipboard()
+                return true
             }
             NotificationCenter.default.post(name: .annotatePasteImage, object: self)
             return true

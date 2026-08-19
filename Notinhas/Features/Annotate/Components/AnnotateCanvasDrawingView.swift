@@ -759,10 +759,15 @@ final class DrawingCanvasNSView: NSView {
             return
         }
 
-        let activeIds: Set<UUID> = if state.isAnnotationSelected(annotation.id), !state.selectedAnnotationIds.isEmpty {
+        var activeIds: Set<UUID> = if state.isAnnotationSelected(annotation.id), !state.selectedAnnotationIds.isEmpty {
             state.selectedAnnotationIds
         } else {
             [annotation.id]
+        }
+
+        if NSEvent.modifierFlags.contains(.option) {
+            activeIds = state.duplicateAnnotations(withIds: activeIds)
+            guard !activeIds.isEmpty else { return }
         }
 
         isDraggingAnnotation = true
@@ -957,7 +962,8 @@ final class DrawingCanvasNSView: NSView {
     override func flagsChanged(with event: NSEvent) {
         guard isDrawing,
               let start = dragStart,
-              state.selectedTool == .line || state.selectedTool == .arrow else {
+              state.selectedTool == .line || state.selectedTool == .arrow
+              || state.selectedTool == .rectangle || state.selectedTool == .circle else {
             super.flagsChanged(with: event)
             return
         }
@@ -979,8 +985,15 @@ final class DrawingCanvasNSView: NSView {
         end: CGPoint,
         shiftHeld: Bool,
     ) -> CGPoint {
-        guard shiftHeld, tool == .line || tool == .arrow else { return end }
-        return AnnotationAngleSnapping.snap45(end, from: start)
+        guard shiftHeld else { return end }
+        switch tool {
+        case .line, .arrow:
+            return AnnotationAngleSnapping.snap45(end, from: start)
+        case .rectangle, .circle:
+            return AnnotationAngleSnapping.snapSquareCorner(end, from: start)
+        default:
+            return end
+        }
     }
 
     /// Applies a resize gesture to the gesture-local copy only. Mirrors the
