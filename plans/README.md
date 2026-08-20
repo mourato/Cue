@@ -915,3 +915,33 @@ merges that edit the same test file. Code review remains a host-chat gate.
   the existing in-memory/session snapshot and `AnnotateManager` restore path;
   add durable pending commits only if real failures show that path is
   insufficient.
+
+## Ponytail audit cleanup (089–096)
+
+Generated 2026-08-20 against commit `ce23ea34`. These plans implement every
+finding in the audit except the first finding, removal of the optional Video
+module. The Video module remains; Plan 089 may remove only its BYO-cloud
+affordances when needed for gated compilation.
+
+| Plan | Title | Priority | Effort | Depends on | Status |
+|---|---|---:|---:|---|---|
+| [089](089-retire-byo-cloud-stack.md) | Retire the BYO cloud upload stack | P0 | L | — | TODO |
+| [090](090-delete-unused-swiftui-extensions.md) | Delete unused SwiftUI style extensions | P2 | S | — | TODO |
+| [091](091-remove-json-feature-intro.md) | Remove the one-campaign Feature Intro framework | P1 | M | — | TODO |
+| [092](092-shrink-window-spacing-api.md) | Shrink the WindowSpacing API to live modifiers | P2 | S | — | TODO |
+| [093](093-remove-disabled-backdrop-transition.md) | Remove the disabled backdrop crossfade path | P1 | S | — | TODO |
+| [094](094-prune-wallpaper-debug-flags.md) | Prune dead wallpaper quality flags | P2 | S | — | TODO |
+| [095](095-remove-app-environment-wrapper.md) | Remove the one-property AppEnvironment wrapper | P2 | S | — | TODO |
+| [096](096-remove-preferences-lazy-view.md) | Remove the single-use Preferences LazyView | P2 | S | — | TODO |
+
+### Dependency notes (089–096)
+
+- Execute and review **089** as the high-risk first stream; it owns the
+  cloud/ImgBB boundary, persistence compatibility, migration behavior, and
+  related documentation.
+- **090–092** and **094–096** are independent cleanup streams and can run in
+  separate worktrees. Serialize merges when they touch the same source file.
+- **093** is independent in code ownership but must serialize with other
+  Capture/Annotate window edits and includes a Screen Recording manual gate.
+- Do not delete remote cloud objects, Keychain entries, legacy configuration,
+  capture history, or the Video module as part of this batch.
