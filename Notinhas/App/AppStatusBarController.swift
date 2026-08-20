@@ -692,19 +692,6 @@ final class AppStatusBarController: ObservableObject {
             menu?.addItem(NSMenuItem.separator())
         }
 
-        // What's New
-        if let campaign = FeatureIntroManager.shared.getPendingCampaign() {
-            let whatsNewItem = NSMenuItem(
-                title: campaign.menuTitle ?? "What's New",
-                action: #selector(showPendingFeatureIntroAction),
-                keyEquivalent: "",
-            )
-            whatsNewItem.target = self
-            whatsNewItem.image = NSImage(systemSymbolName: "sparkles", accessibilityDescription: nil)
-            whatsNewItem.isEnabled = true
-            menu?.addItem(whatsNewItem)
-        }
-
         // Preferences
         let prefsItem = NSMenuItem(
             title: L10n.Menu.preferences,
@@ -838,13 +825,6 @@ final class AppStatusBarController: ObservableObject {
     @objc private func grantPermissionAction() {
         logMenuAction("grantPermission")
         viewModel?.requestPermission()
-    }
-
-    @objc private func showPendingFeatureIntroAction() {
-        logMenuAction("showPendingFeatureIntro")
-        if let campaign = FeatureIntroManager.shared.getPendingCampaign() {
-            FeatureIntroManager.shared.showCampaign(campaign)
-        }
     }
 
     @objc private func openPreferencesAction() {

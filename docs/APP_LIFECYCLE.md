@@ -89,7 +89,7 @@ State machine (`SplashScreen`): `splash` → `language` → `sponsor` (only when
   - `splashSkipped` → skip splash entirely when onboarding done and sponsor seen.
   - `splash.skipOnceAfterOnboardingRelaunch` → one-time skip after a language-change relaunch, then the key is removed.
 - Language preview: `OnboardingLocalizationController` (`Notinhas/Features/Onboarding/Managers/`) re-renders onboarding strings in the selected language without relaunch; on completion `commitLanguageSelection()` persists via `AppLanguageManager` and, when `requiresRelaunchOnCompletion`, calls `relaunchApplication()` after setting the skip-once key.
-- Startup gating (`AppCoordinator.presentStartupExperience`): for existing users (`hasCompletedOnboarding`), when TOML auto-import returns `.skippedPermissionRequired` and `configuration.accessOnboardingPrompted` is false, show a one-time configAccess-only step (`showConfigurationAccess()`, steps `[.configAccess]`) instead of the splash. Otherwise `SplashWindowController.show()`, then after 1.5 s remove the legacy `hasSeenSmartElementIntro` key and present any pending `FeatureIntroManager` campaign.
+- Startup gating (`AppCoordinator.presentStartupExperience`): for existing users (`hasCompletedOnboarding`), when TOML auto-import returns `.skippedPermissionRequired` and `configuration.accessOnboardingPrompted` is false, show a one-time configAccess-only step (`showConfigurationAccess()`, steps `[.configAccess]`) instead of the splash. Otherwise `SplashWindowController.show()` presents the normal startup path. Release notes are maintained externally and are not part of startup runtime.
 - "Restart Onboarding" (Preferences → General → Help): `OnboardingFlowView.resetOnboarding()` clears `onboardingCompleted` / `splashSkipped` / skip-once key, posts `.showOnboarding`.
 
 ## Menu bar
@@ -102,7 +102,7 @@ State machine (`SplashScreen`): `splash` → `language` → `sponsor` (only when
   - Captures: Capture Area, Capture Area & Annotate, Application Capture (menu action), Capture Fullscreen, Capture Active Window, Scrolling Capture (disabled while a session is active), Capture Text (OCR), Capture Smart Element, Object Cutout (macOS 14+ only).
   - Recording: Record Screen, Application Recording (both disabled while recorder active).
   - Tools: Open Annotate, Edit Video, History, Keyboard Shortcuts.
-  - Conditional: **Grant Permission** (when screen permission missing), **What's New** (pending `FeatureIntroManager` campaign).
+  - Conditional: **Grant Permission** (when screen permission missing).
   - Preferences `⌘,`, Quit `⌘Q` (menu title shows **Notinhas**).
   - Configured shortcut key equivalents are attached to menu items via `applyConfiguredShortcut(_:for:using:)`; the Recording → Application Recording overlay shortcut can render as a child-key suffix (see [SHORTCUTS.md](SHORTCUTS.md)).
 - Recording state rendering: while recording, the title shows a monospaced-digit timer (`recorder.formattedDuration`); when paused it is prefixed with `|| `; tooltip mirrors state. `setProcessing(_:)` swaps the icon for an `NSProgressIndicator` spinner (used e.g. during OCR) on Core Animation so it keeps animating.
@@ -132,7 +132,7 @@ The Permissions tab reflects unhealthy identity as `grantedButUnavailableDueToAp
 - Sandbox-off data migration: `SandboxOffDataMigrationService` (`Notinhas/Services/Migration/`) — one-time move of App Support items, preferences, and logs out of the old sandbox container for upgrades to unsandboxed builds. Skips when running sandboxed (`APP_SANDBOX_CONTAINER_ID` present) or already done. Completion tracked by marker file `.sandbox-off-migration-completed` and UserDefaults `migration.sandboxOff.completed`. Launch-blocking modal on failure (see flowchart).
 - Legacy license cleanup: `LegacyLicenseCleanupService` (`Notinhas/Services/LegacyLicenseCleanupService.swift`), completion key `legacyLicenseCleanupCompleted`.
 - Database recovery: `DatabaseManager` (`Notinhas/Services/Cloud/DatabaseManager.swift`) prepares `notinhas.db`; reset archives old files to `DatabaseRecovery-<timestamp>` (capture files on disk and cloud objects are never deleted).
-- Legacy key cleanup: `hasSeenSmartElementIntro` removed at launch (replaced by `FeatureIntroManager` campaigns).
+- Release notes are external to the startup runtime; no campaign state or lookup is persisted at launch.
 
 ## Entitlements & Info.plist
 
