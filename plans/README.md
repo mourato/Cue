@@ -932,7 +932,7 @@ affordances when needed for gated compilation.
 | [093](093-remove-disabled-backdrop-transition.md) | Remove the disabled backdrop crossfade path | P1 | S | — | DONE (`27d2ddac`, merge `c41c6533`; thermo APPROVE; manual Screen Recording gate pending) |
 | [094](094-prune-wallpaper-debug-flags.md) | Prune dead wallpaper quality flags | P2 | S | — | DONE (`89d5cd65`, merge `c907c04a`; thermo APPROVE) |
 | [095](095-remove-app-environment-wrapper.md) | Remove the one-property AppEnvironment wrapper | P2 | S | — | DONE (`794b659e`, merge `84c9361d`; thermo APPROVE) |
-| [096](096-remove-preferences-lazy-view.md) | Remove the single-use Preferences LazyView | P2 | S | — | TODO |
+| [096](096-remove-preferences-lazy-view.md) | Remove the single-use Preferences LazyView | P2 | S | — | DONE (`a71679da`, merge `e5c9451e`; thermo APPROVE; manual Preferences gate pending) |
 
 ### Dependency notes (089–096)
 
