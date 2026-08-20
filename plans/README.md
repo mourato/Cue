@@ -930,7 +930,7 @@ affordances when needed for gated compilation.
 | [091](091-remove-json-feature-intro.md) | Remove the one-campaign Feature Intro framework | P1 | M | — | DONE (`918d29b7`, merge `de3c4a62`; thermo APPROVE; manual splash/menu gate pending) |
 | [092](092-shrink-window-spacing-api.md) | Shrink the WindowSpacing API to live modifiers | P2 | S | — | DONE (`3c613daf`, merge `d54016a1`; thermo fixes `5213c7bc`, `3b30b853`) |
 | [093](093-remove-disabled-backdrop-transition.md) | Remove the disabled backdrop crossfade path | P1 | S | — | DONE (`27d2ddac`, merge `c41c6533`; thermo APPROVE; manual Screen Recording gate pending) |
-| [094](094-prune-wallpaper-debug-flags.md) | Prune dead wallpaper quality flags | P2 | S | — | TODO |
+| [094](094-prune-wallpaper-debug-flags.md) | Prune dead wallpaper quality flags | P2 | S | — | DONE (`89d5cd65`, merge `c907c04a`; thermo APPROVE) |
 | [095](095-remove-app-environment-wrapper.md) | Remove the one-property AppEnvironment wrapper | P2 | S | — | TODO |
 | [096](096-remove-preferences-lazy-view.md) | Remove the single-use Preferences LazyView | P2 | S | — | TODO |
 
