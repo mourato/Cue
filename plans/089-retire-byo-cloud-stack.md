@@ -5,6 +5,7 @@ reviewer. Work from baseline `ce23ea3471f7f367fe470f2983245711f4bdbe29` and
 stop for drift before editing.
 
 Status: TODO
+- **Planned at**: commit `ce23ea34`, 2026-08-20
 Execution profile: implementer; High/Full; reviewer required; serialize this
 plan with other changes touching Annotate, Preferences, Quick Access, or
 configuration. No remote or Keychain deletion is authorized.
@@ -121,4 +122,3 @@ record decoding, capture history, or the ImgBB path; if a remote/Keychain
 deletion is proposed; if a provider is still needed by a non-cloud feature; or
 if the change requires deleting the Video module rather than only its cloud
 affordance.
-

@@ -4,6 +4,7 @@ Executor: implementation agent in an isolated worktree. Baseline:
 `ce23ea3471f7f367fe470f2983245711f4bdbe29`; perform a drift check first.
 
 Status: TODO
+- **Planned at**: commit `ce23ea34`, 2026-08-20
 Execution profile: implementer; Medium/Full; independent but serialize with
 other Capture/Annotate window edits; reviewer required; manual capture check.
 
@@ -50,4 +51,3 @@ No transition type/flag/parameter remains, final backdrop behavior is covered,
 and capture gates pass. Stop if a real animation is enabled by a runtime or
 accessibility setting not visible in the baseline; preserve that path and
 narrow the deletion.
-

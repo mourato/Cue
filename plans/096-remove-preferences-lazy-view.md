@@ -4,6 +4,7 @@ Executor: implementation agent in an isolated worktree. Baseline:
 `ce23ea3471f7f367fe470f2983245711f4bdbe29`; perform a drift check first.
 
 Status: TODO
+- **Planned at**: commit `ce23ea34`, 2026-08-20
 Execution profile: implementer-fast; Low/Fast; independent and parallelizable;
 reviewer required because Preferences is user-facing.
 
@@ -45,4 +46,3 @@ do not retain a generic wrapper speculatively.
 `LazyView` is gone, all Preferences tabs compile and behave normally, and the
 focused gates pass. Stop if a second caller or measured deferred-initialization
 requirement is found; narrow the plan to that concrete requirement.
-

@@ -4,6 +4,7 @@ Executor: implementation agent in an isolated worktree. Baseline:
 `ce23ea3471f7f367fe470f2983245711f4bdbe29`; perform a drift check first.
 
 Status: TODO
+- **Planned at**: commit `ce23ea34`, 2026-08-20
 Execution profile: implementer-fast; Low/Fast; independent and parallelizable;
 reviewer required for compile verification.
 
@@ -42,4 +43,3 @@ The file contains only live spacing API, Annotate and Video-gated callers
 compile, and gates pass. Stop if an unlisted helper has a real caller or if
 pruning a field changes a measured layout; add only that field/helper with its
 caller documented.
-

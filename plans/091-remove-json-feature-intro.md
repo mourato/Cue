@@ -4,6 +4,7 @@ Executor: implementation agent in an isolated worktree. Baseline:
 `ce23ea3471f7f367fe470f2983245711f4bdbe29`; perform a drift check first.
 
 Status: TODO
+- **Planned at**: commit `ce23ea34`, 2026-08-20
 Execution profile: implementer; Medium/Full; independent and parallelizable;
 reviewer required because startup/menu behavior and localization are affected.
 
@@ -55,4 +56,3 @@ No runtime campaign framework/resource/call remains, normal startup behavior is
 preserved, and gates pass. Stop if the mapping reveals a second campaign or if
 the framework owns onboarding/permission state; split that behavior before
 deleting it.
-

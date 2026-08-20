@@ -4,6 +4,7 @@ Executor: implementation agent in an isolated worktree. Baseline:
 `ce23ea3471f7f367fe470f2983245711f4bdbe29`; perform a drift check first.
 
 Status: TODO
+- **Planned at**: commit `ce23ea34`, 2026-08-20
 Execution profile: implementer-fast; Low/Fast; independent and parallelizable;
 reviewer required for the deletion/compile check.
 
@@ -39,4 +40,3 @@ make test
 The two files are gone, no custom extension reference remains, and the default
 build/tests pass. Stop if a real caller appears after excluding declaration
 lines; update this plan's scope rather than silently changing its styling.
-

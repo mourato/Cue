@@ -4,6 +4,7 @@ Executor: implementation agent in an isolated worktree. Baseline:
 `ce23ea3471f7f367fe470f2983245711f4bdbe29`; perform a drift check first.
 
 Status: TODO
+- **Planned at**: commit `ce23ea34`, 2026-08-20
 Execution profile: implementer-fast; Low/Fast; independent and parallelizable;
 reviewer required for compile verification.
 
@@ -43,4 +44,3 @@ make test
 There is no `AppEnvironment` type/reference, launch and deep-link behavior are
 unchanged, and gates pass. Stop if another dependency is discovered; do not
 turn this cleanup into a generalized dependency-injection refactor.
-

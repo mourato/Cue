@@ -4,6 +4,7 @@ Executor: implementation agent in an isolated worktree. Baseline:
 `ce23ea3471f7f367fe470f2983245711f4bdbe29`; perform a drift check first.
 
 Status: TODO
+- **Planned at**: commit `ce23ea34`, 2026-08-20
 Execution profile: implementer-fast; Low/Fast; independent and parallelizable;
 reviewer optional after focused compile check.
 
@@ -35,4 +36,3 @@ Only live constants remain and default/Video-gated compilation is unaffected.
 Stop if a generated/configuration consumer or a real Video reader appears;
 retain that flag or update the consumer explicitly rather than deleting a
 runtime contract.
-
