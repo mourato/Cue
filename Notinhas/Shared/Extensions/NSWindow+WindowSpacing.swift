@@ -5,7 +5,6 @@
 //  Unified window spacing configuration for toolbar, content, and bottom bar
 //
 
-import AppKit
 import SwiftUI
 
 // MARK: - Window Spacing Configuration
@@ -41,9 +40,6 @@ struct WindowSpacingConfiguration {
 
     /// Bottom bar vertical padding
     var bottomBarVPadding: CGFloat = 10
-
-    /// Spacing between bottom bar items
-    var bottomBarItemSpacing: CGFloat = 12
 
     // MARK: Traffic Lights
 
