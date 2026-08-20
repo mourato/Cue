@@ -142,7 +142,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Cleanup orphaned temp capture files from previous sessions
         TempCaptureManager.shared.cleanupOrphanedFiles()
 
-        let coordinator = AppCoordinator(environment: AppEnvironment.live())
+        let coordinator = AppCoordinator(screenCaptureViewModel: ScreenCaptureViewModel())
         self.coordinator = coordinator
         coordinator.applicationDidFinishLaunching()
         didFinishLaunching = true

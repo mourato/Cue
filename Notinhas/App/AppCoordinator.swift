@@ -10,11 +10,11 @@ import Foundation
 
 @MainActor
 final class AppCoordinator {
-    private let environment: AppEnvironment
+    private let screenCaptureViewModel: ScreenCaptureViewModel
     private var observers: [NSObjectProtocol] = []
 
-    init(environment: AppEnvironment) {
-        self.environment = environment
+    init(screenCaptureViewModel: ScreenCaptureViewModel) {
+        self.screenCaptureViewModel = screenCaptureViewModel
     }
 
     func applicationDidFinishLaunching() {
@@ -73,7 +73,7 @@ final class AppCoordinator {
         CaptureHistoryRetentionService.shared.start()
         DiagnosticLogger.shared.log(.debug, .lifecycle, "Background schedulers started")
 
-        AppStatusBarController.shared.setup(viewModel: environment.screenCaptureViewModel)
+        AppStatusBarController.shared.setup(viewModel: screenCaptureViewModel)
         DiagnosticLogger.shared.log(.debug, .ui, "Status bar controller configured")
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -101,7 +101,7 @@ final class AppCoordinator {
     }
 
     func handleDeepLink(_ url: URL) {
-        NotinhasDeepLinkHandler(screenCaptureViewModel: environment.screenCaptureViewModel)
+        NotinhasDeepLinkHandler(screenCaptureViewModel: screenCaptureViewModel)
             .handle(url)
     }
 
