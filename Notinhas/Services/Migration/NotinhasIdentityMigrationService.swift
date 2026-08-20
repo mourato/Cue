@@ -758,6 +758,7 @@ private extension CloudKeychainItem {
         case .googleClientId: "googleClientId"
         case .googleClientSecret: "googleClientSecret"
         case .imgbbAPIKey: "imgbbAPIKey"
+        case .imageKitPrivateKey: "imageKitPrivateKey"
         }
     }
 
@@ -813,6 +814,8 @@ private extension CloudKeychainItem {
                         account: "com.trongduong.snapzy.cloud.google.clientSecret",
                     )]
         case .imgbbAPIKey:
+            return []
+        case .imageKitPrivateKey:
             return []
         }
     }

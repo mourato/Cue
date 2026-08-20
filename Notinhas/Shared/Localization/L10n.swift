@@ -3376,6 +3376,72 @@ nonisolated enum L10n {
             defaultValue: "Uploaded to ImgBB and copied link",
             comment: "Success toast shown after an ImgBB upload copies the link to the clipboard",
         )
+        static let imageKitMissingPrivateKey = string(
+            "annotate.notinhas.imagekit-missing-private-key",
+            defaultValue: "Add an ImageKit private key in Preferences → Uploads before uploading.",
+            comment: "ImageKit missing private key error",
+        )
+        static let imageKitUnauthorized = string(
+            "annotate.notinhas.imagekit-unauthorized",
+            defaultValue: "ImageKit rejected the private key.",
+            comment: "ImageKit authorization error",
+        )
+        static let imageKitRateLimited = string(
+            "annotate.notinhas.imagekit-rate-limited",
+            defaultValue: "ImageKit upload limits were reached. Try again later.",
+            comment: "ImageKit rate limit error",
+        )
+        static let imageKitUploadFailed = string(
+            "annotate.notinhas.imagekit-upload-failed",
+            defaultValue: "ImageKit upload failed.",
+            comment: "ImageKit upload failure",
+        )
+        static let imageKitOffline = string(
+            "annotate.notinhas.imagekit-offline",
+            defaultValue: "ImageKit could not be reached. Check your connection.",
+            comment: "ImageKit transport error",
+        )
+        static let imageKitInvalidResponse = string(
+            "annotate.notinhas.imagekit-invalid-response",
+            defaultValue: "ImageKit returned an unexpected response.",
+            comment: "ImageKit response error",
+        )
+        static func uploadTo(provider: String) -> String {
+            format(
+                "annotate.notinhas.upload-to-provider",
+                defaultValue: "Upload to %@",
+                comment: "Upload action for a selected image provider",
+                provider,
+            )
+        }
+
+        static func uploadingTo(provider: String) -> String {
+            format(
+                "annotate.notinhas.uploading-to-provider",
+                defaultValue: "Uploading to %@…",
+                comment: "Upload progress for a selected image provider",
+                provider,
+            )
+        }
+
+        static func uploadedAndCopied(provider: String) -> String {
+            format(
+                "annotate.notinhas.uploaded-to-provider-and-copied",
+                defaultValue: "Uploaded to %@ and copied link",
+                comment: "Upload success for a selected image provider",
+                provider,
+            )
+        }
+
+        static func uploadFailed(provider: String) -> String {
+            format(
+                "annotate.notinhas.upload-failed-for-provider",
+                defaultValue: "%@ upload failed",
+                comment: "Upload failure for a selected image provider",
+                provider,
+            )
+        }
+
         static let selected = string(
             "annotate.notinhas.selected",
             defaultValue: "Selected",
@@ -3906,6 +3972,26 @@ nonisolated enum L10n {
             "cloud-settings.imgbb-api-key-empty",
             defaultValue: "Enter an ImgBB API key before saving.",
             comment: "Validation message shown when an ImgBB API key is empty",
+        )
+        static let imageKitDescription = string(
+            "cloud-settings.imagekit-description",
+            defaultValue: "Direct ImageKit image sharing for manual uploads from Annotate and Quick Access. The private key stays in Keychain.",
+            comment: "Description for ImageKit image sharing preferences",
+        )
+        static let imageKitPrivateKeyTitle = string(
+            "cloud-settings.imagekit-private-key-title",
+            defaultValue: "ImageKit Private Key",
+            comment: "ImageKit private key setting title",
+        )
+        static let imageKitPrivateKeyEmpty = string(
+            "cloud-settings.imagekit-private-key-empty",
+            defaultValue: "Enter an ImageKit private key before saving.",
+            comment: "Validation message shown when an ImageKit private key is empty",
+        )
+        static let provider = string(
+            "cloud-settings.provider",
+            defaultValue: "Provider",
+            comment: "Image upload provider picker label",
         )
     }
 
