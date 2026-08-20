@@ -28,4 +28,5 @@ Related docs: [ANNOTATE.md](ANNOTATE.md), [QUICK_ACCESS.md](QUICK_ACCESS.md),
 
 Provider availability and benchmark method are recorded in
 [UPLOAD_PROVIDER_BENCHMARK.md](UPLOAD_PROVIDER_BENCHMARK.md). UploadThing is
-not available; see [ADR 074](adr/074-uploadthing-direct-rest-stop.md).
+not available; see [ADR 074](adr/074-uploadthing-direct-rest-stop.md). The
+personal direct-credential boundary is recorded in [ADR 075](adr/075-direct-image-provider-boundary.md).
