@@ -952,7 +952,7 @@ affordances when needed for gated compilation.
 |---|---|---:|---:|---|---|
 | [097](097-imagekit-direct-upload.md) | Add direct ImageKit upload and provider selection | P1 | M/L | — | DONE (`d24e01b8`; review fix `f6a3771a`; isolated; merge pending authorization; manual account checks pending) |
 | [098](098-uploadthing-direct-rest.md) | Add direct UploadThing REST upload | P2 | M | 097 | DONE (feasibility stop; ADR `d6ff5333`; no provider code; manual account check not applicable) |
-| [099](099-upload-provider-benchmark-and-docs.md) | Benchmark direct providers and reconcile documentation | P2 | S/M | 097–098 | PENDING |
+| [099](099-upload-provider-benchmark-and-docs.md) | Benchmark direct providers and reconcile documentation | P2 | S/M | 097–098 | DONE (`8316d086`; review fix `6957d355`; benchmark/manual provider checks pending) |
 
 ### Dependency notes (097–099)
 
