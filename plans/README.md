@@ -925,8 +925,8 @@ affordances when needed for gated compilation.
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 |---|---|---:|---:|---|---|
-| [089](089-retire-byo-cloud-stack.md) | Retire the BYO cloud upload stack | P0 | L | — | TODO |
-| [090](090-delete-unused-swiftui-extensions.md) | Delete unused SwiftUI style extensions | P2 | S | — | TODO |
+| [089](089-retire-byo-cloud-stack.md) | Retire the BYO cloud upload stack | P0 | L | — | DONE (`df93db12`, merge `01533e1b`; thermo APPROVE) |
+| [090](090-delete-unused-swiftui-extensions.md) | Delete unused SwiftUI style extensions | P2 | S | — | DONE (`a6ddcf74`, merge `0e898f21`; thermo APPROVE) |
 | [091](091-remove-json-feature-intro.md) | Remove the one-campaign Feature Intro framework | P1 | M | — | TODO |
 | [092](092-shrink-window-spacing-api.md) | Shrink the WindowSpacing API to live modifiers | P2 | S | — | TODO |
 | [093](093-remove-disabled-backdrop-transition.md) | Remove the disabled backdrop crossfade path | P1 | S | — | TODO |
