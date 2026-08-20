@@ -5,7 +5,7 @@ Companion to the root [SECURITY.md](../SECURITY.md) policy. Describes runtime se
 ## Threat model summary
 
 - Local-first capture and history on disk under Application Support
-- Optional outbound network only for user-configured ImgBB image uploads
+- Optional outbound network only after an explicit upload action through the selected ImgBB or ImageKit image host
 - No automatic update fetches, telemetry, or crash upload endpoints
 - No in-app **Report a Problem** or diagnostic zip upload
 
@@ -27,7 +27,8 @@ TCC grants do not migrate from legacy Snapzy bundle IDs — see [MIGRATION.md](M
 
 ## Secrets
 
-- ImgBB API key: Keychain item `com.mourato.notinhas.cloud.imgbbAPIKey` (configured in Preferences → Uploads; legacy `notinhas.imgbb.apiKey` UserDefaults is migrated on read)
+- ImgBB API key and ImageKit private key: provider-scoped Keychain items (configured in Preferences → Uploads; the legacy ImgBB UserDefaults key is migrated on read). Secrets are never exported to TOML, diagnostics, logs, clipboard, or UI text except masked summaries.
+- Copied provider URLs are public to anyone who receives them. Direct client credentials are a personal-use exception, not a multi-user distribution security model.
 - Never commit keys, `.p12` files, or webhook URLs
 
 ## Deep links
@@ -46,3 +47,5 @@ only for the removed updater must not return.
 - [ ] No plaintext secrets in UserDefaults or TOML export
 - [ ] TOML export excludes Keychain material ([CONFIGURATION.md](CONFIGURATION.md))
 - [ ] Security-sensitive changes update root SECURITY.md
+
+No automatic upload, fallback, telemetry, crash/support upload, server, or background cloud synchronization is introduced. Provider limits and terms remain external; Notinhas does not promise privacy, durability, free usage, or performance.

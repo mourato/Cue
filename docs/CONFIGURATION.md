@@ -48,7 +48,7 @@ The TOML file covers portable app preferences:
 - General settings: language, appearance, sounds, URL scheme integration, show menu bar icon, login item, export folder path.
 - Updates: automatic check/download and the  update channel (`stable` or `beta`).
 - Capture settings: naming templates, screenshot format, cursor/app inclusion, freeze area, show selection area overlay, reverse magnifier zoom direction, scrolling hints, OCR notification, object cutout auto-crop.
-- After-capture actions for screenshot and recording: `save`, `quick_access`, `copy_file`, and `open_annotate` under `[capture.after.screenshot]` / `[capture.after.recording]`. BYO cloud upload is retired; ImgBB remains an explicit sharing action.
+- After-capture actions for screenshot and recording: `save`, `quick_access`, `copy_file`, and `open_annotate` under `[capture.after.screenshot]` / `[capture.after.recording]`. BYO cloud upload is retired; the existing explicit `uploadToImgBB` action is dynamically labeled for the selected ImgBB or ImageKit image host.
 - Recording settings: format, quality, FPS, audio, microphone device id, cursor, click highlights, keystroke overlay, live annotation shortcuts, video editor zoom transition duration.
 - Quick Access: visibility, position, countdown behavior, gesture toggles, trackpad swipe mode, swipe left/right actions, hide card when window open, animation style, action order, enabled actions, card slots.
 - History: retention, maximum count, floating panel layout and filter.
@@ -58,7 +58,7 @@ The TOML file covers portable app preferences:
 
 The export intentionally excludes secrets and machine-private state:
 
-- ImgBB API keys are not exported. They remain in Keychain and are configured separately in Preferences → Uploads.
+- The selected provider (`imgbb` or `imageKit`) is persisted locally under the `uploads.provider` UserDefaults key; absent/invalid values safely use ImgBB. It is not included in TOML export/import. ImgBB API keys and ImageKit private keys are never exported or imported: they remain in provider-scoped Keychain items configured separately in Preferences → Uploads.
 - Legacy cloud configuration keys are ignored on import and are never rewritten or deleted.
 - Capture history, temp files, annotation sidecars, caches, and
   app diagnostics are not part of `config.toml`.
@@ -308,6 +308,6 @@ log section.
 ## Related docs
 
 - [`PREFERENCES.md`](PREFERENCES.md) — in-app preferences backing the exported keys
-- [`CLOUD.md`](CLOUD.md) — ImgBB sharing and the retired BYO cloud boundary
+- [`CLOUD.md`](CLOUD.md) — selected image-host sharing and the retired BYO cloud boundary
 - [`APP_LIFECYCLE.md`](APP_LIFECYCLE.md) — launch-time auto-import and onboarding grant flow
 - [`SHORTCUTS.md`](SHORTCUTS.md) — shortcut sections exported to TOML
