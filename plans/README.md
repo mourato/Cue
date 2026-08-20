@@ -950,9 +950,9 @@ affordances when needed for gated compilation.
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 |---|---|---:|---:|---|---|
-| [097](097-imagekit-direct-upload.md) | Add direct ImageKit upload and provider selection | P1 | M/L | — | DONE (`d24e01b8`; review fix `f6a3771a`; isolated; merge pending authorization; manual account checks pending) |
-| [098](098-uploadthing-direct-rest.md) | Add direct UploadThing REST upload | P2 | M | 097 | DONE (feasibility stop; ADR `d6ff5333`; no provider code; manual account check not applicable) |
-| [099](099-upload-provider-benchmark-and-docs.md) | Benchmark direct providers and reconcile documentation | P2 | S/M | 097–098 | DONE (`8316d086`; review fixes `6957d355`, `2ffe4423`; benchmark/manual provider checks pending) |
+| [097](097-imagekit-direct-upload.md) | Add direct ImageKit upload and provider selection | P1 | M/L | — | MERGED_LOCAL (`d24e01b8`; review fix `f6a3771a`; manual account checks pending) |
+| [098](098-uploadthing-direct-rest.md) | Add direct UploadThing REST upload | P2 | M | 097 | MERGED_LOCAL (feasibility stop; ADR `d6ff5333`; no provider code; manual account check not applicable) |
+| [099](099-upload-provider-benchmark-and-docs.md) | Benchmark direct providers and reconcile documentation | P2 | S/M | 097–098 | MERGED_LOCAL (`8316d086`; review fixes `6957d355`, `2ffe4423`; benchmark/manual provider checks pending) |
 
 ### Dependency notes (097–099)
 
@@ -961,5 +961,4 @@ affordances when needed for gated compilation.
 - UploadThing remains feasibility-gated: if its official direct REST flow
   cannot complete without a Notinhas server or callback, record the stop and
   let Plan 099 document only the providers that shipped.
-- Merge into local `main` only after review and explicit authorization; no
-  push is authorized by these plans.
+- Local merge and push were explicitly authorized for this delivery.
