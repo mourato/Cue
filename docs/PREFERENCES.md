@@ -75,7 +75,7 @@ renders directly without an inner picker.
 
 ### Annotate (`PreferencesAnnotateSettingsView.swift`)
 
-- **Editor chrome** (`AnnotateChromeCustomizationView`): reorder and enable/disable toolbar items (crop, background, rotate, drawing tools, cutout, Save as) and bottom-bar actions (New window, Share, ImgBB, Pin, Copy, Delete). Selection, Undo, Redo, and Done always stay visible; zoom, pan, mode tabs, and Drag to app are fixed. Keys `annotate.chrome.toolbarOrder.v1`, `annotate.chrome.bottomOrder.v1`, `annotate.chrome.enabled.v1`; Reset chrome restores defaults. Inline Capture Markup uses the same drawing-tool order/enable subset.
+- **Editor chrome** (`AnnotateChromeCustomizationView`): reorder and enable/disable toolbar items (crop, background, rotate, drawing tools, cutout, Save as) and bottom-bar actions (New window, Share, selected-provider upload, Pin, Copy, Delete). The persisted `uploadToImgBB` raw action remains a compatibility identifier. Selection, Undo, Redo, and Done always stay visible; zoom, pan, mode tabs, and Drag to app are fixed. Keys `annotate.chrome.toolbarOrder.v1`, `annotate.chrome.bottomOrder.v1`, `annotate.chrome.enabled.v1`; Reset chrome restores defaults. Inline Capture Markup uses the same drawing-tool order/enable subset.
 - Behavior section:
   - Sync Tool Defaults / quick-properties sync (`annotate.quickPropertiesSyncEnabled`, default on).
   - Combine Save-as-Edit (`annotate.combineSaveAsEdit`, default on).
@@ -117,7 +117,7 @@ renders directly without an inner picker.
 
 ### Uploads (`PreferencesCloudSettingsView.swift`)
 
-The separate **Image Sharing** ImgBB section is retained. The ImgBB API key is stored in Keychain (migrated from legacy `notinhas.imgbb.apiKey` UserDefaults). BYO provider settings, usage, password, transfer, and upload-history controls were retired. See [CLOUD.md](CLOUD.md).
+The **Uploads** section owns provider selection (ImgBB or ImageKit), image optimization/derivative settings, and the selected provider credential. Secrets are stored only in provider-scoped Keychain items and are not exported. Existing users retain ImgBB unless they explicitly select ImageKit; invalid or missing selection safely uses ImgBB. UploadThing is unavailable. BYO provider settings, usage, password, transfer, and upload-history controls remain retired. See [CLOUD.md](CLOUD.md).
 
 ### Advanced (`PreferencesAdvancedSettingsView.swift`)
 
@@ -146,7 +146,7 @@ flowchart LR
 ## Related docs
 
 - [SHORTCUTS.md](SHORTCUTS.md) — shortcut mechanics, defaults, conflicts
-- [CLOUD.md](CLOUD.md) — Uploads tab and ImgBB sharing boundary
+- [CLOUD.md](CLOUD.md) — Uploads tab and image-host sharing boundary
 - [UPDATES.md](UPDATES.md) — local diagnostics and manual upgrade notes
 - [APP_LIFECYCLE.md](APP_LIFECYCLE.md) — seeded defaults, activation policy, onboarding
 - [CONFIGURATION.md](CONFIGURATION.md) — TOML backup/sync of these prefs

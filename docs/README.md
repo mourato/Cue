@@ -43,7 +43,8 @@ Notinhas optimizes **capture → annotate with numbered pins/notes → clipboard
 
 | Doc | Topic |
 | --- | --- |
-| [CLOUD.md](CLOUD.md) | ImgBB sharing and retired BYO cloud boundary |
+| [CLOUD.md](CLOUD.md) | Selected image-host sharing and retired BYO cloud boundary |
+| [UPLOAD_PROVIDER_BENCHMARK.md](UPLOAD_PROVIDER_BENCHMARK.md) | Safe benchmark method, unavailable gates, and provider decision |
 | [LOCALIZATION.md](LOCALIZATION.md) | String catalogs |
 
 ## Runtime overview

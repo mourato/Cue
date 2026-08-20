@@ -89,7 +89,7 @@ flowchart TD
 - Save flow (`VideoEditorWindowController.showSaveConfirmation`): temp captures save directly to a chosen destination; saved files prompt Replace Original vs Save As Copy.
   - Replace original: export to temp, move original to `.<name>.backup`, atomic `replaceItemAt` swap, restore from backup on failure; recording metadata for the replaced file is deleted. Permission-denied falls back to a Save As Copy prompt.
   - Save as copy: `_trimmed` suffix suggestion (`generateCopyFilename`, counter on collision) + `NSSavePanel`.
-- After a successful export, the Video module closes or returns to its local result. BYO cloud upload offers were removed; the Video module itself remains available.
+- After a successful export, the Video module closes or returns to its local result. Image-host upload is not offered for video or GIF output; BYO cloud upload offers were removed and the Video module itself remains available.
 
 ## GIF Editing
 

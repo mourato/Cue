@@ -31,8 +31,9 @@ Notinhas is a separate macOS app with its own bundle identifier, URL scheme, and
 - **UserDefaults / preferences** — keys imported from legacy preference domains (`com.trongduong.snapzy`, `com.trongduong.snapzy.debug`) and sandbox preference plists.
 - **Logs** — retained diagnostic files from `~/Library/Logs/Snapzy/` into `~/Library/Logs/Notinhas/`; copied legacy filenames are retained, while new logs use the `notinhas_` prefix.
 - **TOML config** — `~/.config/snapzy/` tree is merged into `~/.config/notinhas/` without overwriting existing destination files.
-- **Keychain** — ImgBB credentials remain readable through the existing
-  migration adapter. BYO cloud credential items are not deleted or rewritten.
+- **Keychain** — legacy ImgBB credentials remain readable through the existing
+  migration adapter. Provider credentials are not exported; BYO cloud credential
+  items are not deleted or rewritten.
 
 ### Behavior guarantees
 
@@ -90,7 +91,7 @@ After migration:
 | Empty history after upgrade | Confirm legacy `~/Library/Application Support/Snapzy/snapzy.db` exists; delete marker file only if you intend to re-run migration and destination DB is absent |
 | Permissions still fail | Reset TCC for `com.mourato.notinhas`, quit System Settings, relaunch Notinhas |
 | Config not applied | Grant config folder access in Settings → Advanced; confirm `~/.config/notinhas/config.toml` |
-| Old cloud settings are present | They are ignored; local sharing and ImgBB remain available |
+| Old cloud settings are present | They are ignored; local sharing and the selected direct image providers remain available |
 
 ## Retired BYO cloud settings
 

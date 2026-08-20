@@ -138,7 +138,7 @@ The Permissions tab reflects unhealthy identity as `grantedButUnavailableDueToAp
 
 `Notinhas/Notinhas.entitlements` (no app-sandbox key — builds are **not** sandboxed):
 
-- `com.apple.security.network.client` — outbound network for explicit ImgBB sharing. No `network.server` entitlement is declared.
+- `com.apple.security.network.client` — outbound network for explicit user-configured image sharing through ImgBB or ImageKit. No `network.server` entitlement is declared; uploads are foreground actions, not background synchronization.
 - `com.apple.security.files.user-selected.read-write` — user-picked files/folders.
 - `com.apple.security.device.audio-input` — microphone for recordings.
 - `com.apple.security.temporary-exception.shared-preference.read-only` → `com.apple.symbolichotkeys` — system screenshot shortcut conflict detection (see [SHORTCUTS.md](SHORTCUTS.md)).

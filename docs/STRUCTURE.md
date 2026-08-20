@@ -14,7 +14,7 @@ Separated feature docs cover each runtime area in depth:
 - [`HISTORY.md`](HISTORY.md) — Capture history, retention, restore, storage cleanup
 - [`ANNOTATE.md`](ANNOTATE.md) — Image annotation editor, sessions, presets, export
 - [`VIDEO_EDITOR.md`](VIDEO_EDITOR.md) — Video trim/zoom/speed editing and export
-- [`CLOUD.md`](CLOUD.md) — Local sharing, ImgBB, and retired BYO-cloud boundary
+- [`CLOUD.md`](CLOUD.md) — Local sharing, direct image hosts, and retired BYO-cloud boundary
 - [`SHORTCUTS.md`](SHORTCUTS.md) — Global/overlay shortcut registration and conflicts
 - [`PREFERENCES.md`](PREFERENCES.md) — Settings tabs, preference storage, defaults
 - [`APP_LIFECYCLE.md`](APP_LIFECYCLE.md) — Launch sequence, onboarding, menu bar bootstrap
@@ -376,7 +376,7 @@ Directory structure mirrors the app. Shared mocks and fixture assets live in `No
 | Annotate editor (full + inline) | `Features/Annotate/`, `docs/ANNOTATE.md` |
 | Editable screenshot annotation history | `Features/Annotate/Services/AnnotationSessionStore.swift`, `Features/Annotate/Models/PersistedAnnotationSession.swift`, `Features/History/`, `Services/History/CaptureHistoryRetentionService.swift`, `docs/ANNOTATE.md`, `docs/HISTORY.md` |
 | Video editor or Smart Camera | `Features/VideoEditor/`, `Services/Capture/RecordingMetadata.swift`, `docs/VIDEO_EDITOR.md` |
-| ImgBB sharing and retired cloud boundary | `Services/Cloud/`, `Features/Preferences/Components/PreferencesCloudSettingsView.swift`, `Features/QuickAccess/Components/QuickAccessCardView.swift`, `Features/Annotate/Components/AnnotateBottomBarView.swift`, `docs/CLOUD.md` |
+| Direct image sharing and retired cloud boundary | `Services/Cloud/`, `Features/Preferences/Components/PreferencesCloudSettingsView.swift`, `Features/QuickAccess/Components/QuickAccessCardView.swift`, `Features/Annotate/Components/AnnotateBottomBarView.swift`, `docs/CLOUD.md` |
 | TOML config export/import + startup auto-apply | `Services/Configuration/`, `Features/Onboarding/Components/OnboardingConfigAccessView.swift`, `Features/Preferences/Components/PreferencesAdvancedSettingsView.swift`, `App/AppCoordinator.swift`, `docs/CONFIGURATION.md` |
 | Onboarding or app startup | `App/`, `Features/Splash/`, `Features/Onboarding/`, `docs/APP_LIFECYCLE.md` |
 | Shortcuts and conflicts | `Services/Shortcuts/`, `Features/Shortcuts/`, `docs/SHORTCUTS.md` |
@@ -386,7 +386,7 @@ Directory structure mirrors the app. Shared mocks and fixture assets live in `No
 
 ## Current Behavior Clarifications
 
-- BYO cloud upload and its after-capture/manual UI were retired by Plan 089. Local save/copy/export and ImgBB sharing remain.
+- BYO cloud upload and its after-capture/manual UI were retired by Plan 089. Local save/copy/export and explicit ImgBB/ImageKit sharing remain.
 - Quick Access can outlive the original capture location: saved captures stay in the export folder, temp captures are deleted when dismissed unless the user explicitly saves them.
 - Two-finger swipe-to-dismiss is scoped to the Quick Access preview card and follows the same side-aware dismiss direction as mouse swipe: rightward on right-side panels, leftward on left-side panels.
 - Committed screenshot annotations are stored as sidecar packages in Application Support. History/Quick Access restore uses those packages to reopen editable annotations after the rendered screenshot has been saved, while delete, clear-history, retention sweep, and temp-to-export save paths remove or move sidecars with the source file.

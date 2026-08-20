@@ -1,6 +1,6 @@
 # Quick Access
 
-Floating post-capture card stack: appears after every screenshot/video/GIF when the `showQuickAccess` after-capture action is on, offering local sharing, ImgBB, gestures, countdown auto-dismiss, pin windows, and entry points into Annotate / Video Editor. Code lives in `Notinhas/Features/QuickAccess/`.
+Floating post-capture card stack: appears after every screenshot/video/GIF when the `showQuickAccess` after-capture action is on, offering local sharing, selected-provider image sharing, gestures, countdown auto-dismiss, pin windows, and entry points into Annotate / Video Editor. Code lives in `Notinhas/Features/QuickAccess/`.
 
 ## Panel
 
@@ -17,7 +17,7 @@ Floating post-capture card stack: appears after every screenshot/video/GIF when 
 ## Card Anatomy
 
 - 180×112 pt base (`QuickAccessLayout.cardWidth/cardHeight`), scaled by overlay scale; 8pt spacing, stack scale/opacity falloff per card.
-- `QuickAccessCardView` — thumbnail (`QuickAccessThumbnailGenerator`), duration badge for videos, pin indicator, and local/ImgBB actions.
+- `QuickAccessCardView` — thumbnail (`QuickAccessThumbnailGenerator`), duration badge for videos, pin indicator, and local/selected-provider actions.
 - Hover → dim + up to 2 center text buttons + up to 4 corner icon buttons (staggered reveal). Double-click opens the editor; right-click context menu mirrors actions, destructive group last.
 - Assigned-but-unavailable screenshot-only actions stay visible disabled.
 
@@ -34,7 +34,7 @@ Default slots (`QuickAccessActionSlot.defaultAssignments`): centerTop copy, cent
 | `dismiss` | Card removed; temp file deleted unless a history record exists |
 | `delete` | Removes history record + annotation sidecar, deletes temp or trashes saved file, deletes recording metadata for videos |
 | `edit` | Opens Annotate (screenshots) or Video Editor (video/GIF); pauses countdown |
-| `uploadToImgBB` | Manual ImgBB upload and public-link copy; requires an ImgBB API key |
+| `uploadToImgBB` | Manual upload of an encoded image through the selected provider and public-link copy; requires that provider's Keychain credential |
 | `pinToScreen` | Opens always-on-top pin window (screenshots only) |
 
 Customization: `QuickAccessActionConfigurationStore` — context-menu order (`quickAccess.actions.order.v1`), enabled set (`...enabled.v1`), slot assignments (`...slots.v1`). Settings → Quick Access preview card supports drag-to-slot + swipe zones + reset. Old cloud action identifiers are ignored when loading configuration.
@@ -94,5 +94,5 @@ Settings → Quick Access: position (left/right), overlay size, auto-close delay
 - [ANNOTATE.md](ANNOTATE.md) — edit action, sidecars, drag-to-app
 - [VIDEO_EDITOR.md](VIDEO_EDITOR.md) — video/GIF editor entry
 - [HISTORY.md](HISTORY.md) — restore-to-Quick-Access flow
-- [CLOUD.md](CLOUD.md) — ImgBB sharing and the retired BYO cloud boundary
+- [CLOUD.md](CLOUD.md) — selected image-host sharing and the retired BYO cloud boundary
 - [PREFERENCES.md](PREFERENCES.md) — settings keys
