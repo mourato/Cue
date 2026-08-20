@@ -41,6 +41,10 @@ struct PreferencesView: View {
                 .tabItem { Label(L10n.Preferences.permissionsTab, systemImage: "lock.shield.fill") }
                 .tag(PreferencesTab.permissions)
 
+            LazyView(CloudSettingsView())
+                .tabItem { Label(L10n.Preferences.cloudTab, systemImage: "icloud.fill") }
+                .tag(PreferencesTab.cloud)
+
             LazyView(AdvancedSettingsView())
                 .tabItem { Label(L10n.Preferences.advancedTab, systemImage: "slider.horizontal.3") }
                 .tag(PreferencesTab.advanced)

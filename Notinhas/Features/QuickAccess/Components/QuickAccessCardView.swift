@@ -107,7 +107,7 @@ struct QuickAccessCardView: View {
                     .transition(reduceMotion ? .opacity : .opacity.combined(with: .scale(scale: 0.95)))
             }
 
-            // Corner buttons (visible on hover or keyboard focus, hidden during cloud upload and swipe).
+            // Corner buttons (visible on hover or keyboard focus, hidden during image sharing and swipe).
             if showsCardActions, !isSwiping, canPerformCardActions, !cornerOverlayActions.isEmpty {
                 cornerButtons
             }
@@ -724,7 +724,7 @@ struct QuickAccessCardView: View {
         return entries
     }
 
-    // MARK: - Cloud Upload
+    // MARK: - ImgBB Sharing
 
     private func uploadToImgBB() {
         guard let apiKey = NotinhasImgBBConfiguration.apiKey else { return }

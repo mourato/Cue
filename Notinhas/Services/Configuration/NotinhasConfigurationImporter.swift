@@ -410,6 +410,8 @@ enum NotinhasConfigurationImporter {
                 mutations.append {
                     QuickAccessSwipeActionStore.shared.setAction(.left, action: action)
                 }
+            } else if retiredQuickAccessActionRawValues.contains(actionStr) {
+                // Ignore actions removed from older configuration files.
             } else {
                 reader.error("quick_access.swipe_left_action is invalid")
             }
@@ -424,6 +426,8 @@ enum NotinhasConfigurationImporter {
                 mutations.append {
                     QuickAccessSwipeActionStore.shared.setAction(.right, action: action)
                 }
+            } else if retiredQuickAccessActionRawValues.contains(actionStr) {
+                // Ignore actions removed from older configuration files.
             } else {
                 reader.error("quick_access.swipe_right_action is invalid")
             }
@@ -445,14 +449,21 @@ enum NotinhasConfigurationImporter {
 
         let order = reader.stringArray("quick_access", "actions_order")?
             .compactMap(QuickAccessActionKind.init(rawValue:))
-        let enabled = reader.stringArray("quick_access", "enabled_actions")?
-            .compactMap(QuickAccessActionKind.init(rawValue:))
+        let enabledActions: Set<QuickAccessActionKind>?
+        if let rawValues = reader.stringArray("quick_access", "enabled_actions") {
+            let actions = Set(rawValues.compactMap(QuickAccessActionKind.init(rawValue:)))
+            enabledActions = !rawValues.isEmpty
+                && actions.isEmpty
+                && rawValues.allSatisfy { Self.retiredQuickAccessActionRawValues.contains($0) } ? nil : actions
+        } else {
+            enabledActions = nil
+        }
         let slots = quickAccessSlots(from: &reader)
-        if order != nil || enabled != nil || slots != nil {
+        if order != nil || enabledActions != nil || slots != nil {
             mutations.append {
                 QuickAccessActionConfigurationStore.shared.applyConfiguration(
                     order: order,
-                    enabledActions: enabled.map(Set.init),
+                    enabledActions: enabledActions,
                     slotAssignments: slots,
                 )
             }

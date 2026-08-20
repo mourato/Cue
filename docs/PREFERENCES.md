@@ -146,7 +146,7 @@ flowchart LR
 ## Related docs
 
 - [SHORTCUTS.md](SHORTCUTS.md) — shortcut mechanics, defaults, conflicts
-- [CLOUD.md](CLOUD.md) — Uploads tab + cloud resources and uploads window
+- [CLOUD.md](CLOUD.md) — Uploads tab and ImgBB sharing boundary
 - [UPDATES.md](UPDATES.md) — local diagnostics and manual upgrade notes
 - [APP_LIFECYCLE.md](APP_LIFECYCLE.md) — seeded defaults, activation policy, onboarding
 - [CONFIGURATION.md](CONFIGURATION.md) — TOML backup/sync of these prefs

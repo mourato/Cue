@@ -48,24 +48,19 @@ The TOML file covers portable app preferences:
 - General settings: language, appearance, sounds, URL scheme integration, show menu bar icon, login item, export folder path.
 - Updates: automatic check/download and the  update channel (`stable` or `beta`).
 - Capture settings: naming templates, screenshot format, cursor/app inclusion, freeze area, show selection area overlay, reverse magnifier zoom direction, scrolling hints, OCR notification, object cutout auto-crop.
-- After-capture actions for screenshot and recording: `save`, `quick_access`, `copy_file`, and `open_annotate` under `[capture.after.screenshot]` / `[capture.after.recording]`. Cloud upload is not part of this matrix — it is manual-only from Quick Access, Annotate, Video Editor, and History surfaces.
+- After-capture actions for screenshot and recording: `save`, `quick_access`, `copy_file`, and `open_annotate` under `[capture.after.screenshot]` / `[capture.after.recording]`. BYO cloud upload is retired; ImgBB remains an explicit sharing action.
 - Recording settings: format, quality, FPS, audio, microphone device id, cursor, click highlights, keystroke overlay, live annotation shortcuts, video editor zoom transition duration.
 - Quick Access: visibility, position, countdown behavior, gesture toggles, trackpad swipe mode, swipe left/right actions, hide card when window open, animation style, action order, enabled actions, card slots.
 - History: retention, maximum count, floating panel layout and filter.
-- Cloud metadata: provider, bucket, region, endpoint, custom domain, expiration, and upload window position.
 - Image upload settings: optimization toggle, derivative format, maximum physical pixel dimension, and JPEG/WebP quality under `[uploads]`.
 - Annotate preferences.
 - Global, overlay, Annotate tool, and Annotate action shortcuts.
 
 The export intentionally excludes secrets and machine-private state:
 
-- Cloud access key and secret key are not exported. They remain in Keychain.
 - ImgBB API keys are not exported. They remain in Keychain and are configured separately in Preferences → Uploads.
-- Cloud credential archive transfer stays in the existing encrypted cloud
-  import/export flow.
-- Cloud configured/password-protection state is not exported because it depends
-  on local Keychain items.
-- Capture history, temp files, annotation sidecars, upload history, caches, and
+- Legacy cloud configuration keys are ignored on import and are never rewritten or deleted.
+- Capture history, temp files, annotation sidecars, caches, and
   app diagnostics are not part of `config.toml`.
 - File-access security-scoped bookmarks are not portable. Imported folder paths
   may still need to be confirmed in Settings on the destination Mac.
@@ -168,8 +163,8 @@ swipe_left_action = "dismiss"
 swipe_right_action = "dismiss"
 hide_card_when_window_open = true
 animation_style = "slide"
-actions_order = ["copy", "saveOrOpen", "edit", "uploadToCloud", "pinToScreen", "dismiss", "delete"]
-enabled_actions = ["copy", "delete", "dismiss", "edit", "pinToScreen", "saveOrOpen", "uploadToCloud"]
+actions_order = ["copy", "saveOrOpen", "edit", "pinToScreen", "dismiss", "delete"]
+enabled_actions = ["copy", "delete", "dismiss", "edit", "pinToScreen", "saveOrOpen"]
 
 [history]
 enabled = true
@@ -183,8 +178,8 @@ bring_forward_after_drag = false
 quick_properties_sync = true
 combine_save_as_edit = true
 chrome_toolbar_order = ["crop", "addBackground", "rotateLeft", "rotateRight", "rectangle", "filledRectangle", "oval", "arrow", "line", "text", "highlighter", "blur", "spotlight", "notinhasNote", "watermark", "pencil", "backgroundCutout", "saveAs"]
-chrome_bottom_order = ["newWindow", "share", "uploadToImgBB", "uploadToCloud", "pin", "copy", "delete"]
-chrome_enabled = ["addBackground", "arrow", "backgroundCutout", "blur", "copy", "crop", "delete", "filledRectangle", "highlighter", "line", "newWindow", "notinhasNote", "oval", "pencil", "pin", "rectangle", "rotateLeft", "rotateRight", "saveAs", "share", "spotlight", "text", "uploadToCloud", "uploadToImgBB", "watermark"]
+chrome_bottom_order = ["newWindow", "share", "uploadToImgBB", "pin", "copy", "delete"]
+chrome_enabled = ["addBackground", "arrow", "backgroundCutout", "blur", "copy", "crop", "delete", "filledRectangle", "highlighter", "line", "newWindow", "notinhasNote", "oval", "pencil", "pin", "rectangle", "rotateLeft", "rotateRight", "saveAs", "share", "spotlight", "text", "uploadToImgBB", "watermark"]
 
 [shortcuts.global.fullscreen]
 key = "3"
@@ -313,6 +308,6 @@ log section.
 ## Related docs
 
 - [`PREFERENCES.md`](PREFERENCES.md) — in-app preferences backing the exported keys
-- [`CLOUD.md`](CLOUD.md) — cloud credentials, manual upload entry points
+- [`CLOUD.md`](CLOUD.md) — ImgBB sharing and the retired BYO cloud boundary
 - [`APP_LIFECYCLE.md`](APP_LIFECYCLE.md) — launch-time auto-import and onboarding grant flow
 - [`SHORTCUTS.md`](SHORTCUTS.md) — shortcut sections exported to TOML

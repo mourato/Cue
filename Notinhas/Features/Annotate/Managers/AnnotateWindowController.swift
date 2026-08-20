@@ -111,9 +111,6 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                 image: image,
                 url: item.url,
                 quickAccessItemId: item.id,
-                cloudURL: item.cloudURL,
-                cloudKey: item.cloudKey,
-                isCloudStale: item.isCloudStale,
                 appliesDefaultCanvasPresetOnNewImages: false,
             )
             state.restoreEmbeddedImageAssets(from: sessionData.embeddedImageAssetsData)
@@ -146,9 +143,6 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                 image: image,
                 url: item.url,
                 quickAccessItemId: item.id,
-                cloudURL: item.cloudURL,
-                cloudKey: item.cloudKey,
-                isCloudStale: item.isCloudStale,
             )
         }
 
@@ -1051,7 +1045,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
     }
 
     /// Manual combine sessions have `sourceURL` pointing at the first user-picked file.
-    /// Implicit-write paths (copy, drag-out, cloud) must never silently overwrite it with the
+    /// Implicit-write paths (copy, drag-out) must never silently overwrite it with the
     /// stitched render — they route to explicit or no-write alternatives instead. Scoped to
     /// combine mode so ordinary single-image manual annotate saves still overwrite as expected.
     private var protectsSourceFromImplicitCombineWrite: Bool {
@@ -1059,7 +1053,6 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
     }
 
     /// Silent save — renders once, updates thumbnail instantly, closes window, saves in background
-    /// If previously uploaded to cloud, gate behind overwrite confirmation.
     private func performSave() {
         switch AnnotateCommitRouting.route(
             for: .save,
@@ -1212,7 +1205,6 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
     }
 
     /// Copy = render once, copy to clipboard, update thumbnail, close, save in background.
-    /// If previously uploaded to cloud and output changed, gate behind overwrite confirmation.
     private func performCopy() {
         switch AnnotateCommitRouting.route(
             for: .copy,
@@ -1235,8 +1227,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         // Render once, use for everything
         let renderedImage = AnnotateExporter.renderFinalImage(state: state)
 
-        // Manual combine sessions upload a temporary render, so any existing cloud URL may
-        // point at an older stitch. Copy the current render and close without touching source.
+        // Manual combine sessions copy the current render and close without touching the source.
         if protectsSourceFromImplicitCombineWrite {
             if let renderedImage {
                 ClipboardHelper.copyImage(renderedImage)

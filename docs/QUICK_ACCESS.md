@@ -94,5 +94,5 @@ Settings → Quick Access: position (left/right), overlay size, auto-close delay
 - [ANNOTATE.md](ANNOTATE.md) — edit action, sidecars, drag-to-app
 - [VIDEO_EDITOR.md](VIDEO_EDITOR.md) — video/GIF editor entry
 - [HISTORY.md](HISTORY.md) — restore-to-Quick-Access flow
-- [CLOUD.md](CLOUD.md) — manual upload gating
+- [CLOUD.md](CLOUD.md) — ImgBB sharing and the retired BYO cloud boundary
 - [PREFERENCES.md](PREFERENCES.md) — settings keys

@@ -262,6 +262,8 @@ enum NotinhasDeepLinkAction: Equatable {
             .shortcuts
         case "permissions", "privacy":
             .permissions
+        case "uploads":
+            .cloud
         case "advanced", "configuration", "config", "toml":
             .advanced
         case "about":

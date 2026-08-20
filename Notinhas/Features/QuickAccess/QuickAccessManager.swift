@@ -170,7 +170,7 @@ final class QuickAccessManager: ObservableObject {
     private var thumbnailSaveGenerations: [UUID: UInt64] = [:]
     /// Tracks which item IDs are currently being edited (paused by editor)
     private var editingItemIds: Set<UUID> = []
-    /// Tracks items doing async work, such as GIF conversion or cloud upload.
+    /// Tracks items doing async work, such as GIF conversion or image sharing.
     private var activityHoldItemIds: Set<UUID> = []
     private var editHotKeyRef: EventHotKeyRef?
     private var editHotKeyHandler: EventHandlerRef?

@@ -111,7 +111,7 @@ flowchart TD
 | File | Responsibility |
 | --- | --- |
 | `Notinhas/Features/VideoEditor/VideoEditorManager.swift` | Window lifecycle, activation policy, Quick Access countdown pause |
-| `Notinhas/Features/VideoEditor/Managers/VideoEditorWindowController.swift` | Save/replace/copy/GIF flows, unsaved-changes alert, post-export upload offer |
+| `Notinhas/Features/VideoEditor/Managers/VideoEditorWindowController.swift` | Save/replace/copy/GIF flows and unsaved-changes alert |
 | `Notinhas/Features/VideoEditor/VideoEditorState.swift` | Central editor model, playback, trim/zoom/speed mutations, undo/redo |
 | `Notinhas/Features/VideoEditor/Models/VideoEditorZoomSegment.swift` | Zoom segment model and clamps |
 | `Notinhas/Features/VideoEditor/Models/VideoEditorSpeedSegment.swift` | Speed segment model and rate presets |
@@ -123,7 +123,7 @@ flowchart TD
 | `Notinhas/Features/VideoEditor/Services/VideoEditorExporter.swift` | Export routing, composition build, replace/copy, audio normalization |
 | `Notinhas/Features/VideoEditor/Services/VideoEditorZoomCompositor.swift` | Custom `AVVideoCompositing` per-frame zoom/background renderer |
 | `Notinhas/Features/VideoEditor/Services/GIFResizer.swift` | ImageIO GIF resize preserving loop/delays |
-| `Notinhas/Features/VideoEditor/Components/VideoEditorBottomBar.swift` | Cancel / cloud-upload / Convert-Save bar |
+| `Notinhas/Features/VideoEditor/Components/VideoEditorBottomBar.swift` | Cancel / Convert-Save bar |
 | `Notinhas/Services/Capture/RecordingMetadata.swift` | Metadata consumed by Follow Mouse and multitrack audio |
 
 ## Related docs

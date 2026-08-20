@@ -105,6 +105,7 @@ final class NotinhasDeepLinkHandlerTests: XCTestCase {
             ("history", .history),
             ("shortcuts", .shortcuts),
             ("permissions", .permissions),
+            ("uploads", .cloud),
             ("advanced", .advanced),
         ]
 

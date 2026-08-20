@@ -137,7 +137,7 @@ Batch variant `handleScreenshotCaptures(urls:)`: filters missing files, delegate
 - [`QUICK_ACCESS.md`](QUICK_ACCESS.md) — card stack, actions, countdown, pin windows
 - [`ANNOTATE.md`](ANNOTATE.md) — preset auto-apply and editable sessions
 - [`HISTORY.md`](HISTORY.md) — history records, retention, cache clearing
-- [`CLOUD.md`](CLOUD.md) — manual cloud upload entry points
+- [`CLOUD.md`](CLOUD.md) — retired BYO cloud boundary and retained ImgBB sharing
 - [`PREFERENCES.md`](PREFERENCES.md) — after-capture matrix and export folder settings
 - [`CONFIGURATION.md`](CONFIGURATION.md) — TOML keys for after-capture actions
 - [`LOCALIZATION.md`](LOCALIZATION.md) — ownership of post-capture copy

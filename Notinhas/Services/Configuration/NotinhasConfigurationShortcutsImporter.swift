@@ -9,6 +9,8 @@ import Foundation
 
 @MainActor
 extension NotinhasConfigurationImporter {
+    static let retiredQuickAccessActionRawValues: Set<String> = ["uploadToCloud"]
+
     static func collectShortcuts(
         _ reader: inout NotinhasConfigurationReader,
         mutations: inout [() -> Void],
@@ -108,6 +110,9 @@ extension NotinhasConfigurationImporter {
             guard let raw = reader.string(["quick_access", "slots", slot.configKey]) else { continue }
             sawValue = true
             if raw.isEmpty {
+                continue
+            }
+            if retiredQuickAccessActionRawValues.contains(raw) {
                 continue
             }
             guard let action = QuickAccessActionKind(rawValue: raw) else {

@@ -287,7 +287,7 @@ NotinhasUITests/
 | `Keychain` | ImgBB credential and migration-only legacy readers |
 | `Application Support/Notinhas/Captures/` | Temp captures, per-session recording processing files, and recording metadata sidecars |
 | `Application Support/Notinhas/AnnotationSessions/` | Sidecar packages for committed editable screenshot annotation sessions |
-| `Application Support/Notinhas/notinhas.db` | Capture history via GRDB; old cloud-upload tables remain migration-compatible |
+| `Application Support/Notinhas/notinhas.db` | Capture history via GRDB; old upload tables remain migration-compatible |
 | `~/.config/notinhas/config.toml` | User-managed TOML preferences file, created from the onboarding config access step or Settings -> Advanced after user-confirmed folder access, replaced by explicit Import/Restore defaults actions, auto-applied on launch when changed, and synced from current settings before Open config.toml when safe |
 
 ## Implementation Notes That Matter
@@ -342,20 +342,17 @@ Current Xcode project contract:
 Do not place XCTest files under `Notinhas/`; that folder is synchronized into the
 app target.
 
-Directory structure mirrors the app: `NotinhasTests/Services/Cloud/AWSV4SignerTests.swift` tests `Notinhas/Services/Cloud/AWSV4Signer.swift`. Shared mocks and fixture assets live in `NotinhasTests/Helpers/` and `NotinhasTests/Fixtures/`.
+Directory structure mirrors the app. Shared mocks and fixture assets live in `NotinhasTests/Helpers/` and `NotinhasTests/Fixtures/`.
 
 ### Test Priority
 
 | Layer | Type | Priority | Notes |
 | --- | --- | --- | --- |
-| `Services/Cloud/AWSV4Signer` | Unit | **P0** | Pure crypto, zero deps |
-| `Services/Cloud/LifecycleXMLParser` | Unit | **P0** | Pure XML parsing |
 | `Services/Capture/CaptureOutputNaming` | Unit | **P0** | Template + sanitization |
 | `Shared/Extensions/` | Unit | **P0** | Pure utilities |
 | `Services/Media/` | Unit | **P1** | Vision/CoreImage, needs fixture images |
 | `Services/Capture/TempCaptureManager` | Unit | **P1** | File lifecycle, mock `FileManager` |
 | `Services/Capture/PostCaptureActionHandler` | Unit | **P1** | Routing logic, protocol DI |
-| `Services/Cloud/CloudManager` | Integration | **P2** | Facade, mock providers |
 | `Features/Capture/CaptureViewModel` | Unit | **P2** | State transitions only, high coupling |
 | `Features/Onboarding/`, `Features/Preferences/` | UI | **P3** | XCUITest |
 
@@ -380,7 +377,7 @@ Directory structure mirrors the app: `NotinhasTests/Services/Cloud/AWSV4SignerTe
 | Annotate editor (full + inline) | `Features/Annotate/`, `docs/ANNOTATE.md` |
 | Editable screenshot annotation history | `Features/Annotate/Services/AnnotationSessionStore.swift`, `Features/Annotate/Models/PersistedAnnotationSession.swift`, `Features/History/`, `Services/History/CaptureHistoryRetentionService.swift`, `docs/ANNOTATE.md`, `docs/HISTORY.md` |
 | Video editor or Smart Camera | `Features/VideoEditor/`, `Services/Capture/RecordingMetadata.swift`, `docs/VIDEO_EDITOR.md` |
-| Cloud upload/config transfer | `Services/Cloud/`, `Features/Preferences/Components/PreferencesCloudSettingsView.swift`, `Features/QuickAccess/Components/QuickAccessCardView.swift`, `Features/Annotate/Components/AnnotateBottomBarView.swift`, `docs/CLOUD.md` |
+| ImgBB sharing and retired cloud boundary | `Services/Cloud/`, `Features/Preferences/Components/PreferencesCloudSettingsView.swift`, `Features/QuickAccess/Components/QuickAccessCardView.swift`, `Features/Annotate/Components/AnnotateBottomBarView.swift`, `docs/CLOUD.md` |
 | TOML config export/import + startup auto-apply | `Services/Configuration/`, `Features/Onboarding/Components/OnboardingConfigAccessView.swift`, `Features/Preferences/Components/PreferencesAdvancedSettingsView.swift`, `App/AppCoordinator.swift`, `docs/CONFIGURATION.md` |
 | Onboarding or app startup | `App/`, `Features/Splash/`, `Features/Onboarding/`, `docs/APP_LIFECYCLE.md` |
 | Shortcuts and conflicts | `Services/Shortcuts/`, `Features/Shortcuts/`, `docs/SHORTCUTS.md` |
@@ -390,13 +387,13 @@ Directory structure mirrors the app: `NotinhasTests/Services/Cloud/AWSV4SignerTe
 
 ## Current Behavior Clarifications
 
-- Cloud upload is manual-only. The `AfterCaptureAction.uploadToCloud` after-capture option was removed (commit `dd4ccd5`), so nothing auto-uploads inside `PostCaptureActionHandler`. Manual upload entry points live in Quick Access cards, Annotate, Video Editor, and History; they show when `CloudManager.isConfigured` is true, and Quick Access / editor surfaces additionally require the `uploadToCloud` action to be enabled in `QuickAccessActionConfigurationStore` (Preferences → Quick Access → Quick Actions).
+- BYO cloud upload and its after-capture/manual UI were retired by Plan 089. Local save/copy/export and ImgBB sharing remain.
 - Quick Access can outlive the original capture location: saved captures stay in the export folder, temp captures are deleted when dismissed unless the user explicitly saves them.
 - Two-finger swipe-to-dismiss is scoped to the Quick Access preview card and follows the same side-aware dismiss direction as mouse swipe: rightward on right-side panels, leftward on left-side panels.
 - Committed screenshot annotations are stored as sidecar packages in Application Support. History/Quick Access restore uses those packages to reopen editable annotations after the rendered screenshot has been saved, while delete, clear-history, retention sweep, and temp-to-export save paths remove or move sidecars with the source file.
 - Sidecar persistence is intentionally commit-based. There is no continuous annotation autosave or draft recovery package for an unsaved Annotate window during app quit.
 - Quick Access screenshot pin opens an independent always-on-top pin window with fit-based sizing, a minimum interactive footprint, compact zoom/drag controls, pinch and Command-scroll zoom, close or Esc-to-unpin, drag-to-app from the current pinned image, and a lock mode that fades the screenshot while allowing pointer interaction with windows underneath except for the unlock control.
-- Annotate, Video Editor, GIF conversion, and cloud upload pause Quick Access countdowns for the active item and resume them when the activity ends.
+- Annotate, Video Editor, and GIF conversion pause Quick Access countdowns for the active item and resume them when the activity ends.
 - During recording, the menu bar item no longer turns into a left-click stop button. It keeps the normal menu path available, adds a live timer to the status item, and exposes stop plus pause/resume from the active menu section.
 - The recording shortcut (`GlobalShortcutKind.recording`, default `⇧⌘5`) is a start/stop toggle handled in `CaptureViewModel.toggleRecordingFromShortcut(...)`. An optional `GlobalShortcutKind.pauseResumeRecording` ships unbound (seeded into `clearedShortcuts` on first launch) and, when bound via Preferences → Shortcuts → Recording, dispatches to `ScreenRecordingManager.togglePause()` only while a recording is active.
 - When Preferences is opened during an active recording with own-app capture enabled, Notinhas temporarily excludes that Settings window from the stream instead of forcing the user to stop recording first.

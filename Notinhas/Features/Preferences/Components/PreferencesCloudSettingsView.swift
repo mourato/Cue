@@ -8,6 +8,7 @@ import SwiftUI
 struct CloudSettingsView: View {
     @ObservedObject private var credentialStore = NotinhasImgBBCredentialStore.shared
     @State private var apiKey = ""
+    @State private var isEditing = false
     @State private var errorMessage: String?
 
     var body: some View {
@@ -16,17 +17,31 @@ struct CloudSettingsView: View {
                 Text(L10n.CloudSettings.imgbbDescription)
                     .foregroundStyle(.secondary)
 
-                if credentialStore.isConfigured {
+                if credentialStore.isConfigured, !isEditing {
                     Text(credentialStore.maskedAPIKey)
                         .textSelection(.enabled)
                     HStack {
-                        Button("Edit") { apiKey = credentialStore.apiKey ?? "" }
-                        Button(L10n.CloudSettings.reset, role: .destructive) { credentialStore.clear() }
+                        Button(L10n.CloudSettings.edit) {
+                            apiKey = credentialStore.apiKey ?? ""
+                            isEditing = true
+                        }
+                        Button(L10n.CloudSettings.reset, role: .destructive) {
+                            credentialStore.clear()
+                            apiKey = ""
+                        }
                     }
                 } else {
                     SecureField(L10n.CloudSettings.imgbbAPIKeyTitle, text: $apiKey)
                         .textFieldStyle(.roundedBorder)
-                    Button(L10n.Common.save) { save() }
+                    HStack {
+                        Button(L10n.Common.save) { save() }
+                        if isEditing {
+                            Button(L10n.Common.cancel) {
+                                apiKey = ""
+                                isEditing = false
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -53,6 +68,7 @@ struct CloudSettingsView: View {
         do {
             try credentialStore.save(apiKey: apiKey)
             apiKey = ""
+            isEditing = false
         } catch {
             errorMessage = error.localizedDescription
         }

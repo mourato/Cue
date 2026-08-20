@@ -35,8 +35,6 @@
             sourceURL = item.url
             let state = VideoEditorState(url: item.url)
             state.quickAccessItemId = item.id
-            state.cloudURL = item.cloudURL
-            state.cloudKey = item.cloudKey
             self.state = state
             isEmptyState = false
 
@@ -428,8 +426,6 @@
 
         private func finalizeTempSave(destinationURL: URL, sourceURL: URL) {
             state?.isExporting = false
-            state?.cloudURL = nil
-            state?.cloudKey = nil
             state?.markAsSaved()
 
             CaptureHistoryStore.shared.updateFilePath(
@@ -637,8 +633,6 @@
                         }
                     }
                     state.isExporting = false
-                    state.cloudURL = nil
-                    state.cloudKey = nil
                     state.markAsSaved()
                     if let quickAccessItemID {
                         await QuickAccessManager.shared.refreshItemThumbnail(id: quickAccessItemID)
@@ -695,8 +689,6 @@
                         }
                     }
                     state.isExporting = false
-                    state.cloudURL = nil
-                    state.cloudKey = nil
                     state.markAsSaved()
 
                     // Show exported file in Finder

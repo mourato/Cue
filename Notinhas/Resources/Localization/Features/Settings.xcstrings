@@ -1222,61 +1222,61 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Wenn du bestätigst, ersetzt Notinhas config.toml durch Standardwerte, setzt App-Einstellungen zurück und löscht Cloud-Zugangsdaten. Gespeicherte Aufnahmen werden nicht gelöscht."
+            "value": "Wenn du bestätigst, ersetzt Notinhas config.toml durch Standardwerte und setzt App-Einstellungen zurück. Gespeicherte Aufnahmen und Schlüsselbund-Einträge werden nicht gelöscht."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "If you confirm, Notinhas will replace config.toml with default values, reset app settings, and clear cloud credentials. Saved captures are not deleted."
+            "value": "If you confirm, Notinhas will replace config.toml with default values and reset app settings. Saved captures and Keychain entries are not deleted."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Si confirmas, Notinhas reemplazará config.toml con valores predeterminados, restablecerá los ajustes de la app y borrará las credenciales de la nube. Las capturas guardadas no se eliminan."
+            "value": "Si confirmas, Notinhas reemplazará config.toml con valores predeterminados y restablecerá los ajustes de la app. Las capturas guardadas y las entradas del llavero no se eliminan."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Si vous confirmez, Notinhas remplacera config.toml par les valeurs par défaut, réinitialisera les réglages de l’app et effacera les identifiants cloud. Les captures enregistrées ne sont pas supprimées."
+            "value": "Si vous confirmez, Notinhas remplacera config.toml par les valeurs par défaut et réinitialisera les réglages de l’app. Les captures enregistrées et les éléments du trousseau ne sont pas supprimés."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "確認すると、Notinhas は config.toml をデフォルト値で置き換え、アプリ設定をリセットし、クラウド認証情報を消去します。保存済みのキャプチャは削除されません。"
+            "value": "確認すると、Notinhas は config.toml をデフォルト値で置き換え、アプリ設定をリセットします。保存済みのキャプチャとキーチェーン項目は削除されません。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "확인하면 Notinhas가 config.toml을 기본값으로 교체하고 앱 설정을 재설정하며 클라우드 자격 증명을 지웁니다. 저장된 캡처는 삭제되지 않습니다."
+            "value": "확인하면 Notinhas가 config.toml을 기본값으로 교체하고 앱 설정을 재설정합니다. 저장된 캡처와 키체인 항목은 삭제되지 않습니다."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Если подтвердить действие, Notinhas заменит config.toml значениями по умолчанию, сбросит настройки приложения и удалит облачные учетные данные. Сохраненные снимки не удаляются."
+            "value": "Если подтвердить действие, Notinhas заменит config.toml значениями по умолчанию и сбросит настройки приложения. Сохраненные снимки и элементы связки ключей не удаляются."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nếu xác nhận, Notinhas sẽ thay config.toml bằng giá trị mặc định, đặt lại cài đặt ứng dụng và xóa thông tin đăng nhập cloud. Ảnh và bản ghi đã lưu sẽ không bị xóa."
+            "value": "Nếu xác nhận, Notinhas sẽ thay config.toml bằng giá trị mặc định và đặt lại cài đặt ứng dụng. Ảnh và bản ghi đã lưu cùng các mục Keychain sẽ không bị xóa."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "确认后，Notinhas 会用默认值替换 config.toml，重置应用设置，并清除云端凭据。已保存的捕捉内容不会被删除。"
+            "value": "确认后，Notinhas 会用默认值替换 config.toml 并重置应用设置。已保存的捕捉内容和钥匙串项目不会被删除。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "確認後，Notinhas 會用預設值取代 config.toml，重置 App 設定，並清除雲端憑證。已儲存的擷取內容不會被刪除。"
+            "value": "確認後，Notinhas 會用預設值取代 config.toml 並重置 App 設定。已儲存的擷取內容和鑰匙圈項目不會被刪除。"
           }
         }
       }
@@ -5434,266 +5434,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "已刪除 %d 項"
-          }
-        }
-      }
-    },
-    "preferences-history.upload-to-cloud": {
-      "extractionState": "stale",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "In die Cloud hochladen"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Upload to Cloud"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Subir a la nube"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Télécharger sur le cloud"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "クラウドにアップロード"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "클라우드에 업로드"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Загрузить в облако"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tải lên Cloud"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "上传至云端"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "上傳至雲端"
-          }
-        }
-      }
-    },
-    "preferences-history.uploaded-to-cloud": {
-      "extractionState": "stale",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "In die Cloud hochgeladen"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Uploaded to Cloud"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Subido a la nube"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Téléversé sur le cloud"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "クラウドにアップロードしました"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "클라우드에 업로드됨"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Загружено в облако"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Đã tải lên Cloud"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已上传至云端"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已上傳至雲端"
-          }
-        }
-      }
-    },
-    "preferences-history.uploaded-to-cloud-and-copied-link": {
-      "extractionState": "stale",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "In die Cloud hochgeladen und Link kopiert"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Uploaded to Cloud and copied link"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Subido a la nube y enlace copiado"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Téléversé sur le cloud et lien copié"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "クラウドにアップロードし、リンクをコピーしました"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "클라우드에 업로드하고 링크를 복사했습니다"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Загружено в облако, ссылка скопирована"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Đã tải lên Cloud và sao chép liên kết"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已上传至云端并复制链接"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已上傳至雲端並複製連結"
-          }
-        }
-      }
-    },
-    "preferences-history.uploading-to-cloud": {
-      "extractionState": "stale",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lädt in die Cloud hoch..."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Uploading to Cloud..."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Subiendo a la nube..."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Téléversement vers le cloud..."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "クラウドにアップロード中..."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "클라우드에 업로드 중..."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Загрузка в облако..."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Đang tải lên Cloud..."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在上传至云端..."
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在上傳至雲端..."
           }
         }
       }
