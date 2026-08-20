@@ -16,9 +16,7 @@ struct HistoryExpandedCaptureCardView: View, Equatable {
     static func == (lhs: HistoryExpandedCaptureCardView, rhs: HistoryExpandedCaptureCardView) -> Bool {
         lhs.record == rhs.record &&
             lhs.isSelected == rhs.isSelected &&
-            lhs.backgroundStyle == rhs.backgroundStyle &&
-            HistoryFloatingManager.shared.cloudUploadState(for: lhs.record) == HistoryFloatingManager.shared
-            .cloudUploadState(for: rhs.record)
+            lhs.backgroundStyle == rhs.backgroundStyle
     }
 
     @ObservedObject private var manager = HistoryFloatingManager.shared
@@ -132,10 +130,6 @@ struct HistoryExpandedCaptureCardView: View, Equatable {
                     typeBadge
                 }
                 .padding(8)
-
-                if let uploadState = manager.cloudUploadState(for: record) {
-                    HistoryCloudUploadOverlayView(state: uploadState)
-                }
             }
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .overlay(

@@ -171,7 +171,6 @@ enum PreferencesKeys {
     static let cloudPasswordEnabled = "cloud.passwordEnabled"
     static let cloudPasswordSkipped = "cloud.passwordSkipped"
     static let cloudUsageStatsCache = "cloud.usageStatsCache"
-    static let cloudUploadsFloatingPosition = "cloud.uploads.floatingPosition"
     static let cloudGoogleFolderId = "cloud.google.folderId"
 
     // Uploads

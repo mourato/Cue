@@ -109,22 +109,8 @@ final class AnnotateCoreTests: XCTestCase {
                 hasImage: false,
                 combineSaveNeedsDialog: true,
                 protectsSourceFromImplicitCombineWrite: false,
-                requiresCloudOverwriteConfirmation: true,
             ),
             .combineDialog,
-        )
-    }
-
-    func testAnnotateCommitRoutingSaveAndCloseUsesCloudReuploadWhenNeeded() {
-        XCTAssertEqual(
-            AnnotateCommitRouting.route(
-                for: .saveAndClose,
-                hasImage: true,
-                combineSaveNeedsDialog: false,
-                protectsSourceFromImplicitCombineWrite: false,
-                requiresCloudOverwriteConfirmation: true,
-            ),
-            .cloudReuploadAndClose,
         )
     }
 
@@ -135,7 +121,6 @@ final class AnnotateCoreTests: XCTestCase {
                 hasImage: true,
                 combineSaveNeedsDialog: false,
                 protectsSourceFromImplicitCombineWrite: false,
-                requiresCloudOverwriteConfirmation: false,
             ),
             .saveAndClose,
         )
@@ -148,7 +133,6 @@ final class AnnotateCoreTests: XCTestCase {
                 hasImage: false,
                 combineSaveNeedsDialog: true,
                 protectsSourceFromImplicitCombineWrite: false,
-                requiresCloudOverwriteConfirmation: true,
             ),
             .noOp,
         )
@@ -161,22 +145,8 @@ final class AnnotateCoreTests: XCTestCase {
                 hasImage: true,
                 combineSaveNeedsDialog: true,
                 protectsSourceFromImplicitCombineWrite: false,
-                requiresCloudOverwriteConfirmation: true,
             ),
             .combineDialog,
-        )
-    }
-
-    func testAnnotateCommitRoutingSaveUsesCloudReuploadWhenNeeded() {
-        XCTAssertEqual(
-            AnnotateCommitRouting.route(
-                for: .save,
-                hasImage: true,
-                combineSaveNeedsDialog: false,
-                protectsSourceFromImplicitCombineWrite: false,
-                requiresCloudOverwriteConfirmation: true,
-            ),
-            .cloudReuploadAndClose,
         )
     }
 
@@ -187,7 +157,6 @@ final class AnnotateCoreTests: XCTestCase {
                 hasImage: true,
                 combineSaveNeedsDialog: false,
                 protectsSourceFromImplicitCombineWrite: false,
-                requiresCloudOverwriteConfirmation: false,
             ),
             .save,
         )
@@ -200,7 +169,6 @@ final class AnnotateCoreTests: XCTestCase {
                 hasImage: false,
                 combineSaveNeedsDialog: false,
                 protectsSourceFromImplicitCombineWrite: true,
-                requiresCloudOverwriteConfirmation: true,
             ),
             .noOp,
         )
@@ -213,22 +181,8 @@ final class AnnotateCoreTests: XCTestCase {
                 hasImage: true,
                 combineSaveNeedsDialog: false,
                 protectsSourceFromImplicitCombineWrite: true,
-                requiresCloudOverwriteConfirmation: true,
             ),
             .copyWithoutSourceWrite,
-        )
-    }
-
-    func testAnnotateCommitRoutingCopyUsesCloudReuploadWhenNeeded() {
-        XCTAssertEqual(
-            AnnotateCommitRouting.route(
-                for: .copy,
-                hasImage: true,
-                combineSaveNeedsDialog: false,
-                protectsSourceFromImplicitCombineWrite: false,
-                requiresCloudOverwriteConfirmation: true,
-            ),
-            .cloudReuploadAndCopy,
         )
     }
 
@@ -239,7 +193,6 @@ final class AnnotateCoreTests: XCTestCase {
                 hasImage: true,
                 combineSaveNeedsDialog: false,
                 protectsSourceFromImplicitCombineWrite: false,
-                requiresCloudOverwriteConfirmation: false,
             ),
             .copy,
         )

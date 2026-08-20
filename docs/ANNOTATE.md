@@ -7,7 +7,7 @@ Notinhas's annotation subsystem: the full Annotate editor window (hybrid AppKit 
 - `Notinhas/Features/Annotate/AnnotateManager.swift` — singleton window registry; session cache keyed by `QuickAccessItem.id`; activation policy bump to `.regular` on open; `openAnnotation(for:)` (QA item) / `openAnnotation(url:sessionData:)` / `openEmptyAnnotation()`.
 - `Notinhas/Features/Annotate/Managers/AnnotateWindowController.swift` — per-window controller, owns save/copy/close notifications.
 - `Notinhas/Features/Annotate/Managers/AnnotateWindow.swift` — `NSWindow` subclass; intercepts ⌘+scroll zoom, trackpad magnify, Space key (pan mode via `annotateSpaceDown/Up` notifications), drag events; level floats while key (`activeEditorLevel`) and restores `restingLevel` on resign; pin sets resting level `.floating`.
-- `Notinhas/Features/Annotate/AnnotateState.swift` — central `ObservableObject` (~4.8k lines): annotations, tools, undo/redo, zoom/pan, canvas effects, crop, cutout, mockup, combine, cloud state.
+- `Notinhas/Features/Annotate/AnnotateState.swift` — central `ObservableObject` (~4.8k lines): annotations, tools, undo/redo, zoom/pan, canvas effects, crop, cutout, mockup, combine, and local sharing state.
 - Layout (`AnnotateMainView`): `AnnotateToolbarView` → `AnnotateQuickPropertiesBar` → `HStack(AnnotateEditorSideDock 240pt — Background **or** Notes, exclusive | AnnotateCanvasView)` → `AnnotateBottomBarView`. Notes auto-open in the left dock when ≥1 note exists unless Background is open; **Add background** (⌘B, `toggleSidebar` action kind) toggles Background content. Preview mode hides the dock.
 - Rendering: `DrawingCanvasNSView` (AppKit event container) + 5 stacked `CanvasLayerView`s composited by CoreAnimation — spotlight overlay → static-below → dragged → static-above → gesture preview. Static layers redraw only when invalidated (CA reuses their backing store), so per-frame cost is flat in annotation count and colors always render through the standard pipeline (no offscreen bitmap color management). Deterministic export via `AnnotateExporter.renderFinalImage` (mockup: `renderMockupFlatImage` off-main + `compositeMockupImage` on main — `ImageRenderer` is main-only).
 - Gesture handling: drag/resize/draw gestures mutate gesture-local `AnnotationItem` copies (no `@Published` churn) and commit once on `mouseUp` via the regular `AnnotateState` update methods + one undo checkpoint; the manipulated item draws in the dragged layer between the static layers (exact z-order). Invalidation: content publishers (`$annotations`, selection, `$sourceImage`, …) redraw all layers; other state only the cheap live layers. Full redraw path culls items outside the dirty rect.
@@ -26,7 +26,7 @@ flowchart TD
     F --> G
     G --> H["User edits: tools, crop, effects, mockup"]
     H --> I{"Committed action"}
-    I -->|Save / copy&close / drag success / cloud upload| J["AnnotateExporter.renderFinalImage -> write file + persist sidecar"]
+    I -->|Save / copy&close / drag success| J["AnnotateExporter.renderFinalImage -> write file + persist sidecar"]
     I -->|Close w/o commit| K["Unsaved-change prompt; no sidecar write"]
 ```
 
@@ -141,8 +141,7 @@ The `.accessory` activation-policy revert is deferred to a later runloop turn (s
 - Left: zoom picker + mode segmented toggle (annotate/mockup/preview).
 - Center: drag handle (compacts when tight).
 - Right: new window, share (`NSSharingServicePicker`), cloud upload, pin (⌃⌘P), copy&close (⌘⇧C), delete (confirm; clears history record + sidecar + QA card, trashes file).
-- Cloud button gated by `CloudManager.shared.isConfigured && QuickAccessActionConfigurationStore.shared.isEnabled(.uploadToCloud)`; ⌘U posts `annotateCloudUpload`; overwrite confirmation when item has a `cloudKey` and is stale. Note: commit `dd4ccd5` removed only the after-capture auto-upload preference — manual uploads here stay.
-- Edits after upload mark item cloud-stale (`isCloudStale`) until re-upload clears it.
+- ImgBB remains an explicit sharing action; BYO cloud buttons, shortcuts, overwrite prompts, and stale-state behavior were removed. Legacy `cloudURL`/`cloudKey` values remain Codable-compatible only.
 
 ## Rotation & Canvas Presets
 

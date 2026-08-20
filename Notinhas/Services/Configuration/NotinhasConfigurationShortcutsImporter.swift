@@ -369,8 +369,6 @@ private extension KeyboardShortcutManager {
             setAnnotateShortcut(config)
         case .videoEditor:
             setVideoEditorShortcut(config)
-        case .cloudUploads:
-            setCloudUploadsShortcut(config)
         case .shortcutList:
             setShortcutListShortcut(config)
         case .ocr:
@@ -395,8 +393,6 @@ private extension AnnotateShortcutManager {
             setToggleSidebarShortcut(config)
         case .togglePin:
             setTogglePinShortcut(config)
-        case .cloudUpload:
-            setCloudUploadShortcut(config)
         case .autoRedactSensitiveData:
             setAutoRedactSensitiveDataShortcut(config)
         }

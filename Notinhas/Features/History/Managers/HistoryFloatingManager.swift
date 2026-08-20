@@ -11,11 +11,6 @@ import Combine
 import Foundation
 import SwiftUI
 
-enum HistoryCloudUploadState: Equatable {
-    case uploading
-    case completed
-}
-
 /// Manages the floating history panel settings and display state
 @MainActor
 final class HistoryFloatingManager: ObservableObject {
@@ -95,7 +90,6 @@ final class HistoryFloatingManager: ObservableObject {
     @Published var expandedFilter: CaptureHistoryType? = nil
     @Published var expandedTimeFilter: HistoryFloatingTimeFilter = .all
     @Published var searchText: String = ""
-    @Published private(set) var cloudUploadStates: [UUID: HistoryCloudUploadState] = [:]
 
     // MARK: - Private
 
@@ -103,8 +97,6 @@ final class HistoryFloatingManager: ObservableObject {
     private lazy var panelContentView = HistoryFloatingContentView(manager: self)
     private var localEscapeMonitor: Any?
     private var globalEscapeMonitor: Any?
-    private var cloudUploadTasks: [UUID: Task<Void, Never>] = [:]
-    private var cloudUploadClearTasks: [UUID: Task<Void, Never>] = [:]
     private var modalInteractionSuppressionCount = 0
     private var isModalInteractionActive: Bool {
         modalInteractionSuppressionCount > 0
@@ -285,105 +277,6 @@ final class HistoryFloatingManager: ObservableObject {
         DiagnosticLogger.shared.log(.debug, .history, "Floating history focused")
     }
 
-    func cloudUploadState(for record: CaptureHistoryRecord) -> HistoryCloudUploadState? {
-        cloudUploadStates[record.id]
-    }
-
-    func uploadToCloud(_ record: CaptureHistoryRecord) {
-        guard cloudUploadStates[record.id] != .uploading else {
-            DiagnosticLogger.shared.log(
-                .debug,
-                .cloud,
-                "History cloud upload skipped; already uploading",
-                context: ["fileName": record.fileName],
-            )
-            return
-        }
-
-        guard CloudManager.shared.isConfigured else {
-            AppToastManager.shared.show(message: L10n.CloudOperation.notConfigured, style: .warning, variant: .compact)
-            DiagnosticLogger.shared.log(
-                .warning,
-                .cloud,
-                "History cloud upload skipped; cloud not configured",
-                context: ["fileName": record.fileName],
-            )
-            return
-        }
-
-        let recordId = record.id
-        cloudUploadClearTasks[recordId]?.cancel()
-        cloudUploadStates[recordId] = .uploading
-
-        let uploadStartTime = Date()
-        DiagnosticLogger.shared.log(
-            .info,
-            .cloud,
-            "History cloud upload started",
-            context: ["fileName": record.fileName, "type": record.captureType.rawValue],
-        )
-
-        cloudUploadTasks[recordId]?.cancel()
-        cloudUploadTasks[recordId] = Task { @MainActor [weak self] in
-            guard let self else { return }
-
-            do {
-                let fileAccess = SandboxFileAccessManager.shared.beginAccessingURL(record.fileURL)
-                defer { fileAccess.stop() }
-
-                guard FileManager.default.fileExists(atPath: record.filePath) else {
-                    throw CloudError.fileNotFound(record.fileURL)
-                }
-
-                let result = try await CloudManager.shared.upload(fileURL: record.fileURL)
-
-                let pasteboard = NSPasteboard.general
-                pasteboard.clearContents()
-                pasteboard.setString(result.publicURL.absoluteString, forType: .string)
-
-                let elapsed = Date().timeIntervalSince(uploadStartTime)
-                let remainingDelay = max(0, 0.6 - elapsed)
-                if remainingDelay > 0 {
-                    try? await Task.sleep(nanoseconds: UInt64(remainingDelay * 1_000_000_000))
-                }
-
-                cloudUploadTasks[recordId] = nil
-                markCloudUploadCompleted(recordId: recordId)
-                SoundManager.play("Pop")
-                AppToastManager.shared.show(
-                    message: L10n.PreferencesHistory.uploadedToCloudAndCopiedLink,
-                    style: .success,
-                    duration: 1.8,
-                    variant: .compact,
-                )
-                DiagnosticLogger.shared.log(
-                    .info,
-                    .cloud,
-                    "History cloud upload completed",
-                    context: [
-                        "fileName": record.fileName,
-                        "publicURL": result.publicURL.absoluteString,
-                    ],
-                )
-            } catch {
-                cloudUploadTasks[recordId] = nil
-                cloudUploadStates[recordId] = nil
-                AppToastManager.shared.show(
-                    message: error.localizedDescription,
-                    style: .error,
-                    duration: 2.5,
-                    variant: .compact,
-                )
-                DiagnosticLogger.shared.logError(
-                    .cloud,
-                    error,
-                    "History cloud upload failed",
-                    context: ["fileName": record.fileName, "type": record.captureType.rawValue],
-                )
-            }
-        }
-    }
-
     func performModalInteraction<Result>(_ action: () -> Result) -> Result {
         modalInteractionSuppressionCount += 1
         DiagnosticLogger.shared.log(
@@ -468,17 +361,6 @@ final class HistoryFloatingManager: ObservableObject {
         expandedFilter = initialFilter ?? defaultFilter
         expandedTimeFilter = .all
         searchText = ""
-    }
-
-    private func markCloudUploadCompleted(recordId: UUID) {
-        cloudUploadClearTasks[recordId]?.cancel()
-        cloudUploadStates[recordId] = .completed
-        cloudUploadClearTasks[recordId] = Task { @MainActor [weak self] in
-            try? await Task.sleep(nanoseconds: 1_400_000_000)
-            guard !Task.isCancelled else { return }
-            self?.cloudUploadStates[recordId] = nil
-            self?.cloudUploadClearTasks[recordId] = nil
-        }
     }
 
     private func setupEscapeMonitors() {

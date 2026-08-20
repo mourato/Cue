@@ -15,7 +15,6 @@ enum PreferencesTab: Hashable {
     case history
     case shortcuts
     case permissions
-    case cloud
     case advanced
 }
 

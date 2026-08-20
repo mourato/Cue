@@ -49,14 +49,6 @@
             }
             // Keyboard shortcuts
             .background {
-                // Cloud upload shortcut (⌘U)
-                Button("") {
-                    NotificationCenter.default.post(name: .videoEditorCloudUpload, object: nil)
-                }
-                .keyboardShortcut("u", modifiers: [.command])
-                .opacity(0)
-                .frame(width: 0, height: 0)
-
                 if !state.isGIF {
                     // Add zoom at playhead (Z key)
                     Button("") {

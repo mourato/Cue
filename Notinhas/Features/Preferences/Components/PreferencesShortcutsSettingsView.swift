@@ -29,7 +29,6 @@ struct ShortcutsSettingsView: View {
     @State private var deleteRecordingShortcut: ShortcutConfig?
     @State private var annotateShortcut: ShortcutConfig?
     @State private var videoEditorShortcut: ShortcutConfig?
-    @State private var cloudUploadsShortcut: ShortcutConfig?
     @State private var shortcutListShortcut: ShortcutConfig?
     @State private var historyShortcut: ShortcutConfig?
     @State private var openEditorShortcut: ShortcutConfig?
@@ -37,7 +36,6 @@ struct ShortcutsSettingsView: View {
     @State private var copyAndCloseShortcut: ShortcutConfig?
     @State private var toggleSidebarShortcut: ShortcutConfig?
     @State private var togglePinShortcut: ShortcutConfig?
-    @State private var cloudUploadShortcut: ShortcutConfig?
     @State private var autoRedactSensitiveDataShortcut: ShortcutConfig?
     @State private var globalShortcutEnabled: [GlobalShortcutKind: Bool]
     @State private var annotateActionEnabled: [AnnotateActionShortcutKind: Bool]
@@ -94,7 +92,6 @@ struct ShortcutsSettingsView: View {
         )
         _annotateShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .annotate))
         _videoEditorShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .videoEditor))
-        _cloudUploadsShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .cloudUploads))
         _shortcutListShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .shortcutList))
         _historyShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .history))
         _openEditorShortcut = State(initialValue: QuickAccessManager.shared.openEditorShortcut)
@@ -102,7 +99,6 @@ struct ShortcutsSettingsView: View {
         _copyAndCloseShortcut = State(initialValue: AnnotateShortcutManager.shared.copyAndCloseShortcut)
         _toggleSidebarShortcut = State(initialValue: AnnotateShortcutManager.shared.toggleSidebarShortcut)
         _togglePinShortcut = State(initialValue: AnnotateShortcutManager.shared.togglePinShortcut)
-        _cloudUploadShortcut = State(initialValue: AnnotateShortcutManager.shared.cloudUploadShortcut)
         _autoRedactSensitiveDataShortcut = State(
             initialValue: AnnotateShortcutManager.shared.autoRedactSensitiveDataShortcut,
         )
@@ -577,17 +573,6 @@ struct ShortcutsSettingsView: View {
                     }
 
                     ShortcutRecorderView(
-                        label: L10n.Actions.cloudUploads,
-                        icon: "icloud.and.arrow.up",
-                        description: L10n.PreferencesShortcuts.cloudUploadsDescription,
-                        shortcut: $cloudUploadsShortcut,
-                        defaultShortcut: .defaultCloudUploads,
-                        isEnabled: globalEnabledBinding(for: .cloudUploads),
-                        validationIssue: globalValidationIssues[.cloudUploads],
-                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .cloudUploads) },
-                    )
-
-                    ShortcutRecorderView(
                         label: L10n.Actions.showShortcutList,
                         icon: "list.bullet.rectangle",
                         description: L10n.PreferencesShortcuts.shortcutListDescription,
@@ -726,17 +711,6 @@ struct ShortcutsSettingsView: View {
                         isEnabled: annotateActionEnabledBinding(for: .togglePin),
                         validationIssue: annotateActionValidationIssues[.togglePin],
                         onShortcutChanged: { handleAnnotateActionShortcutChange($0, for: .togglePin) },
-                    )
-
-                    ShortcutRecorderView(
-                        label: L10n.ShortcutOverlay.cloudUpload,
-                        icon: "icloud.and.arrow.up",
-                        description: L10n.PreferencesShortcuts.cloudUploadDescription,
-                        shortcut: $cloudUploadShortcut,
-                        defaultShortcut: AnnotateShortcutManager.defaultCloudUpload,
-                        isEnabled: annotateActionEnabledBinding(for: .cloudUpload),
-                        validationIssue: annotateActionValidationIssues[.cloudUpload],
-                        onShortcutChanged: { handleAnnotateActionShortcutChange($0, for: .cloudUpload) },
                     )
 
                     ShortcutRecorderView(
@@ -950,10 +924,9 @@ struct ShortcutsSettingsView: View {
     private func resetToolsSection(refresh: Bool = true) {
         annotateShortcut = .defaultAnnotate
         videoEditorShortcut = .defaultVideoEditor
-        cloudUploadsShortcut = .defaultCloudUploads
         shortcutListShortcut = .defaultShortcutList
 
-        let toolsKinds: [GlobalShortcutKind] = [.annotate, .videoEditor, .cloudUploads, .shortcutList]
+        let toolsKinds: [GlobalShortcutKind] = [.annotate, .videoEditor, .shortcutList]
         for kind in toolsKinds {
             globalShortcutEnabled[kind] = true
             manager.setShortcutEnabled(true, for: kind)
@@ -962,7 +935,6 @@ struct ShortcutsSettingsView: View {
 
         manager.setAnnotateShortcut(.defaultAnnotate)
         manager.setVideoEditorShortcut(.defaultVideoEditor)
-        manager.setCloudUploadsShortcut(.defaultCloudUploads)
         manager.setShortcutListShortcut(.defaultShortcutList)
 
         if refresh {
@@ -997,7 +969,6 @@ struct ShortcutsSettingsView: View {
         copyAndCloseShortcut = AnnotateShortcutManager.defaultCopyAndClose
         toggleSidebarShortcut = AnnotateShortcutManager.defaultToggleSidebar
         togglePinShortcut = AnnotateShortcutManager.defaultTogglePin
-        cloudUploadShortcut = AnnotateShortcutManager.defaultCloudUpload
         autoRedactSensitiveDataShortcut = AnnotateShortcutManager.defaultAutoRedactSensitiveData
 
         for kind in AnnotateActionShortcutKind.allCases {
@@ -1009,7 +980,6 @@ struct ShortcutsSettingsView: View {
         annotateManager.setCopyAndCloseShortcut(AnnotateShortcutManager.defaultCopyAndClose)
         annotateManager.setToggleSidebarShortcut(AnnotateShortcutManager.defaultToggleSidebar)
         annotateManager.setTogglePinShortcut(AnnotateShortcutManager.defaultTogglePin)
-        annotateManager.setCloudUploadShortcut(AnnotateShortcutManager.defaultCloudUpload)
         annotateManager.setAutoRedactSensitiveDataShortcut(AnnotateShortcutManager.defaultAutoRedactSensitiveData)
     }
 
@@ -1174,9 +1144,6 @@ struct ShortcutsSettingsView: View {
             case .videoEditor:
                 videoEditorShortcut = config
                 manager.setVideoEditorShortcut(config)
-            case .cloudUploads:
-                cloudUploadsShortcut = config
-                manager.setCloudUploadsShortcut(config)
             case .shortcutList:
                 shortcutListShortcut = config
                 manager.setShortcutListShortcut(config)
@@ -1221,9 +1188,6 @@ struct ShortcutsSettingsView: View {
             case .togglePin:
                 togglePinShortcut = config
                 annotateManager.setTogglePinShortcut(config)
-            case .cloudUpload:
-                cloudUploadShortcut = config
-                annotateManager.setCloudUploadShortcut(config)
             case .autoRedactSensitiveData:
                 autoRedactSensitiveDataShortcut = config
                 annotateManager.setAutoRedactSensitiveDataShortcut(config)

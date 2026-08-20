@@ -692,11 +692,6 @@ nonisolated enum L10n {
             defaultValue: "Open Video Editor",
             comment: "Action title for opening the video editor",
         )
-        static let cloudUploads = string(
-            "action.cloud-uploads",
-            defaultValue: "Cloud Uploads",
-            comment: "Action title for opening cloud uploads",
-        )
         static let showShortcutList = string(
             "action.show-shortcut-list",
             defaultValue: "Show Shortcut List",
@@ -1984,11 +1979,6 @@ nonisolated enum L10n {
         static let togglePin = string(
             "shortcut-overlay.toggle-pin",
             defaultValue: "Toggle Pin",
-            comment: "Annotate action shortcut title",
-        )
-        static let cloudUpload = string(
-            "shortcut-overlay.cloud-upload",
-            defaultValue: "Cloud Upload",
             comment: "Annotate action shortcut title",
         )
         static let autoRedactSensitiveData = string(
@@ -3666,11 +3656,6 @@ nonisolated enum L10n {
             defaultValue: "Open video editing tools",
             comment: "Description for video editor shortcut",
         )
-        static let cloudUploadsDescription = string(
-            "preferences-shortcuts.cloud-uploads-description",
-            defaultValue: "Toggle cloud upload history",
-            comment: "Description for cloud uploads shortcut",
-        )
         static let shortcutListDescription = string(
             "preferences-shortcuts.shortcut-list-description",
             defaultValue: "Open keyboard shortcuts overlay",
@@ -3740,11 +3725,6 @@ nonisolated enum L10n {
             "preferences-shortcuts.toggle-pin-description",
             defaultValue: "Pin or unpin the annotation window",
             comment: "Description for annotate pin shortcut",
-        )
-        static let cloudUploadDescription = string(
-            "preferences-shortcuts.cloud-upload-description",
-            defaultValue: "Upload annotated image to cloud",
-            comment: "Description for annotate cloud upload shortcut",
         )
         static let autoRedactSensitiveDataDescription = string(
             "preferences-shortcuts.auto-redact-sensitive-data-description",
@@ -5175,21 +5155,6 @@ nonisolated enum L10n {
             "annotate.dont-ask-again",
             defaultValue: "Don't ask again",
             comment: "Checkbox label for remembering the clipboard image prompt choice",
-        )
-        static let uploadedToCloud = string(
-            "annotate.uploaded-to-cloud",
-            defaultValue: "Uploaded to Cloud",
-            comment: "Tooltip shown when the annotate asset has already been uploaded to cloud",
-        )
-        static let reuploadToCloud = string(
-            "annotate.reupload-to-cloud",
-            defaultValue: "Re-upload to Cloud",
-            comment: "Tooltip shown when the annotate asset can be re-uploaded to cloud",
-        )
-        static let uploadToCloud = string(
-            "annotate.upload-to-cloud",
-            defaultValue: "Upload to Cloud",
-            comment: "Tooltip shown when the annotate asset can be uploaded to cloud",
         )
         static let pinWindow = string(
             "annotate.pin-window",
@@ -8454,27 +8419,6 @@ nonisolated enum L10n {
                 count,
             )
         }
-
-        static let uploadToCloud = string(
-            "preferences-history.upload-to-cloud",
-            defaultValue: "Upload to Cloud",
-            comment: "Context menu title for uploading a capture history item to cloud storage",
-        )
-        static let uploadingToCloud = string(
-            "preferences-history.uploading-to-cloud",
-            defaultValue: "Uploading to Cloud...",
-            comment: "Loading label shown while a capture history item is uploading to cloud storage",
-        )
-        static let uploadedToCloud = string(
-            "preferences-history.uploaded-to-cloud",
-            defaultValue: "Uploaded to Cloud",
-            comment: "Success label shown after a capture history item has uploaded to cloud storage",
-        )
-        static let uploadedToCloudAndCopiedLink = string(
-            "preferences-history.uploaded-to-cloud-and-copied-link",
-            defaultValue: "Uploaded to Cloud and copied link",
-            comment: "Toast shown after a capture history item uploads to cloud and its public link is copied",
-        )
     }
 
     enum HistoryPanelPosition {

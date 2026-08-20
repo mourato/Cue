@@ -41,7 +41,6 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
     case newWindow
     case share
     case uploadToImgBB
-    case uploadToCloud
     case pin
     case copy
     case delete
@@ -76,7 +75,6 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         .newWindow,
         .share,
         .uploadToImgBB,
-        .uploadToCloud,
         .pin,
         .copy,
         .delete,
@@ -103,7 +101,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
             .drawingOrCutout
         case .saveAs:
             .trailing
-        case .undo, .redo, .selection, .done, .newWindow, .share, .uploadToImgBB, .uploadToCloud, .pin, .copy, .delete:
+        case .undo, .redo, .selection, .done, .newWindow, .share, .uploadToImgBB, .pin, .copy, .delete:
             nil
         }
     }
@@ -125,7 +123,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         case .watermark: .watermark
         case .pencil: .pencil
         case .undo, .redo, .done, .addBackground, .rotateLeft, .rotateRight, .backgroundCutout, .saveAs,
-             .newWindow, .share, .uploadToImgBB, .uploadToCloud, .pin, .copy, .delete:
+             .newWindow, .share, .uploadToImgBB, .pin, .copy, .delete:
             nil
         }
     }
@@ -155,11 +153,11 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
     static func migrating(fromRawValue rawValue: String) -> AnnotateChromeItem? {
         switch rawValue {
         case "filledRectangle":
-            return .rectangle
+            .rectangle
         case "oval":
-            return .circle
+            .circle
         default:
-            return AnnotateChromeItem(rawValue: rawValue)
+            AnnotateChromeItem(rawValue: rawValue)
         }
     }
 
@@ -190,7 +188,6 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         case .newWindow: L10n.AnnotateUI.newWindow
         case .share: L10n.Common.share
         case .uploadToImgBB: NotinhasL10n.uploadToImgBB
-        case .uploadToCloud: L10n.AnnotateUI.uploadToCloud
         case .pin: L10n.AnnotateUI.pinWindow
         case .copy: L10n.AnnotateUI.copyToClipboard
         case .delete: L10n.Common.deleteAction
@@ -224,7 +221,6 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         case .newWindow: "plus.rectangle.on.rectangle"
         case .share: "square.and.arrow.up"
         case .uploadToImgBB: "icloud.and.arrow.up"
-        case .uploadToCloud: "cloud"
         case .pin: "pin"
         case .copy: "doc.on.doc"
         case .delete: "trash"

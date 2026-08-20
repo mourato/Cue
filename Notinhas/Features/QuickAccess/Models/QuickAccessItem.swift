@@ -40,11 +40,9 @@ struct QuickAccessItem: Identifiable, Equatable {
     var processingState: QuickAccessProcessingState = .idle
     /// Incremented when thumbnail changes — used by SwiftUI to detect visual updates
     let thumbnailVersion: UUID
-    /// Cloud URL after successful upload (nil if not uploaded)
+    /// Legacy cloud metadata retained for decoding/migration compatibility.
     var cloudURL: URL?
-    /// Cloud object key for overwrite uploads (nil if not uploaded)
     var cloudKey: String?
-    /// True when image has changed since last cloud upload (needs re-upload)
     var isCloudStale: Bool = false
     /// True when the item should remain visible and bypass auto-dismiss
     var isPinned: Bool = false

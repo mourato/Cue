@@ -10,9 +10,7 @@
 
     // MARK: - Notifications
 
-    extension Notification.Name {
-        static let videoEditorCloudUpload = Notification.Name("videoEditorCloudUpload")
-    }
+    extension Notification.Name {}
 
     /// Custom NSWindow for video editing with dark mode appearance
     class VideoEditorWindow: NSWindow {

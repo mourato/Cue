@@ -104,10 +104,6 @@ struct NotinhasDeepLinkHandler {
                 VideoEditorManager.shared.openEmptyEditor()
             #endif
             NSApp.activate(ignoringOtherApps: true)
-        case .openCloudUploads:
-            if CloudUploadHistoryWindowController.shared.toggleWindow() {
-                NSApp.activate(ignoringOtherApps: true)
-            }
         case .openHistory:
             HistoryFloatingManager.shared.toggle()
         case .showShortcuts:
@@ -143,7 +139,6 @@ enum NotinhasDeepLinkAction: Equatable {
     case openAnnotate
     case openCombine([URL])
     case openVideoEditor
-    case openCloudUploads
     case openHistory
     case showShortcuts
     case openSettings(PreferencesTab?)
@@ -189,8 +184,6 @@ enum NotinhasDeepLinkAction: Equatable {
             self = .openCombine(Self.combineFileURLs(from: components))
         case "open/video-editor", "video-editor", "edit-video", "open-video-editor":
             self = .openVideoEditor
-        case "open/cloud-uploads", "cloud-uploads", "uploads", "open-uploads":
-            self = .openCloudUploads
         case "open/history", "history", "capture-history":
             self = .openHistory
         case "show/shortcuts", "shortcuts", "keyboard-shortcuts", "show-shortcuts":
@@ -225,7 +218,6 @@ enum NotinhasDeepLinkAction: Equatable {
         case .openAnnotate: "openAnnotate"
         case .openCombine(let fileURLs): "openCombine(\(fileURLs.count))"
         case .openVideoEditor: "openVideoEditor"
-        case .openCloudUploads: "openCloudUploads"
         case .openHistory: "openHistory"
         case .showShortcuts: "showShortcuts"
         case .openSettings(let tab): "openSettings(\(String(describing: tab)))"
@@ -270,8 +262,6 @@ enum NotinhasDeepLinkAction: Equatable {
             .shortcuts
         case "permissions", "privacy":
             .permissions
-        case "cloud", "uploads":
-            .cloud
         case "advanced", "configuration", "config", "toml":
             .advanced
         case "about":

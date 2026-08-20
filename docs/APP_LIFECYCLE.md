@@ -101,7 +101,7 @@ State machine (`SplashScreen`): `splash` → `language` → `sponsor` (only when
   - When recording/paused: **Stop Recording (mm:ss)** and **Pause/Resume Recording**, then separator.
   - Captures: Capture Area, Capture Area & Annotate, Application Capture (menu action), Capture Fullscreen, Capture Active Window, Scrolling Capture (disabled while a session is active), Capture Text (OCR), Capture Smart Element, Object Cutout (macOS 14+ only).
   - Recording: Record Screen, Application Recording (both disabled while recorder active).
-  - Tools: Open Annotate, Edit Video, Cloud Uploads (enabled only when `CloudManager.shared.isConfigured`), History, Keyboard Shortcuts.
+  - Tools: Open Annotate, Edit Video, History, Keyboard Shortcuts.
   - Conditional: **Grant Permission** (when screen permission missing), **What's New** (pending `FeatureIntroManager` campaign).
   - Preferences `⌘,`, Quit `⌘Q` (menu title shows **Notinhas**).
   - Configured shortcut key equivalents are attached to menu items via `applyConfiguredShortcut(_:for:using:)`; the Recording → Application Recording overlay shortcut can render as a child-key suffix (see [SHORTCUTS.md](SHORTCUTS.md)).
@@ -138,7 +138,7 @@ The Permissions tab reflects unhealthy identity as `grantedButUnavailableDueToAp
 
 `Notinhas/Notinhas.entitlements` (no app-sandbox key — builds are **not** sandboxed):
 
-- `com.apple.security.network.client` — outbound network (cloud uploads, updates, OAuth). No `network.server` entitlement is declared.
+- `com.apple.security.network.client` — outbound network for explicit ImgBB sharing. No `network.server` entitlement is declared.
 - `com.apple.security.files.user-selected.read-write` — user-picked files/folders.
 - `com.apple.security.device.audio-input` — microphone for recordings.
 - `com.apple.security.temporary-exception.shared-preference.read-only` → `com.apple.symbolichotkeys` — system screenshot shortcut conflict detection (see [SHORTCUTS.md](SHORTCUTS.md)).

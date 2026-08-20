@@ -1,6 +1,6 @@
 # Quick Access
 
-Floating post-capture card stack: appears after every screenshot/video/GIF when the `showQuickAccess` after-capture action is on, offering hover actions, gestures, countdown auto-dismiss, pin windows, and the entry point into Annotate / Video Editor / cloud upload. Code lives in `Notinhas/Features/QuickAccess/`.
+Floating post-capture card stack: appears after every screenshot/video/GIF when the `showQuickAccess` after-capture action is on, offering local sharing, ImgBB, gestures, countdown auto-dismiss, pin windows, and entry points into Annotate / Video Editor. Code lives in `Notinhas/Features/QuickAccess/`.
 
 ## Panel
 
@@ -17,15 +17,15 @@ Floating post-capture card stack: appears after every screenshot/video/GIF when 
 ## Card Anatomy
 
 - 180×112 pt base (`QuickAccessLayout.cardWidth/cardHeight`), scaled by overlay scale; 8pt spacing, stack scale/opacity falloff per card.
-- `QuickAccessCardView` — thumbnail (`QuickAccessThumbnailGenerator`), duration badge for videos, pin indicator, progress overlays (`QuickAccessProgressView`): GIF conversion spinner/ring/check/fail and cloud upload states.
+- `QuickAccessCardView` — thumbnail (`QuickAccessThumbnailGenerator`), duration badge for videos, pin indicator, and local/ImgBB actions.
 - Hover → dim + up to 2 center text buttons + up to 4 corner icon buttons (staggered reveal). Double-click opens the editor; right-click context menu mirrors actions, destructive group last.
-- Assigned-but-unavailable actions (already-uploaded cloud, screenshot-only on video) stay visible disabled.
+- Assigned-but-unavailable screenshot-only actions stay visible disabled.
 
 ## Actions
 
-`QuickAccessActionKind` (7, all live): `copy`, `saveOrOpen`, `dismiss`, `delete`, `edit`, `uploadToCloud`, `pinToScreen`.
+`QuickAccessActionKind` (7, all live): `copy`, `saveOrOpen`, `dismiss`, `delete`, `edit`, `uploadToImgBB`, `pinToScreen`.
 
-Default slots (`QuickAccessActionSlot.defaultAssignments`): centerTop copy, centerBottom saveOrOpen, topTrailing dismiss, topLeading delete, bottomLeading edit, bottomTrailing uploadToCloud. `pinToScreen` unassigned by default.
+Default slots (`QuickAccessActionSlot.defaultAssignments`): centerTop copy, centerBottom saveOrOpen, topTrailing dismiss, topLeading delete, bottomLeading edit, bottomTrailing uploadToImgBB. `pinToScreen` unassigned by default.
 
 | Action | Behavior |
 | --- | --- |
@@ -34,10 +34,10 @@ Default slots (`QuickAccessActionSlot.defaultAssignments`): centerTop copy, cent
 | `dismiss` | Card removed; temp file deleted unless a history record exists |
 | `delete` | Removes history record + annotation sidecar, deletes temp or trashes saved file, deletes recording metadata for videos |
 | `edit` | Opens Annotate (screenshots) or Video Editor (video/GIF); pauses countdown |
-| `uploadToCloud` | Manual `CloudManager.upload`, copies public link, deletes old key on re-upload; gated by `CloudManager.isConfigured` |
+| `uploadToImgBB` | Manual ImgBB upload and public-link copy; requires an ImgBB API key |
 | `pinToScreen` | Opens always-on-top pin window (screenshots only) |
 
-Customization: `QuickAccessActionConfigurationStore` — context-menu order (`quickAccess.actions.order.v1`), enabled set (`...enabled.v1`), slot assignments (`...slots.v1`). Settings → Quick Access preview card supports drag-to-slot + swipe zones + reset. Note: commit `dd4ccd5` removed only the after-capture auto-upload preference option; the manual `uploadToCloud` card action stays, additionally gated by `isEnabled(.uploadToCloud)`.
+Customization: `QuickAccessActionConfigurationStore` — context-menu order (`quickAccess.actions.order.v1`), enabled set (`...enabled.v1`), slot assignments (`...slots.v1`). Settings → Quick Access preview card supports drag-to-slot + swipe zones + reset. Old cloud action identifiers are ignored when loading configuration.
 
 ## Gestures
 
@@ -50,7 +50,7 @@ Customization: `QuickAccessActionConfigurationStore` — context-menu order (`qu
 ## Auto-Dismiss Countdown
 
 - `autoDismissDelay` 3–30s, default 10; pause on hover `pauseCountdownOnHover` default on.
-- Countdown pauses while editing / GIF-converting / cloud-uploading, resumes when work finishes (`pauseCountdownForEditingItem` pauses the edited item + all newer items).
+- Countdown pauses while editing / GIF-converting, resumes when work finishes (`pauseCountdownForEditingItem` pauses the edited item + all newer items).
 - Pinned items bypass the countdown.
 
 ## Pin Windows

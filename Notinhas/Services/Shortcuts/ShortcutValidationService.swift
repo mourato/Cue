@@ -219,8 +219,6 @@ private extension AnnotateActionShortcutKind {
             L10n.AnnotateUI.toggleSidebar
         case .togglePin:
             L10n.ShortcutOverlay.togglePin
-        case .cloudUpload:
-            L10n.ShortcutOverlay.cloudUpload
         case .autoRedactSensitiveData:
             L10n.ShortcutOverlay.autoRedactSensitiveData
         }

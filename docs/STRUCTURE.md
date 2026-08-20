@@ -14,7 +14,7 @@ Separated feature docs cover each runtime area in depth:
 - [`HISTORY.md`](HISTORY.md) — Capture history, retention, restore, storage cleanup
 - [`ANNOTATE.md`](ANNOTATE.md) — Image annotation editor, sessions, presets, export
 - [`VIDEO_EDITOR.md`](VIDEO_EDITOR.md) — Video trim/zoom/speed editing and export
-- [`CLOUD.md`](CLOUD.md) — Cloud providers, credentials, manual uploads
+- [`CLOUD.md`](CLOUD.md) — Local sharing, ImgBB, and retired BYO-cloud boundary
 - [`SHORTCUTS.md`](SHORTCUTS.md) — Global/overlay shortcut registration and conflicts
 - [`PREFERENCES.md`](PREFERENCES.md) — Settings tabs, preference storage, defaults
 - [`APP_LIFECYCLE.md`](APP_LIFECYCLE.md) — Launch sequence, onboarding, menu bar bootstrap
@@ -57,7 +57,7 @@ flowchart LR
 
     subgraph PlatformServices["Platform services"]
         KS["KeyboardShortcutManager"]
-        CL["CloudManager"]
+        CL["DatabaseManager / ImgBB adapter"]
         CFG["NotinhasConfigurationService + AutoImporter + SyncCoordinator"]
         DG["DiagnosticLogger + CrashSentinel"]
         DI["DesktopIconManager"]
@@ -242,7 +242,7 @@ NotinhasUITests/
 | `Services/Capture/` | ScreenCaptureKit capture engine, area selection overlay/controller, OCR scanning overlay, window-target resolution, Smart Element query helpers, recording engine, temp storage, post-capture routing |
 | `Services/Capture/SmartElement/` | Standalone Smart Element overlay controller, per-screen live panels, window-owner resolution, capture performer, and protocol seams |
 | `Services/Capture/ScrollingCapture/` | Long screenshot session model, live preview, stitcher, HUD, metrics |
-| `Services/Cloud/` | S3/R2/Google Drive providers, upload orchestration, GRDB history, Keychain credentials, encrypted transfer, OAuth service |
+| `Services/Cloud/` | Capture-history database and ImgBB/legacy credential adapters |
 | `Services/Configuration/` | TOML export/import facade, focused TOML parser/writer, schema validation, preference mutation helpers, debounced config.toml sync coordinator |
 | `Services/FileAccess/` | Sandbox-scoped save-folder permissions and bookmarks |
 | `Services/Media/` | OCR, QR payload detection, foreground cutout, GIF conversion helpers, WebP encode |
@@ -284,10 +284,10 @@ NotinhasUITests/
 | Store | Used for |
 | --- | --- |
 | `UserDefaults` | Preferences, shortcut configs, onboarding flags, feature toggles |
-| `Keychain` | Cloud access key, secret key, optional cloud protection password |
+| `Keychain` | ImgBB credential and migration-only legacy readers |
 | `Application Support/Notinhas/Captures/` | Temp captures, per-session recording processing files, and recording metadata sidecars |
 | `Application Support/Notinhas/AnnotationSessions/` | Sidecar packages for committed editable screenshot annotation sessions |
-| `Application Support/Notinhas/notinhas.db` | Capture history and cloud upload history via GRDB |
+| `Application Support/Notinhas/notinhas.db` | Capture history via GRDB; old cloud-upload tables remain migration-compatible |
 | `~/.config/notinhas/config.toml` | User-managed TOML preferences file, created from the onboarding config access step or Settings -> Advanced after user-confirmed folder access, replaced by explicit Import/Restore defaults actions, auto-applied on launch when changed, and synced from current settings before Open config.toml when safe |
 
 ## Implementation Notes That Matter
@@ -312,7 +312,7 @@ NotinhasUITests/
 - `RecordingCoordinator` owns the toolbar/overlay UX. `ScreenRecordingManager` owns the media pipeline.
 - `ScrollingCaptureCoordinator` is its own subsystem. Treat `Services/Capture/ScrollingCapture/*` as a unit.
 - `ScrollingCaptureFrameSource` publishes timestamped region frames into `ScrollingCaptureFrameRing`, so live preview and commit/stitch decisions share one bounded frame timeline before falling back to still area capture.
-- `CloudManager` is a facade. Provider-specific behavior lives under `Services/Cloud/`.
+- BYO provider behavior was retired by Plan 089. `Services/Cloud/` retains only shared persistence and credential compatibility code.
 - `NotinhasConfigurationService` is the Settings-facing facade for TOML export/import. `NotinhasConfigurationAccessGranting` shares the config folder grant flow between upgrade onboarding and Settings -> Advanced, creating `~/.config/notinhas` and `config.toml` after a successful grant if either is missing. Settings import validates the selected `.toml`, replaces the managed `config.toml`, then applies it so app state and file state stay aligned. Open config.toml syncs current settings into the managed file first when the file still matches Notinhas's last applied/exported signature; if the file has unapplied external edits, Settings asks before replacing it. `NotinhasConfigurationAutoImporter` runs during startup, hashes `config.toml`, and imports only when the file changed since the last successful launch-time apply. Import paths validate the whole file before applying any mutation and intentionally exclude Keychain secrets, history rows, temp captures, and sandbox bookmarks.
 - `Shared/Localization/L10n.swift` is the bridge for user-facing copy that does not live directly in SwiftUI view literals.
 - `Resources/Localization/Shared/*.xcstrings` and `Resources/Localization/Features/*.xcstrings` are the runtime localization catalogs.

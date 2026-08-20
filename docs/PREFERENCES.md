@@ -75,7 +75,7 @@ renders directly without an inner picker.
 
 ### Annotate (`PreferencesAnnotateSettingsView.swift`)
 
-- **Editor chrome** (`AnnotateChromeCustomizationView`): reorder and enable/disable toolbar items (crop, background, rotate, drawing tools, cutout, Save as) and bottom-bar actions (New window, Share, ImgBB, Cloud, Pin, Copy, Delete). Selection, Undo, Redo, and Done always stay visible; zoom, pan, mode tabs, and Drag to app are fixed. Keys `annotate.chrome.toolbarOrder.v1`, `annotate.chrome.bottomOrder.v1`, `annotate.chrome.enabled.v1`; Reset chrome restores defaults. Inline Capture Markup uses the same drawing-tool order/enable subset.
+- **Editor chrome** (`AnnotateChromeCustomizationView`): reorder and enable/disable toolbar items (crop, background, rotate, drawing tools, cutout, Save as) and bottom-bar actions (New window, Share, ImgBB, Pin, Copy, Delete). Selection, Undo, Redo, and Done always stay visible; zoom, pan, mode tabs, and Drag to app are fixed. Keys `annotate.chrome.toolbarOrder.v1`, `annotate.chrome.bottomOrder.v1`, `annotate.chrome.enabled.v1`; Reset chrome restores defaults. Inline Capture Markup uses the same drawing-tool order/enable subset.
 - Behavior section:
   - Sync Tool Defaults / quick-properties sync (`annotate.quickPropertiesSyncEnabled`, default on).
   - Combine Save-as-Edit (`annotate.combineSaveAsEdit`, default on).
@@ -117,7 +117,7 @@ renders directly without an inner picker.
 
 ### Uploads (`PreferencesCloudSettingsView.swift`)
 
-Image upload optimization, provider configuration, credentials, expiration, usage stats, Cloud Uploads window position, and the separate **Image Sharing** ImgBB section. Optimized image uploads use a temporary derivative; local captures remain unchanged. The ImgBB API key is stored in Keychain (migrated from legacy `notinhas.imgbb.apiKey` UserDefaults). Summary only here — full reference in [CLOUD.md](CLOUD.md).
+The separate **Image Sharing** ImgBB section is retained. The ImgBB API key is stored in Keychain (migrated from legacy `notinhas.imgbb.apiKey` UserDefaults). BYO provider settings, usage, password, transfer, and upload-history controls were retired. See [CLOUD.md](CLOUD.md).
 
 ### Advanced (`PreferencesAdvancedSettingsView.swift`)
 
@@ -141,7 +141,7 @@ flowchart LR
 - Defaults: `showQuickAccess`, `copyFile`, `save` = on for both types; `openAnnotate` = off (opt-in, screenshot-only).
 - Stored as JSON `[String: [String: Bool]]` under UserDefaults key `afterCaptureActions`; load failures fall back to seeded defaults.
 - Edited via `PreferencesAfterCaptureMatrixView.swift` (Capture → After Capture section).
-- **Removed at `dd4ccd5`**: the `uploadToCloud` after-capture auto-upload case no longer exists. Manual cloud uploads remain (Quick Access, Annotate ⌘U, Video Editor, History) — see [CLOUD.md](CLOUD.md).
+- **Plan 089**: BYO cloud uploads and their after-capture/manual UI were retired. Local sharing and ImgBB remain — see [CLOUD.md](CLOUD.md).
 
 ## Related docs
 

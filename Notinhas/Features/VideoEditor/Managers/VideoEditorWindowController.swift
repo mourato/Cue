@@ -448,9 +448,7 @@
             }
 
             NSWorkspace.shared.activateFileViewerSelecting([destinationURL])
-            offerPostExportUpload(for: destinationURL) { [weak self] in
-                self?.forceClose()
-            }
+            forceClose()
         }
 
         private func cleanupTempSourceFile(at sourceURL: URL) {
@@ -649,9 +647,7 @@
                         for: .recording,
                         url: state.originalURL,
                     )
-                    self.offerPostExportUpload(for: state.originalURL) { [weak self] in
-                        self?.forceClose()
-                    }
+                    self.forceClose()
                 } catch {
                     DiagnosticLogger.shared.logError(.export, error, "Video replace original failed")
                     state.isExporting = false
@@ -705,7 +701,7 @@
 
                     // Show exported file in Finder
                     NSWorkspace.shared.activateFileViewerSelecting([outputURL])
-                    self.offerPostExportUpload(for: outputURL) {}
+                    self.forceClose()
                 } catch {
                     DiagnosticLogger.shared.logError(.export, error, "Video save as copy failed")
                     state.isExporting = false
@@ -757,78 +753,6 @@
                 guard let self else { return }
                 if response == .alertFirstButtonReturn {
                     performSaveAsCopy()
-                }
-            }
-        }
-
-        // MARK: - Post-Export Cloud Upload Offer
-
-        private func offerPostExportUpload(for fileURL: URL, completion: @escaping () -> Void) {
-            guard CloudManager.shared.isConfigured,
-                  QuickAccessActionConfigurationStore.shared.isEnabled(.uploadToCloud),
-                  let window,
-                  let state
-            else {
-                completion()
-                return
-            }
-
-            let alert = NSAlert()
-            alert.messageText = L10n.AnnotateUI.uploadToCloud
-            alert.informativeText = "Would you like to upload the exported video to cloud?"
-            alert.alertStyle = .informational
-            alert.addButton(withTitle: L10n.AnnotateUI.uploadToCloud)
-            alert.addButton(withTitle: L10n.Common.cancel)
-
-            alert.beginSheetModal(for: window) { [weak self] response in
-                guard let self else {
-                    completion()
-                    return
-                }
-
-                if response == .alertFirstButtonReturn {
-                    performPostExportUpload(fileURL: fileURL, completion: completion)
-                } else {
-                    completion()
-                }
-            }
-        }
-
-        private func performPostExportUpload(fileURL: URL, completion: @escaping () -> Void) {
-            guard let state else {
-                completion()
-                return
-            }
-
-            state.isExporting = true
-            state.exportProgress = 0.8
-            state.exportStatusMessage = "Uploading to cloud..."
-
-            Task {
-                do {
-                    let fileAccess = SandboxFileAccessManager.shared.beginAccessingURL(fileURL)
-                    defer { fileAccess.stop() }
-
-                    let result = try await CloudManager.shared.upload(fileURL: fileURL)
-
-                    // Store cloud link on pasteboard
-                    let pasteboard = NSPasteboard.general
-                    pasteboard.clearContents()
-                    pasteboard.setString(result.publicURL.absoluteString, forType: .string)
-
-                    SoundManager.play("Pop")
-
-                    // Sync with Quick Access item if linked
-                    if let itemId = self.quickAccessItemID {
-                        QuickAccessManager.shared.setCloudURL(id: itemId, url: result.publicURL, key: result.key)
-                    }
-
-                    state.isExporting = false
-                    completion()
-                } catch {
-                    state.isExporting = false
-                    self.showExportError(error)
-                    completion()
                 }
             }
         }

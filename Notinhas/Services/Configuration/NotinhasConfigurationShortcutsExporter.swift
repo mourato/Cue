@@ -142,7 +142,6 @@ extension GlobalShortcutKind {
         case .deleteRecording: "delete_recording"
         case .annotate: "annotate"
         case .videoEditor: "video_editor"
-        case .cloudUploads: "cloud_uploads"
         case .shortcutList: "shortcut_list"
         case .ocr: "ocr"
         case .smartElement: "smart_element"
@@ -158,7 +157,6 @@ extension AnnotateActionShortcutKind {
         case .copyAndClose: "copy_and_close"
         case .toggleSidebar: "toggle_sidebar"
         case .togglePin: "toggle_pin"
-        case .cloudUpload: "cloud_upload"
         case .autoRedactSensitiveData: "auto_redact_sensitive_data"
         }
     }
