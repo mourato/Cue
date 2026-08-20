@@ -13,7 +13,7 @@ enum NotinhasImageKitUploadError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .missingPrivateKey: L10n.Notinhas.imageKitMissingPrivateKey
-        case .invalidImageData: NotinhasL10n.imgbbInvalidImageData
+        case .invalidImageData: L10n.Notinhas.invalidImageData
         case .unauthorized: L10n.Notinhas.imageKitUnauthorized
         case .rateLimited: L10n.Notinhas.imageKitRateLimited
         case .providerRejected: L10n.Notinhas.imageKitUploadFailed
@@ -48,7 +48,7 @@ actor NotinhasImageKitUploadService {
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         request.setValue(
-            Data("\(key):".utf8).base64EncodedString(),
+            "Basic \(Data("\(key):".utf8).base64EncodedString())",
             forHTTPHeaderField: "Authorization",
         )
         request.httpBody = makeMultipartBody(boundary: boundary, image: image)

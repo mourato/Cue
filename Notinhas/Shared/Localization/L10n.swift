@@ -3351,6 +3351,11 @@ nonisolated enum L10n {
             defaultValue: "Could not prepare the image for upload.",
             comment: "ImgBB invalid image error",
         )
+        static let invalidImageData = string(
+            "annotate.notinhas.invalid-image-data",
+            defaultValue: "Could not prepare the image for upload.",
+            comment: "Invalid image data error shared by upload providers",
+        )
         static let imgbbInvalidResponse = string(
             "annotate.notinhas.imgbb-invalid-response",
             defaultValue: "ImgBB returned an unexpected response.",

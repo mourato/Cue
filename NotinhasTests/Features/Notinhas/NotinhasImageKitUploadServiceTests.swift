@@ -12,7 +12,8 @@ final class NotinhasImageKitUploadServiceTests: XCTestCase {
         MockImageKitURLProtocol.requestHandler = { request in
             XCTAssertEqual(request.url?.absoluteString, "https://upload.imagekit.io/api/v1/files/upload")
             XCTAssertEqual(request.httpMethod, "POST")
-            XCTAssertNotNil(request.value(forHTTPHeaderField: "Authorization"))
+            let expectedAuthorization = "Basic \(Data("fixture-private-key:".utf8).base64EncodedString())"
+            XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), expectedAuthorization)
             let body = String(data: request.httpBody ?? Data(), encoding: .utf8) ?? ""
             XCTAssertTrue(body.contains("name=\"file\""))
             XCTAssertTrue(body.contains("name=\"fileName\""))

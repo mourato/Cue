@@ -81,7 +81,7 @@ final class NotinhasUploadCoordinator: ObservableObject {
     }
 
     private var invalidImageMessage: String {
-        NotinhasL10n.imgbbInvalidImageData
+        L10n.Notinhas.invalidImageData
     }
 
     private func missingCredentialMessage(for provider: NotinhasUploadProvider) -> String {
