@@ -23,15 +23,4 @@ enum WallpaperQualityConfig {
 
     /// Blur radius for .blurred wallpaper style
     static let blurRadius: CGFloat = 20
-
-    /// Pre-compute blur on load vs real-time per-frame
-    static let usePrecomputedBlur: Bool = true
-
-    // MARK: - Debug
-
-    /// Overlay showing actual render dimensions on canvas
-    static let showDebugOverlay: Bool = false
-
-    /// Console logging of load times and memory usage
-    static let logPerformanceMetrics: Bool = false
 }
