@@ -136,7 +136,6 @@ Notinhas/
   App/
     NotinhasApp.swift
     AppCoordinator.swift
-    AppEnvironment.swift
     AppStatusBarController.swift
 
   Features/
