@@ -26,7 +26,6 @@ final class NotinhasDeepLinkHandlerTests: XCTestCase {
             ("notinhas://open/annotate", .openAnnotate),
             ("notinhas://open/combine", .openCombine([])),
             ("notinhas://open/video-editor", .openVideoEditor),
-            ("notinhas://open/cloud-uploads", .openCloudUploads),
             ("notinhas://open/history", .openHistory),
             ("notinhas://show/shortcuts", .showShortcuts),
             ("notinhas://settings", .openSettings(nil)),
@@ -106,7 +105,7 @@ final class NotinhasDeepLinkHandlerTests: XCTestCase {
             ("history", .history),
             ("shortcuts", .shortcuts),
             ("permissions", .permissions),
-            ("cloud", .cloud),
+            ("uploads", .cloud),
             ("advanced", .advanced),
         ]
 

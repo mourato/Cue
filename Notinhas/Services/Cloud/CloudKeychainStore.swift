@@ -9,6 +9,17 @@ import Foundation
 import os.log
 import Security
 
+enum CloudError: LocalizedError {
+    case keychainError(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .keychainError(let reason):
+            L10n.CloudOperation.keychainError(reason)
+        }
+    }
+}
+
 enum CloudKeychainItem {
     case accessKey
     case secretKey

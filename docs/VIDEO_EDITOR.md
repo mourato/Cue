@@ -23,7 +23,7 @@ flowchart TD
     K --> L{"Save ⌘S"}
     L -->|Video| M["VideoEditorExporter"]
     L -->|GIF| N["GIFResizer"]
-    M --> O["offerPostExportUpload (cloud, gated)"]
+    M --> O["close after export"]
 ```
 
 - `VideoEditorManager` (singleton) tracks windows per Quick Access item id, per URL, and one empty editor; opening an existing item/URL reuses its window.
@@ -89,7 +89,7 @@ flowchart TD
 - Save flow (`VideoEditorWindowController.showSaveConfirmation`): temp captures save directly to a chosen destination; saved files prompt Replace Original vs Save As Copy.
   - Replace original: export to temp, move original to `.<name>.backup`, atomic `replaceItemAt` swap, restore from backup on failure; recording metadata for the replaced file is deleted. Permission-denied falls back to a Save As Copy prompt.
   - Save as copy: `_trimmed` suffix suggestion (`generateCopyFilename`, counter on collision) + `NSSavePanel`.
-- After a successful export, `offerPostExportUpload` offers a cloud upload — gated by `CloudManager.shared.isConfigured` **and** `QuickAccessActionConfigurationStore.shared.isEnabled(.uploadToCloud)`. Accepting uploads via `CloudManager.upload`, copies the public URL to the pasteboard, and syncs the cloud URL back to the linked Quick Access item.
+- After a successful export, the Video module closes or returns to its local result. BYO cloud upload offers were removed; the Video module itself remains available.
 
 ## GIF Editing
 
@@ -104,14 +104,14 @@ flowchart TD
 
 ## Bottom Bar (HEAD)
 
-`Components/VideoEditorBottomBar.swift`: **Cancel** | optional cloud-upload button (only when `CloudManager.shared.isConfigured && QuickAccessActionConfigurationStore.shared.isEnabled(.uploadToCloud)`; label flips to re-upload when a cloud key exists; disabled while the card was already uploaded) | **Convert/Save** (⌘S; title is "Save" for temp captures, "Convert" otherwise) with an export progress strip (`VideoEditorExportProgressOverlay` during export). ⌘U uploads directly (`VideoEditorMainView`).
+`Components/VideoEditorBottomBar.swift`: **Cancel** | **Convert/Save** (⌘S; title is "Save" for temp captures, "Convert" otherwise) with an export progress strip (`VideoEditorExportProgressOverlay` during export).
 
 ## Key Files
 
 | File | Responsibility |
 | --- | --- |
 | `Notinhas/Features/VideoEditor/VideoEditorManager.swift` | Window lifecycle, activation policy, Quick Access countdown pause |
-| `Notinhas/Features/VideoEditor/Managers/VideoEditorWindowController.swift` | Save/replace/copy/GIF flows, unsaved-changes alert, post-export upload offer |
+| `Notinhas/Features/VideoEditor/Managers/VideoEditorWindowController.swift` | Save/replace/copy/GIF flows and unsaved-changes alert |
 | `Notinhas/Features/VideoEditor/VideoEditorState.swift` | Central editor model, playback, trim/zoom/speed mutations, undo/redo |
 | `Notinhas/Features/VideoEditor/Models/VideoEditorZoomSegment.swift` | Zoom segment model and clamps |
 | `Notinhas/Features/VideoEditor/Models/VideoEditorSpeedSegment.swift` | Speed segment model and rate presets |
@@ -123,7 +123,7 @@ flowchart TD
 | `Notinhas/Features/VideoEditor/Services/VideoEditorExporter.swift` | Export routing, composition build, replace/copy, audio normalization |
 | `Notinhas/Features/VideoEditor/Services/VideoEditorZoomCompositor.swift` | Custom `AVVideoCompositing` per-frame zoom/background renderer |
 | `Notinhas/Features/VideoEditor/Services/GIFResizer.swift` | ImageIO GIF resize preserving loop/delays |
-| `Notinhas/Features/VideoEditor/Components/VideoEditorBottomBar.swift` | Cancel / cloud-upload / Convert-Save bar |
+| `Notinhas/Features/VideoEditor/Components/VideoEditorBottomBar.swift` | Cancel / Convert-Save bar |
 | `Notinhas/Services/Capture/RecordingMetadata.swift` | Metadata consumed by Follow Mouse and multitrack audio |
 
 ## Related docs

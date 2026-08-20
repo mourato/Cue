@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted (2026-07-24)
+Superseded by Plan 089 (2026-08-20). The retention decision below is historical
+context; [`docs/CLOUD.md`](../CLOUD.md) defines the current boundary.
 
 ## Context
 
@@ -25,10 +26,9 @@ return.
    Element capture, object cutout (foreground extraction), and All-In-One HUD
    (mode + area + dimensions). These remain available upstream paths; Notinhas
    handoff does not require them but designers may use them before annotate.
-2. **BYO cloud — RETAIN** AWS S3, Cloudflare R2, and Google Drive upload
-   providers (`CloudManager` / `CloudProvider`). ImgBB remains the
-   handoff-oriented image host for briefs; BYO cloud is for users who want
-   their own bucket or drive, not a Notinhas-managed service.
+2. **BYO cloud — RETIRED** AWS S3, Cloudflare R2, and Google Drive upload
+   providers were removed by Plan 089. ImgBB remains the handoff-oriented
+   image host for briefs.
 3. **Annotate toolbelt — RETAIN** watermark, combine (image stitch/canvas),
    and integrated mockup tooling in Annotate. Standalone `MockupManager` was
    already removed (plan 075); do not reintroduce a separate mockup app surface.
@@ -42,10 +42,9 @@ return.
 
 ## Consequences
 
-- Future dead-code passes and scope reviews consult this ADR before deleting
-  Swift features in capture, cloud, annotate, or distribution helpers.
-- ImgBB stays aligned with handoff; S3/R2/Drive stay for BYO storage without
-  implying Notinhas operates upload infrastructure.
+- Future dead-code passes and scope reviews consult this ADR for historical
+  context; Plan 089 and the current cloud boundary govern sharing behavior.
+- ImgBB stays aligned with handoff; local save/copy/export remains available.
 - Distribution docs and release automation must not add Homebrew cask publishing
   or Discord release bots without a new ADR superseding this one.
 - Removed upstream channels (Sparkle, `snapzy://`, support endpoint, etc.)

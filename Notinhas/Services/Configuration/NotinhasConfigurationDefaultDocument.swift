@@ -25,7 +25,6 @@ enum NotinhasConfigurationDefaultDocument {
         #endif
         writeQuickAccess(&writer)
         writeHistory(&writer)
-        writeCloud(&writer)
         writeUploads(&writer)
         writeAnnotate(&writer)
         writeShortcuts(&writer)
@@ -165,17 +164,6 @@ enum NotinhasConfigurationDefaultDocument {
         writer.value("auto_clear_days", 0)
     }
 
-    private static func writeCloud(_ writer: inout SimpleTOMLWriter) {
-        writer.section("cloud")
-        writer.value("provider", CloudProviderType.awsS3.rawValue)
-        writer.value("bucket", "")
-        writer.value("region", "us-east-1")
-        writer.value("endpoint", "")
-        writer.value("custom_domain", "")
-        writer.value("expire_time", CloudExpireTime.day7.rawValue)
-        writer.value("uploads_window_position", CloudUploadFloatingPosition.defaultPosition.rawValue)
-    }
-
     private static func writeUploads(_ writer: inout SimpleTOMLWriter) {
         writer.section("uploads")
         writer.value("optimize_images", true)
@@ -292,7 +280,6 @@ enum NotinhasConfigurationDefaultDocument {
         case .deleteRecording: nil
         case .annotate: .defaultAnnotate
         case .videoEditor: .defaultVideoEditor
-        case .cloudUploads: .defaultCloudUploads
         case .shortcutList: .defaultShortcutList
         case .ocr: .defaultOCR
         case .smartElement: nil
@@ -306,7 +293,6 @@ enum NotinhasConfigurationDefaultDocument {
         case .copyAndClose: AnnotateShortcutManager.defaultCopyAndClose
         case .toggleSidebar: AnnotateShortcutManager.defaultToggleSidebar
         case .togglePin: AnnotateShortcutManager.defaultTogglePin
-        case .cloudUpload: AnnotateShortcutManager.defaultCloudUpload
         case .autoRedactSensitiveData: AnnotateShortcutManager.defaultAutoRedactSensitiveData
         }
     }

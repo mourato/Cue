@@ -170,7 +170,7 @@ final class QuickAccessManager: ObservableObject {
     private var thumbnailSaveGenerations: [UUID: UInt64] = [:]
     /// Tracks which item IDs are currently being edited (paused by editor)
     private var editingItemIds: Set<UUID> = []
-    /// Tracks items doing async work, such as GIF conversion or cloud upload.
+    /// Tracks items doing async work, such as GIF conversion or image sharing.
     private var activityHoldItemIds: Set<UUID> = []
     private var editHotKeyRef: EventHotKeyRef?
     private var editHotKeyHandler: EventHandlerRef?
@@ -820,7 +820,7 @@ final class QuickAccessManager: ObservableObject {
 
     /// Update thumbnail directly from an already-rendered image (synchronous, instant)
     /// Used after annotation save — avoids the slow ThumbnailGenerator pipeline.
-    /// Preserves existing isCloudStale — callers should use markCloudStale(id:) if needed.
+    /// Preserves legacy cloud metadata while updating the local thumbnail.
     func updateItemThumbnail(id: UUID, image: NSImage) {
         guard let index = items.firstIndex(where: { $0.id == id }) else { return }
         let existing = items[index]
@@ -1033,7 +1033,7 @@ final class QuickAccessManager: ObservableObject {
         )
     }
 
-    /// Copy item to clipboard (cloud link if available, otherwise image or video file URL)
+    /// Copy the local image or video file to the clipboard.
     func copyToClipboard(id: UUID) {
         guard let item = items.first(where: { $0.id == id }) else {
             DiagnosticLogger.shared.log(
@@ -1042,22 +1042,6 @@ final class QuickAccessManager: ObservableObject {
                 "Quick access clipboard copy missed item",
                 context: ["itemId": id.uuidString],
             )
-            return
-        }
-
-        // If cloud URL is available, copy the cloud link as text
-        if let cloudURL = item.cloudURL {
-            let pasteboard = NSPasteboard.general
-            pasteboard.clearContents()
-            pasteboard.setString(cloudURL.absoluteString, forType: .string)
-            DiagnosticLogger.shared.log(
-                .info,
-                .clipboard,
-                "Quick access copied cloud link to clipboard",
-                context: ["fileName": item.url.lastPathComponent],
-            )
-            dismissCard(id: id)
-            SoundManager.play("Pop")
             return
         }
 
@@ -1634,48 +1618,5 @@ final class QuickAccessManager: ObservableObject {
                 )
             }
         }
-    }
-
-    /// Set cloud URL and key for an item after successful upload
-    func setCloudURL(id: UUID, url: URL, key: String) {
-        guard let index = items.firstIndex(where: { $0.id == id }) else {
-            DiagnosticLogger.shared.log(
-                .warning,
-                .cloud,
-                "Quick access cloud URL update missed item",
-                context: ["itemId": id.uuidString],
-            )
-            return
-        }
-        items[index].cloudURL = url
-        items[index].cloudKey = key
-        items[index].isCloudStale = false
-        DiagnosticLogger.shared.log(
-            .info,
-            .cloud,
-            "Quick access cloud URL attached",
-            context: ["itemId": id.uuidString, "fileName": items[index].url.lastPathComponent],
-        )
-    }
-
-    /// Mark an item's cloud state as stale (local differs from cloud)
-    func markCloudStale(id: UUID) {
-        guard let index = items.firstIndex(where: { $0.id == id }) else {
-            DiagnosticLogger.shared.log(
-                .warning,
-                .cloud,
-                "Quick access cloud stale mark missed item",
-                context: ["itemId": id.uuidString],
-            )
-            return
-        }
-        guard items[index].cloudURL != nil else { return }
-        items[index].isCloudStale = true
-        DiagnosticLogger.shared.log(
-            .debug,
-            .cloud,
-            "Quick access cloud state marked stale",
-            context: ["itemId": id.uuidString, "fileName": items[index].url.lastPathComponent],
-        )
     }
 }

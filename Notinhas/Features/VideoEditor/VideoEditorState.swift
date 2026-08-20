@@ -293,10 +293,6 @@
         private var initialBackgroundCornerRadius: CGFloat = 0
         private var initialExportSettings: ExportSettings = .init()
 
-        // MARK: - Cloud State
-
-        @Published var cloudURL: URL?
-        @Published var cloudKey: String?
         @Published var quickAccessItemId: UUID?
 
         // MARK: - Undo/Redo

@@ -539,4 +539,45 @@ final class NotinhasConfigurationImporterTests: XCTestCase {
         XCTAssertNil(defaults.object(forKey: PreferencesKeys.captureSelectionSnapDistance))
         XCTAssertNil(defaults.object(forKey: PreferencesKeys.captureSelectionColorSensitivity))
     }
+
+    func testValidateLegacyCloudActionsIgnoresRetiredValues() {
+        let source = """
+        schema_version = 1
+
+        [quick_access]
+        swipe_left_action = "uploadToCloud"
+
+        [quick_access.slots]
+        top_leading = "uploadToCloud"
+        """
+
+        XCTAssertFalse(NotinhasConfigurationImporter.validateTOML(source).contains { $0.severity == .error })
+    }
+
+    func testImportLegacyCloudEnabledActionsPreservesDefaults() {
+        let store = QuickAccessActionConfigurationStore.shared
+        let originalOrder = store.actionOrder
+        let originalEnabledActions = store.enabledActions
+        let originalSlotAssignments = store.slotAssignments
+        defer {
+            store.applyConfiguration(
+                order: originalOrder,
+                enabledActions: originalEnabledActions,
+                slotAssignments: originalSlotAssignments,
+            )
+        }
+
+        store.resetToDefaults()
+        let source = """
+        schema_version = 1
+
+        [quick_access]
+        enabled_actions = ["uploadToCloud"]
+        """
+
+        let result = NotinhasConfigurationImporter.importTOML(source, defaults: UserDefaultsFactory.make())
+
+        XCTAssertFalse(result.hasErrors)
+        XCTAssertEqual(store.enabledActions, QuickAccessActionKind.defaultEnabledActions)
+    }
 }

@@ -7,7 +7,7 @@ Notinhas's annotation subsystem: the full Annotate editor window (hybrid AppKit 
 - `Notinhas/Features/Annotate/AnnotateManager.swift` — singleton window registry; session cache keyed by `QuickAccessItem.id`; activation policy bump to `.regular` on open; `openAnnotation(for:)` (QA item) / `openAnnotation(url:sessionData:)` / `openEmptyAnnotation()`.
 - `Notinhas/Features/Annotate/Managers/AnnotateWindowController.swift` — per-window controller, owns save/copy/close notifications.
 - `Notinhas/Features/Annotate/Managers/AnnotateWindow.swift` — `NSWindow` subclass; intercepts ⌘+scroll zoom, trackpad magnify, Space key (pan mode via `annotateSpaceDown/Up` notifications), drag events; level floats while key (`activeEditorLevel`) and restores `restingLevel` on resign; pin sets resting level `.floating`.
-- `Notinhas/Features/Annotate/AnnotateState.swift` — central `ObservableObject` (~4.8k lines): annotations, tools, undo/redo, zoom/pan, canvas effects, crop, cutout, mockup, combine, cloud state.
+- `Notinhas/Features/Annotate/AnnotateState.swift` — central `ObservableObject` (~4.8k lines): annotations, tools, undo/redo, zoom/pan, canvas effects, crop, cutout, mockup, combine, and local sharing state.
 - Layout (`AnnotateMainView`): `AnnotateToolbarView` → `AnnotateQuickPropertiesBar` → `HStack(AnnotateEditorSideDock 240pt — Background **or** Notes, exclusive | AnnotateCanvasView)` → `AnnotateBottomBarView`. Notes auto-open in the left dock when ≥1 note exists unless Background is open; **Add background** (⌘B, `toggleSidebar` action kind) toggles Background content. Preview mode hides the dock.
 - Rendering: `DrawingCanvasNSView` (AppKit event container) + 5 stacked `CanvasLayerView`s composited by CoreAnimation — spotlight overlay → static-below → dragged → static-above → gesture preview. Static layers redraw only when invalidated (CA reuses their backing store), so per-frame cost is flat in annotation count and colors always render through the standard pipeline (no offscreen bitmap color management). Deterministic export via `AnnotateExporter.renderFinalImage` (mockup: `renderMockupFlatImage` off-main + `compositeMockupImage` on main — `ImageRenderer` is main-only).
 - Gesture handling: drag/resize/draw gestures mutate gesture-local `AnnotationItem` copies (no `@Published` churn) and commit once on `mouseUp` via the regular `AnnotateState` update methods + one undo checkpoint; the manipulated item draws in the dragged layer between the static layers (exact z-order). Invalidation: content publishers (`$annotations`, selection, `$sourceImage`, …) redraw all layers; other state only the cheap live layers. Full redraw path culls items outside the dirty rect.
@@ -26,7 +26,7 @@ flowchart TD
     F --> G
     G --> H["User edits: tools, crop, effects, mockup"]
     H --> I{"Committed action"}
-    I -->|Save / copy&close / drag success / cloud upload| J["AnnotateExporter.renderFinalImage -> write file + persist sidecar"]
+    I -->|Save / copy&close / drag success| J["AnnotateExporter.renderFinalImage -> write file + persist sidecar"]
     I -->|Close w/o commit| K["Unsaved-change prompt; no sidecar write"]
 ```
 
@@ -37,7 +37,7 @@ flowchart TD
 1. `markAsSaved` + session cache + `state.makeRenderSnapshot()` — freezes every render input into a value-type `AnnotateRenderSnapshot` (warms lazy embedded-CGImage caches, pre-resolves main-bound wallpaper/blur images).
 2. Instant anti-flash thumbnail: `cacheDisplay` of the canvas region (`DrawingCanvasNSView`, no toolbar/sidebar chrome) downscaled to 200px — set on the card immediately; the pin window is NOT updated with it.
 3. `forceClose()` — window hidden + closed, card reappear commits.
-4. `Task.detached`: off-main `renderFinalImage(snapshot:)` → off-main 200px downscale → main push of the authoritative thumbnail + pin full-res update + `markCloudStale` (guarded by a per-item save generation, last-save-wins) → `saveToFileOffMain` (encode off-main; scoped write + history on main) → sidecar persist off-main (`AnnotationSessionStore.persistOffMain`) → clipboard re-copy off-main (`ClipboardHelper.copyImageOffMain`, serialized).
+4. `Task.detached`: off-main `renderFinalImage(snapshot:)` → off-main 200px downscale → main push of the authoritative thumbnail + pin full-res update (guarded by a per-item save generation, last-save-wins) → `saveToFileOffMain` (encode off-main; scoped write + history on main) → sidecar persist off-main (`AnnotationSessionStore.persistOffMain`) → clipboard re-copy off-main (`ClipboardHelper.copyImageOffMain`, serialized).
 
 The `.accessory` activation-policy revert is deferred to a later runloop turn (shared by Annotate/VideoEditor) so it never stalls the reappear. Signposts (`perf.signposts` default + Instruments `com.notinhas.perf`): `AnnotateReturn`, `instantThumbCapture`, `windowClose`, `render`, `thumbnailScale`. Perf evidence: `plans/260718-1956-quick-access-annotate-return-perf/reports/`.
 
@@ -94,7 +94,7 @@ The `.accessory` activation-policy revert is deferred to a later runloop turn (s
 
 ## Editor chrome customization
 
-- Preferences → Annotate: reorder and show/hide toolbar and bottom-bar actions (`AnnotateChromeConfigurationStore`, keys `annotate.chrome.*`). Always-on anchors: Sidebar, Undo/Redo (leading), Selection (before drawing tools), Done (trailing). Cutout shares order with drawing tools. Cloud upload in the bottom bar still requires cloud configuration and Quick Access cloud action enablement.
+- Preferences → Annotate: reorder and show/hide toolbar and bottom-bar actions (`AnnotateChromeConfigurationStore`, keys `annotate.chrome.*`). Always-on anchors: Sidebar, Undo/Redo (leading), Selection (before drawing tools), Done (trailing). Cutout shares order with drawing tools. ImgBB sharing is available when an ImgBB API key is configured.
 - Inline area-annotate (`InlineAreaControlDeck`) uses the same drawing-tool order/enable subset from the store.
 
 ## Backgrounds & Mockups
@@ -126,7 +126,7 @@ The `.accessory` activation-policy revert is deferred to a later runloop turn (s
 
 - `AnnotationSessionStore` root: `~/Library/Application Support/Notinhas/AnnotationSessions/<SHA256(normalizedPath)>/`.
 - Package: `manifest.json` (`PersistedAnnotationSession`, schemaVersion 1, `PersistedFileSignature` = size + modifiedAt + extension) + `original.bin` + optional `cutout.png` + `assets/` (embedded images). Signature mismatch (replaced file at same path) → sidecar ignored, never restores annotations onto wrong pixels.
-- Commit-based writes only: save, save-and-close, copy&close, successful drag-to-app, cloud upload/re-upload, inline annotate finish, default-preset auto-apply. NO draft autosave; unsaved windows keep the normal unsaved-change prompt.
+- Commit-based writes only: save, save-and-close, copy&close, successful drag-to-app, ImgBB sharing, inline annotate finish, default-preset auto-apply. NO draft autosave; unsaved windows keep the normal unsaved-change prompt.
 - Restore order: QuickAccess in-memory session cache → sidecar → flattened file.
 - Cleanup paths: QA delete, Annotate delete-image, history delete, clear-history, retention sweep (incl. orphan sidecars), move-on-save (temp→export moves sidecar to new path hash).
 
@@ -140,9 +140,8 @@ The `.accessory` activation-policy revert is deferred to a later runloop turn (s
 
 - Left: zoom picker + mode segmented toggle (annotate/mockup/preview).
 - Center: drag handle (compacts when tight).
-- Right: new window, share (`NSSharingServicePicker`), cloud upload, pin (⌃⌘P), copy&close (⌘⇧C), delete (confirm; clears history record + sidecar + QA card, trashes file).
-- Cloud button gated by `CloudManager.shared.isConfigured && QuickAccessActionConfigurationStore.shared.isEnabled(.uploadToCloud)`; ⌘U posts `annotateCloudUpload`; overwrite confirmation when item has a `cloudKey` and is stale. Note: commit `dd4ccd5` removed only the after-capture auto-upload preference — manual uploads here stay.
-- Edits after upload mark item cloud-stale (`isCloudStale`) until re-upload clears it.
+- Right: new window, share (`NSSharingServicePicker`), ImgBB sharing, pin (⌃⌘P), copy&close (⌘⇧C), delete (confirm; clears history record + sidecar + QA card, trashes file).
+- ImgBB remains an explicit sharing action; BYO cloud buttons, shortcuts, overwrite prompts, and stale-state behavior were removed. Legacy `cloudURL`/`cloudKey` values remain Codable-compatible only.
 
 ## Rotation & Canvas Presets
 
@@ -192,7 +191,7 @@ flowchart TD
 - [QUICK_ACCESS.md](QUICK_ACCESS.md) — card edit action, pin windows, session cache
 - [HISTORY.md](HISTORY.md) — restore flow and sidecar lifecycle
 - [POST_CAPTURE.md](POST_CAPTURE.md) — routing incl. preset auto-apply
-- [CLOUD.md](CLOUD.md) — manual upload + stale/re-upload semantics
+- [CLOUD.md](CLOUD.md) — ImgBB sharing and the retired BYO cloud boundary
 - [PREFERENCES.md](PREFERENCES.md) — Annotate settings keys
 - [SHORTCUTS.md](SHORTCUTS.md) — global shortcut registry
 - [LOCALIZATION.md](LOCALIZATION.md) — L10n ownership

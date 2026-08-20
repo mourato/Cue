@@ -28,7 +28,6 @@ enum NotinhasConfigurationImporter {
 
         preparedImport.mutations.forEach { $0() }
         KeyboardShortcutManager.shared.refreshShortcutRegistration()
-        CloudManager.shared.reloadStateFromDefaults()
         defaults.synchronize()
 
         return NotinhasConfigurationImportResult(
@@ -59,7 +58,6 @@ enum NotinhasConfigurationImporter {
         #endif
         collectQuickAccess(&reader, mutations: &mutations)
         collectHistory(&reader, defaults: defaults, mutations: &mutations)
-        collectCloud(&reader, defaults: defaults, mutations: &mutations)
         collectUploads(&reader, defaults: defaults, mutations: &mutations)
         collectAnnotate(&reader, defaults: defaults, mutations: &mutations)
         collectShortcuts(&reader, mutations: &mutations)
@@ -412,6 +410,8 @@ enum NotinhasConfigurationImporter {
                 mutations.append {
                     QuickAccessSwipeActionStore.shared.setAction(.left, action: action)
                 }
+            } else if retiredQuickAccessActionRawValues.contains(actionStr) {
+                // Ignore actions removed from older configuration files.
             } else {
                 reader.error("quick_access.swipe_left_action is invalid")
             }
@@ -426,6 +426,8 @@ enum NotinhasConfigurationImporter {
                 mutations.append {
                     QuickAccessSwipeActionStore.shared.setAction(.right, action: action)
                 }
+            } else if retiredQuickAccessActionRawValues.contains(actionStr) {
+                // Ignore actions removed from older configuration files.
             } else {
                 reader.error("quick_access.swipe_right_action is invalid")
             }
@@ -447,14 +449,21 @@ enum NotinhasConfigurationImporter {
 
         let order = reader.stringArray("quick_access", "actions_order")?
             .compactMap(QuickAccessActionKind.init(rawValue:))
-        let enabled = reader.stringArray("quick_access", "enabled_actions")?
-            .compactMap(QuickAccessActionKind.init(rawValue:))
+        let enabledActions: Set<QuickAccessActionKind>?
+        if let rawValues = reader.stringArray("quick_access", "enabled_actions") {
+            let actions = Set(rawValues.compactMap(QuickAccessActionKind.init(rawValue:)))
+            enabledActions = !rawValues.isEmpty
+                && actions.isEmpty
+                && rawValues.allSatisfy { Self.retiredQuickAccessActionRawValues.contains($0) } ? nil : actions
+        } else {
+            enabledActions = nil
+        }
         let slots = quickAccessSlots(from: &reader)
-        if order != nil || enabled != nil || slots != nil {
+        if order != nil || enabledActions != nil || slots != nil {
             mutations.append {
                 QuickAccessActionConfigurationStore.shared.applyConfiguration(
                     order: order,
-                    enabledActions: enabled.map(Set.init),
+                    enabledActions: enabledActions,
                     slotAssignments: slots,
                 )
             }
@@ -523,55 +532,6 @@ enum NotinhasConfigurationImporter {
         }
         collectInt(&reader, "history", "floating", "auto_clear_days", range: 0 ... 365, mutations: &mutations) {
             manager.autoClearDays = $0
-        }
-    }
-
-    private static func collectCloud(
-        _ reader: inout NotinhasConfigurationReader,
-        defaults: UserDefaults,
-        mutations: inout [() -> Void],
-    ) {
-        collectEnumString(
-            &reader,
-            "cloud",
-            "provider",
-            allowed: CloudProviderType.allCases.map(\.rawValue),
-            mutations: &mutations,
-        ) {
-            defaults.set($0, forKey: PreferencesKeys.cloudProviderType)
-        }
-        collectString(&reader, "cloud", "bucket", mutations: &mutations) {
-            defaults.set($0, forKey: PreferencesKeys.cloudBucket)
-        }
-        collectString(&reader, "cloud", "folder_name", mutations: &mutations) {
-            defaults.set($0, forKey: PreferencesKeys.cloudBucket)
-        }
-        collectString(&reader, "cloud", "region", mutations: &mutations) {
-            defaults.set($0, forKey: PreferencesKeys.cloudRegion)
-        }
-        collectString(&reader, "cloud", "endpoint", mutations: &mutations) {
-            defaults.set($0, forKey: PreferencesKeys.cloudEndpoint)
-        }
-        collectString(&reader, "cloud", "custom_domain", mutations: &mutations) {
-            defaults.set($0, forKey: PreferencesKeys.cloudCustomDomain)
-        }
-        collectEnumString(
-            &reader,
-            "cloud",
-            "expire_time",
-            allowed: CloudExpireTime.allCases.map(\.rawValue),
-            mutations: &mutations,
-        ) {
-            defaults.set($0, forKey: PreferencesKeys.cloudExpireTime)
-        }
-        collectEnumString(
-            &reader,
-            "cloud",
-            "uploads_window_position",
-            allowed: CloudUploadFloatingPosition.allCases.map(\.rawValue),
-            mutations: &mutations,
-        ) {
-            defaults.set($0, forKey: PreferencesKeys.cloudUploadsFloatingPosition)
         }
     }
 

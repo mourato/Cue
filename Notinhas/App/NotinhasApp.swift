@@ -488,7 +488,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         alert.messageText = "Notinhas could not open its database."
 
         var informativeText = """
-        Notinhas needs this database for capture history and cloud upload records.
+        Notinhas needs this database for capture history and legacy record compatibility.
 
         Database:
         \(DatabaseManager.defaultDatabaseURL.path)
@@ -523,7 +523,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         alert.informativeText = """
         Notinhas will move the current database files into a recovery folder, then create a new empty database.
 
-        This resets capture history and cloud upload history inside Notinhas. Capture files on disk and cloud files are not deleted.
+        This resets capture history inside Notinhas. Capture files on disk, Keychain entries, and remote files are not deleted.
 
         Database:
         \(DatabaseManager.defaultDatabaseURL.path)

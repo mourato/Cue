@@ -652,17 +652,6 @@ final class AppStatusBarController: ObservableObject {
             #endif
         }
 
-        let cloudUploadsItem = NSMenuItem(
-            title: L10n.Actions.cloudUploads,
-            action: #selector(openCloudUploadsAction),
-            keyEquivalent: "",
-        )
-        applyConfiguredShortcut(cloudUploadsItem, for: .cloudUploads, using: shortcutManager)
-        cloudUploadsItem.target = self
-        cloudUploadsItem.image = NSImage(systemSymbolName: "icloud.and.arrow.up", accessibilityDescription: nil)
-        cloudUploadsItem.isEnabled = CloudManager.shared.isConfigured
-        menu?.addItem(cloudUploadsItem)
-
         let historyItem = NSMenuItem(
             title: L10n.Actions.openHistory,
             action: #selector(openHistoryAction),
@@ -835,23 +824,6 @@ final class AppStatusBarController: ObservableObject {
             VideoEditorManager.shared.openEmptyEditor()
         }
     #endif
-
-    @objc private func openCloudUploadsAction() {
-        logMenuAction(
-            "openCloudUploads",
-            context: ["cloudConfigured": CloudManager.shared.isConfigured ? "true" : "false"],
-        )
-        let didShow = CloudUploadHistoryWindowController.shared.toggleWindow()
-        DiagnosticLogger.shared.log(
-            .debug,
-            .cloud,
-            "Cloud uploads window toggled",
-            context: ["shown": didShow ? "true" : "false"],
-        )
-        if didShow {
-            NSApp.activate(ignoringOtherApps: true)
-        }
-    }
 
     @objc private func openHistoryAction() {
         logMenuAction("openHistory")

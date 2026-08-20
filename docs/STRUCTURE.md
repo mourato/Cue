@@ -14,7 +14,7 @@ Separated feature docs cover each runtime area in depth:
 - [`HISTORY.md`](HISTORY.md) — Capture history, retention, restore, storage cleanup
 - [`ANNOTATE.md`](ANNOTATE.md) — Image annotation editor, sessions, presets, export
 - [`VIDEO_EDITOR.md`](VIDEO_EDITOR.md) — Video trim/zoom/speed editing and export
-- [`CLOUD.md`](CLOUD.md) — Cloud providers, credentials, manual uploads
+- [`CLOUD.md`](CLOUD.md) — Local sharing, ImgBB, and retired BYO-cloud boundary
 - [`SHORTCUTS.md`](SHORTCUTS.md) — Global/overlay shortcut registration and conflicts
 - [`PREFERENCES.md`](PREFERENCES.md) — Settings tabs, preference storage, defaults
 - [`APP_LIFECYCLE.md`](APP_LIFECYCLE.md) — Launch sequence, onboarding, menu bar bootstrap
@@ -57,7 +57,7 @@ flowchart LR
 
     subgraph PlatformServices["Platform services"]
         KS["KeyboardShortcutManager"]
-        CL["CloudManager"]
+        CL["DatabaseManager / ImgBB adapter"]
         CFG["NotinhasConfigurationService + AutoImporter + SyncCoordinator"]
         DG["DiagnosticLogger + CrashSentinel"]
         DI["DesktopIconManager"]
@@ -242,7 +242,7 @@ NotinhasUITests/
 | `Services/Capture/` | ScreenCaptureKit capture engine, area selection overlay/controller, OCR scanning overlay, window-target resolution, Smart Element query helpers, recording engine, temp storage, post-capture routing |
 | `Services/Capture/SmartElement/` | Standalone Smart Element overlay controller, per-screen live panels, window-owner resolution, capture performer, and protocol seams |
 | `Services/Capture/ScrollingCapture/` | Long screenshot session model, live preview, stitcher, HUD, metrics |
-| `Services/Cloud/` | S3/R2/Google Drive providers, upload orchestration, GRDB history, Keychain credentials, encrypted transfer, OAuth service |
+| `Services/Cloud/` | Capture-history database and ImgBB/legacy credential adapters |
 | `Services/Configuration/` | TOML export/import facade, focused TOML parser/writer, schema validation, preference mutation helpers, debounced config.toml sync coordinator |
 | `Services/FileAccess/` | Sandbox-scoped save-folder permissions and bookmarks |
 | `Services/Media/` | OCR, QR payload detection, foreground cutout, GIF conversion helpers, WebP encode |
@@ -284,10 +284,10 @@ NotinhasUITests/
 | Store | Used for |
 | --- | --- |
 | `UserDefaults` | Preferences, shortcut configs, onboarding flags, feature toggles |
-| `Keychain` | Cloud access key, secret key, optional cloud protection password |
+| `Keychain` | ImgBB credential and migration-only legacy readers |
 | `Application Support/Notinhas/Captures/` | Temp captures, per-session recording processing files, and recording metadata sidecars |
 | `Application Support/Notinhas/AnnotationSessions/` | Sidecar packages for committed editable screenshot annotation sessions |
-| `Application Support/Notinhas/notinhas.db` | Capture history and cloud upload history via GRDB |
+| `Application Support/Notinhas/notinhas.db` | Capture history via GRDB; old upload tables remain migration-compatible |
 | `~/.config/notinhas/config.toml` | User-managed TOML preferences file, created from the onboarding config access step or Settings -> Advanced after user-confirmed folder access, replaced by explicit Import/Restore defaults actions, auto-applied on launch when changed, and synced from current settings before Open config.toml when safe |
 
 ## Implementation Notes That Matter
@@ -312,7 +312,7 @@ NotinhasUITests/
 - `RecordingCoordinator` owns the toolbar/overlay UX. `ScreenRecordingManager` owns the media pipeline.
 - `ScrollingCaptureCoordinator` is its own subsystem. Treat `Services/Capture/ScrollingCapture/*` as a unit.
 - `ScrollingCaptureFrameSource` publishes timestamped region frames into `ScrollingCaptureFrameRing`, so live preview and commit/stitch decisions share one bounded frame timeline before falling back to still area capture.
-- `CloudManager` is a facade. Provider-specific behavior lives under `Services/Cloud/`.
+- BYO provider behavior was retired by Plan 089. `Services/Cloud/` retains only shared persistence and credential compatibility code.
 - `NotinhasConfigurationService` is the Settings-facing facade for TOML export/import. `NotinhasConfigurationAccessGranting` shares the config folder grant flow between upgrade onboarding and Settings -> Advanced, creating `~/.config/notinhas` and `config.toml` after a successful grant if either is missing. Settings import validates the selected `.toml`, replaces the managed `config.toml`, then applies it so app state and file state stay aligned. Open config.toml syncs current settings into the managed file first when the file still matches Notinhas's last applied/exported signature; if the file has unapplied external edits, Settings asks before replacing it. `NotinhasConfigurationAutoImporter` runs during startup, hashes `config.toml`, and imports only when the file changed since the last successful launch-time apply. Import paths validate the whole file before applying any mutation and intentionally exclude Keychain secrets, history rows, temp captures, and sandbox bookmarks.
 - `Shared/Localization/L10n.swift` is the bridge for user-facing copy that does not live directly in SwiftUI view literals.
 - `Resources/Localization/Shared/*.xcstrings` and `Resources/Localization/Features/*.xcstrings` are the runtime localization catalogs.
@@ -342,20 +342,17 @@ Current Xcode project contract:
 Do not place XCTest files under `Notinhas/`; that folder is synchronized into the
 app target.
 
-Directory structure mirrors the app: `NotinhasTests/Services/Cloud/AWSV4SignerTests.swift` tests `Notinhas/Services/Cloud/AWSV4Signer.swift`. Shared mocks and fixture assets live in `NotinhasTests/Helpers/` and `NotinhasTests/Fixtures/`.
+Directory structure mirrors the app. Shared mocks and fixture assets live in `NotinhasTests/Helpers/` and `NotinhasTests/Fixtures/`.
 
 ### Test Priority
 
 | Layer | Type | Priority | Notes |
 | --- | --- | --- | --- |
-| `Services/Cloud/AWSV4Signer` | Unit | **P0** | Pure crypto, zero deps |
-| `Services/Cloud/LifecycleXMLParser` | Unit | **P0** | Pure XML parsing |
 | `Services/Capture/CaptureOutputNaming` | Unit | **P0** | Template + sanitization |
 | `Shared/Extensions/` | Unit | **P0** | Pure utilities |
 | `Services/Media/` | Unit | **P1** | Vision/CoreImage, needs fixture images |
 | `Services/Capture/TempCaptureManager` | Unit | **P1** | File lifecycle, mock `FileManager` |
 | `Services/Capture/PostCaptureActionHandler` | Unit | **P1** | Routing logic, protocol DI |
-| `Services/Cloud/CloudManager` | Integration | **P2** | Facade, mock providers |
 | `Features/Capture/CaptureViewModel` | Unit | **P2** | State transitions only, high coupling |
 | `Features/Onboarding/`, `Features/Preferences/` | UI | **P3** | XCUITest |
 
@@ -380,7 +377,7 @@ Directory structure mirrors the app: `NotinhasTests/Services/Cloud/AWSV4SignerTe
 | Annotate editor (full + inline) | `Features/Annotate/`, `docs/ANNOTATE.md` |
 | Editable screenshot annotation history | `Features/Annotate/Services/AnnotationSessionStore.swift`, `Features/Annotate/Models/PersistedAnnotationSession.swift`, `Features/History/`, `Services/History/CaptureHistoryRetentionService.swift`, `docs/ANNOTATE.md`, `docs/HISTORY.md` |
 | Video editor or Smart Camera | `Features/VideoEditor/`, `Services/Capture/RecordingMetadata.swift`, `docs/VIDEO_EDITOR.md` |
-| Cloud upload/config transfer | `Services/Cloud/`, `Features/Preferences/Components/PreferencesCloudSettingsView.swift`, `Features/QuickAccess/Components/QuickAccessCardView.swift`, `Features/Annotate/Components/AnnotateBottomBarView.swift`, `docs/CLOUD.md` |
+| ImgBB sharing and retired cloud boundary | `Services/Cloud/`, `Features/Preferences/Components/PreferencesCloudSettingsView.swift`, `Features/QuickAccess/Components/QuickAccessCardView.swift`, `Features/Annotate/Components/AnnotateBottomBarView.swift`, `docs/CLOUD.md` |
 | TOML config export/import + startup auto-apply | `Services/Configuration/`, `Features/Onboarding/Components/OnboardingConfigAccessView.swift`, `Features/Preferences/Components/PreferencesAdvancedSettingsView.swift`, `App/AppCoordinator.swift`, `docs/CONFIGURATION.md` |
 | Onboarding or app startup | `App/`, `Features/Splash/`, `Features/Onboarding/`, `docs/APP_LIFECYCLE.md` |
 | Shortcuts and conflicts | `Services/Shortcuts/`, `Features/Shortcuts/`, `docs/SHORTCUTS.md` |
@@ -390,13 +387,13 @@ Directory structure mirrors the app: `NotinhasTests/Services/Cloud/AWSV4SignerTe
 
 ## Current Behavior Clarifications
 
-- Cloud upload is manual-only. The `AfterCaptureAction.uploadToCloud` after-capture option was removed (commit `dd4ccd5`), so nothing auto-uploads inside `PostCaptureActionHandler`. Manual upload entry points live in Quick Access cards, Annotate, Video Editor, and History; they show when `CloudManager.isConfigured` is true, and Quick Access / editor surfaces additionally require the `uploadToCloud` action to be enabled in `QuickAccessActionConfigurationStore` (Preferences → Quick Access → Quick Actions).
+- BYO cloud upload and its after-capture/manual UI were retired by Plan 089. Local save/copy/export and ImgBB sharing remain.
 - Quick Access can outlive the original capture location: saved captures stay in the export folder, temp captures are deleted when dismissed unless the user explicitly saves them.
 - Two-finger swipe-to-dismiss is scoped to the Quick Access preview card and follows the same side-aware dismiss direction as mouse swipe: rightward on right-side panels, leftward on left-side panels.
 - Committed screenshot annotations are stored as sidecar packages in Application Support. History/Quick Access restore uses those packages to reopen editable annotations after the rendered screenshot has been saved, while delete, clear-history, retention sweep, and temp-to-export save paths remove or move sidecars with the source file.
 - Sidecar persistence is intentionally commit-based. There is no continuous annotation autosave or draft recovery package for an unsaved Annotate window during app quit.
 - Quick Access screenshot pin opens an independent always-on-top pin window with fit-based sizing, a minimum interactive footprint, compact zoom/drag controls, pinch and Command-scroll zoom, close or Esc-to-unpin, drag-to-app from the current pinned image, and a lock mode that fades the screenshot while allowing pointer interaction with windows underneath except for the unlock control.
-- Annotate, Video Editor, GIF conversion, and cloud upload pause Quick Access countdowns for the active item and resume them when the activity ends.
+- Annotate, Video Editor, and GIF conversion pause Quick Access countdowns for the active item and resume them when the activity ends.
 - During recording, the menu bar item no longer turns into a left-click stop button. It keeps the normal menu path available, adds a live timer to the status item, and exposes stop plus pause/resume from the active menu section.
 - The recording shortcut (`GlobalShortcutKind.recording`, default `⇧⌘5`) is a start/stop toggle handled in `CaptureViewModel.toggleRecordingFromShortcut(...)`. An optional `GlobalShortcutKind.pauseResumeRecording` ships unbound (seeded into `clearedShortcuts` on first launch) and, when bound via Preferences → Shortcuts → Recording, dispatches to `ScreenRecordingManager.togglePause()` only while a recording is active.
 - When Preferences is opened during an active recording with own-app capture enabled, Notinhas temporarily excludes that Settings window from the stream instead of forcing the user to stop recording first.

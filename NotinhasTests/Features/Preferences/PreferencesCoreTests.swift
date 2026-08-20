@@ -9,17 +9,6 @@
 import XCTest
 
 final class PreferencesCoreTests: XCTestCase {
-    func testCloudUploadFloatingPositionStored_readsValidValueAndFallsBackToDefault() throws {
-        let defaults = try makeDefaults()
-        XCTAssertEqual(CloudUploadFloatingPosition.stored(userDefaults: defaults), .center)
-
-        defaults.set(CloudUploadFloatingPosition.top.rawValue, forKey: PreferencesKeys.cloudUploadsFloatingPosition)
-        XCTAssertEqual(CloudUploadFloatingPosition.stored(userDefaults: defaults), .top)
-
-        defaults.set("invalid", forKey: PreferencesKeys.cloudUploadsFloatingPosition)
-        XCTAssertEqual(CloudUploadFloatingPosition.stored(userDefaults: defaults), .center)
-    }
-
     func testHistoryBackgroundStyleStored_readsValidValueAndFallsBackToDefault() throws {
         let defaults = try makeDefaults()
         XCTAssertEqual(HistoryBackgroundStyle.currentStoredStyle(userDefaults: defaults), .hud)
@@ -76,11 +65,10 @@ final class PreferencesCoreTests: XCTestCase {
             .history,
             .shortcuts,
             .permissions,
-            .cloud,
             .advanced,
         ]
 
-        XCTAssertEqual(tabs.count, 9)
+        XCTAssertEqual(tabs.count, 8)
     }
 
     func testPreferencesNumericPickerValue_sanitizesAndBoundsCustomInput() {

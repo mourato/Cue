@@ -43,8 +43,6 @@ enum AnnotateCommitAction: Equatable {
 enum AnnotateCommitRoute: Equatable {
     case noOp
     case combineDialog
-    case cloudReuploadAndClose
-    case cloudReuploadAndCopy
     case saveAndClose
     case save
     case copyWithoutSourceWrite
@@ -57,15 +55,11 @@ enum AnnotateCommitRouting {
         hasImage: Bool,
         combineSaveNeedsDialog: Bool,
         protectsSourceFromImplicitCombineWrite: Bool,
-        requiresCloudOverwriteConfirmation: Bool,
     ) -> AnnotateCommitRoute {
         switch action {
         case .saveAndClose:
             if combineSaveNeedsDialog {
                 return .combineDialog
-            }
-            if requiresCloudOverwriteConfirmation {
-                return .cloudReuploadAndClose
             }
             return .saveAndClose
 
@@ -74,18 +68,12 @@ enum AnnotateCommitRouting {
             if combineSaveNeedsDialog {
                 return .combineDialog
             }
-            if requiresCloudOverwriteConfirmation {
-                return .cloudReuploadAndClose
-            }
             return .save
 
         case .copy:
             guard hasImage else { return .noOp }
             if protectsSourceFromImplicitCombineWrite {
                 return .copyWithoutSourceWrite
-            }
-            if requiresCloudOverwriteConfirmation {
-                return .cloudReuploadAndCopy
             }
             return .copy
         }
@@ -123,9 +111,6 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                 image: image,
                 url: item.url,
                 quickAccessItemId: item.id,
-                cloudURL: item.cloudURL,
-                cloudKey: item.cloudKey,
-                isCloudStale: item.isCloudStale,
                 appliesDefaultCanvasPresetOnNewImages: false,
             )
             state.restoreEmbeddedImageAssets(from: sessionData.embeddedImageAssetsData)
@@ -158,9 +143,6 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                 image: image,
                 url: item.url,
                 quickAccessItemId: item.id,
-                cloudURL: item.cloudURL,
-                cloudKey: item.cloudKey,
-                isCloudStale: item.isCloudStale,
             )
         }
 
@@ -471,10 +453,6 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         sourceFileAccess = fileAccessManager.beginAccessingURL(url)
     }
 
-    private var requiresCloudOverwriteConfirmation: Bool {
-        state.cloudURL != nil && (state.requiresRenderedOutputForSharing || state.isCloudStale)
-    }
-
     private var shouldCloseAfterDrag: Bool {
         UserDefaults.standard.object(forKey: PreferencesKeys.annotateCloseAfterDrag) as? Bool ?? true
     }
@@ -655,17 +633,12 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
             hasImage: state.hasImage,
             combineSaveNeedsDialog: combineSaveNeedsDialog,
             protectsSourceFromImplicitCombineWrite: protectsSourceFromImplicitCombineWrite,
-            requiresCloudOverwriteConfirmation: requiresCloudOverwriteConfirmation,
         ) {
         case .combineDialog:
             performCombineSave()
-        case .cloudReuploadAndClose:
-            showCloudOverwriteAlert { [weak self] in
-                self?.performCloudReUploadAndClose()
-            }
         case .saveAndClose:
             executeSaveAndClose()
-        case .noOp, .cloudReuploadAndCopy, .save, .copyWithoutSourceWrite, .copy:
+        case .noOp, .save, .copyWithoutSourceWrite, .copy:
             return
         }
     }
@@ -736,7 +709,6 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                             fullResImage: renderedImage,
                             generation: generation,
                         )
-                        QuickAccessManager.shared.markCloudStale(id: itemId)
                     }
                 }
 
@@ -984,7 +956,6 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         saveSessionCache(sessionSnapshot)
         if let itemId = quickAccessItemId {
             QuickAccessManager.shared.updateItemThumbnail(id: itemId, image: renderedImage)
-            QuickAccessManager.shared.markCloudStale(id: itemId)
         }
 
         let capturedState = state
@@ -1074,7 +1045,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
     }
 
     /// Manual combine sessions have `sourceURL` pointing at the first user-picked file.
-    /// Implicit-write paths (copy, drag-out, cloud) must never silently overwrite it with the
+    /// Implicit-write paths (copy, drag-out) must never silently overwrite it with the
     /// stitched render — they route to explicit or no-write alternatives instead. Scoped to
     /// combine mode so ordinary single-image manual annotate saves still overwrite as expected.
     private var protectsSourceFromImplicitCombineWrite: Bool {
@@ -1082,26 +1053,20 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
     }
 
     /// Silent save — renders once, updates thumbnail instantly, closes window, saves in background
-    /// If previously uploaded to cloud, gate behind overwrite confirmation.
     private func performSave() {
         switch AnnotateCommitRouting.route(
             for: .save,
             hasImage: state.hasImage,
             combineSaveNeedsDialog: combineSaveNeedsDialog,
             protectsSourceFromImplicitCombineWrite: protectsSourceFromImplicitCombineWrite,
-            requiresCloudOverwriteConfirmation: requiresCloudOverwriteConfirmation,
         ) {
         case .noOp:
             return
         case .combineDialog:
             performCombineSave()
-        case .cloudReuploadAndClose:
-            showCloudOverwriteAlert { [weak self] in
-                self?.performCloudReUploadAndClose()
-            }
         case .save:
             executeSave()
-        case .saveAndClose, .cloudReuploadAndCopy, .copyWithoutSourceWrite, .copy:
+        case .saveAndClose, .copyWithoutSourceWrite, .copy:
             return
         }
     }
@@ -1126,7 +1091,6 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
             saveSessionCache(sessionSnapshot)
             if let renderedImage, let itemId = quickAccessItemId {
                 QuickAccessManager.shared.updateItemThumbnail(id: itemId, image: renderedImage)
-                QuickAccessManager.shared.markCloudStale(id: itemId)
             }
 
             // Close window instantly
@@ -1241,24 +1205,18 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
     }
 
     /// Copy = render once, copy to clipboard, update thumbnail, close, save in background.
-    /// If previously uploaded to cloud and output changed, gate behind overwrite confirmation.
     private func performCopy() {
         switch AnnotateCommitRouting.route(
             for: .copy,
             hasImage: state.hasImage,
             combineSaveNeedsDialog: combineSaveNeedsDialog,
             protectsSourceFromImplicitCombineWrite: protectsSourceFromImplicitCombineWrite,
-            requiresCloudOverwriteConfirmation: requiresCloudOverwriteConfirmation,
         ) {
         case .noOp:
             return
         case .copyWithoutSourceWrite, .copy:
             executeCopy()
-        case .cloudReuploadAndCopy:
-            showCloudOverwriteAlert { [weak self] in
-                self?.performCloudReUploadCopyAndClose()
-            }
-        case .combineDialog, .cloudReuploadAndClose, .saveAndClose, .save:
+        case .combineDialog, .saveAndClose, .save:
             return
         }
     }
@@ -1269,8 +1227,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         // Render once, use for everything
         let renderedImage = AnnotateExporter.renderFinalImage(state: state)
 
-        // Manual combine sessions upload a temporary render, so any existing cloud URL may
-        // point at an older stitch. Copy the current render and close without touching source.
+        // Manual combine sessions copy the current render and close without touching the source.
         if protectsSourceFromImplicitCombineWrite {
             if let renderedImage {
                 ClipboardHelper.copyImage(renderedImage)
@@ -1280,13 +1237,8 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
             return
         }
 
-        // Copy to clipboard — cloud link (text) if available, otherwise image
-        if let cloudURL = state.cloudURL {
-            let pasteboard = NSPasteboard.general
-            pasteboard.clearContents()
-            pasteboard.setString(cloudURL.absoluteString, forType: .string)
-            SoundManager.play("Pop")
-        } else if let renderedImage {
+        // Copy the rendered image to the clipboard.
+        if let renderedImage {
             ClipboardHelper.copyImage(renderedImage)
             SoundManager.play("Pop")
         }
@@ -1299,7 +1251,6 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         }
         if let renderedImage, let itemId = quickAccessItemId {
             QuickAccessManager.shared.updateItemThumbnail(id: itemId, image: renderedImage)
-            QuickAccessManager.shared.markCloudStale(id: itemId)
         }
 
         // Close instantly, save in background
@@ -1317,215 +1268,6 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                     sourceURL: sourceURL,
                     sessionSnapshot: sessionSnapshot,
                 )
-            }
-        }
-    }
-
-    // MARK: - Cloud Overwrite
-
-    /// Show alert asking user to confirm overwrite of cloud file.
-    /// "Overwrite" → executes onOverwrite closure. "Cancel" → does nothing (window stays open).
-    private func showCloudOverwriteAlert(onOverwrite: @escaping () -> Void) {
-        guard let window else {
-            onOverwrite()
-            return
-        }
-
-        let alert = NSAlert()
-        alert.messageText = L10n.AnnotateUI.overwriteCloudFileTitle
-        alert.informativeText = L10n.AnnotateUI.overwriteCloudFileOnSaveMessage
-        alert.alertStyle = .warning
-        alert.addButton(withTitle: L10n.Common.overwrite)
-        alert.addButton(withTitle: L10n.Common.cancel)
-
-        alert.beginSheetModal(for: window) { response in
-            if response == .alertFirstButtonReturn {
-                onOverwrite()
-            }
-            // Cancel: do nothing — window stays open, changes preserved but not committed
-        }
-    }
-
-    /// Save locally + re-upload to cloud + update QA card + close window.
-    /// Used when user confirms overwrite on Save or Close-Save.
-    private func performCloudReUploadAndClose() {
-        guard let sourceURL = state.sourceURL else { return }
-
-        // Render once
-        let sessionSnapshot = makeSessionSnapshot()
-        let renderedImage = AnnotateExporter.renderFinalImage(state: state)
-
-        // Save to disk first (so cloud upload reads the updated file)
-        guard let renderedImage,
-              AnnotateExporter.saveToFile(image: renderedImage, state: state)
-        else {
-            showSaveErrorAlert()
-            return
-        }
-        Self.persistCommittedSession(sessionSnapshot, for: sourceURL)
-
-        let oldCloudKey = state.cloudKey
-        let capturedState = state
-        let itemId = quickAccessItemId
-
-        // Re-upload to cloud
-        Task {
-            do {
-                let fileAccess = SandboxFileAccessManager.shared.beginAccessingURL(sourceURL)
-                defer { fileAccess.stop() }
-                DiagnosticLogger.shared.log(
-                    .info,
-                    .cloud,
-                    "Annotate cloud re-upload started",
-                    context: ["fileName": sourceURL.lastPathComponent, "mode": "save"],
-                )
-
-                let result = try await CloudManager.shared.upload(fileURL: sourceURL)
-
-                // Delete old cloud file in background
-                if let oldKey = oldCloudKey {
-                    Task.detached(priority: .utility) {
-                        do {
-                            try await CloudManager.shared.deleteByKey(key: oldKey)
-                        } catch {
-                            DiagnosticLogger.shared.logError(.cloud, error, "Annotate old cloud object cleanup failed")
-                        }
-                    }
-                }
-
-                // Update state
-                capturedState.cloudURL = result.publicURL
-                capturedState.cloudKey = result.key
-                capturedState.markAsSaved()
-                capturedState.isCloudStale = false
-
-                // Update QuickAccess item: thumbnail first, then setCloudURL to reset stale
-                if let itemId {
-                    QuickAccessManager.shared.updateItemThumbnail(id: itemId, image: renderedImage)
-                    QuickAccessManager.shared.setCloudURL(id: itemId, url: result.publicURL, key: result.key)
-                }
-
-                // Auto-copy cloud link
-                let pasteboard = NSPasteboard.general
-                pasteboard.clearContents()
-                pasteboard.setString(result.publicURL.absoluteString, forType: .string)
-
-                SoundManager.play("Pop")
-                DiagnosticLogger.shared.log(
-                    .info,
-                    .cloud,
-                    "Annotate cloud re-upload completed",
-                    context: ["fileName": sourceURL.lastPathComponent, "mode": "save"],
-                )
-                self.forceClose()
-            } catch {
-                DiagnosticLogger.shared.logError(
-                    .cloud,
-                    error,
-                    "Annotate cloud re-upload failed; falling back to local save",
-                    context: ["fileName": sourceURL.lastPathComponent, "mode": "save"],
-                )
-                // Fall back to local save only
-                capturedState.markAsSaved()
-                if let itemId {
-                    QuickAccessManager.shared.updateItemThumbnail(id: itemId, image: renderedImage)
-                }
-                await PostCaptureActionHandler.shared.copyEditedCaptureToClipboardIfEnabled(
-                    for: .screenshot,
-                    url: sourceURL,
-                )
-                self.forceClose()
-            }
-        }
-    }
-
-    /// Save locally + re-upload to cloud + copy cloud URL + close window.
-    /// Used when user confirms overwrite on Copy (⌘⇧C).
-    private func performCloudReUploadCopyAndClose() {
-        guard let sourceURL = state.sourceURL else { return }
-
-        // Render once
-        let sessionSnapshot = makeSessionSnapshot()
-        let renderedImage = AnnotateExporter.renderFinalImage(state: state)
-
-        // Save to disk first
-        guard let renderedImage,
-              AnnotateExporter.saveToFile(image: renderedImage, state: state)
-        else {
-            showSaveErrorAlert()
-            return
-        }
-        Self.persistCommittedSession(sessionSnapshot, for: sourceURL)
-
-        let oldCloudKey = state.cloudKey
-        let capturedState = state
-        let itemId = quickAccessItemId
-
-        // Re-upload to cloud
-        Task {
-            do {
-                let fileAccess = SandboxFileAccessManager.shared.beginAccessingURL(sourceURL)
-                defer { fileAccess.stop() }
-                DiagnosticLogger.shared.log(
-                    .info,
-                    .cloud,
-                    "Annotate cloud re-upload started",
-                    context: ["fileName": sourceURL.lastPathComponent, "mode": "copy"],
-                )
-
-                let result = try await CloudManager.shared.upload(fileURL: sourceURL)
-
-                // Delete old cloud file
-                if let oldKey = oldCloudKey {
-                    Task.detached(priority: .utility) {
-                        do {
-                            try await CloudManager.shared.deleteByKey(key: oldKey)
-                        } catch {
-                            DiagnosticLogger.shared.logError(.cloud, error, "Annotate old cloud object cleanup failed")
-                        }
-                    }
-                }
-
-                // Update state
-                capturedState.cloudURL = result.publicURL
-                capturedState.cloudKey = result.key
-                capturedState.markAsSaved()
-                capturedState.isCloudStale = false
-
-                // Update QuickAccess item: thumbnail first, then setCloudURL to reset stale
-                if let itemId {
-                    QuickAccessManager.shared.updateItemThumbnail(id: itemId, image: renderedImage)
-                    QuickAccessManager.shared.setCloudURL(id: itemId, url: result.publicURL, key: result.key)
-                }
-
-                // Copy cloud link to clipboard
-                let pasteboard = NSPasteboard.general
-                pasteboard.clearContents()
-                pasteboard.setString(result.publicURL.absoluteString, forType: .string)
-
-                SoundManager.play("Pop")
-                DiagnosticLogger.shared.log(
-                    .info,
-                    .cloud,
-                    "Annotate cloud re-upload completed",
-                    context: ["fileName": sourceURL.lastPathComponent, "mode": "copy"],
-                )
-                self.forceClose()
-            } catch {
-                DiagnosticLogger.shared.logError(
-                    .cloud,
-                    error,
-                    "Annotate cloud re-upload failed; falling back to image clipboard",
-                    context: ["fileName": sourceURL.lastPathComponent, "mode": "copy"],
-                )
-                // Fall back: copy image to clipboard, close
-                ClipboardHelper.copyImage(renderedImage)
-                capturedState.markAsSaved()
-                if let itemId {
-                    QuickAccessManager.shared.updateItemThumbnail(id: itemId, image: renderedImage)
-                }
-                SoundManager.play("Pop")
-                self.forceClose()
             }
         }
     }

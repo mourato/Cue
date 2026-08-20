@@ -748,14 +748,13 @@ final class QuickAccessCoreTests: XCTestCase {
             .dismiss,
             .delete,
             .edit,
-            .uploadToCloud,
             .uploadToImgBB,
             .pinToScreen,
         ]
 
         XCTAssertEqual(
             QuickAccessActionKind.contextMenuOrder(from: configuredOrder),
-            [.copy, .saveOrOpen, .edit, .uploadToCloud, .uploadToImgBB, .pinToScreen, .dismiss, .delete],
+            [.copy, .saveOrOpen, .edit, .uploadToImgBB, .pinToScreen, .dismiss, .delete],
         )
     }
 
@@ -782,7 +781,7 @@ final class QuickAccessCoreTests: XCTestCase {
 
         XCTAssertEqual(
             store.actionOrder,
-            [.delete, .copy, .saveOrOpen, .dismiss, .edit, .uploadToCloud, .uploadToImgBB, .pinToScreen],
+            [.delete, .copy, .saveOrOpen, .dismiss, .edit, .uploadToImgBB, .pinToScreen],
         )
         XCTAssertEqual(store.orderedActions(includeDisabled: false), [.copy])
     }
@@ -810,30 +809,25 @@ final class QuickAccessCoreTests: XCTestCase {
         let defaults = makeIsolatedDefaults()
         let store = makeActionConfigurationStore(defaults: defaults)
 
-        store.setEnabled(.uploadToCloud, enabled: false)
         store.moveAction(from: IndexSet(integer: 0), to: 3)
 
-        XCTAssertFalse(store.isEnabled(.uploadToCloud))
         XCTAssertEqual(
             store.actionOrder,
-            [.saveOrOpen, .dismiss, .copy, .delete, .edit, .uploadToCloud, .uploadToImgBB, .pinToScreen],
+            [.saveOrOpen, .dismiss, .copy, .delete, .edit, .uploadToImgBB, .pinToScreen],
         )
         XCTAssertEqual(store.slotAssignments, QuickAccessActionSlot.defaultAssignments)
 
         let reloadedStore = makeActionConfigurationStore(defaults: defaults)
-        XCTAssertFalse(reloadedStore.isEnabled(.uploadToCloud))
         XCTAssertEqual(reloadedStore.actionOrder, store.actionOrder)
         XCTAssertEqual(reloadedStore.slotAssignments, QuickAccessActionSlot.defaultAssignments)
-
-        reloadedStore.assignAction(.uploadToCloud, to: .centerTop)
         reloadedStore.clearSlot(.bottomLeading)
 
-        XCTAssertEqual(reloadedStore.action(in: .centerTop), .uploadToCloud)
+        XCTAssertEqual(reloadedStore.action(in: .centerTop), .copy)
         XCTAssertEqual(reloadedStore.action(in: .bottomTrailing), .uploadToImgBB)
         XCTAssertNil(reloadedStore.action(in: .bottomLeading))
 
         let placementReload = makeActionConfigurationStore(defaults: defaults)
-        XCTAssertEqual(placementReload.action(in: .centerTop), .uploadToCloud)
+        XCTAssertEqual(placementReload.action(in: .centerTop), .copy)
         XCTAssertEqual(placementReload.action(in: .bottomTrailing), .uploadToImgBB)
         XCTAssertNil(placementReload.action(in: .bottomLeading))
 

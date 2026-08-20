@@ -48,7 +48,6 @@ All 19 `GlobalShortcutKind`s with shipping defaults (verified in `KeyboardShortc
 | `objectCutout` | Object Cutout | ⌘⇧1 |
 | `annotate` | Open Annotate | ⌘⇧A |
 | `videoEditor` | Open Video Editor | ⌘⇧E |
-| `cloudUploads` | Cloud Uploads window | ⌘⇧L |
 | `shortcutList` | Shortcut cheat sheet overlay | ⌘⇧K |
 | `history` | History panel toggle | ⌘⇧H |
 | `pauseResumeRecording` | Pause/Resume recording | **unbound** (recommended ⌘⇧Space) |
@@ -101,7 +100,6 @@ All 19 `GlobalShortcutKind`s with shipping defaults (verified in `KeyboardShortc
   | `copyAndClose` | ⌘⇧C | `annotate.action.copyAndClose` |
   | `toggleSidebar` (Add background) | ⌘B | `annotate.action.toggleSidebar` |
   | `togglePin` | ⌃⌘P | `annotate.action.togglePin` |
-  | `cloudUpload` | ⌘U | `annotate.action.cloudUpload` |
   | `autoRedactSensitiveData` | unbound | `annotate.action.autoRedactSensitiveData` |
 
 - Action disable set: `shortcuts.disabledAnnotateActionShortcuts`.
@@ -148,7 +146,6 @@ Dispatch: AppleEvent `kAEGetURL` → `AppDelegate` (queued pre-launch) → `AppC
 | `notinhas://open/annotate` | Open empty Annotate editor |
 | `notinhas://open/combine` | Combine images (see params below) |
 | `notinhas://open/video-editor` | Open empty Video Editor |
-| `notinhas://open/cloud-uploads` | Toggle Cloud Uploads window |
 | `notinhas://open/history` | Toggle History panel |
 | `notinhas://show/shortcuts` | Toggle shortcut cheat sheet |
 | `notinhas://settings` / `notinhas://settings?tab=<tab>` | Open Settings, optionally to a tab |
@@ -159,7 +156,7 @@ Dispatch: AppleEvent `kAEGetURL` → `AppDelegate` (queued pre-launch) → `AppC
   open 'notinhas://open/combine?file=/tmp/first.png&file=/tmp/second.png'
   ```
 
-- Settings tabs: `general`, `capture`, `annotate`, `quick-access`, `history`, `shortcuts`, `permissions`, `cloud`, `advanced`. Also accepted as path form (`notinhas://settings/capture`).
+- Settings tabs: `general`, `capture`, `annotate`, `quick-access`, `history`, `shortcuts`, `permissions`, `uploads`, `advanced`. Also accepted as path form (`notinhas://settings/capture`).
 - Aliases exist for most routes — e.g. `capture/focused-window`, `capture/window`, `record/window`, `screenshot/area`, `ocr`, `annotate`, `combine`, `uploads`, `history`, `shortcuts`, `preferences`, plus tab aliases (`screenshots`, `privacy`, `config`, `toml`, …). Full alias list: `NotinhasDeepLinkAction.init?(url:)` in `Notinhas/App/NotinhasDeepLinkHandler.swift`.
 
 ## Related docs

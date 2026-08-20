@@ -163,7 +163,6 @@ final class NotinhasConfigurationService {
 
         let result = importTOML(source)
         if !result.hasErrors {
-            CloudManager.shared.clearConfiguration()
             markCurrentFileAppliedIfLatest(source, operationID: operationID)
         }
         return result

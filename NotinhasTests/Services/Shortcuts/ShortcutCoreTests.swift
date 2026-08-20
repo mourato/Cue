@@ -23,7 +23,6 @@ final class ShortcutCoreTests: XCTestCase {
         XCTAssertEqual(ShortcutConfig.defaultObjectCutout.keyCode, UInt32(kVK_ANSI_1))
         XCTAssertEqual(ShortcutConfig.defaultAnnotate.keyCode, UInt32(kVK_ANSI_A))
         XCTAssertEqual(ShortcutConfig.defaultVideoEditor.keyCode, UInt32(kVK_ANSI_E))
-        XCTAssertEqual(ShortcutConfig.defaultCloudUploads.keyCode, UInt32(kVK_ANSI_L))
         XCTAssertEqual(ShortcutConfig.defaultShortcutList.keyCode, UInt32(kVK_ANSI_K))
         XCTAssertEqual(ShortcutConfig.defaultHistory.keyCode, UInt32(kVK_ANSI_H))
 

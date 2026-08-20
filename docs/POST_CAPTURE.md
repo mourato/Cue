@@ -22,7 +22,7 @@ Post-capture routing is everything that happens after a capture file exists: des
 | `openAnnotate` | OFF (screenshot only) | n/a | Auto-opens the Annotate editor |
 
 - The matrix is stored as `[AfterCaptureAction: [CaptureType: Bool]]` JSON-encoded in `UserDefaults` under the `afterCaptureActions` key via `PreferencesManager`; unset entries fall back to the defaults above. See [`PREFERENCES.md`](PREFERENCES.md).
-- `AfterCaptureAction.uploadToCloud` was **removed** at commit `dd4ccd5` (with its TOML key `upload_to_cloud`). Cloud upload is now manual-only: Quick Access cards, Annotate, Video Editor, and History surfaces, gated on `CloudManager.isConfigured` plus the `uploadToCloud` Quick Access action configuration. Nothing in `PostCaptureActionHandler` auto-uploads. See [`CLOUD.md`](CLOUD.md) and [`CONFIGURATION.md`](CONFIGURATION.md).
+- BYO cloud upload was retired by Plan 089. Post-capture actions are local save/copy/export; ImgBB remains an explicit sharing action from Annotate and Quick Access. See [`CLOUD.md`](CLOUD.md) and [`CONFIGURATION.md`](CONFIGURATION.md).
 
 ```mermaid
 flowchart TD
@@ -104,8 +104,8 @@ Batch variant `handleScreenshotCaptures(urls:)`: filters missing files, delegate
 
 ## Quick Access Handoff
 
-- Quick Access cards expose hover actions and a matching context menu (copy, save/open, edit, cloud upload, dismiss, delete/trash); temp captures show Save, saved captures keep Open in the same slot even when the after-capture Save preference is off. Action visibility, order, and card slots come from `QuickAccessActionConfigurationStore`. See [`QUICK_ACCESS.md`](QUICK_ACCESS.md).
-- Card countdowns **pause** while the item is being edited (Annotate/Video Editor), converted to GIF, or uploaded to cloud, and resume when the activity ends.
+- Quick Access cards expose hover actions and a matching context menu (copy, save/open, edit, ImgBB, dismiss, delete/trash); temp captures show Save, saved captures keep Open in the same slot even when the after-capture Save preference is off. Action visibility, order, and card slots come from `QuickAccessActionConfigurationStore`. See [`QUICK_ACCESS.md`](QUICK_ACCESS.md).
+- Card countdowns **pause** while the item is being edited (Annotate/Video Editor) or converted to GIF, and resume when the activity ends.
 - GIF output is a two-step flow: record video → placeholder Quick Access card → `GIFConverter` → card URL swapped to the GIF → `handleVideoCapture(skipQuickAccess: true)` finishes routing. See [`RECORDING.md`](RECORDING.md).
 - Screenshot pin opens an independent always-on-top pin window (zoom, drag-to-app, click-through lock mode). See [`QUICK_ACCESS.md`](QUICK_ACCESS.md).
 
@@ -137,7 +137,7 @@ Batch variant `handleScreenshotCaptures(urls:)`: filters missing files, delegate
 - [`QUICK_ACCESS.md`](QUICK_ACCESS.md) — card stack, actions, countdown, pin windows
 - [`ANNOTATE.md`](ANNOTATE.md) — preset auto-apply and editable sessions
 - [`HISTORY.md`](HISTORY.md) — history records, retention, cache clearing
-- [`CLOUD.md`](CLOUD.md) — manual cloud upload entry points
+- [`CLOUD.md`](CLOUD.md) — retired BYO cloud boundary and retained ImgBB sharing
 - [`PREFERENCES.md`](PREFERENCES.md) — after-capture matrix and export folder settings
 - [`CONFIGURATION.md`](CONFIGURATION.md) — TOML keys for after-capture actions
 - [`LOCALIZATION.md`](LOCALIZATION.md) — ownership of post-capture copy

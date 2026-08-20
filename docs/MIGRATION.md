@@ -31,7 +31,8 @@ Notinhas is a separate macOS app with its own bundle identifier, URL scheme, and
 - **UserDefaults / preferences** — keys imported from legacy preference domains (`com.trongduong.snapzy`, `com.trongduong.snapzy.debug`) and sandbox preference plists.
 - **Logs** — retained diagnostic files from `~/Library/Logs/Snapzy/` into `~/Library/Logs/Notinhas/`; copied legacy filenames are retained, while new logs use the `notinhas_` prefix.
 - **TOML config** — `~/.config/snapzy/` tree is merged into `~/.config/notinhas/` without overwriting existing destination files.
-- **Keychain** — cloud credential items moved from legacy services to `com.mourato.notinhas.cloud`.
+- **Keychain** — ImgBB credentials remain readable through the existing
+  migration adapter. BYO cloud credential items are not deleted or rewritten.
 
 ### Behavior guarantees
 
@@ -89,6 +90,17 @@ After migration:
 | Empty history after upgrade | Confirm legacy `~/Library/Application Support/Snapzy/snapzy.db` exists; delete marker file only if you intend to re-run migration and destination DB is absent |
 | Permissions still fail | Reset TCC for `com.mourato.notinhas`, quit System Settings, relaunch Notinhas |
 | Config not applied | Grant config folder access in Settings → Advanced; confirm `~/.config/notinhas/config.toml` |
-| Cloud upload fails | Re-enter or re-import cloud credentials (Keychain service changed) |
+| Old cloud settings are present | They are ignored; local sharing and ImgBB remain available |
+
+## Retired BYO cloud settings
+
+Plan 089 retires AWS S3, Cloudflare R2, and Google Drive uploads. Importing an
+older configuration tolerates and ignores its `[cloud]` section. Legacy
+`cloudURL` and `cloudKey` fields remain migration-only so old local records can
+decode, but are not used for new uploads or UI actions.
+
+This migration is non-destructive: Notinhas does not delete remote objects,
+Keychain items, or configuration files. Users who need old cloud data must
+manage it with the provider directly.
 
 For engineering detail see `Notinhas/Services/Migration/NotinhasIdentityMigrationService.swift` and `NotinhasTests/Services/Migration/`.

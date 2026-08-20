@@ -17,9 +17,9 @@ Persistent history of screenshots, videos, and GIFs backed by GRDB SQLite, surfa
 
 ## Card Actions
 
-- Context menu (`HistoryContextMenu`): Open in Finder, Copy, Edit, Upload to Cloud (only when `CloudManager.isConfigured`; live overlay states via `HistoryCloudUploadOverlayView`), Delete — destructive last.
+- Context menu (`HistoryContextMenu`): Open in Finder, Copy, Edit, Delete — destructive last. Cloud upload affordances were removed.
 - Double-click opens the editor; cards expose a Restore pill.
-- Cloud upload here is manual; commit `dd4ccd5` removed only the after-capture auto-upload preference option, not this surface.
+- History remains local capture history; it no longer uploads captures.
 
 ## Restore Flow
 
@@ -69,7 +69,7 @@ Settings → History: enable toggle, floating panel (position, scale, max items,
 
 ## Dead / Legacy Code
 
-Unused (kept in tree): `HistoryMainView` (except `HistoryBackdropView`, still used by the floating panel + preferences + cloud history), `HistoryItemView`, `HistoryToolbar`, `HistoryFilterBar`, `HistoryGridView`. Live card views are `HistoryCardView` / `HistoryExpandedCaptureCardView` / `HistoryCompactCarouselView`.
+Unused (kept in tree): `HistoryMainView` (except `HistoryBackdropView`, still used by the floating panel and preferences), `HistoryItemView`, `HistoryToolbar`, `HistoryFilterBar`, `HistoryGridView`. Live card views are `HistoryCardView` / `HistoryExpandedCaptureCardView` / `HistoryCompactCarouselView`.
 
 ## Related docs
 
@@ -77,5 +77,5 @@ Unused (kept in tree): `HistoryMainView` (except `HistoryBackdropView`, still us
 - [ANNOTATE.md](ANNOTATE.md) — editable session restore, sidecar format
 - [VIDEO_EDITOR.md](VIDEO_EDITOR.md) — video/GIF restore target
 - [POST_CAPTURE.md](POST_CAPTURE.md) — where history records are created
-- [CLOUD.md](CLOUD.md) — upload records sharing `notinhas.db`
+- [CLOUD.md](CLOUD.md) — ImgBB sharing and the retired upload-record boundary
 - [PREFERENCES.md](PREFERENCES.md) — settings keys

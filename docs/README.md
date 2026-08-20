@@ -43,7 +43,7 @@ Notinhas optimizes **capture → annotate with numbered pins/notes → clipboard
 
 | Doc | Topic |
 | --- | --- |
-| [CLOUD.md](CLOUD.md) | Cloud upload (optional) |
+| [CLOUD.md](CLOUD.md) | ImgBB sharing and retired BYO cloud boundary |
 | [LOCALIZATION.md](LOCALIZATION.md) | String catalogs |
 
 ## Runtime overview

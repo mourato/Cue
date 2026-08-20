@@ -9,6 +9,8 @@ import Foundation
 
 @MainActor
 extension NotinhasConfigurationImporter {
+    static let retiredQuickAccessActionRawValues: Set<String> = ["uploadToCloud"]
+
     static func collectShortcuts(
         _ reader: inout NotinhasConfigurationReader,
         mutations: inout [() -> Void],
@@ -108,6 +110,9 @@ extension NotinhasConfigurationImporter {
             guard let raw = reader.string(["quick_access", "slots", slot.configKey]) else { continue }
             sawValue = true
             if raw.isEmpty {
+                continue
+            }
+            if retiredQuickAccessActionRawValues.contains(raw) {
                 continue
             }
             guard let action = QuickAccessActionKind(rawValue: raw) else {
@@ -369,8 +374,6 @@ private extension KeyboardShortcutManager {
             setAnnotateShortcut(config)
         case .videoEditor:
             setVideoEditorShortcut(config)
-        case .cloudUploads:
-            setCloudUploadsShortcut(config)
         case .shortcutList:
             setShortcutListShortcut(config)
         case .ocr:
@@ -395,8 +398,6 @@ private extension AnnotateShortcutManager {
             setToggleSidebarShortcut(config)
         case .togglePin:
             setTogglePinShortcut(config)
-        case .cloudUpload:
-            setCloudUploadShortcut(config)
         case .autoRedactSensitiveData:
             setAutoRedactSensitiveDataShortcut(config)
         }
