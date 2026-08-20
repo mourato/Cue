@@ -10,7 +10,7 @@ reviewer required for compile verification.
 
 ## Why
 
-`NSWindow+WindowSpacing.swift` exposes configuration fields and helpers that
+`View+WindowSpacing.swift` exposes configuration fields and helpers that
 have no callers. Keep the four modifiers actually used by Annotate/Video UI;
 delete the API surface that invites configuration of nonexistent layout.
 

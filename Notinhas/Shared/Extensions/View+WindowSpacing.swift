@@ -1,5 +1,5 @@
 //
-//  NSWindow+WindowSpacing.swift
+//  View+WindowSpacing.swift
 //  Notinhas
 //
 //  Unified window spacing configuration for toolbar, content, and bottom bar
