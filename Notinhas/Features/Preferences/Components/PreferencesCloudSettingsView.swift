@@ -6,38 +6,43 @@
 import SwiftUI
 
 struct CloudSettingsView: View {
-    @ObservedObject private var credentialStore = NotinhasImgBBCredentialStore.shared
-    @State private var apiKey = ""
+    @ObservedObject private var uploadConfiguration = NotinhasUploadConfigurationStore.shared
+    @State private var credential = ""
     @State private var isEditing = false
     @State private var errorMessage: String?
 
     var body: some View {
         Form {
             Section(L10n.CloudSettings.providerSection) {
-                Text(L10n.CloudSettings.imgbbDescription)
+                Picker(L10n.CloudSettings.provider, selection: providerBinding) {
+                    ForEach(NotinhasUploadProvider.allCases) { provider in
+                        Text(provider.name).tag(provider)
+                    }
+                }
+
+                Text(description)
                     .foregroundStyle(.secondary)
 
-                if credentialStore.isConfigured, !isEditing {
-                    Text(credentialStore.maskedAPIKey)
+                if uploadConfiguration.isConfigured, !isEditing {
+                    Text(uploadConfiguration.maskedCredential)
                         .textSelection(.enabled)
                     HStack {
                         Button(L10n.CloudSettings.edit) {
-                            apiKey = credentialStore.apiKey ?? ""
+                            credential = uploadConfiguration.credential ?? ""
                             isEditing = true
                         }
                         Button(L10n.CloudSettings.reset, role: .destructive) {
-                            credentialStore.clear()
-                            apiKey = ""
+                            clearCredential()
                         }
                     }
                 } else {
-                    SecureField(L10n.CloudSettings.imgbbAPIKeyTitle, text: $apiKey)
+                    SecureField(credentialTitle, text: $credential)
                         .textFieldStyle(.roundedBorder)
                     HStack {
                         Button(L10n.Common.save) { save() }
                         if isEditing {
                             Button(L10n.Common.cancel) {
-                                apiKey = ""
+                                credential = ""
                                 isEditing = false
                             }
                         }
@@ -66,12 +71,50 @@ struct CloudSettingsView: View {
 
     private func save() {
         do {
-            try credentialStore.save(apiKey: apiKey)
-            apiKey = ""
+            switch uploadConfiguration.provider {
+            case .imgbb:
+                try uploadConfiguration.imgbb.save(apiKey: credential)
+            case .imageKit:
+                try uploadConfiguration.imageKit.save(privateKey: credential)
+            }
+            credential = ""
             isEditing = false
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+
+    private var providerBinding: Binding<NotinhasUploadProvider> {
+        Binding(
+            get: { uploadConfiguration.provider },
+            set: {
+                uploadConfiguration.select($0)
+                credential = ""
+                isEditing = false
+            },
+        )
+    }
+
+    private var description: String {
+        switch uploadConfiguration.provider {
+        case .imgbb: L10n.CloudSettings.imgbbDescription
+        case .imageKit: L10n.CloudSettings.imageKitDescription
+        }
+    }
+
+    private var credentialTitle: String {
+        switch uploadConfiguration.provider {
+        case .imgbb: L10n.CloudSettings.imgbbAPIKeyTitle
+        case .imageKit: L10n.CloudSettings.imageKitPrivateKeyTitle
+        }
+    }
+
+    private func clearCredential() {
+        switch uploadConfiguration.provider {
+        case .imgbb: uploadConfiguration.imgbb.clear()
+        case .imageKit: uploadConfiguration.imageKit.clear()
+        }
+        credential = ""
     }
 }
 

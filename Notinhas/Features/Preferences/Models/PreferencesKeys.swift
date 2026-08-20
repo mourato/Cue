@@ -165,4 +165,5 @@ enum PreferencesKeys {
     static let uploadImageFormat = "uploads.imageFormat"
     static let uploadMaximumDimension = "uploads.maximumDimension"
     static let uploadJPEGQuality = "uploads.jpegQuality"
+    static let uploadProvider = "uploads.provider"
 }

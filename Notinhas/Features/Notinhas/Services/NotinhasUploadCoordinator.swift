@@ -8,29 +8,37 @@ final class NotinhasUploadCoordinator: ObservableObject {
     @Published private(set) var lastUploadedURL: String?
     @Published private(set) var lastErrorMessage: String?
 
-    private let uploadService: NotinhasImgBBUploadService
+    private let configuration: NotinhasUploadConfigurationStore
+    private let imgbbService: NotinhasImgBBUploadService
+    private let imageKitService: NotinhasImageKitUploadService
 
-    init(uploadService: NotinhasImgBBUploadService = .shared) {
-        self.uploadService = uploadService
+    init(
+        configuration: NotinhasUploadConfigurationStore = .shared,
+        imgbbService: NotinhasImgBBUploadService = .shared,
+        imageKitService: NotinhasImageKitUploadService = .shared,
+    ) {
+        self.configuration = configuration
+        self.imgbbService = imgbbService
+        self.imageKitService = imageKitService
     }
 
-    func upload(finalImage: NSImage, apiKey: String) async -> String? {
+    func upload(finalImage: NSImage) async -> String? {
         guard let imageSnapshot = finalImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
-            lastErrorMessage = NotinhasL10n.imgbbInvalidImageData
+            lastErrorMessage = invalidImageMessage
             return nil
         }
 
         let settings = NotinhasUploadEncodingSettings.current()
-        return await performUpload(apiKey: apiKey) {
+        return await performUpload {
             try await Task.detached(priority: .userInitiated) {
                 try NotinhasUploadImageEncoder.encode(image: imageSnapshot, settings: settings)
             }.value
         }
     }
 
-    func upload(fileURL: URL, apiKey: String) async -> String? {
+    func upload(fileURL: URL) async -> String? {
         let settings = NotinhasUploadEncodingSettings.current()
-        return await performUpload(apiKey: apiKey) {
+        return await performUpload {
             try await Task.detached(priority: .userInitiated) {
                 try NotinhasUploadImageEncoder.encode(fileURL: fileURL, settings: settings)
             }.value
@@ -38,21 +46,30 @@ final class NotinhasUploadCoordinator: ObservableObject {
     }
 
     private func performUpload(
-        apiKey: String,
         encoding: @escaping @Sendable () async throws -> NotinhasEncodedImage,
     ) async -> String? {
+        let provider = configuration.provider
+        guard let credential = configuration.credential else {
+            lastErrorMessage = missingCredentialMessage(for: provider)
+            return nil
+        }
         isUploading = true
         lastErrorMessage = nil
         defer { isUploading = false }
 
         do {
             let encodedImage = try await encoding()
-            let result = try await uploadService.upload(image: encodedImage, apiKey: apiKey)
-            lastUploadedURL = result.link
-            return result.link
+            let link: String = switch provider {
+            case .imgbb:
+                try await imgbbService.upload(image: encodedImage, apiKey: credential).link
+            case .imageKit:
+                try await imageKitService.upload(image: encodedImage, privateKey: credential).url
+            }
+            lastUploadedURL = link
+            return link
         } catch let error as NotinhasUploadEncodingError {
             if case .invalidImageData = error {
-                lastErrorMessage = NotinhasL10n.imgbbInvalidImageData
+                lastErrorMessage = invalidImageMessage
             } else {
                 lastErrorMessage = error.localizedDescription
             }
@@ -60,6 +77,17 @@ final class NotinhasUploadCoordinator: ObservableObject {
         } catch {
             lastErrorMessage = error.localizedDescription
             return nil
+        }
+    }
+
+    private var invalidImageMessage: String {
+        L10n.Notinhas.invalidImageData
+    }
+
+    private func missingCredentialMessage(for provider: NotinhasUploadProvider) -> String {
+        switch provider {
+        case .imgbb: NotinhasL10n.imgbbMissingAPIKey
+        case .imageKit: L10n.Notinhas.imageKitMissingPrivateKey
         }
     }
 }

@@ -51,5 +51,7 @@ enum NotinhasL10n {
     static let imgbbUploadFailed = L10n.Notinhas.imgbbUploadFailed
     static let imgbbUploading = L10n.Notinhas.imgbbUploading
     static let imgbbUploadedAndCopied = L10n.Notinhas.imgbbUploadedAndCopied
+    static let imageKitMissingPrivateKey = L10n.Notinhas.imageKitMissingPrivateKey
+    static let imageKitUploadFailed = L10n.Notinhas.imageKitUploadFailed
     static let selected = L10n.Notinhas.selected
 }

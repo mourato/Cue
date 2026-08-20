@@ -48,9 +48,9 @@ struct AnnotateBottomBarView: View {
     @ObservedObject private var annotateShortcutManager = AnnotateShortcutManager.shared
     @ObservedObject private var chromeStore = AnnotateChromeConfigurationStore.shared
 
-    @State private var isImgBBUploading = false
-    @ObservedObject private var imgbbCredentialStore = NotinhasImgBBCredentialStore.shared
-    private let imgbbUploadCoordinator = NotinhasUploadCoordinator()
+    @State private var isUploading = false
+    @ObservedObject private var uploadConfiguration = NotinhasUploadConfigurationStore.shared
+    private let uploadCoordinator = NotinhasUploadCoordinator()
     @State private var measuredLeftWidth: CGFloat = 0
     @State private var measuredRightWidth: CGFloat = 0
 
@@ -333,9 +333,9 @@ struct AnnotateBottomBarView: View {
         }
     }
 
-    private var isImgBBConfigured: Bool {
-        _ = imgbbCredentialStore.revision
-        return imgbbCredentialStore.isConfigured
+    private var isUploadConfigured: Bool {
+        _ = uploadConfiguration.revision
+        return uploadConfiguration.isConfigured
     }
 
     private var annotateActionButtons: some View {
@@ -364,13 +364,13 @@ struct AnnotateBottomBarView: View {
 
         case .uploadToImgBB:
             BottomBarButton(
-                icon: isImgBBUploading ? "hourglass" : "icloud.and.arrow.up",
-                tooltipTitle: isImgBBConfigured ? NotinhasL10n.uploadToImgBB : NotinhasL10n.imgbbMissingAPIKey,
+                icon: isUploading ? "hourglass" : "icloud.and.arrow.up",
+                tooltipTitle: isUploadConfigured ? uploadActionTitle : missingCredentialMessage,
             ) {
-                handleImgBBUpload()
+                handleUpload()
             }
-            .disabled(isImgBBUploading || !isImgBBConfigured)
-            .opacity(isImgBBConfigured ? 1 : 0.5)
+            .disabled(isUploading || !isUploadConfigured)
+            .opacity(isUploadConfigured ? 1 : 0.5)
 
         case .pin:
             let pinKeys = AnnotateOverlayTooltipKeys.actionKeys(for: .togglePin, manager: annotateShortcutManager)
@@ -474,9 +474,9 @@ struct AnnotateBottomBarView: View {
         }
     }
 
-    private func handleImgBBUpload() {
-        guard let apiKey = NotinhasImgBBConfiguration.apiKey else {
-            AppToastManager.shared.show(message: NotinhasL10n.imgbbMissingAPIKey, style: .warning)
+    private func handleUpload() {
+        guard isUploadConfigured else {
+            AppToastManager.shared.show(message: missingCredentialMessage, style: .warning)
             return
         }
         guard let renderedImage = AnnotateExporter.renderFinalImage(state: state) else {
@@ -484,20 +484,19 @@ struct AnnotateBottomBarView: View {
             return
         }
 
-        isImgBBUploading = true
+        isUploading = true
         // Long upload: one toast handle with spinner, then update to terminal success/error.
         let progressToast = AppToastManager.shared.show(
-            message: NotinhasL10n.imgbbUploading,
+            message: uploadingMessage,
             style: .info,
             duration: nil,
             iconMode: .spinner,
         )
 
         Task { @MainActor in
-            defer { isImgBBUploading = false }
-            let link = await imgbbUploadCoordinator.upload(
+            defer { isUploading = false }
+            let link = await uploadCoordinator.upload(
                 finalImage: renderedImage,
-                apiKey: apiKey,
             )
             if let link {
                 let pasteboard = NSPasteboard.general
@@ -507,14 +506,14 @@ struct AnnotateBottomBarView: View {
                 if let progressToast {
                     AppToastManager.shared.update(
                         progressToast,
-                        message: NotinhasL10n.imgbbUploadedAndCopied,
+                        message: uploadedMessage,
                         style: .success,
                     )
                 } else {
-                    AppToastManager.shared.show(message: NotinhasL10n.imgbbUploadedAndCopied, style: .success)
+                    AppToastManager.shared.show(message: uploadedMessage, style: .success)
                 }
             } else {
-                let message = imgbbUploadCoordinator.lastErrorMessage ?? NotinhasL10n.imgbbUploadFailed
+                let message = uploadCoordinator.lastErrorMessage ?? uploadFailedMessage
                 if let progressToast {
                     AppToastManager.shared.update(progressToast, message: message, style: .error)
                 } else {
@@ -522,6 +521,32 @@ struct AnnotateBottomBarView: View {
                 }
             }
         }
+    }
+
+    private var uploadActionTitle: String {
+        "Upload to \(uploadConfiguration.provider.name)"
+    }
+
+    private var missingCredentialMessage: String {
+        switch uploadConfiguration.provider {
+        case .imgbb: NotinhasL10n.imgbbMissingAPIKey
+        case .imageKit: NotinhasL10n.imageKitMissingPrivateKey
+        }
+    }
+
+    private var uploadFailedMessage: String {
+        switch uploadConfiguration.provider {
+        case .imgbb: NotinhasL10n.imgbbUploadFailed
+        case .imageKit: NotinhasL10n.imageKitUploadFailed
+        }
+    }
+
+    private var uploadingMessage: String {
+        L10n.Notinhas.uploadingTo(provider: uploadConfiguration.provider.name)
+    }
+
+    private var uploadedMessage: String {
+        L10n.Notinhas.uploadedAndCopied(provider: uploadConfiguration.provider.name)
     }
 }
 

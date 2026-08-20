@@ -24,11 +24,11 @@ struct QuickAccessCardView: View {
     @State private var isSwiping = false
     @State private var isDismissing = false
     @State private var swipeOffset: CGFloat = 0
-    @State private var isImgBBUploading = false
+    @State private var isUploading = false
     @State private var imgbbUploadError: String?
     @State private var cardScreenFrame: CGRect = .zero
-    @ObservedObject private var imgbbCredentialStore = NotinhasImgBBCredentialStore.shared
-    private let imgbbUploadCoordinator = NotinhasUploadCoordinator()
+    @ObservedObject private var uploadConfiguration = NotinhasUploadConfigurationStore.shared
+    private let uploadCoordinator = NotinhasUploadCoordinator()
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @FocusState private var isCardFocused: Bool
 
@@ -67,7 +67,7 @@ struct QuickAccessCardView: View {
                     }
                 }
             }
-            .alert(NotinhasL10n.imgbbUploadFailed, isPresented: imgbbUploadErrorBinding) {
+            .alert(uploadFailedMessage, isPresented: imgbbUploadErrorBinding) {
                 Button(L10n.Common.ok, role: .cancel) {}
             } message: {
                 Text(imgbbUploadError ?? "")
@@ -95,7 +95,7 @@ struct QuickAccessCardView: View {
                     .transition(.opacity)
             }
 
-            if isImgBBUploading {
+            if isUploading {
                 QuickAccessProgressView(state: .processing(progress: 0.8))
                     .transition(.opacity)
             }
@@ -259,7 +259,7 @@ struct QuickAccessCardView: View {
     }
 
     private var canPerformCardActions: Bool {
-        item.processingState == .idle && !isImgBBUploading
+        item.processingState == .idle && !isUploading
     }
 
     private var showsCardActions: Bool {
@@ -408,7 +408,7 @@ struct QuickAccessCardView: View {
         case .edit:
             editActionTitle
         case .uploadToImgBB:
-            NotinhasL10n.uploadToImgBB
+            L10n.Notinhas.uploadTo(provider: uploadConfiguration.provider.name)
         case .pinToScreen:
             item.isPinned ? L10n.PreferencesQuickAccess.unpinAction : L10n.PreferencesQuickAccess.pinToScreenAction
         }
@@ -441,7 +441,7 @@ struct QuickAccessCardView: View {
         case .saveOrOpen:
             true
         case .uploadToImgBB:
-            imgbbCredentialStore.isConfigured
+            uploadConfiguration.isConfigured
         case .delete:
             true
         }
@@ -452,7 +452,7 @@ struct QuickAccessCardView: View {
         case .pinToScreen:
             !item.isVideo
         case .uploadToImgBB:
-            imgbbCredentialStore.isConfigured && !item.isVideo && !isImgBBUploading
+            uploadConfiguration.isConfigured && !item.isVideo && !isUploading
         case .copy, .saveOrOpen, .dismiss, .delete, .edit:
             true
         }
@@ -473,7 +473,7 @@ struct QuickAccessCardView: View {
         case .edit:
             handleDoubleClick()
         case .uploadToImgBB:
-            uploadToImgBB()
+            upload()
         case .pinToScreen:
             guard !item.isVideo else { return }
             manager.togglePin(id: item.id)
@@ -726,24 +726,23 @@ struct QuickAccessCardView: View {
 
     // MARK: - ImgBB Sharing
 
-    private func uploadToImgBB() {
-        guard let apiKey = NotinhasImgBBConfiguration.apiKey else { return }
-        guard !isImgBBUploading, FileManager.default.fileExists(atPath: item.url.path) else {
+    private func upload() {
+        guard !isUploading, FileManager.default.fileExists(atPath: item.url.path) else {
             imgbbUploadError = NotinhasL10n.imgbbInvalidImageData
             return
         }
 
-        isImgBBUploading = true
+        isUploading = true
         manager.pauseCountdownForActivity(item.id)
         Task { @MainActor in
             defer {
-                isImgBBUploading = false
+                isUploading = false
                 manager.resumeCountdownForActivity(item.id)
             }
 
-            let link = await imgbbUploadCoordinator.upload(fileURL: item.url, apiKey: apiKey)
+            let link = await uploadCoordinator.upload(fileURL: item.url)
             guard let link else {
-                imgbbUploadError = imgbbUploadCoordinator.lastErrorMessage ?? NotinhasL10n.imgbbUploadFailed
+                imgbbUploadError = uploadCoordinator.lastErrorMessage ?? uploadFailedMessage
                 return
             }
 
@@ -751,6 +750,13 @@ struct QuickAccessCardView: View {
             pasteboard.clearContents()
             pasteboard.setString(link, forType: .string)
             SoundManager.play("Pop")
+        }
+    }
+
+    private var uploadFailedMessage: String {
+        switch uploadConfiguration.provider {
+        case .imgbb: NotinhasL10n.imgbbUploadFailed
+        case .imageKit: NotinhasL10n.imageKitUploadFailed
         }
     }
 }
