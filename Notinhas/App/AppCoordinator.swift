@@ -233,16 +233,6 @@ final class AppCoordinator {
         }
 
         SplashWindowController.shared.show()
-
-        // Automatically show the new feature intro once
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            // Cleanup legacy key
-            UserDefaults.standard.removeObject(forKey: "hasSeenSmartElementIntro")
-
-            if let campaign = FeatureIntroManager.shared.getPendingCampaign() {
-                FeatureIntroManager.shared.showCampaign(campaign)
-            }
-        }
     }
 
     private func shouldPresentConfigurationAccessOnboarding(

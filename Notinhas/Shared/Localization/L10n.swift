@@ -13,7 +13,6 @@ nonisolated enum L10n {
         ("combine.", "Combine"),
         ("menu.", "Menubar"),
         ("common.", "Common"),
-        ("whats-new.", "WhatsNew"),
         ("appearance.", "Common"),
         ("splash.", "Onboarding"),
         ("app-identity.", "Common"),
