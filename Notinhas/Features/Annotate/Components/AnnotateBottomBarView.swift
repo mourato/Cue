@@ -90,6 +90,10 @@ struct AnnotateBottomBarView: View {
                 HStack(spacing: 0) {
                     // Left section: zoom + mode toggle
                     leftSection
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .captureFloatingToolbarMaterial()
+                        .shadow(color: .black.opacity(0.14), radius: 10, y: 3)
                         .fixedSize(horizontal: true, vertical: false)
                         .measuredBottomBarWidth(.left)
 
@@ -97,6 +101,10 @@ struct AnnotateBottomBarView: View {
 
                     // Right section: registered action surface
                     registeredActionSurface
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .captureFloatingToolbarMaterial()
+                        .shadow(color: .black.opacity(0.14), radius: 10, y: 3)
                         .fixedSize(horizontal: true, vertical: false)
                         .measuredBottomBarWidth(.right)
                 }

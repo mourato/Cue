@@ -11,7 +11,6 @@ import SwiftUI
 struct AnnotateMainView: View {
     @StateObject var state: AnnotateState
     @ObservedObject private var themeManager = ThemeManager.shared
-    private let quickPropertiesBarHeight: CGFloat = 48
 
     var body: some View {
         VStack(spacing: 0) {
@@ -23,11 +22,11 @@ struct AnnotateMainView: View {
                 Divider()
                     .background(Color(nsColor: .separatorColor))
 
-                AnnotateQuickPropertiesBar(state: state)
-                    .frame(minHeight: quickPropertiesBarHeight)
-
-                Divider()
-                    .background(Color(nsColor: .separatorColor))
+                if state.showsQuickPropertiesBar {
+                    AnnotateQuickPropertiesBar(state: state)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                }
             }
 
             HStack(spacing: 0) {

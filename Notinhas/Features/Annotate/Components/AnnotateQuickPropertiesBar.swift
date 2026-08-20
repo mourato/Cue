@@ -89,19 +89,12 @@ struct AnnotateQuickPropertiesBar: View {
     private let strokeColors = AnnotateBuiltInColorPalette.annotationColors
     private let fillColors = AnnotateBuiltInColorPalette.fillColors
     private let textBackgroundColors = AnnotateBuiltInColorPalette.fillColors
+
     var body: some View {
-        // Horizontal ViewThatFits(regular→compact) no longer works once the active
-        // row wraps: regular reports a fitting width after wrapping, so compact was
-        // almost never selected. Prefer compact for active (denser wrapped rows);
-        // idle stays regular single-row chrome.
-        Group {
-            if state.showsQuickPropertiesBar {
-                activePropertiesContent(density: .compact)
-            } else {
-                idlePropertiesContent(density: .regular)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .topLeading)
+        // Keep contextual controls compact so wrapped rows stay inside one island.
+        activePropertiesContent(density: .compact)
+            .captureFloatingToolbarMaterial()
+            .shadow(color: .black.opacity(0.14), radius: 10, y: 3)
     }
 
     private func activePropertiesContent(density: QuickPropertiesDensity) -> some View {
@@ -411,16 +404,6 @@ struct AnnotateQuickPropertiesBar: View {
         .padding(.vertical, Spacing.sm)
     }
 
-    private func idlePropertiesContent(density: QuickPropertiesDensity) -> some View {
-        HStack(spacing: density.rowSpacing) {
-            idleContextChip(density: density)
-                .frame(width: density.contextChipWidth, alignment: .leading)
-        }
-        .fixedSize(horizontal: true, vertical: false)
-        .padding(.horizontal, density.horizontalPadding)
-        .padding(.vertical, Spacing.sm)
-    }
-
     private func stableSlot(
         isEnabled: Bool,
         width: CGFloat?,
@@ -471,20 +454,6 @@ struct AnnotateQuickPropertiesBar: View {
             icon: icon,
             title: title,
             isSelectedItem: state.quickPropertiesMode == .selectedItem,
-        )
-    }
-
-    @ViewBuilder
-    private func idleContextChip(density _: QuickPropertiesDensity) -> some View {
-        let isSelectionTool = state.selectedTool == .selection
-        let icon = isSelectionTool ? state.selectedTool.icon : "slider.horizontal.3"
-        let title = isSelectionTool ? L10n.Annotate.selectionTool : L10n.AnnotateContext
-            .defaults(L10n.AnnotateUI.annotation)
-
-        compactContextChip(
-            icon: icon,
-            title: title,
-            isSelectedItem: false,
         )
     }
 
