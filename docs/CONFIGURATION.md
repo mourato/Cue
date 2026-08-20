@@ -58,7 +58,7 @@ The TOML file covers portable app preferences:
 
 The export intentionally excludes secrets and machine-private state:
 
-- `uploads.provider` is persisted as the selected provider (`imgbb` or `imageKit`) when changed; absent/invalid values safely use ImgBB. ImgBB API keys and ImageKit private keys are never exported or imported: they remain in provider-scoped Keychain items configured separately in Preferences → Uploads.
+- The selected provider (`imgbb` or `imageKit`) is persisted locally under the `uploads.provider` UserDefaults key; absent/invalid values safely use ImgBB. It is not included in TOML export/import. ImgBB API keys and ImageKit private keys are never exported or imported: they remain in provider-scoped Keychain items configured separately in Preferences → Uploads.
 - Legacy cloud configuration keys are ignored on import and are never rewritten or deleted.
 - Capture history, temp files, annotation sidecars, caches, and
   app diagnostics are not part of `config.toml`.
