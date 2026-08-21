@@ -53,27 +53,36 @@ struct AnnotateMainView: View {
                         .background(Color.white.opacity(0.1))
                 }
 
-                Group {
-                    if state.showsNotinhasExportPreview, let previewImage = state.notinhasExportPreviewImage {
-                        AnnotateExportPreviewView(image: previewImage)
-                    } else {
-                        AnnotateCanvasView(state: state)
+                ZStack(alignment: .top) {
+                    Group {
+                        if state.showsNotinhasExportPreview, let previewImage = state.notinhasExportPreviewImage {
+                            AnnotateExportPreviewView(image: previewImage)
+                        } else {
+                            AnnotateCanvasView(state: state)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle()) // Constrain hit-test area to frame bounds
+                    .clipped() // Prevent canvas content from overlapping toolbar/bottombar
+                    .onChange(of: state.notinhasNotes) { _ in
+                        if state.showsNotinhasExportPreview {
+                            state.refreshNotinhasExportPreview()
+                        }
+                    }
+
+                    if state.showsQuickPropertiesBar {
+                        AnnotateQuickPropertiesBar(state: state)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .zIndex(1)
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .contentShape(Rectangle()) // Constrain hit-test area to frame bounds
-                .clipped() // Prevent canvas content from overlapping toolbar/bottombar
-                .onChange(of: state.notinhasNotes) { _ in
-                    if state.showsNotinhasExportPreview {
-                        state.refreshNotinhasExportPreview()
-                    }
+                .overlay(alignment: .bottom) {
+                    AnnotateBottomBarView(state: state)
+                        .zIndex(2)
                 }
             }
-
-            Divider()
-                .background(Color(nsColor: .separatorColor))
-
-            AnnotateBottomBarView(state: state)
         }
         .preferredColorScheme(themeManager.systemAppearance)
         .ignoresSafeArea(.all, edges: .top) // Extend background behind title bar
