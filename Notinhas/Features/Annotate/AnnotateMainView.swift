@@ -21,12 +21,6 @@ struct AnnotateMainView: View {
 
                 Divider()
                     .background(Color(nsColor: .separatorColor))
-
-                if state.showsQuickPropertiesBar {
-                    AnnotateQuickPropertiesBar(state: state)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                }
             }
 
             HStack(spacing: 0) {
