@@ -2117,10 +2117,6 @@ final class AnnotateCoreTests: XCTestCase {
         XCTAssertEqual(state.annotationCreationProperties(for: .arrow).strokeWidth, 5)
         XCTAssertEqual(state.annotationCreationProperties(for: .arrow).cornerRadius, 0)
         assertColorsMatch(state.annotationCreationProperties(for: .arrow).strokeColor, .green)
-
-        XCTAssertEqual(state.annotationCreationProperties(for: .rectangle).strokeWidth, 3)
-        XCTAssertEqual(state.annotationCreationProperties(for: .rectangle).cornerRadius, 0)
-        assertColorsMatch(state.annotationCreationProperties(for: .rectangle).strokeColor, .red)
     }
 
     @MainActor

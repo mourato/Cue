@@ -103,12 +103,13 @@ final class AnnotateChromeConfigurationStoreTests: XCTestCase {
         }
     }
 
-    func testAnnotateChromeConfigurationStore_effectiveDrawableToolsRespectsOrderAndEnablement() {
+    func testAnnotateChromeConfigurationStore_effectiveDrawableToolsRespectsOrderAndEnablement() throws {
         let defaults = makeIsolatedDefaults()
         let store = makeStore(defaults: defaults)
 
         store.setEnabled(.watermark, enabled: false)
-        store.moveToolbarItem(from: IndexSet(integer: 13), to: 3)
+        let noteIndex = try XCTUnwrap(store.toolbarItemOrder.firstIndex(of: .notinhasNote))
+        store.moveToolbarItem(from: IndexSet(integer: noteIndex), to: 3)
 
         XCTAssertEqual(store.effectiveDrawableTools().first, .notinhasNote)
         XCTAssertFalse(store.effectiveDrawableTools().contains(.watermark))

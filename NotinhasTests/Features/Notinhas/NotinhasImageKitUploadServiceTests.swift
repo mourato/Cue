@@ -14,7 +14,7 @@ final class NotinhasImageKitUploadServiceTests: XCTestCase {
             XCTAssertEqual(request.httpMethod, "POST")
             let expectedAuthorization = "Basic \(Data("fixture-private-key:".utf8).base64EncodedString())"
             XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), expectedAuthorization)
-            let body = String(data: request.httpBody ?? Data(), encoding: .utf8) ?? ""
+            let body = String(data: Self.requestBodyData(request), encoding: .utf8) ?? ""
             XCTAssertTrue(body.contains("name=\"file\""))
             XCTAssertTrue(body.contains("name=\"fileName\""))
             let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
@@ -61,6 +61,25 @@ final class NotinhasImageKitUploadServiceTests: XCTestCase {
 
     private func makeImage() -> NotinhasEncodedImage {
         NotinhasEncodedImage(data: Data("image-payload".utf8), fileExtension: "webp", contentType: "image/webp")
+    }
+
+    private static func requestBodyData(_ request: URLRequest) -> Data {
+        if let httpBody = request.httpBody {
+            return httpBody
+        }
+
+        guard let stream = request.httpBodyStream else { return Data() }
+        stream.open()
+        defer { stream.close() }
+
+        var data = Data()
+        var buffer = [UInt8](repeating: 0, count: 4096)
+        while stream.hasBytesAvailable {
+            let count = stream.read(&buffer, maxLength: buffer.count)
+            guard count > 0 else { break }
+            data.append(buffer, count: count)
+        }
+        return data
     }
 }
 
