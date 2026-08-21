@@ -394,14 +394,6 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         let inferredTrailingStaticWidth = trailingStaticWidth == 0
             ? detectStaticSideBandWidth(previous: lastRaster, current: raster, fromLeading: false)
             : trailingStaticWidth
-        let visionAlignmentEstimate = estimateVisionAlignment(
-            previous: lastRaster,
-            current: raster,
-            headerHeight: inferredHeaderHeight,
-            footerHeight: inferredFooterHeight,
-            leadingStaticWidth: inferredLeadingStaticWidth,
-            trailingStaticWidth: inferredTrailingStaticWidth,
-        )
         let frameDifference = contentDifference(
             previous: lastRaster,
             current: raster,
@@ -421,8 +413,24 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             visionAlignmentEstimate: nil,
             searchMode: .guided,
         )
-        let strongVisionMovement = hasStrongVisionMovement(visionAlignmentEstimate)
 
+        var alignmentPath: ScrollingCaptureAlignmentPath = .fastGuided
+        var match = fastGuidedMatch
+        var visionAlignmentEstimate: VisionAlignmentEstimate?
+        let needsVision = shouldValidateFastGuidedMatch(match)
+
+        if needsVision {
+            visionAlignmentEstimate = estimateVisionAlignment(
+                previous: lastRaster,
+                current: raster,
+                headerHeight: inferredHeaderHeight,
+                footerHeight: inferredFooterHeight,
+                leadingStaticWidth: inferredLeadingStaticWidth,
+                trailingStaticWidth: inferredTrailingStaticWidth,
+            )
+        }
+
+        let strongVisionMovement = hasStrongVisionMovement(visionAlignmentEstimate)
         if
             frameDifference < 8.5,
             !strongVisionMovement,
@@ -443,10 +451,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             )
         }
 
-        var alignmentPath: ScrollingCaptureAlignmentPath = .fastGuided
-        var match = fastGuidedMatch
-
-        if shouldValidateFastGuidedMatch(match, visionAlignmentEstimate: visionAlignmentEstimate) {
+        if needsVision {
             let guidedVisionMatch = bestMatch(
                 previous: lastRaster,
                 current: raster,
@@ -1406,13 +1411,9 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
 
     private func shouldValidateFastGuidedMatch(
         _ match: Match?,
-        visionAlignmentEstimate: VisionAlignmentEstimate?,
     ) -> Bool {
         guard let match else { return true }
-        guard let visionAlignmentEstimate, visionAlignmentEstimate.deltaY > 0 else { return false }
-
         return matcherConfidence(for: match) < 0.82
-            || fastGuidedMatchDisagreesWithVision(match, visionAlignmentEstimate: visionAlignmentEstimate)
     }
 
     private func fastGuidedMatchDisagreesWithVision(

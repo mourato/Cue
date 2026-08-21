@@ -190,6 +190,27 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
         }
     }
 
+    func testAppend_highConfidenceGuidedMatch_skipsVisionEstimate() {
+        let stitcher = ScrollingCaptureStitcher()
+        guard let image1 = TestImageFactory.scrollingFrame(width: 200, height: 160, logicalYOffset: 0),
+              let image2 = TestImageFactory.scrollingFrame(width: 200, height: 160, logicalYOffset: 20) else {
+            XCTFail("Failed to create scrolling frames")
+            return
+        }
+
+        _ = stitcher.start(with: image1)
+        let update = stitcher.append(
+            image2,
+            maxOutputHeight: 10_000,
+            expectedSignedDeltaPixels: 20,
+        )
+
+        XCTAssertEqual(update?.alignmentDebug?.path, .fastGuided)
+        XCTAssertFalse(update?.alignmentDebug?.usedVisionEstimate ?? true)
+        XCTAssertEqual(update?.acceptedFrameCount, 2)
+        XCTAssertEqual(update?.outputHeight, 180)
+    }
+
     // MARK: - Multiple appends build height
 
     func testMultipleAppends_outputHeightAccumulates() {
