@@ -4350,9 +4350,7 @@ final class AnnotateState: ObservableObject {
             },
             set: { newStyle in
                 self.shapeFillStyle = newStyle
-                let selected = self.quickPropertiesSelectionAnnotations.filter {
-                    $0.type.toolType.supportsShapeFillStyle
-                }
+                let selected = self.quickPropertiesSelectionAnnotations.filter(\.type.toolType.supportsShapeFillStyle)
                 if !selected.isEmpty {
                     for annotation in selected {
                         self.updateAnnotationProperties(

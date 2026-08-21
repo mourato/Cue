@@ -133,7 +133,7 @@ final class AnnotateModifierGestureTests: XCTestCase {
     }
 
     @MainActor
-    func testRepeatedPasteAccumulatesOffset() throws {
+    func testRepeatedPasteAccumulatesOffset() {
         let state = makeAnnotateState()
         let original = AnnotationItem(
             type: .rectangle,
@@ -159,7 +159,7 @@ final class AnnotateModifierGestureTests: XCTestCase {
     }
 
     @MainActor
-    func testDuplicateWithoutMoveUsesSingleUndoCheckpoint() throws {
+    func testDuplicateWithoutMoveUsesSingleUndoCheckpoint() {
         let state = makeAnnotateState()
         let original = AnnotationItem(
             type: .rectangle,
