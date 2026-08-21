@@ -192,11 +192,11 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
     static func migrating(fromRawValue rawValue: String) -> AnnotationToolType? {
         switch rawValue {
         case "filledRectangle":
-            return .rectangle
+            .rectangle
         case "oval":
-            return .circle
+            .circle
         default:
-            return AnnotationToolType(rawValue: rawValue)
+            AnnotationToolType(rawValue: rawValue)
         }
     }
 }

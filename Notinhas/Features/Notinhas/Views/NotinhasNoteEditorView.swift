@@ -145,7 +145,7 @@ struct NotinhasNoteEditorView: View {
                 .first { AnnotateColorPaletteStore.colorsMatch($0.color, color.color) }?
                 .accessibilityName
                 ?? NotinhasPaletteColor.matching(color)?.localizedName
-                ?? NotinhasL10n.selected
+                ?? NotinhasL10n.selected,
         )
         .popover(isPresented: $showsColorPopover, arrowEdge: .bottom) {
             ColorPickerRow(

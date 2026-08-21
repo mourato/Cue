@@ -150,7 +150,7 @@ nonisolated struct AnnotationRenderer {
         currentPath: [CGPoint],
         strokeColor: Color,
         strokeWidth: CGFloat,
-        fillColor: Color = .clear,
+        fillColor _: Color = .clear,
         arrowStyle: ArrowStyle = .straight,
         arrowType: ArrowType = .tapered,
         arrowBendDirection: ArrowBendDirection = .primary,
