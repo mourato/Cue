@@ -27,7 +27,7 @@ flowchart TD
     D --> I["ScrollingCaptureFrameSource + ScrollingCaptureFrameRing"]
     D --> J["ScrollingCaptureCommitScheduler"]
 
-    I --> I1["Timestamped region frames into bounded ring (capacity 8)"]
+    I --> I1["Timestamped region frames into bounded ring (capacity 2)"]
     I1 --> H
 
     F --> K["Global scrollWheel monitor + settle timers"]
@@ -54,7 +54,7 @@ flowchart TD
 
 - The capture context is prewarmed at session start (and re-prewarmed after region edits) through `ScreenCaptureManager.prepareAreaCapture(rect:excludeDesktopIcons:excludeDesktopWidgets:excludeOwnApplication:prefetchedContentTask:)`, producing a reusable `PreparedAreaCaptureContext` with the session scale factor.
 - **Live lane**: `ScrollingCaptureFrameSource` starts a region-scoped `SCStream` (30 fps max, cursor hidden, `.userInteractive` sample queue). Buffers are throttled to the publish interval, converted through a shared `CIContext`, sequenced, and delivered on the main actor. Incomplete frame statuses are dropped.
-- **Shared timeline**: every published frame is appended to `ScrollingCaptureFrameRing` (capacity 8). Preview rendering and commit selection read the same ring, so the two lanes never diverge on different frame histories. `markCommitted(sequenceNumber:)` tracks progress.
+- **Shared timeline**: every published frame is appended to `ScrollingCaptureFrameRing` (capacity 2). Preview rendering and commit selection read the same ring, so the two lanes never diverge on different frame histories. `markCommitted(sequenceNumber:)` tracks progress.
 - **Commit lane**: `ScrollingCaptureCommitScheduler` serializes stitch work and coalesces requests — only the latest pending request survives (`onRequestCoalesced` feeds metrics). `refreshPreview(reason:)` picks the newest ring frame after the last committed sequence number.
 - **Still fallback**: when the ring has no usable new frame (stream not started, failed, or starved), the commit falls back to a still capture through the prewarmed context (`capturePreparedArea`). Commit frame source is logged as `stream` vs `still-fallback`.
 - `ScrollingCaptureCommitFrameNormalizer` keeps every frame submitted to the stitcher at one pixel scale: it clamps the output scale to `max(sourceScaleFactor, minimumOutputScaleFactor)` and reuses `FrozenAreaCaptureSession.imageByPromotingScaleIfNeeded`, so region frames honor the same minimum 2x screenshot baseline as other modes — long screenshots from non-Retina displays do not save as 1x output.
@@ -144,7 +144,7 @@ grep 'ScrollingCaptureDebug' "$HOME/Library/Logs/Notinhas/notinhas_$(date +%F).t
 | `Notinhas/Services/Capture/ScrollingCapture/ScrollingCaptureTypes.swift` | `ScrollingCaptureSessionModel`, phases, runtime states, truth states, guidance, auto-scroll policy |
 | `Notinhas/Services/Capture/ScrollingCapture/ScrollingCaptureStitcher.swift` | Vertical stitcher: fast guided match, Vision recovery, static bands, safety, merged/preview output |
 | `Notinhas/Services/Capture/ScrollingCapture/ScrollingCaptureFrameSource.swift` | Region-scoped `SCStream` publishing timestamped frames |
-| `Notinhas/Services/Capture/ScrollingCapture/ScrollingCaptureFrameRing.swift` | Bounded frame history (capacity 8) shared by preview and commit lanes |
+| `Notinhas/Services/Capture/ScrollingCapture/ScrollingCaptureFrameRing.swift` | Bounded frame history (capacity 2) shared by preview and commit lanes |
 | `Notinhas/Services/Capture/ScrollingCapture/ScrollingCaptureCommitScheduler.swift` | Serial commit lane coalescing to the latest pending request |
 | `Notinhas/Services/Capture/ScrollingCapture/ScrollingCaptureCommitFrameNormalizer.swift` | Uniform pixel scale for frames entering the stitcher |
 | `Notinhas/Services/Capture/ScrollingCapture/ScrollingCaptureHUDWindow.swift` | Floating non-activating control panel (Start/Done/Cancel/Auto Scroll) |

@@ -82,6 +82,13 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         let bytesPerRow: Int
         let pixels: [UInt8]
 
+        init(width: Int, height: Int, bytesPerRow: Int, pixels: [UInt8]) {
+            self.width = width
+            self.height = height
+            self.bytesPerRow = bytesPerRow
+            self.pixels = pixels
+        }
+
         init?(cgImage: CGImage) {
             let width = cgImage.width
             let height = cgImage.height
@@ -193,6 +200,20 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             }
         }
 
+        func croppedRows(startRow: Int, rowCount: Int) -> RasterImage {
+            let safeStartRow = max(0, startRow)
+            let safeRowCount = min(rowCount, height - safeStartRow)
+            let croppedPixels = Array(
+                pixels[(safeStartRow * bytesPerRow) ..< ((safeStartRow + safeRowCount) * bytesPerRow)],
+            )
+            return RasterImage(
+                width: width,
+                height: safeRowCount,
+                bytesPerRow: bytesPerRow,
+                pixels: croppedPixels,
+            )
+        }
+
         func makeCGImage() -> CGImage? {
             Self.makeCGImage(width: width, height: height, bytesPerRow: bytesPerRow, pixels: pixels)
         }
@@ -278,8 +299,6 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
 
     private struct ContentSlice {
         let raster: RasterImage
-        let startRow: Int
-        let rowCount: Int
     }
 
     private struct Match {
@@ -328,7 +347,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
     private(set) var acceptedFrameCount = 0
 
     var outputHeight: Int {
-        contentSlices.reduce(0) { $0 + $1.rowCount }
+        contentSlices.reduce(0) { $0 + $1.raster.height }
     }
 
     func start(with image: CGImage) -> ScrollingCaptureStitchUpdate? {
@@ -336,7 +355,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
 
         baseRaster = raster
         lastRaster = raster
-        contentSlices = [ContentSlice(raster: raster, startRow: 0, rowCount: raster.height)]
+        contentSlices = [ContentSlice(raster: raster)]
         headerHeight = 0
         footerHeight = 0
         leadingStaticWidth = 0
@@ -573,7 +592,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             )
         }
 
-        contentSlices.append(ContentSlice(raster: raster, startRow: sliceStart, rowCount: acceptedDelta))
+        contentSlices.append(ContentSlice(raster: raster.croppedRows(startRow: sliceStart, rowCount: acceptedDelta)))
         self.lastRaster = raster
         lastMatch = Match(
             direction: match.direction,
@@ -622,12 +641,12 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
 
         for slice in contentSlices {
             slice.raster.copyRows(
-                startRow: slice.startRow,
-                rowCount: slice.rowCount,
+                startRow: 0,
+                rowCount: slice.raster.height,
                 into: &mergedPixels,
                 destinationRow: destinationRow,
             )
-            destinationRow += slice.rowCount
+            destinationRow += slice.raster.height
         }
 
         cachedMergedImage = RasterImage.makeCGImage(
@@ -673,20 +692,13 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
 
         var destinationRow = 0
         for slice in contentSlices {
-            guard
-                let sliceImage = slice.raster.makeCroppedCGImage(
-                    xStart: 0,
-                    xEnd: slice.raster.width,
-                    startRow: slice.startRow,
-                    rowCount: slice.rowCount,
-                )
-            else {
-                destinationRow += slice.rowCount
+            guard let sliceImage = slice.raster.makeCGImage() else {
+                destinationRow += slice.raster.height
                 continue
             }
 
             let sourceTop = CGFloat(destinationRow) / CGFloat(max(outputHeight, 1))
-            let sourceBottom = CGFloat(destinationRow + slice.rowCount) / CGFloat(max(outputHeight, 1))
+            let sourceBottom = CGFloat(destinationRow + slice.raster.height) / CGFloat(max(outputHeight, 1))
             let destinationTop = CGFloat(targetHeight) * (1 - sourceTop)
             let destinationBottom = CGFloat(targetHeight) * (1 - sourceBottom)
             let destinationRect = CGRect(
@@ -696,7 +708,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 height: max(1, destinationTop - destinationBottom),
             )
             context.draw(sliceImage, in: destinationRect)
-            destinationRow += slice.rowCount
+            destinationRow += slice.raster.height
         }
 
         return context.makeImage()
@@ -752,7 +764,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
     private func bootstrapContentSlices(with baseRaster: RasterImage) {
         let contentStart = headerHeight
         let contentHeight = max(1, baseRaster.height - headerHeight - footerHeight)
-        contentSlices = [ContentSlice(raster: baseRaster, startRow: contentStart, rowCount: contentHeight)]
+        contentSlices = [ContentSlice(raster: baseRaster.croppedRows(startRow: contentStart, rowCount: contentHeight))]
     }
 
     private func sliceStartRow(

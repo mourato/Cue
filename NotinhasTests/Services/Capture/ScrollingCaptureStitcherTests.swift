@@ -219,6 +219,94 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
         XCTAssertEqual(update?.outputHeight, 180)
     }
 
+    func testMergedImage_preservesAcceptedRowOrder() {
+        let stitcher = ScrollingCaptureStitcher()
+        guard let image1 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 0),
+              let image2 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 20),
+              let image3 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 40) else {
+            XCTFail("Failed to create scrolling frames")
+            return
+        }
+
+        _ = stitcher.start(with: image1)
+        let firstUpdate = stitcher.append(
+            image2,
+            maxOutputHeight: 10_000,
+            expectedSignedDeltaPixels: 20,
+        )
+        let secondUpdate = stitcher.append(
+            image3,
+            maxOutputHeight: 10_000,
+            expectedSignedDeltaPixels: 20,
+        )
+
+        guard case .appended(let firstDeltaY) = firstUpdate?.outcome,
+              case .appended(let secondDeltaY) = secondUpdate?.outcome,
+              let merged = stitcher.mergedImage() else {
+            XCTFail("Expected two merged appends")
+            return
+        }
+        XCTAssertEqual(firstDeltaY, 20)
+        XCTAssertEqual(secondDeltaY, 20)
+        XCTAssertEqual(stitcher.acceptedFrameCount, 3)
+        XCTAssertEqual(merged.width, 80)
+        XCTAssertEqual(merged.height, 200)
+
+        for row in 0 ..< merged.height {
+            XCTAssertEqual(
+                pixelSignature(in: merged, row: row),
+                pixelSignature(forLogicalRow: row),
+                "Unexpected merged pixel at row \(row)",
+            )
+        }
+
+        guard let preview = stitcher.previewImage(maxPixelWidth: 80, maxPixelHeight: 200) else {
+            XCTFail("Expected a full-size preview")
+            return
+        }
+        XCTAssertEqual(preview.width, merged.width)
+        XCTAssertEqual(preview.height, merged.height)
+        for row in 0 ..< preview.height {
+            XCTAssertEqual(
+                pixelSignature(in: preview, row: row),
+                pixelSignature(forLogicalRow: row),
+                "Unexpected preview pixel at row \(row)",
+            )
+        }
+    }
+
+    func testAppend_clampsAcceptedDeltaToMaxOutputHeight() {
+        let stitcher = ScrollingCaptureStitcher()
+        guard let image1 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 0),
+              let image2 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 20) else {
+            XCTFail("Failed to create scrolling frames")
+            return
+        }
+
+        _ = stitcher.start(with: image1)
+        let update = stitcher.append(
+            image2,
+            maxOutputHeight: 175,
+            expectedSignedDeltaPixels: 20,
+        )
+
+        guard case .reachedHeightLimit = update?.outcome,
+              let merged = stitcher.mergedImage() else {
+            XCTFail("Expected a height-limited append")
+            return
+        }
+        XCTAssertEqual(update?.acceptedFrameCount, 2)
+        XCTAssertEqual(update?.outputHeight, 175)
+        XCTAssertEqual(merged.height, 175)
+        for row in 0 ..< merged.height {
+            XCTAssertEqual(
+                pixelSignature(in: merged, row: row),
+                pixelSignature(forLogicalRow: row),
+                "Unexpected clamped pixel at row \(row)",
+            )
+        }
+    }
+
     func testAppend_highConfidenceGuidedMatch_skipsVisionEstimate() {
         let stitcher = ScrollingCaptureStitcher()
         guard let image1 = TestImageFactory.scrollingFrame(width: 200, height: 160, logicalYOffset: 0),
@@ -362,4 +450,27 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
         XCTAssertEqual(update?.outputHeight, 100)
         XCTAssertEqual(update?.alignmentDebug?.path, .alignmentFailed)
     }
+}
+
+private func pixelSignature(in image: CGImage, row: Int) -> [UInt8] {
+    let bytesPerRow = image.width * 4
+    var pixels = [UInt8](repeating: 0, count: image.height * bytesPerRow)
+    pixels.withUnsafeMutableBytes { buffer in
+        guard let context = CGContext(
+            data: buffer.baseAddress,
+            width: image.width,
+            height: image.height,
+            bitsPerComponent: 8,
+            bytesPerRow: bytesPerRow,
+            space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue,
+        ) else { return }
+        context.interpolationQuality = .none
+        context.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
+    }
+    return Array(pixels[(row * bytesPerRow) ..< (row * bytesPerRow + 4)])
+}
+
+private func pixelSignature(forLogicalRow row: Int) -> [UInt8] {
+    [UInt8(row % 256), UInt8((row * 47) % 256), UInt8((row * 113) % 256), 255]
 }
