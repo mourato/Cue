@@ -962,3 +962,40 @@ affordances when needed for gated compilation.
   cannot complete without a Notinhas server or callback, record the stop and
   let Plan 099 document only the providers that shipped.
 - Local merge and push were explicitly authorized for this delivery.
+
+## Scrolling-capture performance (100–103)
+
+Generated 2026-08-21 against commit `5eb42e1` after a focused read-only audit
+of `Notinhas/Services/Capture/ScrollingCapture/`. Execute and review strictly
+in order: **100 → 101 → 102 → 103**. These plans are local handoff artifacts;
+implementation branches must use the repository worktree contract, and merge
+or push still require explicit authorization.
+
+| Plan | Title | Priority | Effort | Depends on | Status |
+|---|---|---:|---:|---|---|
+| [100](100-scrolling-capture-lazy-vision.md) | Move Vision alignment to recovery/low-confidence paths | P1 | M | — | TODO |
+| [101](101-scrolling-capture-compact-slices-and-ring.md) | Store only accepted strips and right-size the frame ring | P1 | M | 100 recommended | TODO |
+| [102](102-scrolling-capture-bounded-preview-render.md) | Bound preview composition work | P1 | M | 101 | TODO |
+| [103](103-scrolling-capture-live-preview-throttle.md) | Throttle live-preview UI work without slowing commits | P2 | M | 100–102 recommended | TODO |
+
+### Dependency notes (100–103)
+
+- Plan 100 changes only the alignment decision order and should land first so
+  later memory/preview work is measured against the cheaper matcher path.
+- Plan 101 changes the slice ownership contract and frame-history bound; Plan
+  102 consumes the compact representation, so do not execute them in parallel.
+- Plan 103 owns MainActor preview/layout work and should be reviewed after the
+  stitcher/preview source changes settle.
+- Run the focused scrolling-capture tests after each plan, then run the full
+  repository gates during the final integrated review.
+
+### Findings considered and deferred
+
+- Reduced-resolution matcher: deferred until real stitch-duration and
+  allocation measurements show the full-resolution matcher remains a problem;
+  the final capture must retain its current quality contract.
+- Tiled/streaming final encoder: deferred until real sessions demonstrate that
+  the configured 32,768-pixel final `CGImage` ceiling causes failures; it would
+  widen the save/post-capture contract unnecessarily now.
+- Speculative commit-interval retuning: deferred; Plan 103 may change cadence
+  only when existing coalescing/stitch metrics demonstrate sustained saturation.
