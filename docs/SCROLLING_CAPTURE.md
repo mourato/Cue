@@ -111,7 +111,7 @@ flowchart TD
 | `finalizing` | Finishing | Sealing the stitched result |
 | `saving` | Saving | Writing the final image |
 
-- Lag is computed from live-publish vs last-committed timestamps with a 90ms tolerance (`previewCommitLagMs`); `liveAhead` occurrences feed session metrics.
+- Lag uses the newest captured-frame timestamp versus the last committed observation (with a 90ms tolerance); after the first committed preview, raw live-viewport presentation is throttled to 12 fps while every frame remains available to the commit ring (`previewCommitLagMs`); `liveAhead` occurrences feed session metrics.
 - The rail prioritizes the stitched preview image; the raw live viewport shows only while no committed preview exists and the truth state prefers it (`prefersLiveViewport`).
 
 ## Finish and Save

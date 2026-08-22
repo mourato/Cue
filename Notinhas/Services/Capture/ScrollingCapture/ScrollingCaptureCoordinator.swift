@@ -35,6 +35,22 @@ final class ScrollingCaptureCoordinator {
         return capturedAt - lastPublishedAt >= minimumInterval
     }
 
+    nonisolated static func previewCommitLagMs(
+        latestCapturedAt: TimeInterval?,
+        lastCommittedObservationAt: TimeInterval?,
+        isUsingLivePreview: Bool,
+        toleranceMs: Int,
+    ) -> Int {
+        guard let latestCapturedAt else { return 0 }
+        if let lastCommittedObservationAt {
+            return max(
+                0,
+                Int(((latestCapturedAt - lastCommittedObservationAt) * 1_000).rounded()),
+            )
+        }
+        return isUsingLivePreview ? toleranceMs + 1 : 0
+    }
+
     private let captureManager = ScreenCaptureManager.shared
     private let maxOutputHeight = ScrollingCaptureConfiguration.maxOutputHeight
     private let liveRefreshIntervalNanoseconds: UInt64 = 50_000_000
@@ -1235,18 +1251,22 @@ final class ScrollingCaptureCoordinator {
             lastPublishedAt: lastLivePreviewPublishedAt,
             minimumInterval: livePreviewUIRefreshInterval,
         )
+        guard shouldPublish else { return }
+
         let publishDurationMs = Self.elapsedMilliseconds(since: publishStartedAt)
-        if shouldPublish {
-            sessionModel.livePreviewImage = observedFrame.image
-            lastLivePreviewPublishedAt = observedFrame.capturedAt
-            sessionMetrics.recordLivePreviewFramePublished(
-                at: observedFrame.capturedAt,
-                publishDurationMs: publishDurationMs,
-            )
+        sessionModel.livePreviewImage = observedFrame.image
+        lastLivePreviewPublishedAt = observedFrame.capturedAt
+        sessionMetrics.recordLivePreviewFramePublished(
+            at: observedFrame.capturedAt,
+            publishDurationMs: publishDurationMs,
+        )
+        if !sessionModel.isUsingLivePreview {
+            sessionModel.isUsingLivePreview = true
         }
-        sessionModel.isUsingLivePreview = true
         if !(commitScheduler?.isRunning ?? false), sessionModel.runtimeState != .paused {
-            sessionModel.runtimeState = .previewing
+            if sessionModel.runtimeState != .previewing {
+                sessionModel.runtimeState = .previewing
+            }
         }
         updatePreviewTruthState()
         if shouldLogLiveFrameSample(observedFrame) {
@@ -1558,23 +1578,19 @@ final class ScrollingCaptureCoordinator {
 
         let schedulerPendingCount = commitScheduler?.activeRequestCount ?? 0
         let pendingCommitCount = max(schedulerPendingCount, isRefreshingPreview ? 1 : 0)
-        sessionModel.pendingCommitCount = pendingCommitCount
 
-        let previewLagMs: Int = if let lastCapturedFrameAt {
-            if let lastCommittedObservationAt {
-                max(
-                    0,
-                    Int(((lastCapturedFrameAt - lastCommittedObservationAt) * 1_000).rounded()),
-                )
-            } else if sessionModel.isUsingLivePreview {
-                previewTruthLagToleranceMs + 1
-            } else {
-                0
-            }
-        } else {
-            0
+        let previewLagMs = Self.previewCommitLagMs(
+            latestCapturedAt: lastCapturedFrameAt,
+            lastCommittedObservationAt: lastCommittedObservationAt,
+            isUsingLivePreview: sessionModel.isUsingLivePreview,
+            toleranceMs: previewTruthLagToleranceMs,
+        )
+        if sessionModel.pendingCommitCount != pendingCommitCount {
+            sessionModel.pendingCommitCount = pendingCommitCount
         }
-        sessionModel.previewCommitLagMs = previewLagMs
+        if sessionModel.previewCommitLagMs != previewLagMs {
+            sessionModel.previewCommitLagMs = previewLagMs
+        }
 
         let previewTruthState: ScrollingCapturePreviewTruthState
         switch sessionModel.phase {
@@ -1611,7 +1627,9 @@ final class ScrollingCaptureCoordinator {
             previewTruthState = .saving
         }
 
-        sessionModel.previewTruthState = previewTruthState
+        if sessionModel.previewTruthState != previewTruthState {
+            sessionModel.previewTruthState = previewTruthState
+        }
         if previewTruthState == .liveAhead {
             sessionMetrics.recordPreviewTruthLiveAhead(lagMs: previewLagMs)
         }
