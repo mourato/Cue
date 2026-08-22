@@ -24,9 +24,21 @@ final class ScrollingCaptureCoordinator {
         acceptedFrameCount != previousAcceptedFrameCount || outputHeight != previousOutputHeight
     }
 
+    nonisolated static func shouldPublishLivePreviewFrame(
+        hasCommittedPreview: Bool,
+        capturedAt: TimeInterval,
+        lastPublishedAt: TimeInterval?,
+        minimumInterval: TimeInterval,
+    ) -> Bool {
+        guard hasCommittedPreview else { return true }
+        guard let lastPublishedAt else { return true }
+        return capturedAt - lastPublishedAt >= minimumInterval
+    }
+
     private let captureManager = ScreenCaptureManager.shared
     private let maxOutputHeight = ScrollingCaptureConfiguration.maxOutputHeight
     private let liveRefreshIntervalNanoseconds: UInt64 = 50_000_000
+    private let livePreviewUIRefreshInterval: TimeInterval = 1.0 / 12.0
     private let defaultMinimumRefreshSpacing: TimeInterval = 0.09
     private let fastMinimumRefreshSpacing: TimeInterval = 0.06
     private let defaultScrollSettleDelay: TimeInterval = 0.05
@@ -86,6 +98,7 @@ final class ScrollingCaptureCoordinator {
     private var lastScheduledCommitSequenceNumber = 0
     private var lastScheduledCommitUpdate: ScrollingCaptureStitchUpdate?
     private var lastLivePreviewPublishedAt: TimeInterval?
+    private var lastCapturedFrameAt: TimeInterval?
     private var lastCommittedObservationAt: TimeInterval?
     private var onSessionEnded: (@MainActor () -> Void)?
 
@@ -130,6 +143,7 @@ final class ScrollingCaptureCoordinator {
         lastScheduledCommitSequenceNumber = 0
         lastScheduledCommitUpdate = nil
         lastLivePreviewPublishedAt = nil
+        lastCapturedFrameAt = nil
         lastCommittedObservationAt = nil
         sessionMetrics = ScrollingCaptureSessionMetrics()
         didFlushSessionMetrics = false
@@ -217,6 +231,7 @@ final class ScrollingCaptureCoordinator {
         lastScheduledCommitSequenceNumber = 0
         lastScheduledCommitUpdate = nil
         lastLivePreviewPublishedAt = nil
+        lastCapturedFrameAt = nil
         lastCommittedObservationAt = nil
         sessionMetrics = ScrollingCaptureSessionMetrics()
         didFlushSessionMetrics = false
@@ -895,6 +910,7 @@ final class ScrollingCaptureCoordinator {
         lastScheduledCommitSequenceNumber = 0
         lastScheduledCommitUpdate = nil
         lastLivePreviewPublishedAt = nil
+        lastCapturedFrameAt = nil
         lastCommittedObservationAt = nil
         sessionModel.previewImage = nil
         sessionModel.livePreviewImage = nil
@@ -1198,6 +1214,7 @@ final class ScrollingCaptureCoordinator {
         liveFrameSource = nil
         liveFrameRing.reset()
         lastLivePreviewPublishedAt = nil
+        lastCapturedFrameAt = nil
         if clearImage {
             sessionModel?.livePreviewImage = nil
         }
@@ -1211,17 +1228,26 @@ final class ScrollingCaptureCoordinator {
         let publishStartedAt = CFAbsoluteTimeGetCurrent()
         let observedFrame = liveFrameRing.append(frame)
         livePreviewFrameSequence = observedFrame.sequenceNumber
-        sessionModel.livePreviewImage = observedFrame.image
+        lastCapturedFrameAt = observedFrame.capturedAt
+        let shouldPublish = Self.shouldPublishLivePreviewFrame(
+            hasCommittedPreview: sessionModel.previewImage != nil,
+            capturedAt: observedFrame.capturedAt,
+            lastPublishedAt: lastLivePreviewPublishedAt,
+            minimumInterval: livePreviewUIRefreshInterval,
+        )
+        let publishDurationMs = Self.elapsedMilliseconds(since: publishStartedAt)
+        if shouldPublish {
+            sessionModel.livePreviewImage = observedFrame.image
+            lastLivePreviewPublishedAt = observedFrame.capturedAt
+            sessionMetrics.recordLivePreviewFramePublished(
+                at: observedFrame.capturedAt,
+                publishDurationMs: publishDurationMs,
+            )
+        }
         sessionModel.isUsingLivePreview = true
         if !(commitScheduler?.isRunning ?? false), sessionModel.runtimeState != .paused {
             sessionModel.runtimeState = .previewing
         }
-        lastLivePreviewPublishedAt = observedFrame.capturedAt
-        let publishDurationMs = Self.elapsedMilliseconds(since: publishStartedAt)
-        sessionMetrics.recordLivePreviewFramePublished(
-            at: observedFrame.capturedAt,
-            publishDurationMs: publishDurationMs,
-        )
         updatePreviewTruthState()
         if shouldLogLiveFrameSample(observedFrame) {
             logScrollingCaptureDebug(
@@ -1534,11 +1560,11 @@ final class ScrollingCaptureCoordinator {
         let pendingCommitCount = max(schedulerPendingCount, isRefreshingPreview ? 1 : 0)
         sessionModel.pendingCommitCount = pendingCommitCount
 
-        let previewLagMs: Int = if let lastLivePreviewPublishedAt {
+        let previewLagMs: Int = if let lastCapturedFrameAt {
             if let lastCommittedObservationAt {
                 max(
                     0,
-                    Int(((lastLivePreviewPublishedAt - lastCommittedObservationAt) * 1_000).rounded()),
+                    Int(((lastCapturedFrameAt - lastCommittedObservationAt) * 1_000).rounded()),
                 )
             } else if sessionModel.isUsingLivePreview {
                 previewTruthLagToleranceMs + 1
