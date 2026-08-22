@@ -222,6 +222,62 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
     func testMergedImage_preservesAcceptedRowOrder() {
         let stitcher = ScrollingCaptureStitcher()
         guard let image1 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 0),
+              let image2 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 20),
+              let image3 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 40) else {
+            XCTFail("Failed to create scrolling frames")
+            return
+        }
+
+        _ = stitcher.start(with: image1)
+        let firstUpdate = stitcher.append(
+            image2,
+            maxOutputHeight: 10_000,
+            expectedSignedDeltaPixels: 20,
+        )
+        let secondUpdate = stitcher.append(
+            image3,
+            maxOutputHeight: 10_000,
+            expectedSignedDeltaPixels: 20,
+        )
+
+        guard case .appended(let firstDeltaY) = firstUpdate?.outcome,
+              case .appended(let secondDeltaY) = secondUpdate?.outcome,
+              let merged = stitcher.mergedImage() else {
+            XCTFail("Expected two merged appends")
+            return
+        }
+        XCTAssertEqual(firstDeltaY, 20)
+        XCTAssertEqual(secondDeltaY, 20)
+        XCTAssertEqual(stitcher.acceptedFrameCount, 3)
+        XCTAssertEqual(merged.width, 80)
+        XCTAssertEqual(merged.height, 200)
+
+        for row in 0 ..< merged.height {
+            XCTAssertEqual(
+                pixelSignature(in: merged, row: row),
+                pixelSignature(forLogicalRow: row),
+                "Unexpected merged pixel at row \(row)",
+            )
+        }
+
+        guard let preview = stitcher.previewImage(maxPixelWidth: 80, maxPixelHeight: 200) else {
+            XCTFail("Expected a full-size preview")
+            return
+        }
+        XCTAssertEqual(preview.width, merged.width)
+        XCTAssertEqual(preview.height, merged.height)
+        for row in 0 ..< preview.height {
+            XCTAssertEqual(
+                pixelSignature(in: preview, row: row),
+                pixelSignature(forLogicalRow: row),
+                "Unexpected preview pixel at row \(row)",
+            )
+        }
+    }
+
+    func testAppend_clampsAcceptedDeltaToMaxOutputHeight() {
+        let stitcher = ScrollingCaptureStitcher()
+        guard let image1 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 0),
               let image2 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 20) else {
             XCTFail("Failed to create scrolling frames")
             return
@@ -230,23 +286,25 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
         _ = stitcher.start(with: image1)
         let update = stitcher.append(
             image2,
-            maxOutputHeight: 10_000,
+            maxOutputHeight: 175,
             expectedSignedDeltaPixels: 20,
         )
 
-        guard case .appended(let deltaY) = update?.outcome,
+        guard case .reachedHeightLimit = update?.outcome,
               let merged = stitcher.mergedImage() else {
-            XCTFail("Expected a merged append")
+            XCTFail("Expected a height-limited append")
             return
         }
-        XCTAssertEqual(deltaY, 20)
-        XCTAssertEqual(merged.width, 80)
-        XCTAssertEqual(merged.height, 180)
-
-        XCTAssertEqual(pixelSignature(in: merged, row: 0), pixelSignature(forLogicalRow: 0))
-        XCTAssertEqual(pixelSignature(in: merged, row: 159), pixelSignature(forLogicalRow: 159))
-        XCTAssertEqual(pixelSignature(in: merged, row: 160), pixelSignature(forLogicalRow: 160))
-        XCTAssertEqual(pixelSignature(in: merged, row: 179), pixelSignature(forLogicalRow: 179))
+        XCTAssertEqual(update?.acceptedFrameCount, 2)
+        XCTAssertEqual(update?.outputHeight, 175)
+        XCTAssertEqual(merged.height, 175)
+        for row in 0 ..< merged.height {
+            XCTAssertEqual(
+                pixelSignature(in: merged, row: row),
+                pixelSignature(forLogicalRow: row),
+                "Unexpected clamped pixel at row \(row)",
+            )
+        }
     }
 
     func testAppend_highConfidenceGuidedMatch_skipsVisionEstimate() {
