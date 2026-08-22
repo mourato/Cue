@@ -66,6 +66,9 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
 
         // Frame count should NOT increment for ignored frames
         XCTAssertEqual(stitcher.acceptedFrameCount, 1)
+        XCTAssertEqual(update?.outputHeight, 100)
+        XCTAssertEqual(update?.alignmentDebug?.path, .duplicateBoundary)
+        XCTAssertFalse(update?.alignmentDebug?.usedVisionEstimate ?? true)
     }
 
     // MARK: - append mismatched dimensions
@@ -188,6 +191,32 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
         default:
             XCTFail("Unexpected outcome: \(String(describing: update?.outcome))")
         }
+    }
+
+    func testAppend_wrongExpectedDelta_usesVisionRecovery() {
+        let stitcher = ScrollingCaptureStitcher()
+        guard let image1 = TestImageFactory.scrollingFrame(width: 200, height: 160, logicalYOffset: 0),
+              let image2 = TestImageFactory.scrollingFrame(width: 200, height: 160, logicalYOffset: 20) else {
+            XCTFail("Failed to create scrolling frames")
+            return
+        }
+
+        _ = stitcher.start(with: image1)
+        let update = stitcher.append(
+            image2,
+            maxOutputHeight: 10_000,
+            expectedSignedDeltaPixels: 70,
+        )
+
+        if case .appended(let deltaY) = update?.outcome {
+            XCTAssertEqual(deltaY, 20)
+        } else {
+            XCTFail("Expected Vision recovery to append 20 pixels, got: \(String(describing: update?.outcome))")
+        }
+        XCTAssertEqual(update?.alignmentDebug?.path, .recoveryVision)
+        XCTAssertTrue(update?.alignmentDebug?.usedVisionEstimate ?? false)
+        XCTAssertEqual(update?.acceptedFrameCount, 2)
+        XCTAssertEqual(update?.outputHeight, 180)
     }
 
     func testAppend_highConfidenceGuidedMatch_skipsVisionEstimate() {
@@ -329,5 +358,8 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
         let update = stitcher.append(image2, maxOutputHeight: 10000)
 
         XCTAssertEqual(update?.safety, .unsafe (reason: "alignment-failed"))
+        XCTAssertEqual(update?.acceptedFrameCount, 1)
+        XCTAssertEqual(update?.outputHeight, 100)
+        XCTAssertEqual(update?.alignmentDebug?.path, .alignmentFailed)
     }
 }

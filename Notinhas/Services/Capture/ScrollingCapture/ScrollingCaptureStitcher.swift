@@ -414,6 +414,23 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             searchMode: .guided,
         )
 
+        if frameDifference < 8.5, fastGuidedMatch == nil {
+            return currentUpdate(
+                outcome: .ignoredNoMovement,
+                includeMergedImage: renderMergedImage,
+                likelyReachedBoundary: true,
+                alignmentDebug: ScrollingCaptureAlignmentDebugInfo(
+                    path: .duplicateBoundary,
+                    usedVisionEstimate: false,
+                    confidence: 1,
+                    pixelScore: nil,
+                    totalScore: nil,
+                    appendDeltaY: nil,
+                    visionAgreementCount: 0,
+                ),
+            )
+        }
+
         var alignmentPath: ScrollingCaptureAlignmentPath = .fastGuided
         var match = fastGuidedMatch
         var visionAlignmentEstimate: VisionAlignmentEstimate?
@@ -451,7 +468,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             )
         }
 
-        if needsVision {
+        if needsVision, let visionAlignmentEstimate {
             let guidedVisionMatch = bestMatch(
                 previous: lastRaster,
                 current: raster,
@@ -490,7 +507,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 visionAlignmentEstimate: visionAlignmentEstimate,
                 searchMode: .recovery,
             )
-            alignmentPath = .recoveryVision
+            alignmentPath = visionAlignmentEstimate == nil ? .alignmentFailed : .recoveryVision
         }
 
         if isLikelyDuplicateBoundary(
