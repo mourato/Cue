@@ -976,7 +976,7 @@ or push still require explicit authorization.
 | [100](100-scrolling-capture-lazy-vision.md) | Move Vision alignment to recovery/low-confidence paths | P1 | M | — | DONE (`94949769`; review fixes `fd0b80b0`, `b575fa10`) |
 | [101](101-scrolling-capture-compact-slices-and-ring.md) | Store only accepted strips and right-size the frame ring | P1 | M | 100 recommended | DONE (`2392accb`; review fixes `876505cd`) |
 | [102](102-scrolling-capture-bounded-preview-render.md) | Bound preview composition work | P1 | M | 101 | DONE (`9ab9f1d8`; review fix `f07ba6d3`) |
-| [103](103-scrolling-capture-live-preview-throttle.md) | Throttle live-preview UI work without slowing commits | P2 | M | 100–102 recommended | TODO |
+| [103](103-scrolling-capture-live-preview-throttle.md) | Throttle live-preview UI work without slowing commits | P2 | M | 100–102 recommended | DONE (`96950129`; review fix `88df48eb`) |
 
 ### Dependency notes (100–103)
 
