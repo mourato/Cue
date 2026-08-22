@@ -29,20 +29,21 @@
 
 ## Features
 
-Notinhas is a tailored fork focused on the capture → annotate → export loop for product designers handing work to developers and AI coding agents.
+Notinhas is a focused macOS visual-handoff tool for product designers. It turns a screenshot into a clear brief for developers and AI coding agents: capture an area, place numbered pins or rectangles, add concise notes, and copy the result.
 
-- **Area capture** with inline annotate, scrolling capture, OCR, and object cutout
-- **Notinhas notes**: numbered pins and rectangles with concise text on the annotate canvas
+- **Capture** with fullscreen, area, window, scrolling, OCR, smart element, and object cutout modes
+- **Visual annotation** with numbered pins, rectangles, and concise notes on the annotate canvas
 - **Clipboard-ready export**: copy the annotated image and structured note brief in one action
 - **Quick Access** floating panel after capture with copy, edit, and drag-to-app
 - **Capture history** with editable annotation restore for committed screenshot sessions
+- **Explicit sharing** from Annotate and Quick Access through the selected ImgBB or ImageKit image host
 - **Configurable shortcuts** with system conflict detection
 - **Localization**: English, Vietnamese, Simplified Chinese, Traditional Chinese, Spanish, Japanese, Korean, Russian, French, and German
 - **Portable preferences** via `~/.config/notinhas/config.toml` (export/import, launch-time auto-apply)
 - **Local diagnostics** with on-disk log retention (no telemetry)
 - **Optional Video module** (compile-time): screen recording and Video Editor — off by default; enable under **Preferences → Advanced** when built with the Video scheme
 
-Inherited upstream capture and annotate capabilities remain available; see [docs/README.md](docs/README.md) for the full engineering map.
+The core workflow is local and explicit: captures, history, annotations, and exports stay on the Mac unless you choose to share an image with a configured host. See [docs/README.md](docs/README.md) for the full engineering map.
 
 ## Install
 
@@ -56,8 +57,6 @@ Inherited upstream capture and annotate capabilities remain available; see [docs
 4. Launch Notinhas
 5. Grant **Screen Recording** (and **Accessibility** if prompted for shortcuts) in System Settings
 6. Re-launch after granting permissions if macOS asks
-
-Upgrading from Snapzy? See [docs/MIGRATION.md](docs/MIGRATION.md) for data migration and mandatory TCC reauthorization.
 
 ### Shell script
 
@@ -114,8 +113,6 @@ Notinhas registers the `notinhas://` URL scheme. Toggle integration under **Sett
 
 Full route table: [docs/SHORTCUTS.md](docs/SHORTCUTS.md).
 
-Legacy `snapzy://` URLs are **not** registered and are ignored at runtime.
-
 ## Development
 
 Start with [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for Xcode setup and `./scripts/build_and_run.sh`.
@@ -145,7 +142,7 @@ make test   # run the default XCTest suite
 
 - [Docs map](docs/README.md)
 - [Product references](docs/REFERENCES.md)
-- [Migration from Snapzy](docs/MIGRATION.md)
+- [Migration guide](docs/MIGRATION.md)
 - [Project structure](docs/STRUCTURE.md)
 - [App lifecycle](docs/APP_LIFECYCLE.md)
 - [Capture flows](docs/CAPTURE.md) · [Annotate](docs/ANNOTATE.md) · [Post-capture](docs/POST_CAPTURE.md)
@@ -156,13 +153,13 @@ make test   # run the default XCTest suite
 
 ## Security
 
-Notinhas runs with hardened runtime and minimal entitlements. Network use is limited to user-initiated cloud uploads (when configured) and local OAuth loopback for Google Drive — no telemetry, no automatic update checks, no third-party analytics.
+Notinhas runs with hardened runtime and minimal entitlements. Network use is limited to explicit uploads to a configured image host — no telemetry, no automatic update checks, and no third-party analytics.
 
 Report vulnerabilities privately via [GitHub Security Advisories](https://github.com/mourato/Notinhas/security/advisories/new). See [SECURITY.md](SECURITY.md).
 
 ## Contributing
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. This repository tracks `mourato/Notinhas`; upstream Snapzy lives at [duongductrong/Snapzy](https://github.com/duongductrong/Snapzy).
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. Contributions should follow the current Notinhas product direction.
 
 ## License
 
