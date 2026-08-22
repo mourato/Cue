@@ -87,7 +87,7 @@ flowchart TD
 - **Duplicate-boundary rejection**: near-zero frame difference with no strong Vision movement and no match (or a likely duplicate boundary) yields `ignoredNoMovement` with `likelyReachedBoundary = true`, which powers end-of-content guidance and auto-finish.
 - **Safety**: `ScrollingCaptureStitchSafety` marks each update `confirmed`, `tentative(reason)`, or `unsafe(reason)`; final output is built from accepted slices only.
 - **Outcomes**: `initialized`, `appended(deltaY)`, `ignoredNoMovement`, `ignoredAlignmentFailed`, `reachedHeightLimit`. Appends clamp to the remaining `maxOutputHeight` budget (`ScrollingCaptureConfiguration.maxOutputHeight = 32768` px).
-- **Output**: `mergedImage()` concatenates accepted slices into the final `CGImage` (cached until the next append); `previewImage(maxPixelWidth:maxPixelHeight:)` renders the downscaled rail thumbnail (2x render scale) so the visible preview grows as slices are accepted.
+- **Output**: `mergedImage()` concatenates accepted slices into the final `CGImage` (cached until the next append); `previewImage(maxPixelWidth:maxPixelHeight:)` draws compact accepted strips into a bounded downscaled rail thumbnail (2x render scale), cached until the accepted output changes. Ignored stitch outcomes retain the last preview.
 
 ## Auto Scroll
 

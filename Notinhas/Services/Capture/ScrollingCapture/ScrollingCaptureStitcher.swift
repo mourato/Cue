@@ -341,6 +341,8 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
     private var trailingStaticWidth = 0
     private var mergeDirection: ScrollingCaptureMergeDirection = .unresolved
     private var cachedMergedImage: CGImage?
+    private var cachedPreviewImage: CGImage?
+    private var cachedPreviewBounds: (width: Int, height: Int)?
     private var lastMatch: Match?
     private var matchNotFoundCount = 0
 
@@ -362,6 +364,8 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         trailingStaticWidth = 0
         mergeDirection = .unresolved
         cachedMergedImage = image
+        cachedPreviewImage = nil
+        cachedPreviewBounds = nil
         lastMatch = nil
         matchNotFoundCount = 0
         acceptedFrameCount = 1
@@ -551,17 +555,25 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             )
         }
 
-        if mergeDirection == .unresolved {
-            mergeDirection = match.direction
-            headerHeight = inferredHeaderHeight
-            footerHeight = inferredFooterHeight
-            leadingStaticWidth = inferredLeadingStaticWidth
-            trailingStaticWidth = inferredTrailingStaticWidth
-            bootstrapContentSlices(with: baseRaster)
-        }
-
-        let remainingHeight = maxOutputHeight - outputHeight
+        let isBootstrapping = mergeDirection == .unresolved
+        let candidateHeaderHeight = isBootstrapping ? inferredHeaderHeight : headerHeight
+        let candidateFooterHeight = isBootstrapping ? inferredFooterHeight : footerHeight
+        let candidateOutputHeight = isBootstrapping
+            ? max(1, baseRaster.height - candidateHeaderHeight - candidateFooterHeight)
+            : outputHeight
+        let remainingHeight = maxOutputHeight - candidateOutputHeight
         guard remainingHeight > 0 else {
+            if isBootstrapping {
+                mergeDirection = match.direction
+                headerHeight = candidateHeaderHeight
+                footerHeight = candidateFooterHeight
+                leadingStaticWidth = inferredLeadingStaticWidth
+                trailingStaticWidth = inferredTrailingStaticWidth
+                bootstrapContentSlices(with: baseRaster)
+                cachedMergedImage = nil
+                cachedPreviewImage = nil
+                cachedPreviewBounds = nil
+            }
             return currentUpdate(
                 outcome: .reachedHeightLimit,
                 includeMergedImage: renderMergedImage,
@@ -575,7 +587,13 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         }
 
         let acceptedDelta = min(match.deltaY, remainingHeight)
-        guard let sliceStart = sliceStartRow(for: match.direction, in: raster, deltaY: acceptedDelta) else {
+        guard let sliceStart = sliceStartRow(
+            for: match.direction,
+            in: raster,
+            deltaY: acceptedDelta,
+            headerHeight: candidateHeaderHeight,
+            footerHeight: candidateFooterHeight,
+        ) else {
             matchNotFoundCount += 1
             return currentUpdate(
                 outcome: .ignoredAlignmentFailed,
@@ -592,6 +610,14 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             )
         }
 
+        if isBootstrapping {
+            mergeDirection = match.direction
+            headerHeight = candidateHeaderHeight
+            footerHeight = candidateFooterHeight
+            leadingStaticWidth = inferredLeadingStaticWidth
+            trailingStaticWidth = inferredTrailingStaticWidth
+            bootstrapContentSlices(with: baseRaster)
+        }
         contentSlices.append(ContentSlice(raster: raster.croppedRows(startRow: sliceStart, rowCount: acceptedDelta)))
         self.lastRaster = raster
         lastMatch = Match(
@@ -607,6 +633,8 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         matchNotFoundCount = 0
         acceptedFrameCount += 1
         cachedMergedImage = nil
+        cachedPreviewImage = nil
+        cachedPreviewBounds = nil
 
         let outcome: ScrollingCaptureStitchOutcome = acceptedDelta < match.deltaY
             ? .reachedHeightLimit
@@ -662,6 +690,10 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         guard let baseRaster else { return nil }
         let safeMaxPixelWidth = max(1, maxPixelWidth)
         let safeMaxPixelHeight = max(1, maxPixelHeight)
+        if cachedPreviewBounds?.width == safeMaxPixelWidth,
+           cachedPreviewBounds?.height == safeMaxPixelHeight {
+            return cachedPreviewImage
+        }
         let targetScale = min(
             1,
             Double(safeMaxPixelWidth) / Double(baseRaster.width),
@@ -711,7 +743,10 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             destinationRow += slice.raster.height
         }
 
-        return context.makeImage()
+        let preview = context.makeImage()
+        cachedPreviewBounds = (safeMaxPixelWidth, safeMaxPixelHeight)
+        cachedPreviewImage = preview
+        return preview
     }
 
     private func currentUpdate(
@@ -771,6 +806,8 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         for direction: ScrollingCaptureMergeDirection,
         in raster: RasterImage,
         deltaY: Int,
+        headerHeight: Int,
+        footerHeight: Int,
     ) -> Int? {
         switch direction {
         case .appendFromBottom:

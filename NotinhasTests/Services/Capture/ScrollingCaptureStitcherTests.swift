@@ -153,6 +153,46 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
         XCTAssertNil(stitcher.previewImage(maxPixelWidth: 200, maxPixelHeight: 200))
     }
 
+    func testPreviewImage_ignoredFrame_reusesPreviousPreview() {
+        let stitcher = ScrollingCaptureStitcher()
+        guard let image = TestImageFactory.solidColor(width: 200, height: 100) else {
+            XCTFail("Failed to create test image")
+            return
+        }
+
+        _ = stitcher.start(with: image)
+        guard let firstPreview = stitcher.previewImage(maxPixelWidth: 100, maxPixelHeight: 100) else {
+            XCTFail("Expected initial preview")
+            return
+        }
+
+        let update = stitcher.append(image, maxOutputHeight: 10_000)
+        XCTAssertEqual(update?.acceptedFrameCount, 1)
+        XCTAssertEqual(update?.outputHeight, 100)
+        XCTAssertTrue(firstPreview === stitcher.previewImage(maxPixelWidth: 100, maxPixelHeight: 100))
+    }
+
+    func testPreviewImage_alignmentFailure_reusesPreviousPreview() {
+        let stitcher = ScrollingCaptureStitcher()
+        guard let image = TestImageFactory.solidColor(width: 200, height: 100),
+              let mismatchedImage = TestImageFactory.solidColor(width: 300, height: 100) else {
+            XCTFail("Failed to create test images")
+            return
+        }
+
+        _ = stitcher.start(with: image)
+        guard let firstPreview = stitcher.previewImage(maxPixelWidth: 100, maxPixelHeight: 100) else {
+            XCTFail("Expected initial preview")
+            return
+        }
+
+        let update = stitcher.append(mismatchedImage, maxOutputHeight: 10_000)
+        if case .ignoredAlignmentFailed = update?.outcome {} else {
+            XCTFail("Expected alignment failure")
+        }
+        XCTAssertTrue(firstPreview === stitcher.previewImage(maxPixelWidth: 100, maxPixelHeight: 100))
+    }
+
     // MARK: - append with shifted content (integration)
 
     func testAppend_shiftedContent_appendsOrFailsAlignment() {
@@ -305,6 +345,98 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
                 "Unexpected clamped pixel at row \(row)",
             )
         }
+    }
+
+    func testAppend_bootstrapHeightLimit_commitsCompactOutputAndPreview() {
+        let stitcher = ScrollingCaptureStitcher()
+        guard let image1 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 0),
+              let image2 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 20) else {
+            XCTFail("Failed to create scrolling frames")
+            return
+        }
+
+        _ = stitcher.start(with: image1)
+        let update = stitcher.append(
+            image2,
+            maxOutputHeight: 100,
+            expectedSignedDeltaPixels: 20,
+        )
+
+        guard case .reachedHeightLimit = update?.outcome,
+              let merged = stitcher.mergedImage(),
+              let preview = stitcher.previewImage(maxPixelWidth: 80, maxPixelHeight: 100) else {
+            XCTFail("Expected a committed bootstrap height-limit result")
+            return
+        }
+        XCTAssertEqual(merged.height, 160)
+        XCTAssertEqual(preview.width, 50)
+        XCTAssertEqual(preview.height, 100)
+        for row in 0 ..< merged.height {
+            XCTAssertEqual(
+                pixelSignature(in: merged, row: row),
+                pixelSignature(forLogicalRow: row),
+                "Unexpected merged pixel at row \(row)",
+            )
+        }
+    }
+
+    func testAppend_bootstrapRejected_preservesOutputAndPreview() {
+        let stitcher = ScrollingCaptureStitcher()
+        guard let image1 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 0),
+              let image2 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 20) else {
+            XCTFail("Failed to create scrolling frames")
+            return
+        }
+
+        _ = stitcher.start(with: image1)
+        guard let previousMerged = stitcher.mergedImage(),
+              let previousPreview = stitcher.previewImage(maxPixelWidth: 80, maxPixelHeight: 200) else {
+            XCTFail("Expected initial output")
+            return
+        }
+
+        let update = stitcher.append(
+            image2,
+            maxOutputHeight: 10,
+            expectedSignedDeltaPixels: 200,
+        )
+
+        guard case .ignoredAlignmentFailed = update?.outcome else {
+            XCTFail("Expected bootstrap append to be rejected")
+            return
+        }
+        XCTAssertEqual(stitcher.outputHeight, 160)
+        XCTAssertTrue(previousMerged === stitcher.mergedImage())
+        XCTAssertTrue(previousPreview === stitcher.previewImage(maxPixelWidth: 80, maxPixelHeight: 200))
+    }
+
+    // MARK: - coordinator preview publication
+
+    func testPreviewOutputChanged_onlyPublishesWhenOutputChanges() {
+        XCTAssertFalse(
+            ScrollingCaptureCoordinator.previewOutputChanged(
+                previousAcceptedFrameCount: 2,
+                previousOutputHeight: 200,
+                acceptedFrameCount: 2,
+                outputHeight: 200,
+            ),
+        )
+        XCTAssertTrue(
+            ScrollingCaptureCoordinator.previewOutputChanged(
+                previousAcceptedFrameCount: 2,
+                previousOutputHeight: 200,
+                acceptedFrameCount: 3,
+                outputHeight: 200,
+            ),
+        )
+        XCTAssertTrue(
+            ScrollingCaptureCoordinator.previewOutputChanged(
+                previousAcceptedFrameCount: 2,
+                previousOutputHeight: 200,
+                acceptedFrameCount: 2,
+                outputHeight: 240,
+            ),
+        )
     }
 
     func testAppend_highConfidenceGuidedMatch_skipsVisionEstimate() {
