@@ -447,27 +447,6 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             )
         }
 
-        let strongVisionMovement = hasStrongVisionMovement(visionAlignmentEstimate)
-        if
-            frameDifference < 8.5,
-            !strongVisionMovement,
-            fastGuidedMatch == nil {
-            return currentUpdate(
-                outcome: .ignoredNoMovement,
-                includeMergedImage: renderMergedImage,
-                likelyReachedBoundary: true,
-                alignmentDebug: ScrollingCaptureAlignmentDebugInfo(
-                    path: .duplicateBoundary,
-                    usedVisionEstimate: visionAlignmentEstimate != nil,
-                    confidence: 1,
-                    pixelScore: nil,
-                    totalScore: nil,
-                    appendDeltaY: nil,
-                    visionAgreementCount: 0,
-                ),
-            )
-        }
-
         if needsVision, let visionAlignmentEstimate {
             let guidedVisionMatch = bestMatch(
                 previous: lastRaster,
@@ -496,18 +475,22 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         }
 
         if match == nil {
-            match = bestMatch(
-                previous: lastRaster,
-                current: raster,
-                headerHeight: inferredHeaderHeight,
-                footerHeight: inferredFooterHeight,
-                leadingStaticWidth: inferredLeadingStaticWidth,
-                trailingStaticWidth: inferredTrailingStaticWidth,
-                expectedSignedDeltaPixels: nil,
-                visionAlignmentEstimate: visionAlignmentEstimate,
-                searchMode: .recovery,
-            )
-            alignmentPath = visionAlignmentEstimate == nil ? .alignmentFailed : .recoveryVision
+            if let visionAlignmentEstimate {
+                match = bestMatch(
+                    previous: lastRaster,
+                    current: raster,
+                    headerHeight: inferredHeaderHeight,
+                    footerHeight: inferredFooterHeight,
+                    leadingStaticWidth: inferredLeadingStaticWidth,
+                    trailingStaticWidth: inferredTrailingStaticWidth,
+                    expectedSignedDeltaPixels: nil,
+                    visionAlignmentEstimate: visionAlignmentEstimate,
+                    searchMode: .recovery,
+                )
+                alignmentPath = .recoveryVision
+            } else {
+                alignmentPath = .alignmentFailed
+            }
         }
 
         if isLikelyDuplicateBoundary(
