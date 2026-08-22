@@ -341,6 +341,8 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
     private var trailingStaticWidth = 0
     private var mergeDirection: ScrollingCaptureMergeDirection = .unresolved
     private var cachedMergedImage: CGImage?
+    private var cachedPreviewImage: CGImage?
+    private var cachedPreviewBounds: (width: Int, height: Int)?
     private var lastMatch: Match?
     private var matchNotFoundCount = 0
 
@@ -362,6 +364,8 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         trailingStaticWidth = 0
         mergeDirection = .unresolved
         cachedMergedImage = image
+        cachedPreviewImage = nil
+        cachedPreviewBounds = nil
         lastMatch = nil
         matchNotFoundCount = 0
         acceptedFrameCount = 1
@@ -607,6 +611,8 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         matchNotFoundCount = 0
         acceptedFrameCount += 1
         cachedMergedImage = nil
+        cachedPreviewImage = nil
+        cachedPreviewBounds = nil
 
         let outcome: ScrollingCaptureStitchOutcome = acceptedDelta < match.deltaY
             ? .reachedHeightLimit
@@ -662,6 +668,10 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         guard let baseRaster else { return nil }
         let safeMaxPixelWidth = max(1, maxPixelWidth)
         let safeMaxPixelHeight = max(1, maxPixelHeight)
+        if cachedPreviewBounds?.width == safeMaxPixelWidth,
+           cachedPreviewBounds?.height == safeMaxPixelHeight {
+            return cachedPreviewImage
+        }
         let targetScale = min(
             1,
             Double(safeMaxPixelWidth) / Double(baseRaster.width),
@@ -711,7 +721,10 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             destinationRow += slice.raster.height
         }
 
-        return context.makeImage()
+        let preview = context.makeImage()
+        cachedPreviewBounds = (safeMaxPixelWidth, safeMaxPixelHeight)
+        cachedPreviewImage = preview
+        return preview
     }
 
     private func currentUpdate(

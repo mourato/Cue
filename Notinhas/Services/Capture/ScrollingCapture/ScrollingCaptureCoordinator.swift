@@ -645,7 +645,9 @@ final class ScrollingCaptureCoordinator {
             if let mergedImage = update.mergedImage {
                 latestImage = mergedImage
             }
-            if let processedStitcher {
+            let outputChanged = update.acceptedFrameCount != sessionModel.acceptedFrameCount
+                || update.outputHeight != sessionModel.stitchedPixelHeight
+            if outputChanged, let processedStitcher {
                 sessionModel.previewImage =
                     makePreviewImage(from: processedStitcher)
                         ?? update.mergedImage

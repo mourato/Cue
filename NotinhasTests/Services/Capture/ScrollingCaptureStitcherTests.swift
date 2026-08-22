@@ -153,6 +153,46 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
         XCTAssertNil(stitcher.previewImage(maxPixelWidth: 200, maxPixelHeight: 200))
     }
 
+    func testPreviewImage_ignoredFrame_reusesPreviousPreview() {
+        let stitcher = ScrollingCaptureStitcher()
+        guard let image = TestImageFactory.solidColor(width: 200, height: 100) else {
+            XCTFail("Failed to create test image")
+            return
+        }
+
+        _ = stitcher.start(with: image)
+        guard let firstPreview = stitcher.previewImage(maxPixelWidth: 100, maxPixelHeight: 100) else {
+            XCTFail("Expected initial preview")
+            return
+        }
+
+        let update = stitcher.append(image, maxOutputHeight: 10_000)
+        XCTAssertEqual(update?.acceptedFrameCount, 1)
+        XCTAssertEqual(update?.outputHeight, 100)
+        XCTAssertTrue(firstPreview === stitcher.previewImage(maxPixelWidth: 100, maxPixelHeight: 100))
+    }
+
+    func testPreviewImage_alignmentFailure_reusesPreviousPreview() {
+        let stitcher = ScrollingCaptureStitcher()
+        guard let image = TestImageFactory.solidColor(width: 200, height: 100),
+              let mismatchedImage = TestImageFactory.solidColor(width: 300, height: 100) else {
+            XCTFail("Failed to create test images")
+            return
+        }
+
+        _ = stitcher.start(with: image)
+        guard let firstPreview = stitcher.previewImage(maxPixelWidth: 100, maxPixelHeight: 100) else {
+            XCTFail("Expected initial preview")
+            return
+        }
+
+        let update = stitcher.append(mismatchedImage, maxOutputHeight: 10_000)
+        if case .ignoredAlignmentFailed = update?.outcome {} else {
+            XCTFail("Expected alignment failure")
+        }
+        XCTAssertTrue(firstPreview === stitcher.previewImage(maxPixelWidth: 100, maxPixelHeight: 100))
+    }
+
     // MARK: - append with shifted content (integration)
 
     func testAppend_shiftedContent_appendsOrFailsAlignment() {
