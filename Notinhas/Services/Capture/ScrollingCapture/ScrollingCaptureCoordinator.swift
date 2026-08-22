@@ -47,7 +47,7 @@ final class ScrollingCaptureCoordinator {
     private var latestImage: CGImage?
     private var stitcher: ScrollingCaptureStitcher?
     private var liveFrameSource: ScrollingCaptureFrameSource?
-    private let liveFrameRing = ScrollingCaptureFrameRing(capacity: 8)
+    private let liveFrameRing = ScrollingCaptureFrameRing(capacity: 2)
     private var commitScheduler: ScrollingCaptureCommitScheduler?
     private var sessionMetrics = ScrollingCaptureSessionMetrics()
     private var didFlushSessionMetrics = false

@@ -33,7 +33,7 @@ final class ScrollingCaptureFrameRing {
     private(set) var frames: [ScrollingCaptureFrame] = []
     private(set) var lastCommittedSequenceNumber: Int?
 
-    init(capacity: Int = 8) {
+    init(capacity: Int = 2) {
         self.capacity = max(1, capacity)
     }
 
