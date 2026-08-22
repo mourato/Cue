@@ -15,6 +15,15 @@ import ScreenCaptureKit
 final class ScrollingCaptureCoordinator {
     static let shared = ScrollingCaptureCoordinator()
 
+    nonisolated static func previewOutputChanged(
+        previousAcceptedFrameCount: Int,
+        previousOutputHeight: Int,
+        acceptedFrameCount: Int,
+        outputHeight: Int,
+    ) -> Bool {
+        acceptedFrameCount != previousAcceptedFrameCount || outputHeight != previousOutputHeight
+    }
+
     private let captureManager = ScreenCaptureManager.shared
     private let maxOutputHeight = ScrollingCaptureConfiguration.maxOutputHeight
     private let liveRefreshIntervalNanoseconds: UInt64 = 50_000_000
@@ -645,8 +654,12 @@ final class ScrollingCaptureCoordinator {
             if let mergedImage = update.mergedImage {
                 latestImage = mergedImage
             }
-            let outputChanged = update.acceptedFrameCount != sessionModel.acceptedFrameCount
-                || update.outputHeight != sessionModel.stitchedPixelHeight
+            let outputChanged = Self.previewOutputChanged(
+                previousAcceptedFrameCount: sessionModel.acceptedFrameCount,
+                previousOutputHeight: sessionModel.stitchedPixelHeight,
+                acceptedFrameCount: update.acceptedFrameCount,
+                outputHeight: update.outputHeight,
+            )
             if outputChanged, let processedStitcher {
                 sessionModel.previewImage =
                     makePreviewImage(from: processedStitcher)

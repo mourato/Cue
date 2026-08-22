@@ -555,17 +555,25 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             )
         }
 
-        if mergeDirection == .unresolved {
-            mergeDirection = match.direction
-            headerHeight = inferredHeaderHeight
-            footerHeight = inferredFooterHeight
-            leadingStaticWidth = inferredLeadingStaticWidth
-            trailingStaticWidth = inferredTrailingStaticWidth
-            bootstrapContentSlices(with: baseRaster)
-        }
-
-        let remainingHeight = maxOutputHeight - outputHeight
+        let isBootstrapping = mergeDirection == .unresolved
+        let candidateHeaderHeight = isBootstrapping ? inferredHeaderHeight : headerHeight
+        let candidateFooterHeight = isBootstrapping ? inferredFooterHeight : footerHeight
+        let candidateOutputHeight = isBootstrapping
+            ? max(1, baseRaster.height - candidateHeaderHeight - candidateFooterHeight)
+            : outputHeight
+        let remainingHeight = maxOutputHeight - candidateOutputHeight
         guard remainingHeight > 0 else {
+            if isBootstrapping {
+                mergeDirection = match.direction
+                headerHeight = candidateHeaderHeight
+                footerHeight = candidateFooterHeight
+                leadingStaticWidth = inferredLeadingStaticWidth
+                trailingStaticWidth = inferredTrailingStaticWidth
+                bootstrapContentSlices(with: baseRaster)
+                cachedMergedImage = nil
+                cachedPreviewImage = nil
+                cachedPreviewBounds = nil
+            }
             return currentUpdate(
                 outcome: .reachedHeightLimit,
                 includeMergedImage: renderMergedImage,
@@ -579,7 +587,13 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         }
 
         let acceptedDelta = min(match.deltaY, remainingHeight)
-        guard let sliceStart = sliceStartRow(for: match.direction, in: raster, deltaY: acceptedDelta) else {
+        guard let sliceStart = sliceStartRow(
+            for: match.direction,
+            in: raster,
+            deltaY: acceptedDelta,
+            headerHeight: candidateHeaderHeight,
+            footerHeight: candidateFooterHeight,
+        ) else {
             matchNotFoundCount += 1
             return currentUpdate(
                 outcome: .ignoredAlignmentFailed,
@@ -596,6 +610,14 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             )
         }
 
+        if isBootstrapping {
+            mergeDirection = match.direction
+            headerHeight = candidateHeaderHeight
+            footerHeight = candidateFooterHeight
+            leadingStaticWidth = inferredLeadingStaticWidth
+            trailingStaticWidth = inferredTrailingStaticWidth
+            bootstrapContentSlices(with: baseRaster)
+        }
         contentSlices.append(ContentSlice(raster: raster.croppedRows(startRow: sliceStart, rowCount: acceptedDelta)))
         self.lastRaster = raster
         lastMatch = Match(
@@ -784,6 +806,8 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         for direction: ScrollingCaptureMergeDirection,
         in raster: RasterImage,
         deltaY: Int,
+        headerHeight: Int,
+        footerHeight: Int,
     ) -> Int? {
         switch direction {
         case .appendFromBottom:
