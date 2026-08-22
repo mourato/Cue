@@ -19,6 +19,23 @@ final class ScrollingCaptureWindowSharingTests: XCTestCase {
         XCTAssertEqual(window.sharingType, NSWindow.SharingType.none)
     }
 
+    func testPreviewLayoutSignature_ignoresSameSizeImageReplacement() throws {
+        let model = ScrollingCaptureSessionModel(selectedRect: sampleAnchorRect)
+        model.livePreviewImage = try XCTUnwrap(TestImageFactory.solidColor(width: 220, height: 160))
+        let first = ScrollingCapturePreviewWindow.layoutSignature(
+            for: model,
+            anchorRect: sampleAnchorRect,
+        )
+
+        model.livePreviewImage = try XCTUnwrap(TestImageFactory.solidColor(width: 220, height: 160, red: 40))
+        let second = ScrollingCapturePreviewWindow.layoutSignature(
+            for: model,
+            anchorRect: sampleAnchorRect,
+        )
+
+        XCTAssertEqual(first, second)
+    }
+
     func testHUDWindow_isExcludedFromScreenCapture() {
         let model = ScrollingCaptureSessionModel(selectedRect: sampleAnchorRect)
         let window = ScrollingCaptureHUDWindow(
@@ -44,6 +61,86 @@ final class ScrollingCaptureWindowSharingTests: XCTestCase {
 
     private var sampleAnchorRect: CGRect {
         CGRect(x: 120, y: 120, width: 360, height: 480)
+    }
+}
+
+final class ScrollingCaptureLivePreviewPolicyTests: XCTestCase {
+    func testLivePreviewPolicy_keepsFirstCommittedPreviewResponsive() {
+        XCTAssertTrue(
+            ScrollingCaptureCoordinator.shouldPublishLivePreviewFrame(
+                hasCommittedPreview: false,
+                capturedAt: 1,
+                lastPublishedAt: 0.99,
+                minimumInterval: 1.0 / 12.0,
+            ),
+        )
+    }
+
+    func testLivePreviewPolicy_throttlesOnlyAfterCommittedPreview() {
+        XCTAssertFalse(
+            ScrollingCaptureCoordinator.shouldPublishLivePreviewFrame(
+                hasCommittedPreview: true,
+                capturedAt: 1.05,
+                lastPublishedAt: 1,
+                minimumInterval: 1.0 / 12.0,
+            ),
+        )
+        XCTAssertTrue(
+            ScrollingCaptureCoordinator.shouldPublishLivePreviewFrame(
+                hasCommittedPreview: true,
+                capturedAt: 1.1,
+                lastPublishedAt: 1,
+                minimumInterval: 1.0 / 12.0,
+            ),
+        )
+    }
+
+    func testPreviewTruthLag_usesNewestCapturedTimestamp() {
+        XCTAssertEqual(
+            ScrollingCaptureCoordinator.previewCommitLagMs(
+                latestCapturedAt: 10,
+                lastCommittedObservationAt: 9.875,
+                isUsingLivePreview: true,
+                toleranceMs: 90,
+            ),
+            125,
+        )
+        XCTAssertEqual(
+            ScrollingCaptureCoordinator.previewCommitLagMs(
+                latestCapturedAt: 10,
+                lastCommittedObservationAt: nil,
+                isUsingLivePreview: true,
+                toleranceMs: 90,
+            ),
+            91,
+        )
+    }
+
+    func testSkippedLivePreviewFrame_remainsAvailableToCommitRing() {
+        let ring = ScrollingCaptureFrameRing()
+        ring.append(frame(sequenceNumber: 1, capturedAt: 1))
+        ring.markCommitted(sequenceNumber: 1)
+
+        XCTAssertFalse(
+            ScrollingCaptureCoordinator.shouldPublishLivePreviewFrame(
+                hasCommittedPreview: true,
+                capturedAt: 1.05,
+                lastPublishedAt: 1,
+                minimumInterval: 1.0 / 12.0,
+            ),
+        )
+
+        ring.append(frame(sequenceNumber: 2, capturedAt: 1.05))
+        XCTAssertEqual(ring.latestFrame(after: ring.lastCommittedSequenceNumber)?.sequenceNumber, 2)
+    }
+
+    private func frame(sequenceNumber: Int, capturedAt: TimeInterval) -> ScrollingCaptureFrame {
+        ScrollingCaptureFrame(
+            sequenceNumber: sequenceNumber,
+            image: TestImageFactory.solidColor(width: 2, height: 2)!,
+            capturedAt: capturedAt,
+            motionScore: nil,
+        )
     }
 }
 
