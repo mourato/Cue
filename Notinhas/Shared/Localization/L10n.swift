@@ -5493,6 +5493,11 @@ nonisolated enum L10n {
             defaultValue: "Camera overlay",
             comment: "Section title for the recorded camera picture-in-picture overlay",
         )
+        static let cameraMetadataInvalid = string(
+            "video-editor.camera-metadata-invalid",
+            defaultValue: "Camera data is unavailable. The screen track will be used.",
+            comment: "Warning shown when camera metadata does not match the source video tracks",
+        )
         static let showCamera = string(
             "video-editor.show-camera",
             defaultValue: "Show camera",

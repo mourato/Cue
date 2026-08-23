@@ -75,6 +75,13 @@
         var body: some View {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack(alignment: .leading, spacing: 16) {
+                    if state.cameraMetadataWasInvalid {
+                        Label(L10n.VideoEditor.cameraMetadataInvalid, systemImage: "exclamationmark.triangle")
+                            .font(.system(size: 10))
+                            .foregroundColor(.orange)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .accessibilityAddTraits(.isStaticText)
+                    }
                     if state.hasCameraTrack {
                         cameraOverlaySection
                         Divider()

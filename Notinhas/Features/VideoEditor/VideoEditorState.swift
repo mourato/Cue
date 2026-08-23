@@ -115,7 +115,10 @@
         @Published private(set) var cameraSize: CGSize = .zero
         @Published private(set) var cameraIsMirrored = false
         @Published private(set) var cameraMetadataWasInvalid = false
-        @Published var cameraOverlayLayout = VideoEditorCameraOverlayLayout.default
+        @Published var cameraOverlayLayout = VideoEditorCameraOverlayLayout.default {
+            didSet { cameraLayoutMutationCount += 1 }
+        }
+
         private(set) var cameraPlayer: AVPlayer?
         private var cameraComposition: AVMutableComposition?
 
@@ -304,6 +307,7 @@
         private var initialBackgroundCornerRadius: CGFloat = 0
         private var initialExportSettings: ExportSettings = .init()
         private var initialCameraOverlayLayout = VideoEditorCameraOverlayLayout.default
+        private var cameraLayoutMutationCount = 0
 
         @Published var quickAccessItemId: UUID?
 
@@ -529,14 +533,32 @@
                                                        cameraSize: nil, cameraIsMirrored: false,
                                                        cameraMetadataWasInvalid: false)
             }
-            let screenID = metadataTracks
-                .first(where: { $0.role == .screen && ids.contains(CMPersistentTrackID($0.trackID)) })?.trackID
-            let screen = videoTracks
-                .first(where: { $0.trackID == CMPersistentTrackID(screenID ?? Int(first.trackID)) }) ?? first
-            guard let camera = metadataTracks.first(where: { $0.role == .camera }) else {
+            let screenEntries = metadataTracks.filter { $0.role == .screen }
+            let cameraEntries = metadataTracks.filter { $0.role == .camera }
+            let cameraWasDeclared = !cameraEntries.isEmpty || metadataTracks.count > 1
+            guard screenEntries.count == 1, cameraEntries.count <= 1,
+                  !cameraWasDeclared || cameraEntries.count == 1 else {
+                return VideoEditorVideoTrackResolution(screenTrackID: first.trackID, cameraTrackID: nil,
+                                                       cameraSize: nil, cameraIsMirrored: false,
+                                                       cameraMetadataWasInvalid: true)
+            }
+            let screenEntry = screenEntries[0]
+            guard ids.contains(CMPersistentTrackID(screenEntry.trackID)) else {
+                return VideoEditorVideoTrackResolution(screenTrackID: first.trackID, cameraTrackID: nil,
+                                                       cameraSize: nil, cameraIsMirrored: false,
+                                                       cameraMetadataWasInvalid: true)
+            }
+            let screen = videoTracks.first(where: { $0.trackID == CMPersistentTrackID(screenEntry.trackID) }) ?? first
+            guard let camera = cameraEntries.first else {
                 return VideoEditorVideoTrackResolution(screenTrackID: screen.trackID, cameraTrackID: nil,
                                                        cameraSize: nil, cameraIsMirrored: false,
                                                        cameraMetadataWasInvalid: false)
+            }
+            guard camera.trackID != screenEntry.trackID,
+                  ids.contains(CMPersistentTrackID(camera.trackID)) else {
+                return VideoEditorVideoTrackResolution(screenTrackID: screen.trackID, cameraTrackID: nil,
+                                                       cameraSize: nil, cameraIsMirrored: camera.isMirrored,
+                                                       cameraMetadataWasInvalid: true)
             }
             guard let cameraTrack = videoTracks.first(where: { $0.trackID == CMPersistentTrackID(camera.trackID) })
             else {
@@ -621,6 +643,7 @@
                     )
                 }
                 let videoTracks = try await asset.loadTracks(withMediaType: .video)
+                let cameraLayoutMutationCountBeforeResolution = cameraLayoutMutationCount
                 if let resolution = try await Self.resolveVideoTracks(videoTracks, metadata: recordingMetadata) {
                     screenTrackID = resolution.screenTrackID
                     cameraTrackID = resolution.cameraTrackID
@@ -628,9 +651,16 @@
                     cameraIsMirrored = resolution.cameraIsMirrored
                     cameraMetadataWasInvalid = resolution.cameraMetadataWasInvalid
                     hasCameraTrack = resolution.cameraTrackID != nil && !isGIF
-                    if !hasCameraTrack {
+                    if cameraLayoutMutationCount == cameraLayoutMutationCountBeforeResolution, !hasCameraTrack {
                         cameraOverlayLayout.isVisible = false
                     }
+                    if cameraLayoutMutationCount == cameraLayoutMutationCountBeforeResolution
+                        ||
+                        (!hasCameraTrack && cameraLayoutMutationCount == cameraLayoutMutationCountBeforeResolution +
+                            1) {
+                        initialCameraOverlayLayout = cameraOverlayLayout
+                    }
+                    updateHasUnsavedChanges()
                     if hasCameraTrack {
                         await prepareCameraPreview(trackID: resolution.cameraTrackID!)
                     }

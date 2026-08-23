@@ -61,6 +61,7 @@
                     .padding(scaledPadding)
                     if let cameraPlayer = state.cameraPlayer, state.cameraOverlayLayout.isVisible {
                         cameraOverlay(cameraPlayer, in: videoCanvasSize)
+                            .padding(scaledPadding)
                     }
                 }
                 .frame(width: compositeSize.width, height: compositeSize.height)

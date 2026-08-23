@@ -52,6 +52,44 @@
             XCTAssertTrue(result?.cameraMetadataWasInvalid == true)
         }
 
+        func testCameraMetadataWithoutScreenRoleIsInvalid() async throws {
+            let composition = AVMutableComposition()
+            let camera = try XCTUnwrap(composition.addMutableTrack(withMediaType: .video, preferredTrackID: 42))
+            let metadata = RecordingMetadata(captureSize: CGSize(width: 1280, height: 720), samplesPerSecond: 30,
+                                             mouseSamples: [], videoSourceTracks: [
+                                                 RecordingVideoSourceTrack(trackID: 42, role: .camera),
+                                             ])
+            let result = try await VideoEditorState.resolveVideoTracks([camera], metadata: metadata)
+            XCTAssertNil(result?.cameraTrackID)
+            XCTAssertTrue(result?.cameraMetadataWasInvalid == true)
+        }
+
+        func testCameraMetadataWithDuplicateRolesIsInvalid() async throws {
+            let composition = AVMutableComposition()
+            let screen = try XCTUnwrap(composition.addMutableTrack(withMediaType: .video, preferredTrackID: 7))
+            let camera = try XCTUnwrap(composition.addMutableTrack(withMediaType: .video, preferredTrackID: 42))
+            let metadata = RecordingMetadata(captureSize: CGSize(width: 1280, height: 720), samplesPerSecond: 30,
+                                             mouseSamples: [], videoSourceTracks: [
+                                                 RecordingVideoSourceTrack(trackID: 7, role: .screen),
+                                                 RecordingVideoSourceTrack(trackID: 42, role: .camera),
+                                                 RecordingVideoSourceTrack(trackID: 7, role: .screen),
+                                             ])
+            let result = try await VideoEditorState.resolveVideoTracks([screen, camera], metadata: metadata)
+            XCTAssertNil(result?.cameraTrackID)
+            XCTAssertTrue(result?.cameraMetadataWasInvalid == true)
+        }
+
+        func testLayoutOffsetForPaddedCanvasPreservesNormalizedCameraPlacement() {
+            let layout = VideoEditorCameraOverlayLayout.default
+            let base = layout.cameraFrame(
+                in: CGSize(width: 1280, height: 720),
+                cameraSize: CGSize(width: 640, height: 480),
+            )
+            let padded = base.offsetBy(dx: 40, dy: 40)
+            XCTAssertEqual(padded.minX, base.minX + 40, accuracy: 0.001)
+            XCTAssertEqual(padded.minY, base.minY + 40, accuracy: 0.001)
+        }
+
         func testInstructionCarriesOnlyResolvedSourceIDs() {
             let instruction = ZoomVideoCompositionInstruction(
                 timeRange: .zero,
@@ -66,6 +104,18 @@
                 instruction.requiredSourceTrackIDs?.compactMap { ($0 as? NSNumber)?.intValue }.sorted(),
                 [7, 42],
             )
+        }
+
+        func testScreenOnlyInstructionKeepsSingleTrackFastPath() {
+            let instruction = ZoomVideoCompositionInstruction(
+                timeRange: .zero,
+                zooms: [],
+                autoFocusPaths: [:],
+                trackID: 7,
+                renderSize: CGSize(width: 1280, height: 720),
+                transitionDuration: 0.4,
+            )
+            XCTAssertEqual(instruction.requiredSourceTrackIDs?.compactMap { ($0 as? NSNumber)?.intValue }, [7])
         }
 
         @MainActor

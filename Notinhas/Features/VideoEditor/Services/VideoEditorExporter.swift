@@ -318,13 +318,17 @@
                 applySpeedScaling(to: compositionVideoTrack, map: speedMap, logPrefix: "[ZoomExport] video")
             }
 
-            if hasCameraOverlay,
-               let cameraID = state.cameraTrackID,
-               let sourceCameraTrack = sourceVideoTracks.first(where: { $0.trackID == cameraID }),
-               let cameraCompositionTrack = composition.addMutableTrack(
-                   withMediaType: .video, preferredTrackID: sourceCameraTrack.trackID,
-               ) {
+            var cameraCompositionTrackID: CMPersistentTrackID?
+            if hasCameraOverlay {
+                guard let cameraID = state.cameraTrackID,
+                      let sourceCameraTrack = sourceVideoTracks.first(where: { $0.trackID == cameraID }),
+                      let cameraCompositionTrack = composition.addMutableTrack(
+                          withMediaType: .video, preferredTrackID: sourceCameraTrack.trackID,
+                      ) else {
+                    throw ExportError.exportFailed
+                }
                 try cameraCompositionTrack.insertTimeRange(timeRange, of: sourceCameraTrack, at: .zero)
+                cameraCompositionTrackID = cameraCompositionTrack.trackID
                 if let speedMap {
                     applySpeedScaling(
                         to: cameraCompositionTrack,
@@ -382,7 +386,7 @@
                 backgroundStyle: state.backgroundStyle,
                 backgroundPadding: state.backgroundPadding,
                 cornerRadius: state.backgroundCornerRadius,
-                cameraTrackID: hasCameraOverlay ? state.cameraTrackID : nil,
+                cameraTrackID: cameraCompositionTrackID,
                 cameraLayout: hasCameraOverlay ? state.cameraOverlayLayout : nil,
                 cameraSize: state.cameraSize,
                 cameraIsMirrored: state.cameraIsMirrored,

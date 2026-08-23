@@ -103,6 +103,12 @@
             // Create instruction covering the entire time range
             let resolvedCameraID = cameraTrackID
                 .flatMap { id in videoTracks.contains(where: { $0.trackID == id }) ? id : nil }
+            if cameraTrackID != nil, resolvedCameraID == nil {
+                throw ZoomCompositorError.trackMismatch(
+                    expected: cameraTrackID!,
+                    available: videoTracks.map(\.trackID),
+                )
+            }
             let instruction = ZoomVideoCompositionInstruction(
                 timeRange: timeRange,
                 zooms: zooms,
@@ -332,14 +338,6 @@
                     ],
                 )
 
-                // Try fallback: use first available track
-                if let firstTrackID = availableTrackIDs.first,
-                   let fallbackBuffer = request.sourceFrame(byTrackID: firstTrackID) {
-                    print("🔄 [Compositor] Frame \(frameCount): Using fallback trackID \(firstTrackID)")
-                    request.finish(withComposedVideoFrame: fallbackBuffer)
-                    return
-                }
-
                 request.finish(with: ZoomCompositor.ZoomCompositorError.trackMismatch(
                     expected: instruction.trackID,
                     available: availableTrackIDs,
@@ -348,6 +346,14 @@
             }
 
             let cameraBuffer = instruction.cameraTrackID.flatMap { request.sourceFrame(byTrackID: $0) }
+            if instruction.cameraTrackID != nil, cameraBuffer == nil, frameCount == 1 || frameCount % 30 == 0 {
+                DiagnosticLogger.shared.log(
+                    .warning,
+                    .export,
+                    "Camera compositor frame missing; preserved screen frame",
+                    context: ["frame": "\(frameCount)"],
+                )
+            }
 
             if frameCount == 1 || frameCount % 30 == 0 {
                 print("🎥 [Compositor] Processing frame \(frameCount) at time \(String(format: "%.2f", currentTime))s")
@@ -481,7 +487,10 @@
                         .transformed(by: CGAffineTransform(translationX: cameraImage.extent.width, y: 0))
                 }
                 let target = layout.cameraFrame(in: instruction.renderSize, cameraSize: instruction.cameraSize)
+                    .offsetBy(dx: instruction.backgroundPadding, dy: instruction.backgroundPadding)
+                let effectiveCanvasSize = instruction.paddedRenderSize
                 let fitted = VideoEditorExportLayout.aspectFitRect(sourceSize: cameraImage.extent.size, in: target.size)
+                    .offsetBy(dx: target.minX, dy: target.minY)
                 let scale = min(
                     fitted.width / max(cameraImage.extent.width, 1),
                     fitted.height / max(cameraImage.extent.height, 1),
@@ -489,11 +498,11 @@
                 cameraImage = cameraImage.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
                     .transformed(by: CGAffineTransform(
                         translationX: fitted.minX,
-                        y: instruction.renderSize.height - fitted.maxY,
+                        y: effectiveCanvasSize.height - fitted.maxY,
                     ))
-                let mask = roundedMask(rect: CGRect(x: fitted.minX, y: instruction.renderSize.height - fitted.maxY,
+                let mask = roundedMask(rect: CGRect(x: fitted.minX, y: effectiveCanvasSize.height - fitted.maxY,
                                                     width: fitted.width, height: fitted.height),
-                                       canvasSize: instruction.renderSize)
+                                       canvasSize: effectiveCanvasSize)
                 processedImage = cameraImage.applyingFilter(
                     "CIBlendWithAlphaMask",
                     parameters: [kCIInputMaskImageKey: mask],
