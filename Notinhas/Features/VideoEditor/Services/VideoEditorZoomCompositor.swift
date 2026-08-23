@@ -93,7 +93,12 @@
             videoComposition.frameDuration = frameDuration
 
             let videoTracks = try await asset.loadTracks(withMediaType: .video)
-            guard let videoTrack = videoTracks.first(where: { $0.trackID == screenTrackID }) ?? videoTracks.first else {
+            let videoTrack = if let screenTrackID {
+                videoTracks.first(where: { $0.trackID == screenTrackID })
+            } else {
+                videoTracks.first
+            }
+            guard let videoTrack else {
                 print("❌ [ZoomCompositor] ERROR: No video track found")
                 DiagnosticLogger.shared.log(.error, .export, "Zoom compositor failed; source video track missing")
                 throw ZoomCompositorError.noVideoTrack
@@ -323,7 +328,7 @@
             }
 
             guard let sourceBuffer = request.sourceFrame(byTrackID: instruction.trackID) else {
-                // Try to find any available source frame as fallback
+                // The required screen frame is absent; never substitute another source track.
                 let availableTrackIDs = request.sourceTrackIDs.map(\.int32Value)
                 print("❌ [Compositor] Frame \(frameCount): No source frame for trackID \(instruction.trackID)")
                 print("❌ [Compositor] Available track IDs: \(availableTrackIDs)")

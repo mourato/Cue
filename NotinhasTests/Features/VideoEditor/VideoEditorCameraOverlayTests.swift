@@ -118,6 +118,26 @@
             XCTAssertEqual(instruction.requiredSourceTrackIDs?.compactMap { ($0 as? NSNumber)?.intValue }, [7])
         }
 
+        func testCompositorDoesNotGuessScreenTrackWhenExplicitIDIsMissing() async throws {
+            let asset = AVMutableComposition()
+            _ = try XCTUnwrap(asset.addMutableTrack(withMediaType: .video, preferredTrackID: 7))
+            let compositor = ZoomCompositor(
+                zooms: [],
+                renderSize: CGSize(width: 1280, height: 720),
+                screenTrackID: 999,
+            )
+
+            do {
+                _ = try await compositor.createVideoComposition(
+                    for: asset,
+                    timeRange: CMTimeRange(start: .zero, duration: CMTime(seconds: 1, preferredTimescale: 600)),
+                )
+                XCTFail("An explicit missing screen track ID must not fall back to the first track")
+            } catch ZoomCompositor.ZoomCompositorError.noVideoTrack {
+                // Expected.
+            }
+        }
+
         @MainActor
         func testCameraLayoutChangesParticipateInDirtyState() {
             let state = VideoEditorState(url: URL(fileURLWithPath: "/tmp/notinhas-camera-overlay-test.mov"))
