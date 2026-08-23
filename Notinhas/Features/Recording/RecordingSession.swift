@@ -16,6 +16,13 @@
     /// This allows safe access from any thread without crossing @MainActor boundaries.
     /// Implements lazy start: session begins when first sample buffer arrives to sync timestamps.
     final class RecordingSession: @unchecked Sendable {
+        enum FinishResult: Equatable, Sendable {
+            case finished
+            case failed(String)
+            case missingWriter
+            case cancelled
+        }
+
         struct VideoWriteStats {
             let receivedFrames: Int
             let appendedFrames: Int
@@ -26,12 +33,16 @@
         }
 
         private let lock = NSLock()
+        private let appendBoundary = NSLock()
 
         private var _assetWriter: AVAssetWriter?
         private var _videoInput: AVAssetWriterInput?
         private var _pixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor?
         private var _audioInput: AVAssetWriterInput?
         private var _microphoneInput: AVAssetWriterInput?
+        private var _videoFinished = false
+        private var _audioFinished = false
+        private var _microphoneFinished = false
         private var _sessionStarted = false
         private var _isCapturing = false
         private var _firstTimestamp: CMTime? // Track first video timestamp for timeline alignment
@@ -195,63 +206,86 @@
             let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
             guard timestamp.isValid else { return }
 
-            // Consolidate locks and read dimensions/offset in one acquisition
+            // Keep the state check, lazy session start, readiness check, and append
+            // indivisible with finishInputs/cancelWriting/reset. Diagnostics and
+            // the first-frame callback stay outside this boundary below.
             var shouldLogDimensionMismatch = false
-            let (
-                writer,
-                videoInput,
-                adaptor,
-                shouldStartSession,
-                onFirstVideoFrame,
-                offset,
-                expectedWidth,
-                expectedHeight,
-                pixelWidth,
-                pixelHeight,
-            ): (
-                AVAssetWriter?, AVAssetWriterInput?, AVAssetWriterInputPixelBufferAdaptor?, Bool, (() -> Void)?, CMTime,
-                Int?,
-                Int?, Int, Int,
-            ) = lock.withLock {
-                guard _isCapturing, let writer = _assetWriter, writer.status == .writing else {
-                    return (nil, nil, nil, false, nil, .zero, nil, nil, 0, 0)
+            var shouldStartSession = false
+            var onFirstVideoFrame: (() -> Void)?
+            var shouldLogAppendFailure = false
+            var adjustedTimestamp = timestamp
+            var writerForLog: AVAssetWriter?
+            var expectedWidth: Int?
+            var expectedHeight: Int?
+            var pixelWidth = 0
+            var pixelHeight = 0
+
+            do {
+                appendBoundary.lock()
+                defer { appendBoundary.unlock() }
+
+                let (writer, videoInput, adaptor): (
+                    AVAssetWriter?,
+                    AVAssetWriterInput?,
+                    AVAssetWriterInputPixelBufferAdaptor?,
+                ) = lock
+                    .withLock {
+                        guard _isCapturing, let writer = _assetWriter, writer.status == .writing else {
+                            return (nil, nil, nil)
+                        }
+
+                        let w = CVPixelBufferGetWidth(pixelBuffer)
+                        let h = CVPixelBufferGetHeight(pixelBuffer)
+                        pixelWidth = w
+                        pixelHeight = h
+                        expectedWidth = _expectedVideoWidth
+                        expectedHeight = _expectedVideoHeight
+                        if let expectedWidth,
+                           let expectedHeight,
+                           w != expectedWidth || h != expectedHeight,
+                           !_didLogFrameDimensionMismatch {
+                            _didLogFrameDimensionMismatch = true
+                            shouldLogDimensionMismatch = true
+                        }
+
+                        let offset = _pauseOffsetAccumulator
+                        adjustedTimestamp = offset.isNumeric && offset > .zero
+                            ? CMTimeSubtract(timestamp, offset)
+                            : timestamp
+                        if !_sessionStarted {
+                            _sessionStarted = true
+                            _firstTimestamp = adjustedTimestamp
+                            shouldStartSession = true
+                            onFirstVideoFrame = _onFirstVideoFrame
+                        }
+                        _videoFramesReceived += 1
+                        return (_assetWriter, _videoInput, _pixelBufferAdaptor)
+                    }
+
+                guard let writer, let videoInput, let adaptor else { return }
+                writerForLog = writer
+
+                // Lazy start and readiness -> append remain under the same boundary.
+                if shouldStartSession {
+                    writer.startSession(atSourceTime: adjustedTimestamp)
                 }
-
-                let w = CVPixelBufferGetWidth(pixelBuffer)
-                let h = CVPixelBufferGetHeight(pixelBuffer)
-                if let expectedWidth = _expectedVideoWidth,
-                   let expectedHeight = _expectedVideoHeight,
-                   w != expectedWidth || h != expectedHeight,
-                   !_didLogFrameDimensionMismatch {
-                    _didLogFrameDimensionMismatch = true
-                    shouldLogDimensionMismatch = true
+                if videoInput.isReadyForMoreMediaData {
+                    let success = adaptor.append(pixelBuffer, withPresentationTime: adjustedTimestamp)
+                    if !success {
+                        shouldLogAppendFailure = lock.withLock {
+                            _videoFramesFailedAppend += 1
+                            if _didLogVideoAppendFailure {
+                                return false
+                            }
+                            _didLogVideoAppendFailure = true
+                            return true
+                        }
+                    } else {
+                        lock.withLock { _videoFramesAppended += 1 }
+                    }
+                } else {
+                    lock.withLock { _videoFramesDroppedBackpressure += 1 }
                 }
-
-                let offset = _pauseOffsetAccumulator
-                let adjustedTimestamp = offset
-                    .isNumeric && offset > .zero ? CMTimeSubtract(timestamp, offset) : timestamp
-
-                var needsSessionStart = false
-                if !_sessionStarted {
-                    _sessionStarted = true
-                    _firstTimestamp = adjustedTimestamp
-                    needsSessionStart = true
-                }
-
-                _videoFramesReceived += 1
-
-                return (
-                    writer,
-                    _videoInput,
-                    _pixelBufferAdaptor,
-                    needsSessionStart,
-                    _onFirstVideoFrame,
-                    offset,
-                    _expectedVideoWidth,
-                    _expectedVideoHeight,
-                    w,
-                    h,
-                )
             }
 
             if shouldLogDimensionMismatch, let expectedWidth, let expectedHeight {
@@ -260,47 +294,18 @@
                     "actual": "\(pixelWidth)x\(pixelHeight)",
                 ])
             }
-
-            guard let writer,
-                  let videoInput,
-                  let adaptor else { return }
-
-            let adjustedTimestamp = offset.isNumeric && offset > .zero ? CMTimeSubtract(timestamp, offset) : timestamp
-
-            // Lazy start session at first video timestamp.
-            // This avoids rewriting every audio sample (large per-buffer allocations).
             if shouldStartSession {
-                writer.startSession(atSourceTime: adjustedTimestamp)
                 DiagnosticLogger.shared.log(.debug, .recording, "Recording writer session started", context: [
                     "firstFrameTimestampSeconds": String(format: "%.3f", adjustedTimestamp.seconds),
                 ])
                 onFirstVideoFrame?()
             }
-
-            // Append pixel buffer with calculated presentation time
-            if videoInput.isReadyForMoreMediaData {
-                let success = adaptor.append(pixelBuffer, withPresentationTime: adjustedTimestamp)
-                if !success {
-                    let shouldLog = lock.withLock {
-                        _videoFramesFailedAppend += 1
-                        if _didLogVideoAppendFailure {
-                            return false
-                        }
-                        _didLogVideoAppendFailure = true
-                        return true
-                    }
-                    if shouldLog {
-                        logWriterIssue(
-                            "Failed to append recording video frame",
-                            writer: writer,
-                            context: ["timestampSeconds": String(format: "%.3f", adjustedTimestamp.seconds)],
-                        )
-                    }
-                } else {
-                    lock.withLock { _videoFramesAppended += 1 }
-                }
-            } else {
-                lock.withLock { _videoFramesDroppedBackpressure += 1 }
+            if shouldLogAppendFailure {
+                logWriterIssue(
+                    "Failed to append recording video frame",
+                    writer: writerForLog,
+                    context: ["timestampSeconds": String(format: "%.3f", adjustedTimestamp.seconds)],
+                )
             }
         }
 
@@ -311,43 +316,46 @@
             guard timestamp.isValid else { return }
             logAudioSampleFormatIfNeeded(sampleBuffer, role: .systemAudio)
 
-            let (writer, audioInput, firstTs, offset): (AVAssetWriter?, AVAssetWriterInput?, CMTime?, CMTime) = lock
-                .withLock {
-                    guard _isCapturing, let writer = _assetWriter, writer.status == .writing else {
-                        return (nil, nil, nil, .zero)
+            var shouldLogAppendFailure = false
+            var adjustedTimestamp = timestamp
+            var writerForLog: AVAssetWriter?
+
+            do {
+                appendBoundary.lock()
+                defer { appendBoundary.unlock() }
+
+                let (writer, audioInput, firstTs, offset): (AVAssetWriter?, AVAssetWriterInput?, CMTime?, CMTime) = lock
+                    .withLock {
+                        guard _isCapturing, let writer = _assetWriter, writer.status == .writing else {
+                            return (nil, nil, nil, .zero)
+                        }
+                        return (writer, _audioInput, _firstTimestamp, _pauseOffsetAccumulator)
                     }
-                    return (writer, _audioInput, _firstTimestamp, _pauseOffsetAccumulator)
-                }
 
-            guard let writer, writer.status == .writing else { return }
-            guard let audioInput else { return }
-            // Skip audio until video has started the session
-            guard let firstTs else { return }
-
-            let adjustedTimestamp = offset.isNumeric && offset > .zero ? CMTimeSubtract(timestamp, offset) : timestamp
-
-            // Skip audio samples that arrived before video start
-            guard CMTimeCompare(adjustedTimestamp, firstTs) >= 0 else { return }
-
-            if audioInput.isReadyForMoreMediaData {
+                guard let writer, writer.status == .writing, let audioInput, let firstTs else { return }
+                adjustedTimestamp = offset.isNumeric && offset > .zero
+                    ? CMTimeSubtract(timestamp, offset)
+                    : timestamp
+                guard CMTimeCompare(adjustedTimestamp, firstTs) >= 0 else { return }
                 guard let bufferToAppend = adjustedAudioSampleBuffer(sampleBuffer, offset: offset) else { return }
-                let success = audioInput.append(bufferToAppend)
-                if !success {
-                    let shouldLog = lock.withLock {
+                writerForLog = writer
+
+                if audioInput.isReadyForMoreMediaData, !audioInput.append(bufferToAppend) {
+                    shouldLogAppendFailure = lock.withLock {
                         if _didLogAudioAppendFailure {
                             return false
                         }
                         _didLogAudioAppendFailure = true
                         return true
                     }
-                    if shouldLog {
-                        logWriterIssue(
-                            "Failed to append recording system audio sample",
-                            writer: writer,
-                            context: ["timestampSeconds": String(format: "%.3f", adjustedTimestamp.seconds)],
-                        )
-                    }
                 }
+            }
+            if shouldLogAppendFailure {
+                logWriterIssue(
+                    "Failed to append recording system audio sample",
+                    writer: writerForLog,
+                    context: ["timestampSeconds": String(format: "%.3f", adjustedTimestamp.seconds)],
+                )
             }
         }
 
@@ -358,73 +366,90 @@
             guard timestamp.isValid else { return }
             logAudioSampleFormatIfNeeded(sampleBuffer, role: .microphone)
 
-            let (writer, microphoneInput, firstTs, offset): (AVAssetWriter?, AVAssetWriterInput?, CMTime?,
-                                                             CMTime) = lock
-                .withLock {
+            var shouldLogAppendFailure = false
+            var adjustedTimestamp = timestamp
+            var writerForLog: AVAssetWriter?
+
+            do {
+                appendBoundary.lock()
+                defer { appendBoundary.unlock() }
+
+                let (writer, microphoneInput, firstTs, offset): (AVAssetWriter?, AVAssetWriterInput?, CMTime?,
+                                                                 CMTime) = lock.withLock {
                     guard _isCapturing, let writer = _assetWriter, writer.status == .writing else {
                         return (nil, nil, nil, .zero)
                     }
                     return (writer, _microphoneInput, _firstTimestamp, _pauseOffsetAccumulator)
                 }
 
-            guard let writer, writer.status == .writing else { return }
-            guard let microphoneInput else { return }
-            // Skip mic audio until video has started the session
-            guard let firstTs else { return }
-
-            let adjustedTimestamp = offset.isNumeric && offset > .zero ? CMTimeSubtract(timestamp, offset) : timestamp
-
-            // Skip mic samples that arrived before video start
-            guard CMTimeCompare(adjustedTimestamp, firstTs) >= 0 else { return }
-
-            lock.withLock { _microphoneSamplesReceived += 1 }
-
-            if microphoneInput.isReadyForMoreMediaData {
+                guard let writer, writer.status == .writing, let microphoneInput, let firstTs else { return }
+                adjustedTimestamp = offset.isNumeric && offset > .zero
+                    ? CMTimeSubtract(timestamp, offset)
+                    : timestamp
+                guard CMTimeCompare(adjustedTimestamp, firstTs) >= 0 else { return }
                 guard let bufferToAppend = adjustedAudioSampleBuffer(sampleBuffer, offset: offset) else { return }
-                let success = microphoneInput.append(bufferToAppend)
-                if success {
-                    lock.withLock { _microphoneSamplesAppended += 1 }
-                } else {
-                    let shouldLog = lock.withLock {
-                        if _didLogMicrophoneAppendFailure {
-                            return false
+                writerForLog = writer
+                lock.withLock { _microphoneSamplesReceived += 1 }
+
+                if microphoneInput.isReadyForMoreMediaData {
+                    if microphoneInput.append(bufferToAppend) {
+                        lock.withLock { _microphoneSamplesAppended += 1 }
+                    } else {
+                        shouldLogAppendFailure = lock.withLock {
+                            if _didLogMicrophoneAppendFailure {
+                                return false
+                            }
+                            _didLogMicrophoneAppendFailure = true
+                            return true
                         }
-                        _didLogMicrophoneAppendFailure = true
-                        return true
-                    }
-                    if shouldLog {
-                        logWriterIssue(
-                            "Failed to append recording microphone sample",
-                            writer: writer,
-                            context: ["timestampSeconds": String(format: "%.3f", adjustedTimestamp.seconds)],
-                        )
                     }
                 }
+            }
+            if shouldLogAppendFailure {
+                logWriterIssue(
+                    "Failed to append recording microphone sample",
+                    writer: writerForLog,
+                    context: ["timestampSeconds": String(format: "%.3f", adjustedTimestamp.seconds)],
+                )
             }
         }
 
         /// Mark inputs as finished
         func finishInputs() {
+            appendBoundary.lock()
+            defer { appendBoundary.unlock() }
             lock.withLock {
-                _videoInput?.markAsFinished()
-                _audioInput?.markAsFinished()
-                _microphoneInput?.markAsFinished()
+                _isCapturing = false
+                if !_videoFinished {
+                    _videoInput?.markAsFinished()
+                    _videoFinished = true
+                }
+                if !_audioFinished {
+                    _audioInput?.markAsFinished()
+                    _audioFinished = true
+                }
+                if !_microphoneFinished {
+                    _microphoneInput?.markAsFinished()
+                    _microphoneFinished = true
+                }
             }
         }
 
         /// Cancel writing
         func cancelWriting() {
+            appendBoundary.lock()
+            defer { appendBoundary.unlock() }
             lock.withLock {
                 _assetWriter?.cancelWriting()
             }
         }
 
         /// Finish writing asynchronously
-        func finishWriting() async {
-            let writer = lock.withLock { _assetWriter }
+        func finishWriting() async -> FinishResult {
+            let writer = withAppendBoundary { lock.withLock { _assetWriter } }
             guard let writer else {
                 DiagnosticLogger.shared.log(.warning, .recording, "Recording finish requested without asset writer")
-                return
+                return .missingWriter
             }
 
             DiagnosticLogger.shared.log(.debug, .recording, "Finishing recording writer", context: [
@@ -435,24 +460,43 @@
                 await writer.finishWriting()
                 if let error = writer.error {
                     logWriterIssue("Recording writer finished with error", writer: writer)
-                } else {
+                    return .failed(error.localizedDescription)
+                } else if writer.status == .completed {
                     DiagnosticLogger.shared.log(.debug, .recording, "Recording writer finished", context: [
                         "writerStatus": writerStatusLabel(writer.status),
                     ])
+                    return .finished
+                } else {
+                    logWriterIssue("Recording writer did not complete", writer: writer)
+                    return .failed("writer status: \(writerStatusLabel(writer.status))")
                 }
             } else {
                 logWriterIssue("Recording writer not in writing state during finish", writer: writer)
+                return writer.status == .cancelled
+                    ? .cancelled
+                    : .failed("writer status: \(writerStatusLabel(writer.status))")
             }
+        }
+
+        private func withAppendBoundary<T>(_ body: () -> T) -> T {
+            appendBoundary.lock()
+            defer { appendBoundary.unlock() }
+            return body()
         }
 
         /// Reset all state
         func reset() {
+            appendBoundary.lock()
+            defer { appendBoundary.unlock() }
             lock.withLock {
                 _assetWriter = nil
                 _videoInput = nil
                 _pixelBufferAdaptor = nil
                 _audioInput = nil
                 _microphoneInput = nil
+                _videoFinished = false
+                _audioFinished = false
+                _microphoneFinished = false
                 _sessionStarted = false
                 _isCapturing = false
                 _firstTimestamp = nil

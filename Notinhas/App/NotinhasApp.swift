@@ -93,21 +93,52 @@ struct AppLaunchPolicy {
 
 // MARK: - App Delegate
 
+enum ApplicationTerminationPolicy {
+    static func shouldWait(isRecording: Bool, terminationInProgress: Bool) -> Bool {
+        isRecording || terminationInProgress
+    }
+}
+
 @MainActor
 class AppDelegate: NSObject, NSApplicationDelegate {
     private let launchPolicyProvider: () -> AppLaunchPolicy
+    private let recordingIsActive: () -> Bool
+    private let finishRecording: (UInt64) async -> Bool
+    private let abandonRecording: () -> Void
     private var coordinator: AppCoordinator?
     private var pendingDeepLinkURLs: [URL] = []
     private var pendingOpenFileURLs: [URL] = []
     private var didFinishLaunching = false
+    private var terminationTask: Task<Void, Never>?
 
     override init() {
         launchPolicyProvider = { AppLaunchPolicy() }
+        #if NOTINHAS_VIDEO_MODULE
+            recordingIsActive = { ScreenRecordingManager.shared.isActive }
+            finishRecording = { timeout in
+                await ScreenRecordingManager.shared.finishForApplicationTermination(
+                    timeoutNanoseconds: timeout,
+                )
+            }
+            abandonRecording = { ScreenRecordingManager.shared.markApplicationTerminationAbandoned() }
+        #else
+            recordingIsActive = { false }
+            finishRecording = { _ in true }
+            abandonRecording = {}
+        #endif
         super.init()
     }
 
-    init(launchPolicyProvider: @escaping () -> AppLaunchPolicy) {
+    init(
+        launchPolicyProvider: @escaping () -> AppLaunchPolicy,
+        recordingIsActive: @escaping () -> Bool = { false },
+        finishRecording: @escaping (UInt64) async -> Bool = { _ in true },
+        abandonRecording: @escaping () -> Void = {},
+    ) {
         self.launchPolicyProvider = launchPolicyProvider
+        self.recordingIsActive = recordingIsActive
+        self.finishRecording = finishRecording
+        self.abandonRecording = abandonRecording
         super.init()
     }
 
@@ -141,6 +172,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Cleanup orphaned temp capture files from previous sessions
         TempCaptureManager.shared.cleanupOrphanedFiles()
+        #if NOTINHAS_VIDEO_MODULE
+            Task { @MainActor in
+                _ = await TempCaptureManager.shared.recoverRecordingSessions()
+            }
+        #endif
 
         let coordinator = AppCoordinator(screenCaptureViewModel: ScreenCaptureViewModel())
         self.coordinator = coordinator
@@ -156,6 +192,29 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             andEventID: AEEventID(kAEGetURL),
         )
         coordinator?.applicationWillTerminate()
+    }
+
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        #if NOTINHAS_VIDEO_MODULE
+            guard ApplicationTerminationPolicy.shouldWait(
+                isRecording: recordingIsActive(),
+                terminationInProgress: terminationTask != nil,
+            ) else { return .terminateNow }
+            guard terminationTask == nil else { return .terminateLater }
+
+            terminationTask = Task { @MainActor [weak self] in
+                guard let self else { return }
+                let didFinish = await finishRecording(2_000_000_000)
+                if !didFinish {
+                    abandonRecording()
+                }
+                sender.reply(toApplicationShouldTerminate: true)
+                terminationTask = nil
+            }
+            return .terminateLater
+        #else
+            .terminateNow
+        #endif
     }
 
     func applicationShouldHandleReopen(_: NSApplication, hasVisibleWindows _: Bool) -> Bool {

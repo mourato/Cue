@@ -74,5 +74,17 @@
             session.setAccumulatedPauseOffset(offset)
             session.reset()
         }
+
+        func testFinishWriting_withoutWriter_returnsMissingWriter() async {
+            let result = await session.finishWriting()
+            XCTAssertEqual(result, .missingWriter)
+        }
+
+        func testFinishInputs_thenReset_isIdempotent() {
+            session.finishInputs()
+            session.finishInputs()
+            session.reset()
+            XCTAssertFalse(session.sessionStarted)
+        }
     }
 #endif

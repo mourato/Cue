@@ -6285,6 +6285,16 @@ nonisolated enum L10n {
             defaultValue: "Recording cancelled",
             comment: "Error description when recording is cancelled",
         )
+        static let partialPreserved = string(
+            "recording.error.partial-preserved",
+            defaultValue: "The recording could not be finalized. The partial capture was preserved for recovery.",
+            comment: "Actionable message when a partial recording is preserved",
+        )
+        static let failedPreserved = string(
+            "recording.error.failed-preserved",
+            defaultValue: "Recording could not be finalized. The capture was preserved and was not added to History.",
+            comment: "Actionable message when a recording fails without a normal output",
+        )
     }
 
     enum FileAccess {
