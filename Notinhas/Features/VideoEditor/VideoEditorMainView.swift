@@ -79,7 +79,11 @@
             }
             .alert(L10n.VideoEditor.frameExtractionFailed, isPresented: Binding(
                 get: { state.frameExtractionError != nil },
-                set: { if !$0 { state.frameExtractionError = nil } },
+                set: {
+                    if !$0 {
+                        state.frameExtractionError = nil
+                    }
+                },
             )) {
                 Button(L10n.Common.ok) { state.frameExtractionError = nil }
             } message: {
