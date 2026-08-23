@@ -93,7 +93,7 @@ Overlay setup happens after `startRecording()` succeeds; region overlay borders 
 ## Smart Camera Metadata
 
 - `RecordingMouseTracker` (`Notinhas/Services/Capture/RecordingMouseTracker.swift`) samples the cursor on a main-runloop timer at `clamp(fps*2, 60, 120)` samples/s plus a global mouse-move monitor (deduplicated), starting on the first video frame. Samples are normalized 0...1 in **top-left** coordinates relative to the capture rect, with `isInsideCapture` flags and pause-excluded timestamps.
-- `RecordingMetadata` v5 (`Notinhas/Services/Capture/RecordingMetadata.swift`): `version`, `coordinateSpace`, `captureSize`, `samplesPerSecond`, `mouseSamples`, plus optional `audioSourceURL`, `audioSourceTrackRoles`, `audioSourceTracks` (trackID → role). Older versions are canonicalized on load (v1 bottom-left coordinates are flipped).
+- `RecordingMetadata` v6 (`Notinhas/Services/Capture/RecordingMetadata.swift`): `version`, `coordinateSpace`, `captureSize`, `samplesPerSecond`, `mouseSamples`, plus optional `audioSourceURL`, `audioSourceTrackRoles`, `audioSourceTracks` (trackID → role), and `videoSourceTracks` (screen/camera role keyed by real track ID). Older versions are canonicalized on load (v1 bottom-left coordinates are flipped).
 - Storage: `Application Support/Notinhas/Captures/RecordingMetadata/` with `Entries/<uuid>.json`, `AudioSources/`, and `index.json` (path + security-scoped bookmark per video). Legacy layouts (root-level store, `*.snapzy-recording.json` sidecars) are migrated on load. `RecordingMetadataCleanupScheduler` prunes orphans every 30 min (24 h grace after the video file disappears).
 - Consumed later by the video editor's Follow Mouse — see [`VIDEO_EDITOR.md`](VIDEO_EDITOR.md).
 

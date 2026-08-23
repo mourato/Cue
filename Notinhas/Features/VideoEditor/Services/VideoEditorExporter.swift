@@ -33,6 +33,7 @@
             let scopedOutputURL = outputAccess.url.appendingPathComponent(outputURL.lastPathComponent)
 
             let hasCameraEffects = state.zoomSegments.contains { $0.isEnabled }
+            let hasCameraOverlay = state.hasCameraTrack && state.cameraOverlayLayout.isVisible
             let hasBackground = state.backgroundStyle != .none && state.backgroundPadding > 0
             let hasCustomAudio = state.exportSettings.audioMode == .custom
             let hasSpeed = state.hasSpeedSegments
@@ -40,7 +41,7 @@
             // If visual effects, custom audio, or speed scaling are enabled, use composition-based
             // export. Speed scaling requires the composition path even with no other effects
             // (and even when muted — audio is simply dropped while the video is still time-scaled).
-            if hasCameraEffects || hasBackground || hasCustomAudio || hasSpeed {
+            if hasCameraEffects || hasBackground || hasCustomAudio || hasSpeed || hasCameraOverlay {
                 try await exportWithZooms(state: state, to: scopedOutputURL, progress: progress)
                 try await normalizeExportAudioForCompatibilityIfNeeded(
                     at: scopedOutputURL,
@@ -219,6 +220,7 @@
             // segments are active so the zoom/auto-focus paths stay on the existing (trim-relative)
             // timeline exactly as before.
             let speedMap: SpeedTimeMap? = state.hasSpeedSegments ? state.speedTimeMap : nil
+            let hasCameraOverlay = state.hasCameraTrack && state.cameraOverlayLayout.isVisible
             if let speedMap {
                 print(
                     "🔍 [ZoomExport] Speed scaling active — original \(String(format: "%.2f", speedMap.originalDuration))s → scaled \(String(format: "%.2f", speedMap.scaledDuration))s, spans: \(speedMap.spans.count)",
@@ -273,17 +275,19 @@
             print("🔍 [ZoomExport] Created AVMutableComposition")
 
             // Add video track
-            guard let sourceVideoTrack = try await state.asset.loadTracks(withMediaType: .video).first else {
+            let sourceVideoTracks = try await state.asset.loadTracks(withMediaType: .video)
+            guard let screenVideoTrack = sourceVideoTracks.first(where: { $0.trackID == state.screenTrackID })
+                ?? sourceVideoTracks.first else {
                 print("❌ [ZoomExport] ERROR: No video track found in source asset")
                 DiagnosticLogger.shared.log(.error, .export, "No video track in source asset")
                 throw ExportError.exportFailed
             }
-            print("🔍 [ZoomExport] Source video track ID: \(sourceVideoTrack.trackID)")
-            let sourceFrameDuration = try await sourceFrameDuration(for: sourceVideoTrack)
+            print("🔍 [ZoomExport] Source video track ID: \(screenVideoTrack.trackID)")
+            let sourceFrameDuration = try await sourceFrameDuration(for: screenVideoTrack)
 
             guard let compositionVideoTrack = composition.addMutableTrack(
                 withMediaType: .video,
-                preferredTrackID: kCMPersistentTrackID_Invalid,
+                preferredTrackID: screenVideoTrack.trackID,
             ) else {
                 print("❌ [ZoomExport] ERROR: Failed to add video track to composition")
                 DiagnosticLogger.shared.log(.error, .export, "Zoom export failed to add video track to composition")
@@ -292,7 +296,7 @@
             print("🔍 [ZoomExport] Composition video track ID: \(compositionVideoTrack.trackID)")
 
             do {
-                try compositionVideoTrack.insertTimeRange(timeRange, of: sourceVideoTrack, at: .zero)
+                try compositionVideoTrack.insertTimeRange(timeRange, of: screenVideoTrack, at: .zero)
                 print(
                     "🔍 [ZoomExport] Inserted video time range: \(CMTimeGetSeconds(timeRange.start))s - \(CMTimeGetSeconds(timeRange.end))s (duration: \(CMTimeGetSeconds(timeRange.duration))s)",
                 )
@@ -303,7 +307,7 @@
             }
 
             // Copy video track transform
-            let transform = try await sourceVideoTrack.load(.preferredTransform)
+            let transform = try await screenVideoTrack.load(.preferredTransform)
             compositionVideoTrack.preferredTransform = transform
             print("🔍 [ZoomExport] Applied video transform: \(transform)")
 
@@ -312,6 +316,26 @@
             // map's span coordinates map directly.
             if let speedMap {
                 applySpeedScaling(to: compositionVideoTrack, map: speedMap, logPrefix: "[ZoomExport] video")
+            }
+
+            var cameraCompositionTrackID: CMPersistentTrackID?
+            if hasCameraOverlay {
+                guard let cameraID = state.cameraTrackID,
+                      let sourceCameraTrack = sourceVideoTracks.first(where: { $0.trackID == cameraID }),
+                      let cameraCompositionTrack = composition.addMutableTrack(
+                          withMediaType: .video, preferredTrackID: sourceCameraTrack.trackID,
+                      ) else {
+                    throw ExportError.exportFailed
+                }
+                try cameraCompositionTrack.insertTimeRange(timeRange, of: sourceCameraTrack, at: .zero)
+                cameraCompositionTrackID = cameraCompositionTrack.trackID
+                if let speedMap {
+                    applySpeedScaling(
+                        to: cameraCompositionTrack,
+                        map: speedMap,
+                        logPrefix: "[ZoomExport] camera",
+                    )
+                }
             }
 
             // Add audio track based on export settings (scaled + pitch-preserved when speed active).
@@ -362,6 +386,11 @@
                 backgroundStyle: state.backgroundStyle,
                 backgroundPadding: state.backgroundPadding,
                 cornerRadius: state.backgroundCornerRadius,
+                cameraTrackID: cameraCompositionTrackID,
+                cameraLayout: hasCameraOverlay ? state.cameraOverlayLayout : nil,
+                cameraSize: state.cameraSize,
+                cameraIsMirrored: state.cameraIsMirrored,
+                screenTrackID: compositionVideoTrack.trackID,
             )
 
             // Use actual composition duration to prevent frame boundary issues

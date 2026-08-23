@@ -5488,6 +5488,66 @@ nonisolated enum L10n {
             defaultValue: "Smart Camera",
             comment: "Section title for smart camera metadata in the video editor",
         )
+        static let cameraOverlay = string(
+            "video-editor.camera-overlay",
+            defaultValue: "Camera overlay",
+            comment: "Section title for the recorded camera picture-in-picture overlay",
+        )
+        static let cameraMetadataInvalid = string(
+            "video-editor.camera-metadata-invalid",
+            defaultValue: "Camera data is unavailable. The screen track will be used.",
+            comment: "Warning shown when camera metadata does not match the source video tracks",
+        )
+        static let showCamera = string(
+            "video-editor.show-camera",
+            defaultValue: "Show camera",
+            comment: "Toggle label for showing the recorded camera overlay",
+        )
+        static let cameraPosition = string(
+            "video-editor.camera-position",
+            defaultValue: "Position",
+            comment: "Label for the camera overlay position picker",
+        )
+        static let cameraSize = string(
+            "video-editor.camera-size",
+            defaultValue: "Size",
+            comment: "Label for the camera overlay size picker",
+        )
+        static let topLeading = string(
+            "video-editor.camera-top-leading",
+            defaultValue: "Top left",
+            comment: "Top-left camera overlay position",
+        )
+        static let topTrailing = string(
+            "video-editor.camera-top-trailing",
+            defaultValue: "Top right",
+            comment: "Top-right camera overlay position",
+        )
+        static let bottomLeading = string(
+            "video-editor.camera-bottom-leading",
+            defaultValue: "Bottom left",
+            comment: "Bottom-left camera overlay position",
+        )
+        static let bottomTrailing = string(
+            "video-editor.camera-bottom-trailing",
+            defaultValue: "Bottom right",
+            comment: "Bottom-right camera overlay position",
+        )
+        static let small = string(
+            "video-editor.camera-small",
+            defaultValue: "Small",
+            comment: "Small camera overlay size",
+        )
+        static let medium = string(
+            "video-editor.camera-medium",
+            defaultValue: "Medium",
+            comment: "Medium camera overlay size",
+        )
+        static let large = string(
+            "video-editor.camera-large",
+            defaultValue: "Large",
+            comment: "Large camera overlay size",
+        )
         static let segments = string(
             "video-editor.segments",
             defaultValue: "Segments",
