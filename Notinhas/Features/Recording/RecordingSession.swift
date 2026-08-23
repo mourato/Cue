@@ -414,7 +414,19 @@
             } else {
                 lock.withLock { _cameraFramesFailedAppend += 1
                     _didLogCameraAppendFailure = true
+                    _cameraInput?.markAsFinished()
+                    _cameraFinished = true
                 }
+            }
+        }
+
+        func finishCameraInput() {
+            appendBoundary.lock()
+            defer { appendBoundary.unlock() }
+            lock.withLock {
+                guard !_cameraFinished else { return }
+                _cameraInput?.markAsFinished()
+                _cameraFinished = true
             }
         }
 

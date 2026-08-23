@@ -175,6 +175,7 @@
         }
 
         private func fail() {
+            guard isRunning || captureSession != nil else { return }
             isRunning = false
             captureSession?.stopRunning()
             captureSession = nil

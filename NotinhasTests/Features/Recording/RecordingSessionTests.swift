@@ -30,6 +30,7 @@
             XCTAssertNil(session.videoInput)
             XCTAssertNil(session.audioInput)
             XCTAssertNil(session.microphoneInput)
+            XCTAssertNil(session.cameraInput)
         }
 
         func testCanWriteFrames_whenNotCapturing_returnsFalse() {
@@ -85,6 +86,15 @@
             session.finishInputs()
             session.reset()
             XCTAssertFalse(session.sessionStarted)
+        }
+
+        func testFinishCameraInput_withoutInput_isIdempotent() {
+            session.finishCameraInput()
+            session.finishCameraInput()
+            let stats = session.videoWriteStats()
+            XCTAssertEqual(stats.cameraFramesReceived, 0)
+            XCTAssertEqual(stats.cameraFramesAppended, 0)
+            XCTAssertEqual(stats.cameraFramesFailedAppend, 0)
         }
     }
 #endif

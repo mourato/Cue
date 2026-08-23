@@ -44,8 +44,8 @@
                 }
             }
             .alert(L10n.Camera.accessRequiredTitle, isPresented: $permissionDenied) {
-                Button("Cancel", role: .cancel) {}
-                Button("Open System Settings") {
+                Button(L10n.Common.cancel, role: .cancel) {}
+                Button(L10n.Common.openSystemSettings) {
                     NSWorkspace.shared
                         .open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Camera")!)
                 }

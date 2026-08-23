@@ -2520,7 +2520,7 @@
         }
 
         nonisolated func cameraCapturerDidBecomeUnavailable(_: CameraVideoCapturer) {
-            session.cameraInput?.markAsFinished()
+            session.finishCameraInput()
         }
     }
 

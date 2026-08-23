@@ -7,6 +7,8 @@
         func testDeniedCameraDoesNotStartSession() {
             let factory = FakeCameraFactory(status: .denied)
             let capturer = CameraVideoCapturer(factory: factory)
+            let delegate = FakeCameraDelegate()
+            capturer.delegate = delegate
             capturer.start()
             let stopped = expectation(description: "camera setup completes")
             DispatchQueue.global().asyncAfter(deadline: .now() + 0.1) { stopped.fulfill() }
@@ -14,6 +16,15 @@
             XCTAssertFalse(factory.session.started)
             capturer.stop()
             capturer.stop()
+            XCTAssertEqual(delegate.unavailableCount, 1)
+        }
+    }
+
+    private final class FakeCameraDelegate: CameraVideoCapturerDelegate {
+        var unavailableCount = 0
+        func cameraCapturer(_: CameraVideoCapturer, didOutput _: CMSampleBuffer) {}
+        func cameraCapturerDidBecomeUnavailable(_: CameraVideoCapturer) {
+            unavailableCount += 1
         }
     }
 

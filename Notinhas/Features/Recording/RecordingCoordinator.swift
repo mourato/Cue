@@ -365,6 +365,8 @@
                 toolbar.captureAudio = configuration.captureAudio
                 toolbar.captureMicrophone = configuration.captureMicrophone
                 toolbar.microphoneDeviceID = configuration.microphoneDeviceID
+                toolbar.captureCamera = configuration.captureCamera
+                toolbar.cameraDeviceID = configuration.cameraDeviceID
                 toolbar.outputMode = configuration.outputMode
                 toolbar.state.showCursor = configuration.showCursor
                 toolbar.state.highlightClicks = configuration.highlightClicks
