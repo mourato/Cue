@@ -57,6 +57,33 @@ final class PostCaptureActionHandler {
         return quickAccessItem
     }
 
+    /// Route an explicitly requested video frame through the screenshot actions once.
+    @discardableResult
+    func handleVideoFrameCapture(
+        url: URL,
+        sourceURL: URL,
+        requestedTime: TimeInterval,
+        actualTime: TimeInterval,
+    ) async -> QuickAccessItem? {
+        let quickAccessItem = await executeActions(
+            for: .screenshot,
+            url: url,
+            forceOpenAnnotate: true,
+        )
+        await addScreenshotToHistory(url: url)
+        DiagnosticLogger.shared.log(
+            .info,
+            .annotate,
+            "Video frame routed through screenshot actions",
+            context: [
+                "fileName": sourceURL.lastPathComponent,
+                "requestedTime": String(format: "%.3f", requestedTime),
+                "actualTime": String(format: "%.3f", actualTime),
+            ],
+        )
+        return quickAccessItem
+    }
+
     /// Execute post-capture actions for a batch of screenshots, such as
     /// fullscreen capture across multiple displays.
     func handleScreenshotCaptures(urls: [URL]) async {
@@ -295,6 +322,7 @@ final class PostCaptureActionHandler {
         url: URL,
         skipQuickAccess: Bool = false,
         pinToScreen: Bool = false,
+        forceOpenAnnotate: Bool = false,
     ) async -> QuickAccessItem? {
         let scopedAccess = fileAccess.beginAccessingURL(url)
         defer { scopedAccess.stop() }
@@ -398,7 +426,8 @@ final class PostCaptureActionHandler {
         }
 
         // Open Annotate Editor (screenshots only)
-        if captureType == .screenshot, preferences.isActionEnabled(.openAnnotate, for: captureType) {
+        if captureType == .screenshot,
+           (forceOpenAnnotate || preferences.isActionEnabled(.openAnnotate, for: captureType)) {
             if let quickAccessItem {
                 AnnotateManager.shared.openAnnotation(for: quickAccessItem)
             } else {

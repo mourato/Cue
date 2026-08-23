@@ -274,6 +274,8 @@
         @Published var isExporting: Bool = false
         @Published var exportProgress: Float = 0
         @Published var exportStatusMessage: String = "Preparing..."
+        @Published var frameExtractionError: String?
+        @Published private(set) var isExtractingFrame = false
 
         // MARK: - Export Settings
 
@@ -732,6 +734,40 @@
                 "generatedFrames": "\(frameThumbnails.count)",
                 "elapsedMs": "\(Int(Date().timeIntervalSince(startedAt) * 1000))",
             ])
+        }
+
+        /// Extracts the raw, preferred-oriented asset frame at the clicked playhead time.
+        /// Editor zoom, background, padding, cursor effects, and speed are intentionally absent.
+        func annotateCurrentFrame() async {
+            guard !isGIF, !isExtractingFrame else { return }
+            let request = VideoFrameExtractionRequest(
+                sourceURL: assetURL,
+                requestedTime: CMTimeGetSeconds(playbackState.currentTime),
+                assetDuration: CMTimeGetSeconds(duration),
+                baseName: sourceURL.deletingPathExtension().lastPathComponent,
+            )
+            guard request.clampedTime != nil else {
+                frameExtractionError = VideoFrameExtractionError.invalidRequestTime.localizedDescription
+                return
+            }
+
+            isExtractingFrame = true
+            defer { isExtractingFrame = false }
+            do {
+                let result = try await VideoFrameExtractor.extract(
+                    request: request,
+                    outputRoot: TempCaptureManager.shared.tempCaptureDirectory,
+                )
+                await PostCaptureActionHandler.shared.handleVideoFrameCapture(
+                    url: result.url,
+                    sourceURL: request.sourceURL,
+                    requestedTime: result.requestedTime,
+                    actualTime: result.actualTime,
+                )
+            } catch {
+                frameExtractionError = error.localizedDescription
+                DiagnosticLogger.shared.logError(.editor, error, "Video frame extraction failed")
+            }
         }
 
         private func determineFrameExtractionProfile() async -> FrameExtractionProfile {
