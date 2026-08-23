@@ -1,2 +1,3 @@
 "NSMicrophoneUsageDescription" = "Notinhas needs microphone access to record audio with your screen recordings.";
+"NSCameraUsageDescription" = "Notinhas needs camera access to record an optional camera track with your screen recordings.";
 "NSScreenCaptureUsageDescription" = "Notinhas needs screen recording permission to capture screenshots and record your screen.";

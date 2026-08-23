@@ -1,2 +1,3 @@
 "NSMicrophoneUsageDescription" = "Notinhas では、画面録画で音声を録音するにはマイクへのアクセスが必要です。";
+"NSCameraUsageDescription" = "Notinhas では、画面録画で任意のカメラトラックを録画するにはカメラへのアクセスが必要です。";
 "NSScreenCaptureUsageDescription" = "Notinhas では、スクリーンショットをキャプチャして画面を記録するには、画面記録許可が必要です。";

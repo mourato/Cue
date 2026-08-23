@@ -41,6 +41,8 @@
 	</array>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Notinhas needs microphone access to record audio with your screen recordings.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Notinhas needs camera access to record an optional camera track with your screen recordings.</string>
 	<key>NSScreenCaptureUsageDescription</key>
 	<string>Notinhas needs screen recording permission to capture screenshots and record your screen.</string>
 </dict>

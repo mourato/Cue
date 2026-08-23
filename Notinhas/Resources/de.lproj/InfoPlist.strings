@@ -1,2 +1,3 @@
 "NSMicrophoneUsageDescription" = "Notinhas benötigt Mikrofonzugriff, um Audio mit Ihren Bildschirmaufnahmen aufzunehmen.";
+"NSCameraUsageDescription" = "Notinhas benötigt Kamerazugriff, um eine optionale Kameraspur mit Ihren Bildschirmaufnahmen aufzunehmen.";
 "NSScreenCaptureUsageDescription" = "Notinhas benötigt die Berechtigung zur Bildschirmaufzeichnung, um Screenshots aufzunehmen und Ihren Bildschirm aufzuzeichnen.";
