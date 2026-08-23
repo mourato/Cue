@@ -182,6 +182,7 @@
         // MARK: - NSWindowDelegate
 
         func windowShouldClose(_ sender: NSWindow) -> Bool {
+            state?.invalidateFrameAnnotationAttempt()
             // Empty state can always close
             guard let state else { return true }
 
@@ -750,6 +751,7 @@
         }
 
         private func forceClose() {
+            state?.invalidateFrameAnnotationAttempt()
             state?.pause()
             state?.hasUnsavedChanges = false
             window?.close()
@@ -758,6 +760,7 @@
         // MARK: - Cancel Action
 
         private func handleCancel() {
+            state?.invalidateFrameAnnotationAttempt()
             guard let window else { return }
 
             if let state, state.hasUnsavedChanges {

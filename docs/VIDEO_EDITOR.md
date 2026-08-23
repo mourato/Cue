@@ -41,6 +41,7 @@ flowchart TD
 
 - Visual timeline `Components/VideoEditorVideoTimelineView.swift` with frame-strip thumbnails (`VideoEditorVideoTimelineFrameStrip`) and trim handles (`VideoEditorVideoTrimHandlesView`).
 - Frame extraction uses an adaptive `FrameExtractionProfile` — 12 / 16 / 25 frames depending on track/duration, default 25 with zero tolerance.
+- **Annotate Current Frame** snapshots the playback time, clamps it to the raw asset duration, and writes one preferred-oriented PNG through the screenshot → Quick Access/History → Annotate path. It does not render editor zoom, background, padding, cursor effects, or speed segments, and never modifies the video source.
 - Minimum trim duration 1 s; handle drags clamp the playhead and record undoable `EditorAction.trimStart/trimEnd`.
 
 ## Zoom Segments

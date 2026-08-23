@@ -5141,6 +5141,31 @@ nonisolated enum L10n {
             defaultValue: "Convert",
             comment: "Primary action title for converting an existing video editor session",
         )
+        static let annotateCurrentFrame = string(
+            "video-editor.annotate-current-frame",
+            defaultValue: "Annotate Current Frame",
+            comment: "Toolbar action that extracts the current raw video frame into Annotate",
+        )
+        static let annotateCurrentFrameHint = string(
+            "video-editor.annotate-current-frame-hint",
+            defaultValue: "Extract the current frame as an image for annotation.",
+            comment: "Accessibility hint for the annotate current frame action",
+        )
+        static let frameExtractionFailed = string(
+            "video-editor.frame-extraction-failed",
+            defaultValue: "Could not extract the current video frame.",
+            comment: "Alert title shown when current video frame extraction fails",
+        )
+        static let invalidFrameTime = string(
+            "video-editor.invalid-frame-time",
+            defaultValue: "The video has no valid frame time.",
+            comment: "Error shown when a video has no valid frame time",
+        )
+        static let frameSaveFailed = string(
+            "video-editor.frame-save-failed",
+            defaultValue: "Could not save the extracted video frame.",
+            comment: "Error shown when the extracted video frame cannot be saved",
+        )
         static let unsavedChangesTitle = string(
             "video-editor.unsaved-changes-title",
             defaultValue: "Unsaved Changes",

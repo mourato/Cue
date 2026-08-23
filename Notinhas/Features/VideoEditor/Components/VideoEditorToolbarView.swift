@@ -113,6 +113,16 @@
                 }
                 .help(L10n.Common.openInFinder)
 
+                if !state.isGIF {
+                    ToolbarButton(icon: "photo.badge.arrow.down", isSelected: false) {
+                        Task { await state.annotateCurrentFrame() }
+                    }
+                    .disabled(state.isExtractingFrame)
+                    .help(L10n.VideoEditor.annotateCurrentFrame)
+                    .accessibilityLabel(L10n.VideoEditor.annotateCurrentFrame)
+                    .accessibilityHint(L10n.VideoEditor.annotateCurrentFrameHint)
+                }
+
                 ToolbarButton(
                     icon: "info.circle",
                     selectedIcon: "info.circle.fill",

@@ -274,6 +274,8 @@
         @Published var isExporting: Bool = false
         @Published var exportProgress: Float = 0
         @Published var exportStatusMessage: String = "Preparing..."
+        @Published var frameExtractionError: String?
+        @Published private(set) var isExtractingFrame = false
 
         // MARK: - Export Settings
 
@@ -314,6 +316,7 @@
         private var endObserver: NSObjectProtocol?
         private var cancellables = Set<AnyCancellable>()
         private var autoFocusPathInputs: [UUID: AutoFocusPathInput] = [:]
+        private var frameAnnotationAttemptID: UUID?
 
         // MARK: - Computed Properties
 
@@ -732,6 +735,52 @@
                 "generatedFrames": "\(frameThumbnails.count)",
                 "elapsedMs": "\(Int(Date().timeIntervalSince(startedAt) * 1000))",
             ])
+        }
+
+        /// Extracts the raw, preferred-oriented asset frame at the clicked playhead time.
+        /// Editor zoom, background, padding, cursor effects, and speed are intentionally absent.
+        func annotateCurrentFrame() async {
+            guard !isGIF, !isExtractingFrame else { return }
+            let request = VideoFrameExtractionRequest(
+                sourceURL: assetURL,
+                requestedTime: CMTimeGetSeconds(playbackState.currentTime),
+                assetDuration: CMTimeGetSeconds(duration),
+                baseName: sourceURL.deletingPathExtension().lastPathComponent,
+            )
+            guard request.clampedTime != nil else {
+                frameExtractionError = VideoFrameExtractionError.invalidRequestTime.localizedDescription
+                return
+            }
+
+            isExtractingFrame = true
+            defer { isExtractingFrame = false }
+            let attemptID = UUID()
+            frameAnnotationAttemptID = attemptID
+            do {
+                let result = try await VideoFrameExtractor.extract(
+                    request: request,
+                    outputRoot: TempCaptureManager.shared.tempCaptureDirectory,
+                )
+                guard frameAnnotationAttemptID == attemptID, !Task.isCancelled else {
+                    if result.url.pathExtension.lowercased() == "png" {
+                        try? FileManager.default.removeItem(at: result.url)
+                    }
+                    return
+                }
+                await PostCaptureActionHandler.shared.handleVideoFrameCapture(
+                    url: result.url,
+                    sourceURL: request.sourceURL,
+                    requestedTime: result.requestedTime,
+                    actualTime: result.actualTime,
+                )
+            } catch {
+                frameExtractionError = error.localizedDescription
+                DiagnosticLogger.shared.logError(.editor, error, "Video frame extraction failed")
+            }
+        }
+
+        func invalidateFrameAnnotationAttempt() {
+            frameAnnotationAttemptID = nil
         }
 
         private func determineFrameExtractionProfile() async -> FrameExtractionProfile {
