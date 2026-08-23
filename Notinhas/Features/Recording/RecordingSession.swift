@@ -30,6 +30,10 @@
             let failedAppendFrames: Int
             let microphoneSamplesReceived: Int
             let microphoneSamplesAppended: Int
+            let cameraFramesReceived: Int
+            let cameraFramesAppended: Int
+            let cameraFramesDropped: Int
+            let cameraFramesFailedAppend: Int
         }
 
         private let lock = NSLock()
@@ -40,9 +44,12 @@
         private var _pixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor?
         private var _audioInput: AVAssetWriterInput?
         private var _microphoneInput: AVAssetWriterInput?
+        private var _cameraInput: AVAssetWriterInput?
+        private var _cameraAdaptor: AVAssetWriterInputPixelBufferAdaptor?
         private var _videoFinished = false
         private var _audioFinished = false
         private var _microphoneFinished = false
+        private var _cameraFinished = false
         private var _sessionStarted = false
         private var _isCapturing = false
         private var _firstTimestamp: CMTime? // Track first video timestamp for timeline alignment
@@ -54,6 +61,10 @@
         private var _videoFramesFailedAppend = 0
         private var _microphoneSamplesReceived = 0
         private var _microphoneSamplesAppended = 0
+        private var _cameraFramesReceived = 0
+        private var _cameraFramesAppended = 0
+        private var _cameraFramesDropped = 0
+        private var _cameraFramesFailedAppend = 0
         private var _expectedVideoWidth: Int?
         private var _expectedVideoHeight: Int?
         private var _didLogMissingPixelBuffer = false
@@ -61,6 +72,7 @@
         private var _didLogVideoAppendFailure = false
         private var _didLogAudioAppendFailure = false
         private var _didLogMicrophoneAppendFailure = false
+        private var _didLogCameraAppendFailure = false
         private var _didLogSystemAudioSampleFormat = false
         private var _didLogMicrophoneAudioSampleFormat = false
 
@@ -89,6 +101,16 @@
         var microphoneInput: AVAssetWriterInput? {
             get { lock.withLock { _microphoneInput } }
             set { lock.withLock { _microphoneInput = newValue } }
+        }
+
+        var cameraInput: AVAssetWriterInput? {
+            get { lock.withLock { _cameraInput } }
+            set { lock.withLock { _cameraInput = newValue } }
+        }
+
+        var cameraAdaptor: AVAssetWriterInputPixelBufferAdaptor? {
+            get { lock.withLock { _cameraAdaptor } }
+            set { lock.withLock { _cameraAdaptor = newValue } }
         }
 
         var sessionStarted: Bool {
@@ -131,6 +153,10 @@
                     failedAppendFrames: _videoFramesFailedAppend,
                     microphoneSamplesReceived: _microphoneSamplesReceived,
                     microphoneSamplesAppended: _microphoneSamplesAppended,
+                    cameraFramesReceived: _cameraFramesReceived,
+                    cameraFramesAppended: _cameraFramesAppended,
+                    cameraFramesDropped: _cameraFramesDropped,
+                    cameraFramesFailedAppend: _cameraFramesFailedAppend,
                 )
             }
         }
@@ -359,6 +385,39 @@
             }
         }
 
+        func appendCameraSample(_ sampleBuffer: CMSampleBuffer) {
+            guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+            let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+            guard timestamp.isValid else { return }
+            appendBoundary.lock()
+            defer { appendBoundary.unlock() }
+            let values = lock.withLock { (
+                _isCapturing,
+                _assetWriter,
+                _cameraInput,
+                _cameraAdaptor,
+                _firstTimestamp,
+                _pauseOffsetAccumulator,
+            ) }
+            guard values.0, let writer = values.1, writer.status == .writing, let input = values.2,
+                  let adaptor = values.3, let first = values.4 else { return }
+            let adjusted = values.5 > .zero ? CMTimeSubtract(timestamp, values.5) : timestamp
+            guard adjusted >= first else { lock.withLock { _cameraFramesDropped += 1 }
+                return
+            }
+            lock.withLock { _cameraFramesReceived += 1 }
+            guard input.isReadyForMoreMediaData else { lock.withLock { _cameraFramesDropped += 1 }
+                return
+            }
+            if adaptor.append(pixelBuffer, withPresentationTime: adjusted) {
+                lock.withLock { _cameraFramesAppended += 1 }
+            } else {
+                lock.withLock { _cameraFramesFailedAppend += 1
+                    _didLogCameraAppendFailure = true
+                }
+            }
+        }
+
         /// Thread-safe microphone sample write
         func appendMicrophoneSample(_ sampleBuffer: CMSampleBuffer) {
             // Get mic timestamp
@@ -432,6 +491,10 @@
                     _microphoneInput?.markAsFinished()
                     _microphoneFinished = true
                 }
+                if !_cameraFinished {
+                    _cameraInput?.markAsFinished()
+                    _cameraFinished = true
+                }
             }
         }
 
@@ -494,9 +557,12 @@
                 _pixelBufferAdaptor = nil
                 _audioInput = nil
                 _microphoneInput = nil
+                _cameraInput = nil
+                _cameraAdaptor = nil
                 _videoFinished = false
                 _audioFinished = false
                 _microphoneFinished = false
+                _cameraFinished = false
                 _sessionStarted = false
                 _isCapturing = false
                 _firstTimestamp = nil
@@ -508,6 +574,10 @@
                 _videoFramesFailedAppend = 0
                 _microphoneSamplesReceived = 0
                 _microphoneSamplesAppended = 0
+                _cameraFramesReceived = 0
+                _cameraFramesAppended = 0
+                _cameraFramesDropped = 0
+                _cameraFramesFailedAppend = 0
                 _expectedVideoWidth = nil
                 _expectedVideoHeight = nil
                 _didLogMissingPixelBuffer = false
@@ -515,6 +585,7 @@
                 _didLogVideoAppendFailure = false
                 _didLogAudioAppendFailure = false
                 _didLogMicrophoneAppendFailure = false
+                _didLogCameraAppendFailure = false
                 _didLogSystemAudioSampleFormat = false
                 _didLogMicrophoneAudioSampleFormat = false
             }
