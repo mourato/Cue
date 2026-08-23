@@ -116,6 +116,7 @@
         private let factory: CameraCaptureSessionFactory
         private let preferredDeviceID: String?
         private var captureSession: CameraCaptureSession?
+        private var notificationTokens: [NSObjectProtocol] = []
         private var isRunning = false
         private let sessionQueue = DispatchQueue(label: "com.mourato.notinhas.camera.session", qos: .userInteractive)
         private let dataOutputQueue = DispatchQueue(label: "com.mourato.notinhas.camera.data", qos: .userInteractive)
@@ -142,6 +143,18 @@
                 }
                 let session = factory.makeSession()
                 captureSession = session
+                notificationTokens = [
+                    AVCaptureSession.runtimeErrorNotification,
+                    AVCaptureSession.wasInterruptedNotification,
+                    AVCaptureDevice.wasDisconnectedNotification,
+                ].map { notification in
+                    NotificationCenter.default
+                        .addObserver(forName: notification, object: nil, queue: nil) { [weak self] _ in
+                            self?.sessionQueue.async { [weak self] in
+                                self?.fail()
+                            }
+                        }
+                }
                 do {
                     _ = try factory.configureInput(on: session, preferredDeviceID: preferredDeviceID)
                     try factory.configureOutput(on: session, delegate: self, queue: dataOutputQueue)
@@ -156,6 +169,8 @@
                 isRunning = false
                 captureSession?.stopRunning()
                 captureSession = nil
+                notificationTokens.forEach(NotificationCenter.default.removeObserver)
+                notificationTokens.removeAll()
             }
         }
 
@@ -163,6 +178,8 @@
             isRunning = false
             captureSession?.stopRunning()
             captureSession = nil
+            notificationTokens.forEach(NotificationCenter.default.removeObserver)
+            notificationTokens.removeAll()
             delegate?.cameraCapturerDidBecomeUnavailable(self)
         }
     }
