@@ -3895,6 +3895,31 @@ nonisolated enum L10n {
         )
     }
 
+    enum Camera {
+        static let options = string(
+            "camera.options",
+            defaultValue: "Camera options",
+            comment: "Accessibility label for camera options",
+        )
+        static let on = string("camera.on", defaultValue: "Camera on", comment: "Camera enabled tooltip")
+        static let off = string("camera.off", defaultValue: "Camera off", comment: "Camera disabled tooltip")
+        static let doNotUse = string(
+            "camera.do-not-use",
+            defaultValue: "Do Not Use Camera",
+            comment: "Camera menu option",
+        )
+        static let accessRequiredTitle = string(
+            "camera.access-required-title",
+            defaultValue: "Camera Access Required",
+            comment: "Camera permission alert title",
+        )
+        static let permissionMessage = string(
+            "camera.permission-message",
+            defaultValue: "Notinhas needs camera permission to record a camera track.",
+            comment: "Camera permission alert message",
+        )
+    }
+
     enum CloudOperation {
         static func keychainError(_ reason: String) -> String {
             format(

@@ -45,6 +45,8 @@
             let captureAudio: Bool
             let captureMicrophone: Bool
             let microphoneDeviceID: String
+            let captureCamera: Bool
+            let cameraDeviceID: String
             let outputMode: RecordingOutputMode
             let showCursor: Bool
             let highlightClicks: Bool
@@ -344,6 +346,8 @@
                 captureAudio: toolbarWindow.captureAudio,
                 captureMicrophone: toolbarWindow.captureMicrophone,
                 microphoneDeviceID: toolbarWindow.microphoneDeviceID,
+                captureCamera: toolbarWindow.captureCamera,
+                cameraDeviceID: toolbarWindow.cameraDeviceID,
                 outputMode: toolbarWindow.outputMode,
                 showCursor: toolbarWindow.state.showCursor,
                 highlightClicks: toolbarWindow.state.highlightClicks,
@@ -551,6 +555,8 @@
             let savedCaptureAudio = window.captureAudio
             let savedCaptureMicrophone = window.captureMicrophone
             let savedMicrophoneDeviceID = window.microphoneDeviceID
+            let savedCaptureCamera = window.captureCamera
+            let savedCameraDeviceID = window.cameraDeviceID
             let savedShowCursor = window.state.showCursor
             DiagnosticLogger.shared.log(.info, .recording, "Recording restart requested", context: [
                 "format": savedFormat.rawValue,
@@ -601,6 +607,8 @@
                         captureSystemAudio: savedCaptureAudio,
                         captureMicrophone: savedCaptureMicrophone,
                         microphoneDeviceID: savedMicrophoneDeviceID,
+                        captureCamera: savedCaptureCamera,
+                        cameraDeviceID: savedCameraDeviceID,
                         showCursor: savedShowCursor,
                         saveDirectory: savePlan.finalDirectory,
                         processingDirectory: savePlan.processingDirectory,
@@ -679,6 +687,8 @@
             // Get microphone setting from toolbar
             let captureMicrophone = window.captureMicrophone
             let microphoneDeviceID = window.microphoneDeviceID
+            let captureCamera = window.captureCamera && window.outputMode != .gif
+            let cameraDeviceID = window.cameraDeviceID
             DiagnosticLogger.shared.log(.debug, .recording, "Recording options resolved", context: [
                 "quality": quality.rawValue,
                 "fps": "\(fps)",
@@ -719,6 +729,8 @@
                         captureSystemAudio: captureSystemAudio,
                         captureMicrophone: captureMicrophone,
                         microphoneDeviceID: microphoneDeviceID,
+                        captureCamera: captureCamera,
+                        cameraDeviceID: cameraDeviceID,
                         showCursor: showCursor,
                         saveDirectory: savePlan.finalDirectory,
                         processingDirectory: savePlan.processingDirectory,
@@ -865,6 +877,8 @@
                         fps: fps,
                         captureSystemAudio: captureSystemAudio,
                         captureMicrophone: false,
+                        captureCamera: window.captureCamera && window.outputMode != .gif,
+                        cameraDeviceID: window.cameraDeviceID,
                         showCursor: showCursor,
                         saveDirectory: savePlan.finalDirectory,
                         processingDirectory: savePlan.processingDirectory,
