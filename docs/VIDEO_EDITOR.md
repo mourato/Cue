@@ -103,6 +103,22 @@ flowchart TD
   - Save as copy: `_trimmed` suffix suggestion (`generateCopyFilename`, counter on collision) + `NSSavePanel`.
 - After a successful export, the Video module closes or returns to its local result. Image-host upload is not offered for video or GIF output; BYO cloud upload offers were removed and the Video module itself remains available.
 
+### Plan 108 characterization (2026-08-23)
+
+A temporary XCTest used a synthetic 4-second, 320×180 source with trim, zoom,
+speed, solid background, custom dimensions, and custom-audio settings. Two
+Save As exports produced identical 354,495-byte outputs in 348 ms and 187 ms;
+Replace Original took 192 ms and produced the same size. The fixture had no
+audio track, so this measures the composition path and settings route rather
+than a real multitrack audio normalization cost.
+
+The measured repeated-export cost does not justify durable cache infrastructure
+yet. Plan 108 therefore stops at characterization (YAGNI): no recipe, cache
+manifest, App Support directory, or exporter integration is added. If real
+long-duration or multitrack exports show material repeated cost, a follow-up
+plan should preserve these decisions: source is read-only, cache output is a
+discardable deliverable, and reopening a baked output never reapplies a recipe.
+
 ## GIF Editing
 
 - GIF mode is dimension-change only — no trim, zoom, or speed; saving with unchanged dimensions shows a "no changes" alert.
