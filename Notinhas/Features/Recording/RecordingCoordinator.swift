@@ -936,7 +936,7 @@
                 case .failed:
                     presentRecordingOutcome(L10n.Recording.failedPreserved)
                 case .cancelled:
-                    presentRecordingOutcome(L10n.Recording.cancelled)
+                    break
                 case nil:
                     presentRecordingOutcome(L10n.Recording.failedPreserved)
                 }

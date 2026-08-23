@@ -667,6 +667,7 @@
         private var recordingActivity: NSObjectProtocol?
         private(set) var lastStopResult: RecordingStopResult?
         private var terminationTimedOut = false
+        private var terminationStopTask: Task<URL?, Never>?
 
         private struct CaptureGeometry {
             let sourceRect: CGRect
@@ -1390,16 +1391,27 @@
         /// The polling window is bounded and repeated calls are harmless.
         func finishForApplicationTermination(timeoutNanoseconds: UInt64 = 2_000_000_000) async -> Bool {
             if state == .recording || state == .paused {
-                _ = await stopRecording()
-                return state == .idle
+                if terminationStopTask == nil {
+                    terminationStopTask = Task { @MainActor [weak self] in
+                        guard let self else { return nil }
+                        let result = await stopRecording()
+                        terminationStopTask = nil
+                        return result
+                    }
+                }
             }
-            guard state == .stopping else { return state == .idle }
+            guard state == .stopping || terminationStopTask != nil else { return state == .idle }
 
             let deadline = DispatchTime.now().uptimeNanoseconds + timeoutNanoseconds
-            while state == .stopping, DispatchTime.now().uptimeNanoseconds < deadline {
+            while state != .idle, DispatchTime.now().uptimeNanoseconds < deadline {
                 try? await Task.sleep(nanoseconds: 10_000_000)
             }
-            return state == .idle
+            guard state == .idle else {
+                markApplicationTerminationAbandoned()
+                return false
+            }
+            terminationStopTask = nil
+            return true
         }
 
         func markApplicationTerminationAbandoned() {
