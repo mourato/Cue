@@ -11,6 +11,12 @@ import XCTest
 
 @MainActor
 final class AppLaunchPolicyTests: XCTestCase {
+    func testApplicationTerminationPolicy_waitsForActiveOrPendingTermination() {
+        XCTAssertTrue(ApplicationTerminationPolicy.shouldWait(isRecording: true, terminationInProgress: false))
+        XCTAssertTrue(ApplicationTerminationPolicy.shouldWait(isRecording: false, terminationInProgress: true))
+        XCTAssertFalse(ApplicationTerminationPolicy.shouldWait(isRecording: false, terminationInProgress: false))
+    }
+
     func testShouldStartInteractiveApplication_underXCTestSkipsBeforeScreenAccess() {
         var didRequestScreenCount = false
         let policy = AppLaunchPolicy(

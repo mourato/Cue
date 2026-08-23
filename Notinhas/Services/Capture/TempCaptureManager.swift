@@ -9,6 +9,9 @@
 
 import Foundation
 import os.log
+#if NOTINHAS_VIDEO_MODULE
+    import AVFoundation
+#endif
 
 private let logger = Logger(subsystem: "Notinhas", category: "TempCaptureManager")
 
@@ -19,13 +22,82 @@ struct RecordingSavePlan {
 }
 
 struct RecordingProcessingManifest: Codable, Equatable {
-    static let currentVersion = 1
-    let version: Int
-    let sessionID: String
-    let writerFile: String?
+    static let currentVersion = 2
+    var version: Int
+    var sessionID: String
+    var writerFile: String?
+    var relativeURLs: [String: String]
+    var container: String
+    var codec: String?
+    var width: Int?
+    var height: Int?
+    var startedAt: Date
     var state: String
     var lastCheckpoint: Date
     var isFinalized: Bool
+    var ownerProcessID: Int
+    var ownerToken: String
+
+    enum CodingKeys: String, CodingKey {
+        case version, sessionID, writerFile, relativeURLs, container, codec, width, height
+        case startedAt, state, lastCheckpoint, isFinalized, ownerProcessID, ownerToken
+    }
+
+    init(
+        version: Int = currentVersion,
+        sessionID: String,
+        writerFile: String?,
+        relativeURLs: [String: String] = [:],
+        container: String = "mov",
+        codec: String? = nil,
+        width: Int? = nil,
+        height: Int? = nil,
+        startedAt: Date = Date(),
+        state: String,
+        lastCheckpoint: Date = Date(),
+        isFinalized: Bool,
+        ownerProcessID: Int = Int(ProcessInfo.processInfo.processIdentifier),
+        ownerToken: String = "legacy",
+    ) {
+        self.version = version
+        self.sessionID = sessionID
+        self.writerFile = writerFile
+        self.relativeURLs = relativeURLs
+        self.container = container
+        self.codec = codec
+        self.width = width
+        self.height = height
+        self.startedAt = startedAt
+        self.state = state
+        self.lastCheckpoint = lastCheckpoint
+        self.isFinalized = isFinalized
+        self.ownerProcessID = ownerProcessID
+        self.ownerToken = ownerToken
+    }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        version = try values.decodeIfPresent(Int.self, forKey: .version) ?? 1
+        sessionID = try values.decode(String.self, forKey: .sessionID)
+        writerFile = try values.decodeIfPresent(String.self, forKey: .writerFile)
+        relativeURLs = try values.decodeIfPresent([String: String].self, forKey: .relativeURLs) ?? [:]
+        container = try values.decodeIfPresent(String.self, forKey: .container) ?? "mov"
+        codec = try values.decodeIfPresent(String.self, forKey: .codec)
+        width = try values.decodeIfPresent(Int.self, forKey: .width)
+        height = try values.decodeIfPresent(Int.self, forKey: .height)
+        startedAt = try values.decodeIfPresent(Date.self, forKey: .startedAt) ?? Date.distantPast
+        state = try values.decode(String.self, forKey: .state)
+        lastCheckpoint = try values.decodeIfPresent(Date.self, forKey: .lastCheckpoint) ?? startedAt
+        isFinalized = try values.decodeIfPresent(Bool.self, forKey: .isFinalized) ?? false
+        ownerProcessID = try values.decodeIfPresent(Int.self, forKey: .ownerProcessID) ?? -1
+        ownerToken = try values.decodeIfPresent(String.self, forKey: .ownerToken) ?? "legacy"
+    }
+}
+
+enum RecordingRecoveryDisposition: Equatable {
+    case active
+    case preservedInvalid
+    case promoted(URL)
 }
 
 /// Manages lifecycle of temporary capture files when auto-save is disabled
@@ -36,6 +108,7 @@ final class TempCaptureManager {
     private let preferences: PreferencesProviding
     private let fileAccess: SandboxFileAccessing
     private let defaults: UserDefaults
+    private let ownerToken = UUID().uuidString
 
     init(
         preferences: PreferencesProviding = PreferencesManager.shared,
@@ -120,9 +193,12 @@ final class TempCaptureManager {
             version: RecordingProcessingManifest.currentVersion,
             sessionID: processingDirectory.lastPathComponent,
             writerFile: nil,
+            relativeURLs: [:],
+            container: "mov",
             state: "prepared",
             lastCheckpoint: Date(),
             isFinalized: false,
+            ownerToken: ownerToken,
         )
         try writeManifest(manifest, in: processingDirectory)
 
@@ -149,22 +225,120 @@ final class TempCaptureManager {
         writerURL: URL?,
         state: String,
         isFinalized: Bool = false,
-    ) {
-        guard isRecordingProcessingSessionDirectory(directory) else { return }
+        container: String? = nil,
+        codec: String? = nil,
+        width: Int? = nil,
+        height: Int? = nil,
+    ) -> Bool {
+        guard isRecordingProcessingSessionDirectory(directory) else {
+            DiagnosticLogger.shared.log(
+                .warning,
+                .recording,
+                "Recording manifest update rejected outside processing root",
+            )
+            return false
+        }
+        let previous = loadManifest(in: directory)
+        if let writerURL, !isURL(writerURL, inside: directory) {
+            DiagnosticLogger.shared.log(
+                .warning,
+                .recording,
+                "Recording manifest update rejected outside session directory",
+            )
+            return false
+        }
         let writerFile = writerURL.flatMap { url -> String? in
             guard isURL(url, inside: directory) else { return nil }
             return url.lastPathComponent
-        }
+        } ?? previous?.writerFile
+        let checkpoint = Date()
         let manifest = RecordingProcessingManifest(
             version: RecordingProcessingManifest.currentVersion,
             sessionID: directory.lastPathComponent,
             writerFile: writerFile,
+            relativeURLs: writerFile.map { ["writer": $0] } ?? previous?.relativeURLs ?? [:],
+            container: container ?? previous?.container ?? "mov",
+            codec: codec ?? previous?.codec,
+            width: width ?? previous?.width,
+            height: height ?? previous?.height,
+            startedAt: previous?.startedAt ?? checkpoint,
             state: state,
-            lastCheckpoint: Date(),
+            lastCheckpoint: checkpoint,
             isFinalized: isFinalized,
+            ownerProcessID: previous?.ownerProcessID ?? Int(ProcessInfo.processInfo.processIdentifier),
+            ownerToken: previous?.ownerToken ?? ownerToken,
         )
-        try? writeManifest(manifest, in: directory)
+        do {
+            try writeManifest(manifest, in: directory)
+            return true
+        } catch {
+            DiagnosticLogger.shared.logError(.recording, error, "Recording manifest update failed")
+            return false
+        }
     }
+
+    #if NOTINHAS_VIDEO_MODULE
+        func recoverRecordingSessions() async -> [RecordingRecoveryDisposition] {
+            let fm = FileManager.default
+            guard let directories = try? fm.contentsOfDirectory(
+                at: recordingProcessingDirectory,
+                includingPropertiesForKeys: [.isDirectoryKey],
+                options: [.skipsHiddenFiles],
+            ) else { return [] }
+
+            var results: [RecordingRecoveryDisposition] = []
+            for directory in directories {
+                guard (try? directory.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true else { continue }
+                guard let manifest = loadManifest(in: directory) else {
+                    DiagnosticLogger.shared.log(
+                        .warning,
+                        .recording,
+                        "Recording recovery preserved session with invalid manifest",
+                    )
+                    results.append(.preservedInvalid)
+                    continue
+                }
+                if manifest.ownerProcessID == ProcessInfo.processInfo.processIdentifier,
+                   manifest.ownerToken == ownerToken,
+                   ["prepared", "recording", "paused"].contains(manifest.state),
+                   !manifest.isFinalized {
+                    results.append(.active)
+                    continue
+                }
+
+                guard let relativePath = manifest.relativeURLs["writer"] ?? manifest.writerFile,
+                      let writerURL = safeRelativeURL(relativePath, in: directory),
+                      await isValidRecordingOutput(writerURL)
+                else {
+                    DiagnosticLogger.shared.log(
+                        .warning,
+                        .recording,
+                        "Recording recovery preserved invalid or incomplete session",
+                    )
+                    results.append(.preservedInvalid)
+                    continue
+                }
+
+                let recoveredURL = makeRecoveredRecordingURL(for: writerURL)
+                do {
+                    try fm.moveItem(at: writerURL, to: recoveredURL)
+                    if RecordingMetadataStore.load(for: writerURL) != nil {
+                        try RecordingMetadataStore.moveAssociation(from: writerURL, to: recoveredURL)
+                    }
+                    try fm.removeItem(at: directory)
+                    results.append(.promoted(recoveredURL))
+                } catch {
+                    DiagnosticLogger.shared.logError(
+                        .recording,
+                        error,
+                        "Recording recovery promotion failed; preserving session",
+                    )
+                    results.append(.preservedInvalid)
+                }
+            }
+            return results
+        }
+    #endif
 
     /// Build a stable fallback URL in the temp capture root if final export move fails.
     func makeRecoveredRecordingURL(for sourceURL: URL) -> URL {
@@ -471,6 +645,32 @@ final class TempCaptureManager {
         let data = try JSONEncoder().encode(manifest)
         try data.write(to: url, options: .atomic)
     }
+
+    private func loadManifest(in directory: URL) -> RecordingProcessingManifest? {
+        let url = directory.appendingPathComponent("recording-manifest.json")
+        guard let data = try? Data(contentsOf: url) else { return nil }
+        return try? JSONDecoder().decode(RecordingProcessingManifest.self, from: data)
+    }
+
+    private func safeRelativeURL(_ relativePath: String, in directory: URL) -> URL? {
+        guard !relativePath.isEmpty, !relativePath.hasPrefix("/"), !relativePath.contains("..") else { return nil }
+        let url = directory.appendingPathComponent(relativePath).standardizedFileURL
+        return isURL(url, inside: directory) ? url : nil
+    }
+
+    #if NOTINHAS_VIDEO_MODULE
+        private func isValidRecordingOutput(_ url: URL) async -> Bool {
+            guard FileManager.default.fileExists(atPath: url.path) else { return false }
+            do {
+                let asset = AVURLAsset(url: url)
+                let duration = try await asset.load(.duration)
+                let tracks = try await asset.loadTracks(withMediaType: .video)
+                return duration.isNumeric && duration.seconds > 0 && !tracks.isEmpty
+            } catch {
+                return false
+            }
+        }
+    #endif
 
     private func isRecordingProcessingURL(_ url: URL) -> Bool {
         let root = recordingProcessingDirectory.standardizedFileURL.resolvingSymlinksInPath().path

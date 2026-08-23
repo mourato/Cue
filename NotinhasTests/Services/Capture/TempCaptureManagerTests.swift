@@ -5,6 +5,8 @@
 //  Unit tests for TempCaptureManager file lifecycle management.
 //
 
+import AVFoundation
+import CoreVideo
 @testable import Notinhas
 import XCTest
 
@@ -303,6 +305,94 @@ final class TempCaptureManagerTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: writerURL.path))
         XCTAssertTrue(FileManager.default.fileExists(atPath: plan.processingDirectory.path))
         try? FileManager.default.removeItem(at: plan.processingDirectory)
+    }
+
+    func testRecordingRecovery_activeSessionIsPreserved() async throws {
+        let exportDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("NotinhasTests_Export_\(UUID().uuidString)")
+        let plan = try manager.makeRecordingSavePlan(exportDirectory: exportDir)
+        let writerURL = plan.processingDirectory.appendingPathComponent("active.mov")
+        _ = manager.updateRecordingManifest(for: plan.processingDirectory, writerURL: writerURL, state: "recording")
+        let results = await manager.recoverRecordingSessions()
+
+        XCTAssertEqual(results, [.active])
+        XCTAssertTrue(FileManager.default.fileExists(atPath: plan.processingDirectory.path))
+        try? FileManager.default.removeItem(at: plan.processingDirectory)
+    }
+
+    func testRecordingRecovery_invalidSessionIsPreserved() async throws {
+        let exportDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("NotinhasTests_Export_\(UUID().uuidString)")
+        let plan = try manager.makeRecordingSavePlan(exportDirectory: exportDir)
+        let writerURL = plan.processingDirectory.appendingPathComponent("invalid.mov")
+        try Data("not a movie".utf8).write(to: writerURL)
+        _ = manager.updateRecordingManifest(for: plan.processingDirectory, writerURL: writerURL, state: "abandoned")
+        let results = await manager.recoverRecordingSessions()
+
+        XCTAssertEqual(results, [.preservedInvalid])
+        XCTAssertTrue(FileManager.default.fileExists(atPath: writerURL.path))
+        try? FileManager.default.removeItem(at: plan.processingDirectory)
+    }
+
+    func testRecordingRecovery_validSessionPromotesToTempCapture() async throws {
+        let exportDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("NotinhasTests_Export_\(UUID().uuidString)")
+        let plan = try manager.makeRecordingSavePlan(exportDirectory: exportDir)
+        let writerURL = plan.processingDirectory.appendingPathComponent("valid.mov")
+        try await makeValidVideo(at: writerURL)
+        _ = manager.updateRecordingManifest(for: plan.processingDirectory, writerURL: writerURL, state: "abandoned")
+        let results = await manager.recoverRecordingSessions()
+
+        guard case .promoted(let recoveredURL) = try XCTUnwrap(results.first) else {
+            return XCTFail("Expected valid session promotion")
+        }
+        XCTAssertTrue(manager.isTempFile(recoveredURL))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: recoveredURL.path))
+        manager.deleteTempFile(at: recoveredURL)
+    }
+
+    func testRecordingManifest_pathGuardRejectsOutsideSession() throws {
+        let exportDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("NotinhasTests_Export_\(UUID().uuidString)")
+        let plan = try manager.makeRecordingSavePlan(exportDirectory: exportDir)
+        let outside = FileManager.default.temporaryDirectory.appendingPathComponent("outside.mov")
+
+        XCTAssertFalse(manager.updateRecordingManifest(
+            for: plan.processingDirectory,
+            writerURL: outside,
+            state: "recording",
+        ))
+        try? FileManager.default.removeItem(at: plan.processingDirectory)
+    }
+
+    private func makeValidVideo(at url: URL) async throws {
+        let writer = try AVAssetWriter(outputURL: url, fileType: .mov)
+        let input = AVAssetWriterInput(
+            mediaType: .video,
+            outputSettings: [
+                AVVideoCodecKey: AVVideoCodecType.h264,
+                AVVideoWidthKey: 16,
+                AVVideoHeightKey: 16,
+            ],
+        )
+        XCTAssertTrue(writer.canAdd(input))
+        writer.add(input)
+        let adaptor = AVAssetWriterInputPixelBufferAdaptor(
+            assetWriterInput: input,
+            sourcePixelBufferAttributes: [
+                kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
+                kCVPixelBufferWidthKey as String: 16,
+                kCVPixelBufferHeightKey as String: 16,
+            ],
+        )
+        writer.startWriting()
+        writer.startSession(atSourceTime: .zero)
+        var pixelBuffer: CVPixelBuffer?
+        CVPixelBufferCreate(nil, 16, 16, kCVPixelFormatType_32BGRA, nil, &pixelBuffer)
+        XCTAssertTrue(try adaptor.append(XCTUnwrap(pixelBuffer), withPresentationTime: .zero))
+        input.markAsFinished()
+        await writer.finishWriting()
+        XCTAssertEqual(writer.status, .completed)
     }
 
     func testRecordingSavePlan_autoSaveOn_finalDirIsExport() throws {

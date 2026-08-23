@@ -666,6 +666,7 @@
         private var registeredOutputTypes: Set<SCStreamOutputType> = []
         private var recordingActivity: NSObjectProtocol?
         private(set) var lastStopResult: RecordingStopResult?
+        private var terminationTimedOut = false
 
         private struct CaptureGeometry {
             let sourceRect: CGRect
@@ -728,6 +729,7 @@
             state = .preparing
             error = nil
             lastStopResult = nil
+            terminationTimedOut = false
             session.sessionStarted = false
 
             DiagnosticLogger.shared.log(.info, .recording, "Recording prepare started", context: [
@@ -1073,6 +1075,11 @@
                     for: recordingProcessingDirectory,
                     writerURL: outputURL,
                     state: "recording",
+                    container: videoFormat.rawValue,
+                    codec: RecordingVideoEncodingSettings.preferredCodec(format: videoFormat, quality: videoQuality)
+                        .rawValue,
+                    width: Int(recordingRect.width),
+                    height: Int(recordingRect.height),
                 )
             }
 
@@ -1274,6 +1281,16 @@
             let mouseSamples = mouseTracker?.stop() ?? []
             let writerURL = outputURL
             await logRecordingFrameDiagnostics(outputURL: writerURL, stats: videoWriteStats)
+            if terminationTimedOut {
+                if let writerURL, FileManager.default.fileExists(atPath: writerURL.path) {
+                    shouldPreserveProcessingOutputOnCleanup = true
+                    lastStopResult = .preservedPartial(writerURL)
+                } else {
+                    lastStopResult = .failed("recording output unavailable")
+                }
+                cleanup()
+                return nil
+            }
             guard case .finished = finishResult, let writerURL,
                   await isValidRecordingOutput(writerURL)
             else {
@@ -1370,10 +1387,33 @@
         }
 
         /// Finish through the normal stop path during application termination.
-        /// Repeated calls are harmless once the recorder is stopping or idle.
-        func finishForApplicationTermination() async {
-            guard state == .recording || state == .paused else { return }
-            _ = await stopRecording()
+        /// The polling window is bounded and repeated calls are harmless.
+        func finishForApplicationTermination(timeoutNanoseconds: UInt64 = 2_000_000_000) async -> Bool {
+            if state == .recording || state == .paused {
+                _ = await stopRecording()
+                return state == .idle
+            }
+            guard state == .stopping else { return state == .idle }
+
+            let deadline = DispatchTime.now().uptimeNanoseconds + timeoutNanoseconds
+            while state == .stopping, DispatchTime.now().uptimeNanoseconds < deadline {
+                try? await Task.sleep(nanoseconds: 10_000_000)
+            }
+            return state == .idle
+        }
+
+        func markApplicationTerminationAbandoned() {
+            guard state != .idle else { return }
+            terminationTimedOut = true
+            shouldPreserveProcessingOutputOnCleanup = true
+            if let recordingProcessingDirectory {
+                _ = TempCaptureManager.shared.updateRecordingManifest(
+                    for: recordingProcessingDirectory,
+                    writerURL: outputURL,
+                    state: "abandoned",
+                )
+            }
+            endRecordingActivityIfNeeded()
         }
 
         /// Cancel the recording without saving
@@ -2274,10 +2314,7 @@
             mouseTracker = nil
             microphoneCapturer = nil
             audioLevelMeter.reset()
-            if let recordingActivity {
-                ProcessInfo.processInfo.endActivity(recordingActivity)
-                self.recordingActivity = nil
-            }
+            endRecordingActivityIfNeeded()
             if let recordingProcessingDirectory {
                 TempCaptureManager.shared.updateRecordingManifest(
                     for: recordingProcessingDirectory,
@@ -2292,6 +2329,12 @@
             outputURL = nil
             state = .idle
             elapsedSeconds = 0
+        }
+
+        private func endRecordingActivityIfNeeded() {
+            guard let recordingActivity else { return }
+            ProcessInfo.processInfo.endActivity(recordingActivity)
+            self.recordingActivity = nil
         }
 
         private func isValidRecordingOutput(_ url: URL) async -> Bool {

@@ -910,19 +910,17 @@
             let outputMode = toolbarWindow?.state.outputMode ?? .video
 
             Task {
-                let url = await recorder.stopRecording()
+                _ = await recorder.stopRecording()
+                let stopResult = recorder.lastStopResult
                 DiagnosticLogger.shared.log(.info, .recording, "Recording stopped", context: [
-                    "hasOutput": "\(url != nil)",
+                    "hasOutput": "\(stopResult.map { if case .finished = $0 { true } else { false } } ?? false)",
                     "outputMode": "\(outputMode)",
                 ])
-                if url == nil {
-                    DiagnosticLogger.shared.log(.warning, .recording, "Recording stop completed without output URL")
-                }
-
                 // Dismiss recording UI immediately (status bar, area overlay, etc.)
                 cleanup()
 
-                if let url {
+                switch stopResult {
+                case .finished(let url):
                     // Play sound
                     SoundManager.play("Glass")
 
@@ -933,8 +931,25 @@
                         // Video mode: normal post-capture flow
                         await PostCaptureActionHandler.shared.handleVideoCapture(url: url)
                     }
+                case .preservedPartial:
+                    presentRecordingOutcome(L10n.Recording.partialPreserved)
+                case .failed:
+                    presentRecordingOutcome(L10n.Recording.failedPreserved)
+                case .cancelled:
+                    presentRecordingOutcome(L10n.Recording.cancelled)
+                case nil:
+                    presentRecordingOutcome(L10n.Recording.failedPreserved)
                 }
             }
+        }
+
+        private func presentRecordingOutcome(_ message: String) {
+            let alert = NSAlert()
+            alert.messageText = L10n.Recording.failedTitle
+            alert.informativeText = message
+            alert.alertStyle = .warning
+            alert.addButton(withTitle: L10n.Common.ok)
+            alert.runModal()
         }
 
         /// Handle GIF conversion: add to QuickAccess with progress, convert, and update
