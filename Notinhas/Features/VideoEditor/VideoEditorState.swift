@@ -316,6 +316,7 @@
         private var endObserver: NSObjectProtocol?
         private var cancellables = Set<AnyCancellable>()
         private var autoFocusPathInputs: [UUID: AutoFocusPathInput] = [:]
+        private var frameAnnotationAttemptID: UUID?
 
         // MARK: - Computed Properties
 
@@ -753,11 +754,19 @@
 
             isExtractingFrame = true
             defer { isExtractingFrame = false }
+            let attemptID = UUID()
+            frameAnnotationAttemptID = attemptID
             do {
                 let result = try await VideoFrameExtractor.extract(
                     request: request,
                     outputRoot: TempCaptureManager.shared.tempCaptureDirectory,
                 )
+                guard frameAnnotationAttemptID == attemptID, !Task.isCancelled else {
+                    if result.url.pathExtension.lowercased() == "png" {
+                        try? FileManager.default.removeItem(at: result.url)
+                    }
+                    return
+                }
                 await PostCaptureActionHandler.shared.handleVideoFrameCapture(
                     url: result.url,
                     sourceURL: request.sourceURL,
@@ -768,6 +777,10 @@
                 frameExtractionError = error.localizedDescription
                 DiagnosticLogger.shared.logError(.editor, error, "Video frame extraction failed")
             }
+        }
+
+        func invalidateFrameAnnotationAttempt() {
+            frameAnnotationAttemptID = nil
         }
 
         private func determineFrameExtractionProfile() async -> FrameExtractionProfile {
