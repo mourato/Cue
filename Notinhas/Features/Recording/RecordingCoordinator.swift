@@ -26,6 +26,7 @@
         private var localEscapeMonitor: Any?
         private var globalEscapeMonitor: Any?
         private var onSessionEnded: (@MainActor () -> Void)?
+        private var cameraUnavailableObserver: NSObjectProtocol?
 
         // Annotation overlay
         private var annotationToolbarWindow: RecordingAnnotationToolbarWindow?
@@ -45,13 +46,23 @@
             let captureAudio: Bool
             let captureMicrophone: Bool
             let microphoneDeviceID: String
+            let captureCamera: Bool
+            let cameraDeviceID: String
             let outputMode: RecordingOutputMode
             let showCursor: Bool
             let highlightClicks: Bool
             let showKeystrokes: Bool
         }
 
-        private init() {}
+        private init() {
+            cameraUnavailableObserver = NotificationCenter.default.addObserver(
+                forName: .recordingCameraUnavailable,
+                object: nil,
+                queue: .main,
+            ) { [weak self] _ in
+                self?.showCameraFallbackAlert()
+            }
+        }
 
         private let tempCaptureManager = TempCaptureManager.shared
 
@@ -344,6 +355,8 @@
                 captureAudio: toolbarWindow.captureAudio,
                 captureMicrophone: toolbarWindow.captureMicrophone,
                 microphoneDeviceID: toolbarWindow.microphoneDeviceID,
+                captureCamera: toolbarWindow.captureCamera,
+                cameraDeviceID: toolbarWindow.cameraDeviceID,
                 outputMode: toolbarWindow.outputMode,
                 showCursor: toolbarWindow.state.showCursor,
                 highlightClicks: toolbarWindow.state.highlightClicks,
@@ -361,6 +374,8 @@
                 toolbar.captureAudio = configuration.captureAudio
                 toolbar.captureMicrophone = configuration.captureMicrophone
                 toolbar.microphoneDeviceID = configuration.microphoneDeviceID
+                toolbar.captureCamera = configuration.captureCamera
+                toolbar.cameraDeviceID = configuration.cameraDeviceID
                 toolbar.outputMode = configuration.outputMode
                 toolbar.state.showCursor = configuration.showCursor
                 toolbar.state.highlightClicks = configuration.highlightClicks
@@ -551,6 +566,8 @@
             let savedCaptureAudio = window.captureAudio
             let savedCaptureMicrophone = window.captureMicrophone
             let savedMicrophoneDeviceID = window.microphoneDeviceID
+            let savedCaptureCamera = window.captureCamera
+            let savedCameraDeviceID = window.cameraDeviceID
             let savedShowCursor = window.state.showCursor
             DiagnosticLogger.shared.log(.info, .recording, "Recording restart requested", context: [
                 "format": savedFormat.rawValue,
@@ -601,6 +618,8 @@
                         captureSystemAudio: savedCaptureAudio,
                         captureMicrophone: savedCaptureMicrophone,
                         microphoneDeviceID: savedMicrophoneDeviceID,
+                        captureCamera: savedCaptureCamera,
+                        cameraDeviceID: savedCameraDeviceID,
                         showCursor: savedShowCursor,
                         saveDirectory: savePlan.finalDirectory,
                         processingDirectory: savePlan.processingDirectory,
@@ -679,6 +698,8 @@
             // Get microphone setting from toolbar
             let captureMicrophone = window.captureMicrophone
             let microphoneDeviceID = window.microphoneDeviceID
+            let captureCamera = window.captureCamera && window.outputMode != .gif
+            let cameraDeviceID = window.cameraDeviceID
             DiagnosticLogger.shared.log(.debug, .recording, "Recording options resolved", context: [
                 "quality": quality.rawValue,
                 "fps": "\(fps)",
@@ -719,6 +740,8 @@
                         captureSystemAudio: captureSystemAudio,
                         captureMicrophone: captureMicrophone,
                         microphoneDeviceID: microphoneDeviceID,
+                        captureCamera: captureCamera,
+                        cameraDeviceID: cameraDeviceID,
                         showCursor: showCursor,
                         saveDirectory: savePlan.finalDirectory,
                         processingDirectory: savePlan.processingDirectory,
@@ -817,6 +840,23 @@
             }
         }
 
+        private func showCameraFallbackAlert() {
+            guard recorder.state == .recording || recorder.state == .paused else { return }
+            toolbarWindow?.captureCamera = false
+
+            let alert = NSAlert()
+            alert.messageText = L10n.Camera.unavailableTitle
+            alert.informativeText = L10n.Camera.unavailableMessage
+            alert.alertStyle = .warning
+            alert.addButton(withTitle: L10n.Common.openSystemSettings)
+            alert.addButton(withTitle: L10n.Camera.continueWithoutCamera)
+
+            if alert.runModal() == .alertFirstButtonReturn,
+               let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Camera") {
+                NSWorkspace.shared.open(url)
+            }
+        }
+
         private func startRecordingWithoutMicrophone() {
             guard let rect = selectedRect, let window = toolbarWindow else {
                 DiagnosticLogger.shared.log(
@@ -865,6 +905,8 @@
                         fps: fps,
                         captureSystemAudio: captureSystemAudio,
                         captureMicrophone: false,
+                        captureCamera: window.captureCamera && window.outputMode != .gif,
+                        cameraDeviceID: window.cameraDeviceID,
                         showCursor: showCursor,
                         saveDirectory: savePlan.finalDirectory,
                         processingDirectory: savePlan.processingDirectory,

@@ -60,6 +60,33 @@
             XCTAssertEqual(decoded.coordinateSpace, .topLeftNormalized)
         }
 
+        func testRecordingMetadata_cameraTrackRoundTripsWithRole() throws {
+            var metadata = makeCurrentMetadata()
+            metadata.videoSourceTracks = [
+                RecordingVideoSourceTrack(trackID: 1, role: .screen),
+                RecordingVideoSourceTrack(
+                    trackID: 2,
+                    role: .camera,
+                    captureSize: CGSize(width: 640, height: 480),
+                    isMirrored: true,
+                ),
+            ]
+            let data = try JSONEncoder().encode(metadata)
+            let decoded = try JSONDecoder().decode(RecordingMetadata.self, from: data)
+            XCTAssertEqual(decoded.videoSourceTracks, metadata.videoSourceTracks)
+        }
+
+        func testVideoTrackRoles_doNotInferCameraWithoutAppendedFrames() {
+            XCTAssertEqual(
+                ScreenRecordingManager.videoTrackRoles(trackCount: 2, cameraFramesAppended: 0),
+                [.screen],
+            )
+            XCTAssertEqual(
+                ScreenRecordingManager.videoTrackRoles(trackCount: 2, cameraFramesAppended: 1),
+                [.screen, .camera],
+            )
+        }
+
         func testRecordingMetadata_v1WithoutCoordinateSpaceDecodesAsBottomLeft() throws {
             let legacy = LegacyMetadataV1(
                 version: 1,

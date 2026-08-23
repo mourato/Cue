@@ -46,6 +46,9 @@
                 HStack(spacing: ToolbarConstants.groupSpacing) {
                     ToolbarMicToggleButton(state: state)
                     ToolbarSystemAudioToggleButton(state: state)
+                    if state.outputMode != .gif {
+                        ToolbarCameraToggleButton(state: state)
+                    }
                 }
 
                 RecordingToolbarDivider()

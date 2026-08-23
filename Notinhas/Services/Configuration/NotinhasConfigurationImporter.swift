@@ -246,6 +246,12 @@ enum NotinhasConfigurationImporter {
             collectString(&reader, "recording", "microphone_device_id", mutations: &mutations) {
                 defaults.set($0, forKey: PreferencesKeys.recordingMicrophoneDeviceID)
             }
+            collectBool(&reader, "recording", "capture_camera", mutations: &mutations) {
+                defaults.set($0, forKey: PreferencesKeys.recordingCaptureCamera)
+            }
+            collectString(&reader, "recording", "camera_device_id", mutations: &mutations) {
+                defaults.set($0, forKey: PreferencesKeys.recordingCameraDeviceID)
+            }
             collectBool(&reader, "recording", "remember_last_area", mutations: &mutations) {
                 defaults.set($0, forKey: PreferencesKeys.recordingRememberLastArea)
             }

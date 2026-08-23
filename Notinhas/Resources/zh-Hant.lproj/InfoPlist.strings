@@ -1,2 +1,3 @@
 "NSMicrophoneUsageDescription" = "Notinhas 需要麥克風存取權才能在螢幕錄製中錄製音訊。";
+"NSCameraUsageDescription" = "Notinhas 需要相機存取權才能在螢幕錄製中錄製選用的相機軌道。";
 "NSScreenCaptureUsageDescription" = "Notinhas 需要螢幕錄製權限才能擷取螢幕截圖並錄製螢幕。";

@@ -49,8 +49,27 @@
         var role: RecordingAudioSourceTrackRole
     }
 
+    enum RecordingVideoSourceTrackRole: String, Codable, Equatable {
+        case screen
+        case camera
+    }
+
+    struct RecordingVideoSourceTrack: Codable, Equatable {
+        var trackID: Int
+        var role: RecordingVideoSourceTrackRole
+        var captureSize: CGSize?
+        var isMirrored: Bool
+
+        init(trackID: Int, role: RecordingVideoSourceTrackRole, captureSize: CGSize? = nil, isMirrored: Bool = false) {
+            self.trackID = trackID
+            self.role = role
+            self.captureSize = captureSize
+            self.isMirrored = isMirrored
+        }
+    }
+
     struct RecordingMetadata: Codable, Equatable {
-        static let currentVersion = 5
+        static let currentVersion = 6
 
         var version: Int
         var coordinateSpace: RecordingCoordinateSpace
@@ -60,6 +79,7 @@
         var audioSourceURL: URL?
         var audioSourceTrackRoles: [RecordingAudioSourceTrackRole]
         var audioSourceTracks: [RecordingAudioSourceTrack]
+        var videoSourceTracks: [RecordingVideoSourceTrack]
 
         init(
             version: Int = RecordingMetadata.currentVersion,
@@ -70,6 +90,7 @@
             audioSourceURL: URL? = nil,
             audioSourceTrackRoles: [RecordingAudioSourceTrackRole] = [],
             audioSourceTracks: [RecordingAudioSourceTrack] = [],
+            videoSourceTracks: [RecordingVideoSourceTrack] = [],
         ) {
             self.version = version
             self.coordinateSpace = coordinateSpace
@@ -79,6 +100,7 @@
             self.audioSourceURL = audioSourceURL
             self.audioSourceTrackRoles = audioSourceTrackRoles
             self.audioSourceTracks = audioSourceTracks
+            self.videoSourceTracks = videoSourceTracks
         }
 
         private enum CodingKeys: String, CodingKey {
@@ -90,6 +112,7 @@
             case audioSourceURL
             case audioSourceTrackRoles
             case audioSourceTracks
+            case videoSourceTracks
         }
 
         init(from decoder: Decoder) throws {
@@ -118,6 +141,10 @@
                 [RecordingAudioSourceTrack].self,
                 forKey: .audioSourceTracks,
             ) ?? []
+            videoSourceTracks = try container.decodeIfPresent(
+                [RecordingVideoSourceTrack].self,
+                forKey: .videoSourceTracks,
+            ) ?? []
         }
 
         func encode(to encoder: Encoder) throws {
@@ -133,6 +160,9 @@
             }
             if !audioSourceTracks.isEmpty {
                 try container.encode(audioSourceTracks, forKey: .audioSourceTracks)
+            }
+            if !videoSourceTracks.isEmpty {
+                try container.encode(videoSourceTracks, forKey: .videoSourceTracks)
             }
         }
     }
@@ -715,6 +745,7 @@
                 audioSourceURL: audioSourceURL,
                 audioSourceTrackRoles: audioSourceTrackRoles,
                 audioSourceTracks: audioSourceTracks,
+                videoSourceTracks: videoSourceTracks,
             )
         }
     }

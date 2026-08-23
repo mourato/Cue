@@ -13,6 +13,10 @@
     import Foundation
     import ScreenCaptureKit
 
+    extension Notification.Name {
+        static let recordingCameraUnavailable = Notification.Name("Notinhas.recordingCameraUnavailable")
+    }
+
     // MARK: - Video Format
 
     enum VideoFormat: String, CaseIterable, Codable {
@@ -263,6 +267,16 @@
         ) async throws -> Result {
             let asset = AVURLAsset(url: sourceURL)
             let audioTracks = try await asset.loadTracks(withMediaType: .audio)
+            let videoTracks = try await asset.loadTracks(withMediaType: .video)
+            if videoTracks.count > 1 {
+                // Keep the camera source intact until the editor owns multi-track composition.
+                return Result(
+                    outputURL: sourceURL,
+                    audioTrackCount: audioTracks.count,
+                    didNormalize: false,
+                    audioSourceURL: nil,
+                )
+            }
             guard requiresMixDown(audioTrackCount: audioTracks.count) else {
                 return Result(
                     outputURL: sourceURL,
@@ -598,6 +612,15 @@
 
     @MainActor
     final class ScreenRecordingManager: NSObject, ObservableObject {
+        nonisolated static func videoTrackRoles(
+            trackCount: Int,
+            cameraFramesAppended: Int,
+        ) -> [RecordingVideoSourceTrackRole] {
+            guard trackCount > 0 else { return [] }
+            guard cameraFramesAppended > 0 else { return [.screen] }
+            return [.screen] + Array(repeating: .camera, count: max(0, trackCount - 1))
+        }
+
         static let shared = ScreenRecordingManager()
 
         // MARK: - Published State
@@ -629,6 +652,7 @@
         private var stream: SCStream?
         private let session = RecordingSession() // Thread-safe session for frame writing
         private var microphoneCapturer: MicrophoneAudioCapturer?
+        private var cameraCapturer: CameraVideoCapturer?
 
         /// Live 0...1 audio level derived read-only from capture buffers; drives the
         /// recording status-bar waveform. Observed directly by the status bar UI.
@@ -650,6 +674,8 @@
         private var captureSystemAudio: Bool = true
         private var captureMicrophone: Bool = false
         private var microphoneDeviceID: String?
+        private var captureCamera = false
+        private var cameraDeviceID: String?
         private var showCursorInRecording: Bool = true
         private var excludeOwnApplicationFromCapture: Bool = true
         private var excludeDesktopIconsFromCapture: Bool = false
@@ -689,6 +715,10 @@
             label: "com.mourato.notinhas.recording.microphone",
             qos: .userInteractive,
         )
+        private let cameraProcessingQueue = DispatchQueue(
+            label: "com.mourato.notinhas.recording.camera",
+            qos: .userInteractive,
+        )
 
         private struct RecordingAudioNormalizationResult {
             let outputURL: URL?
@@ -711,6 +741,8 @@
             captureSystemAudio: Bool = true,
             captureMicrophone: Bool = false,
             microphoneDeviceID: String? = nil,
+            captureCamera: Bool = false,
+            cameraDeviceID: String? = nil,
             showCursor: Bool = true,
             saveDirectory: URL,
             processingDirectory: URL? = nil,
@@ -758,6 +790,8 @@
             self.captureSystemAudio = captureSystemAudio
             self.captureMicrophone = captureMicrophone
             self.microphoneDeviceID = microphoneDeviceID
+            self.captureCamera = captureCamera
+            self.cameraDeviceID = cameraDeviceID
             showCursorInRecording = showCursor
             excludeOwnApplicationFromCapture = excludeOwnApplication
             excludeDesktopIconsFromCapture = excludeDesktopIcons
@@ -976,6 +1010,7 @@
                     height: captureGeometry.outputHeight,
                     captureSystemAudio: captureSystemAudio,
                     captureMicrophone: captureMicrophone,
+                    captureCamera: self.captureCamera,
                 )
 
                 try await setupStream(
@@ -991,6 +1026,11 @@
                     let capturer = MicrophoneAudioCapturer(preferredDeviceID: microphoneDeviceID)
                     capturer.delegate = self
                     microphoneCapturer = capturer
+                }
+                if self.captureCamera {
+                    let capturer = CameraVideoCapturer(preferredDeviceID: cameraDeviceID)
+                    capturer.delegate = self
+                    cameraCapturer = capturer
                 }
 
                 mouseTracker = RecordingMouseTracker(recordingRect: captureGeometry.globalCaptureRect, fps: fps)
@@ -1066,6 +1106,7 @@
 
             // Start independent microphone capture
             microphoneCapturer?.start()
+            cameraCapturer?.start()
 
             recordingActivity = ProcessInfo.processInfo.beginActivity(
                 options: [.userInitiated, .latencyCritical],
@@ -1272,6 +1313,7 @@
             }
 
             microphoneCapturer?.stop()
+            cameraCapturer?.stop()
 
             session.finishInputs()
 
@@ -1333,9 +1375,9 @@
                     for: editorAudioSourceURL,
                     roles: audioSourceTrackRoles,
                 )
-                if mouseSamples.count >= 2 || editorAudioSourceURL != nil {
+                if mouseSamples.count >= 2 || editorAudioSourceURL != nil || captureCamera {
                     do {
-                        let metadata = RecordingMetadata(
+                        let metadata = await RecordingMetadata(
                             coordinateSpace: .topLeftNormalized,
                             captureSize: recordingRect.size,
                             samplesPerSecond: mouseTracker?.samplesPerSecond ?? fps,
@@ -1343,6 +1385,7 @@
                             audioSourceURL: editorAudioSourceURL,
                             audioSourceTrackRoles: audioSourceTrackRoles,
                             audioSourceTracks: audioSourceTracks,
+                            videoSourceTracks: recordingVideoSourceTracks(for: url, stats: videoWriteStats),
                         )
                         try RecordingMetadataStore.save(metadata, for: url)
                         DiagnosticLogger.shared.log(.info, .recording, "Recording metadata saved", context: [
@@ -1447,6 +1490,7 @@
             }
 
             microphoneCapturer?.stop()
+            cameraCapturer?.stop()
             session.setOnFirstVideoFrame(nil)
             session.cancelWriting()
             lastStopResult = .cancelled
@@ -1634,6 +1678,31 @@
             }
         }
 
+        private func recordingVideoSourceTracks(
+            for sourceURL: URL,
+            stats: RecordingSession.VideoWriteStats,
+        ) async -> [RecordingVideoSourceTrack] {
+            guard let tracks = try? await AVURLAsset(url: sourceURL).loadTracks(withMediaType: .video)
+            else { return [] }
+            let roles = Self.videoTrackRoles(
+                trackCount: tracks.count,
+                cameraFramesAppended: stats.cameraFramesAppended,
+            )
+            var sourceTracks: [RecordingVideoSourceTrack] = []
+            for (index, track) in tracks.enumerated() {
+                guard index < roles.count else { continue }
+                let captureSize = await (try? track.load(.naturalSize)) ?? .zero
+                sourceTracks.append(
+                    RecordingVideoSourceTrack(
+                        trackID: Int(track.trackID),
+                        role: roles[index],
+                        captureSize: captureSize,
+                    ),
+                )
+            }
+            return sourceTracks
+        }
+
         private func finalizeRecordingOutput(writerURL: URL?) -> URL? {
             guard let writerURL else { return nil }
 
@@ -1763,6 +1832,7 @@
             height: Int,
             captureSystemAudio: Bool,
             captureMicrophone: Bool,
+            captureCamera: Bool = false,
         ) throws {
             guard let url = outputURL else {
                 DiagnosticLogger.shared.log(.error, .recording, "Asset writer setup failed: missing output URL")
@@ -1852,6 +1922,19 @@
                 sourcePixelBufferAttributes: sourcePixelBufferAttributes,
             )
             session.pixelBufferAdaptor = adaptor
+
+            if captureCamera {
+                let cameraIn = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
+                cameraIn.expectsMediaDataInRealTime = true
+                guard writer.canAdd(cameraIn)
+                else { throw RecordingError.setupFailed(L10n.Recording.cannotAddVideoWriterInput) }
+                writer.add(cameraIn)
+                session.cameraInput = cameraIn
+                session.cameraAdaptor = AVAssetWriterInputPixelBufferAdaptor(
+                    assetWriterInput: cameraIn,
+                    sourcePixelBufferAttributes: sourcePixelBufferAttributes,
+                )
+            }
 
             // Audio settings (AAC) for system audio
             if captureSystemAudio {
@@ -2278,6 +2361,9 @@
                 "dropRatePercent": String(format: "%.2f", dropRate),
                 "microphoneSamplesReceived": "\(stats.microphoneSamplesReceived)",
                 "microphoneSamplesAppended": "\(stats.microphoneSamplesAppended)",
+                "cameraFramesReceived": "\(stats.cameraFramesReceived)",
+                "cameraFramesAppended": "\(stats.cameraFramesAppended)",
+                "cameraFramesDropped": "\(stats.cameraFramesDropped)",
             ]
 
             if let outputURL {
@@ -2322,6 +2408,8 @@
             captureWindowTarget = nil
             session.setOnFirstVideoFrame(nil)
             microphoneDeviceID = nil
+            cameraDeviceID = nil
+            cameraCapturer = nil
             showCursorInRecording = true
             excludeOwnApplicationFromCapture = true
             excludeDesktopIconsFromCapture = false
@@ -2453,6 +2541,20 @@
         nonisolated func microphoneCapturer(_: MicrophoneAudioCapturer, didOutput sampleBuffer: CMSampleBuffer) {
             session.appendMicrophoneSample(sampleBuffer)
             audioLevelMeter.ingest(sampleBuffer, source: .microphone)
+        }
+    }
+
+    extension ScreenRecordingManager: CameraVideoCapturerDelegate {
+        nonisolated func cameraCapturer(_: CameraVideoCapturer, didOutput sampleBuffer: CMSampleBuffer) {
+            if session.appendCameraSample(sampleBuffer) {
+                NotificationCenter.default.post(name: .recordingCameraUnavailable, object: nil)
+            }
+        }
+
+        nonisolated func cameraCapturerDidBecomeUnavailable(_: CameraVideoCapturer) {
+            if session.finishCameraInput() {
+                NotificationCenter.default.post(name: .recordingCameraUnavailable, object: nil)
+            }
         }
     }
 

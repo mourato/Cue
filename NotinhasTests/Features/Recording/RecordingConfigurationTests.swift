@@ -24,6 +24,11 @@
             XCTAssertEqual(RecordingToolbarPreferences.selectedQuality(defaults: defaults), .high)
             XCTAssertTrue(RecordingToolbarPreferences.captureAudio(defaults: defaults))
             XCTAssertFalse(RecordingToolbarPreferences.captureMicrophone(defaults: defaults))
+            XCTAssertFalse(RecordingToolbarPreferences.captureCamera(defaults: defaults))
+            XCTAssertEqual(
+                RecordingToolbarPreferences.cameraDeviceID(defaults: defaults),
+                RecordingCameraDeviceProvider.systemDefaultID,
+            )
             XCTAssertEqual(
                 RecordingToolbarPreferences.microphoneDeviceID(defaults: defaults),
                 RecordingMicrophoneDevice.systemDefaultID,

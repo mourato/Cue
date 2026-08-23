@@ -1,2 +1,3 @@
 "NSMicrophoneUsageDescription" = "Notinhas требуется доступ к микрофону для записи звука вместе с записями экрана.";
+"NSCameraUsageDescription" = "Notinhas требуется доступ к камере для записи дополнительной дорожки камеры вместе с записью экрана.";
 "NSScreenCaptureUsageDescription" = "Notinhas требуется разрешение на запись экрана, чтобы делать снимки экрана и записывать ваш экран.";

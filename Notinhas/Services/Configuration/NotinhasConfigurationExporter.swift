@@ -120,6 +120,8 @@ enum NotinhasConfigurationExporter {
             writer.value("capture_system_audio", RecordingToolbarPreferences.captureAudio(defaults: defaults))
             writer.value("capture_microphone", RecordingToolbarPreferences.captureMicrophone(defaults: defaults))
             writer.value("microphone_device_id", RecordingToolbarPreferences.microphoneDeviceID(defaults: defaults))
+            writer.value("capture_camera", RecordingToolbarPreferences.captureCamera(defaults: defaults))
+            writer.value("camera_device_id", RecordingToolbarPreferences.cameraDeviceID(defaults: defaults))
             writer.value(
                 "remember_last_area",
                 defaults.boolValue(PreferencesKeys.recordingRememberLastArea, default: true),

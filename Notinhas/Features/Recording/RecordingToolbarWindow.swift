@@ -67,6 +67,15 @@
             RecordingMicrophoneDeviceProvider.storedDeviceID(defaults: defaults)
         }
 
+        static func captureCamera(defaults: UserDefaults = .standard) -> Bool {
+            defaults.object(forKey: PreferencesKeys.recordingCaptureCamera) as? Bool ?? false
+        }
+
+        static func cameraDeviceID(defaults: UserDefaults = .standard) -> String {
+            defaults.string(forKey: PreferencesKeys.recordingCameraDeviceID) ?? RecordingCameraDeviceProvider
+                .systemDefaultID
+        }
+
         static func outputMode(defaults: UserDefaults = .standard) -> RecordingOutputMode {
             guard let modeString = defaults.string(forKey: PreferencesKeys.recordingOutputMode),
                   let mode = RecordingOutputMode(rawValue: modeString)
@@ -127,6 +136,8 @@
         @Published var captureAudio: Bool
         @Published var captureMicrophone: Bool
         @Published var microphoneDeviceID: String
+        @Published var captureCamera: Bool
+        @Published var cameraDeviceID: String
         @Published var captureMode: RecordingCaptureMode
         @Published var outputMode: RecordingOutputMode
         @Published var showCursor: Bool
@@ -142,6 +153,8 @@
             captureAudio = RecordingToolbarPreferences.captureAudio()
             captureMicrophone = RecordingToolbarPreferences.captureMicrophone()
             microphoneDeviceID = RecordingToolbarPreferences.microphoneDeviceID()
+            captureCamera = RecordingToolbarPreferences.captureCamera()
+            cameraDeviceID = RecordingToolbarPreferences.cameraDeviceID()
             captureMode = .area
             outputMode = RecordingToolbarPreferences.outputMode()
             showCursor = RecordingToolbarPreferences.showCursor()
@@ -202,6 +215,16 @@
         var microphoneDeviceID: String {
             get { state.microphoneDeviceID }
             set { state.microphoneDeviceID = newValue }
+        }
+
+        var captureCamera: Bool {
+            get { state.captureCamera }
+            set { state.captureCamera = newValue }
+        }
+
+        var cameraDeviceID: String {
+            get { state.cameraDeviceID }
+            set { state.cameraDeviceID = newValue }
         }
 
         var captureMode: RecordingCaptureMode {
