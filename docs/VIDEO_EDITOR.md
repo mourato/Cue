@@ -2,6 +2,17 @@
 
 This doc covers the video editor in `Notinhas/Features/VideoEditor/`: windowing, trim, zoom segments, Follow Mouse (Smart Camera), speed (timelapse) segments, background/padding, audio mixing, export, GIF resizing, and undo/redo. How recordings and their mouse/audio metadata are produced lives in [`RECORDING.md`](RECORDING.md).
 
+## Camera overlay (Plan 107)
+
+Recordings with role-tagged screen and camera tracks resolve those tracks by the
+metadata track IDs; external multi-track videos are never inferred by array
+position. The editor keeps camera video separate from the existing audio mix
+and previews it muted, synchronized to the screen playhead. The MVP offers a
+visible toggle, four corner presets, three sizes, normalized aspect-fit layout,
+and a rounded mask. Export uses the same layout and bakes the overlay when it
+is visible. Hiding it exports screen-only. GIF output and the default scheme
+remain screen-only. A missing or invalid camera ID degrades to screen-only.
+
 ## Entry and Windowing
 
 ```mermaid

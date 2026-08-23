@@ -59,6 +59,9 @@
                     )
                     .frame(width: videoCanvasSize.width, height: videoCanvasSize.height)
                     .padding(scaledPadding)
+                    if let cameraPlayer = state.cameraPlayer, state.cameraOverlayLayout.isVisible {
+                        cameraOverlay(cameraPlayer, in: videoCanvasSize)
+                    }
                 }
                 .frame(width: compositeSize.width, height: compositeSize.height)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignmentValue)
@@ -75,6 +78,16 @@
             .onChange(of: state.zoomTransitionDuration) { _ in
                 updateZoomState(at: CMTimeGetSeconds(playbackState.currentTime))
             }
+        }
+
+        private func cameraOverlay(_ player: AVPlayer, in canvasSize: CGSize) -> some View {
+            let frame = state.cameraOverlayLayout.cameraFrame(in: canvasSize, cameraSize: state.cameraSize)
+            return VideoPlayerSection(player: player)
+                .frame(width: frame.width, height: frame.height)
+                .clipShape(RoundedRectangle(cornerRadius: min(frame.width, frame.height) * 0.08, style: .continuous))
+                .scaleEffect(x: state.cameraIsMirrored ? -1 : 1, y: 1)
+                .position(x: frame.midX, y: frame.midY)
+                .accessibilityLabel(L10n.VideoEditor.cameraOverlay)
         }
 
         // MARK: - Background View

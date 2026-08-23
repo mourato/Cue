@@ -75,6 +75,10 @@
         var body: some View {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack(alignment: .leading, spacing: 16) {
+                    if state.hasCameraTrack {
+                        cameraOverlaySection
+                        Divider()
+                    }
                     if let segment = selectedSegment {
                         modeSection(for: segment)
 
@@ -108,6 +112,29 @@
             .onChange(of: localStateSnapshot) { _ in
                 syncLocalState()
             }
+        }
+
+        private var cameraOverlaySection: some View {
+            VStack(alignment: .leading, spacing: 10) {
+                Label(L10n.VideoEditor.cameraOverlay, systemImage: "video.fill")
+                    .font(.system(size: 12, weight: .semibold))
+                Toggle(L10n.VideoEditor.showCamera, isOn: $state.cameraOverlayLayout.isVisible)
+                    .accessibilityValue(state.cameraOverlayLayout.isVisible ? L10n.Common.on : L10n.Common.off)
+                if state.cameraOverlayLayout.isVisible {
+                    Picker(L10n.VideoEditor.cameraPosition, selection: $state.cameraOverlayLayout.position) {
+                        Text(L10n.VideoEditor.topLeading).tag(VideoEditorCameraOverlayPosition.topLeading)
+                        Text(L10n.VideoEditor.topTrailing).tag(VideoEditorCameraOverlayPosition.topTrailing)
+                        Text(L10n.VideoEditor.bottomLeading).tag(VideoEditorCameraOverlayPosition.bottomLeading)
+                        Text(L10n.VideoEditor.bottomTrailing).tag(VideoEditorCameraOverlayPosition.bottomTrailing)
+                    }
+                    Picker(L10n.VideoEditor.cameraSize, selection: $state.cameraOverlayLayout.size) {
+                        Text(L10n.VideoEditor.small).tag(VideoEditorCameraOverlaySize.small)
+                        Text(L10n.VideoEditor.medium).tag(VideoEditorCameraOverlaySize.medium)
+                        Text(L10n.VideoEditor.large).tag(VideoEditorCameraOverlaySize.large)
+                    }
+                }
+            }
+            .accessibilityElement(children: .contain)
         }
 
         private func modeSection(for segment: ZoomSegment) -> some View {
