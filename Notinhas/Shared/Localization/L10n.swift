@@ -5156,6 +5156,16 @@ nonisolated enum L10n {
             defaultValue: "Could not extract the current video frame.",
             comment: "Alert title shown when current video frame extraction fails",
         )
+        static let invalidFrameTime = string(
+            "video-editor.invalid-frame-time",
+            defaultValue: "The video has no valid frame time.",
+            comment: "Error shown when a video has no valid frame time",
+        )
+        static let frameSaveFailed = string(
+            "video-editor.frame-save-failed",
+            defaultValue: "Could not save the extracted video frame.",
+            comment: "Error shown when the extracted video frame cannot be saved",
+        )
         static let unsavedChangesTitle = string(
             "video-editor.unsaved-changes-title",
             defaultValue: "Unsaved Changes",

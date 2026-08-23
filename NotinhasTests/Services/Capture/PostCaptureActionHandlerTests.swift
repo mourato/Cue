@@ -74,13 +74,50 @@ final class PostCaptureActionHandlerTests: XCTestCase {
         }
     }
 
-    private func makeHandler(quickAccess: QuickAccessManaging) -> PostCaptureActionHandler {
+    private func makeHandler(
+        quickAccess: QuickAccessManaging,
+        annotateAction: @escaping (QuickAccessItem?, URL, AnnotationSessionData?) -> Void = { _, _, _ in },
+        historyAction: ((URL) async -> Void)? = nil,
+    ) -> PostCaptureActionHandler {
         PostCaptureActionHandler(
             preferences: preferences,
             quickAccess: quickAccess,
             fileAccess: SandboxFileAccessManager.shared,
             screenshotPresetAutoApplier: screenshotPresetAutoApplier,
+            annotateAction: annotateAction,
+            historyAction: historyAction,
         )
+    }
+
+    func testHandleVideoFrameCapture_routesScreenshotActionsOnceAndForcesAnnotate() async {
+        preferences.setAction(.copyFile, for: .screenshot, enabled: false)
+        preferences.setAction(.save, for: .screenshot, enabled: false)
+        preferences.setAction(.showQuickAccess, for: .screenshot, enabled: true)
+        preferences.setAction(.openAnnotate, for: .screenshot, enabled: false)
+
+        var openedItems: [QuickAccessItem?] = []
+        var historyURLs: [URL] = []
+        let fakeQuickAccess = FakeQuickAccessManager()
+        let handler = makeHandler(
+            quickAccess: fakeQuickAccess,
+            annotateAction: { item, url, _ in
+                XCTAssertEqual(url, self.tempFileURL)
+                openedItems.append(item)
+            },
+            historyAction: { url in historyURLs.append(url) },
+        )
+
+        _ = await handler.handleVideoFrameCapture(
+            url: tempFileURL,
+            sourceURL: tempDirectory.appendingPathComponent("source.mov"),
+            requestedTime: 1,
+            actualTime: 1,
+        )
+
+        XCTAssertEqual(fakeQuickAccess.addedScreenshots, [tempFileURL])
+        XCTAssertEqual(openedItems.count, 1)
+        XCTAssertNotNil(openedItems[0])
+        XCTAssertEqual(historyURLs, [tempFileURL])
     }
 
     private func writeTestImage(to url: URL, width: Int = 100, height: Int = 100) throws {

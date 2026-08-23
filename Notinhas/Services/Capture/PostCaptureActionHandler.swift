@@ -27,17 +27,29 @@ final class PostCaptureActionHandler {
     private let quickAccess: QuickAccessManaging
     private let fileAccess: SandboxFileAccessing
     private let screenshotPresetAutoApplier: ScreenshotPresetAutoApplier
+    private let annotateAction: (QuickAccessItem?, URL, AnnotationSessionData?) -> Void
+    private let historyAction: ((URL) async -> Void)?
 
     init(
         preferences: PreferencesProviding,
         quickAccess: QuickAccessManaging,
         fileAccess: SandboxFileAccessing,
         screenshotPresetAutoApplier: ScreenshotPresetAutoApplier,
+        annotateAction: @escaping (QuickAccessItem?, URL, AnnotationSessionData?) -> Void = { item, url, sessionData in
+            if let item {
+                AnnotateManager.shared.openAnnotation(for: item)
+            } else {
+                AnnotateManager.shared.openAnnotation(url: url, sessionData: sessionData)
+            }
+        },
+        historyAction: ((URL) async -> Void)? = nil,
     ) {
         self.preferences = preferences
         self.quickAccess = quickAccess
         self.fileAccess = fileAccess
         self.screenshotPresetAutoApplier = screenshotPresetAutoApplier
+        self.annotateAction = annotateAction
+        self.historyAction = historyAction
     }
 
     // MARK: - Public API
@@ -52,7 +64,7 @@ final class PostCaptureActionHandler {
         )
 
         // Add to capture history
-        await addScreenshotToHistory(url: url)
+        await recordScreenshotHistory(url: url)
 
         return quickAccessItem
     }
@@ -70,7 +82,7 @@ final class PostCaptureActionHandler {
             url: url,
             forceOpenAnnotate: true,
         )
-        await addScreenshotToHistory(url: url)
+        await recordScreenshotHistory(url: url)
         DiagnosticLogger.shared.log(
             .info,
             .annotate,
@@ -151,7 +163,7 @@ final class PostCaptureActionHandler {
         }
 
         for url in validURLs {
-            await addScreenshotToHistory(url: url)
+            await recordScreenshotHistory(url: url)
         }
     }
 
@@ -197,6 +209,14 @@ final class PostCaptureActionHandler {
                 "height": height.map { "\($0)" } ?? "unknown",
             ],
         )
+    }
+
+    private func recordScreenshotHistory(url: URL) async {
+        if let historyAction {
+            await historyAction(url)
+        } else {
+            await addScreenshotToHistory(url: url)
+        }
     }
 
     /// Execute all enabled post-capture actions for a video recording
@@ -427,11 +447,11 @@ final class PostCaptureActionHandler {
 
         // Open Annotate Editor (screenshots only)
         if captureType == .screenshot,
-           (forceOpenAnnotate || preferences.isActionEnabled(.openAnnotate, for: captureType)) {
+           forceOpenAnnotate || preferences.isActionEnabled(.openAnnotate, for: captureType) {
             if let quickAccessItem {
-                AnnotateManager.shared.openAnnotation(for: quickAccessItem)
+                annotateAction(quickAccessItem, url, screenshotSessionData)
             } else {
-                AnnotateManager.shared.openAnnotation(url: url, sessionData: screenshotSessionData)
+                annotateAction(nil, url, screenshotSessionData)
             }
             logger.debug("Annotate editor opened for \(url.lastPathComponent)")
             DiagnosticLogger.shared.log(
