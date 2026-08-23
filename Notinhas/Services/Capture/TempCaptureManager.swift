@@ -18,6 +18,16 @@ struct RecordingSavePlan {
     let autoSaveEnabled: Bool
 }
 
+struct RecordingProcessingManifest: Codable, Equatable {
+    static let currentVersion = 1
+    let version: Int
+    let sessionID: String
+    let writerFile: String?
+    var state: String
+    var lastCheckpoint: Date
+    var isFinalized: Bool
+}
+
 /// Manages lifecycle of temporary capture files when auto-save is disabled
 @MainActor
 final class TempCaptureManager {
@@ -106,6 +116,15 @@ final class TempCaptureManager {
         let autoSaveEnabled = preferences.isActionEnabled(.save, for: .recording)
         let finalDirectory = autoSaveEnabled ? exportDirectory : tempCaptureDirectory
         let processingDirectory = try createRecordingProcessingDirectory()
+        let manifest = RecordingProcessingManifest(
+            version: RecordingProcessingManifest.currentVersion,
+            sessionID: processingDirectory.lastPathComponent,
+            writerFile: nil,
+            state: "prepared",
+            lastCheckpoint: Date(),
+            isFinalized: false,
+        )
+        try writeManifest(manifest, in: processingDirectory)
 
         DiagnosticLogger.shared.log(
             .info,
@@ -123,6 +142,28 @@ final class TempCaptureManager {
             processingDirectory: processingDirectory,
             autoSaveEnabled: autoSaveEnabled,
         )
+    }
+
+    func updateRecordingManifest(
+        for directory: URL,
+        writerURL: URL?,
+        state: String,
+        isFinalized: Bool = false,
+    ) {
+        guard isRecordingProcessingSessionDirectory(directory) else { return }
+        let writerFile = writerURL.flatMap { url -> String? in
+            guard isURL(url, inside: directory) else { return nil }
+            return url.lastPathComponent
+        }
+        let manifest = RecordingProcessingManifest(
+            version: RecordingProcessingManifest.currentVersion,
+            sessionID: directory.lastPathComponent,
+            writerFile: writerFile,
+            state: state,
+            lastCheckpoint: Date(),
+            isFinalized: isFinalized,
+        )
+        try? writeManifest(manifest, in: directory)
     }
 
     /// Build a stable fallback URL in the temp capture root if final export move fails.
@@ -292,6 +333,9 @@ final class TempCaptureManager {
         var directoriesToPrune: [URL] = []
 
         for case let fileURL as URL in enumerator {
+            if isRecordingProcessingURL(fileURL) {
+                continue
+            }
             guard
                 let values = try? fileURL.resourceValues(forKeys: [.isRegularFileKey]),
                 values.isRegularFile == true
@@ -422,10 +466,28 @@ final class TempCaptureManager {
         return sessionDirectory
     }
 
+    private func writeManifest(_ manifest: RecordingProcessingManifest, in directory: URL) throws {
+        let url = directory.appendingPathComponent("recording-manifest.json")
+        let data = try JSONEncoder().encode(manifest)
+        try data.write(to: url, options: .atomic)
+    }
+
+    private func isRecordingProcessingURL(_ url: URL) -> Bool {
+        let root = recordingProcessingDirectory.standardizedFileURL.resolvingSymlinksInPath().path
+        let path = url.standardizedFileURL.resolvingSymlinksInPath().path
+        return path == root || path.hasPrefix(root + "/")
+    }
+
     private func isRecordingProcessingSessionDirectory(_ directory: URL) -> Bool {
         let rootPath = recordingProcessingDirectory.standardizedFileURL.resolvingSymlinksInPath().path
         let directoryPath = directory.standardizedFileURL.resolvingSymlinksInPath().path
         return directoryPath.hasPrefix(rootPath + "/")
+    }
+
+    private func isURL(_ url: URL, inside directory: URL) -> Bool {
+        let root = directory.standardizedFileURL.resolvingSymlinksInPath().path
+        let path = url.standardizedFileURL.resolvingSymlinksInPath().path
+        return path.hasPrefix(root + "/")
     }
 
     /// Move associated recording metadata sidecar when saving a video

@@ -85,6 +85,11 @@ final class AppCoordinator {
     }
 
     func applicationWillTerminate() {
+        #if NOTINHAS_VIDEO_MODULE
+            Task { @MainActor in
+                await ScreenRecordingManager.shared.finishForApplicationTermination()
+            }
+        #endif
         flushConfigurationSyncBeforeTermination()
         DiagnosticLogger.shared.log(.info, .lifecycle, "App terminated normally")
         CrashSentinel.shared.markTerminated()

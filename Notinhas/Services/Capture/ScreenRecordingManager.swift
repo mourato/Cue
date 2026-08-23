@@ -563,6 +563,13 @@
         }
     }
 
+    enum RecordingStopResult: Equatable {
+        case finished(URL)
+        case cancelled
+        case failed(String)
+        case preservedPartial(URL)
+    }
+
     // MARK: - Recording Error
 
     enum RecordingError: Error, LocalizedError {
@@ -657,6 +664,8 @@
         private var mouseTracker: RecordingMouseTracker?
         private var exportDirectoryAccess: SandboxFileAccessManager.ScopedAccess?
         private var registeredOutputTypes: Set<SCStreamOutputType> = []
+        private var recordingActivity: NSObjectProtocol?
+        private(set) var lastStopResult: RecordingStopResult?
 
         private struct CaptureGeometry {
             let sourceRect: CGRect
@@ -718,6 +727,7 @@
             }
             state = .preparing
             error = nil
+            lastStopResult = nil
             session.sessionStarted = false
 
             DiagnosticLogger.shared.log(.info, .recording, "Recording prepare started", context: [
@@ -950,6 +960,11 @@
                 "writerFile": outputURL?.lastPathComponent ?? "nil",
                 "processingDirectory": writerDirectory.lastPathComponent,
             ])
+            TempCaptureManager.shared.updateRecordingManifest(
+                for: writerDirectory,
+                writerURL: outputURL,
+                state: "prepared",
+            )
 
             do {
                 // Setup AVAssetWriter
@@ -1049,6 +1064,18 @@
             // Start independent microphone capture
             microphoneCapturer?.start()
 
+            recordingActivity = ProcessInfo.processInfo.beginActivity(
+                options: [.userInitiated, .latencyCritical],
+                reason: "Keep the active recording writer alive",
+            )
+            if let recordingProcessingDirectory {
+                TempCaptureManager.shared.updateRecordingManifest(
+                    for: recordingProcessingDirectory,
+                    writerURL: outputURL,
+                    state: "recording",
+                )
+            }
+
             state = .recording
             DiagnosticLogger.shared.log(.info, .recording, "Recording started", context: [
                 "rect": "\(Int(recordingRect.width))x\(Int(recordingRect.height))",
@@ -1080,6 +1107,13 @@
             audioLevelMeter.freeze()
             pauseStartTime = Date()
             state = .paused
+            if let recordingProcessingDirectory {
+                TempCaptureManager.shared.updateRecordingManifest(
+                    for: recordingProcessingDirectory,
+                    writerURL: outputURL,
+                    state: "paused",
+                )
+            }
             DiagnosticLogger.shared.log(.info, .recording, "Recording paused")
         }
 
@@ -1105,6 +1139,13 @@
             mouseTracker?.resume()
             audioLevelMeter.unfreeze()
             state = .recording
+            if let recordingProcessingDirectory {
+                TempCaptureManager.shared.updateRecordingManifest(
+                    for: recordingProcessingDirectory,
+                    writerURL: outputURL,
+                    state: "recording",
+                )
+            }
             DiagnosticLogger.shared.log(.info, .recording, "Recording resumed", context: [
                 "pauseOffsetSeconds": String(format: "%.3f", pausedDuration),
             ])
@@ -1226,17 +1267,45 @@
 
             session.finishInputs()
 
-            await session.finishWriting()
+            let finishResult = await session.finishWriting()
 
             let videoWriteStats = session.videoWriteStats()
 
             let mouseSamples = mouseTracker?.stop() ?? []
             let writerURL = outputURL
             await logRecordingFrameDiagnostics(outputURL: writerURL, stats: videoWriteStats)
+            guard case .finished = finishResult, let writerURL,
+                  await isValidRecordingOutput(writerURL)
+            else {
+                let result: RecordingStopResult
+                if let writerURL, FileManager.default.fileExists(atPath: writerURL.path) {
+                    shouldPreserveProcessingOutputOnCleanup = true
+                    result = .preservedPartial(writerURL)
+                } else {
+                    switch finishResult {
+                    case .cancelled:
+                        result = .cancelled
+                    case .failed(let message):
+                        result = .failed(message)
+                    case .missingWriter:
+                        result = .failed("missing writer")
+                    case .finished:
+                        result = .failed("invalid recording output")
+                    }
+                }
+                lastStopResult = result
+                cleanup()
+                return nil
+            }
             let audioNormalization = await normalizeRecordingAudioForCompatibilityIfNeeded(writerURL: writerURL)
             let editorAudioSourceURL = storeRecordingAudioSourceIfNeeded(audioNormalization.audioSourceURL)
             let url = finalizeRecordingOutput(writerURL: audioNormalization.outputURL)
             outputURL = url
+            if let url {
+                lastStopResult = .finished(url)
+            } else {
+                lastStopResult = .failed("recording output could not be finalized")
+            }
             if let url {
                 let audioSourceTrackRoles = editorAudioSourceURL == nil ? [] : RecordingAudioSourceTrackRole.roles(
                     capturesSystemAudio: captureSystemAudio,
@@ -1300,6 +1369,13 @@
             return url
         }
 
+        /// Finish through the normal stop path during application termination.
+        /// Repeated calls are harmless once the recorder is stopping or idle.
+        func finishForApplicationTermination() async {
+            guard state == .recording || state == .paused else { return }
+            _ = await stopRecording()
+        }
+
         /// Cancel the recording without saving
         func cancelRecording() async {
             guard state != .idle else {
@@ -1321,6 +1397,15 @@
             microphoneCapturer?.stop()
             session.setOnFirstVideoFrame(nil)
             session.cancelWriting()
+            lastStopResult = .cancelled
+            if let recordingProcessingDirectory {
+                TempCaptureManager.shared.updateRecordingManifest(
+                    for: recordingProcessingDirectory,
+                    writerURL: outputURL,
+                    state: "cancelled",
+                    isFinalized: true,
+                )
+            }
             mouseTracker?.reset()
             DiagnosticLogger.shared.log(.info, .recording, "Recording cancelled")
             if let url = outputURL {
@@ -2189,12 +2274,37 @@
             mouseTracker = nil
             microphoneCapturer = nil
             audioLevelMeter.reset()
+            if let recordingActivity {
+                ProcessInfo.processInfo.endActivity(recordingActivity)
+                self.recordingActivity = nil
+            }
+            if let recordingProcessingDirectory {
+                TempCaptureManager.shared.updateRecordingManifest(
+                    for: recordingProcessingDirectory,
+                    writerURL: outputURL,
+                    state: shouldPreserveProcessingOutputOnCleanup ? "abandoned" : "finished",
+                    isFinalized: !shouldPreserveProcessingOutputOnCleanup,
+                )
+            }
             session.reset()
             cleanupRecordingProcessingDirectoryIfNeeded()
             finalOutputURL = nil
             outputURL = nil
             state = .idle
             elapsedSeconds = 0
+        }
+
+        private func isValidRecordingOutput(_ url: URL) async -> Bool {
+            guard FileManager.default.fileExists(atPath: url.path) else { return false }
+            do {
+                let asset = AVURLAsset(url: url)
+                let duration = try await asset.load(.duration)
+                let videoTracks = try await asset.loadTracks(withMediaType: .video)
+                return duration.isNumeric && duration.seconds > 0 && !videoTracks.isEmpty
+            } catch {
+                DiagnosticLogger.shared.logError(.recording, error, "Recording output validation failed")
+                return false
+            }
         }
 
         private func teardownStream(_ activeStream: SCStream) async {

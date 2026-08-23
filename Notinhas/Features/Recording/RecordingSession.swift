@@ -16,6 +16,13 @@
     /// This allows safe access from any thread without crossing @MainActor boundaries.
     /// Implements lazy start: session begins when first sample buffer arrives to sync timestamps.
     final class RecordingSession: @unchecked Sendable {
+        enum FinishResult: Equatable, Sendable {
+            case finished
+            case failed(String)
+            case missingWriter
+            case cancelled
+        }
+
         struct VideoWriteStats {
             let receivedFrames: Int
             let appendedFrames: Int
@@ -26,6 +33,7 @@
         }
 
         private let lock = NSLock()
+        private let appendBoundary = NSLock()
 
         private var _assetWriter: AVAssetWriter?
         private var _videoInput: AVAssetWriterInput?
@@ -195,6 +203,9 @@
             let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
             guard timestamp.isValid else { return }
 
+            appendBoundary.lock()
+            defer { appendBoundary.unlock() }
+
             // Consolidate locks and read dimensions/offset in one acquisition
             var shouldLogDimensionMismatch = false
             let (
@@ -311,6 +322,9 @@
             guard timestamp.isValid else { return }
             logAudioSampleFormatIfNeeded(sampleBuffer, role: .systemAudio)
 
+            appendBoundary.lock()
+            defer { appendBoundary.unlock() }
+
             let (writer, audioInput, firstTs, offset): (AVAssetWriter?, AVAssetWriterInput?, CMTime?, CMTime) = lock
                 .withLock {
                     guard _isCapturing, let writer = _assetWriter, writer.status == .writing else {
@@ -357,6 +371,9 @@
             let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
             guard timestamp.isValid else { return }
             logAudioSampleFormatIfNeeded(sampleBuffer, role: .microphone)
+
+            appendBoundary.lock()
+            defer { appendBoundary.unlock() }
 
             let (writer, microphoneInput, firstTs, offset): (AVAssetWriter?, AVAssetWriterInput?, CMTime?,
                                                              CMTime) = lock
@@ -405,6 +422,8 @@
 
         /// Mark inputs as finished
         func finishInputs() {
+            appendBoundary.lock()
+            defer { appendBoundary.unlock() }
             lock.withLock {
                 _videoInput?.markAsFinished()
                 _audioInput?.markAsFinished()
@@ -414,17 +433,19 @@
 
         /// Cancel writing
         func cancelWriting() {
+            appendBoundary.lock()
+            defer { appendBoundary.unlock() }
             lock.withLock {
                 _assetWriter?.cancelWriting()
             }
         }
 
         /// Finish writing asynchronously
-        func finishWriting() async {
+        func finishWriting() async -> FinishResult {
             let writer = lock.withLock { _assetWriter }
             guard let writer else {
                 DiagnosticLogger.shared.log(.warning, .recording, "Recording finish requested without asset writer")
-                return
+                return .missingWriter
             }
 
             DiagnosticLogger.shared.log(.debug, .recording, "Finishing recording writer", context: [
@@ -435,18 +456,28 @@
                 await writer.finishWriting()
                 if let error = writer.error {
                     logWriterIssue("Recording writer finished with error", writer: writer)
-                } else {
+                    return .failed(error.localizedDescription)
+                } else if writer.status == .completed {
                     DiagnosticLogger.shared.log(.debug, .recording, "Recording writer finished", context: [
                         "writerStatus": writerStatusLabel(writer.status),
                     ])
+                    return .finished
+                } else {
+                    logWriterIssue("Recording writer did not complete", writer: writer)
+                    return .failed("writer status: \(writerStatusLabel(writer.status))")
                 }
             } else {
                 logWriterIssue("Recording writer not in writing state during finish", writer: writer)
+                return writer.status == .cancelled
+                    ? .cancelled
+                    : .failed("writer status: \(writerStatusLabel(writer.status))")
             }
         }
 
         /// Reset all state
         func reset() {
+            appendBoundary.lock()
+            defer { appendBoundary.unlock() }
             lock.withLock {
                 _assetWriter = nil
                 _videoInput = nil

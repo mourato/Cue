@@ -276,6 +276,35 @@ final class TempCaptureManagerTests: XCTestCase {
         try? FileManager.default.removeItem(at: plan.processingDirectory)
     }
 
+    func testRecordingSavePlan_writesAtomicVersionedManifest() throws {
+        let exportDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("NotinhasTests_Export_\(UUID().uuidString)")
+        let plan = try manager.makeRecordingSavePlan(exportDirectory: exportDir)
+        let manifestURL = plan.processingDirectory.appendingPathComponent("recording-manifest.json")
+        let data = try Data(contentsOf: manifestURL)
+        let manifest = try JSONDecoder().decode(RecordingProcessingManifest.self, from: data)
+
+        XCTAssertEqual(manifest.version, RecordingProcessingManifest.currentVersion)
+        XCTAssertEqual(manifest.sessionID, plan.processingDirectory.lastPathComponent)
+        XCTAssertEqual(manifest.state, "prepared")
+        XCTAssertFalse(manifest.isFinalized)
+        try? FileManager.default.removeItem(at: plan.processingDirectory)
+    }
+
+    func testCleanupOrphanedFiles_preservesRecordingProcessingSession() throws {
+        let exportDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("NotinhasTests_Export_\(UUID().uuidString)")
+        let plan = try manager.makeRecordingSavePlan(exportDirectory: exportDir)
+        let writerURL = plan.processingDirectory.appendingPathComponent("partial.mov")
+        try Data("partial".utf8).write(to: writerURL)
+
+        manager.cleanupOrphanedFiles()
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: writerURL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: plan.processingDirectory.path))
+        try? FileManager.default.removeItem(at: plan.processingDirectory)
+    }
+
     func testRecordingSavePlan_autoSaveOn_finalDirIsExport() throws {
         fakePreferences.setAction(.save, for: .recording, enabled: true)
 
