@@ -1728,15 +1728,18 @@
                 shouldPreserveProcessingOutputOnCleanup = false
             }
 
-            if shouldPreserveProcessingOutputOnCleanup,
-               let outputURL,
-               isURL(outputURL, inside: directory),
-               FileManager.default.fileExists(atPath: outputURL.path) {
+            if shouldPreserveProcessingOutputOnCleanup {
+                var context: [String: String] = [:]
+                if let outputURL {
+                    context["file"] = outputURL.lastPathComponent
+                } else {
+                    context["reason"] = "output not created before termination timeout"
+                }
                 DiagnosticLogger.shared.log(
                     .warning,
                     .recording,
-                    "Recording processing directory preserved because final output still lives there",
-                    context: ["file": outputURL.lastPathComponent],
+                    "Recording processing directory preserved because output may still be in flight",
+                    context: context,
                 )
                 return
             }
