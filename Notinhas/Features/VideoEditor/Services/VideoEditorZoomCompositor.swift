@@ -26,6 +26,11 @@
         private let backgroundPadding: CGFloat
         private let cornerRadius: CGFloat
         let paddedRenderSize: CGSize
+        private let cameraTrackID: CMPersistentTrackID?
+        private let screenTrackID: CMPersistentTrackID?
+        private let cameraLayout: VideoEditorCameraOverlayLayout?
+        private let cameraSize: CGSize
+        private let cameraIsMirrored: Bool
 
         // MARK: - Initialization
 
@@ -38,6 +43,11 @@
             backgroundStyle: BackgroundStyle = .none,
             backgroundPadding: CGFloat = 0,
             cornerRadius: CGFloat = 0,
+            cameraTrackID: CMPersistentTrackID? = nil,
+            cameraLayout: VideoEditorCameraOverlayLayout? = nil,
+            cameraSize: CGSize = .zero,
+            cameraIsMirrored: Bool = false,
+            screenTrackID: CMPersistentTrackID? = nil,
         ) {
             self.zooms = zooms.filter(\.isEnabled)
             self.autoFocusPaths = autoFocusPaths
@@ -47,6 +57,11 @@
             self.backgroundStyle = backgroundStyle
             self.backgroundPadding = backgroundPadding
             self.cornerRadius = cornerRadius
+            self.cameraTrackID = cameraTrackID
+            self.screenTrackID = screenTrackID
+            self.cameraLayout = cameraLayout
+            self.cameraSize = cameraSize
+            self.cameraIsMirrored = cameraIsMirrored
 
             // Calculate padded render size
             if backgroundStyle != .none, backgroundPadding > 0 {
@@ -77,8 +92,8 @@
             videoComposition.renderSize = renderSize
             videoComposition.frameDuration = frameDuration
 
-            // Get video track
-            guard let videoTrack = try await asset.loadTracks(withMediaType: .video).first else {
+            let videoTracks = try await asset.loadTracks(withMediaType: .video)
+            guard let videoTrack = videoTracks.first(where: { $0.trackID == screenTrackID }) ?? videoTracks.first else {
                 print("❌ [ZoomCompositor] ERROR: No video track found")
                 DiagnosticLogger.shared.log(.error, .export, "Zoom compositor failed; source video track missing")
                 throw ZoomCompositorError.noVideoTrack
@@ -86,6 +101,8 @@
             print("🎬 [ZoomCompositor] Video track ID: \(videoTrack.trackID)")
 
             // Create instruction covering the entire time range
+            let resolvedCameraID = cameraTrackID
+                .flatMap { id in videoTracks.contains(where: { $0.trackID == id }) ? id : nil }
             let instruction = ZoomVideoCompositionInstruction(
                 timeRange: timeRange,
                 zooms: zooms,
@@ -97,6 +114,10 @@
                 backgroundPadding: backgroundPadding,
                 cornerRadius: cornerRadius,
                 paddedRenderSize: paddedRenderSize,
+                cameraTrackID: resolvedCameraID,
+                cameraLayout: cameraLayout,
+                cameraSize: cameraSize,
+                cameraIsMirrored: cameraIsMirrored,
             )
             print("🎬 [ZoomCompositor] Created instruction with trackID: \(videoTrack.trackID)")
 
@@ -144,6 +165,11 @@
         let backgroundPadding: CGFloat
         let cornerRadius: CGFloat
         let paddedRenderSize: CGSize
+        let screenTrackID: CMPersistentTrackID
+        let cameraTrackID: CMPersistentTrackID?
+        let cameraLayout: VideoEditorCameraOverlayLayout?
+        let cameraSize: CGSize
+        let cameraIsMirrored: Bool
 
         var enablePostProcessing: Bool {
             true
@@ -156,7 +182,7 @@
         var requiredSourceTrackIDs: [NSValue]? {
             // Must return NSNumber (which is a subclass of NSValue) for track IDs
             // AVFoundation calls intValue on these objects
-            [NSNumber(value: trackID)]
+            Array(Set([trackID, cameraTrackID].compactMap(\.self))).map { NSNumber(value: $0) }
         }
 
         var passthroughTrackID: CMPersistentTrackID {
@@ -174,11 +200,20 @@
             backgroundPadding: CGFloat = 0,
             cornerRadius: CGFloat = 0,
             paddedRenderSize: CGSize? = nil,
+            cameraTrackID: CMPersistentTrackID? = nil,
+            cameraLayout: VideoEditorCameraOverlayLayout? = nil,
+            cameraSize: CGSize = .zero,
+            cameraIsMirrored: Bool = false,
         ) {
             self.timeRange = timeRange
             self.zooms = zooms
             self.autoFocusPaths = autoFocusPaths
             self.trackID = trackID
+            screenTrackID = trackID
+            self.cameraTrackID = cameraTrackID
+            self.cameraLayout = cameraLayout
+            self.cameraSize = cameraSize
+            self.cameraIsMirrored = cameraIsMirrored
             self.renderSize = renderSize
             self.transitionDuration = transitionDuration
             self.backgroundStyle = backgroundStyle
@@ -312,6 +347,8 @@
                 return
             }
 
+            let cameraBuffer = instruction.cameraTrackID.flatMap { request.sourceFrame(byTrackID: $0) }
+
             if frameCount == 1 || frameCount % 30 == 0 {
                 print("🎥 [Compositor] Processing frame \(frameCount) at time \(String(format: "%.2f", currentTime))s")
             }
@@ -332,7 +369,8 @@
                 || abs(sourceSize.height - instruction.renderSize.height) > 0.5
 
             // If no zoom and no background, pass through original frame
-            if zoomLevel <= minimumRenderableZoomLevel, !instruction.hasBackground, !needsCanvasFit {
+            if cameraBuffer == nil, zoomLevel <= minimumRenderableZoomLevel, !instruction.hasBackground,
+               !needsCanvasFit {
                 request.finish(withComposedVideoFrame: sourceBuffer)
                 return
             }
@@ -343,6 +381,7 @@
                 zoomLevel: zoomLevel,
                 center: zoomCenter,
                 instruction: instruction,
+                cameraBuffer: cameraBuffer,
             ) else {
                 print("❌ [Compositor] Frame \(frameCount): applyEffects returned nil, passing through")
                 if frameCount == 1 || frameCount % 30 == 0 {
@@ -365,6 +404,7 @@
             zoomLevel: CGFloat,
             center: CGPoint,
             instruction: ZoomVideoCompositionInstruction,
+            cameraBuffer: CVPixelBuffer? = nil,
         ) -> CVPixelBuffer? {
             // Create CIImage from source buffer
             var processedImage = CIImage(cvPixelBuffer: sourceBuffer)
@@ -430,6 +470,35 @@
 
                 // Composite video over background
                 processedImage = translatedVideo.composited(over: background)
+            }
+
+            if let cameraBuffer, let layout = instruction.cameraLayout {
+                var cameraImage = CIImage(cvPixelBuffer: cameraBuffer)
+                    .transformed(by: CGAffineTransform(translationX: -cameraImageExtent(cameraBuffer).origin.x,
+                                                       y: -cameraImageExtent(cameraBuffer).origin.y))
+                if instruction.cameraIsMirrored {
+                    cameraImage = cameraImage.transformed(by: CGAffineTransform(scaleX: -1, y: 1))
+                        .transformed(by: CGAffineTransform(translationX: cameraImage.extent.width, y: 0))
+                }
+                let target = layout.cameraFrame(in: instruction.renderSize, cameraSize: instruction.cameraSize)
+                let fitted = VideoEditorExportLayout.aspectFitRect(sourceSize: cameraImage.extent.size, in: target.size)
+                let scale = min(
+                    fitted.width / max(cameraImage.extent.width, 1),
+                    fitted.height / max(cameraImage.extent.height, 1),
+                )
+                cameraImage = cameraImage.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+                    .transformed(by: CGAffineTransform(
+                        translationX: fitted.minX,
+                        y: instruction.renderSize.height - fitted.maxY,
+                    ))
+                let mask = roundedMask(rect: CGRect(x: fitted.minX, y: instruction.renderSize.height - fitted.maxY,
+                                                    width: fitted.width, height: fitted.height),
+                                       canvasSize: instruction.renderSize)
+                processedImage = cameraImage.applyingFilter(
+                    "CIBlendWithAlphaMask",
+                    parameters: [kCIInputMaskImageKey: mask],
+                )
+                .composited(over: processedImage)
             }
 
             // Create output buffer
@@ -503,6 +572,21 @@
             blendFilter.setValue(maskImage, forKey: kCIInputMaskImageKey)
 
             return blendFilter.outputImage ?? image
+        }
+
+        private func cameraImageExtent(_ buffer: CVPixelBuffer) -> CGRect {
+            CIImage(cvPixelBuffer: buffer).extent
+        }
+
+        private func roundedMask(rect: CGRect, canvasSize: CGSize) -> CIImage {
+            guard let filter = CIFilter(name: "CIRoundedRectangleGenerator") else {
+                return CIImage(color: .white).cropped(to: rect)
+            }
+            filter.setValue(CIVector(cgRect: rect), forKey: "inputExtent")
+            filter.setValue(min(rect.width, rect.height) * 0.08, forKey: "inputRadius")
+            filter.setValue(CIColor.white, forKey: "inputColor")
+            return filter.outputImage?.cropped(to: CGRect(origin: .zero, size: canvasSize))
+                ?? CIImage(color: .white).cropped(to: rect)
         }
 
         private func placeImageOnCanvas(_ image: CIImage, canvasSize: CGSize, fittedRect: CGRect) -> CIImage {

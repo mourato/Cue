@@ -109,6 +109,15 @@
         @Published private(set) var duration: CMTime = .zero
         @Published private(set) var naturalSize: CGSize = .zero
         @Published private(set) var audioTrackRoles: [VideoEditorAudioTrackRole] = []
+        @Published private(set) var hasCameraTrack = false
+        @Published private(set) var screenTrackID: CMPersistentTrackID?
+        @Published private(set) var cameraTrackID: CMPersistentTrackID?
+        @Published private(set) var cameraSize: CGSize = .zero
+        @Published private(set) var cameraIsMirrored = false
+        @Published private(set) var cameraMetadataWasInvalid = false
+        @Published var cameraOverlayLayout = VideoEditorCameraOverlayLayout.default
+        private(set) var cameraPlayer: AVPlayer?
+        private var cameraComposition: AVMutableComposition?
 
         // MARK: - Trim Range
 
@@ -294,6 +303,7 @@
         private var initialBackgroundShadowIntensity: CGFloat = 0
         private var initialBackgroundCornerRadius: CGFloat = 0
         private var initialExportSettings: ExportSettings = .init()
+        private var initialCameraOverlayLayout = VideoEditorCameraOverlayLayout.default
 
         @Published var quickAccessItemId: UUID?
 
@@ -509,6 +519,38 @@
             return VideoEditorAudioTrackRole.roles(forAudioTrackCount: count)
         }
 
+        static func resolveVideoTracks(
+            _ videoTracks: [AVAssetTrack], metadata: RecordingMetadata?,
+        ) async throws -> VideoEditorVideoTrackResolution? {
+            guard let first = videoTracks.first else { return nil }
+            let ids = Set(videoTracks.map(\.trackID))
+            guard let metadataTracks = metadata?.videoSourceTracks, !metadataTracks.isEmpty else {
+                return VideoEditorVideoTrackResolution(screenTrackID: first.trackID, cameraTrackID: nil,
+                                                       cameraSize: nil, cameraIsMirrored: false,
+                                                       cameraMetadataWasInvalid: false)
+            }
+            let screenID = metadataTracks
+                .first(where: { $0.role == .screen && ids.contains(CMPersistentTrackID($0.trackID)) })?.trackID
+            let screen = videoTracks
+                .first(where: { $0.trackID == CMPersistentTrackID(screenID ?? Int(first.trackID)) }) ?? first
+            guard let camera = metadataTracks.first(where: { $0.role == .camera }) else {
+                return VideoEditorVideoTrackResolution(screenTrackID: screen.trackID, cameraTrackID: nil,
+                                                       cameraSize: nil, cameraIsMirrored: false,
+                                                       cameraMetadataWasInvalid: false)
+            }
+            guard let cameraTrack = videoTracks.first(where: { $0.trackID == CMPersistentTrackID(camera.trackID) })
+            else {
+                return VideoEditorVideoTrackResolution(screenTrackID: screen.trackID, cameraTrackID: nil,
+                                                       cameraSize: nil, cameraIsMirrored: camera.isMirrored,
+                                                       cameraMetadataWasInvalid: true)
+            }
+            let naturalSize = try await cameraTrack.load(.naturalSize)
+            return VideoEditorVideoTrackResolution(screenTrackID: screen.trackID, cameraTrackID: cameraTrack.trackID,
+                                                   cameraSize: camera.captureSize ?? naturalSize,
+                                                   cameraIsMirrored: camera.isMirrored,
+                                                   cameraMetadataWasInvalid: false)
+        }
+
         private static func videoEditorAudioTrackRole(_ role: RecordingAudioSourceTrackRole)
             -> VideoEditorAudioTrackRole {
             switch role {
@@ -578,6 +620,21 @@
                         height: abs(transformedSize.height),
                     )
                 }
+                let videoTracks = try await asset.loadTracks(withMediaType: .video)
+                if let resolution = try await Self.resolveVideoTracks(videoTracks, metadata: recordingMetadata) {
+                    screenTrackID = resolution.screenTrackID
+                    cameraTrackID = resolution.cameraTrackID
+                    cameraSize = resolution.cameraSize ?? .zero
+                    cameraIsMirrored = resolution.cameraIsMirrored
+                    cameraMetadataWasInvalid = resolution.cameraMetadataWasInvalid
+                    hasCameraTrack = resolution.cameraTrackID != nil && !isGIF
+                    if !hasCameraTrack {
+                        cameraOverlayLayout.isVisible = false
+                    }
+                    if hasCameraTrack {
+                        await prepareCameraPreview(trackID: resolution.cameraTrackID!)
+                    }
+                }
                 let audioTracks = try await asset.loadTracks(withMediaType: .audio)
                 let audioTrackCount = audioTracks.count
                 audioTrackRoles = Self.audioTrackRoles(for: audioTracks, metadata: recordingMetadata)
@@ -602,6 +659,7 @@
             player.currentItem?.audioTimePitchAlgorithm = .spectral
             // Start playback at the rate of the speed segment under the playhead (1.0 when none).
             player.rate = currentPreviewRate(at: currentTime)
+            cameraPlayer?.rate = player.rate
             playbackState.setPlaying(true)
         }
 
@@ -617,6 +675,7 @@
 
         func pause() {
             player.pause()
+            cameraPlayer?.pause()
             playbackState.setPlaying(false)
         }
 
@@ -638,6 +697,7 @@
             let clampedTime = clampTime(time)
             playbackState.setCurrentTime(clampedTime)
             player.seek(to: clampedTime, toleranceBefore: .zero, toleranceAfter: .zero)
+            cameraPlayer?.seek(to: clampedTime, toleranceBefore: .zero, toleranceAfter: .zero)
         }
 
         func stepTimeline(by seconds: Double) {
@@ -646,6 +706,7 @@
             let clampedTime = clampTime(steppedTime)
             playbackState.setCurrentTime(clampedTime)
             player.seek(to: clampedTime, toleranceBefore: .zero, toleranceAfter: .zero)
+            cameraPlayer?.seek(to: clampedTime, toleranceBefore: .zero, toleranceAfter: .zero)
         }
 
         // MARK: - Scrubbing
@@ -659,6 +720,7 @@
             let clampedTime = clampTime(time)
             playbackState.setCurrentTime(clampedTime)
             player.seek(to: clampedTime, toleranceBefore: .zero, toleranceAfter: .zero)
+            cameraPlayer?.seek(to: clampedTime, toleranceBefore: .zero, toleranceAfter: .zero)
         }
 
         func endScrubbing() {
@@ -860,6 +922,7 @@
             initialBackgroundShadowIntensity = backgroundShadowIntensity
             initialBackgroundCornerRadius = backgroundCornerRadius
             initialExportSettings = exportSettings
+            initialCameraOverlayLayout = cameraOverlayLayout
             clearUndoHistory()
         }
 
@@ -1605,6 +1668,11 @@
                     self?.recalculateEstimatedFileSize()
                 }
                 .store(in: &cancellables)
+
+            $cameraOverlayLayout
+                .dropFirst()
+                .sink { [weak self] _ in self?.updateHasUnsavedChanges() }
+                .store(in: &cancellables)
         }
 
         private func updateHasUnsavedChanges(currentZoomSegments: [ZoomSegment]? = nil) {
@@ -1631,9 +1699,29 @@
             let bgCornerChanged = backgroundCornerRadius != initialBackgroundCornerRadius
             let backgroundChanged = bgStyleChanged || bgPaddingChanged || bgShadowChanged || bgCornerChanged
             let exportSettingsChanged = exportSettings != initialExportSettings
+            let cameraLayoutChanged = cameraOverlayLayout != initialCameraOverlayLayout
 
             hasUnsavedChanges = startChanged || endChanged || muteChanged || zoomsChanged || speedsChanged ||
-                backgroundChanged || exportSettingsChanged
+                backgroundChanged || exportSettingsChanged || cameraLayoutChanged
+        }
+
+        private func prepareCameraPreview(trackID: CMPersistentTrackID) async {
+            guard let tracks = try? await asset.loadTracks(withMediaType: .video),
+                  let sourceTrack = tracks.first(where: { $0.trackID == trackID }) else { return }
+            let composition = AVMutableComposition()
+            guard let track = composition.addMutableTrack(withMediaType: .video, preferredTrackID: trackID),
+                  let duration = try? await sourceTrack.load(.timeRange) else { return }
+            do {
+                try track.insertTimeRange(duration, of: sourceTrack, at: .zero)
+                let item = AVPlayerItem(asset: composition)
+                let player = AVPlayer(playerItem: item)
+                player.isMuted = true
+                cameraComposition = composition
+                cameraPlayer = player
+                await cameraPlayer?.seek(to: currentTime, toleranceBefore: .zero, toleranceAfter: .zero)
+            } catch {
+                DiagnosticLogger.shared.logError(.editor, error, "Camera preview preparation failed")
+            }
         }
 
         private func clampTime(_ time: CMTime) -> CMTime {
