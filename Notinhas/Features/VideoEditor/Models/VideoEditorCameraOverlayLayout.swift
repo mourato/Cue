@@ -17,9 +17,11 @@
         }
 
         var fraction: CGFloat {
-            switch self { case .small: 0.22
+            switch self {
+            case .small: 0.22
             case .medium: 0.30
-            case .large: 0.38 }
+            case .large: 0.38
+            }
         }
     }
 
