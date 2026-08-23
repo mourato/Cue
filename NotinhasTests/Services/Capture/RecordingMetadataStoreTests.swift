@@ -76,6 +76,17 @@
             XCTAssertEqual(decoded.videoSourceTracks, metadata.videoSourceTracks)
         }
 
+        func testVideoTrackRoles_doNotInferCameraWithoutAppendedFrames() {
+            XCTAssertEqual(
+                ScreenRecordingManager.videoTrackRoles(trackCount: 2, cameraFramesAppended: 0),
+                [.screen],
+            )
+            XCTAssertEqual(
+                ScreenRecordingManager.videoTrackRoles(trackCount: 2, cameraFramesAppended: 1),
+                [.screen, .camera],
+            )
+        }
+
         func testRecordingMetadata_v1WithoutCoordinateSpaceDecodesAsBottomLeft() throws {
             let legacy = LegacyMetadataV1(
                 version: 1,

@@ -89,8 +89,8 @@
         }
 
         func testFinishCameraInput_withoutInput_isIdempotent() {
-            session.finishCameraInput()
-            session.finishCameraInput()
+            XCTAssertTrue(session.finishCameraInput())
+            XCTAssertFalse(session.finishCameraInput())
             let stats = session.videoWriteStats()
             XCTAssertEqual(stats.cameraFramesReceived, 0)
             XCTAssertEqual(stats.cameraFramesAppended, 0)

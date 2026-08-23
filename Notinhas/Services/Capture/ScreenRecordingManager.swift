@@ -13,6 +13,10 @@
     import Foundation
     import ScreenCaptureKit
 
+    extension Notification.Name {
+        static let recordingCameraUnavailable = Notification.Name("Notinhas.recordingCameraUnavailable")
+    }
+
     // MARK: - Video Format
 
     enum VideoFormat: String, CaseIterable, Codable {
@@ -608,6 +612,15 @@
 
     @MainActor
     final class ScreenRecordingManager: NSObject, ObservableObject {
+        nonisolated static func videoTrackRoles(
+            trackCount: Int,
+            cameraFramesAppended: Int,
+        ) -> [RecordingVideoSourceTrackRole] {
+            guard trackCount > 0 else { return [] }
+            guard cameraFramesAppended > 0 else { return [.screen] }
+            return [.screen] + Array(repeating: .camera, count: max(0, trackCount - 1))
+        }
+
         static let shared = ScreenRecordingManager()
 
         // MARK: - Published State
@@ -1372,7 +1385,7 @@
                             audioSourceURL: editorAudioSourceURL,
                             audioSourceTrackRoles: audioSourceTrackRoles,
                             audioSourceTracks: audioSourceTracks,
-                            videoSourceTracks: recordingVideoSourceTracks(for: url),
+                            videoSourceTracks: recordingVideoSourceTracks(for: url, stats: videoWriteStats),
                         )
                         try RecordingMetadataStore.save(metadata, for: url)
                         DiagnosticLogger.shared.log(.info, .recording, "Recording metadata saved", context: [
@@ -1665,12 +1678,29 @@
             }
         }
 
-        private func recordingVideoSourceTracks(for sourceURL: URL) async -> [RecordingVideoSourceTrack] {
+        private func recordingVideoSourceTracks(
+            for sourceURL: URL,
+            stats: RecordingSession.VideoWriteStats,
+        ) async -> [RecordingVideoSourceTrack] {
             guard let tracks = try? await AVURLAsset(url: sourceURL).loadTracks(withMediaType: .video)
             else { return [] }
-            return tracks.enumerated().map { index, track in
-                RecordingVideoSourceTrack(trackID: Int(track.trackID), role: index == 0 ? .screen : .camera)
+            let roles = Self.videoTrackRoles(
+                trackCount: tracks.count,
+                cameraFramesAppended: stats.cameraFramesAppended,
+            )
+            var sourceTracks: [RecordingVideoSourceTrack] = []
+            for (index, track) in tracks.enumerated() {
+                guard index < roles.count else { continue }
+                let captureSize = await (try? track.load(.naturalSize)) ?? .zero
+                sourceTracks.append(
+                    RecordingVideoSourceTrack(
+                        trackID: Int(track.trackID),
+                        role: roles[index],
+                        captureSize: captureSize,
+                    ),
+                )
             }
+            return sourceTracks
         }
 
         private func finalizeRecordingOutput(writerURL: URL?) -> URL? {
@@ -2516,11 +2546,15 @@
 
     extension ScreenRecordingManager: CameraVideoCapturerDelegate {
         nonisolated func cameraCapturer(_: CameraVideoCapturer, didOutput sampleBuffer: CMSampleBuffer) {
-            session.appendCameraSample(sampleBuffer)
+            if session.appendCameraSample(sampleBuffer) {
+                NotificationCenter.default.post(name: .recordingCameraUnavailable, object: nil)
+            }
         }
 
         nonisolated func cameraCapturerDidBecomeUnavailable(_: CameraVideoCapturer) {
-            session.finishCameraInput()
+            if session.finishCameraInput() {
+                NotificationCenter.default.post(name: .recordingCameraUnavailable, object: nil)
+            }
         }
     }
 

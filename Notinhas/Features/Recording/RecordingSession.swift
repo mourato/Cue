@@ -385,10 +385,10 @@
             }
         }
 
-        func appendCameraSample(_ sampleBuffer: CMSampleBuffer) {
-            guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+        func appendCameraSample(_ sampleBuffer: CMSampleBuffer) -> Bool {
+            guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return false }
             let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-            guard timestamp.isValid else { return }
+            guard timestamp.isValid else { return false }
             appendBoundary.lock()
             defer { appendBoundary.unlock() }
             let values = lock.withLock { (
@@ -398,17 +398,19 @@
                 _cameraAdaptor,
                 _firstTimestamp,
                 _pauseOffsetAccumulator,
+                _cameraFinished,
             ) }
             guard values.0, let writer = values.1, writer.status == .writing, let input = values.2,
-                  let adaptor = values.3, let first = values.4 else { return }
+                  let adaptor = values.3, let first = values.4, !values.6 else { return false }
             let adjusted = values.5 > .zero ? CMTimeSubtract(timestamp, values.5) : timestamp
             guard adjusted >= first else { lock.withLock { _cameraFramesDropped += 1 }
-                return
+                return false
             }
             lock.withLock { _cameraFramesReceived += 1 }
             guard input.isReadyForMoreMediaData else { lock.withLock { _cameraFramesDropped += 1 }
-                return
+                return false
             }
+            var didFail = false
             if adaptor.append(pixelBuffer, withPresentationTime: adjusted) {
                 lock.withLock { _cameraFramesAppended += 1 }
             } else {
@@ -417,16 +419,20 @@
                     _cameraInput?.markAsFinished()
                     _cameraFinished = true
                 }
+                didFail = true
             }
+            return didFail
         }
 
-        func finishCameraInput() {
+        @discardableResult
+        func finishCameraInput() -> Bool {
             appendBoundary.lock()
             defer { appendBoundary.unlock() }
-            lock.withLock {
-                guard !_cameraFinished else { return }
+            return lock.withLock {
+                guard !_cameraFinished else { return false }
                 _cameraInput?.markAsFinished()
                 _cameraFinished = true
+                return true
             }
         }
 

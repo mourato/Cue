@@ -26,6 +26,7 @@
         private var localEscapeMonitor: Any?
         private var globalEscapeMonitor: Any?
         private var onSessionEnded: (@MainActor () -> Void)?
+        private var cameraUnavailableObserver: NSObjectProtocol?
 
         // Annotation overlay
         private var annotationToolbarWindow: RecordingAnnotationToolbarWindow?
@@ -53,7 +54,15 @@
             let showKeystrokes: Bool
         }
 
-        private init() {}
+        private init() {
+            cameraUnavailableObserver = NotificationCenter.default.addObserver(
+                forName: .recordingCameraUnavailable,
+                object: nil,
+                queue: .main,
+            ) { [weak self] _ in
+                self?.showCameraFallbackAlert()
+            }
+        }
 
         private let tempCaptureManager = TempCaptureManager.shared
 
@@ -828,6 +837,23 @@
                 alert.addButton(withTitle: L10n.Common.ok)
                 alert.runModal()
                 return false
+            }
+        }
+
+        private func showCameraFallbackAlert() {
+            guard recorder.state == .recording || recorder.state == .paused else { return }
+            toolbarWindow?.captureCamera = false
+
+            let alert = NSAlert()
+            alert.messageText = L10n.Camera.unavailableTitle
+            alert.informativeText = L10n.Camera.unavailableMessage
+            alert.alertStyle = .warning
+            alert.addButton(withTitle: L10n.Common.openSystemSettings)
+            alert.addButton(withTitle: L10n.Camera.continueWithoutCamera)
+
+            if alert.runModal() == .alertFirstButtonReturn,
+               let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Camera") {
+                NSWorkspace.shared.open(url)
             }
         }
 

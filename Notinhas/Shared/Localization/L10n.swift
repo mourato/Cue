@@ -3918,6 +3918,21 @@ nonisolated enum L10n {
             defaultValue: "Notinhas needs camera permission to record a camera track.",
             comment: "Camera permission alert message",
         )
+        static let unavailableTitle = string(
+            "camera.unavailable-title",
+            defaultValue: "Camera unavailable",
+            comment: "Camera fallback alert title",
+        )
+        static let unavailableMessage = string(
+            "camera.unavailable-message",
+            defaultValue: "The screen recording will continue without the camera.",
+            comment: "Camera fallback alert message",
+        )
+        static let continueWithoutCamera = string(
+            "camera.continue-without-camera",
+            defaultValue: "Continue Without Camera",
+            comment: "Camera fallback alert action",
+        )
     }
 
     enum CloudOperation {
