@@ -468,7 +468,6 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 excludeDesktopIcons: excludeDesktopIcons,
                 excludeDesktopWidgets: excludeDesktopWidgets,
                 excludeOwnApplication: excludeOwnApplication,
-                allowFastPathWhenOwnApplicationHidden: excludeOwnApplication,
                 prefetchedContentTask: prefetchedContentTask,
                 targetDisplayIDs: [targetDisplayID],
                 context: context,
@@ -633,7 +632,6 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 excludeDesktopIcons: excludeDesktopIcons,
                 excludeDesktopWidgets: excludeDesktopWidgets,
                 excludeOwnApplication: excludeOwnApplication,
-                allowFastPathWhenOwnApplicationHidden: excludeOwnApplication,
                 prefetchedContentTask: prefetchedContentTask,
             )
             isCapturing = false
@@ -809,7 +807,6 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                         excludeDesktopIcons: excludeDesktopIcons,
                         excludeDesktopWidgets: excludeDesktopWidgets,
                         excludeOwnApplication: excludeOwnApplication,
-                        allowFastPathWhenOwnApplicationHidden: excludeOwnApplication,
                         prefetchedContentTask: prefetchedContentTask,
                     )
                     frozenSession = preparedSession.session
@@ -934,7 +931,6 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                             excludeDesktopIcons: excludeDesktopIcons,
                             excludeDesktopWidgets: excludeDesktopWidgets,
                             excludeOwnApplication: excludeOwnApplication,
-                            allowFastPathWhenOwnApplicationHidden: excludeOwnApplication,
                             prefetchedContentTask: prefetchedContentTask,
                         )
                         frozenSession = preparedSession.session
@@ -1317,22 +1313,10 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 context
             }
 
-            // Frame lock: synchronously snapshot every display the `.rect` selection touches at
-            // the instant of mouse-up (~5-20ms per display via the existing CGDisplayCreateImage
-            // fast path), BEFORE any async hop — every await/Task suspension widens the window in
-            // which a post-release Cmd+Tab could recomposite the screen and change the captured
-            // pixels. Empty when the fast path can't honor the capture options; the capture task
-            // then falls back to captureArea() (status quo).
-            let mouseUpSnapshots: [FrozenDisplaySnapshot] = if case .rect = selection.target {
-                captureLiveMouseUpSnapshots(
-                    selection: selection,
-                    showCursor: showCursor,
-                    excludeDesktopIcons: excludeDesktopIcons,
-                    excludeDesktopWidgets: excludeDesktopWidgets,
-                )
-            } else {
-                []
-            }
+            // Frame lock previously used CGDisplayCreateImage at mouse-up; that API is
+            // unavailable at the macOS 26 deployment target, so live rect capture falls
+            // through to ScreenCaptureKit via captureArea().
+            let mouseUpSnapshots: [FrozenDisplaySnapshot] = []
 
             // Secure pixels first: immediately after the snapshot is taken, we dismiss the overlay
             AreaSelectionController.shared.cancelSelection()
@@ -1383,70 +1367,9 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         }
     }
 
-    /// Synchronously snapshot each display the live `.rect` selection touches, at the instant
-    /// of mouse-up, via the existing CGDisplayCreateImage fast path (~5-20ms per display, no
-    /// SCStream, no recording indicator). The area-selection overlay never bakes in: its
-    /// windows are `sharingType = .none`, which CGDisplayCreateImage respects — the same
-    /// mechanism frozen-mode lazy snapshots rely on while overlays are visible.
-    ///
-    /// Own-app exclusion does NOT disqualify the fast path here: live sessions hide own
-    /// normal windows for their whole duration (`hideVisibleNormalWindowsIfNeeded`), so at
-    /// mouse-up no own window is visible — the same reasoning as the fullscreen fast path's
-    /// `allowFastPathWhenOwnApplicationHidden`.
-    ///
-    /// Returns `[]` when the fast path can't honor the capture options (cursor shown /
-    /// desktop-icon / widget exclusion — CGDisplayCreateImage can't filter those) or when any
-    /// touched display fails to snapshot (mixed-source composites are worse than a uniform
-    /// fallback). The caller then falls back to `captureArea()` (status quo).
-    private func captureLiveMouseUpSnapshots(
-        selection: AreaSelectionResult,
-        showCursor: Bool,
-        excludeDesktopIcons: Bool,
-        excludeDesktopWidgets: Bool,
-    ) -> [FrozenDisplaySnapshot] {
-        let grabStartedAt = Date()
-        let neededDisplayIDs = selection.spansMultipleDisplays ? selection.displayIDs : [selection.displayID]
-        let snapshots = Self.gatherLiveMouseUpSnapshots(
-            displayIDs: neededDisplayIDs,
-            showCursor: showCursor,
-            excludeDesktopIcons: excludeDesktopIcons,
-            excludeDesktopWidgets: excludeDesktopWidgets,
-        ) { displayID in
-            let snapshot = captureManager.captureFastDisplaySnapshot(
-                displayID: displayID,
-                showCursor: false,
-                excludeDesktopIcons: false,
-                excludeDesktopWidgets: false,
-                excludeOwnApplication: false,
-            )
-            if snapshot == nil {
-                DiagnosticLogger.shared.log(
-                    .info, .capture,
-                    "Mouse-up fast snapshot unavailable; falling back to captureArea",
-                    context: ["displayID": "\(displayID)"],
-                )
-            }
-            return snapshot
-        }
-        if !snapshots.isEmpty {
-            DiagnosticLogger.shared.log(
-                .info, .capture,
-                "Mouse-up fast snapshots grabbed",
-                context: [
-                    "displays": "\(snapshots.count)",
-                    "grabMs": "\(Int(Date().timeIntervalSince(grabStartedAt) * 1000))",
-                ],
-            )
-        }
-        return snapshots
-    }
-
-    /// Testable core of `captureLiveMouseUpSnapshots`: fast-path gating plus the
-    /// all-or-nothing per-display gather. Returns `[]` when the requested options can't be
-    /// honored by the CG fast path or when ANY display's grab fails — a partial result would
-    /// produce a mixed-source composite, which is worse than a uniform fallback.
-    /// `snapshotProvider` is `captureFastDisplaySnapshot` in production; injected so this
-    /// logic is unit-testable without displays or Screen Recording permission.
+    /// Testable gating/gather helper retained for unit tests of the historical mouse-up
+    /// fast-path rules. Production no longer uses a synchronous display grab
+    /// (`CGDisplayCreateImage` unavailable at macOS 26+).
     static func gatherLiveMouseUpSnapshots(
         displayIDs: Set<CGDirectDisplayID>,
         showCursor: Bool,
@@ -1573,36 +1496,16 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         guard !missingDisplayIDs.isEmpty else { return }
 
         let startedAt = Date()
-        if !showCursor, !excludeDesktopIcons, !excludeDesktopWidgets {
-            for displayID in missingDisplayIDs {
-                let fastSnapshot = AreaSelectionController.shared.withDisplayOverlayHidden(for: displayID) {
-                    captureManager.captureFastDisplaySnapshot(
-                        displayID: displayID,
-                        showCursor: false,
-                        excludeDesktopIcons: false,
-                        excludeDesktopWidgets: false,
-                        excludeOwnApplication: false,
-                    )
-                }
-                if let fastSnapshot {
-                    frozenSession.addSnapshot(fastSnapshot)
-                }
-            }
-            missingDisplayIDs = frozenSession.missingSnapshotDisplayIDs(for: displayIDs)
-        }
-
-        if !missingDisplayIDs.isEmpty {
-            let snapshots = try await captureManager.captureDisplaySnapshots(
-                displayIDs: missingDisplayIDs,
-                showCursor: showCursor,
-                excludeDesktopIcons: excludeDesktopIcons,
-                excludeDesktopWidgets: excludeDesktopWidgets,
-                excludeOwnApplication: excludeOwnApplication,
-                prefetchedContentTask: prefetchedContentTask,
-            )
-            for snapshot in snapshots.values {
-                frozenSession.addSnapshot(snapshot)
-            }
+        let snapshots = try await captureManager.captureDisplaySnapshots(
+            displayIDs: missingDisplayIDs,
+            showCursor: showCursor,
+            excludeDesktopIcons: excludeDesktopIcons,
+            excludeDesktopWidgets: excludeDesktopWidgets,
+            excludeOwnApplication: excludeOwnApplication,
+            prefetchedContentTask: prefetchedContentTask,
+        )
+        for snapshot in snapshots.values {
+            frozenSession.addSnapshot(snapshot)
         }
 
         let unresolvedDisplayIDs = frozenSession.missingSnapshotDisplayIDs(for: displayIDs)
@@ -1648,55 +1551,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
             guard let self else { return }
             guard activeAreaSelectionSessionID == sessionID else { return }
 
-            // Try fast CG path first (only when no cursor/desktop exclusion needed)
-            cgFastPath: do {
-                guard !showCursor, !excludeDesktopIcons, !excludeDesktopWidgets else { break cgFastPath }
-
-                // Resolve NSScreen data on main thread (AppKit requirement), then pass as
-                // value types across the thread boundary for off-main CGDisplayCreateImage.
-                guard let screen = NSScreen.screens.first(where: { $0.displayID == displayID }) else {
-                    // Display not found — fall through to SCK async path below
-                    break cgFastPath
-                }
-                let screenFrame = screen.frame
-                let backingScale = screen.backingScaleFactor
-                let colorSpaceName = captureManager.preferredCaptureColorSpaceName(for: screen).map { String($0) }
-                let captureManager = captureManager
-
-                // withDisplayOverlayHiddenAsync: hides overlay on main, runs work off-main, restores on main.
-                let fastSnapshot = await AreaSelectionController.shared.withDisplayOverlayHiddenAsync(
-                    for: displayID,
-                ) {
-                    // Task.detached ensures CGDisplayCreateImage runs on cooperative thread pool,
-                    // not on MainActor, freeing main thread for mouse event processing.
-                    await Task.detached {
-                        captureManager.captureFastDisplaySnapshotOffMain(
-                            displayID: displayID,
-                            screenFrame: screenFrame,
-                            backingScaleFactor: backingScale,
-                            colorSpaceName: colorSpaceName,
-                        )
-                    }.value
-                }
-
-                // Re-validate session after awaiting — user may have dismissed capture area.
-                guard activeAreaSelectionSessionID == sessionID else { return }
-
-                if let fastSnapshot {
-                    applyLazyFrozenSnapshot(
-                        fastSnapshot,
-                        mode: excludeOwnApplication ? "coregraphics-hidden-overlay" : "coregraphics",
-                        displayID: displayID,
-                        startedAt: startedAt,
-                        sessionID: sessionID,
-                        frozenSession: frozenSession,
-                    )
-                    lazyAreaSnapshotTasks[displayID] = nil
-                    return
-                }
-            }
-
-            // SCK async path
+            // ScreenCaptureKit path (CGDisplayCreateImage fast path retired at macOS 26+).
             do {
                 let snapshots = try await captureManager.captureDisplaySnapshots(
                     displayIDs: [displayID],
@@ -1784,41 +1639,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 guard let self, activeAreaSelectionSessionID == sessionID else { return }
                 let startedAt = Date()
 
-                // Fast CoreGraphics path when no cursor/desktop exclusions are needed. The overlay
-                // is capture-excluded (sharingType == .none), so it is not baked into the snapshot.
-                if !showCursor, !excludeDesktopIcons, !excludeDesktopWidgets,
-                   let screen = NSScreen.screens.first(where: { $0.displayID == displayID }) {
-                    let screenFrame = screen.frame
-                    let backingScale = screen.backingScaleFactor
-                    let colorSpaceName = captureManager.preferredCaptureColorSpaceName(for: screen).map { String($0) }
-                    let captureManager = captureManager
-                    let fastSnapshot = await AreaSelectionController.shared.withDisplayOverlayHiddenAsync(
-                        for: displayID,
-                    ) {
-                        await Task.detached {
-                            captureManager.captureFastDisplaySnapshotOffMain(
-                                displayID: displayID,
-                                screenFrame: screenFrame,
-                                backingScaleFactor: backingScale,
-                                colorSpaceName: colorSpaceName,
-                            )
-                        }.value
-                    }
-                    guard activeAreaSelectionSessionID == sessionID else { return }
-                    if let fastSnapshot {
-                        applyLazyFrozenSnapshot(
-                            fastSnapshot,
-                            mode: "transition-refreeze-cg",
-                            displayID: displayID,
-                            startedAt: startedAt,
-                            sessionID: sessionID,
-                            frozenSession: frozenSession,
-                        )
-                        return
-                    }
-                }
-
-                // ScreenCaptureKit path (exclusions on, or fast path unavailable).
+                // ScreenCaptureKit path (CGDisplayCreateImage fast path retired at macOS 26+).
                 do {
                     let snapshots = try await captureManager.captureDisplaySnapshots(
                         displayIDs: [displayID],
@@ -2949,19 +2770,6 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
     // MARK: - Object Cutout Capture
 
     func captureObjectCutout() {
-        // Feature gate: keep app compatible on macOS 13 while disabling this flow safely.
-        guard #available(macOS 14.0, *) else {
-            DiagnosticLogger.shared.log(.warning, .capture, "Object cutout unavailable: macOS < 14")
-            lastCaptureResult = .failure(.unavailable(L10n.ForegroundCutout.unsupportedOS))
-            AppToastManager.shared.show(
-                message: L10n.ForegroundCutout.unsupportedOS,
-                style: .warning,
-                position: .bottomCenter,
-            )
-            QuickAccessSound.failed.play()
-            return
-        }
-
         // Prevent multiple area captures
         if isAreaSelectionActive {
             DiagnosticLogger.shared.log(.debug, .capture, "captureObjectCutout blocked: area selection active")
@@ -3171,12 +2979,6 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
             case .noSubjectDetected:
                 AppToastManager.shared.show(
                     message: L10n.ForegroundCutout.noSubjectDetectedTryTighterArea,
-                    style: .warning,
-                    position: .bottomCenter,
-                )
-            case .unsupportedOS:
-                AppToastManager.shared.show(
-                    message: L10n.ForegroundCutout.unsupportedOS,
                     style: .warning,
                     position: .bottomCenter,
                 )

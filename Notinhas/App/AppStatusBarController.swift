@@ -561,11 +561,7 @@ final class AppStatusBarController: ObservableObject {
             systemSymbolName: "person.crop.rectangle",
             accessibilityDescription: nil,
         )
-        if #available(macOS 14.0, *) {
-            captureObjectCutoutItem.isEnabled = viewModel.hasPermission
-        } else {
-            captureObjectCutoutItem.isEnabled = false
-        }
+        captureObjectCutoutItem.isEnabled = viewModel.hasPermission
         menu?.addItem(captureObjectCutoutItem)
 
         if isVideoModuleEnabled {
@@ -866,23 +862,19 @@ final class AppStatusBarController: ObservableObject {
         NSApp.activate(ignoringOtherApps: true)
 
         // Trigger Settings scene - equivalent to SettingsLink behavior
-        if #available(macOS 14.0, *) {
-            if let keyEvent = NSEvent.keyEvent(
-                with: .keyDown,
-                location: .zero,
-                modifierFlags: .command,
-                timestamp: 0,
-                windowNumber: 0,
-                context: nil,
-                characters: ",",
-                charactersIgnoringModifiers: ",",
-                isARepeat: false,
-                keyCode: 43,
-            ) {
-                NSApp.mainMenu?.performKeyEquivalent(with: keyEvent)
-            }
-        } else {
-            NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+        if let keyEvent = NSEvent.keyEvent(
+            with: .keyDown,
+            location: .zero,
+            modifierFlags: .command,
+            timestamp: 0,
+            windowNumber: 0,
+            context: nil,
+            characters: ",",
+            charactersIgnoringModifiers: ",",
+            isARepeat: false,
+            keyCode: 43,
+        ) {
+            NSApp.mainMenu?.performKeyEquivalent(with: keyEvent)
         }
 
         schedulePreferencesWindowTracking(excludingWindowNumbers: existingWindowNumbers)

@@ -96,7 +96,7 @@ Batch variant `handleScreenshotCaptures(urls:)`: filters missing files, delegate
 
 `Notinhas/Services/Clipboard/ClipboardHelper.swift` writes one pasteboard item per capture so receiving apps pick their preferred representation:
 
-- `copyImage(from:)` — `writeObjects([NSURL])` (grants the receiver a sandbox extension), then augments the same item with the encoded data type (`.png`/JPEG/WebP UTI) and `.tiff` pixel data. When `NSImage` cannot decode the file (e.g. WebP on macOS 13), the item still carries the file URL and original encoded bytes.
+- `copyImage(from:)` — `writeObjects([NSURL])` (grants the receiver a sandbox extension), then augments the same item with the encoded data type (`.png`/JPEG/WebP UTI) and `.tiff` pixel data. When `NSImage` cannot decode the file (e.g. unsupported encoded bytes), the item still carries the file URL and original encoded bytes.
 - `copyMediaFile(from:)` — videos/GIFs: file-URL write plus same-item `.URL` and `.string` fallbacks for Teams/Electron/WebView paste targets.
 - `copyFileURLs(_:)` — batch file-URL copy for multi-display screenshot sets.
 - Render-based `copyImage(_:format:)` — Annotate/Mockup copies render to the configured format, write a temp file (`Notinhas_clipboard_<uuid>`), then copy like a file.

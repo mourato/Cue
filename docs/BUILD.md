@@ -6,7 +6,7 @@ Build Notinhas from source on your local machine.
 
 ## Prerequisites
 
-- macOS 13.0+
+- macOS 26.0+
 - Xcode 15.0+
 - Command Line Tools: `xcode-select --install`
 

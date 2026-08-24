@@ -3,12 +3,14 @@
 //  Notinhas
 //
 //  Seam for area-selection backdrop grabs (magnifier / luma). Production uses
-//  CGWindowListCreateImage; XCTest hosts default to a synthetic image so the
+//  ScreenCaptureKit; XCTest hosts default to a synthetic image so the
 //  suite does not trigger Screen Recording TCC for com.mourato.notinhas.debug.
 //
 
 import CoreGraphics
+import CoreVideo
 import Foundation
+@preconcurrency import ScreenCaptureKit
 
 /// Captures an on-screen backdrop for area-selection magnifier / luma paths.
 protocol AreaSelectionBackdropCapturing: Sendable {
@@ -24,26 +26,42 @@ protocol AreaSelectionBackdropCapturing: Sendable {
 struct LiveAreaSelectionBackdropCapturer: AreaSelectionBackdropCapturing {
     func captureBackdrop(
         displayID: CGDirectDisplayID,
-        captureRect: CGRect,
+        captureRect _: CGRect,
         scaleFactor: CGFloat,
         isVisible: Bool,
     ) async -> AreaSelectionBackdrop? {
-        await Task.detached(priority: .userInitiated) {
-            guard let cgImage = CGWindowListCreateImage(
-                captureRect,
-                .optionOnScreenOnly,
-                kCGNullWindowID,
-                .nominalResolution,
-            ) else {
+        do {
+            let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
+            guard let display = content.displays.first(where: { $0.displayID == Int(displayID) }) else {
                 return nil
             }
+
+            let filter = SCContentFilter(display: display, excludingWindows: [])
+            let pointPixelScale = CGFloat(filter.pointPixelScale)
+            let pixelScale = scaleFactor > 0
+                ? scaleFactor
+                : (pointPixelScale > 0 ? pointPixelScale : 2.0)
+
+            let configuration = SCStreamConfiguration()
+            configuration.width = max(1, Int((display.frame.width * pixelScale).rounded()))
+            configuration.height = max(1, Int((display.frame.height * pixelScale).rounded()))
+            configuration.pixelFormat = kCVPixelFormatType_32BGRA
+            configuration.showsCursor = false
+            configuration.captureResolution = .best
+
+            let image = try await SCScreenshotManager.captureImage(
+                contentFilter: filter,
+                configuration: configuration,
+            )
             return AreaSelectionBackdrop(
                 displayID: displayID,
-                image: cgImage,
-                scaleFactor: scaleFactor,
+                image: image,
+                scaleFactor: pixelScale,
                 isVisible: isVisible,
             )
-        }.value
+        } catch {
+            return nil
+        }
     }
 }
 

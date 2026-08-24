@@ -106,9 +106,7 @@ struct VisionOCRProfile {
         if let minimumTextHeight {
             request.minimumTextHeight = minimumTextHeight
         }
-        if #available(macOS 13.0, *) {
-            request.automaticallyDetectsLanguage = automaticallyDetectsLanguage
-        }
+        request.automaticallyDetectsLanguage = automaticallyDetectsLanguage
     }
 }
 

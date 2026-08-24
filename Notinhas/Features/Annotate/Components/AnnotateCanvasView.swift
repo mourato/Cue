@@ -179,7 +179,7 @@ struct AnnotateCanvasView: View {
             handleDrop(providers: providers)
         }
         .focusable()
-        .modifier(FocusEffectDisabledModifier())
+        .focusEffectDisabled()
         .focused($isCanvasFocused)
         .background(
             KeyEventHandlerView { char in
@@ -601,7 +601,7 @@ struct AnnotateCanvasView: View {
 
     // MARK: - Keyboard Shortcuts
 
-    /// Handle tool switching keyboard shortcuts (macOS 13+ compatible)
+    /// Handle annotate tool-switching keyboard shortcuts while the canvas owns focus.
     private func handleToolShortcutChar(_ char: Character) {
         // Skip if no image loaded
         guard state.hasImage else { return }
@@ -678,22 +678,12 @@ private struct CombineCanvasClipModifier: ViewModifier {
     }
 }
 
-// MARK: - Focus Effect Disabled Modifier (macOS 13 compat)
+// MARK: - Canvas Key Focus Ownership
 
-/// Wraps `.focusEffectDisabled()` which is only available on macOS 14+
-private struct FocusEffectDisabledModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        if #available(macOS 14.0, *) {
-            content.focusEffectDisabled()
-        } else {
-            content
-        }
-    }
-}
-
-// MARK: - Key Event Handler (macOS 13 compat, replaces .onKeyPress)
-
-/// NSViewRepresentable that intercepts keyboard events via AppKit for macOS 13 compatibility
+/// AppKit keyboard intercept for annotate tool shortcuts.
+/// Owns first-responder reclaim so empty-canvas clicks keep shortcuts working, while leaving
+/// `DrawingCanvasNSView` and `NSTextView` (text editing) alone. Prefer this over SwiftUI
+/// `.onKeyPress`, which would mark every key as handled and swallow Delete/Space/etc.
 struct KeyEventHandlerView: NSViewRepresentable {
     let onKey: (Character) -> Void
 

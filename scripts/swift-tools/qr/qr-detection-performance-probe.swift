@@ -130,8 +130,6 @@ struct QRDetectionPerformanceProbe {
   }
 
   private static func configureCPUComputeDevice(for request: VNRequest) {
-    guard #available(macOS 14.0, *) else { return }
-
     let cpuDevice = MLComputeDevice.allComputeDevices.first { device in
       if case .cpu = device {
         return true

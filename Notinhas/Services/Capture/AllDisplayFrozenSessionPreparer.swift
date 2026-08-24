@@ -31,34 +31,11 @@ enum AllDisplayFrozenSessionPreparer {
         excludeDesktopIcons: Bool,
         excludeDesktopWidgets: Bool,
         excludeOwnApplication: Bool,
-        allowFastPathWhenOwnApplicationHidden: Bool,
         prefetchedContentTask: ShareableContentPrefetchTask?,
     ) async throws -> (session: FrozenAreaCaptureSession, mode: String) {
         let expectedDisplayIDs = connectedDisplayIDs(from: screens)
         guard !expectedDisplayIDs.isEmpty else {
             throw CaptureError.noDisplayFound
-        }
-
-        let canUseFastPath = !showCursor
-            && !excludeDesktopIcons
-            && !excludeDesktopWidgets
-        if canUseFastPath {
-            let snapshots = screens.compactMap { screen -> FrozenDisplaySnapshot? in
-                guard let displayID = screen.displayID else { return nil }
-                return captureManager.captureFastDisplaySnapshot(
-                    displayID: displayID,
-                    showCursor: false,
-                    excludeDesktopIcons: false,
-                    excludeDesktopWidgets: false,
-                    excludeOwnApplication: excludeOwnApplication,
-                    allowFastPathWhenOwnApplicationHidden: allowFastPathWhenOwnApplicationHidden,
-                )
-            }
-            if snapshots.count == screens.count {
-                let session = FrozenAreaCaptureSession.fromSnapshots(snapshots)
-                try validateCompleteSession(session, expectedDisplayIDs: expectedDisplayIDs)
-                return (session, "coregraphics-all")
-            }
         }
 
         let shareableContentTask = prefetchedContentTask ?? captureManager.prefetchShareableContent(

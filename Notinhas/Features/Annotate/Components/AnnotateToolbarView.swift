@@ -180,25 +180,21 @@ struct AnnotateToolbarView: View {
         ) {
             state.toggleBackgroundCutout()
         }
-        .disabled(!state.canUseBackgroundCutout || !state.hasImage || state.isCutoutProcessing)
-        .opacity((!state.canUseBackgroundCutout || !state.hasImage) ? 0.4 : 1)
+        .disabled(!state.hasImage || state.isCutoutProcessing)
+        .opacity(!state.hasImage ? 0.4 : 1)
         .help(
-            state.canUseBackgroundCutout
-                ? (state.isCutoutApplied
-                    ? L10n.AnnotateUI.backgroundRemovedClickToRestore
-                    : (backgroundCutoutAutoCropEnabled
-                        ? L10n.AnnotateUI.removeBackgroundAutoCropsWhenSafe
-                        : L10n.AnnotateUI.removeBackgroundAutoCropDisabledInSettings))
-                : L10n.AnnotateUI.requiresMacOS14OrLater,
+            state.isCutoutApplied
+                ? L10n.AnnotateUI.backgroundRemovedClickToRestore
+                : (backgroundCutoutAutoCropEnabled
+                    ? L10n.AnnotateUI.removeBackgroundAutoCropsWhenSafe
+                    : L10n.AnnotateUI.removeBackgroundAutoCropDisabledInSettings),
         )
         .accessibilityLabel(
-            state.canUseBackgroundCutout
-                ? (state.isCutoutApplied
-                    ? L10n.AnnotateUI.backgroundRemovedClickToRestore
-                    : (backgroundCutoutAutoCropEnabled
-                        ? L10n.AnnotateUI.removeBackgroundAutoCropsWhenSafe
-                        : L10n.AnnotateUI.removeBackgroundAutoCropDisabledInSettings))
-                : L10n.AnnotateUI.requiresMacOS14OrLater,
+            state.isCutoutApplied
+                ? L10n.AnnotateUI.backgroundRemovedClickToRestore
+                : (backgroundCutoutAutoCropEnabled
+                    ? L10n.AnnotateUI.removeBackgroundAutoCropsWhenSafe
+                    : L10n.AnnotateUI.removeBackgroundAutoCropDisabledInSettings),
         )
     }
 

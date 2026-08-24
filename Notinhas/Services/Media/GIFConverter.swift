@@ -60,11 +60,7 @@
             let asset = AVURLAsset(url: videoURL)
 
             // Get video duration
-            let duration: CMTime = if #available(macOS 15.0, *) {
-                try await asset.load(.duration)
-            } else {
-                asset.duration
-            }
+            let duration = try await asset.load(.duration)
             let durationSeconds = CMTimeGetSeconds(duration)
 
             guard durationSeconds > 0, durationSeconds.isFinite else {
@@ -76,19 +72,11 @@
             }
 
             // Get video dimensions for scaling
-            let videoTrack: AVAssetTrack? = if #available(macOS 15.0, *) {
-                try? await asset.loadTracks(withMediaType: .video).first
-            } else {
-                asset.tracks(withMediaType: .video).first
-            }
+            let videoTrack = try? await asset.loadTracks(withMediaType: .video).first
 
             let naturalSize: CGSize
             if let track = videoTrack {
-                if #available(macOS 15.0, *) {
-                    naturalSize = await (try? track.load(.naturalSize)) ?? CGSize(width: 640, height: 480)
-                } else {
-                    naturalSize = track.naturalSize
-                }
+                naturalSize = await (try? track.load(.naturalSize)) ?? CGSize(width: 640, height: 480)
             } else {
                 DiagnosticLogger.shared.log(
                     .warning,

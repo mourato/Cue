@@ -64,7 +64,7 @@ private struct CaptureFloatingToolbarMaterialBackground: ViewModifier {
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     func body(content: Content) -> some View {
-        if #available(macOS 26.0, *), !reduceTransparency {
+        if !reduceTransparency {
             content
                 .glassEffect(
                     .regular,
@@ -72,12 +72,11 @@ private struct CaptureFloatingToolbarMaterialBackground: ViewModifier {
                 )
         } else {
             content
-                .background(reduceTransparency ? AnyShapeStyle(Color(nsColor: .windowBackgroundColor)) :
-                    AnyShapeStyle(.ultraThinMaterial))
+                .background(AnyShapeStyle(Color(nsColor: .windowBackgroundColor)))
                 .clipShape(RoundedRectangle(cornerRadius: ToolbarConstants.toolbarCornerRadius))
                 .overlay(
                     RoundedRectangle(cornerRadius: ToolbarConstants.toolbarCornerRadius)
-                        .strokeBorder(Color.primary.opacity(reduceTransparency ? 0.2 : 0.1), lineWidth: 0.5),
+                        .strokeBorder(Color.primary.opacity(0.2), lineWidth: 0.5),
                 )
         }
     }

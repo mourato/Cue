@@ -2111,15 +2111,8 @@
             config.pixelFormat = kCVPixelFormatType_32BGRA
             config.showsCursor = showCursorInRecording
             config.sourceRect = captureGeometry.sourceRect
-            let captureResolutionMode: String
-            if #available(macOS 14.2, *) {
-                config.captureResolution = .best
-                captureResolutionMode = "best"
-            } else {
-                // Fallback for macOS 13/14.0/14.1:
-                // rely on explicit native-scaled dimensions + pixel-aligned sourceRect.
-                captureResolutionMode = "fallback-native-dimensions"
-            }
+            config.captureResolution = .best
+            let captureResolutionMode = "best"
 
             // System audio configuration
             if captureSystemAudio {

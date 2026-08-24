@@ -4,7 +4,7 @@ Set up Notinhas for local development and run it from source.
 
 ## Prerequisites
 
-- macOS 13.0+
+- macOS 26.0+
 - Xcode 15.0+
 - Command Line Tools: `xcode-select --install`
 

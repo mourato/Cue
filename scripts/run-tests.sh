@@ -137,7 +137,7 @@ Environment:
   NOTINHAS_SKIP_VISUAL_TESTS          Set to 1 for the same effect as --skip-visual.
   NOTINHAS_ALLOW_TEST_SOUNDS          Set to 1 only for an intentional audio integration run.
   NOTINHAS_ALLOW_SCREEN_CAPTURE_IN_TESTS
-                                      Set to 1 to use live CGWindowListCreateImage backdrop
+                                      Set to 1 to use live ScreenCaptureKit backdrop
                                       captures in XCTest (default: synthetic, no Screen Recording TCC).
 
 Examples:
