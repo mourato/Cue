@@ -34,17 +34,18 @@ Output: `~/Library/Developer/Xcode/DerivedData/Notinhas-*/Build/Products/Debug/N
 ## Run the local debug app
 
 Use `./scripts/build_and_run.sh` as the canonical local entry point (build, launch,
-verify, log streaming, and optional Video module). `./scripts/launch.sh` remains as a
+verify, log streaming; Video module on by default). `./scripts/launch.sh` remains as a
 legacy compatibility wrapper that forwards to `./scripts/build_and_run.sh --logs`.
 
 ```bash
 ./scripts/build_and_run.sh
+./scripts/build_and_run.sh --no-video-module   # plain Notinhas scheme
 ```
 
-The script builds **Notinhas Debug.app** at:
+With the default Video module, the script builds **Notinhas Debug.app** at:
 
 ```text
-.build/xcode-derived-data/Build/Products/Debug/Notinhas Debug.app
+.build/xcode-derived-data/Build/Products/Debug+Video/Notinhas Debug.app
 ```
 
 Debug uses bundle ID `com.mourato.notinhas.debug` so TCC grants stay separate from release `com.mourato.notinhas`.
@@ -158,10 +159,9 @@ Fixture coverage: `scripts/tests/integrate-plan.sh`.
 
 ## Optional Video module
 
-```bash
-./scripts/build_and_run.sh --video-module
-open Notinhas.xcodeproj   # select **Notinhas Video** scheme
-```
+`./scripts/build_and_run.sh` includes the Video module by default. Opt out with
+`--no-video-module` or `ENABLE_VIDEO_MODULE=0`. In Xcode, select the
+**Notinhas Video** scheme (or keep **Notinhas** for a build without the module).
 
 Enable at runtime under **Preferences → Advanced** when compiled in.
 

@@ -6,7 +6,7 @@ help:
 	@echo "  make build  Same as make b"
 	@echo "  make dmg    Build Release app, ad-hoc sign, and create local DMG"
 	@echo "  make test   Run the default XCTest suite"
-	@echo "  make build-video  Build the optional Video module"
+	@echo "  make build-video  Build+verify with the Video module (also the make b default)"
 	@echo "  make test-video   Run the optional Video XCTest suite"
 	@echo "  make format-check Validate SwiftFormat"
 	@echo "  make format-fix   Apply SwiftFormat"

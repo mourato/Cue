@@ -72,10 +72,12 @@ prompts on macOS whenever they change.
 
 ### Optional Video Module
 
-Recording and Video Editor compile only with `NOTINHAS_VIDEO_MODULE` or
-`--video-module` using **Notinhas Video** / **Debug+Video**. The default
-**Notinhas** scheme keeps the module off. Enable it at runtime under
-**Preferences → Advanced**; capture → annotate → export does not require it.
+Recording and Video Editor compile with `NOTINHAS_VIDEO_MODULE` using
+**Notinhas Video** / **Debug+Video**. `./scripts/build_and_run.sh` includes the
+module by default (`--no-video-module` or `ENABLE_VIDEO_MODULE=0` to opt out).
+The plain **Notinhas** Xcode scheme keeps the module off. Enable it at runtime
+under **Preferences → Advanced**; capture → annotate → export does not require
+it.
 
 ### Test isolation
 

@@ -119,7 +119,8 @@ Start with [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for Xcode setup and `./scr
 
 ```bash
 open Notinhas.xcodeproj          # default Notinhas scheme (Video module off)
-./scripts/build_and_run.sh         # interactive Debug/Release build + launch
+./scripts/build_and_run.sh         # Video module on by default (Debug/Release)
+./scripts/build_and_run.sh --no-video-module
 ./scripts/run-tests.sh             # XCTest suite (default scheme)
 ./scripts/run-tests.sh --skip-visual   # skip on-screen overlay/panel suites
 ./scripts/run-tests.sh --video-module   # optional Recording/VideoEditor tests

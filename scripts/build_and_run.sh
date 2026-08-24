@@ -17,7 +17,8 @@ CONFIGURATION="${CONFIGURATION:-Debug}"
 LOG_LEVEL="${LOG_LEVEL:-default,error,fault}"
 CLEAN=0
 QUIET=1
-ENABLE_VIDEO_MODULE="${ENABLE_VIDEO_MODULE:-}"
+# Local script builds include the Video module unless explicitly disabled.
+ENABLE_VIDEO_MODULE="${ENABLE_VIDEO_MODULE:-1}"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DERIVED_DATA_PATH="${DERIVED_DATA_PATH:-$ROOT_DIR/.build/xcode-derived-data}"
@@ -58,22 +59,23 @@ ${BOLD}Options:${NC}
   --configuration C   Build configuration. Local builds use LOCAL_CODE_SIGN_IDENTITY.
   --derived-data PATH Build DerivedData path. Default: .build/xcode-derived-data
   --log-level LEVELS  default,info,debug,error,fault,all. Default: default,error,fault
-  --video-module      Build with the optional Video module (recording + video editor).
-  --no-video-module   Build without the optional Video module (default).
+  --video-module      Build with the Video module (recording + video editor; default).
+  --no-video-module   Build without the Video module.
   --clean             Clean before building
   --verbose           Show full xcodebuild output (warnings, notes, progress)
   --help, -h          Show this help
 
 ${BOLD}Environment:${NC}
-  ENABLE_VIDEO_MODULE Set to 1 or 0 to enable/disable the Video module non-interactively.
+  ENABLE_VIDEO_MODULE Set to 1 (default) or 0 to enable/disable the Video module
+                      non-interactively.
 
 ${BOLD}Examples:${NC}
   $0
   $0 --verify
   $0 --logs --log-level all
   $0 --configuration Release
-  ENABLE_VIDEO_MODULE=1 $0
-  $0 --video-module --configuration Debug+Video
+  $0 --no-video-module
+  ENABLE_VIDEO_MODULE=0 $0
 USAGE
 }
 
@@ -141,18 +143,18 @@ configure_interactive_build() {
       ;;
   esac
 
-  printf "Include optional Video module (recording + video editor)? [y/N]: "
+  printf "Include Video module (recording + video editor)? [Y/n]: "
   local video_choice
   read -r video_choice || exit 0
   case "$video_choice" in
-    y|Y|yes|YES)
+    ""|y|Y|yes|YES)
       ENABLE_VIDEO_MODULE=1
       ;;
-    ""|n|N|no|NO)
+    n|N|no|NO)
       ENABLE_VIDEO_MODULE=0
       ;;
     *)
-      ENABLE_VIDEO_MODULE=0
+      ENABLE_VIDEO_MODULE=1
       ;;
   esac
   apply_video_module_settings
@@ -226,7 +228,7 @@ parse_args() {
 
   if [[ "$argument_count" -eq 0 && -t 0 && -t 1 ]]; then
     configure_interactive_build
-  elif [[ -n "$ENABLE_VIDEO_MODULE" ]]; then
+  else
     apply_video_module_settings
   fi
 }
