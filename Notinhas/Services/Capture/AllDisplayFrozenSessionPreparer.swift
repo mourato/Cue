@@ -31,7 +31,6 @@ enum AllDisplayFrozenSessionPreparer {
         excludeDesktopIcons: Bool,
         excludeDesktopWidgets: Bool,
         excludeOwnApplication: Bool,
-        allowFastPathWhenOwnApplicationHidden _: Bool,
         prefetchedContentTask: ShareableContentPrefetchTask?,
     ) async throws -> (session: FrozenAreaCaptureSession, mode: String) {
         let expectedDisplayIDs = connectedDisplayIDs(from: screens)
@@ -39,7 +38,6 @@ enum AllDisplayFrozenSessionPreparer {
             throw CaptureError.noDisplayFound
         }
 
-        // CGDisplayCreateImage fast path is unavailable at the macOS 26 deployment target.
         let shareableContentTask = prefetchedContentTask ?? captureManager.prefetchShareableContent(
             includeDesktopWindows: excludeDesktopIcons || excludeDesktopWidgets,
         )

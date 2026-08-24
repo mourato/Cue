@@ -263,29 +263,6 @@ final class ScreenCaptureManager: ObservableObject {
         return task
     }
 
-    /// Former CoreGraphics display grab. `CGDisplayCreateImage` is unavailable at the
-    /// macOS 26 deployment target; callers must use ScreenCaptureKit (`captureDisplaySnapshots`).
-    func captureFastDisplaySnapshot(
-        displayID _: CGDirectDisplayID,
-        showCursor _: Bool,
-        excludeDesktopIcons _: Bool,
-        excludeDesktopWidgets _: Bool,
-        excludeOwnApplication _: Bool = false,
-        allowFastPathWhenOwnApplicationHidden _: Bool = false,
-    ) -> FrozenDisplaySnapshot? {
-        nil
-    }
-
-    /// Former off-main CoreGraphics display grab; always unavailable at macOS 26+.
-    nonisolated func captureFastDisplaySnapshotOffMain(
-        displayID _: CGDirectDisplayID,
-        screenFrame _: CGRect,
-        backingScaleFactor _: CGFloat,
-        colorSpaceName _: String?,
-    ) -> FrozenDisplaySnapshot? {
-        nil
-    }
-
     func captureDisplaySnapshots(
         displayIDs: Set<CGDirectDisplayID>? = nil,
         showCursor: Bool = false,
@@ -536,7 +513,6 @@ final class ScreenCaptureManager: ObservableObject {
         excludeDesktopIcons: Bool = false,
         excludeDesktopWidgets: Bool = false,
         excludeOwnApplication: Bool = false,
-        allowFastPathWhenOwnApplicationHidden: Bool = false,
         prefetchedContentTask: ShareableContentPrefetchTask? = nil,
         targetDisplayIDs: Set<CGDirectDisplayID>? = nil,
         context: CaptureContext = .empty,
@@ -556,8 +532,7 @@ final class ScreenCaptureManager: ObservableObject {
         defer { isCapturing = false }
 
         do {
-            // Always ScreenCaptureKit — CGDisplayCreateImage is unavailable at macOS 26+.
-            _ = allowFastPathWhenOwnApplicationHidden
+            // ScreenCaptureKit only — CGDisplayCreateImage is unavailable at macOS 26+.
             let includeDesktopWindows = excludeDesktopIcons || excludeDesktopWidgets
             let content = try await loadShareableContent(
                 prefetchedContentTask: prefetchedContentTask,

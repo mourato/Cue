@@ -181,11 +181,11 @@ struct AnnotateCanvasView: View {
         .focusable()
         .focusEffectDisabled()
         .focused($isCanvasFocused)
-        .onKeyPress { keyPress in
-            guard let char = keyPress.characters.first else { return .ignored }
-            handleToolShortcutChar(char)
-            return .handled
-        }
+        .background(
+            KeyEventHandlerView { char in
+                handleToolShortcutChar(char)
+            },
+        )
         .onAppear {
             isCanvasFocused = true
         }
@@ -601,7 +601,7 @@ struct AnnotateCanvasView: View {
 
     // MARK: - Keyboard Shortcuts
 
-    /// Handle tool switching keyboard shortcuts
+    /// Handle annotate tool-switching keyboard shortcuts while the canvas owns focus.
     private func handleToolShortcutChar(_ char: Character) {
         // Skip if no image loaded
         guard state.hasImage else { return }
@@ -674,6 +674,107 @@ private struct CombineCanvasClipModifier: ViewModifier {
             content.clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
         } else {
             content
+        }
+    }
+}
+
+// MARK: - Canvas Key Focus Ownership
+
+/// AppKit keyboard intercept for annotate tool shortcuts.
+/// Owns first-responder reclaim so empty-canvas clicks keep shortcuts working, while leaving
+/// `DrawingCanvasNSView` and `NSTextView` (text editing) alone. Prefer this over SwiftUI
+/// `.onKeyPress`, which would mark every key as handled and swallow Delete/Space/etc.
+struct KeyEventHandlerView: NSViewRepresentable {
+    let onKey: (Character) -> Void
+
+    func makeNSView(context _: Context) -> KeyEventNSView {
+        KeyEventNSView(onKey: onKey)
+    }
+
+    func updateNSView(_ nsView: KeyEventNSView, context _: Context) {
+        nsView.onKey = onKey
+    }
+}
+
+final class KeyEventNSView: NSView {
+    var onKey: (Character) -> Void
+    private var windowObserver: NSObjectProtocol?
+
+    init(onKey: @escaping (Character) -> Void) {
+        self.onKey = onKey
+        super.init(frame: .zero)
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override var acceptsFirstResponder: Bool {
+        true
+    }
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        // Remove old observer
+        if let obs = windowObserver {
+            NotificationCenter.default.removeObserver(obs)
+            windowObserver = nil
+        }
+
+        guard let window else { return }
+
+        // Grab first responder on initial attach
+        DispatchQueue.main.async { [weak self] in
+            self?.window?.makeFirstResponder(self)
+        }
+
+        // Watch for first responder changes — reclaim when focus goes
+        // to a generic view (not DrawingCanvasNSView or text editor)
+        windowObserver = NotificationCenter.default.addObserver(
+            forName: NSWindow.didUpdateNotification,
+            object: window,
+            queue: .main,
+        ) { [weak self] _ in
+            self?.reclaimFirstResponderIfNeeded()
+        }
+    }
+
+    /// Reclaim first responder if no important view holds it
+    private func reclaimFirstResponderIfNeeded() {
+        guard let window else { return }
+        let current = window.firstResponder
+
+        // Already the first responder — nothing to do
+        if current === self {
+            return
+        }
+
+        // DrawingCanvasNSView has focus — it handles shortcuts too, leave it
+        if current is DrawingCanvasNSView {
+            return
+        }
+
+        // A text view has focus (e.g. TextEditor) — leave it for typing
+        if current is NSTextView {
+            return
+        }
+
+        // Generic view has focus (e.g. clicked empty area) — reclaim
+        window.makeFirstResponder(self)
+    }
+
+    override func keyDown(with event: NSEvent) {
+        guard let chars = event.charactersIgnoringModifiers, let char = chars.first else {
+            super.keyDown(with: event)
+            return
+        }
+        onKey(char)
+    }
+
+    isolated deinit {
+        if let obs = windowObserver {
+            NotificationCenter.default.removeObserver(obs)
         }
     }
 }

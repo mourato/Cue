@@ -468,7 +468,6 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 excludeDesktopIcons: excludeDesktopIcons,
                 excludeDesktopWidgets: excludeDesktopWidgets,
                 excludeOwnApplication: excludeOwnApplication,
-                allowFastPathWhenOwnApplicationHidden: excludeOwnApplication,
                 prefetchedContentTask: prefetchedContentTask,
                 targetDisplayIDs: [targetDisplayID],
                 context: context,
@@ -633,7 +632,6 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 excludeDesktopIcons: excludeDesktopIcons,
                 excludeDesktopWidgets: excludeDesktopWidgets,
                 excludeOwnApplication: excludeOwnApplication,
-                allowFastPathWhenOwnApplicationHidden: excludeOwnApplication,
                 prefetchedContentTask: prefetchedContentTask,
             )
             isCapturing = false
@@ -809,7 +807,6 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                         excludeDesktopIcons: excludeDesktopIcons,
                         excludeDesktopWidgets: excludeDesktopWidgets,
                         excludeOwnApplication: excludeOwnApplication,
-                        allowFastPathWhenOwnApplicationHidden: excludeOwnApplication,
                         prefetchedContentTask: prefetchedContentTask,
                     )
                     frozenSession = preparedSession.session
@@ -934,7 +931,6 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                             excludeDesktopIcons: excludeDesktopIcons,
                             excludeDesktopWidgets: excludeDesktopWidgets,
                             excludeOwnApplication: excludeOwnApplication,
-                            allowFastPathWhenOwnApplicationHidden: excludeOwnApplication,
                             prefetchedContentTask: prefetchedContentTask,
                         )
                         frozenSession = preparedSession.session

@@ -774,7 +774,7 @@ final class AreaSelectionController: NSObject {
 
     /// Async variant of `withDisplayOverlayHidden` — hides the overlay on main, awaits
     /// the async work closure (which may run off-main), then restores the overlay on main.
-    /// Use when the work body performs blocking I/O like `CGDisplayCreateImage`.
+    /// Use when the work body performs blocking I/O such as screen capture.
     func withDisplayOverlayHiddenAsync<T: Sendable>(
         for displayID: CGDirectDisplayID,
         perform work: @Sendable () async -> T,

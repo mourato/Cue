@@ -78,7 +78,6 @@ Notinhas/Services/Capture/**	xctest	NotinhasTests/ScrollingCaptureCommitSchedule
 Notinhas/Services/Capture/**	xctest	NotinhasTests/ScrollingCaptureMetricsTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
 Notinhas/Services/Capture/**	xctest	NotinhasTests/ScrollingCaptureStitcherTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
 Notinhas/Services/Capture/**	xctest	NotinhasTests/ScrollingCaptureWindowSharingTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/SingleFrameStreamCaptureSessionTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
 Notinhas/Services/Capture/**	xctest	NotinhasTests/SmartElementCaptureControllerTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
 Notinhas/Services/Capture/**	xctest	NotinhasTests/SmartElementQueryServiceTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
 Notinhas/Services/Capture/**	xctest	NotinhasTests/SmartElementWindowOwnerResolverTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
