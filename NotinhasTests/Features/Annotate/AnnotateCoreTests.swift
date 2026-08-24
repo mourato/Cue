@@ -654,10 +654,10 @@ final class AnnotateCoreTests: XCTestCase {
         state.loadImage(image)
         state.activateTool(.blur)
 
-        XCTAssertEqual(state.annotationCreationProperties(for: .blur).strokeWidth, 1)
-        XCTAssertEqual(state.quickStrokeWidthDisplayText, "8")
+        XCTAssertEqual(state.annotationCreationProperties(for: .blur).strokeWidth, AnnotationStrokeWidth.thin.points)
+        XCTAssertEqual(state.quickStrokeWidthDisplayText, "10")
 
-        state.quickStrokeWidthBinding.wrappedValue = 6
+        state.quickStrokeWidthBinding.wrappedValue = AnnotationStrokeWidth.medium.points
         state.setActiveBlurType(.gaussian)
         let expectedBlurProperties = state.annotationCreationProperties(for: .blur)
 
@@ -1105,7 +1105,7 @@ final class AnnotateCoreTests: XCTestCase {
         guard case .counter(5) = annotation?.type else {
             return XCTFail("Expected counter value 5, got \(String(describing: annotation?.type))")
         }
-        XCTAssertEqual(annotation?.bounds, CGRect(x: 38, y: 48, width: 24, height: 24))
+        XCTAssertEqual(annotation?.bounds, CGRect(x: 36, y: 46, width: 28, height: 28))
     }
 
     func testAnnotationFactory_rejectsNonDrawingToolsAndSinglePointPaths() {
@@ -1364,11 +1364,11 @@ final class AnnotateCoreTests: XCTestCase {
     }
 
     func testAnnotationProperties_clampControlValueAndDerivedSizes() {
-        XCTAssertEqual(AnnotationProperties.clampedControlValue(-10), 1)
-        XCTAssertEqual(AnnotationProperties.clampedControlValue(30), 20)
-        XCTAssertEqual(AnnotationProperties.counterDiameter(for: 3), 24)
-        XCTAssertEqual(AnnotationProperties.pixelatedBlurSize(for: 2), 10)
-        XCTAssertEqual(AnnotationProperties.gaussianBlurRadius(for: 2), 16)
+        XCTAssertEqual(AnnotationProperties.clampedControlValue(-10), AnnotationStrokeWidth.thin.points)
+        XCTAssertEqual(AnnotationProperties.clampedControlValue(30), AnnotationStrokeWidth.heavy.points)
+        XCTAssertEqual(AnnotationProperties.counterDiameter(for: AnnotationStrokeWidth.regular.points), 28)
+        XCTAssertEqual(AnnotationProperties.pixelatedBlurSize(for: AnnotationStrokeWidth.thin.points), 10)
+        XCTAssertEqual(AnnotationProperties.gaussianBlurRadius(for: AnnotationStrokeWidth.thin.points), 16)
     }
 
     func testAnnotateExporterGenerateCopyURL_incrementsExistingCopies() throws {
@@ -1970,16 +1970,31 @@ final class AnnotateCoreTests: XCTestCase {
         let state = makeAnnotateState(defaults: UserDefaultsFactory.make())
         state.activateTool(.rectangle)
 
-        state.quickStrokeWidthBinding.wrappedValue = 9
+        state.quickStrokeWidthBinding.wrappedValue = AnnotationStrokeWidth.heavy.points
 
-        XCTAssertEqual(state.annotationCreationProperties(for: .rectangle).strokeWidth, 9)
-        XCTAssertEqual(state.annotationCreationProperties(for: .rectangle).strokeWidth, 9)
-        XCTAssertEqual(state.annotationCreationProperties(for: .arrow).strokeWidth, 9)
-        XCTAssertEqual(state.annotationCreationProperties(for: .blur).strokeWidth, 9)
-        XCTAssertEqual(state.annotationCreationProperties(for: .pencil).strokeWidth, 9)
+        XCTAssertEqual(
+            state.annotationCreationProperties(for: .rectangle).strokeWidth,
+            AnnotationStrokeWidth.heavy.points,
+        )
+        XCTAssertEqual(
+            state.annotationCreationProperties(for: .rectangle).strokeWidth,
+            AnnotationStrokeWidth.heavy.points,
+        )
+        XCTAssertEqual(
+            state.annotationCreationProperties(for: .arrow).strokeWidth,
+            AnnotationStrokeWidth.heavy.points,
+        )
+        XCTAssertEqual(
+            state.annotationCreationProperties(for: .blur).strokeWidth,
+            AnnotationStrokeWidth.heavy.points,
+        )
+        XCTAssertEqual(
+            state.annotationCreationProperties(for: .pencil).strokeWidth,
+            AnnotationStrokeWidth.heavy.points,
+        )
 
         state.activateTool(.arrow)
-        XCTAssertEqual(state.quickStrokeWidthBinding.wrappedValue, 9)
+        XCTAssertEqual(state.quickStrokeWidthBinding.wrappedValue, AnnotationStrokeWidth.heavy.points)
     }
 
     @MainActor
@@ -2016,40 +2031,57 @@ final class AnnotateCoreTests: XCTestCase {
         let annotation = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 0, y: 0, width: 80, height: 40),
-            properties: AnnotationProperties(strokeWidth: 3),
+            properties: AnnotationProperties(strokeWidth: AnnotationStrokeWidth.regular.points),
         )
         state.annotations = [annotation]
         state.setSelectedAnnotationIds([annotation.id])
 
-        state.quickStrokeWidthBinding.wrappedValue = 12
+        state.quickStrokeWidthBinding.wrappedValue = AnnotationStrokeWidth.heavy.points
 
         let updated = try XCTUnwrap(state.annotations.first)
-        XCTAssertEqual(updated.properties.strokeWidth, 12)
-        XCTAssertEqual(state.annotationCreationProperties(for: .arrow).strokeWidth, 3)
-        XCTAssertEqual(state.annotationCreationProperties(for: .rectangle).strokeWidth, 3)
+        XCTAssertEqual(updated.properties.strokeWidth, AnnotationStrokeWidth.heavy.points)
+        XCTAssertEqual(
+            state.annotationCreationProperties(for: .arrow).strokeWidth,
+            AnnotationStrokeWidth.default.points,
+        )
+        XCTAssertEqual(
+            state.annotationCreationProperties(for: .rectangle).strokeWidth,
+            AnnotationStrokeWidth.default.points,
+        )
     }
 
     @MainActor
-    func testQuickPropertiesSliderGestureRecordsSingleUndoCheckpoint() throws {
+    func testQuickPropertiesStrokeWidthSelectionRecordsSingleUndoCheckpoint() throws {
         let state = makeAnnotateState(defaults: UserDefaultsFactory.make())
         let annotation = AnnotationItem(
             type: .blur(.pixelated),
             bounds: CGRect(x: 0, y: 0, width: 120, height: 80),
-            properties: AnnotationProperties(strokeWidth: 3),
+            properties: AnnotationProperties(strokeWidth: AnnotationStrokeWidth.regular.points),
         )
         state.annotations = [annotation]
         state.setSelectedAnnotationIds([annotation.id])
 
-        state.setQuickPropertiesControlEditing(true)
-        state.quickStrokeWidthBinding.wrappedValue = 8
-        state.quickStrokeWidthBinding.wrappedValue = 12
-        state.setQuickPropertiesControlEditing(false)
+        state.quickStrokeWidthBinding.wrappedValue = AnnotationStrokeWidth.thick.points
+        state.quickStrokeWidthBinding.wrappedValue = AnnotationStrokeWidth.heavy.points
 
-        XCTAssertEqual(try XCTUnwrap(state.annotations.first).properties.strokeWidth, 12)
+        XCTAssertEqual(
+            try XCTUnwrap(state.annotations.first).properties.strokeWidth,
+            AnnotationStrokeWidth.heavy.points,
+        )
 
         state.undo()
 
-        XCTAssertEqual(try XCTUnwrap(state.annotations.first).properties.strokeWidth, 3)
+        XCTAssertEqual(
+            try XCTUnwrap(state.annotations.first).properties.strokeWidth,
+            AnnotationStrokeWidth.thick.points,
+        )
+
+        state.undo()
+
+        XCTAssertEqual(
+            try XCTUnwrap(state.annotations.first).properties.strokeWidth,
+            AnnotationStrokeWidth.regular.points,
+        )
         XCTAssertFalse(state.canUndo)
     }
 
@@ -2059,7 +2091,7 @@ final class AnnotateCoreTests: XCTestCase {
         let firstState = makeAnnotateState(defaults: defaults)
 
         firstState.activateTool(.rectangle)
-        firstState.quickStrokeWidthBinding.wrappedValue = 11
+        firstState.quickStrokeWidthBinding.wrappedValue = AnnotationStrokeWidth.heavy.points
         firstState.quickCornerRadiusBinding.wrappedValue = 7
         firstState.activateTool(.text)
         firstState.quickTextFontSizeBinding.wrappedValue = 32
@@ -2069,8 +2101,14 @@ final class AnnotateCoreTests: XCTestCase {
 
         let reloadedState = makeAnnotateState(defaults: defaults)
 
-        XCTAssertEqual(reloadedState.annotationCreationProperties(for: .line).strokeWidth, 11)
-        XCTAssertEqual(reloadedState.annotationCreationProperties(for: .blur).strokeWidth, 11)
+        XCTAssertEqual(
+            reloadedState.annotationCreationProperties(for: .line).strokeWidth,
+            AnnotationStrokeWidth.heavy.points,
+        )
+        XCTAssertEqual(
+            reloadedState.annotationCreationProperties(for: .blur).strokeWidth,
+            AnnotationStrokeWidth.heavy.points,
+        )
         XCTAssertEqual(reloadedState.annotationCreationProperties(for: .rectangle).cornerRadius, 7)
         XCTAssertEqual(reloadedState.annotationCreationProperties(for: .text).fontSize, 32)
         XCTAssertEqual(reloadedState.annotationCreationProperties(for: .watermark).fontSize, 32)
@@ -2103,18 +2141,24 @@ final class AnnotateCoreTests: XCTestCase {
 
         state.activateTool(.rectangle)
         state.quickStrokeColorBinding.wrappedValue = .blue
-        state.quickStrokeWidthBinding.wrappedValue = 9
+        state.quickStrokeWidthBinding.wrappedValue = AnnotationStrokeWidth.heavy.points
         state.quickCornerRadiusBinding.wrappedValue = 12
 
         state.activateTool(.arrow)
         state.quickStrokeColorBinding.wrappedValue = .green
-        state.quickStrokeWidthBinding.wrappedValue = 5
+        state.quickStrokeWidthBinding.wrappedValue = AnnotationStrokeWidth.thin.points
 
-        XCTAssertEqual(state.annotationCreationProperties(for: .rectangle).strokeWidth, 9)
+        XCTAssertEqual(
+            state.annotationCreationProperties(for: .rectangle).strokeWidth,
+            AnnotationStrokeWidth.heavy.points,
+        )
         XCTAssertEqual(state.annotationCreationProperties(for: .rectangle).cornerRadius, 12)
         assertColorsMatch(state.annotationCreationProperties(for: .rectangle).strokeColor, .blue)
 
-        XCTAssertEqual(state.annotationCreationProperties(for: .arrow).strokeWidth, 5)
+        XCTAssertEqual(
+            state.annotationCreationProperties(for: .arrow).strokeWidth,
+            AnnotationStrokeWidth.thin.points,
+        )
         XCTAssertEqual(state.annotationCreationProperties(for: .arrow).cornerRadius, 0)
         assertColorsMatch(state.annotationCreationProperties(for: .arrow).strokeColor, .green)
     }
@@ -2167,23 +2211,29 @@ final class AnnotateCoreTests: XCTestCase {
 
         firstState.activateTool(.rectangle)
         firstState.quickStrokeColorBinding.wrappedValue = .blue
-        firstState.quickStrokeWidthBinding.wrappedValue = 9
+        firstState.quickStrokeWidthBinding.wrappedValue = AnnotationStrokeWidth.heavy.points
         firstState.quickCornerRadiusBinding.wrappedValue = 12
 
         firstState.activateTool(.arrow)
         firstState.quickStrokeColorBinding.wrappedValue = .green
-        firstState.quickStrokeWidthBinding.wrappedValue = 5
+        firstState.quickStrokeWidthBinding.wrappedValue = AnnotationStrokeWidth.thin.points
 
         firstState.activateTool(.text)
         firstState.quickTextFontSizeBinding.wrappedValue = 30
 
         let reloadedState = makeAnnotateState(defaults: defaults)
 
-        XCTAssertEqual(reloadedState.annotationCreationProperties(for: .rectangle).strokeWidth, 9)
+        XCTAssertEqual(
+            reloadedState.annotationCreationProperties(for: .rectangle).strokeWidth,
+            AnnotationStrokeWidth.heavy.points,
+        )
         XCTAssertEqual(reloadedState.annotationCreationProperties(for: .rectangle).cornerRadius, 12)
         assertColorsMatch(reloadedState.annotationCreationProperties(for: .rectangle).strokeColor, .blue)
 
-        XCTAssertEqual(reloadedState.annotationCreationProperties(for: .arrow).strokeWidth, 5)
+        XCTAssertEqual(
+            reloadedState.annotationCreationProperties(for: .arrow).strokeWidth,
+            AnnotationStrokeWidth.thin.points,
+        )
         assertColorsMatch(reloadedState.annotationCreationProperties(for: .arrow).strokeColor, .green)
 
         XCTAssertEqual(reloadedState.annotationCreationProperties(for: .text).fontSize, 30)
@@ -2196,22 +2246,34 @@ final class AnnotateCoreTests: XCTestCase {
         let sharedState = makeAnnotateState(defaults: defaults)
         sharedState.activateTool(.rectangle)
         sharedState.quickStrokeColorBinding.wrappedValue = .blue
-        sharedState.quickStrokeWidthBinding.wrappedValue = 9
+        sharedState.quickStrokeWidthBinding.wrappedValue = AnnotationStrokeWidth.heavy.points
 
         defaults.set(false, forKey: PreferencesKeys.annotateQuickPropertiesSyncEnabled)
         let independentState = makeAnnotateState(defaults: defaults)
 
-        XCTAssertEqual(independentState.annotationCreationProperties(for: .rectangle).strokeWidth, 9)
-        XCTAssertEqual(independentState.annotationCreationProperties(for: .arrow).strokeWidth, 9)
+        XCTAssertEqual(
+            independentState.annotationCreationProperties(for: .rectangle).strokeWidth,
+            AnnotationStrokeWidth.heavy.points,
+        )
+        XCTAssertEqual(
+            independentState.annotationCreationProperties(for: .arrow).strokeWidth,
+            AnnotationStrokeWidth.heavy.points,
+        )
         assertColorsMatch(independentState.annotationCreationProperties(for: .rectangle).strokeColor, .blue)
         assertColorsMatch(independentState.annotationCreationProperties(for: .arrow).strokeColor, .blue)
 
         independentState.activateTool(.arrow)
         independentState.quickStrokeColorBinding.wrappedValue = .green
-        independentState.quickStrokeWidthBinding.wrappedValue = 5
+        independentState.quickStrokeWidthBinding.wrappedValue = AnnotationStrokeWidth.thin.points
 
-        XCTAssertEqual(independentState.annotationCreationProperties(for: .rectangle).strokeWidth, 9)
-        XCTAssertEqual(independentState.annotationCreationProperties(for: .arrow).strokeWidth, 5)
+        XCTAssertEqual(
+            independentState.annotationCreationProperties(for: .rectangle).strokeWidth,
+            AnnotationStrokeWidth.heavy.points,
+        )
+        XCTAssertEqual(
+            independentState.annotationCreationProperties(for: .arrow).strokeWidth,
+            AnnotationStrokeWidth.thin.points,
+        )
         assertColorsMatch(independentState.annotationCreationProperties(for: .rectangle).strokeColor, .blue)
         assertColorsMatch(independentState.annotationCreationProperties(for: .arrow).strokeColor, .green)
     }
@@ -2222,7 +2284,7 @@ final class AnnotateCoreTests: XCTestCase {
         let sharedState = makeAnnotateState(defaults: defaults)
         sharedState.activateTool(.rectangle)
         sharedState.quickStrokeColorBinding.wrappedValue = .blue
-        sharedState.quickStrokeWidthBinding.wrappedValue = 9
+        sharedState.quickStrokeWidthBinding.wrappedValue = AnnotationStrokeWidth.heavy.points
         sharedState.quickCornerRadiusBinding.wrappedValue = 12
         sharedState.activateTool(.watermark)
         sharedState.quickWatermarkOpacityBinding.wrappedValue = 0.4
@@ -2232,7 +2294,7 @@ final class AnnotateCoreTests: XCTestCase {
         let independentState = makeAnnotateState(defaults: defaults)
         independentState.activateTool(.arrow)
         independentState.quickStrokeColorBinding.wrappedValue = .green
-        independentState.quickStrokeWidthBinding.wrappedValue = 5
+        independentState.quickStrokeWidthBinding.wrappedValue = AnnotationStrokeWidth.thin.points
         independentState.activateTool(.rectangle)
         independentState.quickCornerRadiusBinding.wrappedValue = 4
         independentState.activateTool(.watermark)
@@ -2242,8 +2304,14 @@ final class AnnotateCoreTests: XCTestCase {
         defaults.set(true, forKey: PreferencesKeys.annotateQuickPropertiesSyncEnabled)
         let syncedState = makeAnnotateState(defaults: defaults)
 
-        XCTAssertEqual(syncedState.annotationCreationProperties(for: .rectangle).strokeWidth, 9)
-        XCTAssertEqual(syncedState.annotationCreationProperties(for: .arrow).strokeWidth, 9)
+        XCTAssertEqual(
+            syncedState.annotationCreationProperties(for: .rectangle).strokeWidth,
+            AnnotationStrokeWidth.heavy.points,
+        )
+        XCTAssertEqual(
+            syncedState.annotationCreationProperties(for: .arrow).strokeWidth,
+            AnnotationStrokeWidth.heavy.points,
+        )
         XCTAssertEqual(syncedState.annotationCreationProperties(for: .rectangle).cornerRadius, 12)
         XCTAssertEqual(syncedState.annotationCreationProperties(for: .rectangle).cornerRadius, 12)
         XCTAssertEqual(syncedState.annotationCreationProperties(for: .watermark).opacity, 0.4)

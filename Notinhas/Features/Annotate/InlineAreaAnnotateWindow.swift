@@ -1625,14 +1625,9 @@ private struct InlineAreaPropertiesBar: View {
                     }
 
                     if state.quickPropertiesSupportsStrokeWidth {
-                        InlineAreaSliderControl(
+                        InlineAreaStrokeWidthControl(
                             title: state.quickStrokeWidthLabel,
-                            icon: state.quickStrokeWidthIcon,
                             value: state.quickStrokeWidthBinding,
-                            range: AnnotationProperties.controlValueRange,
-                            step: 1,
-                            displayText: state.quickStrokeWidthDisplayText,
-                            onEditingChanged: state.setQuickPropertiesControlEditing,
                         )
                     }
 
@@ -2486,6 +2481,20 @@ private struct InlineAreaArrowBendControl: View {
             .buttonStyle(.plain)
             .help("\(L10n.AnnotateUI.flipArrowBend): \(bendDirection.displayName)")
             .accessibilityLabel(L10n.AnnotateUI.flipArrowBend)
+        }
+    }
+}
+
+private struct InlineAreaStrokeWidthControl: View {
+    let title: String
+    @Binding var value: CGFloat
+
+    var body: some View {
+        InlineAreaPropertyGroup(title: title) {
+            AnnotationStrokeWidthPicker(
+                value: $value,
+                controlHeight: InlineAreaChrome.propertyControlHeight,
+            )
         }
     }
 }

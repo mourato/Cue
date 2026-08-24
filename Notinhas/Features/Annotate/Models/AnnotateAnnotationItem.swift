@@ -1482,7 +1482,7 @@ nonisolated enum AnnotationType: Equatable {
 
 /// Visual properties for an annotation
 nonisolated struct AnnotationProperties: Equatable {
-    static let controlValueRange: ClosedRange<CGFloat> = 1 ... 20
+    static let controlValueRange: ClosedRange<CGFloat> = AnnotationStrokeWidth.pointsRange
     static let magnificationRange: ClosedRange<CGFloat> = 1.25 ... 8
 
     var strokeColor: Color
@@ -1503,7 +1503,7 @@ nonisolated struct AnnotationProperties: Equatable {
     init(
         strokeColor: Color = .red,
         fillColor: Color = .clear,
-        strokeWidth: CGFloat = 3,
+        strokeWidth: CGFloat = AnnotationStrokeWidth.default.points,
         cornerRadius: CGFloat = 0,
         fontSize: CGFloat = 16,
         fontName: String = "SF Pro",
@@ -1533,7 +1533,7 @@ nonisolated struct AnnotationProperties: Equatable {
     }
 
     static func clampedControlValue(_ value: CGFloat) -> CGFloat {
-        min(max(value, controlValueRange.lowerBound), controlValueRange.upperBound)
+        AnnotationStrokeWidth.clamped(value)
     }
 
     static func clampedMagnification(_ value: CGFloat) -> CGFloat {

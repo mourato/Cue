@@ -187,7 +187,7 @@ final class AnnotateState: ObservableObject {
         }
     }
 
-    @Published var strokeWidth: CGFloat = 3
+    @Published var strokeWidth: CGFloat = AnnotationStrokeWidth.default.points
     @Published var strokeColor: Color = .red
     @Published var fillColor: Color = .clear
     @Published var rectangleCornerRadius: CGFloat = 0
@@ -1582,7 +1582,11 @@ final class AnnotateState: ObservableObject {
         let item = AnnotationItem(
             type: .embeddedImage(assetId),
             bounds: placementBounds,
-            properties: AnnotationProperties(strokeColor: .clear, fillColor: .clear, strokeWidth: 1),
+            properties: AnnotationProperties(
+                strokeColor: .clear,
+                fillColor: .clear,
+                strokeWidth: AnnotationStrokeWidth.thin.points,
+            ),
         )
         annotations.append(item)
         freeCombineBoundsByAnnotationID[item.id] = placementBounds
@@ -3954,7 +3958,7 @@ final class AnnotateState: ObservableObject {
             var properties = AnnotationProperties(
                 strokeColor: sharedAnnotationColor ?? .red,
                 fillColor: .clear,
-                strokeWidth: 3,
+                strokeWidth: AnnotationStrokeWidth.default.points,
                 cornerRadius: 14,
                 opacity: 1.0,
                 spotlightOpacity: spotlightOpacity,
@@ -3982,7 +3986,7 @@ final class AnnotateState: ObservableObject {
         var properties = AnnotationProperties(
             strokeColor: strokeColor,
             fillColor: .clear,
-            strokeWidth: 3,
+            strokeWidth: AnnotationStrokeWidth.default.points,
             cornerRadius: 0,
             fontSize: 36,
             fontName: "SF Pro",
@@ -4897,10 +4901,6 @@ final class AnnotateState: ObservableObject {
         quickStrokeWidthUsesSizeLabel ? L10n.Common.size : L10n.Common.stroke
     }
 
-    var quickStrokeWidthIcon: String {
-        quickStrokeWidthUsesSizeLabel ? "arrow.up.left.and.arrow.down.right" : "line.diagonal"
-    }
-
     var quickStrokeWidthDisplayText: String {
         let controlValue = quickStrokeWidthValue
 
@@ -5058,7 +5058,7 @@ final class AnnotateState: ObservableObject {
     var quickStrokeWidthBinding: Binding<CGFloat> {
         Binding(
             get: { [weak self] in
-                guard let self else { return 3 }
+                guard let self else { return AnnotationStrokeWidth.default.points }
                 if selectedTool == .notinhasNote {
                     if let selectedID = notinhasSelectedNoteID,
                        let note = notinhasNotes.first(where: { $0.id == selectedID }) {

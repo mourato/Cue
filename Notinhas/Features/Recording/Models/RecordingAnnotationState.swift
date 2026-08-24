@@ -48,7 +48,7 @@
         @Published var selectedTool: AnnotationToolType = .selection
         @Published var selectedAnnotationId: UUID?
         @Published var strokeColor: Color = .red
-        @Published var strokeWidth: CGFloat = 3
+        @Published var strokeWidth: CGFloat = AnnotationStrokeWidth.default.points
         @Published var shapeFillStyle: AnnotationShapeFillStyle = .outline
         @Published var isAnnotationEnabled: Bool = false {
             didSet {

@@ -1217,6 +1217,15 @@ nonisolated enum L10n {
             defaultValue: "Stroke",
             comment: "Generic stroke setting label",
         )
+        static func strokeWidthOption(_ points: Int) -> String {
+            L10n.format(
+                "common.stroke-width-option",
+                defaultValue: "%d pt",
+                comment: "Accessibility and tooltip label for a discrete stroke-width preset. %d is the width in points.",
+                points,
+            )
+        }
+
         static let solid = string(
             "common.solid",
             defaultValue: "Solid",
