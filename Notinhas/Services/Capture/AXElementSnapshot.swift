@@ -65,7 +65,7 @@ struct AXAccessibilitySnapshotProvider: AXSnapshotProviding {
         let error = AXUIElementCopyElementAtPosition(root, Float(point.x), Float(point.y), &element)
         guard error == .success, let axElement = element else {
             DiagnosticLogger.shared.log(
-                .error,
+                .debug,
                 .capture,
                 "AXUIElementCopyElementAtPosition failed: \(error.rawValue)",
                 context: ["pid": pid.map(String.init) ?? "sys"],
@@ -82,7 +82,7 @@ struct AXAccessibilitySnapshotProvider: AXSnapshotProviding {
             let size = axValue(of: element, attribute: kAXSizeAttribute, type: .cgSize, default: CGSize.zero)
         else {
             DiagnosticLogger.shared.log(
-                .error,
+                .debug,
                 .capture,
                 "AX element missing position or size",
                 context: ["role": role ?? "nil"],

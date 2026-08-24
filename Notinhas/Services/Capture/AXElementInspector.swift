@@ -42,69 +42,31 @@ enum AXElementInspector {
         var depth = 0
         while let candidate = current, depth < maxParentDepth {
             if isMeaningful(candidate, atDepth: depth) {
-                DiagnosticLogger.shared.log(
-                    .debug,
-                    .capture,
-                    "findMeaningful: accepted element at depth \(depth)",
-                    context: ["role": candidate.role ?? "nil"],
-                )
                 return candidate
             }
             current = candidate.parent
             depth += 1
         }
-        if depth >= maxParentDepth {
-            DiagnosticLogger.shared.log(.debug, .capture, "findMeaningful: reached maxParentDepth without success")
-        }
         return nil
     }
 
-    static func isMeaningful(_ snapshot: AXElementSnapshot, atDepth depth: Int = 0) -> Bool {
-        guard let role = snapshot.role else {
-            DiagnosticLogger.shared.log(.debug, .capture, "isMeaningful(depth: \(depth)): false (role is nil)")
-            return false
-        }
+    static func isMeaningful(_ snapshot: AXElementSnapshot, atDepth _: Int = 0) -> Bool {
+        guard let role = snapshot.role else { return false }
 
         if rejectedRoles.contains(role) {
-            DiagnosticLogger.shared.log(
-                .debug,
-                .capture,
-                "isMeaningful(depth: \(depth)): false (rejected role)",
-                context: ["role": role],
-            )
             return false
         }
 
         if !acceptableRoles.contains(role) {
-            DiagnosticLogger.shared.log(
-                .debug,
-                .capture,
-                "isMeaningful(depth: \(depth)): false (role not in acceptableRoles)",
-                context: ["role": role],
-            )
             return false
         }
 
         let size = snapshot.size
-        guard size.width >= minSide, size.height >= minSide else {
-            DiagnosticLogger.shared.log(
-                .debug,
-                .capture,
-                "isMeaningful(depth: \(depth)): false (size too small)",
-                context: ["role": role, "size": "\(size.width)x\(size.height)"],
-            )
-            return false
-        }
+        guard size.width >= minSide, size.height >= minSide else { return false }
 
         if let windowSize = snapshot.containingWindowSize, windowSize.width > 0, windowSize.height > 0 {
             let areaRatio = (size.width * size.height) / (windowSize.width * windowSize.height)
             if areaRatio > windowFillThreshold {
-                DiagnosticLogger.shared.log(
-                    .debug,
-                    .capture,
-                    "isMeaningful(depth: \(depth)): false (window ratio > \(windowFillThreshold))",
-                    context: ["role": role, "ratio": "\(areaRatio)"],
-                )
                 return false
             }
         }

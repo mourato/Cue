@@ -70,7 +70,7 @@ final class AllInOneCaptureModeTests: XCTestCase {
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .scrolling, rect: rect), .scrolling(rect))
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .timer, rect: rect), .timer(rect))
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .ocr, rect: rect), .ocr(rect))
-        XCTAssertEqual(AllInOneCaptureCommand.make(for: .recording, rect: rect), .recording)
+        XCTAssertEqual(AllInOneCaptureCommand.make(for: .recording, rect: rect), .recording(rect))
     }
 
     func testCommandMatrix_preservesNoRectFallback() {
@@ -79,5 +79,6 @@ final class AllInOneCaptureModeTests: XCTestCase {
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .scrolling, rect: nil), .scrolling(nil))
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .timer, rect: nil), .timer(nil))
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .ocr, rect: nil), .ocr(nil))
+        XCTAssertEqual(AllInOneCaptureCommand.make(for: .recording, rect: nil), .recording(nil))
     }
 }

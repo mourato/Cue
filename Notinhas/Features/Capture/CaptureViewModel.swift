@@ -1972,6 +1972,17 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
             startRecordingFlow(initialInteractionMode: .manualRegion)
         }
 
+        /// Starts recording with an area already selected by All-In-One.
+        /// This must not re-enter the generic area-selection flow.
+        func startRecordingFlow(at rect: CGRect) {
+            guard VideoModuleAvailability.isEnabled else { return }
+            guard rect.width > 0, rect.height > 0 else {
+                DiagnosticLogger.shared.log(.warning, .recording, "Recording handoff ignored: invalid selected rect")
+                return
+            }
+            startRecordingFlow(initialInteractionMode: .manualRegion, preselectedRect: rect)
+        }
+
         func startApplicationRecordingFlow() {
             guard VideoModuleAvailability.isEnabled else { return }
             cancelAllInOneSessionIfNeeded()
@@ -2040,7 +2051,10 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
             }
         }
 
-        private func startRecordingFlow(initialInteractionMode: AreaSelectionInteractionMode) {
+        private func startRecordingFlow(
+            initialInteractionMode: AreaSelectionInteractionMode,
+            preselectedRect: CGRect? = nil,
+        ) {
             guard VideoModuleAvailability.isEnabled else { return }
             guard hasPermission else {
                 requestPermission()
@@ -2075,6 +2089,27 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                             DiagnosticLogger.shared.log(.warning, .recording, "startRecordingFlow: self deallocated")
                             hiddenWindowSession.restore()
                             AreaSelectionController.shared.cancelSelection()
+                            return
+                        }
+
+                        if let preselectedRect {
+                            isAreaSelectionActive = false
+                            DiagnosticLogger.shared.log(
+                                .info,
+                                .recording,
+                                "Using All-In-One recording area",
+                                context: [
+                                    "rect": "\(Int(preselectedRect.width))x\(Int(preselectedRect.height))",
+                                    "origin": "\(Int(preselectedRect.origin.x)),\(Int(preselectedRect.origin.y))",
+                                    "areaSelectionPresenting": "\(AreaSelectionController.shared.isPresenting)",
+                                ],
+                            )
+                            RecordingCoordinator.shared.showToolbar(
+                                for: preselectedRect,
+                                onSessionEnded: {
+                                    hiddenWindowSession.restore()
+                                },
+                            )
                             return
                         }
 

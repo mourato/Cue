@@ -96,7 +96,7 @@ enum AllInOneCaptureCommand: Equatable {
     case scrolling(CGRect?)
     case timer(CGRect?)
     case ocr(CGRect?)
-    case recording
+    case recording(CGRect?)
 
     static func make(for mode: AllInOneCaptureMode, rect: CGRect?) -> AllInOneCaptureCommand {
         switch mode {
@@ -107,7 +107,7 @@ enum AllInOneCaptureCommand: Equatable {
         case .scrolling: .scrolling(rect)
         case .timer: .timer(rect)
         case .ocr: .ocr(rect)
-        case .recording: .recording
+        case .recording: .recording(rect)
         }
     }
 }
