@@ -212,6 +212,7 @@ final class AllInOneCaptureCoordinatorTests: XCTestCase {
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .window, rect: rect), .window)
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .fullscreen, rect: rect), .fullscreen)
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .timer, rect: nil), .timer(nil))
+        XCTAssertEqual(AllInOneCaptureCommand.make(for: .recording, rect: rect), .recording(rect))
     }
 
     func testCaptureCommand_keepsNilRectForFirstSelectionModes() {
@@ -219,6 +220,7 @@ final class AllInOneCaptureCoordinatorTests: XCTestCase {
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .annotate, rect: nil), .annotate(nil))
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .scrolling, rect: nil), .scrolling(nil))
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .ocr, rect: nil), .ocr(nil))
+        XCTAssertEqual(AllInOneCaptureCommand.make(for: .recording, rect: nil), .recording(nil))
     }
 
     func testRefinementController_usesFrozenBackdropsWithoutLiveCaptureTask() {

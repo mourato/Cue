@@ -51,6 +51,46 @@ final class SmartElementQueryServiceTests: XCTestCase {
         XCTAssertEqual(snapshotProvider.callCount, 0)
     }
 
+    func testSemanticBoundaryProvider_throttlesRapidCandidateQueries() throws {
+        guard NSScreen.screens.first != nil else {
+            throw XCTSkip("Needs at least one NSScreen.")
+        }
+
+        let snapshotProvider = CountingAXSnapshotProvider(
+            snapshot: AXElementSnapshot(
+                role: "AXButton",
+                position: CGPoint(x: 10, y: 10),
+                size: CGSize(width: 30, height: 30),
+            ),
+        )
+        let provider = CaptureSelectionSemanticBoundaryProvider(
+            snapshotProvider: snapshotProvider,
+            isTrusted: { true },
+            minimumSemanticQueryInterval: 1,
+        )
+
+        _ = provider.semanticCandidates(
+            at: CGPoint(x: 100, y: 100),
+            ownerPID: nil,
+            handle: .topLeft,
+        )
+        _ = provider.semanticCandidates(
+            at: CGPoint(x: 101, y: 100),
+            ownerPID: nil,
+            handle: .topLeft,
+        )
+
+        XCTAssertEqual(snapshotProvider.callCount, 1)
+
+        provider.clearCache()
+        _ = provider.semanticCandidates(
+            at: CGPoint(x: 101, y: 100),
+            ownerPID: nil,
+            handle: .topLeft,
+        )
+        XCTAssertEqual(snapshotProvider.callCount, 2)
+    }
+
     // MARK: - Dedup
 
     func testQueryElement_dedupesIdenticalRect() throws {

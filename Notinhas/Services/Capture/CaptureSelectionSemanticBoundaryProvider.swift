@@ -29,13 +29,19 @@ final class CaptureSelectionSemanticBoundaryProvider: CaptureSelectionSemanticBo
     private var cachedInputRect: CGRect?
     private var cachedRect: CGRect?
     private var cachedOwnerPID: Int32?
+    private var lastSemanticCandidatesQueryAt: TimeInterval?
+    private var cachedSemanticCandidates: [CaptureSelectionSnappingCandidate] = []
+    private var cachedSemanticCandidatesOwnerPID: Int32?
+    private let minimumSemanticQueryInterval: TimeInterval
 
     init(
         snapshotProvider: AXSnapshotProviding = AXAccessibilitySnapshotProvider(),
         isTrusted: @escaping () -> Bool = { AXIsProcessTrusted() },
+        minimumSemanticQueryInterval: TimeInterval = 1.0 / 30.0,
     ) {
         self.snapshotProvider = snapshotProvider
         self.isTrusted = isTrusted
+        self.minimumSemanticQueryInterval = max(0, minimumSemanticQueryInterval)
     }
 
     func semanticRect(at screenPoint: CGPoint, ownerPID: Int32?) -> CGRect? {
@@ -72,6 +78,9 @@ final class CaptureSelectionSemanticBoundaryProvider: CaptureSelectionSemanticBo
         cachedInputRect = nil
         cachedRect = nil
         cachedOwnerPID = nil
+        lastSemanticCandidatesQueryAt = nil
+        cachedSemanticCandidates = []
+        cachedSemanticCandidatesOwnerPID = nil
     }
 
     func semanticCandidates(
@@ -79,12 +88,37 @@ final class CaptureSelectionSemanticBoundaryProvider: CaptureSelectionSemanticBo
         ownerPID: Int32?,
         handle: CaptureSelectionResizeHandle,
     ) -> [CaptureSelectionSnappingCandidate] {
-        guard let rect = semanticRect(at: screenPoint, ownerPID: ownerPID) else {
+        guard isTrusted() else {
+            clearCache()
             return []
         }
 
+        let now = ProcessInfo.processInfo.systemUptime
+        if let lastQueryAt = lastSemanticCandidatesQueryAt,
+           now - lastQueryAt < minimumSemanticQueryInterval,
+           cachedSemanticCandidatesOwnerPID == ownerPID {
+            return filteredSemanticCandidates(for: handle)
+        }
+
+        let candidates: [CaptureSelectionSnappingCandidate] = if let rect = semanticRect(
+            at: screenPoint,
+            ownerPID: ownerPID,
+        ) {
+            CaptureSelectionSnapping.semanticCandidates(for: rect)
+        } else {
+            []
+        }
+
+        lastSemanticCandidatesQueryAt = now
+        cachedSemanticCandidates = candidates
+        cachedSemanticCandidatesOwnerPID = ownerPID
+        return filteredSemanticCandidates(for: handle)
+    }
+
+    private func filteredSemanticCandidates(
+        for handle: CaptureSelectionResizeHandle,
+    ) -> [CaptureSelectionSnappingCandidate] {
         let activeEdges = CaptureSelectionSnapping.activeEdges(for: handle)
-        return CaptureSelectionSnapping.semanticCandidates(for: rect)
-            .filter { activeEdges.contains($0.edge) }
+        return cachedSemanticCandidates.filter { activeEdges.contains($0.edge) }
     }
 }

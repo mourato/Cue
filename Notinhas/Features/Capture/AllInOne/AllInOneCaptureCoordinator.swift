@@ -57,13 +57,16 @@ final class AllInOneCaptureCoordinator {
         )
         let state = AllInOneCaptureSessionState(availableModes: configuredModes)
         state.onModeActivated = { [weak self] mode in
-            self?.activate(mode)
+            guard let self, isActive, sessionGeneration == generation else { return }
+            activate(mode)
         }
         state.onRectChanged = { [weak self] rect in
-            self?.applyRect(rect)
+            guard let self, isActive, sessionGeneration == generation else { return }
+            applyRect(rect)
         }
         state.onCancel = { [weak self] in
-            self?.cancel()
+            guard let self, isActive, sessionGeneration == generation else { return }
+            cancel()
         }
         sessionState = state
 
@@ -72,7 +75,7 @@ final class AllInOneCaptureCoordinator {
                 await self?.startWithFrozenSessionIfNeeded(generation: generation)
             }
         } else {
-            continueStartup()
+            continueStartup(generation: generation)
         }
     }
 
@@ -120,7 +123,7 @@ final class AllInOneCaptureCoordinator {
                 return
             }
             frozenSession = session
-            continueStartup()
+            continueStartup(generation: generation)
         case .failure(let error):
             guard isActive, sessionGeneration == generation else { return }
             viewModel.lastCaptureResult = .failure(error)
@@ -128,8 +131,8 @@ final class AllInOneCaptureCoordinator {
         }
     }
 
-    private func continueStartup() {
-        guard isActive else { return }
+    private func continueStartup(generation: UUID) {
+        guard isActive, sessionGeneration == generation else { return }
 
         installHUDs(using: sessionState!)
         syncHUDDisplayLevel()
@@ -139,9 +142,9 @@ final class AllInOneCaptureCoordinator {
         let screenFrames = NSScreen.screens.map(\.frame)
         if let lastRect = CaptureLastSelectionStore.load(userDefaults: .standard, screens: screenFrames) {
             showFrozenBackdropHostIfNeeded()
-            beginRefinement(with: lastRect)
+            beginRefinement(with: lastRect, generation: generation)
         } else {
-            startInitialAreaSelection()
+            startInitialAreaSelection(generation: generation)
         }
     }
 
@@ -157,7 +160,7 @@ final class AllInOneCaptureCoordinator {
         positionHUDs()
     }
 
-    private func startInitialAreaSelection() {
+    private func startInitialAreaSelection(generation: UUID) {
         isAwaitingInitialSelection = true
         viewModel?.setAllInOneSelectionBlocking(true)
 
@@ -171,11 +174,10 @@ final class AllInOneCaptureCoordinator {
             backdrops: backdrops,
             completion: { [weak self] result in
                 guard let self else { return }
+                guard isActive, sessionGeneration == generation else { return }
                 isAwaitingInitialSelection = false
                 viewModel?.setAllInOneSelectionBlocking(false)
                 AreaSelectionController.shared.cursorExclusionFrames = { [] }
-
-                guard isActive else { return }
 
                 guard let result else {
                     cancel()
@@ -183,14 +185,14 @@ final class AllInOneCaptureCoordinator {
                 }
 
                 showFrozenBackdropHostIfNeeded()
-                beginRefinement(with: result.rect)
+                beginRefinement(with: result.rect, generation: generation)
             },
         )
 
         // AreaSelectionController presents screen-saver-level panels. Reassert the All-In-One
         // controls above them so the user can change modes before completing the first drag.
         DispatchQueue.main.async { [weak self] in
-            guard let self, isActive, isAwaitingInitialSelection else { return }
+            guard let self, isActive, sessionGeneration == generation, isAwaitingInitialSelection else { return }
             syncHUDDisplayLevel()
         }
     }
@@ -202,7 +204,8 @@ final class AllInOneCaptureCoordinator {
         positionHUDs()
     }
 
-    private func beginRefinement(with rect: CGRect) {
+    private func beginRefinement(with rect: CGRect, generation: UUID) {
+        guard isActive, sessionGeneration == generation else { return }
         let normalized = CaptureSelectionGeometry.normalized(
             rect,
             minSize: CaptureSelectionChromeMetrics.confirmedMinimumSize,
@@ -228,10 +231,12 @@ final class AllInOneCaptureCoordinator {
             frozenBackdrops: frozenSession?.backdrops,
         )
         controller.onRectChanged = { [weak self] updated in
-            self?.handleRefinementRectChanged(updated)
+            guard let self, isActive, sessionGeneration == generation else { return }
+            handleRefinementRectChanged(updated)
         }
         controller.onCancel = { [weak self] in
-            self?.cancel()
+            guard let self, isActive, sessionGeneration == generation else { return }
+            cancel()
         }
         refinementController = controller
         controller.cursorExclusionFrames = { [weak self] in
@@ -439,10 +444,34 @@ final class AllInOneCaptureCoordinator {
             }
         case .timer:
             transferredSession?.invalidate()
-        case .recording:
+        case let .recording(rect):
             transferredSession?.invalidate()
             #if NOTINHAS_VIDEO_MODULE
-                viewModel.startRecordingFlow()
+                let capturedViewModel = viewModel
+                DiagnosticLogger.shared.log(
+                    .info,
+                    .recording,
+                    "All-In-One recording handoff queued",
+                    context: [
+                        "hasRect": "\(rect != nil)",
+                        "areaSelectionPresenting": "\(AreaSelectionController.shared.isPresenting)",
+                    ],
+                )
+                DispatchQueue.main.async { [weak capturedViewModel] in
+                    guard let capturedViewModel else {
+                        DiagnosticLogger.shared.log(
+                            .warning,
+                            .recording,
+                            "All-In-One recording handoff dropped: view model deallocated",
+                        )
+                        return
+                    }
+                    if let rect {
+                        capturedViewModel.startRecordingFlow(at: rect)
+                    } else {
+                        capturedViewModel.startRecordingFlow()
+                    }
+                }
             #endif
         }
     }
