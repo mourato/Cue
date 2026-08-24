@@ -40,6 +40,9 @@ second canonical design-system document.
   share the same icon label, frame, hover treatment, inactive opacity, and
   accessibility state value; opening a device popover must not change the
   control's geometry.
+- The live recording camera preview is draggable within the selected area and
+  exposes session-only size and shape controls; it never writes those controls
+  to preferences.
 - Sidebar and swatch states use semantic fills and borders: default, hover,
   selected, and disabled must remain distinguishable in Light and Dark.
 - Numbered pins/notes are the product identity. Preserve their ordering,

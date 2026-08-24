@@ -24,6 +24,7 @@
         private let captureManager = ScreenCaptureManager.shared
         private let recorder = ScreenRecordingManager.shared
         private var cameraPreviewWindow: RecordingCameraPreviewWindow?
+        private var cameraPreviewNormalizedCenter: CGPoint?
         private var isStartingRecording = false
         private var localEscapeMonitor: Any?
         private var globalEscapeMonitor: Any?
@@ -50,6 +51,8 @@
             let microphoneDeviceID: String
             let captureCamera: Bool
             let cameraDeviceID: String
+            let cameraPreviewSize: RecordingCameraPreviewSize
+            let cameraPreviewShape: RecordingCameraPreviewShape
             let outputMode: RecordingOutputMode
             let showCursor: Bool
             let highlightClicks: Bool
@@ -193,6 +196,7 @@
                 return
             }
             isActive = true
+            cameraPreviewNormalizedCenter = nil
             self.onSessionEnded = onSessionEnded
             presentToolbar(
                 for: rect,
@@ -342,6 +346,9 @@
             toolbar.onCaptureCameraChanged = { [weak self] _ in
                 self?.updateCameraPreview()
             }
+            toolbar.onCameraPreviewConfigurationChanged = { [weak self] in
+                self?.updateCameraPreview()
+            }
             toolbar.onOutputModeChanged = { [weak self] _ in
                 self?.updateCameraPreview()
             }
@@ -369,6 +376,8 @@
                 microphoneDeviceID: toolbarWindow.microphoneDeviceID,
                 captureCamera: toolbarWindow.captureCamera,
                 cameraDeviceID: toolbarWindow.cameraDeviceID,
+                cameraPreviewSize: toolbarWindow.state.cameraPreviewSize,
+                cameraPreviewShape: toolbarWindow.state.cameraPreviewShape,
                 outputMode: toolbarWindow.outputMode,
                 showCursor: toolbarWindow.state.showCursor,
                 highlightClicks: toolbarWindow.state.highlightClicks,
@@ -388,6 +397,8 @@
                 toolbar.microphoneDeviceID = configuration.microphoneDeviceID
                 toolbar.captureCamera = configuration.captureCamera
                 toolbar.cameraDeviceID = configuration.cameraDeviceID
+                toolbar.state.cameraPreviewSize = configuration.cameraPreviewSize
+                toolbar.state.cameraPreviewShape = configuration.cameraPreviewShape
                 toolbar.outputMode = configuration.outputMode
                 toolbar.state.showCursor = configuration.showCursor
                 toolbar.state.highlightClicks = configuration.highlightClicks
@@ -530,6 +541,7 @@
             toolbarWindow?.onCapture = nil
             toolbarWindow?.onCancel = nil
             toolbarWindow?.onCaptureCameraChanged = nil
+            toolbarWindow?.onCameraPreviewConfigurationChanged = nil
             toolbarWindow?.onOutputModeChanged = nil
             toolbarWindow?.onDelete = nil
             toolbarWindow?.onRestart = nil
@@ -698,8 +710,10 @@
             }
 
             let deviceID = toolbarWindow.cameraDeviceID
+            let configuration = toolbarWindow.cameraPreviewConfiguration
             if let cameraPreviewWindow, cameraPreviewWindow.deviceID == deviceID {
                 cameraPreviewWindow.updateSelectionRect(selectedRect)
+                cameraPreviewWindow.updateConfiguration(configuration)
                 return
             }
 
@@ -707,6 +721,8 @@
             guard let previewWindow = RecordingCameraPreviewWindow(
                 deviceID: deviceID,
                 selectionRect: selectedRect,
+                configuration: configuration,
+                normalizedCenter: cameraPreviewNormalizedCenter,
             ) else {
                 DiagnosticLogger.shared.log(
                     .warning,
@@ -721,6 +737,7 @@
         }
 
         private func closeCameraPreview() {
+            cameraPreviewNormalizedCenter = cameraPreviewWindow?.normalizedCenter ?? cameraPreviewNormalizedCenter
             cameraPreviewWindow?.close()
             cameraPreviewWindow = nil
         }
@@ -1255,6 +1272,7 @@
             closePreRecordUI()
             selectedRect = nil
             selectedWindowTarget = nil
+            cameraPreviewNormalizedCenter = nil
             isActive = false
             let sessionEndHandler = onSessionEnded
             onSessionEnded = nil

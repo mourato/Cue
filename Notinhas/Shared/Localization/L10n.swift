@@ -40,6 +40,7 @@ nonisolated enum L10n {
         ("scrolling-capture.", "Capture"),
         ("scrolling-capture-status.", "Capture"),
         ("gif.", "Recording"),
+        ("camera.", "Recording"),
         ("keystroke-position.", "Recording"),
         ("microphone.", "Recording"),
         ("recording.", "Recording"),
@@ -3903,6 +3904,62 @@ nonisolated enum L10n {
         )
         static let on = string("camera.on", defaultValue: "Camera on", comment: "Camera enabled tooltip")
         static let off = string("camera.off", defaultValue: "Camera off", comment: "Camera disabled tooltip")
+        static let preview = string(
+            "camera.preview",
+            defaultValue: "Camera preview",
+            comment: "Accessibility label for the live camera preview",
+        )
+        static let previewDragHint = string(
+            "camera.preview-drag-hint",
+            defaultValue: "Drag to reposition within the recording area.",
+            comment: "Accessibility hint for moving the live camera preview",
+        )
+        static let previewSize = string(
+            "camera.preview-size",
+            defaultValue: "Preview size",
+            comment: "Camera preview size section label",
+        )
+        static let previewShape = string(
+            "camera.preview-shape",
+            defaultValue: "Preview shape",
+            comment: "Camera preview shape section label",
+        )
+        static let small = string("camera.small", defaultValue: "Small", comment: "Small camera preview size")
+        static let medium = string("camera.medium", defaultValue: "Medium", comment: "Medium camera preview size")
+        static let large = string("camera.large", defaultValue: "Large", comment: "Large camera preview size")
+        static let huge = string("camera.huge", defaultValue: "Huge", comment: "Huge camera preview size")
+        static let circle = string("camera.circle", defaultValue: "Circle", comment: "Circle camera preview shape")
+        static let square = string("camera.square", defaultValue: "Square", comment: "Square camera preview shape")
+        static let rectangle = string(
+            "camera.rectangle",
+            defaultValue: "Rectangle",
+            comment: "Rectangle camera preview shape",
+        )
+        static let vertical = string(
+            "camera.vertical",
+            defaultValue: "Vertical",
+            comment: "Vertical camera preview shape",
+        )
+        static let moveLeft = string(
+            "camera.move-left",
+            defaultValue: "Move left",
+            comment: "Move camera preview left",
+        )
+        static let moveRight = string(
+            "camera.move-right",
+            defaultValue: "Move right",
+            comment: "Move camera preview right",
+        )
+        static let moveUp = string(
+            "camera.move-up",
+            defaultValue: "Move up",
+            comment: "Move camera preview up",
+        )
+        static let moveDown = string(
+            "camera.move-down",
+            defaultValue: "Move down",
+            comment: "Move camera preview down",
+        )
         static let doNotUse = string(
             "camera.do-not-use",
             defaultValue: "Do Not Use Camera",

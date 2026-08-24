@@ -138,6 +138,8 @@
         @Published var microphoneDeviceID: String
         @Published var captureCamera: Bool
         @Published var cameraDeviceID: String
+        @Published var cameraPreviewSize: RecordingCameraPreviewSize
+        @Published var cameraPreviewShape: RecordingCameraPreviewShape
         @Published var captureMode: RecordingCaptureMode
         @Published var outputMode: RecordingOutputMode
         @Published var showCursor: Bool
@@ -147,6 +149,7 @@
 
         var onCaptureModeChanged: ((RecordingCaptureMode) -> Void)?
         var onCaptureCameraChanged: ((Bool) -> Void)?
+        var onCameraPreviewConfigurationChanged: (() -> Void)?
         var onOutputModeChanged: ((RecordingOutputMode) -> Void)?
 
         init() {
@@ -157,6 +160,8 @@
             microphoneDeviceID = RecordingToolbarPreferences.microphoneDeviceID()
             captureCamera = RecordingToolbarPreferences.captureCamera()
             cameraDeviceID = RecordingToolbarPreferences.cameraDeviceID()
+            cameraPreviewSize = .small
+            cameraPreviewShape = .rectangle
             captureMode = .area
             outputMode = RecordingToolbarPreferences.outputMode()
             showCursor = RecordingToolbarPreferences.showCursor()
@@ -229,6 +234,10 @@
             set { state.cameraDeviceID = newValue }
         }
 
+        var cameraPreviewConfiguration: RecordingCameraPreviewConfiguration {
+            RecordingCameraPreviewConfiguration(size: state.cameraPreviewSize, shape: state.cameraPreviewShape)
+        }
+
         var captureMode: RecordingCaptureMode {
             get { state.captureMode }
             set { state.captureMode = newValue }
@@ -248,6 +257,11 @@
         var onCaptureCameraChanged: ((Bool) -> Void)? {
             get { state.onCaptureCameraChanged }
             set { state.onCaptureCameraChanged = newValue }
+        }
+
+        var onCameraPreviewConfigurationChanged: (() -> Void)? {
+            get { state.onCameraPreviewConfigurationChanged }
+            set { state.onCameraPreviewConfigurationChanged = newValue }
         }
 
         var onOutputModeChanged: ((RecordingOutputMode) -> Void)? {

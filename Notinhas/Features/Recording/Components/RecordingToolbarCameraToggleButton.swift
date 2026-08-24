@@ -104,9 +104,66 @@
                     }
                     .buttonStyle(.borderless)
                 }
+
+                if state.captureCamera {
+                    Divider()
+                    previewOptions
+                }
             }
             .padding(8)
-            .frame(minWidth: 180)
+            .frame(minWidth: 220)
+        }
+
+        private var previewOptions: some View {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(L10n.Camera.previewSize)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                ForEach(RecordingCameraPreviewSize.allCases) { size in
+                    cameraOptionButton(
+                        title: size.displayName,
+                        isSelected: state.cameraPreviewSize == size,
+                    ) {
+                        state.cameraPreviewSize = size
+                        state.onCameraPreviewConfigurationChanged?()
+                    }
+                }
+
+                Divider()
+
+                Text(L10n.Camera.previewShape)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                ForEach(RecordingCameraPreviewShape.allCases) { shape in
+                    cameraOptionButton(
+                        title: shape.displayName,
+                        isSelected: state.cameraPreviewShape == shape,
+                    ) {
+                        state.cameraPreviewShape = shape
+                        state.onCameraPreviewConfigurationChanged?()
+                    }
+                }
+            }
+        }
+
+        private func cameraOptionButton(
+            title: String,
+            isSelected: Bool,
+            action: @escaping () -> Void,
+        ) -> some View {
+            Button(action: action) {
+                HStack {
+                    Text(title)
+                    Spacer()
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(.borderless)
+            .accessibilityAddTraits(isSelected ? .isSelected : [])
         }
     }
 #endif

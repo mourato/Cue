@@ -29,5 +29,64 @@
             XCTAssertGreaterThan(preview.width, 0)
             XCTAssertGreaterThan(preview.height, 0)
         }
+
+        func testPlacementSupportsEveryPreviewShape() {
+            let selection = CGRect(x: 0, y: 0, width: 1200, height: 800)
+
+            for shape in RecordingCameraPreviewShape.allCases {
+                let preview = RecordingCameraPreviewPlacement.frame(
+                    in: selection,
+                    configuration: RecordingCameraPreviewConfiguration(shape: shape),
+                )
+
+                XCTAssertTrue(selection.insetBy(dx: 16, dy: 16).contains(preview))
+                XCTAssertEqual(
+                    preview.width / preview.height,
+                    shape == .vertical ? 9 / 16 : shape == .rectangle ? 16 / 9 : 1,
+                    accuracy: 0.001,
+                )
+            }
+        }
+
+        func testPlacementSizePresetsGrowWithinTheSelection() {
+            let selection = CGRect(x: 0, y: 0, width: 1600, height: 900)
+            let widths = RecordingCameraPreviewSize.allCases.map { size in
+                RecordingCameraPreviewPlacement.frame(
+                    in: selection,
+                    configuration: RecordingCameraPreviewConfiguration(size: size),
+                ).width
+            }
+
+            XCTAssertEqual(widths, widths.sorted())
+            XCTAssertGreaterThan(widths.last ?? 0, widths.first ?? 0)
+        }
+
+        func testClampedOriginKeepsDraggedPreviewInsideSelection() {
+            let selection = CGRect(x: 100, y: 200, width: 1200, height: 800)
+            let origin = RecordingCameraPreviewPlacement.clampedOrigin(
+                CGPoint(x: -500, y: 5000),
+                size: CGSize(width: 240, height: 135),
+                in: selection,
+            )
+
+            XCTAssertEqual(origin.x, selection.minX + 16)
+            XCTAssertEqual(origin.y, selection.maxY - 16 - 135)
+        }
+
+        func testNormalizedCenterRestoresSessionPosition() {
+            let selection = CGRect(x: 100, y: 200, width: 1200, height: 800)
+            let configuration = RecordingCameraPreviewConfiguration(
+                size: .medium,
+                shape: .square,
+            )
+            let preview = RecordingCameraPreviewPlacement.frame(
+                in: selection,
+                configuration: configuration,
+                normalizedCenter: CGPoint(x: 0.25, y: 0.75),
+            )
+
+            XCTAssertEqual((preview.midX - selection.minX) / selection.width, 0.25, accuracy: 0.001)
+            XCTAssertEqual((preview.midY - selection.minY) / selection.height, 0.75, accuracy: 0.001)
+        }
     }
 #endif

@@ -1,6 +1,321 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "camera.circle": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Kreis" } },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Circle"
+          }
+        },
+        "es": { "stringUnit": { "state": "translated", "value": "Círculo" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Cercle" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "円" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "원형" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Круг" } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Hình tròn" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "圆形" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "圓形" } }
+      }
+    },
+    "camera.huge": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Sehr groß" } },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Huge"
+          }
+        },
+        "es": { "stringUnit": { "state": "translated", "value": "Enorme" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Très grande" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "特大" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "매우 크게" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Огромный" } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Rất lớn" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "超大" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "超大" } }
+      }
+    },
+    "camera.large": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Groß" } },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Large"
+          }
+        },
+        "es": { "stringUnit": { "state": "translated", "value": "Grande" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Grande" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "大" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "크게" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Большой" } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Lớn" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "大" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "大" } }
+      }
+    },
+    "camera.medium": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Mittel" } },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Medium"
+          }
+        },
+        "es": { "stringUnit": { "state": "translated", "value": "Mediano" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Moyenne" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "中" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "중간" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Средний" } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Trung bình" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "中" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "中" } }
+      }
+    },
+    "camera.preview": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Kameravorschau" } },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera preview"
+          }
+        },
+        "es": { "stringUnit": { "state": "translated", "value": "Vista previa de la cámara" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Aperçu de la caméra" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "カメラプレビュー" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "카메라 미리보기" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Предпросмотр камеры" } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Bản xem trước camera" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "摄像头预览" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "相機預覽" } }
+      }
+    },
+    "camera.preview-drag-hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Ziehen, um die Position innerhalb des Aufnahmebereichs zu ändern." } },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag to reposition within the recording area."
+          }
+        },
+        "es": { "stringUnit": { "state": "translated", "value": "Arrastra para cambiar la posición dentro del área de grabación." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Faites glisser pour repositionner dans la zone d’enregistrement." } },
+        "ja": { "stringUnit": { "state": "translated", "value": "録画領域内でドラッグして位置を変更します。" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "녹화 영역 안에서 드래그하여 위치를 변경합니다." } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Перетащите, чтобы изменить положение в области записи." } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Kéo để định vị lại trong vùng ghi." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "拖动以在录制区域内重新定位。" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "拖曳以在錄製區域內重新定位。" } }
+      }
+    },
+    "camera.preview-shape": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Vorschauform" } },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preview shape"
+          }
+        },
+        "es": { "stringUnit": { "state": "translated", "value": "Forma de la vista previa" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Forme de l’aperçu" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "プレビューの形" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "미리보기 모양" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Форма предпросмотра" } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Hình dạng bản xem trước" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "预览形状" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "預覽形狀" } }
+      }
+    },
+    "camera.preview-size": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Vorschaugröße" } },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preview size"
+          }
+        },
+        "es": { "stringUnit": { "state": "translated", "value": "Tamaño de la vista previa" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Taille de l’aperçu" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "プレビューのサイズ" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "미리보기 크기" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Размер предпросмотра" } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Kích thước bản xem trước" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "预览大小" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "預覽大小" } }
+      }
+    },
+    "camera.rectangle": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Rechteck" } },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rectangle"
+          }
+        },
+        "es": { "stringUnit": { "state": "translated", "value": "Rectángulo" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Rectangle" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "長方形" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "직사각형" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Прямоугольник" } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Hình chữ nhật" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "矩形" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "矩形" } }
+      }
+    },
+    "camera.small": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Klein" } },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Small"
+          }
+        },
+        "es": { "stringUnit": { "state": "translated", "value": "Pequeño" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Petite" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "小" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "작게" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Маленький" } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Nhỏ" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "小" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "小" } }
+      }
+    },
+    "camera.square": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Quadrat" } },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Square"
+          }
+        },
+        "es": { "stringUnit": { "state": "translated", "value": "Cuadrado" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Carré" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "正方形" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "정사각형" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Квадрат" } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Hình vuông" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "正方形" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "正方形" } }
+      }
+    },
+    "camera.vertical": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Hochformat" } },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vertical"
+          }
+        },
+        "es": { "stringUnit": { "state": "translated", "value": "Vertical" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Vertical" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "縦長" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "세로형" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Вертикальный" } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Dọc" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "竖直" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "垂直" } }
+      }
+    },
+    "camera.preview-position": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Horizontal %d%%, vertikal %d%%" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Horizontal %d%%, vertical %d%%" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Horizontal %d%%, vertical %d%%" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Horizontal %d%%, vertical %d%%" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "横 %d%%、縦 %d%%" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "가로 %d%%, 세로 %d%%" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "По горизонтали: %d%%, по вертикали: %d%%" } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Ngang %d%%, dọc %d%%" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "水平 %d%%，垂直 %d%%" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "水平 %d%%，垂直 %d%%" } }
+      }
+    },
+    "camera.move-down": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Nach unten verschieben" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Move down" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Mover abajo" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Déplacer vers le bas" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "下に移動" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "아래로 이동" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Переместить вниз" } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Di chuyển xuống" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "下移" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "下移" } }
+      }
+    },
+    "camera.move-left": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Nach links verschieben" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Move left" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Mover a la izquierda" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Déplacer vers la gauche" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "左に移動" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "왼쪽으로 이동" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Переместить влево" } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Di chuyển sang trái" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "左移" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "左移" } }
+      }
+    },
+    "camera.move-right": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Nach rechts verschieben" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Move right" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Mover a la derecha" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Déplacer vers la droite" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "右に移動" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "오른쪽으로 이동" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Переместить вправо" } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Di chuyển sang phải" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "右移" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "右移" } }
+      }
+    },
+    "camera.move-up": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Nach oben verschieben" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Move up" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Mover arriba" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Déplacer vers le haut" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "上に移動" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "위로 이동" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Переместить вверх" } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Di chuyển lên" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "上移" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "上移" } }
+      }
+    },
     "gif.cannot-create-output-file": {
       "extractionState": "stale",
       "localizations": {
