@@ -586,7 +586,9 @@ final class DrawingCanvasNSView: NSView {
 
     /// Clamp point to the active drawing bounds. Applied expanded crops become drawable canvas.
     private func clampToCanvasBounds(_ point: CGPoint) -> CGPoint {
-        if state.isCombineMode, state.combineMode == .freeCanvas {
+        // Free Canvas: allow embedded-image drag/resize past the current union so gaps
+        // can be created; markup tools stay clamped. Content bounds expand on mouseUp.
+        if shouldBypassCombineCanvasClamp {
             return point
         }
         let bounds = state.isCombineMode
@@ -598,26 +600,43 @@ final class DrawingCanvasNSView: NSView {
         )
     }
 
+    private var shouldBypassCombineCanvasClamp: Bool {
+        guard state.isCombineMode, state.combineMode == .freeCanvas else { return false }
+        if isResizingAnnotation, let id = resizingAnnotationId {
+            return isEmbeddedImageGestureItem(id: id)
+        }
+        if isDraggingAnnotation {
+            let ids = draggingAnnotationIds.isEmpty
+                ? Set(draggingAnnotationId.map { [$0] } ?? [])
+                : draggingAnnotationIds
+            return ids.contains { isEmbeddedImageGestureItem(id: $0) }
+        }
+        return false
+    }
+
+    private func isEmbeddedImageGestureItem(id: UUID) -> Bool {
+        if let local = gestureLocalItems[id], case .embeddedImage = local.type {
+            return true
+        }
+        if let annotation = state.annotations.first(where: { $0.id == id }),
+           case .embeddedImage = annotation.type {
+            return true
+        }
+        return false
+    }
+
     private func interactionPoint(from displayPoint: CGPoint) -> CGPoint {
         let rawImagePoint = displayToImage(displayPoint)
         guard state.selectedTool != .crop else { return rawImagePoint }
         return clampToCanvasBounds(rawImagePoint)
     }
 
-    private func refreshFreeCanvasContentBoundsFromGesture() {
-        guard state.isCombineMode, state.combineMode == .freeCanvas else { return }
-        let embeddedBounds = gestureLocalItems.reduce(into: [UUID: CGRect]()) { result, entry in
-            guard case .embeddedImage = entry.value.type else { return }
-            result[entry.key] = entry.value.bounds
-        }
-        guard !embeddedBounds.isEmpty else { return }
-        state.updateCombineContentBoundsForFreeCanvasGesture(localBoundsByAnnotationID: embeddedBounds)
-    }
-
     // MARK: - Mouse Events
 
     override func mouseDown(with event: NSEvent) {
-        if state.isCombineMode, state.combineMode == .autoStitch {
+        // Freeze content bounds for the gesture so live layout/fit does not remap
+        // display↔image coordinates under the cursor (Free Canvas expands on mouseUp).
+        if state.isCombineMode {
             state.frozenCombineContentBounds = state.combineContentBounds
         }
         let displayPoint = convert(event.locationInWindow, from: nil)
@@ -880,7 +899,6 @@ final class DrawingCanvasNSView: NSView {
         if isResizingAnnotation, let handle = activeResizeHandle,
            let resizeId = resizingAnnotationId {
             applyGestureResize(handle: handle, resizeId: resizeId, imagePoint: imagePoint, event: event)
-            refreshFreeCanvasContentBoundsFromGesture()
             invalidateLiveLayers()
             return
         }
@@ -955,7 +973,6 @@ final class DrawingCanvasNSView: NSView {
                     gestureLocalItems[draggedID] = dragged.applyingResizeBounds(snapped)
                 }
             }
-            refreshFreeCanvasContentBoundsFromGesture()
             invalidateLiveLayers()
             return
         }
@@ -1099,7 +1116,7 @@ final class DrawingCanvasNSView: NSView {
     }
 
     override func mouseUp(with event: NSEvent) {
-        if state.isCombineMode, state.combineMode == .autoStitch {
+        if state.isCombineMode {
             state.frozenCombineContentBounds = nil
         }
         let displayPoint = convert(event.locationInWindow, from: nil)

@@ -312,7 +312,9 @@ final class AnnotateState: ObservableObject {
             captureCurrentFreeCombineBounds()
         }
         let resolvedMode = preferredMode ?? preferredCombineModeFromDefaults()
-        setCombineMode(resolvedMode)
+        // Activation (including forced Auto Stitch for multi-file Combine) must not
+        // overwrite the user's remembered in-editor preference.
+        setCombineMode(resolvedMode, persistPreference: false)
     }
 
     func deactivateCombineMode() {
@@ -322,7 +324,7 @@ final class AnnotateState: ObservableObject {
         frozenCombineContentBounds = nil
     }
 
-    func setCombineMode(_ mode: CombineImagesMode) {
+    func setCombineMode(_ mode: CombineImagesMode, persistPreference: Bool = true) {
         guard isCombineMode else { return }
         guard combineMode != mode else {
             refreshCombineLayout()
@@ -333,7 +335,9 @@ final class AnnotateState: ObservableObject {
             captureCurrentFreeCombineBounds()
         }
         combineMode = mode
-        persistCombineModePreference(mode)
+        if persistPreference {
+            persistCombineModePreference(mode)
+        }
         switch mode {
         case .autoStitch:
             applyAutomaticCombineLayout()
@@ -1756,7 +1760,7 @@ final class AnnotateState: ObservableObject {
         embeddedImageSnapshotCacheData.removeAll()
         embeddedImageCGImageCache.removeAll()
         isCombineMode = false
-        combineMode = .autoStitch
+        combineMode = preferredCombineModeFromDefaults()
         combineDirection = .smart
         combineResolvedDirection = .horizontal
         combineGap = 0
@@ -2261,22 +2265,16 @@ final class AnnotateState: ObservableObject {
         updateCombineContentBounds()
     }
 
-    private func updateCombineContentBounds(embeddedBoundsOverrides: [UUID: CGRect] = [:]) {
+    private func updateCombineContentBounds() {
         guard isCombineMode else {
             combineContentBounds = sourceImageBounds
             return
         }
         let imageBounds = annotations.compactMap { annotation -> CGRect? in
             guard case .embeddedImage = annotation.type else { return nil }
-            return embeddedBoundsOverrides[annotation.id] ?? annotation.bounds
+            return annotation.bounds
         }
         combineContentBounds = imageBounds.reduce(sourceImageBounds) { $0.union($1) }
-    }
-
-    /// Expands combine content bounds during a Free Canvas gesture using gesture-local geometry.
-    func updateCombineContentBoundsForFreeCanvasGesture(localBoundsByAnnotationID: [UUID: CGRect]) {
-        guard isCombineMode, combineMode == .freeCanvas else { return }
-        updateCombineContentBounds(embeddedBoundsOverrides: localBoundsByAnnotationID)
     }
 
     private func preferredCombineModeFromDefaults() -> CombineImagesMode {

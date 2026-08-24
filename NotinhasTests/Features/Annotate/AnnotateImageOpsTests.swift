@@ -177,6 +177,25 @@ final class AnnotateImageOpsTests: XCTestCase {
         )
     }
 
+    func testForcedAutoStitchActivationDoesNotPersistPreference() throws {
+        let defaults = UserDefaultsFactory.make()
+        defaults.set(
+            CombineImagesMode.freeCanvas.rawValue,
+            forKey: PreferencesKeys.annotateCombineLastMode,
+        )
+        let state = AnnotateState(defaults: defaults)
+        Self.retainedAnnotateStates.append(state)
+        try state.loadImage(makeImage(width: 400, height: 300))
+
+        state.activateCombineMode(preferredMode: .autoStitch)
+
+        XCTAssertEqual(state.combineMode, .autoStitch)
+        XCTAssertEqual(
+            defaults.string(forKey: PreferencesKeys.annotateCombineLastMode),
+            CombineImagesMode.freeCanvas.rawValue,
+        )
+    }
+
     func testInvalidCombineModePreferenceDefaultsToFreeCanvas() throws {
         let defaults = UserDefaultsFactory.make()
         defaults.set("not-a-mode", forKey: PreferencesKeys.annotateCombineLastMode)
@@ -188,7 +207,7 @@ final class AnnotateImageOpsTests: XCTestCase {
         XCTAssertEqual(state.combineMode, .freeCanvas)
     }
 
-    func testFreeCanvasGestureExpandsCombineContentBounds() throws {
+    func testFreeCanvasBoundsCommitExpandsCombineContentBounds() throws {
         let state = makeAnnotateState()
         try state.loadImage(makeImage(width: 400, height: 300))
         try state.importImage(makeImage(width: 200, height: 100))
@@ -196,9 +215,9 @@ final class AnnotateImageOpsTests: XCTestCase {
 
         let importedID = try XCTUnwrap(state.annotations.first?.id)
         let expandedBounds = CGRect(x: 90, y: -200, width: 200, height: 100)
-        state.updateCombineContentBoundsForFreeCanvasGesture(
-            localBoundsByAnnotationID: [importedID: expandedBounds],
-        )
+        // Canvas expands when geometry commits (mouseUp), not while the gesture
+        // remaps the live fit/coordinate space.
+        state.updateAnnotationBounds(id: importedID, bounds: expandedBounds)
 
         XCTAssertEqual(state.combineContentBounds.minY, -200, accuracy: 0.001)
         XCTAssertEqual(state.combineContentBounds.maxY, 300, accuracy: 0.001)
