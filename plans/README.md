@@ -999,3 +999,74 @@ or push still require explicit authorization.
   widen the save/post-capture contract unnecessarily now.
 - Speculative commit-interval retuning: deferred; Plan 103 may change cadence
   only when existing coalescing/stitch metrics demonstrate sustained saturation.
+
+## Screendrop recording follow-ups and camera PiP (104–108)
+
+Generated 2026-08-23 against commit `6106c84` after reconciling the
+Screendrop reference, the `$benchmarking` catalog rules, and a focused audit of
+the current recording/editor surfaces. These are local handoff artifacts for a
+different implementation chat; statuses start at `TODO`. The reference catalog
+is recorded in `.agents/overlays/benchmarking.md`, and the human summary is in
+`docs/REFERENCES.md`.
+
+| Plan | Title | Priority | Effort | Depends on | Status |
+|---|---|---:|---:|---|---|
+| 104 | [Make recording recoverable on writer failure and app termination](104-recording-lifecycle-and-recovery.md) | P0 | L | — | DONE (`5974d106`; review fixes `53a9c4d`) |
+| 105 | [Send the video playhead frame into the Notinhas brief flow](105-video-frame-to-notinhas-brief.md) | P1 | M | —; serialize with 107/108 on Video Editor files | DONE (`d894dea5`; review fixes `80a9ffc5`) |
+| 106 | [Capture an optional synchronized camera track with screen-only fallback](106-camera-pip-capture-session.md) | P1 | L | 104 recommended | DONE (`be4b4fef`; review fixes `9e011a06`) |
+| 107 | [Preview, lay out, and export camera PiP](107-camera-pip-editor-and-export.md) | P1 | L | 104; 106 | DONE (`ac4dda65`; review fixes `49ff1e8c`) |
+| 108 | [Persist export recipe and reuse validated render cache](108-video-edit-recipe-and-render-cache.md) | P2 | M/L | 104; 107 recommended | DONE (`3be5223b`; characterization only, cache deferred by YAGNI) |
+
+### Dependency notes (104–108)
+
+- Execute **104 first**. It owns the append/finish barrier, typed stop result,
+  termination policy, processing manifest, and any validated fragmented-writer
+  decision consumed by camera capture.
+- **105** is independent of camera capture and may run before 106, but it must
+  serialize with 107 and 108 whenever they edit `VideoEditorState`, the toolbar,
+  or `VideoEditorExporter`.
+- Execute **106 → 107**. Plan 106 owns permission/device/sample capture and
+  metadata role; Plan 107 owns the multi-track preview/compositor/export. Do not
+  add a second camera flag or timeline.
+- **108** is deliberately P2. It may execute after 104 and before 107 only if
+  its recipe leaves camera optional; otherwise execute after 107. It starts with
+  measurement and can stop without adding a cache when repeated export cost is
+  not real.
+- No two plans that touch `RecordingSession`, `RecordingMetadata`,
+  `VideoEditorState`, `VideoEditorExporter`, or
+  `VideoEditorZoomCompositor` should be merged concurrently.
+
+### Product decisions (104–108)
+
+- Camera PiP was explicitly promoted despite the earlier recommendation to
+  defer it. The bounded MVP is one optional camera, one synchronized screen
+  recording, default off, basic position/size presets, export, and screen-only
+  fallback.
+- Camera capture remains inside the existing Video compile/runtime gate. It is
+  not a new product mode, camera-only recorder, streaming feature, or cloud
+  integration.
+- Plan 105 extracts a raw oriented frame into the existing screenshot/Annotate
+  flow. It does not silently rasterize zoom/background effects.
+- Plan 108 persists a canonical export recipe in a cache manifest, not a new
+  project file or automatic draft restore. Reopening a baked output must never
+  apply the recipe twice.
+- All plans identify [Screendrop](https://github.com/fayazara/Screendrop) as
+  behavioral/engineering inspiration and require independent implementation;
+  local study is available at
+  `~/Documents/Projects/References/Screendrop/`.
+
+### Findings considered and rejected (104–108)
+
+- Full Screendrop Studio parity: rejected; transcriptions, teleprompter,
+  cloud, arbitrary cursor/keyframe editing, and generic Loom behavior do not
+  directly serve Notinhas' visual handoff.
+- Camera audio, multiple cameras, face tracking, background removal, streaming
+  and camera-only capture: rejected from the PiP MVP.
+- Baking camera pixels during capture: rejected; it would prevent layout edits
+  and increase capture cost. Store a track and compose at preview/export.
+- Automatic recipe restore/draft project format: deferred until master versus
+  baked derivative authority is defined; cache manifest alone is the smaller
+  safe step.
+- A fragmented writer without current-SDK/container evidence: rejected as a
+  speculative rewrite. Plan 104 keeps lifecycle/preservation as the required
+  outcome and stops the fragmentation substep when validation fails.
