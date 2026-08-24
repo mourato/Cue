@@ -65,6 +65,8 @@ struct AnnotateSidebarView: View, Equatable {
     let state: AnnotateState
     private let snapshot: AnnotateSidebarSnapshot
     @State private var isPresetDropdownPresented = false
+    @State private var isBackgroundExpanded = true
+    @State private var isStyleExpanded = false
 
     init(state: AnnotateState) {
         self.state = state
@@ -79,41 +81,36 @@ struct AnnotateSidebarView: View, Equatable {
         VStack(alignment: .leading, spacing: Spacing.md) {
             presetControlsSection
 
-            // Compact gradient section
-            gradientSection
-
-            // Wallpaper section
-            wallpaperSection
-
-            // Blurred background section
-            blurredSection
-
-            // Compact color section
-            colorSection
-
-            Divider().background(Color(nsColor: .separatorColor))
-
-            // Sliders section
-            slidersSection
-
-            // Ratio section
-            if !state.isCombineMode {
-                ratioSection
+            DisclosureGroup(isExpanded: $isBackgroundExpanded) {
+                VStack(alignment: .leading, spacing: Spacing.md) {
+                    gradientSection
+                    wallpaperSection
+                    blurredSection
+                    colorSection
+                }
+            } label: {
+                SidebarSectionHeader(title: L10n.Common.background)
             }
 
-            // Alignment section
-            if !state.isCombineMode {
-                alignmentSection
-            }
+            DisclosureGroup(isExpanded: $isStyleExpanded) {
+                VStack(alignment: .leading, spacing: Spacing.md) {
+                    slidersSection
 
-            // Mockup section (shown when mockup mode is active)
-            if state.editorMode == .mockup {
-                Divider().background(Color(nsColor: .separatorColor))
-                MockupControlsSection(state: state)
-            }
+                    if !state.isCombineMode {
+                        ratioSection
+                        alignmentSection
+                    }
 
-            if state.isCombineMode {
-                AnnotateCombineControlsView(state: state)
+                    if state.editorMode == .mockup {
+                        MockupControlsSection(state: state)
+                    }
+
+                    if state.isCombineMode {
+                        AnnotateCombineControlsView(state: state)
+                    }
+                }
+            } label: {
+                SidebarSectionHeader(title: L10n.Common.style)
             }
 
             Spacer(minLength: Spacing.lg)

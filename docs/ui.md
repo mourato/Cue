@@ -65,6 +65,20 @@ second canonical design-system document.
   central canvas host. The side dock remains in normal layout flow and reduces
   that host's bounds; full-width separator or background bands must not appear
   beneath the floating islands.
+- The annotation workspace uses a neutral dotted grid behind the canvas for
+  visual separation; the grid is editor chrome only and never enters export or
+  clipboard output.
+- Background controls are grouped under a collapsible `Background` section,
+  while style, layout, mockup, and combine controls remain available under a
+  collapsed-by-default `Style` section. The annotation toolbar keeps its
+  complete visible tool inventory.
+- Floating control islands reuse `captureFloatingToolbarMaterial()`: use
+  Liquid Glass on macOS 26 and later, with the existing material/solid fallback
+  for older systems or Reduce Transparency. Do not apply glass to the full
+  editor, canvas, or sidebar.
+- The clipboard handoff action is the primary labeled action in the bottom
+  action island; secondary actions may remain icon-only with explicit tooltips
+  and accessibility labels.
 
 ## States and accessibility
 

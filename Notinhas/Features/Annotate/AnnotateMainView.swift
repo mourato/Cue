@@ -7,6 +7,39 @@
 
 import SwiftUI
 
+private struct AnnotateWorkspaceBackground: View {
+    private let dotSpacing: CGFloat = 18
+    private let dotRadius: CGFloat = 1.15
+
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .fill(colorScheme == .dark ? Color(white: 0.16) : Color(white: 0.93))
+
+            Canvas { context, size in
+                var path = Path()
+                let offset = dotSpacing / 2
+
+                for x in stride(from: offset, through: size.width, by: dotSpacing) {
+                    for y in stride(from: offset, through: size.height, by: dotSpacing) {
+                        path.addEllipse(in: CGRect(
+                            x: x - dotRadius,
+                            y: y - dotRadius,
+                            width: dotRadius * 2,
+                            height: dotRadius * 2,
+                        ))
+                    }
+                }
+
+                context.fill(path, with: .color(Color.secondary.opacity(0.14)))
+            }
+        }
+        .allowsHitTesting(false)
+    }
+}
+
 /// Main container for annotation window layout
 struct AnnotateMainView: View {
     @StateObject var state: AnnotateState
@@ -48,6 +81,10 @@ struct AnnotateMainView: View {
                 }
 
                 ZStack(alignment: .top) {
+                    if !state.showsNotinhasExportPreview {
+                        AnnotateWorkspaceBackground()
+                    }
+
                     Group {
                         if state.showsNotinhasExportPreview, let previewImage = state.notinhasExportPreviewImage {
                             AnnotateExportPreviewView(image: previewImage)

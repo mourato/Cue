@@ -386,6 +386,7 @@ struct AnnotateBottomBarView: View {
             let copyKeys = AnnotateOverlayTooltipKeys.actionKeys(for: .copyAndClose, manager: annotateShortcutManager)
             BottomBarButton(
                 icon: "doc.on.doc",
+                title: L10n.Common.copy,
                 tooltipTitle: L10n.AnnotateUI.copyToClipboard,
                 tooltipKeys: copyKeys,
             ) {
@@ -554,6 +555,7 @@ struct AnnotateBottomBarView: View {
 
 struct BottomBarButton: View {
     let icon: String
+    var title: String?
     let tooltipTitle: String
     var tooltipKeys: [String] = []
     let action: () -> Void
@@ -561,23 +563,37 @@ struct BottomBarButton: View {
     @State private var isHovering = false
 
     var body: some View {
-        Button(action: action) {
-            Image(systemName: icon)
-                .font(.system(size: 14))
-                .foregroundColor(.primary)
-                .frame(width: 28, height: 28)
-                .background(
-                    RoundedRectangle(cornerRadius: 6)
-                        .fill(isHovering ? Color.primary.opacity(0.15) : Color.clear),
-                )
+        if let title {
+            Button(action: action) {
+                Label(title, systemImage: icon)
+                    .font(.system(size: 12, weight: .semibold))
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.small)
+            .tint(.blue)
+            .overlayTooltip(tooltipTitle, keys: tooltipKeys, edge: .above)
+            .accessibilityLabel(accessibilityTitle)
+        } else {
+            Button(action: action) {
+                Image(systemName: icon)
+                    .font(.system(size: 14))
+                    .foregroundColor(.primary)
+                    .frame(width: 28, height: 28)
+                    .background(
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(isHovering ? Color.primary.opacity(0.15) : Color.clear),
+                    )
+            }
+            .buttonStyle(.plain)
+            .onHover { isHovering = $0 }
+            .overlayTooltip(tooltipTitle, keys: tooltipKeys, edge: .above)
+            .accessibilityLabel(accessibilityTitle)
         }
-        .buttonStyle(.plain)
-        .onHover { isHovering = $0 }
-        .overlayTooltip(tooltipTitle, keys: tooltipKeys, edge: .above)
-        .accessibilityLabel(
-            tooltipKeys.isEmpty
-                ? tooltipTitle
-                : L10n.Common.withShortcut(tooltipTitle, tooltipKeys.joined(separator: "")),
-        )
+    }
+
+    private var accessibilityTitle: String {
+        tooltipKeys.isEmpty
+            ? tooltipTitle
+            : L10n.Common.withShortcut(tooltipTitle, tooltipKeys.joined(separator: ""))
     }
 }
