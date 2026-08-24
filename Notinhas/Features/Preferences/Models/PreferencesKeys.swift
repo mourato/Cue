@@ -85,6 +85,9 @@ enum PreferencesKeys {
     static let legacyNotinhasNotesPanelSide = "notinhas.notes.panelSide"
     /// Legacy ImgBB API key in UserDefaults. Retained for one-time migration only; new writes use Keychain.
     static let notinhasImgBBAPIKey = "notinhas.imgbb.apiKey"
+    /// Non-secret presence cache so Annotate / Quick Access can enable upload without unlocking Keychain.
+    static let imgbbCredentialConfigured = "notinhas.imgbb.credentialConfigured"
+    static let imageKitCredentialConfigured = "notinhas.imagekit.credentialConfigured"
     static let annotateCustomColors = "annotate.customColors.v1"
     static let annotateFavoriteColors = "annotate.favoriteColors.v1"
     static let ocrSuccessNotificationEnabled = "ocr.successNotificationEnabled"

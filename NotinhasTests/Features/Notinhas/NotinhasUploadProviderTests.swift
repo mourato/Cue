@@ -4,8 +4,11 @@ import XCTest
 @MainActor
 final class NotinhasUploadProviderTests: XCTestCase {
     func testImageKitCredentialIsTrimmedMaskedAndClearable() throws {
+        let suite = "notinhas.imagekit.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defaults.removePersistentDomain(forName: suite)
         let keychain = MockProviderKeychain()
-        let store = NotinhasImageKitCredentialStore(keychain: keychain)
+        let store = NotinhasImageKitCredentialStore(defaults: defaults, keychain: keychain)
 
         try store.save(privateKey: "  fixture-private-key  ")
 
@@ -13,10 +16,26 @@ final class NotinhasUploadProviderTests: XCTestCase {
         XCTAssertEqual(store.privateKey, "fixture-private-key")
         XCTAssertEqual(store.maskedPrivateKey, "fixt••••-key")
         XCTAssertTrue(store.isConfigured)
+        XCTAssertTrue(defaults.bool(forKey: PreferencesKeys.imageKitCredentialConfigured))
 
         store.clear()
         XCTAssertFalse(store.isConfigured)
         XCTAssertNil(keychain.storedValue)
+        XCTAssertFalse(defaults.bool(forKey: PreferencesKeys.imageKitCredentialConfigured))
+        defaults.removePersistentDomain(forName: suite)
+    }
+
+    func testImageKitInitProbesWithoutUnlockingRead() {
+        let suite = "notinhas.imagekit.probe.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defaults.removePersistentDomain(forName: suite)
+        let keychain = MockProviderKeychain(storedValue: "fixture-private-key")
+        let store = NotinhasImageKitCredentialStore(defaults: defaults, keychain: keychain)
+
+        XCTAssertTrue(store.isConfigured)
+        XCTAssertEqual(keychain.probeCount, 1)
+        XCTAssertEqual(keychain.readCount, 0)
+        defaults.removePersistentDomain(forName: suite)
     }
 
     func testImageKitCredentialRejectsWhitespace() {
@@ -34,7 +53,7 @@ final class NotinhasUploadProviderTests: XCTestCase {
         let store = NotinhasUploadConfigurationStore(
             defaults: defaults,
             imgbb: NotinhasImgBBCredentialStore(defaults: defaults, keychain: MockProviderKeychain()),
-            imageKit: NotinhasImageKitCredentialStore(keychain: MockProviderKeychain()),
+            imageKit: NotinhasImageKitCredentialStore(defaults: defaults, keychain: MockProviderKeychain()),
         )
 
         XCTAssertEqual(store.provider, .imgbb)
@@ -46,9 +65,21 @@ final class NotinhasUploadProviderTests: XCTestCase {
 
 private final class MockProviderKeychain: ImgBBKeychainBacking, ImageKitKeychainBacking {
     var storedValue: String?
+    private(set) var readCount = 0
+    private(set) var probeCount = 0
+
+    init(storedValue: String? = nil) {
+        self.storedValue = storedValue
+    }
 
     func read(context _: String) -> CloudKeychainReadOutcome {
-        storedValue.map(CloudKeychainReadOutcome.success) ?? .itemNotFound
+        readCount += 1
+        return storedValue.map(CloudKeychainReadOutcome.success) ?? .itemNotFound
+    }
+
+    func probePresence(context _: String) -> CloudKeychainPresence {
+        probeCount += 1
+        return storedValue == nil ? .absent : .present
     }
 
     func upsert(value: String) throws {
