@@ -42,7 +42,7 @@ nonisolated enum NotinhasNoteGeometry {
                 CGPoint(x: center.x + delta.x, y: center.y + delta.y),
                 within: bounds,
             ))
-        case .rect(let rect):
+        case .rect(let rect, let pinCorner):
             let standardized = rect.standardized
             var translated = CGRect(
                 x: standardized.origin.x + delta.x,
@@ -60,7 +60,7 @@ nonisolated enum NotinhasNoteGeometry {
             } else {
                 translated.origin.y = max(bounds.minY, min(translated.origin.y, bounds.maxY - translated.height))
             }
-            return .rect(translated)
+            return .rect(translated, pinCorner)
         }
     }
 
@@ -84,7 +84,7 @@ nonisolated enum NotinhasNoteGeometry {
         to point: CGPoint,
         within bounds: CGRect,
     ) -> NotinhasNoteTarget {
-        guard case .rect(let rect) = target else { return target }
+        guard case .rect(let rect, let pinCorner) = target else { return target }
 
         let original = rect.standardized
         let imageBounds = bounds.standardized
@@ -119,7 +119,10 @@ nonisolated enum NotinhasNoteGeometry {
             minY = min(clampedPoint.y, maxY - minimumHeight)
         }
 
-        return .rect(CGRect(x: minX, y: minY, width: maxX - minX, height: maxY - minY))
+        return .rect(
+            CGRect(x: minX, y: minY, width: maxX - minX, height: maxY - minY),
+            pinCorner,
+        )
     }
 
     static func clampedRect(from start: CGPoint, to end: CGPoint, within bounds: CGRect) -> CGRect {
@@ -141,8 +144,22 @@ nonisolated enum NotinhasNoteGeometry {
         )
     }
 
-    static func pinCenter(for rect: CGRect) -> CGPoint {
-        CGPoint(x: rect.minX, y: rect.midY)
+    /// Badge center sits exactly on the chosen vertex of `rect` (image space, y-up).
+    static func pinCenter(
+        for rect: CGRect,
+        pinCorner: NotinhasRectPinCorner = .legacyFallback,
+    ) -> CGPoint {
+        let standardized = rect.standardized
+        switch pinCorner {
+        case .topLeft:
+            return CGPoint(x: standardized.minX, y: standardized.maxY)
+        case .topRight:
+            return CGPoint(x: standardized.maxX, y: standardized.maxY)
+        case .bottomLeft:
+            return CGPoint(x: standardized.minX, y: standardized.minY)
+        case .bottomRight:
+            return CGPoint(x: standardized.maxX, y: standardized.minY)
+        }
     }
 
     static func pinAnchor(for target: NotinhasNoteTarget) -> CGPoint {
@@ -347,9 +364,9 @@ nonisolated enum NotinhasNoteGeometry {
                 width: pinDiameter,
                 height: pinDiameter,
             )
-        case .rect(let rect):
+        case .rect(let rect, let pinCorner):
             let standardized = rect.standardized
-            let center = pinCenter(for: standardized)
+            let center = pinCenter(for: standardized, pinCorner: pinCorner)
             let pinBounds = CGRect(
                 x: center.x - pinDiameter / 2,
                 y: center.y - pinDiameter / 2,
@@ -372,13 +389,16 @@ nonisolated enum NotinhasNoteGeometry {
                 x: point.x - cropOrigin.x + destinationOffset.x,
                 y: point.y - cropOrigin.y + destinationOffset.y,
             ))
-        case .rect(let rect):
-            transformed.target = .rect(CGRect(
-                x: rect.origin.x - cropOrigin.x + destinationOffset.x,
-                y: rect.origin.y - cropOrigin.y + destinationOffset.y,
-                width: rect.width,
-                height: rect.height,
-            ))
+        case .rect(let rect, let pinCorner):
+            transformed.target = .rect(
+                CGRect(
+                    x: rect.origin.x - cropOrigin.x + destinationOffset.x,
+                    y: rect.origin.y - cropOrigin.y + destinationOffset.y,
+                    width: rect.width,
+                    height: rect.height,
+                ),
+                pinCorner,
+            )
         }
         return transformed
     }

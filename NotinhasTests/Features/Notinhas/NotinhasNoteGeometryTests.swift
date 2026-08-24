@@ -33,7 +33,7 @@ final class NotinhasNoteGeometryTests: XCTestCase {
             by: CGPoint(x: 20, y: 0),
             within: bounds,
         )
-        guard case .rect(let rect) = translated else {
+        guard case .rect(let rect, _) = translated else {
             return XCTFail("Expected rect target")
         }
         XCTAssertEqual(rect.origin.x, 80)
@@ -49,7 +49,7 @@ final class NotinhasNoteGeometryTests: XCTestCase {
             within: CGRect(x: 0, y: 0, width: 200, height: 200),
         )
 
-        guard case .rect(let rect) = resized else {
+        guard case .rect(let rect, _) = resized else {
             return XCTFail("Expected rect target")
         }
         XCTAssertEqual(rect, CGRect(x: 20, y: 50, width: 50, height: 40))
@@ -60,7 +60,7 @@ final class NotinhasNoteGeometryTests: XCTestCase {
             to: CGPoint(x: 95, y: 35),
             within: CGRect(x: 0, y: 0, width: 200, height: 200),
         )
-        guard case .rect(let minimumRect) = tooSmall else {
+        guard case .rect(let minimumRect, _) = tooSmall else {
             return XCTFail("Expected rect target")
         }
         XCTAssertEqual(minimumRect.width, NotinhasNoteGeometry.minimumRectSize)
@@ -95,7 +95,7 @@ final class NotinhasNoteGeometryTests: XCTestCase {
             within: CGRect(x: 0, y: 0, width: 200, height: 200),
         )
 
-        guard case .rect(let topRect) = top, case .rect(let leftRect) = left else {
+        guard case .rect(let topRect, _) = top, case .rect(let leftRect, _) = left else {
             return XCTFail("Expected rectangle targets")
         }
         XCTAssertEqual(topRect, CGRect(x: 20, y: 30, width: 80, height: 80))
@@ -129,7 +129,7 @@ final class NotinhasNoteGeometryTests: XCTestCase {
             cropOrigin: CGPoint(x: 5, y: 5),
             destinationOffset: CGPoint(x: 100, y: 200),
         )
-        guard case .rect(let rect) = transformed.target else {
+        guard case .rect(let rect, _) = transformed.target else {
             return XCTFail("Expected rect target")
         }
         XCTAssertEqual(rect.origin.x, 105)
@@ -146,8 +146,94 @@ final class NotinhasNoteGeometryTests: XCTestCase {
         XCTAssertEqual(
             NotinhasNoteTarget.rect(CGRect(x: 10, y: 20, width: 30, height: 15))
                 .rotated(oldSize: size, clockwise: false),
-            .rect(CGRect(x: 25, y: 10, width: 15, height: 30)),
+            .rect(CGRect(x: 25, y: 10, width: 15, height: 30), pinCorner: .bottomLeft),
         )
+    }
+
+    func testPinCenterAnchorsExactlyOnRequestedCorner() {
+        let rect = CGRect(x: 20, y: 30, width: 80, height: 60)
+        XCTAssertEqual(
+            NotinhasNoteGeometry.pinCenter(for: rect, pinCorner: .topLeft),
+            CGPoint(x: 20, y: 90),
+        )
+        XCTAssertEqual(
+            NotinhasNoteGeometry.pinCenter(for: rect, pinCorner: .topRight),
+            CGPoint(x: 100, y: 90),
+        )
+        XCTAssertEqual(
+            NotinhasNoteGeometry.pinCenter(for: rect, pinCorner: .bottomLeft),
+            CGPoint(x: 20, y: 30),
+        )
+        XCTAssertEqual(
+            NotinhasNoteGeometry.pinCenter(for: rect, pinCorner: .bottomRight),
+            CGPoint(x: 100, y: 30),
+        )
+    }
+
+    func testPinCornerFromDragUsesStartVertex() {
+        let start = CGPoint(x: 40, y: 50)
+        XCTAssertEqual(
+            NotinhasRectPinCorner.fromDrag(start: start, end: CGPoint(x: 90, y: 20)),
+            .topLeft,
+        )
+        XCTAssertEqual(
+            NotinhasRectPinCorner.fromDrag(start: start, end: CGPoint(x: 90, y: 80)),
+            .bottomLeft,
+        )
+        XCTAssertEqual(
+            NotinhasRectPinCorner.fromDrag(start: start, end: CGPoint(x: 10, y: 20)),
+            .topRight,
+        )
+        XCTAssertEqual(
+            NotinhasRectPinCorner.fromDrag(start: start, end: CGPoint(x: 10, y: 80)),
+            .bottomRight,
+        )
+    }
+
+    func testResizedAndTranslatedRectPreservePinCorner() {
+        let target = NotinhasNoteTarget.rect(
+            CGRect(x: 20, y: 30, width: 80, height: 60),
+            pinCorner: .bottomRight,
+        )
+        let resized = NotinhasNoteGeometry.resized(
+            target,
+            handle: .topLeft,
+            to: CGPoint(x: 10, y: 100),
+            within: CGRect(x: 0, y: 0, width: 200, height: 200),
+        )
+        let translated = NotinhasNoteGeometry.translated(
+            target,
+            by: CGPoint(x: 5, y: -5),
+            within: CGRect(x: 0, y: 0, width: 200, height: 200),
+        )
+        XCTAssertEqual(resized.pinCorner, .bottomRight)
+        XCTAssertEqual(translated.pinCorner, .bottomRight)
+    }
+
+    func testRectPinCornerRotatesWithImage() {
+        let size = CGSize(width: 100, height: 60)
+        let target = NotinhasNoteTarget.rect(
+            CGRect(x: 10, y: 20, width: 30, height: 15),
+            pinCorner: .topLeft,
+        )
+        XCTAssertEqual(target.rotated(oldSize: size, clockwise: true).pinCorner, .topRight)
+        XCTAssertEqual(target.rotated(oldSize: size, clockwise: false).pinCorner, .bottomLeft)
+    }
+
+    func testRectTargetDecodeDefaultsMissingPinCornerToTopLeft() throws {
+        let modern = NotinhasNoteTarget.rect(
+            CGRect(x: 10, y: 20, width: 30, height: 40),
+            pinCorner: .bottomRight,
+        )
+        var object = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: JSONEncoder().encode(modern)) as? [String: Any],
+        )
+        object.removeValue(forKey: "pinCorner")
+        let decoded = try JSONDecoder().decode(
+            NotinhasNoteTarget.self,
+            from: JSONSerialization.data(withJSONObject: object),
+        )
+        XCTAssertEqual(decoded, .rect(CGRect(x: 10, y: 20, width: 30, height: 40), pinCorner: .topLeft))
     }
 
     func testEditorOriginPrefersRightOfLargeRect() {

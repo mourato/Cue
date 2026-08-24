@@ -81,8 +81,8 @@ final class NotinhasPinSizeTests: XCTestCase {
             pinControlValue: 10,
             creationOrder: 1,
         )
-        // Pin sits on the left edge of the rect; a large diameter extends left of minX.
-        let probe = CGPoint(x: 100 - note.pinDiameter / 2 + 1, y: 60)
+        // Default pin corner is topLeft; a large diameter extends left of minX at maxY.
+        let probe = CGPoint(x: 100 - note.pinDiameter / 2 + 1, y: 80)
 
         XCTAssertTrue(NotinhasNoteGeometry.hitTest(note: note, at: probe))
     }

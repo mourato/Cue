@@ -235,7 +235,11 @@ extension AnnotateState {
         guard let start = notinhasNoteDrawStart, var draft = notinhasDraftNote else { return }
         let distance = hypot(point.x - start.x, point.y - start.y)
         if NotinhasNoteGeometry.shouldCreateRect(dragDistance: distance) {
-            draft.target = .rect(NotinhasNoteGeometry.clampedRect(from: start, to: point, within: imageBounds))
+            let pinCorner = NotinhasRectPinCorner.fromDrag(start: start, end: point)
+            draft.target = .rect(
+                NotinhasNoteGeometry.clampedRect(from: start, to: point, within: imageBounds),
+                pinCorner,
+            )
         } else {
             draft.target = .point(NotinhasNoteGeometry.clampedPoint(start, within: imageBounds))
         }

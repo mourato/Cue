@@ -53,9 +53,10 @@ enum NotinhasNoteRenderer {
                 isSelected: isSelected,
                 in: context,
             )
-        case .rect(let rect):
+        case .rect(let rect, let pinCorner):
             drawRectangleTarget(
                 rect: rect,
+                pinCorner: pinCorner,
                 style: note.areaStyle,
                 color: note.color.nsColor,
                 strokeWidth: note.areaStrokeWidth,
@@ -104,6 +105,7 @@ enum NotinhasNoteRenderer {
 
     static func drawRectangleTarget(
         rect: CGRect,
+        pinCorner: NotinhasRectPinCorner = .legacyFallback,
         style: NotinhasAreaStyle,
         color: NSColor,
         strokeWidth: CGFloat = NotinhasVisualNote.defaultAreaStrokeWidth,
@@ -140,7 +142,7 @@ enum NotinhasNoteRenderer {
             AnnotationShapeFillStyleDrawing.drawHatch(in: standardized, color: color, context: context)
         }
 
-        let pinCenter = NotinhasNoteGeometry.pinCenter(for: standardized)
+        let pinCenter = NotinhasNoteGeometry.pinCenter(for: standardized, pinCorner: pinCorner)
         let circleRect = CGRect(
             x: pinCenter.x - pinRadius,
             y: pinCenter.y - pinRadius,

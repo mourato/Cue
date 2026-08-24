@@ -47,6 +47,10 @@ second canonical design-system document.
   selected, and disabled must remain distinguishable in Light and Dark.
 - Numbered pins/notes are the product identity. Preserve their ordering,
   editing, rendering, and export semantics when changing editor chrome.
+- For rectangular notes, the numbered badge sits centered on one of the four
+  vertices (not a side midpoint). New drags store the drag-start corner;
+  resize/move keep that corner; image rotation remaps it; legacy sessions
+  without a stored corner use `topLeft`. Badge center is exactly on the vertex.
 - Selected rectangles, including note rectangles, expose corner and midpoint
   side handles; a side drag changes one dimension while keeping the opposite
   edge fixed and respecting the minimum size.

@@ -1418,7 +1418,7 @@ final class DrawingCanvasNSView: NSView {
         at displayPoint: CGPoint,
         for note: NotinhasVisualNote,
     ) -> NotinhasNoteGeometry.ResizeHandle? {
-        guard case .rect(let rect) = note.target else { return nil }
+        guard case .rect(let rect, _) = note.target else { return nil }
         for (handle, center) in NotinhasNoteGeometry.resizeHandleCenters(for: rect) {
             if handleRect(at: imageToDisplay(center)).contains(displayPoint) {
                 return handle
@@ -1564,7 +1564,7 @@ final class DrawingCanvasNSView: NSView {
                 imageBounds: notinhasImageBounds(),
             )
             if note.id == state.notinhasSelectedNoteID,
-               case .rect(let rect) = displayNote.target {
+               case .rect(let rect, _) = displayNote.target {
                 drawNotinhasResizeHandles(for: rect, in: context)
             }
         }

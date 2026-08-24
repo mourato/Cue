@@ -10,17 +10,24 @@ import Foundation
 
 nonisolated enum NotinhasNoteTarget: Codable, Equatable {
     case point(CGPoint)
-    case rect(CGRect)
+    /// Rectangular area with the numbered badge anchored at `pinCorner`.
+    case rect(CGRect, NotinhasRectPinCorner)
 
     private enum CodingKeys: String, CodingKey {
         case kind
         case point
         case rect
+        case pinCorner
     }
 
     private enum Kind: String, Codable {
         case point
         case rect
+    }
+
+    /// Rectangular note target; defaults to `.topLeft` for call sites without an explicit corner.
+    static func rect(_ rect: CGRect, pinCorner: NotinhasRectPinCorner = .legacyFallback) -> NotinhasNoteTarget {
+        .rect(rect, pinCorner)
     }
 
     init(from decoder: Decoder) throws {
@@ -30,7 +37,12 @@ nonisolated enum NotinhasNoteTarget: Codable, Equatable {
         case .point:
             self = try .point(container.decode(CGPoint.self, forKey: .point))
         case .rect:
-            self = try .rect(container.decode(CGRect.self, forKey: .rect))
+            let rect = try container.decode(CGRect.self, forKey: .rect)
+            let pinCorner = try container.decodeIfPresent(
+                NotinhasRectPinCorner.self,
+                forKey: .pinCorner,
+            ) ?? .legacyFallback
+            self = .rect(rect, pinCorner)
         }
     }
 
@@ -40,9 +52,10 @@ nonisolated enum NotinhasNoteTarget: Codable, Equatable {
         case .point(let point):
             try container.encode(Kind.point, forKey: .kind)
             try container.encode(point, forKey: .point)
-        case .rect(let rect):
+        case .rect(let rect, let pinCorner):
             try container.encode(Kind.rect, forKey: .kind)
             try container.encode(rect, forKey: .rect)
+            try container.encode(pinCorner, forKey: .pinCorner)
         }
     }
 
@@ -53,12 +66,19 @@ nonisolated enum NotinhasNoteTarget: Codable, Equatable {
         return false
     }
 
+    var pinCorner: NotinhasRectPinCorner? {
+        if case .rect(_, let pinCorner) = self {
+            return pinCorner
+        }
+        return nil
+    }
+
     var pinCenter: CGPoint {
         switch self {
         case .point(let point):
             point
-        case .rect(let rect):
-            NotinhasNoteGeometry.pinCenter(for: rect.standardized)
+        case .rect(let rect, let pinCorner):
+            NotinhasNoteGeometry.pinCenter(for: rect.standardized, pinCorner: pinCorner)
         }
     }
 
@@ -70,8 +90,11 @@ nonisolated enum NotinhasNoteTarget: Codable, Equatable {
         switch self {
         case .point(let point):
             .point(AnnotateImageRotation.rotatePoint(point, oldSize: oldSize, clockwise: clockwise))
-        case .rect(let rect):
-            .rect(AnnotateImageRotation.rotateRect(rect, oldSize: oldSize, clockwise: clockwise))
+        case .rect(let rect, let pinCorner):
+            .rect(
+                AnnotateImageRotation.rotateRect(rect, oldSize: oldSize, clockwise: clockwise),
+                pinCorner.rotated(clockwise: clockwise),
+            )
         }
     }
 }

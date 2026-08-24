@@ -100,6 +100,23 @@ final class NotinhasAnnotateStateTests: XCTestCase {
         XCTAssertEqual(state.notinhasNotes[0].target, note.target)
     }
 
+    func testDrawingRectAnchorsPinAtDragStartCorner() {
+        let state = makeState()
+        let color = RGBAColor(red: 1, green: 0, blue: 0, alpha: 1)
+        let bounds = CGRect(x: 0, y: 0, width: 400, height: 400)
+
+        state.notinhasBeginDrawing(at: CGPoint(x: 100, y: 200), color: color)
+        state.notinhasUpdateDrawing(to: CGPoint(x: 180, y: 120), imageBounds: bounds)
+
+        XCTAssertEqual(state.notinhasDraftNote?.target.pinCorner, .topLeft)
+        guard case .rect(let rect, let pinCorner) = state.notinhasDraftNote?.target else {
+            return XCTFail("Expected rect draft")
+        }
+        XCTAssertEqual(pinCorner, .topLeft)
+        XCTAssertEqual(rect.minX, 100, accuracy: 0.001)
+        XCTAssertEqual(rect.maxY, 200, accuracy: 0.001)
+    }
+
     func testMovingNotePreviewDoesNotPublishUntilCommit() {
         let state = makeState()
         let note = makeNote()
