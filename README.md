@@ -47,7 +47,7 @@ The core workflow is local and explicit: captures, history, annotations, and exp
 
 ## Install
 
-> Requires **macOS 13.0** or later.
+> Requires **macOS 26.0** or later.
 
 ### Download a release
 

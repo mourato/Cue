@@ -161,10 +161,7 @@ final class AnnotateState: ObservableObject {
     }
 
     var canUseBackgroundCutout: Bool {
-        if #available(macOS 14.0, *) {
-            return true
-        }
-        return false
+        true
     }
 
     var isBackgroundCutoutAutoCropEnabled: Bool {
@@ -1918,11 +1915,6 @@ final class AnnotateState: ObservableObject {
 
     func applyBackgroundCutout() {
         guard !isCutoutProcessing else { return }
-
-        guard canUseBackgroundCutout else {
-            cutoutErrorMessage = ForegroundCutoutError.unsupportedOS.localizedDescription
-            return
-        }
 
         guard let sourceImage,
               let sourceCGImage = sourceImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else {

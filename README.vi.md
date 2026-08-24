@@ -19,7 +19,7 @@
 
 ## Cài đặt
 
-Yêu cầu **macOS 13.0+**.
+Yêu cầu **macOS 26.0+**.
 
 1. Tải [Releases](https://github.com/mourato/Notinhas/releases) — `Notinhas-v<version>.dmg`
 2. Kéo `Notinhas.app` vào `/Applications`

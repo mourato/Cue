@@ -106,7 +106,7 @@ The `.accessory` activation-policy revert is deferred to a later runloop turn (s
 
 ## Remove Background (Cutout)
 
-- Toolbar button, macOS 14+; `ForegroundCutoutService` (`Services/Media/`) runs Vision `VNGenerateForegroundInstanceMaskRequest`.
+- Toolbar button; `ForegroundCutoutService` (`Services/Media/`) runs Vision `VNGenerateForegroundInstanceMaskRequest`.
 - Non-destructive overlay: original kept, cutout composited through `effectiveSourceImage`; revert restores original.
 - Crop-aware auto-crop: `ForegroundAutoCropPolicy` heuristics → `ForegroundAutoCropDecision` enum; auto-crop applied only when `.suggested` and pref on; applied rect tracked (`cutoutAutoAppliedCropRect`) for exact revert on toggle-off.
 - Global pref `backgroundCutout.autoCropEnabled` (default true), shared with capture-time cutout flow.

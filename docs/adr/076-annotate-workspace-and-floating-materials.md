@@ -10,7 +10,7 @@ notes and shapes must remain prominent while canvas styling and export actions
 stay close to the image. Screendrop demonstrates a useful visual treatment: a
 neutral dotted workspace, labeled primary actions, and glass-like floating
 controls. Its current implementation targets macOS 26.4 and uses Liquid Glass,
-while Notinhas continues to support its macOS 13 deployment target.
+while Notinhas targets macOS 26.0+ and keeps a Reduce Transparency solid fallback for Liquid Glass chrome.
 
 ## Decision
 

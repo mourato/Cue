@@ -199,13 +199,13 @@ final class ScreenCaptureManager: ObservableObject {
 
     /// Request screen recording permission by triggering the system prompt.
     ///
-    /// Strategy (macOS 13+):
+    /// Strategy:
     /// 1. Fast-path if already granted (`CGPreflightScreenCaptureAccess`).
-    /// 2. Try `SCShareableContent.current` — on macOS 13–14 this triggers the
-    ///    native system dialog that auto-adds the app to Screen Recording.
+    /// 2. Try `SCShareableContent.current` — triggers the native system dialog
+    ///    that auto-adds the app to Screen Recording when possible.
     /// 3. If SCShareableContent throws (not-permitted), fall back to
-    ///    `CGRequestScreenCaptureAccess()` which opens System Settings on
-    ///    macOS 15+ so the user can manually toggle the app on.
+    ///    `CGRequestScreenCaptureAccess()` which opens System Settings so the
+    ///    user can manually toggle the app on.
     func requestPermission() async -> Bool {
         AppIdentityManager.shared.refresh()
 
@@ -215,7 +215,7 @@ final class ScreenCaptureManager: ObservableObject {
             return hasPermission
         }
 
-        // Primary: ScreenCaptureKit triggers the native permission dialog (macOS 13-14)
+        // Primary: ScreenCaptureKit triggers the native permission dialog
         // and auto-adds the app to the Screen Recording list.
         do {
             _ = try await SCShareableContent.current
@@ -224,7 +224,7 @@ final class ScreenCaptureManager: ObservableObject {
             return hasPermission
         } catch {
             // SCShareableContent threw — permission not yet granted.
-            // Fallback: CGRequestScreenCaptureAccess opens System Settings on macOS 15+.
+            // Fallback: CGRequestScreenCaptureAccess opens System Settings when needed.
             let granted = CGRequestScreenCaptureAccess()
             if !granted {
                 openScreenRecordingPreferences()
@@ -263,65 +263,27 @@ final class ScreenCaptureManager: ObservableObject {
         return task
     }
 
+    /// Former CoreGraphics display grab. `CGDisplayCreateImage` is unavailable at the
+    /// macOS 26 deployment target; callers must use ScreenCaptureKit (`captureDisplaySnapshots`).
     func captureFastDisplaySnapshot(
-        displayID: CGDirectDisplayID,
-        showCursor: Bool,
-        excludeDesktopIcons: Bool,
-        excludeDesktopWidgets: Bool,
-        excludeOwnApplication: Bool = false,
-        allowFastPathWhenOwnApplicationHidden: Bool = false,
+        displayID _: CGDirectDisplayID,
+        showCursor _: Bool,
+        excludeDesktopIcons _: Bool,
+        excludeDesktopWidgets _: Bool,
+        excludeOwnApplication _: Bool = false,
+        allowFastPathWhenOwnApplicationHidden _: Bool = false,
     ) -> FrozenDisplaySnapshot? {
-        guard !excludeOwnApplication || allowFastPathWhenOwnApplicationHidden else { return nil }
-        guard !showCursor else { return nil }
-        guard !excludeDesktopIcons else { return nil }
-        guard !excludeDesktopWidgets else { return nil }
-        guard let screen = NSScreen.screens.first(where: { $0.displayID == displayID }) else {
-            return nil
-        }
-        guard let image = CGDisplayCreateImage(displayID) else {
-            return nil
-        }
-
-        let scaleFactor = Self.imageScaleFactor(
-            for: image,
-            screenFrame: screen.frame,
-            fallback: screen.backingScaleFactor,
-        )
-
-        return FrozenDisplaySnapshot(
-            displayID: displayID,
-            screenFrame: screen.frame,
-            scaleFactor: scaleFactor,
-            colorSpaceName: preferredCaptureColorSpaceName(for: screen),
-            image: image,
-        )
+        nil
     }
 
-    /// Off-main-thread variant — caller must resolve NSScreen data on main thread first,
-    /// then pass as value types so CGDisplayCreateImage can run on a background thread.
+    /// Former off-main CoreGraphics display grab; always unavailable at macOS 26+.
     nonisolated func captureFastDisplaySnapshotOffMain(
-        displayID: CGDirectDisplayID,
-        screenFrame: CGRect,
-        backingScaleFactor: CGFloat,
-        colorSpaceName: String?,
+        displayID _: CGDirectDisplayID,
+        screenFrame _: CGRect,
+        backingScaleFactor _: CGFloat,
+        colorSpaceName _: String?,
     ) -> FrozenDisplaySnapshot? {
-        guard let image = CGDisplayCreateImage(displayID) else {
-            return nil
-        }
-
-        let scaleFactor = Self.imageScaleFactor(
-            for: image,
-            screenFrame: screenFrame,
-            fallback: backingScaleFactor,
-        )
-
-        return FrozenDisplaySnapshot(
-            displayID: displayID,
-            screenFrame: screenFrame,
-            scaleFactor: scaleFactor,
-            colorSpaceName: colorSpaceName as CFString?,
-            image: image,
-        )
+        nil
     }
 
     func captureDisplaySnapshots(
@@ -409,7 +371,7 @@ final class ScreenCaptureManager: ObservableObject {
                 let screenFrame = screen.frame
 
                 group.addTask {
-                    let image = try await Self.captureImageCompat(
+                    let image = try await SCScreenshotManager.captureImage(
                         contentFilter: filter,
                         configuration: configuration,
                     )
@@ -509,12 +471,8 @@ final class ScreenCaptureManager: ObservableObject {
             let outputScaleFactor = max(nativeScaleFactor, preferredScreenshotOutputScaleFactor)
 
             let config = SCStreamConfiguration()
-            if #available(macOS 14.0, *) {
-                config.ignoreShadowsSingleWindow = false
-            }
-            if #available(macOS 14.2, *) {
-                config.captureResolution = .best
-            }
+            config.ignoreShadowsSingleWindow = false
+            config.captureResolution = .best
             let captureFrame = matchedScreen?.frame ?? display.frame
             config.width = max(1, Int((captureFrame.width * nativeScaleFactor).rounded()))
             config.height = max(1, Int((captureFrame.height * nativeScaleFactor).rounded()))
@@ -524,8 +482,8 @@ final class ScreenCaptureManager: ObservableObject {
                 config.colorSpaceName = colorSpaceName
             }
 
-            // Capture the image (compat: SCScreenshotManager requires macOS 14+)
-            let image = try await Self.captureImageCompat(
+            // Capture the image via SCScreenshotManager
+            let image = try await SCScreenshotManager.captureImage(
                 contentFilter: filter,
                 configuration: config,
             )
@@ -598,31 +556,17 @@ final class ScreenCaptureManager: ObservableObject {
         defer { isCapturing = false }
 
         do {
-            let canUseFastPath = canUseFastDisplayCapturePath(
-                showCursor: showCursor,
-                excludeDesktopIcons: excludeDesktopIcons,
-                excludeDesktopWidgets: excludeDesktopWidgets,
-                excludeOwnApplication: excludeOwnApplication,
-                allowFastPathWhenOwnApplicationHidden: allowFastPathWhenOwnApplicationHidden,
+            // Always ScreenCaptureKit — CGDisplayCreateImage is unavailable at macOS 26+.
+            _ = allowFastPathWhenOwnApplicationHidden
+            let includeDesktopWindows = excludeDesktopIcons || excludeDesktopWidgets
+            let content = try await loadShareableContent(
+                prefetchedContentTask: prefetchedContentTask,
+                includeDesktopWindows: includeDesktopWindows,
             )
-            let content: SCShareableContent?
-            let targets: [DisplayCaptureTarget]
-
-            if canUseFastPath {
-                content = nil
-                targets = makeFastDisplayCaptureTargets(targetDisplayIDs: targetDisplayIDs)
-            } else {
-                let includeDesktopWindows = excludeDesktopIcons || excludeDesktopWidgets
-                let loadedContent = try await loadShareableContent(
-                    prefetchedContentTask: prefetchedContentTask,
-                    includeDesktopWindows: includeDesktopWindows,
-                )
-                content = loadedContent
-                targets = makeDisplayCaptureTargets(
-                    content: loadedContent,
-                    targetDisplayIDs: targetDisplayIDs,
-                )
-            }
+            let targets = makeDisplayCaptureTargets(
+                content: content,
+                targetDisplayIDs: targetDisplayIDs,
+            )
 
             guard !targets.isEmpty else {
                 return MultiDisplayScreenshotResult(
@@ -637,7 +581,6 @@ final class ScreenCaptureManager: ObservableObject {
             let payloads = await captureDisplayPayloads(
                 targets: targets,
                 content: content,
-                canUseFastPath: canUseFastPath,
                 showCursor: showCursor,
                 excludeDesktopIcons: excludeDesktopIcons,
                 excludeDesktopWidgets: excludeDesktopWidgets,
@@ -731,53 +674,14 @@ final class ScreenCaptureManager: ObservableObject {
         }
     }
 
-    private func makeFastDisplayCaptureTargets(
-        targetDisplayIDs: Set<CGDirectDisplayID>? = nil,
-    ) -> [DisplayCaptureTarget] {
-        NSScreen.screens.enumerated().compactMap { order, screen in
-            guard let displayID = screen.displayID,
-                  targetDisplayIDs?.contains(displayID) ?? true else { return nil }
-            return DisplayCaptureTarget(
-                displayID: displayID,
-                order: order,
-                screen: screen,
-                screenFrame: screen.frame,
-                display: nil,
-                scaleFactor: screen.backingScaleFactor,
-            )
-        }
-    }
-
-    private func canUseFastDisplayCapturePath(
-        showCursor: Bool,
-        excludeDesktopIcons: Bool,
-        excludeDesktopWidgets: Bool,
-        excludeOwnApplication: Bool,
-        allowFastPathWhenOwnApplicationHidden: Bool,
-    ) -> Bool {
-        !showCursor
-            && !excludeDesktopIcons
-            && !excludeDesktopWidgets
-            && (!excludeOwnApplication || allowFastPathWhenOwnApplicationHidden)
-    }
-
     private func captureDisplayPayloads(
         targets: [DisplayCaptureTarget],
-        content: SCShareableContent?,
-        canUseFastPath: Bool,
+        content: SCShareableContent,
         showCursor: Bool,
         excludeDesktopIcons: Bool,
         excludeDesktopWidgets: Bool,
         excludeOwnApplication: Bool,
     ) async -> [DisplayPayloadResult] {
-        if canUseFastPath {
-            return await captureDisplayPayloadsUsingCoreGraphics(targets: targets)
-        }
-
-        guard let content else {
-            return targets.map { .failure($0.displayID, .noDisplayFound) }
-        }
-
         let requests = targets.compactMap {
             target -> (
                 displayID: CGDirectDisplayID,
@@ -823,7 +727,7 @@ final class ScreenCaptureManager: ObservableObject {
             for request in requests {
                 group.addTask {
                     do {
-                        let image = try await Self.captureImageCompat(
+                        let image = try await SCScreenshotManager.captureImage(
                             contentFilter: request.filter,
                             configuration: request.configuration,
                         )
@@ -850,60 +754,6 @@ final class ScreenCaptureManager: ObservableObject {
                     } catch {
                         return .failure(request.displayID, .captureFailed(error.localizedDescription))
                     }
-                }
-            }
-
-            var results: [DisplayPayloadResult] = []
-            for await result in group {
-                results.append(result)
-            }
-            return results.sorted(by: Self.displayPayloadResultOrder)
-        }
-    }
-
-    private nonisolated func captureDisplayPayloadsUsingCoreGraphics(
-        targets: [DisplayCaptureTarget],
-    ) async -> [DisplayPayloadResult] {
-        let requests = targets.map {
-            (
-                displayID: $0.displayID,
-                order: $0.order,
-                screenFrame: $0.screenFrame,
-                scaleFactor: $0.scaleFactor,
-            )
-        }
-
-        return await withTaskGroup(of: DisplayPayloadResult.self) { group in
-            for request in requests {
-                group.addTask {
-                    guard let image = CGDisplayCreateImage(request.displayID) else {
-                        return .failure(
-                            request.displayID,
-                            .captureFailed(L10n.ScreenCapture.unableToCaptureSelectedArea),
-                        )
-                    }
-
-                    let imageScaleFactor = Self.imageScaleFactor(
-                        for: image,
-                        screenFrame: request.screenFrame,
-                        fallback: request.scaleFactor,
-                    )
-                    let promotedImage = Self.promoteScreenshotImageIfNeeded(
-                        image,
-                        logicalSize: request.screenFrame.size,
-                        sourceScaleFactor: imageScaleFactor,
-                        minimumOutputScaleFactor: Self.minimumScreenshotOutputScaleFactor,
-                        colorSpaceName: nil,
-                    )
-
-                    return .success(
-                        DisplayCapturePayload(
-                            displayID: request.displayID,
-                            order: request.order,
-                            image: promotedImage.image,
-                            scaleFactor: promotedImage.scaleFactor,
-                        ),
-                    )
                 }
             }
 
@@ -1420,7 +1270,7 @@ final class ScreenCaptureManager: ObservableObject {
     }
 
     func capturePreparedArea(_ context: PreparedAreaCaptureContext) async throws -> PreparedAreaCaptureResult? {
-        let fullImage = try await Self.captureImageCompat(
+        let fullImage = try await SCScreenshotManager.captureImage(
             contentFilter: context.contentFilter,
             configuration: context.configuration,
         )
@@ -1674,12 +1524,8 @@ final class ScreenCaptureManager: ObservableObject {
             value: 1,
             timescale: CMTimeScale(max(1, maximumFrameRate)),
         )
-        if #available(macOS 14.0, *) {
-            configuration.ignoreShadowsSingleWindow = false
-        }
-        if #available(macOS 14.2, *) {
-            configuration.captureResolution = .best
-        }
+        configuration.ignoreShadowsSingleWindow = false
+        configuration.captureResolution = .best
         configuration.colorSpaceName = context.configuration.colorSpaceName
         return configuration
     }
@@ -1782,12 +1628,8 @@ final class ScreenCaptureManager: ObservableObject {
         let fullCaptureHeight = max(1, Int((screenFrame.height * captureScale).rounded()))
 
         let config = SCStreamConfiguration()
-        if #available(macOS 14.0, *) {
-            config.ignoreShadowsSingleWindow = false
-        }
-        if #available(macOS 14.2, *) {
-            config.captureResolution = .best
-        }
+        config.ignoreShadowsSingleWindow = false
+        config.captureResolution = .best
         config.width = fullCaptureWidth
         config.height = fullCaptureHeight
         config.pixelFormat = kCVPixelFormatType_32BGRA
@@ -1848,19 +1690,11 @@ final class ScreenCaptureManager: ObservableObject {
             resolvedWindowScaleFactor(window: window, fallbackDisplayID: fallbackTarget.displayID),
             preferredScreenshotOutputScaleFactor,
         )
-        let contentRect: CGRect = if #available(macOS 14.0, *) {
-            contentFilter.contentRect.isEmpty ? window.frame : contentFilter.contentRect
-        } else {
-            window.frame
-        }
+        let contentRect: CGRect = contentFilter.contentRect.isEmpty ? window.frame : contentFilter.contentRect
 
         let configuration = SCStreamConfiguration()
-        if #available(macOS 14.0, *) {
-            configuration.ignoreShadowsSingleWindow = false
-        }
-        if #available(macOS 14.2, *) {
-            configuration.captureResolution = .best
-        }
+        configuration.ignoreShadowsSingleWindow = false
+        configuration.captureResolution = .best
         configuration.width = max(1, Int((contentRect.width * scaleFactor).rounded()))
         configuration.height = max(1, Int((contentRect.height * scaleFactor).rounded()))
         configuration.pixelFormat = kCVPixelFormatType_32BGRA
@@ -1871,7 +1705,7 @@ final class ScreenCaptureManager: ObservableObject {
             configuration.colorSpaceName = colorSpaceName
         }
 
-        let image = try await Self.captureImageCompat(
+        let image = try await SCScreenshotManager.captureImage(
             contentFilter: contentFilter,
             configuration: configuration,
         )
@@ -1896,12 +1730,10 @@ final class ScreenCaptureManager: ObservableObject {
         window: SCWindow,
         fallbackDisplayID: CGDirectDisplayID,
     ) -> CGFloat {
-        if #available(macOS 14.0, *) {
-            let filter = SCContentFilter(desktopIndependentWindow: window)
-            let pointPixelScale = CGFloat(filter.pointPixelScale)
-            if pointPixelScale > 0 {
-                return pointPixelScale
-            }
+        let filter = SCContentFilter(desktopIndependentWindow: window)
+        let pointPixelScale = CGFloat(filter.pointPixelScale)
+        if pointPixelScale > 0 {
+            return pointPixelScale
         }
 
         if let screen = screenContainingWindow(window, fallbackDisplayID: fallbackDisplayID) {
@@ -2134,7 +1966,7 @@ final class ScreenCaptureManager: ObservableObject {
         display: SCDisplay,
         contentFilter: SCContentFilter? = nil,
     ) -> CGFloat {
-        if #available(macOS 14.0, *), let contentFilter {
+        if let contentFilter {
             let pointPixelScale = CGFloat(contentFilter.pointPixelScale)
             if pointPixelScale.isFinite, pointPixelScale > 0 {
                 return pointPixelScale
@@ -2228,12 +2060,8 @@ final class ScreenCaptureManager: ObservableObject {
         showsCursor: Bool,
     ) -> SCStreamConfiguration {
         let configuration = SCStreamConfiguration()
-        if #available(macOS 14.0, *) {
-            configuration.ignoreShadowsSingleWindow = false
-        }
-        if #available(macOS 14.2, *) {
-            configuration.captureResolution = .best
-        }
+        configuration.ignoreShadowsSingleWindow = false
+        configuration.captureResolution = .best
         configuration.width = max(1, Int((screen.frame.width * scaleFactor).rounded()))
         configuration.height = max(1, Int((screen.frame.height * scaleFactor).rounded()))
         configuration.pixelFormat = kCVPixelFormatType_32BGRA
@@ -2416,29 +2244,6 @@ final class ScreenCaptureManager: ObservableObject {
         case nil:
             standardShareableContentCache = nil
             desktopInclusiveShareableContentCache = nil
-        }
-    }
-
-    /// Compatibility wrapper: uses SCScreenshotManager on macOS 14+, falls back to SCStream single-frame capture on
-    /// macOS
-    /// 13.
-    private static func captureImageCompat(
-        contentFilter: SCContentFilter,
-        configuration: SCStreamConfiguration,
-    ) async throws -> CGImage {
-        if #available(macOS 14.0, *) {
-            try await SCScreenshotManager.captureImage(
-                contentFilter: contentFilter,
-                configuration: configuration,
-            )
-        } else {
-            // Fallback: use SCStream to capture a single frame. The session keeps the
-            // stream/output/delegate alive, surfaces stream errors, and bounds the wait
-            // with a timeout so the capture can never hang forever (issue #286).
-            try await SingleFrameStreamCaptureSession.capture(
-                contentFilter: contentFilter,
-                configuration: configuration,
-            )
         }
     }
 

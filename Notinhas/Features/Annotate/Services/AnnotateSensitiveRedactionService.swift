@@ -332,9 +332,7 @@ final class AnnotateSensitiveRedactionService {
                 request.recognitionLevel = .accurate
                 request.usesLanguageCorrection = true
                 request.minimumTextHeight = 0.01
-                if #available(macOS 13.0, *) {
-                    request.automaticallyDetectsLanguage = true
-                }
+                request.automaticallyDetectsLanguage = true
 
                 do {
                     try VNImageRequestHandler(cgImage: cgImage, options: [:]).perform([request])

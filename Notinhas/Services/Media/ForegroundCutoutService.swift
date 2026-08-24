@@ -35,15 +35,12 @@ struct ForegroundCutoutResult {
 }
 
 enum ForegroundCutoutError: LocalizedError {
-    case unsupportedOS
     case noSubjectDetected
     case cutoutFailed(Error)
     case imageConversionFailed
 
     var errorDescription: String? {
         switch self {
-        case .unsupportedOS:
-            L10n.ForegroundCutout.unsupportedOS
         case .noSubjectDetected:
             L10n.ForegroundCutout.noSubjectDetected
         case .cutoutFailed(let error):
@@ -75,10 +72,6 @@ final class ForegroundCutoutService {
         from image: CGImage,
         policy: ForegroundAutoCropPolicy,
     ) async throws -> ForegroundCutoutResult {
-        guard #available(macOS 14.0, *) else {
-            throw ForegroundCutoutError.unsupportedOS
-        }
-
         DiagnosticLogger.shared.log(
             .info,
             .capture,
@@ -117,10 +110,6 @@ final class ForegroundCutoutService {
     ///   - image: Source image in display pixel coordinates.
     ///   - cropToSubject: When true, trims transparent padding around detected subject bounds.
     func extractForeground(from image: CGImage, cropToSubject: Bool = false) async throws -> CGImage {
-        guard #available(macOS 14.0, *) else {
-            throw ForegroundCutoutError.unsupportedOS
-        }
-
         DiagnosticLogger.shared.log(
             .info,
             .capture,
@@ -149,7 +138,6 @@ final class ForegroundCutoutService {
         }
     }
 
-    @available(macOS 14.0, *)
     private nonisolated static func extractForegroundSync(
         from image: CGImage,
         cropToSubject: Bool,
@@ -197,7 +185,6 @@ final class ForegroundCutoutService {
         return output
     }
 
-    @available(macOS 14.0, *)
     private nonisolated static func extractForegroundResultSync(
         from image: CGImage,
         policy: ForegroundAutoCropPolicy,

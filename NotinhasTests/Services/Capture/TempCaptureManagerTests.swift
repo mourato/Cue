@@ -307,49 +307,51 @@ final class TempCaptureManagerTests: XCTestCase {
         try? FileManager.default.removeItem(at: plan.processingDirectory)
     }
 
-    func testRecordingRecovery_activeSessionIsPreserved() async throws {
-        let exportDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("NotinhasTests_Export_\(UUID().uuidString)")
-        let plan = try manager.makeRecordingSavePlan(exportDirectory: exportDir)
-        let writerURL = plan.processingDirectory.appendingPathComponent("active.mov")
-        _ = manager.updateRecordingManifest(for: plan.processingDirectory, writerURL: writerURL, state: "recording")
-        let results = await manager.recoverRecordingSessions()
+    #if NOTINHAS_VIDEO_MODULE
+        func testRecordingRecovery_activeSessionIsPreserved() async throws {
+            let exportDir = FileManager.default.temporaryDirectory
+                .appendingPathComponent("NotinhasTests_Export_\(UUID().uuidString)")
+            let plan = try manager.makeRecordingSavePlan(exportDirectory: exportDir)
+            let writerURL = plan.processingDirectory.appendingPathComponent("active.mov")
+            _ = manager.updateRecordingManifest(for: plan.processingDirectory, writerURL: writerURL, state: "recording")
+            let results = await manager.recoverRecordingSessions()
 
-        XCTAssertEqual(results, [.active])
-        XCTAssertTrue(FileManager.default.fileExists(atPath: plan.processingDirectory.path))
-        try? FileManager.default.removeItem(at: plan.processingDirectory)
-    }
-
-    func testRecordingRecovery_invalidSessionIsPreserved() async throws {
-        let exportDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("NotinhasTests_Export_\(UUID().uuidString)")
-        let plan = try manager.makeRecordingSavePlan(exportDirectory: exportDir)
-        let writerURL = plan.processingDirectory.appendingPathComponent("invalid.mov")
-        try Data("not a movie".utf8).write(to: writerURL)
-        _ = manager.updateRecordingManifest(for: plan.processingDirectory, writerURL: writerURL, state: "abandoned")
-        let results = await manager.recoverRecordingSessions()
-
-        XCTAssertEqual(results, [.preservedInvalid])
-        XCTAssertTrue(FileManager.default.fileExists(atPath: writerURL.path))
-        try? FileManager.default.removeItem(at: plan.processingDirectory)
-    }
-
-    func testRecordingRecovery_validSessionPromotesToTempCapture() async throws {
-        let exportDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("NotinhasTests_Export_\(UUID().uuidString)")
-        let plan = try manager.makeRecordingSavePlan(exportDirectory: exportDir)
-        let writerURL = plan.processingDirectory.appendingPathComponent("valid.mov")
-        try await makeValidVideo(at: writerURL)
-        _ = manager.updateRecordingManifest(for: plan.processingDirectory, writerURL: writerURL, state: "abandoned")
-        let results = await manager.recoverRecordingSessions()
-
-        guard case .promoted(let recoveredURL) = try XCTUnwrap(results.first) else {
-            return XCTFail("Expected valid session promotion")
+            XCTAssertEqual(results, [.active])
+            XCTAssertTrue(FileManager.default.fileExists(atPath: plan.processingDirectory.path))
+            try? FileManager.default.removeItem(at: plan.processingDirectory)
         }
-        XCTAssertTrue(manager.isTempFile(recoveredURL))
-        XCTAssertTrue(FileManager.default.fileExists(atPath: recoveredURL.path))
-        manager.deleteTempFile(at: recoveredURL)
-    }
+
+        func testRecordingRecovery_invalidSessionIsPreserved() async throws {
+            let exportDir = FileManager.default.temporaryDirectory
+                .appendingPathComponent("NotinhasTests_Export_\(UUID().uuidString)")
+            let plan = try manager.makeRecordingSavePlan(exportDirectory: exportDir)
+            let writerURL = plan.processingDirectory.appendingPathComponent("invalid.mov")
+            try Data("not a movie".utf8).write(to: writerURL)
+            _ = manager.updateRecordingManifest(for: plan.processingDirectory, writerURL: writerURL, state: "abandoned")
+            let results = await manager.recoverRecordingSessions()
+
+            XCTAssertEqual(results, [.preservedInvalid])
+            XCTAssertTrue(FileManager.default.fileExists(atPath: writerURL.path))
+            try? FileManager.default.removeItem(at: plan.processingDirectory)
+        }
+
+        func testRecordingRecovery_validSessionPromotesToTempCapture() async throws {
+            let exportDir = FileManager.default.temporaryDirectory
+                .appendingPathComponent("NotinhasTests_Export_\(UUID().uuidString)")
+            let plan = try manager.makeRecordingSavePlan(exportDirectory: exportDir)
+            let writerURL = plan.processingDirectory.appendingPathComponent("valid.mov")
+            try await makeValidVideo(at: writerURL)
+            _ = manager.updateRecordingManifest(for: plan.processingDirectory, writerURL: writerURL, state: "abandoned")
+            let results = await manager.recoverRecordingSessions()
+
+            guard case .promoted(let recoveredURL) = try XCTUnwrap(results.first) else {
+                return XCTFail("Expected valid session promotion")
+            }
+            XCTAssertTrue(manager.isTempFile(recoveredURL))
+            XCTAssertTrue(FileManager.default.fileExists(atPath: recoveredURL.path))
+            manager.deleteTempFile(at: recoveredURL)
+        }
+    #endif
 
     func testRecordingManifest_pathGuardRejectsOutsideSession() throws {
         let exportDir = FileManager.default.temporaryDirectory

@@ -3072,11 +3072,6 @@ nonisolated enum L10n {
             defaultValue: "Choose the built-in or external microphone used for recordings",
             comment: "Capture preferences setting description",
         )
-        static let microphoneRequiresMacOS = string(
-            "preferences-capture.microphone-requires-macos",
-            defaultValue: "Requires macOS 15.0+",
-            comment: "Capture preferences description when microphone capture is unavailable on the current macOS version",
-        )
         static let removeBackground = string(
             "preferences-capture.remove-background",
             defaultValue: "Remove Background",
@@ -4413,11 +4408,6 @@ nonisolated enum L10n {
             "annotate.remove-background-auto-crop-disabled",
             defaultValue: "Remove Background (Auto-crop disabled in Settings)",
             comment: "Tooltip shown when background cutout is available but auto-crop is disabled in settings",
-        )
-        static let requiresMacOS14OrLater = string(
-            "annotate.requires-macos-14",
-            defaultValue: "Requires macOS 14+",
-            comment: "Tooltip shown when background cutout is unavailable on older macOS versions",
         )
         static let dropImageHere = string(
             "annotate.drop-image-here",
@@ -6992,11 +6982,6 @@ nonisolated enum L10n {
     }
 
     enum ForegroundCutout {
-        static let unsupportedOS = string(
-            "foreground-cutout.unsupported-os",
-            defaultValue: "Background cutout requires macOS 14 or newer.",
-            comment: "Error shown when foreground cutout is unavailable on the current macOS version",
-        )
         static let noSubjectDetected = string(
             "foreground-cutout.no-subject-detected",
             defaultValue: "No foreground subject was detected in the selected area.",

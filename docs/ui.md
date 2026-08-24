@@ -80,9 +80,8 @@ second canonical design-system document.
   collapsed-by-default `Style` section. The annotation toolbar keeps its
   complete visible tool inventory.
 - Floating control islands reuse `captureFloatingToolbarMaterial()`: use
-  Liquid Glass on macOS 26 and later, with the existing material/solid fallback
-  for older systems or Reduce Transparency. Do not apply glass to the full
-  editor, canvas, or sidebar.
+  Liquid Glass by default, with the existing solid fallback for Reduce
+  Transparency. Do not apply glass to the full editor, canvas, or sidebar.
 - The clipboard handoff action is the primary labeled action in the bottom
   action island; secondary actions may remain icon-only with explicit tooltips
   and accessibility labels.

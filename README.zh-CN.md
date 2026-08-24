@@ -19,7 +19,7 @@
 
 ## 安装
 
-需要 **macOS 13.0+**。
+需要 **macOS 26.0+**。
 
 1. 从 [Releases](https://github.com/mourato/Notinhas/releases) 下载 `Notinhas-v<version>.dmg`
 2. 将 `Notinhas.app` 拖入 `/Applications`
