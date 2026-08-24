@@ -7,6 +7,42 @@
 
 import SwiftUI
 
+/// Glyph-only preview of an area/shape fill style (no button chrome).
+struct NotinhasAreaStylePreview: View {
+    let style: NotinhasAreaStyle
+    let color: Color
+    var width: CGFloat = 18
+    var height: CGFloat = 14
+
+    var body: some View {
+        let rect = RoundedRectangle(cornerRadius: 2, style: .continuous)
+        Group {
+            switch style {
+            case .outline:
+                rect
+                    .stroke(color, lineWidth: 2)
+            case .solid:
+                ZStack {
+                    rect.fill(color)
+                    rect.stroke(color, lineWidth: 1.5)
+                }
+            case .tinted:
+                ZStack {
+                    rect.fill(color.opacity(0.22))
+                    rect.stroke(color, lineWidth: 1.5)
+                }
+            case .hatched:
+                ZStack {
+                    rect.stroke(color, lineWidth: 1.5)
+                    NotinhasHatchPreview(color: color)
+                        .clipShape(rect)
+                }
+            }
+        }
+        .frame(width: width, height: height)
+    }
+}
+
 struct NotinhasAreaStylePreviewButton: View {
     let style: NotinhasAreaStyle
     let isSelected: Bool
@@ -15,7 +51,7 @@ struct NotinhasAreaStylePreviewButton: View {
 
     var body: some View {
         Button(action: action) {
-            preview
+            NotinhasAreaStylePreview(style: style, color: color)
                 .frame(width: 28, height: 22)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 5)
@@ -35,36 +71,6 @@ struct NotinhasAreaStylePreviewButton: View {
         .help(style.localizedName)
         .accessibilityLabel(style.localizedName)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
-    }
-
-    @ViewBuilder
-    private var preview: some View {
-        let rect = RoundedRectangle(cornerRadius: 2, style: .continuous)
-        switch style {
-        case .outline:
-            rect
-                .stroke(color, lineWidth: 2)
-                .frame(width: 18, height: 14)
-        case .solid:
-            ZStack {
-                rect.fill(color)
-                rect.stroke(color, lineWidth: 1.5)
-            }
-            .frame(width: 18, height: 14)
-        case .tinted:
-            ZStack {
-                rect.fill(color.opacity(0.22))
-                rect.stroke(color, lineWidth: 1.5)
-            }
-            .frame(width: 18, height: 14)
-        case .hatched:
-            ZStack {
-                rect.stroke(color, lineWidth: 1.5)
-                NotinhasHatchPreview(color: color)
-                    .clipShape(rect)
-            }
-            .frame(width: 18, height: 14)
-        }
     }
 }
 
@@ -86,7 +92,7 @@ private struct NotinhasHatchPreview: View {
     }
 }
 
-private extension AnnotationShapeFillStyle {
+extension AnnotationShapeFillStyle {
     var localizedName: String {
         switch self {
         case .outline:

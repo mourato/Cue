@@ -63,8 +63,13 @@ second canonical design-system document.
   use the same enum but omit solid in the picker.
 - Drawn annotation stroke width uses discrete `AnnotationStrokeWidth` presets
   (`2 / 4 / 6 / 8 / 12`, Screendrop-aligned) via a segmented dot picker in the
-  annotate quick bar, sidebar, inline area controls, and recording annotation
-  toolbar. Continuous stroke sliders are not used for drawn elements.
+  annotate quick-properties stroke popover, sidebar, inline area controls, and
+  recording annotation toolbar. Continuous stroke sliders are not used for drawn
+  elements.
+- In `AnnotateQuickPropertiesBar`, Color, Stroke/Size, and shape Style open as
+  popovers that stay open until dismissed by clicking outside or pressing Esc.
+  Stroke and Style triggers show a live preview of the current value. The bar
+  sizes to its content on a single centered row (no wrap) over the canvas.
 - Notinhas notes share the built-in annotate color dictionary in
   `AnnotateBuiltInColorPalette`, which keeps `NotinhasPaletteColor` hex values
   for named overlaps and still owns numeral ink via palette matching. Do not
