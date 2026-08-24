@@ -249,7 +249,7 @@ final class AnnotateState: ObservableObject {
     static let combineBaseLayerID = UUID(uuidString: "00000000-0000-0000-0000-000000000001")!
 
     @Published private(set) var isCombineMode = false
-    @Published private(set) var combineMode: CombineImagesMode = .autoStitch
+    @Published private(set) var combineMode: CombineImagesMode = .freeCanvas
     @Published private(set) var combineDirection: CombineImagesDirection = .smart
     @Published private(set) var combineResolvedDirection: CombineImagesDirection = .horizontal
     @Published private(set) var combineGap: CGFloat = 0
@@ -303,7 +303,7 @@ final class AnnotateState: ObservableObject {
         refreshCombineLayout()
     }
 
-    func activateCombineMode(preferredMode: CombineImagesMode = .autoStitch) {
+    func activateCombineMode(preferredMode: CombineImagesMode? = nil) {
         guard hasImage else { return }
         if !isCombineMode {
             isCombineMode = true
@@ -311,7 +311,10 @@ final class AnnotateState: ObservableObject {
             selectedTool = .selection
             captureCurrentFreeCombineBounds()
         }
-        setCombineMode(preferredMode)
+        let resolvedMode = preferredMode ?? preferredCombineModeFromDefaults()
+        // Activation (including forced Auto Stitch for multi-file Combine) must not
+        // overwrite the user's remembered in-editor preference.
+        setCombineMode(resolvedMode, persistPreference: false)
     }
 
     func deactivateCombineMode() {
@@ -321,7 +324,7 @@ final class AnnotateState: ObservableObject {
         frozenCombineContentBounds = nil
     }
 
-    func setCombineMode(_ mode: CombineImagesMode) {
+    func setCombineMode(_ mode: CombineImagesMode, persistPreference: Bool = true) {
         guard isCombineMode else { return }
         guard combineMode != mode else {
             refreshCombineLayout()
@@ -332,6 +335,9 @@ final class AnnotateState: ObservableObject {
             captureCurrentFreeCombineBounds()
         }
         combineMode = mode
+        if persistPreference {
+            persistCombineModePreference(mode)
+        }
         switch mode {
         case .autoStitch:
             applyAutomaticCombineLayout()
@@ -1564,7 +1570,7 @@ final class AnnotateState: ObservableObject {
         let imageSize = normalizedCanvasImageSize(for: image)
         guard imageSize.width > 0, imageSize.height > 0 else { return }
 
-        activateCombineMode(preferredMode: combineMode)
+        activateCombineMode(preferredMode: isCombineMode ? combineMode : nil)
 
         let placementBounds = importedImagePlacementBounds(for: imageSize)
         let assetId = UUID()
@@ -1754,7 +1760,7 @@ final class AnnotateState: ObservableObject {
         embeddedImageSnapshotCacheData.removeAll()
         embeddedImageCGImageCache.removeAll()
         isCombineMode = false
-        combineMode = .autoStitch
+        combineMode = preferredCombineModeFromDefaults()
         combineDirection = .smart
         combineResolvedDirection = .horizontal
         combineGap = 0
@@ -2271,11 +2277,32 @@ final class AnnotateState: ObservableObject {
         combineContentBounds = imageBounds.reduce(sourceImageBounds) { $0.union($1) }
     }
 
+    private func preferredCombineModeFromDefaults() -> CombineImagesMode {
+        guard let raw = defaults.string(forKey: PreferencesKeys.annotateCombineLastMode),
+              let mode = CombineImagesMode(rawValue: raw) else {
+            return .freeCanvas
+        }
+        return mode
+    }
+
+    private func persistCombineModePreference(_ mode: CombineImagesMode) {
+        defaults.set(mode.rawValue, forKey: PreferencesKeys.annotateCombineLastMode)
+    }
+
     private func importedImagePlacementBounds(for imageSize: CGSize) -> CGRect {
         if isCombineMode {
-            let baseHeight = max(imageHeight, 1)
-            let scale = baseHeight / max(imageSize.height, 1)
-            let targetSize = CGSize(width: imageSize.width * scale, height: baseHeight)
+            let targetSize: CGSize
+            if combineMode == .autoStitch {
+                let baseHeight = max(imageHeight, 1)
+                let scale = baseHeight / max(imageSize.height, 1)
+                targetSize = CGSize(width: imageSize.width * scale, height: baseHeight)
+            } else {
+                targetSize = downscaledImportedImageSize(
+                    for: imageSize,
+                    maxWidth: max(1, combineContentBounds.width * Self.importedImageMaxCoverage),
+                    maxHeight: max(1, combineContentBounds.height * Self.importedImageMaxCoverage),
+                )
+            }
             return CGRect(
                 origin: CGPoint(x: combineContentBounds.maxX + combineGap, y: combineContentBounds.minY),
                 size: targetSize,
@@ -2288,12 +2315,10 @@ final class AnnotateState: ObservableObject {
             CGRect(origin: .zero, size: CGSize(width: imageWidth, height: imageHeight))
         }
 
-        let maxWidth = max(1, drawingBounds.width * Self.importedImageMaxCoverage)
-        let maxHeight = max(1, drawingBounds.height * Self.importedImageMaxCoverage)
-        let scale = min(maxWidth / imageSize.width, maxHeight / imageSize.height, 1)
-        let targetSize = CGSize(
-            width: max(1, imageSize.width * scale),
-            height: max(1, imageSize.height * scale),
+        let targetSize = downscaledImportedImageSize(
+            for: imageSize,
+            maxWidth: max(1, drawingBounds.width * Self.importedImageMaxCoverage),
+            maxHeight: max(1, drawingBounds.height * Self.importedImageMaxCoverage),
         )
 
         let existingEmbeddedCount = annotations.reduce(into: 0) { count, annotation in
@@ -2314,6 +2339,18 @@ final class AnnotateState: ObservableObject {
         let clampedY = min(max(baseY, minY), maxY)
 
         return CGRect(origin: CGPoint(x: clampedX, y: clampedY), size: targetSize)
+    }
+
+    private func downscaledImportedImageSize(
+        for imageSize: CGSize,
+        maxWidth: CGFloat,
+        maxHeight: CGFloat,
+    ) -> CGSize {
+        let scale = min(maxWidth / imageSize.width, maxHeight / imageSize.height, 1)
+        return CGSize(
+            width: max(1, imageSize.width * scale),
+            height: max(1, imageSize.height * scale),
+        )
     }
 
     // MARK: - Undo/Redo Methods

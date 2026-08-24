@@ -586,6 +586,11 @@ final class DrawingCanvasNSView: NSView {
 
     /// Clamp point to the active drawing bounds. Applied expanded crops become drawable canvas.
     private func clampToCanvasBounds(_ point: CGPoint) -> CGPoint {
+        // Free Canvas: allow embedded-image drag/resize past the current union so gaps
+        // can be created; markup tools stay clamped. Content bounds expand on mouseUp.
+        if shouldBypassCombineCanvasClamp {
+            return point
+        }
         let bounds = state.isCombineMode
             ? state.effectiveContentBounds.standardized
             : state.activeAnnotationBounds.standardized
@@ -593,6 +598,31 @@ final class DrawingCanvasNSView: NSView {
             x: max(bounds.minX, min(point.x, bounds.maxX)),
             y: max(bounds.minY, min(point.y, bounds.maxY)),
         )
+    }
+
+    private var shouldBypassCombineCanvasClamp: Bool {
+        guard state.isCombineMode, state.combineMode == .freeCanvas else { return false }
+        if isResizingAnnotation, let id = resizingAnnotationId {
+            return isEmbeddedImageGestureItem(id: id)
+        }
+        if isDraggingAnnotation {
+            let ids = draggingAnnotationIds.isEmpty
+                ? Set(draggingAnnotationId.map { [$0] } ?? [])
+                : draggingAnnotationIds
+            return ids.contains { isEmbeddedImageGestureItem(id: $0) }
+        }
+        return false
+    }
+
+    private func isEmbeddedImageGestureItem(id: UUID) -> Bool {
+        if let local = gestureLocalItems[id], case .embeddedImage = local.type {
+            return true
+        }
+        if let annotation = state.annotations.first(where: { $0.id == id }),
+           case .embeddedImage = annotation.type {
+            return true
+        }
+        return false
     }
 
     private func interactionPoint(from displayPoint: CGPoint) -> CGPoint {
@@ -604,6 +634,8 @@ final class DrawingCanvasNSView: NSView {
     // MARK: - Mouse Events
 
     override func mouseDown(with event: NSEvent) {
+        // Freeze content bounds for the gesture so live layout/fit does not remap
+        // display↔image coordinates under the cursor (Free Canvas expands on mouseUp).
         if state.isCombineMode {
             state.frozenCombineContentBounds = state.combineContentBounds
         }
