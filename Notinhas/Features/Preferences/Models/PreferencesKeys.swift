@@ -78,6 +78,7 @@ enum PreferencesKeys {
     static let annotateToolParameterDefaults = "annotate.toolParameterDefaults.v1"
     static let annotateQuickPropertiesSyncEnabled = "annotate.quickPropertiesSyncEnabled"
     static let annotateCombineSaveAsEdit = "annotate.combineSaveAsEdit"
+    static let annotateCombineLastMode = "annotate.combineLastMode"
     static let annotateChromeToolbarOrder = "annotate.chrome.toolbarOrder.v1"
     static let annotateChromeBottomOrder = "annotate.chrome.bottomOrder.v1"
     static let annotateChromeEnabledItems = "annotate.chrome.enabled.v1"

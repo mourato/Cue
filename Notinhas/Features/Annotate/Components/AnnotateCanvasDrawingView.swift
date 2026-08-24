@@ -586,6 +586,9 @@ final class DrawingCanvasNSView: NSView {
 
     /// Clamp point to the active drawing bounds. Applied expanded crops become drawable canvas.
     private func clampToCanvasBounds(_ point: CGPoint) -> CGPoint {
+        if state.isCombineMode, state.combineMode == .freeCanvas {
+            return point
+        }
         let bounds = state.isCombineMode
             ? state.effectiveContentBounds.standardized
             : state.activeAnnotationBounds.standardized
@@ -601,10 +604,20 @@ final class DrawingCanvasNSView: NSView {
         return clampToCanvasBounds(rawImagePoint)
     }
 
+    private func refreshFreeCanvasContentBoundsFromGesture() {
+        guard state.isCombineMode, state.combineMode == .freeCanvas else { return }
+        let embeddedBounds = gestureLocalItems.reduce(into: [UUID: CGRect]()) { result, entry in
+            guard case .embeddedImage = entry.value.type else { return }
+            result[entry.key] = entry.value.bounds
+        }
+        guard !embeddedBounds.isEmpty else { return }
+        state.updateCombineContentBoundsForFreeCanvasGesture(localBoundsByAnnotationID: embeddedBounds)
+    }
+
     // MARK: - Mouse Events
 
     override func mouseDown(with event: NSEvent) {
-        if state.isCombineMode {
+        if state.isCombineMode, state.combineMode == .autoStitch {
             state.frozenCombineContentBounds = state.combineContentBounds
         }
         let displayPoint = convert(event.locationInWindow, from: nil)
@@ -867,6 +880,7 @@ final class DrawingCanvasNSView: NSView {
         if isResizingAnnotation, let handle = activeResizeHandle,
            let resizeId = resizingAnnotationId {
             applyGestureResize(handle: handle, resizeId: resizeId, imagePoint: imagePoint, event: event)
+            refreshFreeCanvasContentBoundsFromGesture()
             invalidateLiveLayers()
             return
         }
@@ -941,6 +955,7 @@ final class DrawingCanvasNSView: NSView {
                     gestureLocalItems[draggedID] = dragged.applyingResizeBounds(snapped)
                 }
             }
+            refreshFreeCanvasContentBoundsFromGesture()
             invalidateLiveLayers()
             return
         }
@@ -1084,7 +1099,7 @@ final class DrawingCanvasNSView: NSView {
     }
 
     override func mouseUp(with event: NSEvent) {
-        if state.isCombineMode {
+        if state.isCombineMode, state.combineMode == .autoStitch {
             state.frozenCombineContentBounds = nil
         }
         let displayPoint = convert(event.locationInWindow, from: nil)
