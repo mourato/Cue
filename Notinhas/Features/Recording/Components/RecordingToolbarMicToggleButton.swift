@@ -3,7 +3,7 @@
     //  ToolbarMicToggleButton.swift
     //  Notinhas
 //
-    //  Microphone input menu button for the recording toolbar
+    //  Microphone input device button for the recording toolbar
     //  Styled to match Apple's native macOS recording toolbar
 //
 
@@ -14,6 +14,7 @@
         @ObservedObject var state: RecordingToolbarState
         @State private var isHovered = false
         @State private var showPermissionDeniedAlert = false
+        @State private var showPopover = false
 
         private var systemName: String {
             state.captureMicrophone ? "mic.fill" : "mic.slash.fill"
@@ -28,33 +29,15 @@
         }
 
         var body: some View {
-            Menu {
-                Button {
-                    selectNoMicrophone()
-                } label: {
-                    menuItemLabel(
-                        title: L10n.Microphone.doNotUse,
-                        isSelected: !state.captureMicrophone,
-                    )
-                }
-
-                Divider()
-
-                ForEach(microphoneMenuDevices) { device in
-                    Button {
-                        selectMicrophoneDevice(device)
-                    } label: {
-                        menuItemLabel(
-                            title: device.displayName,
-                            isSelected: state.captureMicrophone && state.microphoneDeviceID == device.id,
-                        )
-                    }
-                }
+            Button {
+                showPopover.toggle()
             } label: {
-                micButtonLabel
+                ToolbarIconButtonLabel(
+                    systemName: systemName,
+                    isActive: state.captureMicrophone,
+                    isHovered: isHovered || showPopover,
+                )
             }
-            .menuStyle(.borderlessButton)
-            .menuIndicator(.hidden)
             .buttonStyle(.plain)
             .frame(
                 width: ToolbarConstants.iconButtonSize,
@@ -66,6 +49,9 @@
             .accessibilityValue(tooltipText)
             .accessibilityAddTraits(state.captureMicrophone ? .isSelected : [])
             .accessibilityHint(L10n.Microphone.chooseInput)
+            .popover(isPresented: $showPopover, arrowEdge: .bottom) {
+                microphonePopoverContent
+            }
             .alert(L10n.Microphone.accessRequiredTitle, isPresented: $showPermissionDeniedAlert) {
                 Button(L10n.Common.openSystemSettings) {
                     openMicrophoneSettings()
@@ -76,19 +62,43 @@
             }
         }
 
+        private var microphonePopoverContent: some View {
+            VStack(alignment: .leading, spacing: 4) {
+                Button {
+                    selectNoMicrophone()
+                    showPopover = false
+                } label: {
+                    menuItemLabel(
+                        title: L10n.Microphone.doNotUse,
+                        isSelected: !state.captureMicrophone,
+                    )
+                }
+                .buttonStyle(.borderless)
+
+                Divider()
+
+                ForEach(microphoneMenuDevices) { device in
+                    Button {
+                        selectMicrophoneDevice(device)
+                        showPopover = false
+                    } label: {
+                        menuItemLabel(
+                            title: device.displayName,
+                            isSelected: state.captureMicrophone && state.microphoneDeviceID == device.id,
+                        )
+                    }
+                    .buttonStyle(.borderless)
+                }
+            }
+            .padding(8)
+            .frame(minWidth: 180)
+        }
+
         private var microphoneMenuDevices: [RecordingMicrophoneDevice] {
             RecordingMicrophoneDeviceProvider.availableDevices(
                 selectedDeviceID: state.microphoneDeviceID,
             )
             .filter { !$0.isUnavailable }
-        }
-
-        private var micButtonLabel: some View {
-            ToolbarIconButtonLabel(
-                systemName: systemName,
-                isActive: state.captureMicrophone,
-                isHovered: isHovered,
-            )
         }
 
         @ViewBuilder

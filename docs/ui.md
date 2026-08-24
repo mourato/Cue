@@ -36,9 +36,10 @@ second canonical design-system document.
   4, 6, 8, and 12; default and selected strokes are 1 and 2 points.
 - Toolbar controls are real `Button`s with a 28×28 visual frame, clear hover
   and selected states, and explicit accessibility selection/value.
-- Recording toolbar microphone, system-audio, and camera menus share the same
-  icon label, frame, hover treatment, inactive opacity, and accessibility state
-  value; opening a device menu must not change the control's geometry.
+- Recording toolbar microphone and camera device popovers, plus system audio,
+  share the same icon label, frame, hover treatment, inactive opacity, and
+  accessibility state value; opening a device popover must not change the
+  control's geometry.
 - Sidebar and swatch states use semantic fills and borders: default, hover,
   selected, and disabled must remain distinguishable in Light and Dark.
 - Numbered pins/notes are the product identity. Preserve their ordering,
