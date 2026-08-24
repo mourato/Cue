@@ -103,8 +103,10 @@ struct AnnotateMainView: View {
 
                     if state.showsQuickPropertiesBar {
                         AnnotateQuickPropertiesBar(state: state)
+                            .fixedSize(horizontal: true, vertical: false)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
+                            .frame(maxWidth: .infinity, alignment: .top)
                             .zIndex(1)
                     }
                 }

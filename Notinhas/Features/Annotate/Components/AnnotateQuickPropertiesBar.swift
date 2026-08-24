@@ -137,10 +137,7 @@ struct AnnotateQuickPropertiesBar: View {
         let hasBeforeArrowStyle = hasBeforeCornerRadius || showCornerRadius
         let hasBeforeShapeFillStyle = hasBeforeArrowStyle || showArrowStyle
 
-        return QuickPropertiesFlowLayout(
-            horizontalSpacing: density.rowSpacing,
-            verticalSpacing: density.rowSpacing,
-        ) {
+        return HStack(alignment: .center, spacing: density.rowSpacing) {
             contextChip(density: density)
                 .frame(width: density.contextChipWidth, alignment: .leading)
 
@@ -393,7 +390,7 @@ struct AnnotateQuickPropertiesBar: View {
                 )
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .fixedSize(horizontal: true, vertical: false)
         .padding(.horizontal, density.horizontalPadding)
         .padding(.vertical, Spacing.sm)
     }
@@ -515,9 +512,7 @@ private struct QuickPropertiesColorPopoverControl: View {
                         selectedColor: $selectedColor,
                         colors: colors,
                         role: role,
-                    ) {
-                        showsPopover = false
-                    }
+                    )
                 }
 
                 ForEach(Array(paletteStore.favoriteColors(for: role).prefix(quickColorLimit)), id: \.self) { color in
@@ -551,7 +546,6 @@ private struct QuickPropertiesColorPopover: View {
     @Binding var selectedColor: Color
     let colors: [Color]
     let role: AnnotateColorPaletteRole
-    let dismiss: () -> Void
 
     @ObservedObject private var paletteStore = AnnotateColorPaletteStore.shared
     @State private var draftCustomColor = Color.red
@@ -817,7 +811,7 @@ private struct QuickPropertiesColorPopover: View {
                 handleFavoriteDrop(payload, targetColor: color)
             },
             onSelect: {
-                selectColorAndDismiss(color)
+                selectColor(color)
             },
         )
     }
@@ -835,7 +829,7 @@ private struct QuickPropertiesColorPopover: View {
             overlayAction: overlayAction,
             overlayHelp: overlayHelp,
             onSelect: {
-                selectColorAndDismiss(color)
+                selectColor(color)
             },
         )
     }
@@ -877,12 +871,11 @@ private struct QuickPropertiesColorPopover: View {
         draftCustomColor = color
     }
 
-    private func selectColorAndDismiss(_ color: Color) {
+    private func selectColor(_ color: Color) {
         originalSelectedColor = nil
         activeDraftTarget = nil
         showsFavoriteSelectionPopover = false
         selectedColor = color
-        dismiss()
     }
 
     private func beginCustomColorDraft() {
@@ -1193,7 +1186,7 @@ private struct QuickPropertiesGroup<Content: View>: View {
     }
 
     var body: some View {
-        HStack(spacing: spacing) {
+        HStack(alignment: .center, spacing: spacing) {
             Text(title)
                 .font(Typography.labelSmall)
                 .foregroundColor(SidebarColors.labelSecondary)
@@ -1232,10 +1225,39 @@ private struct QuickStrokeWidthControl: View {
     @Binding var value: CGFloat
     let groupSpacing: CGFloat
 
+    @State private var showsPopover = false
+
+    private var selection: AnnotationStrokeWidth {
+        AnnotationStrokeWidth.nearest(to: value)
+    }
+
     var body: some View {
         QuickPropertiesGroup(title: title, spacing: groupSpacing) {
-            AnnotationStrokeWidthPicker(value: $value)
+            QuickPropertiesPopoverTriggerButton(
+                title: title,
+                isPresented: $showsPopover,
+            ) {
+                Capsule()
+                    .fill(Color.primary)
+                    .frame(width: 16, height: strokePreviewHeight(for: selection))
+            }
+            .popover(isPresented: $showsPopover, arrowEdge: .bottom) {
+                VStack(alignment: .leading, spacing: Spacing.sm) {
+                    Text(title)
+                        .font(Typography.labelMedium)
+                        .foregroundColor(SidebarColors.labelSecondary)
+                        .lineLimit(1)
+
+                    AnnotationStrokeWidthPicker(value: $value)
+                }
+                .padding(12)
+                .frame(width: 196, alignment: .leading)
+            }
         }
+    }
+
+    private func strokePreviewHeight(for width: AnnotationStrokeWidth) -> CGFloat {
+        min(max(width.points, 2), 8)
     }
 }
 
@@ -1623,17 +1645,41 @@ private struct QuickShapeFillStyleControl: View {
     let color: Color
     let groupSpacing: CGFloat
 
+    @State private var showsPopover = false
+
     var body: some View {
         QuickPropertiesGroup(title: L10n.AnnotateUI.shapeStyle, spacing: groupSpacing) {
-            HStack(spacing: 5) {
-                ForEach(AnnotationShapeFillStyle.allCases) { style in
-                    NotinhasAreaStylePreviewButton(
-                        style: style,
-                        isSelected: selectedStyle == style,
-                        color: color,
-                        action: { selectedStyle = style },
-                    )
+            QuickPropertiesPopoverTriggerButton(
+                title: L10n.AnnotateUI.shapeStyle,
+                isPresented: $showsPopover,
+            ) {
+                NotinhasAreaStylePreview(
+                    style: selectedStyle,
+                    color: color,
+                    width: 16,
+                    height: 12,
+                )
+            }
+            .popover(isPresented: $showsPopover, arrowEdge: .bottom) {
+                VStack(alignment: .leading, spacing: Spacing.sm) {
+                    Text(L10n.AnnotateUI.shapeStyle)
+                        .font(Typography.labelMedium)
+                        .foregroundColor(SidebarColors.labelSecondary)
+                        .lineLimit(1)
+
+                    HStack(spacing: 5) {
+                        ForEach(AnnotationShapeFillStyle.allCases) { style in
+                            NotinhasAreaStylePreviewButton(
+                                style: style,
+                                isSelected: selectedStyle == style,
+                                color: color,
+                                action: { selectedStyle = style },
+                            )
+                        }
+                    }
                 }
+                .padding(12)
+                .frame(minWidth: 196, alignment: .leading)
             }
         }
     }
@@ -1797,6 +1843,37 @@ private struct QuickArrowStyleControl: View {
                 }
             }
         }
+    }
+}
+
+private struct QuickPropertiesPopoverTriggerButton<Preview: View>: View {
+    let title: String
+    @Binding var isPresented: Bool
+    @ViewBuilder let preview: () -> Preview
+
+    var body: some View {
+        Button {
+            isPresented.toggle()
+        } label: {
+            HStack(spacing: 5) {
+                preview()
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 8, weight: .bold))
+                    .foregroundColor(.secondary)
+            }
+            .frame(width: 42, height: 26)
+            .background(
+                RoundedRectangle(cornerRadius: 7)
+                    .fill(SidebarColors.itemDefault),
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 7)
+                    .stroke(Color.secondary.opacity(0.14), lineWidth: 1),
+            )
+        }
+        .buttonStyle(.plain)
+        .help(title)
+        .accessibilityLabel(title)
     }
 }
 
