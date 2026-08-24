@@ -80,11 +80,13 @@ struct AnnotationPropertiesSection: View {
     }
 
     private var strokeWidthSlider: some View {
-        CompactSliderRow(
-            label: L10n.Common.stroke,
-            value: strokeWidthBinding,
-            range: 1 ... 20,
-        )
+        VStack(alignment: .leading, spacing: 4) {
+            Text(L10n.Common.stroke)
+                .font(.system(size: 10))
+                .foregroundColor(.secondary)
+
+            AnnotationStrokeWidthPicker(value: strokeWidthBinding)
+        }
     }
 
     private var magnificationSlider: some View {
@@ -136,7 +138,7 @@ struct AnnotationPropertiesSection: View {
 
     private var strokeWidthBinding: Binding<CGFloat> {
         Binding(
-            get: { annotation?.properties.strokeWidth ?? 3 },
+            get: { annotation?.properties.strokeWidth ?? AnnotationStrokeWidth.default.points },
             set: { newWidth in
                 guard let id = state.selectedAnnotationId else { return }
                 state.updateAnnotationProperties(id: id, strokeWidth: newWidth, recordsUndo: true)

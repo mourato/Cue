@@ -343,14 +343,8 @@ struct AnnotateQuickPropertiesBar: View {
             ) {
                 QuickStrokeWidthControl(
                     title: state.quickStrokeWidthLabel,
-                    iconName: state.quickStrokeWidthIcon,
                     value: state.quickStrokeWidthBinding,
-                    displayText: state.quickStrokeWidthDisplayText,
-                    sliderWidth: density.sliderWidth,
                     groupSpacing: density.groupSpacing,
-                    onEditingChanged: { isEditing in
-                        state.setQuickPropertiesControlEditing(isEditing)
-                    },
                 )
             }
 
@@ -1235,35 +1229,12 @@ private struct QuickSelectionInfoControl: View {
 
 private struct QuickStrokeWidthControl: View {
     let title: String
-    let iconName: String
     @Binding var value: CGFloat
-    let displayText: String
-    let sliderWidth: CGFloat
     let groupSpacing: CGFloat
-    let onEditingChanged: (Bool) -> Void
 
     var body: some View {
         QuickPropertiesGroup(title: title, spacing: groupSpacing) {
-            HStack(spacing: 6) {
-                Image(systemName: iconName)
-                    .font(.system(size: 10))
-                    .foregroundColor(.secondary)
-
-                SteppedSliderControl(
-                    value: $value,
-                    step: 1,
-                    in: AnnotationProperties.controlValueRange,
-                    sliderWidth: sliderWidth,
-                    onEditingChanged: onEditingChanged,
-                )
-
-                Text(displayText)
-                    .font(Typography.labelSmall)
-                    .foregroundColor(SidebarColors.labelSecondary)
-                    .lineLimit(1)
-                    .monospacedDigit()
-                    .frame(width: 28, alignment: .trailing)
-            }
+            AnnotationStrokeWidthPicker(value: $value)
         }
     }
 }

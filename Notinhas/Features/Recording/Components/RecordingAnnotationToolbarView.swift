@@ -25,7 +25,6 @@
         let direction: AnnotationToolbarDirection
 
         private let colorPresets: [Color] = [.red, .blue, .green, .yellow, .white]
-        private let widthPresets: [CGFloat] = [2, 4, 8]
 
         var body: some View {
             contentLayout
@@ -129,18 +128,28 @@
         // MARK: - Width Presets
 
         private var widthPickers: some View {
-            ForEach(widthPresets, id: \.self) { width in
+            ForEach(AnnotationStrokeWidth.allCases) { width in
                 Button {
-                    state.strokeWidth = width
+                    state.strokeWidth = width.points
                 } label: {
-                    RoundedRectangle(cornerRadius: 1)
-                        .fill(state.strokeWidth == width ? Color.primary : Color.primary.opacity(0.4))
-                        .frame(
-                            width: direction == .horizontal ? width * 3 : 16,
-                            height: direction == .horizontal ? 16 : width * 3,
+                    Circle()
+                        .fill(
+                            AnnotationStrokeWidth.nearest(to: state.strokeWidth) == width
+                                ? Color.primary
+                                : Color.primary.opacity(0.4),
                         )
+                        .frame(
+                            width: min(width.points + 2, 13),
+                            height: min(width.points + 2, 13),
+                        )
+                        .frame(width: 20, height: 20)
                 }
                 .buttonStyle(.plain)
+                .help(L10n.Common.strokeWidthOption(Int(width.points)))
+                .accessibilityLabel(L10n.Common.strokeWidthOption(Int(width.points)))
+                .accessibilityAddTraits(
+                    AnnotationStrokeWidth.nearest(to: state.strokeWidth) == width ? .isSelected : [],
+                )
             }
         }
 
