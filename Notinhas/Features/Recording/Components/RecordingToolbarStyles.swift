@@ -90,12 +90,13 @@ struct RecordingToolbarDivider: View {
     struct ToolbarIconButtonLabel: View {
         let systemName: String
         var iconSize: CGFloat = ToolbarConstants.iconSize
+        var isActive: Bool = true
         let isHovered: Bool
 
         var body: some View {
             Image(systemName: systemName)
                 .font(.system(size: iconSize, weight: .medium))
-                .foregroundColor(.primary.opacity(isHovered ? 1.0 : 0.85))
+                .foregroundColor(.primary.opacity(isActive ? (isHovered ? 1.0 : 0.85) : (isHovered ? 0.72 : 0.5)))
                 .frame(
                     width: ToolbarConstants.iconButtonSize,
                     height: ToolbarConstants.iconButtonSize,

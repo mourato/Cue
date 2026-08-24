@@ -34,6 +34,7 @@
                 ToolbarIconButtonLabel(
                     systemName: systemName,
                     iconSize: speakerIconSize,
+                    isActive: state.captureAudio,
                     isHovered: isHovered,
                 )
             }
@@ -42,6 +43,7 @@
             .help(helpText)
             .accessibilityLabel(L10n.RecordingToolbar.systemAudio)
             .accessibilityValue(statusText)
+            .accessibilityAddTraits(state.captureAudio ? .isSelected : [])
         }
     }
 

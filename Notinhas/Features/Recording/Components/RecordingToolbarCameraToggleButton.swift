@@ -4,7 +4,16 @@
 
     struct ToolbarCameraToggleButton: View {
         @ObservedObject var state: RecordingToolbarState
+        @State private var isHovered = false
         @State private var permissionDenied = false
+
+        private var systemName: String {
+            state.captureCamera ? "video.fill" : "video.slash.fill"
+        }
+
+        private var statusText: String {
+            state.captureCamera ? L10n.Camera.on : L10n.Camera.off
+        }
 
         var body: some View {
             Menu {
@@ -14,25 +23,45 @@
                 Divider()
                 ForEach(RecordingCameraDeviceProvider.devices(), id: \.uniqueID) { device in
                     Button {
+                        let wasEnabled = state.captureCamera
                         state.cameraDeviceID = device.uniqueID
                         state.captureCamera = true
                         UserDefaults.standard.set(device.uniqueID, forKey: PreferencesKeys.recordingCameraDeviceID)
+                        if wasEnabled {
+                            state.onCaptureCameraChanged?(true)
+                        }
                     } label: { Text(device.localizedName) }
                 }
             } label: {
-                Image(systemName: state.captureCamera ? "video.fill" : "video.slash.fill")
-                    .frame(width: ToolbarConstants.iconButtonSize, height: ToolbarConstants.iconButtonSize)
+                ToolbarIconButtonLabel(
+                    systemName: systemName,
+                    isActive: state.captureCamera,
+                    isHovered: isHovered,
+                )
             }
             .menuStyle(.borderlessButton)
             .menuIndicator(.hidden)
+            .buttonStyle(.plain)
+            .frame(
+                width: ToolbarConstants.iconButtonSize,
+                height: ToolbarConstants.iconButtonSize,
+            )
             .accessibilityLabel(L10n.Camera.options)
-            .help(state.captureCamera ? L10n.Camera.on : L10n.Camera.off)
+            .accessibilityValue(statusText)
+            .accessibilityAddTraits(state.captureCamera ? .isSelected : [])
+            .onHover { isHovered = $0 }
+            .help(statusText)
             .onChange(of: state.captureCamera) { enabled in
-                guard enabled else { return }
+                guard enabled else {
+                    state.onCaptureCameraChanged?(false)
+                    return
+                }
                 switch AVCaptureDevice.authorizationStatus(for: .video) {
                 case .notDetermined:
                     Task { @MainActor in
-                        if await !(AVCaptureDevice.requestAccess(for: .video)) {
+                        if await AVCaptureDevice.requestAccess(for: .video) {
+                            state.onCaptureCameraChanged?(true)
+                        } else {
                             state.captureCamera = false
                             permissionDenied = true
                         }
@@ -40,7 +69,10 @@
                 case .denied, .restricted:
                     state.captureCamera = false
                     permissionDenied = true
-                default: break
+                case .authorized:
+                    state.onCaptureCameraChanged?(true)
+                @unknown default:
+                    break
                 }
             }
             .alert(L10n.Camera.accessRequiredTitle, isPresented: $permissionDenied) {

@@ -116,6 +116,7 @@
                         isSelected: state.outputMode == mode,
                     ) {
                         state.outputMode = mode
+                        state.onOutputModeChanged?(mode)
                         // Persist selection
                         UserDefaults.standard.set(mode.rawValue, forKey: PreferencesKeys.recordingOutputMode)
                     }

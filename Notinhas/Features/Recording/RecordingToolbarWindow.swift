@@ -146,6 +146,8 @@
         @Published var isPreparingToRecord: Bool = false
 
         var onCaptureModeChanged: ((RecordingCaptureMode) -> Void)?
+        var onCaptureCameraChanged: ((Bool) -> Void)?
+        var onOutputModeChanged: ((RecordingOutputMode) -> Void)?
 
         init() {
             selectedFormat = RecordingToolbarPreferences.selectedFormat()
@@ -241,6 +243,16 @@
         var onCaptureModeChanged: ((RecordingCaptureMode) -> Void)? {
             get { state.onCaptureModeChanged }
             set { state.onCaptureModeChanged = newValue }
+        }
+
+        var onCaptureCameraChanged: ((Bool) -> Void)? {
+            get { state.onCaptureCameraChanged }
+            set { state.onCaptureCameraChanged = newValue }
+        }
+
+        var onOutputModeChanged: ((RecordingOutputMode) -> Void)? {
+            get { state.onOutputModeChanged }
+            set { state.onOutputModeChanged = newValue }
         }
 
         init(anchorRect: CGRect) {

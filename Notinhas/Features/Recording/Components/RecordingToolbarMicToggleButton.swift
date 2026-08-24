@@ -63,6 +63,8 @@
             .onHover { isHovered = $0 }
             .help(tooltipText)
             .accessibilityLabel(accessibilityLabel)
+            .accessibilityValue(tooltipText)
+            .accessibilityAddTraits(state.captureMicrophone ? .isSelected : [])
             .accessibilityHint(L10n.Microphone.chooseInput)
             .alert(L10n.Microphone.accessRequiredTitle, isPresented: $showPermissionDeniedAlert) {
                 Button(L10n.Common.openSystemSettings) {
@@ -84,6 +86,7 @@
         private var micButtonLabel: some View {
             ToolbarIconButtonLabel(
                 systemName: systemName,
+                isActive: state.captureMicrophone,
                 isHovered: isHovered,
             )
         }

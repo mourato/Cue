@@ -45,6 +45,7 @@ flowchart TD
 - Mode changes re-run selection through `RecordingCoordinator.restartSelection(for:)` while preserving the current toolbar configuration (format, quality, audio flags, output mode, cursor/overlay toggles).
 - `.application` carries a `WindowCaptureTarget`; the content filter becomes `SCContentFilter(display:including:)` with the target window plus excepted overlay windows. If the window vanishes from shareable content, the filter falls back to rect capture.
 - The pre-record region overlay (`RecordingRegionOverlayWindow`, one per screen) supports cross-display drag/resize/reselect: `RecordingRegionOverlayView` installs local + global `NSEvent` monitors on gesture start and clamps movement to the unified desktop frame (union of all screen frames). `SCStream` still records a single `SCDisplay` — the display with the largest overlap wins (same rule as area screenshots). During a drag the coordinator takes a lightweight path (`updateOverlayHighlightsOnly`) and persists/repositions only on gesture end.
+- When camera capture is enabled, `RecordingCoordinator` starts a native `AVCaptureVideoPreviewLayer` inside the selected region so framing is visible before recording. The preview follows selection moves/resizes, ignores mouse input, is excluded from the screen stream to avoid duplicating the separate camera track, and stops before the writer starts. GIF mode remains screen-only.
 
 ## Media Pipeline
 
@@ -117,7 +118,8 @@ The pre-record toolbar has a camera button (`RecordingToolbarView` → `Recordin
 | `Notinhas/Features/Recording/RecordingCoordinator.swift` | Toolbar/overlay UX, stop/restart/delete, GIF handoff, screenshot-from-toolbar |
 | `Notinhas/Features/Recording/RecordingSession.swift` | Thread-safe AVAssetWriter session, lazy session start, pause-offset PTS re-timing |
 | `Notinhas/Features/Recording/RecordingToolbarWindow.swift` | Pre-record toolbar + recording status bar window, hover-bar visibility and drag persistence |
-| `Notinhas/Features/Recording/RecordingToolbarView.swift` | Pre-record controls (close, screenshot, mode toggle, mic/system audio, options, Record + output dropdown) |
+| `Notinhas/Features/Recording/RecordingToolbarView.swift` | Pre-record controls (close, screenshot, mode toggle, mic/system audio/camera, options, Record + output dropdown) |
+| `Notinhas/Features/Recording/RecordingCameraPreviewWindow.swift` | Pre-record camera preview session, placement, and exclusion-safe floating window |
 | `Notinhas/Features/Recording/Components/RecordingStatusBarView.swift` | During-recording controls: timer, pause/resume, annotate, restart, delete, stop, waveform |
 | `Notinhas/Features/Recording/Managers/RecordingRegionOverlayWindow.swift` | Cross-display region overlay (drag/resize/reselect) |
 | `Notinhas/Features/Recording/MicrophoneAudioCapturer.swift` | Independent AVCaptureSession mic capture, 48 kHz LPCM pinning |

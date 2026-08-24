@@ -7,6 +7,7 @@
 //
 
     import AppKit
+    import AVFoundation
     import Combine
     import SwiftUI
 
@@ -22,6 +23,7 @@
         private var selectedWindowTarget: WindowCaptureTarget?
         private let captureManager = ScreenCaptureManager.shared
         private let recorder = ScreenRecordingManager.shared
+        private var cameraPreviewWindow: RecordingCameraPreviewWindow?
         private var isStartingRecording = false
         private var localEscapeMonitor: Any?
         private var globalEscapeMonitor: Any?
@@ -88,6 +90,9 @@
             var windowIDs = regionOverlayWindows.map { CGWindowID($0.windowNumber) }
             if let toolbarWindow {
                 windowIDs.append(CGWindowID(toolbarWindow.windowNumber))
+            }
+            if let cameraPreviewWindow {
+                windowIDs.append(CGWindowID(cameraPreviewWindow.windowNumber))
             }
             return (false, windowIDs)
         }
@@ -320,6 +325,7 @@
             toolbarWindow = toolbar
 
             showRegionOverlay(for: rect, interactionEnabled: captureMode != .application)
+            updateCameraPreview()
             setupEscapeMonitors()
         }
 
@@ -332,6 +338,12 @@
             }
             toolbar.onCancel = { [weak self] in
                 self?.cancel()
+            }
+            toolbar.onCaptureCameraChanged = { [weak self] _ in
+                self?.updateCameraPreview()
+            }
+            toolbar.onOutputModeChanged = { [weak self] _ in
+                self?.updateCameraPreview()
             }
             toolbar.onDelete = { [weak self] in
                 self?.deleteRecording()
@@ -404,6 +416,7 @@
                 overlay.updateHighlightRect(rect)
                 overlay.setInteractionEnabledIfNeeded(interactionEnabled)
             }
+            cameraPreviewWindow?.updateSelectionRect(rect)
 
             if syncToolbarMode {
                 if toolbarWindow?.captureMode != captureMode {
@@ -423,6 +436,7 @@
             for overlay in regionOverlayWindows {
                 overlay.updateHighlightRect(rect)
             }
+            cameraPreviewWindow?.updateSelectionRect(rect)
             toolbarWindow?.updateAnchorRect(rect)
         }
 
@@ -505,6 +519,8 @@
         }
 
         private func closePreRecordUI() {
+            closeCameraPreview()
+
             for overlay in regionOverlayWindows {
                 overlay.close()
             }
@@ -513,6 +529,8 @@
             toolbarWindow?.onRecord = nil
             toolbarWindow?.onCapture = nil
             toolbarWindow?.onCancel = nil
+            toolbarWindow?.onCaptureCameraChanged = nil
+            toolbarWindow?.onOutputModeChanged = nil
             toolbarWindow?.onDelete = nil
             toolbarWindow?.onRestart = nil
             toolbarWindow?.onStop = nil
@@ -665,6 +683,48 @@
             }
         }
 
+        private func updateCameraPreview() {
+            guard let toolbarWindow,
+                  toolbarWindow.captureCamera,
+                  toolbarWindow.outputMode != .gif,
+                  let selectedRect else {
+                closeCameraPreview()
+                return
+            }
+
+            guard AVCaptureDevice.authorizationStatus(for: .video) == .authorized else {
+                closeCameraPreview()
+                return
+            }
+
+            let deviceID = toolbarWindow.cameraDeviceID
+            if let cameraPreviewWindow, cameraPreviewWindow.deviceID == deviceID {
+                cameraPreviewWindow.updateSelectionRect(selectedRect)
+                return
+            }
+
+            closeCameraPreview()
+            guard let previewWindow = RecordingCameraPreviewWindow(
+                deviceID: deviceID,
+                selectionRect: selectedRect,
+            ) else {
+                DiagnosticLogger.shared.log(
+                    .warning,
+                    .recording,
+                    "Camera preview setup failed; recording can continue without live preview",
+                )
+                return
+            }
+
+            cameraPreviewWindow = previewWindow
+            previewWindow.start()
+        }
+
+        private func closeCameraPreview() {
+            cameraPreviewWindow?.close()
+            cameraPreviewWindow = nil
+        }
+
         private func startRecording() {
             guard let rect = selectedRect, let window = toolbarWindow else {
                 DiagnosticLogger.shared.log(
@@ -675,6 +735,7 @@
                 return
             }
             guard beginRecordingStartAttempt(source: "toolbar") else { return }
+            closeCameraPreview()
 
             let format = window.selectedFormat
             DiagnosticLogger.shared.log(.info, .recording, "Start recording", context: [
@@ -1105,6 +1166,7 @@
             }
 
             // Hide overlay windows and toolbar so they don't appear in the screenshot
+            closeCameraPreview()
             for overlay in regionOverlayWindows {
                 overlay.orderOut(nil)
             }
