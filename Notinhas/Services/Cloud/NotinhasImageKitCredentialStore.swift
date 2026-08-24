@@ -15,6 +15,7 @@ enum NotinhasImageKitCredentialError: LocalizedError, Equatable {
 
 protocol ImageKitKeychainBacking {
     func read(context: String) -> CloudKeychainReadOutcome
+    func probePresence(context: String) -> CloudKeychainPresence
     func upsert(value: String) throws
     func delete() -> [CloudKeychainDeleteIssue]
 }
@@ -22,6 +23,10 @@ protocol ImageKitKeychainBacking {
 struct CloudKeychainImageKitBacking: ImageKitKeychainBacking {
     func read(context: String) -> CloudKeychainReadOutcome {
         CloudKeychainStore.read(item: .imageKitPrivateKey, context: context)
+    }
+
+    func probePresence(context: String) -> CloudKeychainPresence {
+        CloudKeychainStore.probePresence(item: .imageKitPrivateKey, context: context)
     }
 
     func upsert(value: String) throws {
@@ -38,15 +43,22 @@ final class NotinhasImageKitCredentialStore: ObservableObject {
     static let shared = NotinhasImageKitCredentialStore()
 
     @Published private(set) var revision = UUID()
+    /// Cached without unlocking Keychain. See `NotinhasImgBBCredentialStore.isConfigured`.
     @Published private(set) var isConfigured = false
 
+    private let defaults: UserDefaults
     private let keychain: ImageKitKeychainBacking
 
-    init(keychain: ImageKitKeychainBacking = CloudKeychainImageKitBacking()) {
+    init(
+        defaults: UserDefaults = .standard,
+        keychain: ImageKitKeychainBacking = CloudKeychainImageKitBacking(),
+    ) {
+        self.defaults = defaults
         self.keychain = keychain
         refreshConfiguredState()
     }
 
+    /// Unlocks Keychain when needed. Call only from explicit upload / Preferences paths.
     var privateKey: String? {
         switch keychain.read(context: "imageKitCredential.read") {
         case .success(let value): normalized(value)
@@ -65,6 +77,7 @@ final class NotinhasImageKitCredentialStore: ObservableObject {
         guard !trimmed.isEmpty else { throw NotinhasImageKitCredentialError.emptyKey }
         do {
             try keychain.upsert(value: trimmed)
+            defaults.set(true, forKey: PreferencesKeys.imageKitCredentialConfigured)
             publishChange()
         } catch {
             throw NotinhasImageKitCredentialError.keychainWriteFailed(error.localizedDescription)
@@ -73,10 +86,12 @@ final class NotinhasImageKitCredentialStore: ObservableObject {
 
     func clear() {
         _ = keychain.delete()
+        defaults.set(false, forKey: PreferencesKeys.imageKitCredentialConfigured)
         publishChange()
     }
 
     func reload() {
+        defaults.removeObject(forKey: PreferencesKeys.imageKitCredentialConfigured)
         publishChange()
     }
 
@@ -91,6 +106,16 @@ final class NotinhasImageKitCredentialStore: ObservableObject {
     }
 
     private func refreshConfiguredState() {
-        isConfigured = privateKey != nil
+        isConfigured = resolveConfiguredPresence()
+    }
+
+    private func resolveConfiguredPresence() -> Bool {
+        if let cached = defaults.object(forKey: PreferencesKeys.imageKitCredentialConfigured) as? Bool {
+            return cached
+        }
+
+        let present = keychain.probePresence(context: "imageKitCredential.probe") == .present
+        defaults.set(present, forKey: PreferencesKeys.imageKitCredentialConfigured)
+        return present
     }
 }

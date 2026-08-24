@@ -87,6 +87,13 @@ enum CloudKeychainReadOutcome {
     case error(OSStatus)
 }
 
+/// Non-unlocking Keychain presence result. Used to drive UI enablement without
+/// prompting for the login password / item ACL.
+enum CloudKeychainPresence: Equatable {
+    case present
+    case absent
+}
+
 struct CloudKeychainDeleteIssue {
     let locationDescription: String
     let status: OSStatus
@@ -167,6 +174,53 @@ enum CloudKeychainStore {
         }
 
         return .itemNotFound
+    }
+
+    /// Checks whether a secret exists without returning its value or presenting
+    /// Keychain UI. Prefer this for `isConfigured` caching at launch / editor open.
+    static func probePresence(item: CloudKeychainItem, context: String) -> CloudKeychainPresence {
+        let primaryLocation = Location(
+            service: currentService,
+            account: item.account,
+            usesDataProtection: true,
+        )
+        let primaryPresence = probeValue(at: primaryLocation)
+
+        switch primaryPresence {
+        case .present:
+            return .present
+        case .absent:
+            break
+        case .error(let status) where status == errSecMissingEntitlement:
+            logger.notice(
+                "Data-protection keychain unavailable for presence probe (\(status, privacy: .public)); falling back [\(context, privacy: .public)]",
+            )
+            DiagnosticLogger.shared.log(
+                .warning,
+                .cloud,
+                "Data-protection keychain unavailable for presence probe; falling back",
+                context: [
+                    "operation": context,
+                    "item": itemDiagnosticName(item),
+                    "status": "\(status)",
+                ],
+            )
+        case .error:
+            // Locked or otherwise inaccessible items still count as present so UI
+            // can offer upload; the unlock read happens on explicit use.
+            return .present
+        }
+
+        for legacyLocation in legacyLocations(for: item) {
+            switch probeValue(at: legacyLocation) {
+            case .present, .error:
+                return .present
+            case .absent:
+                continue
+            }
+        }
+
+        return .absent
     }
 
     @discardableResult
@@ -289,6 +343,12 @@ enum CloudKeychainStore {
         return locations
     }
 
+    private enum ProbeOutcome {
+        case present
+        case absent
+        case error(OSStatus)
+    }
+
     private static func readValue(at location: Location) -> CloudKeychainReadOutcome {
         var query = baseQuery(for: location)
         query[kSecReturnData as String] = true
@@ -309,6 +369,28 @@ enum CloudKeychainStore {
             return .authRequired(status)
         case errSecInteractionNotAllowed:
             return .interactionNotAllowed
+        default:
+            return .error(status)
+        }
+    }
+
+    private static func probeValue(at location: Location) -> ProbeOutcome {
+        var query = baseQuery(for: location)
+        query[kSecReturnAttributes as String] = true
+        query[kSecMatchLimit as String] = kSecMatchLimitOne
+        query[kSecUseAuthenticationUI as String] = kSecUseAuthenticationUIFail
+
+        var result: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+
+        switch status {
+        case errSecSuccess:
+            return .present
+        case errSecItemNotFound:
+            return .absent
+        case errSecAuthFailed, errSecUserCanceled, errSecInteractionNotAllowed:
+            // Item exists but unlocking would require UI — treat as present.
+            return .present
         default:
             return .error(status)
         }
