@@ -7,61 +7,126 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Video bearbeiten..."
+            "value": "Video-Editor"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Edit Video..."
+            "value": "Video Editor"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Editar vídeo..."
+            "value": "Editor de vídeo"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Modifier la vidéo..."
+            "value": "Éditeur vidéo"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "ビデオを編集..."
+            "value": "ビデオエディタ"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "비디오 편집..."
+            "value": "비디오 편집기"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Редактировать видео..."
+            "value": "Видеоредактор"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Chỉnh sửa video..."
+            "value": "Trình chỉnh sửa video"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "编辑视频..."
+            "value": "视频编辑器"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "編輯影片..."
+            "value": "影片編輯器"
+          }
+        }
+      }
+    },
+    "menu.choose-application-window": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anwendungsfenster auswählen…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose Application Window…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elegir ventana de la aplicación…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisir la fenêtre de l’application…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アプリケーションウィンドウを選択…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "응용 프로그램 윈도우 선택…"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выбрать окно приложения…"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn cửa sổ ứng dụng…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择应用程序窗口…"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選擇應用程式視窗…"
           }
         }
       }

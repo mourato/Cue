@@ -720,8 +720,13 @@ nonisolated enum L10n {
         )
         static let editVideo = string(
             "menu.edit-video",
-            defaultValue: "Edit Video...",
+            defaultValue: "Video Editor",
             comment: "Status bar menu item title for opening the video editor",
+        )
+        static let chooseApplicationWindow = string(
+            "menu.choose-application-window",
+            defaultValue: "Choose Application Window…",
+            comment: "Status bar menu item title for choosing an application window to capture",
         )
         static let keyboardShortcuts = string(
             "menu.keyboard-shortcuts",

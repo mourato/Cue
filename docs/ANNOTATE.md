@@ -119,7 +119,7 @@ The `.accessory` activation-policy revert is deferred to a later runloop turn (s
 
 ## Combine Images
 
-- `CombineImagesCoordinator` (`Features/Annotate/CombineImagesCoordinator.swift`) — picker entry from status bar menu or `notinhas://open/combine?file=...`; requires ≥2 images.
+- `CombineImagesCoordinator` (`Features/Annotate/CombineImagesCoordinator.swift`) — picker entry from `notinhas://open/combine?file=...`; requires ≥2 images.
 - Modes: autoStitch / freeCanvas; direction smart / horizontal / vertical; edge snapping; session persisted as `PersistedCombineSession` inside the sidecar manifest.
 
 ## Session Sidecars

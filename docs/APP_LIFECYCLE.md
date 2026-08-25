@@ -99,12 +99,14 @@ State machine (`SplashScreen`): `splash` → `language` → `sponsor` (only when
 - Click behavior: button `sendAction(on: [.leftMouseUp, .rightMouseUp])` — both left and right click rebuild and open the same menu (`buildMenu()` runs on every open to refresh state).
 - Menu structure (verified in `buildMenu()`):
   - When recording/paused: **Stop Recording (mm:ss)** and **Pause/Resume Recording**, then separator.
-  - Captures: Capture Area, Capture Area & Annotate, Application Capture (menu action), Capture Fullscreen, Capture Active Window, Scrolling Capture (disabled while a session is active), Capture Text (OCR), Capture Smart Element, Object Cutout.
-  - Recording: Record Screen, Application Recording (both disabled while recorder active).
-  - Tools: Open Annotate, Edit Video, History, Keyboard Shortcuts.
-  - Conditional: **Grant Permission** (when screen permission missing).
+  - Primary captures: All-In-One Capture, Capture Area, Choose Application Window, and Capture Fullscreen.
+  - **Capture** submenu: Capture Markup, Capture Active Window, Scrolling Capture (disabled while a session is active), Capture Text (OCR), Capture Smart Element, Object Cutout, and—when enabled—Record Screen and Application Recording (both disabled while recorder active).
+  - Editors: Annotate and, when enabled, Video Editor.
+  - Library: History.
+  - Conditional: **Grant Permission** (when screen permission is missing, shown before capture actions).
   - Preferences `⌘,`, Quit `⌘Q` (menu title shows **Notinhas**).
   - Configured shortcut key equivalents are attached to menu items via `applyConfiguredShortcut(_:for:using:)`; the Recording → Application Recording overlay shortcut can render as a child-key suffix (see [SHORTCUTS.md](SHORTCUTS.md)).
+  - Keyboard Shortcuts and Combine Images remain available through their existing non-menu routes; they are no longer top-level status-menu items.
 - Recording state rendering: while recording, the title shows a monospaced-digit timer (`recorder.formattedDuration`); when paused it is prefixed with `|| `; tooltip mirrors state. `setProcessing(_:)` swaps the icon for an `NSProgressIndicator` spinner (used e.g. during OCR) on Core Animation so it keeps animating.
 - Visibility: `showMenuBarIcon` pref toggles the status item (`syncStatusItemVisibility`).
 - Preferences activation-policy dance (`presentPreferencesWindow`): elevates `.accessory` → `.regular` so Notinhas appears in the app menu/Cmd+Tab, triggers the Settings scene (synthesized `⌘,` key equivalent), tracks the window (12 retry passes), and reverts to `.accessory` in `windowDidClose` when no other normal windows remain. While recording, the tracked Preferences window is added to the recorder's runtime exclusion list so Notinhas's own window isn't captured.

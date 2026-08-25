@@ -416,6 +416,22 @@ final class AppStatusBarController: ObservableObject {
         }
         let shortcutManager = KeyboardShortcutManager.shared
 
+        // Permission is the only blocking state, so keep its repair action visible before capture.
+        if !viewModel.hasPermission {
+            let permissionItem = NSMenuItem(
+                title: L10n.Menu.grantPermission,
+                action: #selector(grantPermissionAction),
+                keyEquivalent: "",
+            )
+            permissionItem.target = self
+            permissionItem.image = NSImage(
+                systemSymbolName: "lock.shield", accessibilityDescription: nil,
+            )
+            permissionItem.isEnabled = true
+            menu?.addItem(permissionItem)
+            menu?.addItem(NSMenuItem.separator())
+        }
+
         // Recording status indicator (when recording)
         #if NOTINHAS_VIDEO_MODULE
             if recorder.state == .recording || recorder.state == .paused {
@@ -447,7 +463,7 @@ final class AppStatusBarController: ObservableObject {
             }
         #endif
 
-        // Capture Actions
+        // Primary capture actions
         let captureAllInOneItem = NSMenuItem(
             title: L10n.Actions.captureAllInOne,
             action: #selector(captureAllInOneAction),
@@ -458,6 +474,10 @@ final class AppStatusBarController: ObservableObject {
         captureAllInOneItem.image = NSImage(systemSymbolName: "viewfinder", accessibilityDescription: nil)
         captureAllInOneItem.isEnabled = viewModel.hasPermission
         menu?.addItem(captureAllInOneItem)
+        menu?.addItem(NSMenuItem.separator())
+
+        let captureMenu = NSMenu(title: L10n.Preferences.captureTab)
+        captureMenu.autoenablesItems = false
 
         let captureAreaItem = NSMenuItem(
             title: L10n.Actions.captureArea,
@@ -479,10 +499,10 @@ final class AppStatusBarController: ObservableObject {
         captureAreaAnnotateItem.target = self
         captureAreaAnnotateItem.image = NSImage(systemSymbolName: "pencil.and.scribble", accessibilityDescription: nil)
         captureAreaAnnotateItem.isEnabled = viewModel.hasPermission
-        menu?.addItem(captureAreaAnnotateItem)
+        captureMenu.addItem(captureAreaAnnotateItem)
 
         let applicationCaptureItem = NSMenuItem(
-            title: L10n.PreferencesShortcuts.applicationCaptureTitle,
+            title: L10n.Menu.chooseApplicationWindow,
             action: #selector(captureApplicationAction),
             keyEquivalent: "",
         )
@@ -503,6 +523,7 @@ final class AppStatusBarController: ObservableObject {
         )
         captureFullscreenItem.isEnabled = viewModel.hasPermission
         menu?.addItem(captureFullscreenItem)
+        menu?.addItem(NSMenuItem.separator())
 
         let captureActiveWindowItem = NSMenuItem(
             title: L10n.Actions.captureActiveWindow,
@@ -515,7 +536,7 @@ final class AppStatusBarController: ObservableObject {
             systemSymbolName: "macwindow.on.rectangle", accessibilityDescription: nil,
         )
         captureActiveWindowItem.isEnabled = viewModel.hasPermission
-        menu?.addItem(captureActiveWindowItem)
+        captureMenu.addItem(captureActiveWindowItem)
 
         let scrollingCaptureItem = NSMenuItem(
             title: L10n.Actions.scrollingCapture,
@@ -526,7 +547,7 @@ final class AppStatusBarController: ObservableObject {
         scrollingCaptureItem.target = self
         scrollingCaptureItem.image = NSImage(systemSymbolName: "arrow.up.and.down", accessibilityDescription: nil)
         scrollingCaptureItem.isEnabled = viewModel.hasPermission && !ScrollingCaptureCoordinator.shared.isActive
-        menu?.addItem(scrollingCaptureItem)
+        captureMenu.addItem(scrollingCaptureItem)
 
         let captureOCRItem = NSMenuItem(
             title: L10n.Actions.captureTextOCR,
@@ -537,7 +558,7 @@ final class AppStatusBarController: ObservableObject {
         captureOCRItem.target = self
         captureOCRItem.image = NSImage(systemSymbolName: "text.viewfinder", accessibilityDescription: nil)
         captureOCRItem.isEnabled = viewModel.hasPermission
-        menu?.addItem(captureOCRItem)
+        captureMenu.addItem(captureOCRItem)
 
         let captureSmartElementItem = NSMenuItem(
             title: L10n.Actions.captureSmartElement,
@@ -548,7 +569,7 @@ final class AppStatusBarController: ObservableObject {
         captureSmartElementItem.target = self
         captureSmartElementItem.image = NSImage(systemSymbolName: "dot.viewfinder", accessibilityDescription: nil)
         captureSmartElementItem.isEnabled = viewModel.hasPermission
-        menu?.addItem(captureSmartElementItem)
+        captureMenu.addItem(captureSmartElementItem)
 
         let captureObjectCutoutItem = NSMenuItem(
             title: GlobalShortcutKind.objectCutout.displayName,
@@ -562,11 +583,11 @@ final class AppStatusBarController: ObservableObject {
             accessibilityDescription: nil,
         )
         captureObjectCutoutItem.isEnabled = viewModel.hasPermission
-        menu?.addItem(captureObjectCutoutItem)
+        captureMenu.addItem(captureObjectCutoutItem)
 
         if isVideoModuleEnabled {
             #if NOTINHAS_VIDEO_MODULE
-                menu?.addItem(NSMenuItem.separator())
+                captureMenu.addItem(NSMenuItem.separator())
 
                 // Recording
                 let recordItem = NSMenuItem(
@@ -578,7 +599,7 @@ final class AppStatusBarController: ObservableObject {
                 recordItem.target = self
                 recordItem.image = NSImage(systemSymbolName: "record.circle", accessibilityDescription: nil)
                 recordItem.isEnabled = viewModel.hasPermission && !recorder.isActive
-                menu?.addItem(recordItem)
+                captureMenu.addItem(recordItem)
 
                 let applicationRecordingShortcut = CaptureOverlayShortcutSettings.recordingApplicationCaptureShortcut
                 let applicationRecordingItem = NSMenuItem(
@@ -599,17 +620,22 @@ final class AppStatusBarController: ObservableObject {
                     accessibilityDescription: nil,
                 )
                 applicationRecordingItem.isEnabled = viewModel.hasPermission && !recorder.isActive
-                menu?.addItem(applicationRecordingItem)
-
-                menu?.addItem(NSMenuItem.separator())
+                captureMenu.addItem(applicationRecordingItem)
             #endif
-        } else {
-            menu?.addItem(NSMenuItem.separator())
         }
 
-        // Tools
+        let captureMenuItem = NSMenuItem(
+            title: L10n.Preferences.captureTab,
+            action: nil,
+            keyEquivalent: "",
+        )
+        captureMenuItem.submenu = captureMenu
+        menu?.addItem(captureMenuItem)
+        menu?.addItem(NSMenuItem.separator())
+
+        // Editors
         let annotateItem = NSMenuItem(
-            title: L10n.Actions.openAnnotate,
+            title: L10n.Preferences.annotateTab,
             action: #selector(openAnnotateAction),
             keyEquivalent: "",
         )
@@ -620,18 +646,6 @@ final class AppStatusBarController: ObservableObject {
         )
         annotateItem.isEnabled = true
         menu?.addItem(annotateItem)
-
-        let combineImagesItem = NSMenuItem(
-            title: L10n.Combine.open,
-            action: #selector(openCombineImagesAction),
-            keyEquivalent: "",
-        )
-        combineImagesItem.target = self
-        combineImagesItem.image = NSImage(
-            systemSymbolName: "rectangle.3.group", accessibilityDescription: nil,
-        )
-        combineImagesItem.isEnabled = true
-        menu?.addItem(combineImagesItem)
 
         if isVideoModuleEnabled {
             #if NOTINHAS_VIDEO_MODULE
@@ -648,6 +662,9 @@ final class AppStatusBarController: ObservableObject {
             #endif
         }
 
+        menu?.addItem(NSMenuItem.separator())
+
+        // Library
         let historyItem = NSMenuItem(
             title: L10n.Actions.openHistory,
             action: #selector(openHistoryAction),
@@ -659,34 +676,7 @@ final class AppStatusBarController: ObservableObject {
         historyItem.isEnabled = true
         menu?.addItem(historyItem)
 
-        let shortcutListItem = NSMenuItem(
-            title: L10n.Menu.keyboardShortcuts,
-            action: #selector(showShortcutListAction),
-            keyEquivalent: "",
-        )
-        applyConfiguredShortcut(shortcutListItem, for: .shortcutList, using: shortcutManager)
-        shortcutListItem.target = self
-        shortcutListItem.image = NSImage(systemSymbolName: "list.bullet.rectangle", accessibilityDescription: nil)
-        shortcutListItem.isEnabled = true
-        menu?.addItem(shortcutListItem)
-
         menu?.addItem(NSMenuItem.separator())
-
-        // Permission (if not granted)
-        if !viewModel.hasPermission {
-            let permissionItem = NSMenuItem(
-                title: L10n.Menu.grantPermission,
-                action: #selector(grantPermissionAction),
-                keyEquivalent: "",
-            )
-            permissionItem.target = self
-            permissionItem.image = NSImage(
-                systemSymbolName: "lock.shield", accessibilityDescription: nil,
-            )
-            permissionItem.isEnabled = true
-            menu?.addItem(permissionItem)
-            menu?.addItem(NSMenuItem.separator())
-        }
 
         // Preferences
         let prefsItem = NSMenuItem(
@@ -796,11 +786,6 @@ final class AppStatusBarController: ObservableObject {
         AnnotateManager.shared.openEmptyAnnotation()
     }
 
-    @objc private func openCombineImagesAction() {
-        logMenuAction("openCombineImages")
-        CombineImagesCoordinator.shared.presentPicker()
-    }
-
     #if NOTINHAS_VIDEO_MODULE
         @objc private func editVideoAction() {
             logMenuAction("editVideo")
@@ -811,11 +796,6 @@ final class AppStatusBarController: ObservableObject {
     @objc private func openHistoryAction() {
         logMenuAction("openHistory")
         HistoryFloatingManager.shared.toggle()
-    }
-
-    @objc private func showShortcutListAction() {
-        logMenuAction("showShortcutList")
-        ShortcutOverlayManager.shared.toggle()
     }
 
     @objc private func grantPermissionAction() {
