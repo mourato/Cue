@@ -8,12 +8,15 @@ if [[ "${1:-}" == "--dry-run" ]]; then
 fi
 APP_PATH="${1:-/Applications/Notinhas.app}"
 LSREGISTER="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
-RELEASE_BUNDLE_ID="com.mourato.notinhas"
-DEBUG_BUNDLE_ID="com.mourato.notinhas.debug"
 
 [[ "$(uname -s)" == "Darwin" ]] || { echo "This script only supports macOS." >&2; exit 1; }
 [[ -x "$LSREGISTER" ]] || { echo "Launch Services tool not found: $LSREGISTER" >&2; exit 1; }
 [[ -d "$APP_PATH" ]] || { echo "Canonical app not found: $APP_PATH" >&2; exit 1; }
+[[ -f "$APP_PATH/Contents/Info.plist" ]] || { echo "App Info.plist not found: $APP_PATH" >&2; exit 1; }
+
+APP_NAME="$(basename "$APP_PATH" .app)"
+APP_BUNDLE_IDENTIFIER="$(/usr/bin/plutil -extract CFBundleIdentifier raw -o - "$APP_PATH/Contents/Info.plist" 2>/dev/null || true)"
+[[ -n "$APP_BUNDLE_IDENTIFIER" ]] || { echo "App bundle identifier is missing: $APP_PATH" >&2; exit 1; }
 
 dump_path="$(mktemp "${TMPDIR:-/tmp}/notinhas-launch-services.XXXXXX")"
 trap 'rm -f "$dump_path"' EXIT
@@ -30,9 +33,9 @@ while IFS= read -r registered_path; do
 	fi
 	unregistered=$((unregistered + 1))
 done < <(
-	awk -v release="$RELEASE_BUNDLE_ID" -v debug="$DEBUG_BUNDLE_ID" '
-		function flush() {
-			if (path != "" && (identifier == release || identifier == debug)) print path
+  awk -v expected="$APP_BUNDLE_IDENTIFIER" '
+    function flush() {
+      if (path != "" && identifier == expected) print path
 		}
 		/^bundle id:/ {
 			flush()

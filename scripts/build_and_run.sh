@@ -3,6 +3,8 @@ set -euo pipefail
 
 APP_NAME="Notinhas"
 DEBUG_BUNDLE_NAME="Notinhas Debug"
+RELEASE_BUNDLE_IDENTIFIER="com.mourato.notinhas"
+DEBUG_BUNDLE_IDENTIFIER="com.mourato.notinhas.debug"
 SCHEME="Notinhas"
 PROJECT="Notinhas.xcodeproj"
 LOG_SUBSYSTEM="${LOG_SUBSYSTEM:-Notinhas}"
@@ -15,8 +17,12 @@ APPLICATIONS_DIR="${APPLICATIONS_DIR:-/Applications}"
 MODE="run"
 CONFIGURATION="${CONFIGURATION:-Debug}"
 LOG_LEVEL="${LOG_LEVEL:-default,error,fault}"
+SHUTDOWN_TIMEOUT_SECONDS="${SHUTDOWN_TIMEOUT_SECONDS:-15}"
+STARTUP_TIMEOUT_SECONDS="${STARTUP_TIMEOUT_SECONDS:-15}"
 CLEAN=0
 QUIET=1
+FORCE_TERMINATE=0
+NO_INTERACTIVE=0
 # Local script builds include the Video module unless explicitly disabled.
 ENABLE_VIDEO_MODULE="${ENABLE_VIDEO_MODULE:-1}"
 
@@ -59,6 +65,12 @@ ${BOLD}Options:${NC}
   --configuration C   Build configuration. Local builds use LOCAL_CODE_SIGN_IDENTITY.
   --derived-data PATH Build DerivedData path. Default: .build/xcode-derived-data
   --log-level LEVELS  default,info,debug,error,fault,all. Default: default,error,fault
+  --shutdown-timeout SECONDS
+                      Wait time for existing instances to exit. Default: 15.
+  --startup-timeout SECONDS
+                      Wait time for the expected executable to start. Default: 15.
+  --force-terminate   Allow SIGTERM after graceful shutdown timeout.
+  --no-interactive    Never prompt; use the supplied configuration.
   --video-module      Build with the Video module (recording + video editor; default).
   --no-video-module   Build without the Video module.
   --clean             Clean before building
@@ -68,6 +80,10 @@ ${BOLD}Options:${NC}
 ${BOLD}Environment:${NC}
   ENABLE_VIDEO_MODULE Set to 1 (default) or 0 to enable/disable the Video module
                       non-interactively.
+  SHUTDOWN_TIMEOUT_SECONDS
+                      Graceful shutdown wait. Default: 15.
+  STARTUP_TIMEOUT_SECONDS
+                      Launch verification wait. Default: 15.
 
 ${BOLD}Examples:${NC}
   $0
@@ -200,6 +216,24 @@ parse_args() {
         LOG_LEVEL="$2"
         shift 2
         ;;
+      --shutdown-timeout)
+        [[ $# -ge 2 ]] || fail "--shutdown-timeout requires a value."
+        SHUTDOWN_TIMEOUT_SECONDS="$2"
+        shift 2
+        ;;
+      --startup-timeout)
+        [[ $# -ge 2 ]] || fail "--startup-timeout requires a value."
+        STARTUP_TIMEOUT_SECONDS="$2"
+        shift 2
+        ;;
+      --force-terminate)
+        FORCE_TERMINATE=1
+        shift
+        ;;
+      --no-interactive)
+        NO_INTERACTIVE=1
+        shift
+        ;;
       --clean)
         CLEAN=1
         shift
@@ -226,7 +260,7 @@ parse_args() {
     esac
   done
 
-  if [[ "$argument_count" -eq 0 && -t 0 && -t 1 ]]; then
+  if [[ "$argument_count" -eq 0 && "$NO_INTERACTIVE" -eq 0 && -t 0 && -t 1 ]]; then
     configure_interactive_build
   else
     apply_video_module_settings
@@ -289,6 +323,30 @@ app_binary_path() {
   printf "%s/Contents/MacOS/%s" "$(app_bundle_path)" "$APP_NAME"
 }
 
+require_positive_integer() {
+  [[ "$1" =~ ^[1-9][0-9]*$ ]] || fail "Timeout must be a positive integer: $1"
+}
+
+expected_bundle_identifier() {
+  if [[ "$(basename "$1")" == "$DEBUG_BUNDLE_NAME.app" ]]; then
+    printf '%s\n' "$DEBUG_BUNDLE_IDENTIFIER"
+  else
+    printf '%s\n' "$RELEASE_BUNDLE_IDENTIFIER"
+  fi
+}
+
+validate_app_bundle() {
+  local bundle="$1" identifier expected_identifier
+  [[ -d "$bundle" ]] || return 1
+  [[ "$(basename "$bundle")" == "$APP_NAME.app" || "$(basename "$bundle")" == "$DEBUG_BUNDLE_NAME.app" ]] || return 1
+  [[ -f "$bundle/Contents/Info.plist" ]] || return 1
+  [[ -x "$bundle/Contents/MacOS/$APP_NAME" ]] || return 1
+  identifier="$(/usr/bin/plutil -extract CFBundleIdentifier raw -o - "$bundle/Contents/Info.plist" 2>/dev/null || true)"
+  expected_identifier="$(expected_bundle_identifier "$bundle")"
+  [[ "$identifier" == "$expected_identifier" ]] || return 1
+  /usr/bin/codesign --verify --deep --strict "$bundle" >/dev/null 2>&1
+}
+
 installed_release_app_path() {
   printf "%s/%s.app" "$APPLICATIONS_DIR" "$APP_NAME"
 }
@@ -298,19 +356,41 @@ app_process_pids() {
 }
 
 stop_app() {
-  local pids
+  local pids reply deadline bundle_identifier
   pids="$(app_process_pids)"
   [[ -n "$pids" ]] || return 0
 
-  info "Stopping existing $APP_NAME process(es)..."
-  pkill -TERM -x "$APP_NAME" >/dev/null 2>&1 || true
-
-  for _ in {1..40}; do
-    [[ -z "$(app_process_pids)" ]] && return
-    sleep 0.25
+  info "Requesting graceful shutdown for existing $APP_NAME process(es)..."
+  for bundle_identifier in "$RELEASE_BUNDLE_IDENTIFIER" "$DEBUG_BUNDLE_IDENTIFIER"; do
+    /usr/bin/osascript -e "tell application id \"$bundle_identifier\" to quit" >/dev/null 2>&1 || true
   done
 
-  fail "Could not stop the existing $APP_NAME process. Close it manually and retry."
+  deadline=$((SECONDS + SHUTDOWN_TIMEOUT_SECONDS))
+  while [[ "$SECONDS" -lt "$deadline" ]]; do
+    [[ -z "$(app_process_pids)" ]] && return 0
+    sleep 1
+  done
+
+  if [[ "$FORCE_TERMINATE" -ne 1 && -t 0 && -t 1 ]]; then
+    read -r -p "Graceful shutdown timed out. Stop exact process(es) now? [y/N]: " reply < /dev/tty || reply=""
+    case "$reply" in
+      y|Y|yes|YES) FORCE_TERMINATE=1 ;;
+    esac
+  fi
+
+  [[ "$FORCE_TERMINATE" -eq 1 ]] || fail "$APP_NAME did not terminate within ${SHUTDOWN_TIMEOUT_SECONDS}s; rerun with --force-terminate."
+  info "Graceful shutdown timed out; sending SIGTERM to PID(s): $pids"
+  while IFS= read -r pid; do
+    [[ -n "$pid" ]] && kill -TERM "$pid" 2>/dev/null || true
+  done <<< "$pids"
+
+  deadline=$((SECONDS + SHUTDOWN_TIMEOUT_SECONDS))
+  while [[ "$SECONDS" -lt "$deadline" ]]; do
+    [[ -z "$(app_process_pids)" ]] && return 0
+    sleep 1
+  done
+
+  fail "$APP_NAME remained running after SIGTERM."
 }
 
 process_uses_binary() {
@@ -323,20 +403,22 @@ process_uses_binary() {
 
 wait_for_app_binary() {
   local expected_binary="$1"
-  local pid
+  local pid deadline
 
-  for _ in {1..40}; do
+  deadline=$((SECONDS + STARTUP_TIMEOUT_SECONDS))
+  while [[ "$SECONDS" -lt "$deadline" ]]; do
     while IFS= read -r pid; do
       [[ -n "$pid" ]] || continue
       if process_uses_binary "$pid" "$expected_binary"; then
         printf '%s\n' "$pid"
-        return
+        return 0
       fi
     done < <(app_process_pids)
-    sleep 0.25
+    sleep 1
   done
 
-  fail "Launched $APP_NAME, but no process is running the expected binary: $expected_binary"
+  printf 'error: Launched %s, but no process is running the expected binary within %ss: %s\n' "$APP_NAME" "$STARTUP_TIMEOUT_SECONDS" "$expected_binary" >&2
+  return 1
 }
 
 filter_xcodebuild_output() {
@@ -428,8 +510,7 @@ build_app() {
 
   local app_bundle
   app_bundle="$(app_bundle_path)"
-  [[ -d "$app_bundle" ]] || fail "Build finished but app bundle was not found: $app_bundle"
-  [[ -x "$(app_binary_path)" ]] || fail "Built app binary is not executable: $(app_binary_path)"
+  validate_app_bundle "$app_bundle" || fail "Built app bundle failed validation: $app_bundle"
 
   success "Build ready: $app_bundle"
 }
@@ -439,14 +520,15 @@ launch_app_bundle() {
   local expected_binary="$app_bundle/Contents/MacOS/$APP_NAME"
   local pid
 
-  [[ -d "$app_bundle" ]] || fail "App bundle was not found: $app_bundle"
-  [[ -x "$expected_binary" ]] || fail "App binary is not executable: $expected_binary"
+  validate_app_bundle "$app_bundle" || fail "App bundle failed validation: $app_bundle"
 
   # Stop again immediately before launch; a long build can outlive the initial stop.
   stop_app
   info "Launching $app_bundle..."
   /usr/bin/open -n "$app_bundle"
-  pid="$(wait_for_app_binary "$expected_binary")"
+  if ! pid="$(wait_for_app_binary "$expected_binary")"; then
+    fail "Launched $APP_NAME, but it did not remain running from the expected binary."
+  fi
   success "Launched $app_bundle (pid $pid)"
 }
 
@@ -455,37 +537,35 @@ open_app() {
 }
 
 install_release_app() {
-  local source_app destination_app backup_directory
+  local source_app destination_app stage backup_directory had_backup=0
   source_app="$(app_bundle_path)"
   destination_app="$(installed_release_app_path)"
+  stage="${destination_app}.stage.$$"
 
   [[ -d "$APPLICATIONS_DIR" ]] || fail "Applications directory was not found: $APPLICATIONS_DIR"
   [[ -w "$APPLICATIONS_DIR" ]] || fail "Applications directory is not writable: $APPLICATIONS_DIR"
-  [[ -d "$source_app" ]] || fail "Release app bundle was not found: $source_app"
+  validate_app_bundle "$source_app" || fail "Release app bundle failed validation: $source_app"
 
   # Do not replace an app bundle whose old executable is still running.
   stop_app
 
   backup_directory="$(mktemp -d "${TMPDIR:-/tmp}/${APP_NAME}.install-backup.XXXXXX")"
+  rm -rf "$stage"
   if [[ -e "$destination_app" ]]; then
     info "Replacing existing $destination_app..."
-    mv "$destination_app" "$backup_directory/$APP_NAME.app"
+    mv "$destination_app" "$backup_directory/$APP_NAME.app" || {
+      rmdir "$backup_directory" 2>/dev/null || true
+      fail "Could not back up the existing $APP_NAME app."
+    }
+    had_backup=1
   fi
 
-  if /usr/bin/ditto "$source_app" "$destination_app"; then
-    if ! "$ROOT_DIR/scripts/clean-launch-services.sh" "$destination_app"; then
-      rm -rf "$destination_app"
-      if [[ -e "$backup_directory/$APP_NAME.app" ]]; then
-        mv "$backup_directory/$APP_NAME.app" "$destination_app"
-      fi
-      rmdir "$backup_directory" 2>/dev/null || true
-      fail "Could not remove stale LaunchServices registrations; the previous app was restored."
-    fi
+  if /usr/bin/ditto "$source_app" "$stage" && mv "$stage" "$destination_app" && validate_app_bundle "$destination_app" && "$ROOT_DIR/scripts/clean-launch-services.sh" "$destination_app"; then
     rm -rf "$backup_directory"
-    success "Installed: $destination_app"
+    success "Installed and validated: $destination_app"
   else
-    rm -rf "$destination_app"
-    if [[ -e "$backup_directory/$APP_NAME.app" ]]; then
+    rm -rf "$stage" "$destination_app"
+    if [[ "$had_backup" -eq 1 && -e "$backup_directory/$APP_NAME.app" ]]; then
       mv "$backup_directory/$APP_NAME.app" "$destination_app"
     fi
     rmdir "$backup_directory" 2>/dev/null || true
@@ -498,7 +578,7 @@ open_installed_release_app() {
 }
 
 release_post_build_menu() {
-  [[ -t 0 && -t 1 ]] || {
+  [[ "$NO_INTERACTIVE" -eq 1 || ! -t 0 || ! -t 1 ]] && {
     info "Release app is ready: $(app_bundle_path)"
     return
   }
@@ -569,14 +649,17 @@ main() {
   require_macos
   require_command xcodebuild
   require_command pgrep
-  require_command pkill
+  require_command lsof
+  require_command osascript
+  require_positive_integer "$SHUTDOWN_TIMEOUT_SECONDS"
+  require_positive_integer "$STARTUP_TIMEOUT_SECONDS"
   [[ -x /usr/sbin/lsof ]] || fail "Missing required command: /usr/sbin/lsof"
 
   cd "$ROOT_DIR"
   stop_app
   build_app
 
-  if [[ "$CONFIGURATION" == "Release" && "$MODE" == "run" ]]; then
+  if [[ "$CONFIGURATION" == Release* && "$MODE" == "run" ]]; then
     release_post_build_menu
     return
   fi
