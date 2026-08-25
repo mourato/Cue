@@ -14,11 +14,17 @@
         let onCancel: () -> Void
 
         var body: some View {
-            VStack(spacing: 16) {
-                mainControls
-                recordingOptions
+            VStack(spacing: 8) {
+                VStack(spacing: 0) {
+                    mainControls
+                    RecordingToolbarHorizontalDivider()
+                    recordingOptions
+                }
+                .captureFloatingToolbarMaterial()
+                
                 outputActions
             }
+            .frame(maxWidth: 280)
             .accessibilityElement(children: .contain)
             .accessibilityLabel(L10n.RecordingToolbar.toolbarAccessibility)
         }
@@ -42,21 +48,12 @@
                 RecordingToolbarDivider()
 
                 RecordingDimensionsEditor(state: state)
-                    .frame(minWidth: 180, maxWidth: 220, minHeight: 56)
-
-                RecordingToolbarDivider()
-
-                RecordingToolbarPanelCell {
-                    ToolbarCaptureAreaToggle(state: state)
-                }
+                    .frame(minWidth: 120, maxWidth: 220, minHeight: 40)
             }
-            .padding(4)
-            .frame(minWidth: 360)
-            .captureFloatingToolbarMaterial()
         }
 
         private var outputActions: some View {
-            VStack(spacing: 0) {
+            VStack(spacing: 4) {
                 RecordingOutputActionButton(
                     mode: .gif,
                     state: state,
@@ -72,7 +69,6 @@
                 )
             }
             .padding(4)
-            .frame(minWidth: 360)
             .captureFloatingToolbarMaterial()
         }
 
@@ -118,9 +114,6 @@
                     )
                 }
             }
-            .padding(4)
-            .frame(minWidth: 360)
-            .captureFloatingToolbarMaterial()
         }
     }
 
@@ -129,7 +122,7 @@
 
         var body: some View {
             content()
-                .frame(width: 56, height: 56)
+                .frame(width: 40, height: 40)
         }
     }
 
@@ -137,8 +130,8 @@
         var body: some View {
             Rectangle()
                 .fill(Color.primary.opacity(0.15))
-                .frame(height: 1)
-                .padding(.horizontal, 12)
+                .frame(height: 0.5)
+                .padding(.horizontal, 2)
         }
     }
 
@@ -174,7 +167,6 @@
                     field: .height,
                 )
             }
-            .frame(maxWidth: .infinity)
             .opacity(isEditable ? 1 : 0.55)
             .onChange(of: focusedField) { oldField, newField in
                 guard newField == nil, let oldField else { return }
@@ -189,8 +181,8 @@
         ) -> some View {
             TextField("", text: text)
                 .textFieldStyle(.plain)
-                .font(.system(size: 16, weight: .semibold, design: .monospaced))
-                .frame(width: 64, height: 32)
+                .font(.system(size: 14, weight: .medium, design: .monospaced))
+                .frame(width: 64, height: 28)
                 .multilineTextAlignment(.center)
                 .background(
                     RoundedRectangle(cornerRadius: 6)
@@ -292,22 +284,21 @@
                 state.onOutputModeChanged?(mode)
                 onRecord()
             } label: {
-                HStack(spacing: 12) {
+                HStack(spacing: 6) {
                     Image(systemName: mode == .gif ? "photo.on.rectangle" : "video")
-                        .font(.system(size: 18, weight: .medium))
-                        .frame(width: 32, height: 32)
+                        .font(.system(size: 14, weight: .medium))
+                        .frame(width: 24, height: 24)
 
                     HStack(spacing: 4) {
                         Text(L10n.RecordingToolbar.record)
                         Text(mode.displayName)
                     }
-                    .font(.system(size: 16, weight: .semibold))
-
+                    .font(.system(size: 14, weight: .medium))
                     Spacer(minLength: 0)
                 }
                 .foregroundStyle(.primary)
-                .padding(.horizontal, 20)
-                .frame(maxWidth: .infinity, minHeight: 52, alignment: .leading)
+                .padding(.horizontal, 8)
+                .frame(minHeight: 32, alignment: .leading)
                 .background(
                     RoundedRectangle(cornerRadius: 8)
                         .fill(Color.primary.opacity(isHovered ? 0.1 : 0)),

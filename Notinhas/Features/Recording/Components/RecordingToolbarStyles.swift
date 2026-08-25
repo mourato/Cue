@@ -31,7 +31,7 @@ struct RecordingToolbarDivider: View {
         Rectangle()
             .fill(Color.primary.opacity(0.15))
             .frame(width: 1, height: ToolbarConstants.dividerHeight)
-            .padding(.horizontal, 4)
+            .padding(.horizontal, 2)
     }
 }
 
