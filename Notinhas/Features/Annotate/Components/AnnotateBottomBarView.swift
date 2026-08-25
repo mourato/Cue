@@ -570,7 +570,7 @@ struct BottomBarButton: View {
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.small)
-            .tint(.blue)
+            .tint(.accentColor)
             .overlayTooltip(tooltipTitle, keys: tooltipKeys, edge: .above)
             .accessibilityLabel(accessibilityTitle)
         } else {
