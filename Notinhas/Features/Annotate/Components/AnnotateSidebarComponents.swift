@@ -493,8 +493,8 @@ struct AnnotateCustomColorPickerControl: View {
                 onCancel: cancelCustomColorDraft,
                 onApply: applyCustomColorDraft,
             )
-            .padding(10)
-            .frame(width: 196, alignment: .leading)
+            .padding(PopoverTokens.panelContentInset)
+            .frame(width: PopoverTokens.propertyPanelWidth, alignment: .leading)
             .onDisappear {
                 cancelCustomColorDraftIfNeeded()
             }

@@ -559,12 +559,12 @@ private struct QuickPropertiesColorPopover: View {
     }
 
     private let columns = Array(
-        repeating: GridItem(.fixed(24), spacing: 8),
+        repeating: GridItem(.fixed(PopoverTokens.colorGridCellSize), spacing: PopoverTokens.colorGridSpacing),
         count: 5,
     )
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.sm) {
+        VStack(alignment: .leading, spacing: PopoverTokens.panelItemSpacing) {
             Text(title)
                 .font(Typography.labelMedium)
                 .foregroundColor(SidebarColors.labelSecondary)
@@ -576,7 +576,7 @@ private struct QuickPropertiesColorPopover: View {
                     .font(Typography.labelSmall)
                     .foregroundColor(SidebarColors.labelSecondary)
 
-                LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
+                LazyVGrid(columns: columns, alignment: .leading, spacing: PopoverTokens.colorGridSpacing) {
                     ForEach(favorites, id: \.self) { color in
                         favoriteColorButton(color)
                     }
@@ -599,7 +599,7 @@ private struct QuickPropertiesColorPopover: View {
                 .font(Typography.labelSmall)
                 .foregroundColor(SidebarColors.labelSecondary)
 
-            LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
+            LazyVGrid(columns: columns, alignment: .leading, spacing: PopoverTokens.colorGridSpacing) {
                 ForEach(colors, id: \.self) { color in
                     paletteColorButton(color, overlayAction: nil, overlayHelp: "")
                 }
@@ -622,7 +622,7 @@ private struct QuickPropertiesColorPopover: View {
                     Button {
                         beginCustomColorDraft()
                     } label: {
-                        AnnotateAddColorSwatch(size: 22)
+                        AnnotateAddColorSwatch(size: PopoverTokens.colorSwatchSize)
                     }
                     .buttonStyle(.plain)
                     .help(L10n.Common.custom)
@@ -635,8 +635,8 @@ private struct QuickPropertiesColorPopover: View {
                     .padding(.top, 2)
             }
         }
-        .padding(12)
-        .frame(width: 196, alignment: .leading)
+        .padding(PopoverTokens.panelContentInset)
+        .frame(width: PopoverTokens.propertyPanelWidth, alignment: .leading)
         .onAppear {
             syncDraftColor(with: selectedColor)
         }
@@ -700,12 +700,12 @@ private struct QuickPropertiesColorPopover: View {
     }
 
     private var favoriteSelectionPopover: some View {
-        VStack(alignment: .leading, spacing: Spacing.sm) {
+        VStack(alignment: .leading, spacing: PopoverTokens.panelItemSpacing) {
             Text(L10n.Common.colors)
                 .font(Typography.labelSmall)
                 .foregroundColor(SidebarColors.labelSecondary)
 
-            LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
+            LazyVGrid(columns: columns, alignment: .leading, spacing: PopoverTokens.colorGridSpacing) {
                 ForEach(favoriteVaultColors, id: \.self) { color in
                     favoriteVaultColorButton(color)
                 }
@@ -718,7 +718,7 @@ private struct QuickPropertiesColorPopover: View {
                     Button {
                         beginFavoriteColorDraft()
                     } label: {
-                        AnnotateAddColorSwatch(size: 22)
+                        AnnotateAddColorSwatch(size: PopoverTokens.colorSwatchSize)
                     }
                     .buttonStyle(.plain)
                     .help(L10n.Common.custom)
@@ -731,8 +731,8 @@ private struct QuickPropertiesColorPopover: View {
                     .padding(.top, 2)
             }
         }
-        .padding(12)
-        .frame(width: 196, alignment: .leading)
+        .padding(PopoverTokens.panelContentInset)
+        .frame(width: PopoverTokens.propertyPanelWidth, alignment: .leading)
         .onDisappear {
             if activeDraftTarget == .favorite {
                 cancelColorDraft(keepFavoriteSelectionPopoverOpen: false)
@@ -747,7 +747,7 @@ private struct QuickPropertiesColorPopover: View {
             QuickPropertiesColorSwatch(
                 color: draftCustomColor,
                 isSelected: true,
-                size: 22,
+                size: PopoverTokens.colorSwatchSize,
             )
         }
         .buttonStyle(.plain)
@@ -763,7 +763,7 @@ private struct QuickPropertiesColorPopover: View {
             QuickPropertiesColorSwatch(
                 color: draftCustomColor,
                 isSelected: AnnotateColorPaletteStore.colorsMatch(selectedColor, draftCustomColor),
-                size: 22,
+                size: PopoverTokens.colorSwatchSize,
             )
         }
         .buttonStyle(.plain)
@@ -1023,7 +1023,7 @@ private struct QuickPropertiesPaletteColorButton: View {
                 QuickPropertiesColorSwatch(
                     color: color,
                     isSelected: isSelected,
-                    size: 22,
+                    size: PopoverTokens.colorSwatchSize,
                 )
             }
             .buttonStyle(.plain)
@@ -1242,7 +1242,7 @@ private struct QuickStrokeWidthControl: View {
                     .frame(width: 16, height: strokePreviewHeight(for: selection))
             }
             .popover(isPresented: $showsPopover, arrowEdge: .bottom) {
-                VStack(alignment: .leading, spacing: Spacing.sm) {
+                VStack(alignment: .leading, spacing: PopoverTokens.panelItemSpacing) {
                     Text(title)
                         .font(Typography.labelMedium)
                         .foregroundColor(SidebarColors.labelSecondary)
@@ -1250,8 +1250,8 @@ private struct QuickStrokeWidthControl: View {
 
                     AnnotationStrokeWidthPicker(value: $value)
                 }
-                .padding(12)
-                .frame(width: 196, alignment: .leading)
+                .padding(PopoverTokens.panelContentInset)
+                .frame(width: PopoverTokens.propertyPanelWidth, alignment: .leading)
             }
         }
     }
@@ -1661,13 +1661,13 @@ private struct QuickShapeFillStyleControl: View {
                 )
             }
             .popover(isPresented: $showsPopover, arrowEdge: .bottom) {
-                VStack(alignment: .leading, spacing: Spacing.sm) {
+                VStack(alignment: .leading, spacing: PopoverTokens.panelItemSpacing) {
                     Text(L10n.AnnotateUI.shapeStyle)
                         .font(Typography.labelMedium)
                         .foregroundColor(SidebarColors.labelSecondary)
                         .lineLimit(1)
 
-                    HStack(spacing: 5) {
+                    HStack(spacing: PopoverTokens.compactControlSpacing) {
                         ForEach(AnnotationShapeFillStyle.allCases) { style in
                             NotinhasAreaStylePreviewButton(
                                 style: style,
@@ -1678,8 +1678,8 @@ private struct QuickShapeFillStyleControl: View {
                         }
                     }
                 }
-                .padding(12)
-                .frame(minWidth: 196, alignment: .leading)
+                .padding(PopoverTokens.panelContentInset)
+                .frame(minWidth: PopoverTokens.propertyPanelWidth, alignment: .leading)
             }
         }
     }

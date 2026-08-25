@@ -28,8 +28,18 @@
 
         var body: some View {
             contentLayout
-                .padding(.horizontal, direction == .horizontal ? 10 : 6)
-                .padding(.vertical, direction == .horizontal ? 6 : 10)
+                .padding(
+                    .horizontal,
+                    direction == .horizontal
+                        ? PopoverTokens.annotationToolbarHorizontalInset
+                        : PopoverTokens.annotationToolbarCompactInset,
+                )
+                .padding(
+                    .vertical,
+                    direction == .horizontal
+                        ? PopoverTokens.annotationToolbarCompactInset
+                        : PopoverTokens.annotationToolbarAxisInset,
+                )
         }
 
         // MARK: - Layout

@@ -109,7 +109,7 @@
         @ObservedObject var state: RecordingToolbarState
 
         var body: some View {
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: PopoverTokens.menuItemSpacing) {
                 ForEach(RecordingOutputMode.allCases, id: \.self) { mode in
                     OutputModeRow(
                         mode: mode,
@@ -122,8 +122,8 @@
                     }
                 }
             }
-            .padding(8)
-            .frame(width: 160)
+            .padding(PopoverTokens.menuContentInset)
+            .frame(width: PopoverTokens.outputMenuWidth)
         }
     }
 
@@ -133,8 +133,6 @@
         let mode: RecordingOutputMode
         let isSelected: Bool
         let action: () -> Void
-
-        @State private var isHovered = false
 
         var body: some View {
             Button(action: action) {
@@ -156,16 +154,9 @@
                             .foregroundColor(.accentColor)
                     }
                 }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 6)
-                .background(
-                    RoundedRectangle(cornerRadius: 6)
-                        .fill(Color.primary.opacity(isHovered ? 0.08 : 0)),
-                )
-                .contentShape(RoundedRectangle(cornerRadius: 6))
+                .popoverMenuItem(isSelected: isSelected)
             }
             .buttonStyle(.plain)
-            .onHover { isHovered = $0 }
         }
     }
 

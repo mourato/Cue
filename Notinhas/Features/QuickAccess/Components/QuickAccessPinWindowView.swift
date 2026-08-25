@@ -121,7 +121,7 @@ struct QuickAccessPinWindowView: View {
     }
 
     private var zoomPicker: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: PopoverTokens.menuItemSpacing) {
             ForEach(state.zoomMenuPercents, id: \.self) { percent in
                 PinWindowZoomOptionButton(
                     title: "\(percent)%",
@@ -135,7 +135,7 @@ struct QuickAccessPinWindowView: View {
             Rectangle()
                 .fill(Color.primary.opacity(0.08))
                 .frame(height: 1)
-                .padding(.vertical, 3)
+                .padding(.vertical, PopoverTokens.menuDividerPadding)
 
             PinWindowZoomOptionButton(
                 title: L10n.QuickAccess.fitPinnedWindow,
@@ -146,18 +146,8 @@ struct QuickAccessPinWindowView: View {
                 isZoomPickerPresented = false
             }
         }
-        .padding(PinWindowZoomPickerMetrics.contentInset)
-        .frame(width: PinWindowZoomPickerMetrics.width)
-        .background(
-            RoundedRectangle(cornerRadius: PinWindowZoomPickerMetrics.containerCornerRadius, style: .continuous)
-                .fill(.regularMaterial),
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: PinWindowZoomPickerMetrics.containerCornerRadius, style: .continuous)
-                .strokeBorder(Color.primary.opacity(0.12), lineWidth: 1),
-        )
-        .clipShape(RoundedRectangle(cornerRadius: PinWindowZoomPickerMetrics.containerCornerRadius, style: .continuous))
-        .shadow(color: Color.black.opacity(0.18), radius: 14, x: 0, y: 8)
+        .padding(PopoverTokens.menuContentInset)
+        .frame(width: PopoverTokens.zoomMenuWidth)
     }
 
     private var dragHandle: some View {
@@ -237,27 +227,15 @@ struct QuickAccessPinWindowView: View {
     }
 }
 
-private enum PinWindowZoomPickerMetrics {
-    static let width: CGFloat = 122
-    static let contentInset: CGFloat = 6
-    static let containerCornerRadius: CGFloat = Size.radiusLg
-    static var optionCornerRadius: CGFloat {
-        max(containerCornerRadius - contentInset, Size.radiusMd)
-    }
-}
-
 private struct PinWindowZoomOptionButton: View {
     let title: String
     var systemImage: String?
     let isSelected: Bool
     let action: () -> Void
 
-    @State private var isHovering = false
-    private let cornerRadius = PinWindowZoomPickerMetrics.optionCornerRadius
-
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 7) {
+            HStack(spacing: PopoverTokens.menuIconSpacing) {
                 if let systemImage {
                     Image(systemName: systemImage)
                         .font(.system(size: 10, weight: .semibold))
@@ -276,32 +254,9 @@ private struct PinWindowZoomOptionButton: View {
                         .font(.system(size: 10, weight: .bold))
                 }
             }
-            .foregroundStyle(isSelected || isHovering ? .primary : .secondary)
-            .padding(.horizontal, 8)
-            .frame(height: 25)
-            .background(
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .fill(rowFill),
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(rowStroke, lineWidth: 1),
-            )
-            .contentShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            .foregroundStyle(isSelected ? .primary : .secondary)
+            .popoverMenuItem(isSelected: isSelected)
         }
         .buttonStyle(.plain)
-        .onHover { isHovering = $0 }
-        .animation(.easeInOut(duration: 0.12), value: isHovering)
-    }
-
-    private var rowFill: Color {
-        if isSelected {
-            return Color.primary.opacity(0.1)
-        }
-        return isHovering ? Color.primary.opacity(0.075) : Color.clear
-    }
-
-    private var rowStroke: Color {
-        isSelected || isHovering ? Color.primary.opacity(0.08) : Color.clear
     }
 }

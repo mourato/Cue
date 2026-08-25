@@ -55,7 +55,7 @@
         }
 
         private var captureModePopover: some View {
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: PopoverTokens.menuItemSpacing) {
                 ForEach(RecordingCaptureMode.allCases, id: \.self) { mode in
                     Button {
                         state.captureMode = mode
@@ -76,15 +76,14 @@
                             }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 6)
                     }
                     .buttonStyle(.plain)
+                    .popoverMenuItem(isSelected: state.captureMode == mode)
                     .accessibilityAddTraits(state.captureMode == mode ? .isSelected : [])
                 }
             }
-            .padding(8)
-            .frame(width: 220)
+            .padding(PopoverTokens.menuContentInset)
+            .frame(width: PopoverTokens.deviceMenuWidth)
         }
     }
 

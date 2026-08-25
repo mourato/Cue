@@ -73,20 +73,21 @@
         }
 
         private var cameraPopoverContent: some View {
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: PopoverTokens.menuItemSpacing) {
                 Button {
                     state.captureCamera = false
                     showPopover = false
                 } label: {
-                    Label(
-                        L10n.Camera.doNotUse,
-                        systemImage: state.captureCamera ? "video" : "checkmark",
+                    cameraMenuItemLabel(
+                        title: L10n.Camera.doNotUse,
+                        isSelected: !state.captureCamera,
                     )
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .buttonStyle(.borderless)
+                .buttonStyle(.plain)
+                .popoverMenuItem(isSelected: !state.captureCamera)
 
                 Divider()
+                    .padding(.vertical, PopoverTokens.menuDividerPadding)
 
                 ForEach(RecordingCameraDeviceProvider.devices(), id: \.uniqueID) { device in
                     Button {
@@ -99,23 +100,29 @@
                         }
                         showPopover = false
                     } label: {
-                        Text(device.localizedName)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                        cameraMenuItemLabel(
+                            title: device.localizedName,
+                            isSelected: state.captureCamera && state.cameraDeviceID == device.uniqueID,
+                        )
                     }
-                    .buttonStyle(.borderless)
+                    .buttonStyle(.plain)
+                    .popoverMenuItem(
+                        isSelected: state.captureCamera && state.cameraDeviceID == device.uniqueID,
+                    )
                 }
 
                 if state.captureCamera {
                     Divider()
+                        .padding(.vertical, PopoverTokens.menuDividerPadding)
                     previewOptions
                 }
             }
-            .padding(8)
-            .frame(minWidth: 220)
+            .padding(PopoverTokens.menuContentInset)
+            .frame(minWidth: PopoverTokens.deviceMenuWidth)
         }
 
         private var previewOptions: some View {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: PopoverTokens.panelItemSpacing) {
                 Text(L10n.Camera.previewSize)
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -130,6 +137,7 @@
                 }
 
                 Divider()
+                    .padding(.vertical, PopoverTokens.menuDividerPadding)
 
                 Text(L10n.Camera.previewShape)
                     .font(.caption)
@@ -161,9 +169,25 @@
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .popoverMenuItem(isSelected: isSelected)
             }
-            .buttonStyle(.borderless)
+            .buttonStyle(.plain)
             .accessibilityAddTraits(isSelected ? .isSelected : [])
+        }
+
+        private func cameraMenuItemLabel(title: String, isSelected: Bool) -> some View {
+            HStack(spacing: PopoverTokens.menuItemHorizontalPadding) {
+                Image(systemName: "checkmark")
+                    .font(.system(size: 10, weight: .semibold))
+                    .frame(width: 12)
+                    .opacity(isSelected ? 1 : 0)
+
+                Text(title)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+
+                Spacer(minLength: 0)
+            }
         }
     }
 #endif

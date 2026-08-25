@@ -41,7 +41,7 @@
             effect.state = .active
             effect.blendingMode = .behindWindow
             effect.wantsLayer = true
-            effect.layer?.cornerRadius = ToolbarConstants.toolbarCornerRadius
+            effect.layer?.cornerRadius = PopoverTokens.annotationToolbarCornerRadius
             effect.layer?.masksToBounds = true
 
             hosting.layer?.backgroundColor = .clear

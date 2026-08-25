@@ -63,7 +63,7 @@
         }
 
         private var microphonePopoverContent: some View {
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: PopoverTokens.menuItemSpacing) {
                 Button {
                     selectNoMicrophone()
                     showPopover = false
@@ -73,9 +73,11 @@
                         isSelected: !state.captureMicrophone,
                     )
                 }
-                .buttonStyle(.borderless)
+                .buttonStyle(.plain)
+                .popoverMenuItem(isSelected: !state.captureMicrophone)
 
                 Divider()
+                    .padding(.vertical, PopoverTokens.menuDividerPadding)
 
                 ForEach(microphoneMenuDevices) { device in
                     Button {
@@ -87,11 +89,14 @@
                             isSelected: state.captureMicrophone && state.microphoneDeviceID == device.id,
                         )
                     }
-                    .buttonStyle(.borderless)
+                    .buttonStyle(.plain)
+                    .popoverMenuItem(
+                        isSelected: state.captureMicrophone && state.microphoneDeviceID == device.id,
+                    )
                 }
             }
-            .padding(8)
-            .frame(minWidth: 180)
+            .padding(PopoverTokens.menuContentInset)
+            .frame(minWidth: PopoverTokens.narrowMenuWidth)
         }
 
         private var microphoneMenuDevices: [RecordingMicrophoneDevice] {
@@ -101,12 +106,18 @@
             .filter { !$0.isUnavailable }
         }
 
-        @ViewBuilder
         private func menuItemLabel(title: String, isSelected: Bool) -> some View {
-            if isSelected {
-                Label(title, systemImage: "checkmark")
-            } else {
+            HStack(spacing: PopoverTokens.menuItemHorizontalPadding) {
+                Image(systemName: "checkmark")
+                    .font(.system(size: 10, weight: .semibold))
+                    .frame(width: 12)
+                    .opacity(isSelected ? 1 : 0)
+
                 Text(title)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+
+                Spacer(minLength: 0)
             }
         }
 

@@ -59,7 +59,7 @@
         @ObservedObject var state: RecordingToolbarState
 
         var body: some View {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: PopoverTokens.panelSectionSpacing) {
                 // Header
                 HStack {
                     Image(systemName: "gearshape")
@@ -73,7 +73,7 @@
 
                 // Format Section
                 SettingsSection(title: L10n.RecordingToolbar.formatSection, icon: "film") {
-                    HStack(spacing: 6) {
+                    HStack(spacing: PopoverTokens.controlSpacing) {
                         ForEach(VideoFormat.allCases, id: \.self) { format in
                             OptionPill(
                                 title: format.displayName,
@@ -87,7 +87,7 @@
 
                 // Quality Section
                 SettingsSection(title: L10n.RecordingToolbar.qualitySection, icon: "sparkles") {
-                    HStack(spacing: 6) {
+                    HStack(spacing: PopoverTokens.controlSpacing) {
                         ForEach(VideoQuality.allCases, id: \.self) { quality in
                             OptionPill(
                                 title: quality.displayName,
@@ -115,8 +115,8 @@
                     )
                 }
             }
-            .padding(12)
-            .frame(width: 280)
+            .padding(PopoverTokens.panelContentInset)
+            .frame(width: PopoverTokens.settingsPanelWidth)
         }
     }
 
@@ -128,8 +128,8 @@
         @ViewBuilder let content: () -> Content
 
         var body: some View {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack(spacing: 6) {
+            VStack(alignment: .leading, spacing: PopoverTokens.panelItemSpacing) {
+                HStack(spacing: PopoverTokens.controlSpacing) {
                     Image(systemName: icon)
                         .font(.system(size: 10))
                         .foregroundColor(.secondary)
@@ -148,7 +148,7 @@
         let isOn: Binding<Bool>
 
         var body: some View {
-            HStack(spacing: 8) {
+            HStack(spacing: PopoverTokens.panelItemSpacing) {
                 Text(title)
                     .font(.system(size: 11))
                 Spacer()
@@ -175,10 +175,10 @@
                 Text(title)
                     .font(.system(size: 11, weight: isSelected ? .semibold : .regular))
                     .foregroundColor(isSelected ? .white : .primary)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
+                    .padding(.horizontal, PopoverTokens.controlHorizontalPadding)
+                    .padding(.vertical, PopoverTokens.controlVerticalPadding)
                     .background(
-                        RoundedRectangle(cornerRadius: 6)
+                        RoundedRectangle(cornerRadius: PopoverTokens.controlCornerRadius)
                             .fill(isSelected ? Color.accentColor : Color.primary.opacity(isHovered ? 0.1 : 0.05)),
                     )
             }

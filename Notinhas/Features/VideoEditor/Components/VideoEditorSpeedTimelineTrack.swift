@@ -531,12 +531,15 @@
         let onSelect: (Double) -> Void
 
         var body: some View {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: PopoverTokens.panelItemSpacing) {
                 Text(L10n.VideoEditor.speeds)
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundColor(.secondary)
 
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 3), spacing: 6) {
+                LazyVGrid(
+                    columns: Array(repeating: GridItem(.flexible(), spacing: PopoverTokens.controlSpacing), count: 3),
+                    spacing: PopoverTokens.controlSpacing,
+                ) {
                     ForEach(SpeedSegment.presets, id: \.self) { preset in
                         Button {
                             onSelect(preset)
@@ -544,9 +547,9 @@
                             Text(label(preset))
                                 .font(.system(size: 11, weight: .medium))
                                 .frame(maxWidth: .infinity)
-                                .padding(.vertical, 5)
+                                .padding(.vertical, PopoverTokens.controlVerticalPadding)
                                 .background(
-                                    RoundedRectangle(cornerRadius: 5)
+                                    RoundedRectangle(cornerRadius: PopoverTokens.controlCornerRadius)
                                         .fill(isCurrent(preset) ? SpeedColors.fill(for: preset).opacity(0.9) : Color
                                             .gray.opacity(0.15)),
                                 )
@@ -556,8 +559,8 @@
                     }
                 }
             }
-            .padding(12)
-            .frame(width: 180)
+            .padding(PopoverTokens.panelContentInset)
+            .frame(width: PopoverTokens.speedPanelWidth)
         }
 
         private func isCurrent(_ preset: Double) -> Bool {
