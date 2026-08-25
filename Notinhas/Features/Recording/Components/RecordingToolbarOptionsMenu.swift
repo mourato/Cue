@@ -11,6 +11,7 @@
 
     struct ToolbarOptionsMenu: View {
         @ObservedObject var state: RecordingToolbarState
+        var compact = false
 
         @State private var isHovered = false
         @State private var showPopover = false
@@ -19,21 +20,28 @@
             Button {
                 showPopover.toggle()
             } label: {
-                HStack(spacing: 2) {
-                    Text(L10n.RecordingToolbar.options)
-                        .font(.system(size: 13, weight: .regular))
-                    Image(systemName: "chevron.down")
-                        .font(.system(size: 8, weight: .semibold))
+                if compact {
+                    ToolbarIconButtonLabel(
+                        systemName: "slider.horizontal.3",
+                        isHovered: isHovered || showPopover,
+                    )
+                } else {
+                    HStack(spacing: 2) {
+                        Text(L10n.RecordingToolbar.options)
+                            .font(.system(size: 13, weight: .regular))
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 8, weight: .semibold))
+                    }
+                    .foregroundColor(.primary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(
+                        RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
+                            .fill(Color.primary.opacity(isHovered || showPopover ? 0.1 : 0)),
+                    )
+                    .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
+                    .animation(ToolbarConstants.hoverAnimation, value: isHovered)
                 }
-                .foregroundColor(.primary)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
-                .background(
-                    RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
-                        .fill(Color.primary.opacity(isHovered || showPopover ? 0.1 : 0)),
-                )
-                .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
-                .animation(ToolbarConstants.hoverAnimation, value: isHovered)
             }
             .buttonStyle(.plain)
             .onHover { isHovered = $0 }
@@ -102,28 +110,6 @@
                             set: { newValue in
                                 state.showCursor = newValue
                                 UserDefaults.standard.set(newValue, forKey: PreferencesKeys.recordingShowCursor)
-                            },
-                        ),
-                    )
-
-                    RightAlignedToggleRow(
-                        title: L10n.RecordingToolbar.highlightClicks,
-                        isOn: Binding(
-                            get: { state.highlightClicks },
-                            set: { newValue in
-                                state.highlightClicks = newValue
-                                UserDefaults.standard.set(newValue, forKey: PreferencesKeys.recordingHighlightClicks)
-                            },
-                        ),
-                    )
-
-                    RightAlignedToggleRow(
-                        title: L10n.RecordingToolbar.showKeystrokes,
-                        isOn: Binding(
-                            get: { state.showKeystrokes },
-                            set: { newValue in
-                                state.showKeystrokes = newValue
-                                UserDefaults.standard.set(newValue, forKey: PreferencesKeys.recordingShowKeystrokes)
                             },
                         ),
                     )

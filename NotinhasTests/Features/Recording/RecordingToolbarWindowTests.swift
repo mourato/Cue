@@ -61,5 +61,25 @@
             XCTAssertEqual(result.x, union.minX, accuracy: 0.001)
             XCTAssertEqual(result.y, union.minY, accuracy: 0.001)
         }
+
+        func testCenteredSelectionRect_preservesCenterWhenSizeFits() {
+            let result = RecordingToolbarWindow.centeredSelectionRect(
+                around: CGPoint(x: 500, y: 400),
+                size: CGSize(width: 300, height: 200),
+                within: union,
+            )
+
+            XCTAssertEqual(result, CGRect(x: 350, y: 300, width: 300, height: 200))
+        }
+
+        func testCenteredSelectionRect_clampsSizeAndOriginToScreen() {
+            let result = RecordingToolbarWindow.centeredSelectionRect(
+                around: CGPoint(x: 20, y: 30),
+                size: CGSize(width: 2_000, height: 1_000),
+                within: union,
+            )
+
+            XCTAssertEqual(result, union)
+        }
     }
 #endif

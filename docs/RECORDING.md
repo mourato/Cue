@@ -13,7 +13,7 @@ flowchart TD
     E --> D
 
     D --> F["RecordingToolbarWindow (pre-record) + RecordingRegionOverlayWindow per screen"]
-    F --> G["User adjusts region / mode / audio / format, presses Record"]
+    F --> G["User adjusts region / mode / dimensions / audio / overlays, chooses GIF or Video"]
     G --> H["TempCaptureManager.makeRecordingSavePlan(exportDirectory:)"]
     H --> I["ScreenRecordingManager.prepareRecording(...)"]
     I --> J["ScreenRecordingManager.startRecording()"]
@@ -86,7 +86,9 @@ Overlay setup happens after `startRecording()` succeeds; region overlay borders 
 
 ## GIF Output
 
-- `RecordingOutputMode { .video, .gif }` toggle in the toolbar's Record-button dropdown, persisted `PreferencesKeys.recordingOutputMode`.
+- `RecordingOutputMode { .video, .gif }` is selected by the pre-record toolbar's
+  `Record GIF` or `Record Video` action and persisted in
+  `PreferencesKeys.recordingOutputMode`.
 - Two-step flow (`RecordingCoordinator.handleGIFConversion`): the finished video is added to Quick Access immediately with `.processing(progress:)` state; `GIFConverter.convert` (`Notinhas/Services/Media/GIFConverter.swift`, pure AVFoundation + ImageIO, no FFmpeg) extracts frames via `AVAssetImageGenerator` then assembles a `CGImageDestination` GIF. Defaults: 15 fps, max width 960 px (never upscales), loop forever (`loopCount = 0`). Progress: 0–85 % extraction, 85–100 % assembly.
 - On success: `QuickAccessManager.updateItemURL` swaps the card to the GIF with a fresh thumbnail, `PostCaptureActionHandler.handleVideoCapture(url:skipQuickAccess: true)` runs remaining actions (clipboard etc.), then the source video and its recording metadata are deleted.
 - On failure: card shows `.failed`, auto-clears to `.idle` after 2 s, video kept.
@@ -106,19 +108,30 @@ Overlay setup happens after `startRecording()` succeeds; region overlay borders 
 - The `⇧⌘5` toggle is state-aware through `stopFromStatusItem()`: `.recording`/`.paused` → stop, `.preparing` → cancel, `.idle`/`.stopping` → no-op.
 - Opening Preferences during recording with own-app capture enabled dynamically excludes the Settings window from the active stream (`addRuntimeExcludedWindow` / `removeRuntimeExcludedWindow`).
 
-## Quick Screenshot From the Toolbar
+## Pre-record Toolbar
 
-The pre-record toolbar has a camera button (`RecordingToolbarView` → `RecordingCoordinator.captureScreenshot()`): hides toolbar + overlays, captures the selected rect via `ScreenCaptureManager.captureArea` (or `captureWindow` in application mode) through the normal screenshot save/post-capture pipeline, then closes the recording session.
+The pre-record toolbar is three compact floating islands:
+
+- The first contains cancel, recording options, editable width/height fields,
+  and the area/fullscreen/application capture-mode menu. Width and height are
+  screen points; changing either dimension keeps the selection centered and
+  clamps it to the display containing the selection.
+- The second exposes microphone, system audio, camera, click highlight, and
+  keystroke display toggles. The click and keystroke settings are persisted
+  with the recording preferences and are applied when recording starts.
+- The third contains labeled `Record GIF` and `Record Video` actions. Each
+  action sets the output mode and starts recording immediately. Screenshot
+  capture is not offered from this toolbar.
 
 ## Key Files
 
 | File | Responsibility |
 | --- | --- |
 | `Notinhas/Features/Capture/CaptureViewModel.swift` | Recording entry actions, shortcut toggle, remember-last-area restore |
-| `Notinhas/Features/Recording/RecordingCoordinator.swift` | Toolbar/overlay UX, stop/restart/delete, GIF handoff, screenshot-from-toolbar |
+| `Notinhas/Features/Recording/RecordingCoordinator.swift` | Toolbar/overlay UX, selection updates, stop/restart/delete, GIF handoff |
 | `Notinhas/Features/Recording/RecordingSession.swift` | Thread-safe AVAssetWriter session, lazy session start, pause-offset PTS re-timing |
-| `Notinhas/Features/Recording/RecordingToolbarWindow.swift` | Pre-record toolbar + recording status bar window, hover-bar visibility and drag persistence |
-| `Notinhas/Features/Recording/RecordingToolbarView.swift` | Pre-record controls (close, screenshot, mode toggle, mic/system audio/camera, options, Record + output dropdown) |
+| `Notinhas/Features/Recording/RecordingToolbarWindow.swift` | Pre-record toolbar + recording status bar window, editable selection state, hover-bar visibility and drag persistence |
+| `Notinhas/Features/Recording/RecordingToolbarView.swift` | Pre-record controls (cancel, dimensions, mode menu, mic/system audio/camera, click/keystroke overlays, GIF/Video actions) |
 | `Notinhas/Features/Recording/RecordingCameraPreviewWindow.swift` | Pre-record camera preview session, placement, and exclusion-safe floating window |
 | `Notinhas/Features/Recording/Components/RecordingStatusBarView.swift` | During-recording controls: timer, pause/resume, annotate, restart, delete, stop, waveform |
 | `Notinhas/Features/Recording/Managers/RecordingRegionOverlayWindow.swift` | Cross-display region overlay (drag/resize/reselect) |

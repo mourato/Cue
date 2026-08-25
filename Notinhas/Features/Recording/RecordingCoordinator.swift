@@ -337,11 +337,11 @@
             toolbar.onRecord = { [weak self] in
                 self?.startRecording()
             }
-            toolbar.onCapture = { [weak self] in
-                self?.captureScreenshot()
-            }
             toolbar.onCancel = { [weak self] in
                 self?.cancel()
+            }
+            toolbar.onSelectionRectChanged = { [weak self] rect in
+                self?.updateSelectionFromToolbar(rect)
             }
             toolbar.onCaptureCameraChanged = { [weak self] _ in
                 self?.updateCameraPreview()
@@ -435,6 +435,29 @@
                 }
                 toolbarWindow?.updateAnchorRect(rect)
             }
+        }
+
+        /// Apply a typed dimension edit while keeping the current selection center fixed.
+        private func updateSelectionFromToolbar(_ requestedRect: CGRect) {
+            guard let currentRect = selectedRect,
+                  toolbarWindow?.captureMode == .area else {
+                toolbarWindow?.updateAnchorRect(selectedRect ?? requestedRect)
+                return
+            }
+
+            let center = CGPoint(x: currentRect.midX, y: currentRect.midY)
+            let screenFrame = NSScreen.screens.first(where: { $0.frame.contains(center) })?.frame
+                ?? ScreenUtility.activeScreen().frame
+            let rect = RecordingToolbarWindow.centeredSelectionRect(
+                around: center,
+                size: requestedRect.size,
+                within: screenFrame,
+            )
+            updateSelectedTarget(
+                rect: rect,
+                captureMode: .area,
+                windowTarget: nil,
+            )
         }
 
         /// Lightweight path for drag/resize events — updates overlay visuals and
@@ -538,8 +561,8 @@
             regionOverlayWindows.removeAll()
 
             toolbarWindow?.onRecord = nil
-            toolbarWindow?.onCapture = nil
             toolbarWindow?.onCancel = nil
+            toolbarWindow?.onSelectionRectChanged = nil
             toolbarWindow?.onCaptureCameraChanged = nil
             toolbarWindow?.onCameraPreviewConfigurationChanged = nil
             toolbarWindow?.onOutputModeChanged = nil
@@ -1162,88 +1185,6 @@
                     try? await Task.sleep(nanoseconds: 2_000_000_000)
                     quickAccess.updateProcessingState(id: itemId, state: .idle)
                 }
-            }
-        }
-
-        /// Capture a screenshot of the selected area and close the toolbar
-        private func captureScreenshot() {
-            guard let rect = selectedRect else { return }
-            DiagnosticLogger.shared.log(.info, .recording, "Screenshot during recording", context: [
-                "rect": "\(Int(rect.width))x\(Int(rect.height))",
-            ])
-
-            guard let saveDirectory = resolveSaveDirectoryForOperation() else {
-                DiagnosticLogger.shared.log(
-                    .warning,
-                    .recording,
-                    "Screenshot during recording blocked: no save directory access",
-                )
-                showSaveLocationPermissionAlert()
-                return
-            }
-
-            // Hide overlay windows and toolbar so they don't appear in the screenshot
-            closeCameraPreview()
-            for overlay in regionOverlayWindows {
-                overlay.orderOut(nil)
-            }
-            toolbarWindow?.orderOut(nil)
-
-            let captureManager = ScreenCaptureManager.shared
-            let excludeDesktopIcons = DesktopIconManager.shared.isIconHidingEnabled
-            let excludeDesktopWidgets = DesktopIconManager.shared.isWidgetHidingEnabled
-            let prefetchedContentTask = captureManager.prefetchShareableContent(
-                includeDesktopWindows: excludeDesktopIcons || excludeDesktopWidgets,
-            )
-
-            // Resolve save directory based on auto-save toggle
-            let actualSaveDirectory = tempCaptureManager.resolveSaveDirectory(
-                for: .screenshot,
-                exportDirectory: saveDirectory,
-            )
-
-            Task {
-                await Task.yield()
-
-                let result: CaptureResult = if let selectedWindowTarget {
-                    await captureManager.captureWindow(
-                        target: selectedWindowTarget,
-                        saveDirectory: actualSaveDirectory,
-                        showCursor: showsCursorInScreenshots,
-                        excludeDesktopIcons: excludeDesktopIcons,
-                        excludeDesktopWidgets: excludeDesktopWidgets,
-                        excludeOwnApplication: !includeOwnAppInScreenshots,
-                        prefetchedContentTask: prefetchedContentTask,
-                    )
-                } else {
-                    await captureManager.captureArea(
-                        rect: rect,
-                        saveDirectory: actualSaveDirectory,
-                        showCursor: showsCursorInScreenshots,
-                        excludeDesktopIcons: excludeDesktopIcons,
-                        excludeDesktopWidgets: excludeDesktopWidgets,
-                        excludeOwnApplication: !includeOwnAppInScreenshots,
-                        prefetchedContentTask: prefetchedContentTask,
-                    )
-                }
-
-                switch result {
-                case .success:
-                    DiagnosticLogger.shared.log(.info, .recording, "Screenshot during recording captured")
-                    SoundManager.playScreenshotCapture()
-                // PostCaptureActionHandler is triggered automatically via
-                // ScreenCaptureManager.captureCompletedPublisher → ScreenCaptureViewModel
-                case .failure(let error):
-                    DiagnosticLogger.shared.logError(.recording, error, "Screenshot during recording failed")
-                    let alert = NSAlert()
-                    alert.messageText = L10n.Recording.screenshotFailedTitle
-                    alert.informativeText = error.localizedDescription
-                    alert.alertStyle = .warning
-                    alert.addButton(withTitle: L10n.Common.ok)
-                    alert.runModal()
-                }
-
-                cleanup()
             }
         }
 

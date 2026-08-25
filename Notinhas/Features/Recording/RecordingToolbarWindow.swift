@@ -145,12 +145,16 @@
         @Published var showCursor: Bool
         @Published var highlightClicks: Bool
         @Published var showKeystrokes: Bool
+        @Published var selectionRect: CGRect = .zero
+        @Published var selectionWidthText = ""
+        @Published var selectionHeightText = ""
         @Published var isPreparingToRecord: Bool = false
 
         var onCaptureModeChanged: ((RecordingCaptureMode) -> Void)?
         var onCaptureCameraChanged: ((Bool) -> Void)?
         var onCameraPreviewConfigurationChanged: (() -> Void)?
         var onOutputModeChanged: ((RecordingOutputMode) -> Void)?
+        var onSelectionRectChanged: ((CGRect) -> Void)?
 
         init() {
             selectedFormat = RecordingToolbarPreferences.selectedFormat()
@@ -168,6 +172,12 @@
             highlightClicks = RecordingToolbarPreferences.highlightClicks()
             showKeystrokes = RecordingToolbarPreferences.showKeystrokes()
         }
+
+        func updateSelectionRect(_ rect: CGRect) {
+            selectionRect = rect
+            selectionWidthText = String(max(1, Int(rect.width.rounded())))
+            selectionHeightText = String(max(1, Int(rect.height.rounded())))
+        }
     }
 
     // MARK: - Toolbar Window
@@ -182,7 +192,6 @@
 
         // Callbacks
         var onRecord: (() -> Void)?
-        var onCapture: (() -> Void)?
         var onCancel: (() -> Void)?
         var onDelete: (() -> Void)?
         var onRestart: (() -> Void)?
@@ -269,6 +278,11 @@
             set { state.onOutputModeChanged = newValue }
         }
 
+        var onSelectionRectChanged: ((CGRect) -> Void)? {
+            get { state.onSelectionRectChanged }
+            set { state.onSelectionRectChanged = newValue }
+        }
+
         init(anchorRect: CGRect) {
             self.anchorRect = anchorRect
 
@@ -280,6 +294,7 @@
             )
 
             configureWindow()
+            state.updateSelectionRect(anchorRect)
             showPreRecordToolbar()
         }
 
@@ -307,7 +322,6 @@
             let view = RecordingToolbarView(
                 state: state,
                 onRecord: { [weak self] in self?.onRecord?() },
-                onCapture: { [weak self] in self?.onCapture?() },
                 onCancel: { [weak self] in self?.onCancel?() },
             )
 
@@ -456,6 +470,32 @@
             )
         }
 
+        /// Center a requested selection size around `center` and keep it inside `bounds`.
+        /// Used by the pre-record dimension editor and kept pure for deterministic tests.
+        nonisolated static func centeredSelectionRect(
+            around center: CGPoint,
+            size: CGSize,
+            within bounds: CGRect,
+        ) -> CGRect {
+            guard !bounds.isNull, bounds.width > 0, bounds.height > 0 else {
+                return CGRect(
+                    x: center.x - max(1, size.width) / 2,
+                    y: center.y - max(1, size.height) / 2,
+                    width: max(1, size.width),
+                    height: max(1, size.height),
+                )
+            }
+
+            let width = min(max(1, size.width), bounds.width)
+            let height = min(max(1, size.height), bounds.height)
+            let origin = clampedOrigin(
+                CGPoint(x: center.x - width / 2, y: center.y - height / 2),
+                size: CGSize(width: width, height: height),
+                within: bounds,
+            )
+            return CGRect(origin: origin, size: CGSize(width: width, height: height))
+        }
+
         private func setContent(_ view: AnyView) {
             let themedView = view.preferredColorScheme(ThemeManager.shared.systemAppearance)
             let hosting = NSHostingView(rootView: AnyView(themedView))
@@ -525,6 +565,7 @@
 
         func updateAnchorRect(_ rect: CGRect) {
             anchorRect = rect
+            state.updateSelectionRect(rect)
             positionBelowRect(rect)
         }
     }

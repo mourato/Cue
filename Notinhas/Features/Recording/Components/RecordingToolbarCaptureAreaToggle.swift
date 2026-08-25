@@ -1,116 +1,97 @@
 #if NOTINHAS_VIDEO_MODULE
 //
-    //  ToolbarCaptureAreaToggle.swift
+    //  RecordingToolbarCaptureAreaToggle.swift
     //  Notinhas
 //
-    //  Toggle button for switching between area selection and fullscreen capture
-    //  Styled to match Apple's native macOS recording toolbar
+    //  Compact capture-mode menu for the pre-record toolbar.
 //
 
     import SwiftUI
 
-    enum RecordingCaptureMode: String {
+    enum RecordingCaptureMode: String, CaseIterable {
         case area
         case fullscreen
         case application
-    }
 
-    struct ToolbarCaptureAreaToggle: View {
-        @ObservedObject var state: RecordingToolbarState
-        @State private var isAreaHovered = false
-        @State private var isFullscreenHovered = false
-        @State private var isApplicationHovered = false
-
-        private func isSelected(_ mode: RecordingCaptureMode) -> Bool {
-            state.captureMode == mode
+        var iconName: String {
+            switch self {
+            case .area: "rectangle.dashed"
+            case .fullscreen: "arrow.up.left.and.arrow.down.right"
+            case .application: "square.on.square"
+            }
         }
 
-        var body: some View {
-            HStack(spacing: ToolbarConstants.groupSpacing) {
-                // Fullscreen capture button
-                Button {
-                    state.captureMode = .fullscreen
-                    state.onCaptureModeChanged?(.fullscreen)
-                } label: {
-                    Image(systemName: "rectangle.inset.filled")
-                        .font(.system(size: ToolbarConstants.iconSize, weight: .medium))
-                        .foregroundColor(.primary.opacity(isSelected(.fullscreen) ? 1.0 : 0.5))
-                        .frame(
-                            width: ToolbarConstants.iconButtonSize,
-                            height: ToolbarConstants.iconButtonSize,
-                        )
-                        .background(
-                            RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
-                                .fill(Color.primary.opacity(isFullscreenHovered ? 0.1 : 0)),
-                        )
-                        .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
-                        .animation(ToolbarConstants.hoverAnimation, value: isFullscreenHovered)
-                }
-                .buttonStyle(.plain)
-                .onHover { isFullscreenHovered = $0 }
-                .help(L10n.RecordingToolbar.fullscreenCapture)
-                .accessibilityLabel(L10n.RecordingToolbar.fullscreenCapture)
-                .accessibilityAddTraits(isSelected(.fullscreen) ? .isSelected : [])
-
-                // Area selection button
-                Button {
-                    state.captureMode = .area
-                    state.onCaptureModeChanged?(.area)
-                } label: {
-                    Image(systemName: "rectangle.dashed")
-                        .font(.system(size: ToolbarConstants.iconSize, weight: .medium))
-                        .foregroundColor(.primary.opacity(isSelected(.area) ? 1.0 : 0.5))
-                        .frame(
-                            width: ToolbarConstants.iconButtonSize,
-                            height: ToolbarConstants.iconButtonSize,
-                        )
-                        .background(
-                            RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
-                                .fill(Color.primary.opacity(isAreaHovered ? 0.1 : 0)),
-                        )
-                        .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
-                        .animation(ToolbarConstants.hoverAnimation, value: isAreaHovered)
-                }
-                .buttonStyle(.plain)
-                .onHover { isAreaHovered = $0 }
-                .help(L10n.RecordingToolbar.areaSelection)
-                .accessibilityLabel(L10n.RecordingToolbar.areaSelectionCapture)
-                .accessibilityAddTraits(isSelected(.area) ? .isSelected : [])
-
-                // Application window button
-                Button {
-                    state.captureMode = .application
-                    state.onCaptureModeChanged?(.application)
-                } label: {
-                    Image(systemName: "square.on.square")
-                        .font(.system(size: ToolbarConstants.iconSize, weight: .medium))
-                        .foregroundColor(.primary.opacity(isSelected(.application) ? 1.0 : 0.5))
-                        .frame(
-                            width: ToolbarConstants.iconButtonSize,
-                            height: ToolbarConstants.iconButtonSize,
-                        )
-                        .background(
-                            RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
-                                .fill(Color.primary.opacity(isApplicationHovered ? 0.1 : 0)),
-                        )
-                        .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
-                        .animation(ToolbarConstants.hoverAnimation, value: isApplicationHovered)
-                }
-                .buttonStyle(.plain)
-                .onHover { isApplicationHovered = $0 }
-                .help(L10n.PreferencesShortcuts.applicationRecordingTitle)
-                .accessibilityLabel(L10n.PreferencesShortcuts.applicationRecordingTitle)
-                .accessibilityAddTraits(isSelected(.application) ? .isSelected : [])
+        var displayName: String {
+            switch self {
+            case .area: L10n.RecordingToolbar.areaSelection
+            case .fullscreen: L10n.RecordingToolbar.fullscreenCapture
+            case .application: L10n.PreferencesShortcuts.applicationRecordingTitle
             }
         }
     }
 
-    #Preview {
-        HStack(spacing: 4) {
-            ToolbarCaptureAreaToggle(state: RecordingToolbarState())
+    struct ToolbarCaptureAreaToggle: View {
+        @ObservedObject var state: RecordingToolbarState
+        @State private var isHovered = false
+        @State private var showPopover = false
+
+        var body: some View {
+            Button {
+                showPopover.toggle()
+            } label: {
+                ToolbarIconButtonLabel(
+                    systemName: state.captureMode.iconName,
+                    isHovered: isHovered || showPopover,
+                )
+            }
+            .buttonStyle(.plain)
+            .onHover { isHovered = $0 }
+            .popover(isPresented: $showPopover, arrowEdge: .bottom) {
+                captureModePopover
+            }
+            .help(state.captureMode.displayName)
+            .accessibilityLabel(state.captureMode.displayName)
+            .accessibilityValue(state.captureMode.displayName)
         }
-        .padding(10)
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+
+        private var captureModePopover: some View {
+            VStack(alignment: .leading, spacing: 4) {
+                ForEach(RecordingCaptureMode.allCases, id: \.self) { mode in
+                    Button {
+                        state.captureMode = mode
+                        state.onCaptureModeChanged?(mode)
+                        showPopover = false
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: mode.iconName)
+                                .frame(width: 18)
+
+                            Text(mode.displayName)
+
+                            Spacer()
+
+                            if state.captureMode == mode {
+                                Image(systemName: "checkmark")
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 6)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityAddTraits(state.captureMode == mode ? .isSelected : [])
+                }
+            }
+            .padding(8)
+            .frame(width: 220)
+        }
+    }
+
+    #Preview {
+        ToolbarCaptureAreaToggle(state: RecordingToolbarState())
+            .padding(10)
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 14))
     }
 #endif

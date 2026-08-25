@@ -40,6 +40,12 @@ second canonical design-system document.
   share the same icon label, frame, hover treatment, inactive opacity, and
   accessibility state value; opening a device popover must not change the
   control's geometry.
+- The pre-recording toolbar is composed of three compact floating islands:
+  cancel/options/dimensions/mode, direct recording toggles, and labeled GIF or
+  Video start actions. Area dimensions are editable screen points; changing a
+  dimension preserves the selection center and clamps the result to the display
+  containing the selection. Screenshot capture is not a pre-recording toolbar
+  action.
 - The live recording camera preview is draggable within the selected area and
   exposes session-only size and shape controls; it never writes those controls
   to preferences.
