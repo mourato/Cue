@@ -292,9 +292,9 @@ private struct ShortcutValidationPopoverContent: View {
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .frame(minWidth: 160, maxWidth: 260)
+        .padding(.horizontal, PopoverTokens.transientHorizontalPadding)
+        .padding(.vertical, PopoverTokens.transientVerticalPadding)
+        .frame(minWidth: 160, maxWidth: PopoverTokens.transientMaxWidth)
     }
 
     private var accentColor: Color {

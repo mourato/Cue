@@ -37,9 +37,10 @@
                                 .font(.system(size: 10, weight: .semibold))
                                 .foregroundColor(SidebarColors.labelSecondary)
                                 .frame(width: 16, height: 16)
-                                .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
+                        .frame(width: PopoverTokens.menuItemMinHeight, height: PopoverTokens.menuItemMinHeight)
+                        .contentShape(Rectangle())
                     }
 
                     Divider()

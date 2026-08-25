@@ -136,8 +136,8 @@
                     .showVideoInfoHint)
                 .popover(isPresented: $state.isVideoInfoSidebarVisible, arrowEdge: .bottom) {
                     VideoDetailsSidebarView(state: state)
-                        .frame(width: 320)
-                        .frame(height: 380)
+                        .frame(width: PopoverTokens.infoPanelWidth)
+                        .frame(height: PopoverTokens.infoPanelHeight)
                 }
             }
         }

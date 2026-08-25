@@ -162,11 +162,11 @@ struct QuickAccessPreviewSwipeZonePopover: View {
             }
         }
         .foregroundStyle(.primary)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 7)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
+        .padding(.horizontal, PopoverTokens.overlayHorizontalPadding)
+        .padding(.vertical, PopoverTokens.overlayVerticalPadding)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: PopoverTokens.overlayCornerRadius))
         .overlay(
-            RoundedRectangle(cornerRadius: 8)
+            RoundedRectangle(cornerRadius: PopoverTokens.overlayCornerRadius)
                 .stroke(Color.primary.opacity(0.12), lineWidth: 1),
         )
         .shadow(color: Color.black.opacity(0.14), radius: 8, x: 0, y: 3)

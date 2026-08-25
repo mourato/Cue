@@ -30,7 +30,7 @@
 
             let arrowWidth: CGFloat = 16
             let arrowHeight: CGFloat = 8
-            let cornerRadius: CGFloat = ToolbarConstants.toolbarCornerRadius
+            let cornerRadius: CGFloat = PopoverTokens.annotationToolbarCornerRadius
 
             let bodyRect = switch arrowEdge {
             case .top:
@@ -95,7 +95,7 @@
         var anchorButtonCenterXOffset: CGFloat = 0
 
         private let arrowHeight: CGFloat = 8
-        private let popoverGap: CGFloat = 6
+        private let popoverGap: CGFloat = PopoverTokens.annotationToolbarGap
 
         init(annotationState: RecordingAnnotationState) {
             self.annotationState = annotationState

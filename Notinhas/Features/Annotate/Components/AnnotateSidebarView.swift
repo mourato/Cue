@@ -142,8 +142,8 @@ struct AnnotateSidebarView: View, Equatable {
                 .font(Typography.labelMedium)
                 .foregroundColor(SidebarColors.labelPrimary)
                 .frame(minWidth: 50)
-                .padding(.horizontal, Spacing.sm)
-                .padding(.vertical, 7)
+                .padding(.horizontal, PopoverTokens.menuItemHorizontalPadding)
+                .padding(.vertical, PopoverTokens.menuItemVerticalPadding)
                 .background(
                     RoundedRectangle(cornerRadius: Size.radiusSm)
                         .fill(state.isNoneCanvasEffectsActive ? Color.accentColor.opacity(0.25) : SidebarColors
@@ -229,22 +229,22 @@ struct AnnotateSidebarView: View, Equatable {
             .disabled(state.isCanvasPresetLimitReached)
 
             Divider()
-                .padding(.vertical, 4)
+                .padding(.vertical, PopoverTokens.menuDividerPadding)
 
             if state.canvasPresets.isEmpty {
                 Text(L10n.AnnotateUI.noPresetsYet)
                     .font(Typography.labelSmall)
                     .foregroundColor(SidebarColors.labelSecondary)
-                    .padding(.horizontal, Spacing.sm)
-                    .padding(.vertical, 7)
+                    .padding(.horizontal, PopoverTokens.menuItemHorizontalPadding)
+                    .padding(.vertical, PopoverTokens.menuItemVerticalPadding)
             } else {
                 ForEach(state.canvasPresets) { preset in
                     presetDropdownRow(preset)
                 }
             }
         }
-        .padding(.vertical, 4)
-        .frame(width: 240)
+        .padding(.vertical, PopoverTokens.menuDividerPadding)
+        .frame(width: PopoverTokens.presetMenuWidth)
     }
 
     private func presetDropdownRow(_ preset: AnnotateCanvasPreset) -> some View {
@@ -306,8 +306,8 @@ struct AnnotateSidebarView: View, Equatable {
             .accessibilityLabel(L10n.AnnotateUI.deletePresetHelp)
             .frame(minWidth: 28, minHeight: 28)
         }
-        .padding(.horizontal, Spacing.sm)
-        .padding(.vertical, 6)
+        .padding(.horizontal, PopoverTokens.menuItemHorizontalPadding)
+        .padding(.vertical, PopoverTokens.menuItemVerticalPadding)
     }
 
     private var updatePresetButton: some View {

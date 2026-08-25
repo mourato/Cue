@@ -40,6 +40,89 @@ enum Size {
     static let strokeSelected: CGFloat = 2
 }
 
+// MARK: - Popover Layout
+
+enum PopoverTokens {
+    // Compact selection menus
+    static let menuContentInset: CGFloat = Spacing.sm
+    static let menuItemSpacing: CGFloat = Spacing.xs
+    static let menuItemMinHeight: CGFloat = 28
+    static let menuItemHorizontalPadding: CGFloat = Spacing.sm
+    static let menuItemVerticalPadding: CGFloat = 6
+    static let menuIconSpacing: CGFloat = 7
+    static let menuDividerPadding: CGFloat = Spacing.xs
+    static let narrowMenuWidth: CGFloat = 180
+    static let deviceMenuWidth: CGFloat = 220
+    static let outputMenuWidth: CGFloat = 160
+    static let zoomMenuWidth: CGFloat = 122
+    static let presetMenuWidth: CGFloat = 240
+
+    // Property and settings panels
+    static let panelContentInset: CGFloat = 12
+    static let panelItemSpacing: CGFloat = Spacing.sm
+    static let panelSectionSpacing: CGFloat = Spacing.md
+    static let propertyPanelWidth: CGFloat = 196
+    static let settingsPanelWidth: CGFloat = 280
+    static let infoPanelWidth: CGFloat = 320
+    static let infoPanelHeight: CGFloat = 380
+    static let speedPanelWidth: CGFloat = 180
+    static let colorGridCellSize: CGFloat = 24
+    static let colorGridSpacing: CGFloat = 8
+    static let colorSwatchSize: CGFloat = 22
+    static let noteColorPanelWidth: CGFloat = 220
+
+    // Repeated control geometry
+    static let controlSpacing: CGFloat = 6
+    static let compactControlSpacing: CGFloat = 5
+    static let controlHorizontalPadding: CGFloat = 10
+    static let controlVerticalPadding: CGFloat = 5
+    static let controlCornerRadius: CGFloat = Size.radiusSm
+    static let hoverFill = Color.primary.opacity(0.08)
+    static let selectedFill = Color.accentColor.opacity(0.12)
+    static let selectedStroke = Color.accentColor.opacity(0.45)
+
+    // Transient feedback and custom overlay surfaces
+    static let transientHorizontalPadding: CGFloat = 10
+    static let transientVerticalPadding: CGFloat = 6
+    static let transientMaxWidth: CGFloat = 260
+    static let overlayHorizontalPadding: CGFloat = 10
+    static let overlayVerticalPadding: CGFloat = 7
+    static let overlayCornerRadius: CGFloat = Size.radiusMd
+    static let annotationToolbarHorizontalInset: CGFloat = 10
+    static let annotationToolbarCompactInset: CGFloat = 6
+    static let annotationToolbarAxisInset: CGFloat = 10
+    static let annotationToolbarCornerRadius: CGFloat = 14
+    static let annotationToolbarGap: CGFloat = 6
+}
+
+struct PopoverMenuItemStyle: ViewModifier {
+    let isSelected: Bool
+
+    @State private var isHovering = false
+
+    func body(content: Content) -> some View {
+        content
+            .frame(
+                maxWidth: .infinity,
+                minHeight: PopoverTokens.menuItemMinHeight,
+                alignment: .leading,
+            )
+            .padding(.horizontal, PopoverTokens.menuItemHorizontalPadding)
+            .contentShape(Rectangle())
+            .background(
+                RoundedRectangle(cornerRadius: PopoverTokens.controlCornerRadius, style: .continuous)
+                    .fill(isSelected ? PopoverTokens.selectedFill : isHovering ? PopoverTokens.hoverFill : .clear),
+            )
+            .overlay {
+                if isSelected {
+                    RoundedRectangle(cornerRadius: PopoverTokens.controlCornerRadius, style: .continuous)
+                        .strokeBorder(PopoverTokens.selectedStroke, lineWidth: Size.strokeDefault)
+                }
+            }
+            .onHover { isHovering = $0 }
+    }
+}
+
 // MARK: - Typography
 
 enum Typography {
@@ -263,6 +346,10 @@ struct ActionButtonStyle: ViewModifier {
 // MARK: - View Extensions
 
 extension View {
+    func popoverMenuItem(isSelected: Bool = false) -> some View {
+        modifier(PopoverMenuItemStyle(isSelected: isSelected))
+    }
+
     func sidebarItemStyle(isSelected: Bool, cornerRadius: CGFloat = Size.radiusMd) -> some View {
         modifier(SidebarItemStyle(isSelected: isSelected, cornerRadius: cornerRadius))
     }

@@ -80,9 +80,9 @@ private struct HintPopoverContent: View {
         Text(text)
             .font(.system(size: 11))
             .foregroundColor(.primary)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
+            .padding(.horizontal, PopoverTokens.transientHorizontalPadding)
+            .padding(.vertical, PopoverTokens.transientVerticalPadding)
             .fixedSize(horizontal: false, vertical: true)
-            .frame(maxWidth: 260, alignment: .leading)
+            .frame(maxWidth: PopoverTokens.transientMaxWidth, alignment: .leading)
     }
 }

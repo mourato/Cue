@@ -28,7 +28,7 @@ struct NotinhasNoteEditorView: View {
             noteTextField
             footer
         }
-        .padding(12)
+        .padding(PopoverTokens.panelContentInset)
         .frame(width: panelWidth, alignment: .topLeading)
         .frame(maxHeight: maxPanelHeight, alignment: .topLeading)
         .fixedSize(horizontal: false, vertical: true)
@@ -145,8 +145,8 @@ struct NotinhasNoteEditorView: View {
                 selectedColor: colorBinding,
                 colors: AnnotateBuiltInColorPalette.annotationColors,
             )
-            .padding(12)
-            .frame(width: 220)
+            .padding(PopoverTokens.panelContentInset)
+            .frame(width: PopoverTokens.noteColorPanelWidth)
         }
     }
 
@@ -168,7 +168,7 @@ struct NotinhasNoteEditorView: View {
         .accessibilityLabel(NotinhasL10n.areaStylePickerLabel)
         .accessibilityValue(areaStyle.localizedName)
         .popover(isPresented: $showsStylePopover, arrowEdge: .bottom) {
-            VStack(alignment: .leading, spacing: Spacing.sm) {
+            VStack(alignment: .leading, spacing: PopoverTokens.panelItemSpacing) {
                 Text(NotinhasL10n.areaStylePickerLabel)
                     .font(Typography.labelMedium)
                     .foregroundColor(SidebarColors.labelSecondary)
@@ -185,8 +185,8 @@ struct NotinhasNoteEditorView: View {
                     }
                 }
             }
-            .padding(12)
-            .frame(minWidth: 164, alignment: .leading)
+            .padding(PopoverTokens.panelContentInset)
+            .frame(minWidth: PopoverTokens.propertyPanelWidth, alignment: .leading)
         }
     }
 
@@ -210,7 +210,7 @@ struct NotinhasNoteEditorView: View {
             L10n.Common.strokeWidthOption(Int(AnnotationStrokeWidth.nearest(to: areaStrokeWidth).points)),
         )
         .popover(isPresented: $showsStrokeWidthPopover, arrowEdge: .bottom) {
-            VStack(alignment: .leading, spacing: Spacing.sm) {
+            VStack(alignment: .leading, spacing: PopoverTokens.panelItemSpacing) {
                 Text(NotinhasL10n.areaStrokeWidthLabel)
                     .font(Typography.labelMedium)
                     .foregroundColor(SidebarColors.labelSecondary)
@@ -218,8 +218,8 @@ struct NotinhasNoteEditorView: View {
 
                 AnnotationStrokeWidthPicker(value: $areaStrokeWidth)
             }
-            .padding(12)
-            .frame(width: 196, alignment: .leading)
+            .padding(PopoverTokens.panelContentInset)
+            .frame(width: PopoverTokens.propertyPanelWidth, alignment: .leading)
         }
     }
 

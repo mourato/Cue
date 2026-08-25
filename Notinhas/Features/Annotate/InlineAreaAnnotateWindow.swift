@@ -1810,10 +1810,13 @@ private struct InlineAreaColorPopover: View {
         case favorite
     }
 
-    private let columns = Array(repeating: GridItem(.fixed(24), spacing: 8), count: 5)
+    private let columns = Array(
+        repeating: GridItem(.fixed(PopoverTokens.colorGridCellSize), spacing: PopoverTokens.colorGridSpacing),
+        count: 5,
+    )
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: PopoverTokens.panelItemSpacing) {
             Text(title)
                 .font(Typography.labelMedium)
                 .foregroundColor(.secondary)
@@ -1825,7 +1828,7 @@ private struct InlineAreaColorPopover: View {
                     .font(Typography.labelSmall)
                     .foregroundColor(.secondary)
 
-                LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
+                LazyVGrid(columns: columns, alignment: .leading, spacing: PopoverTokens.colorGridSpacing) {
                     ForEach(favorites, id: \.self) { color in
                         favoriteColorButton(color)
                     }
@@ -1848,7 +1851,7 @@ private struct InlineAreaColorPopover: View {
                 .font(Typography.labelSmall)
                 .foregroundColor(.secondary)
 
-            LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
+            LazyVGrid(columns: columns, alignment: .leading, spacing: PopoverTokens.colorGridSpacing) {
                 ForEach(colors, id: \.self) { color in
                     paletteColorButton(color, overlayAction: nil, overlayHelp: "")
                 }
@@ -1871,7 +1874,7 @@ private struct InlineAreaColorPopover: View {
                     Button {
                         beginCustomColorDraft()
                     } label: {
-                        AnnotateAddColorSwatch(size: 22)
+                        AnnotateAddColorSwatch(size: PopoverTokens.colorSwatchSize)
                     }
                     .buttonStyle(.plain)
                     .help(L10n.Common.custom)
@@ -1884,8 +1887,8 @@ private struct InlineAreaColorPopover: View {
                     .padding(.top, 2)
             }
         }
-        .padding(12)
-        .frame(width: 196, alignment: .leading)
+        .padding(PopoverTokens.panelContentInset)
+        .frame(width: PopoverTokens.propertyPanelWidth, alignment: .leading)
         .onAppear {
             syncDraftColor(with: selectedColor)
         }
@@ -1949,12 +1952,12 @@ private struct InlineAreaColorPopover: View {
     }
 
     private var favoriteSelectionPopover: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: PopoverTokens.panelItemSpacing) {
             Text(L10n.Common.colors)
                 .font(Typography.labelSmall)
                 .foregroundColor(.secondary)
 
-            LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
+            LazyVGrid(columns: columns, alignment: .leading, spacing: PopoverTokens.colorGridSpacing) {
                 ForEach(favoriteVaultColors, id: \.self) { color in
                     favoriteVaultColorButton(color)
                 }
@@ -1967,7 +1970,7 @@ private struct InlineAreaColorPopover: View {
                     Button {
                         beginFavoriteColorDraft()
                     } label: {
-                        AnnotateAddColorSwatch(size: 22)
+                        AnnotateAddColorSwatch(size: PopoverTokens.colorSwatchSize)
                     }
                     .buttonStyle(.plain)
                     .help(L10n.Common.custom)
@@ -1980,8 +1983,8 @@ private struct InlineAreaColorPopover: View {
                     .padding(.top, 2)
             }
         }
-        .padding(12)
-        .frame(width: 196, alignment: .leading)
+        .padding(PopoverTokens.panelContentInset)
+        .frame(width: PopoverTokens.propertyPanelWidth, alignment: .leading)
         .onDisappear {
             if activeDraftTarget == .favorite {
                 cancelColorDraft(keepFavoriteSelectionPopoverOpen: false)
@@ -1993,7 +1996,7 @@ private struct InlineAreaColorPopover: View {
         InlineAreaColorSwatch(
             color: draftCustomColor,
             isSelected: true,
-            size: 22,
+            size: PopoverTokens.colorSwatchSize,
         )
         .contentShape(Circle())
         .onTapGesture {
@@ -2007,7 +2010,7 @@ private struct InlineAreaColorPopover: View {
         InlineAreaColorSwatch(
             color: draftCustomColor,
             isSelected: AnnotateColorPaletteStore.colorsMatch(selectedColor, draftCustomColor),
-            size: 22,
+            size: PopoverTokens.colorSwatchSize,
         )
         .contentShape(Circle())
         .onTapGesture {
@@ -2268,7 +2271,7 @@ private struct InlineAreaPaletteColorButton: View {
             InlineAreaColorSwatch(
                 color: color,
                 isSelected: isSelected,
-                size: 22,
+                size: PopoverTokens.colorSwatchSize,
             )
             .contentShape(Circle())
             .onTapGesture(perform: onSelect)

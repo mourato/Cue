@@ -104,6 +104,8 @@ second canonical design-system document.
 - Floating control islands reuse `captureFloatingToolbarMaterial()`: use
   Liquid Glass by default, with the existing solid fallback for Reduce
   Transparency. Do not apply glass to the full editor, canvas, or sidebar.
+- Popovers use `PopoverTokens` in [`DesignTokens.swift`](../Notinhas/Shared/Styles/DesignTokens.swift): compact menus use an 8-point content inset, 4-point item spacing, and 28-point minimum rows; property and settings panels use a 12-point content inset; transient feedback uses the compact 10×6-point inset. `PopoverMenuItemStyle` owns menu-row hover, selection, full-width content shape, and selected-state border.
+- Native SwiftUI `.popover` content does not add a second material, border, clip, or shadow. Custom overlay cards and AppKit popover windows may own their surface chrome, but their padding, radii, and anchor gap come from `PopoverTokens`.
 - The clipboard handoff action is the primary labeled action in the bottom
   action island; secondary actions may remain icon-only with explicit tooltips
   and accessibility labels.
