@@ -1,4 +1,14 @@
 #!/bin/bash
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+if [ -x "${SCRIPT_DIR}/first-commit-version-bump.sh" ]; then
+  if ! "${SCRIPT_DIR}/first-commit-version-bump.sh"; then
+    exit 1
+  fi
+fi
+
 # Get staged Swift files (ignoring deleted ones)
 staged_swift_files=()
 while IFS= read -r staged_path; do
@@ -11,7 +21,7 @@ fi
 
 if which swiftformat >/dev/null; then
   echo "Validating staged Swift files..."
-  swiftformat "${staged_swift_files[@]}" --lint
+  (cd "${PROJECT_ROOT}" && swiftformat "${staged_swift_files[@]}" --lint)
 else
   echo "error: SwiftFormat is required for Swift commits." >&2
   exit 1

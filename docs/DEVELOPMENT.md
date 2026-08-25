@@ -23,6 +23,20 @@ open Notinhas.xcodeproj
 
 Build and run with `Cmd+R` using the **Notinhas** scheme (Video module off by default).
 
+## Daily local version
+
+The first commit made each day updates the app version to `<major>.<month>.<day>`
+and increments the build number. Enable the tracked pre-commit hook once per
+clone:
+
+```bash
+git config --local core.hooksPath scripts
+```
+
+Use `SKIP_DAILY_VERSION_BUMP=1` to skip one commit or
+`FORCE_DAILY_VERSION_BUMP=1` to force a bump. The hook updates the four app
+configurations only; test bundle versions are independent.
+
 ## Build from the terminal
 
 ```bash
