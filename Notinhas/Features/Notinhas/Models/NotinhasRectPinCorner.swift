@@ -38,17 +38,17 @@ nonisolated enum NotinhasRectPinCorner: String, Codable, Equatable, CaseIterable
     func rotated(clockwise: Bool) -> NotinhasRectPinCorner {
         if clockwise {
             switch self {
-            case .topLeft: return .topRight
-            case .topRight: return .bottomRight
-            case .bottomRight: return .bottomLeft
-            case .bottomLeft: return .topLeft
+            case .topLeft: .topRight
+            case .topRight: .bottomRight
+            case .bottomRight: .bottomLeft
+            case .bottomLeft: .topLeft
             }
         } else {
             switch self {
-            case .topLeft: return .bottomLeft
-            case .bottomLeft: return .bottomRight
-            case .bottomRight: return .topRight
-            case .topRight: return .topLeft
+            case .topLeft: .bottomLeft
+            case .bottomLeft: .bottomRight
+            case .bottomRight: .topRight
+            case .topRight: .topLeft
             }
         }
     }

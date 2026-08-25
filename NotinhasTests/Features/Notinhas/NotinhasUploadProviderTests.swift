@@ -25,9 +25,9 @@ final class NotinhasUploadProviderTests: XCTestCase {
         defaults.removePersistentDomain(forName: suite)
     }
 
-    func testImageKitInitProbesWithoutUnlockingRead() {
+    func testImageKitInitProbesWithoutUnlockingRead() throws {
         let suite = "notinhas.imagekit.probe.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: suite)!
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
         defaults.removePersistentDomain(forName: suite)
         let keychain = MockProviderKeychain(storedValue: "fixture-private-key")
         let store = NotinhasImageKitCredentialStore(defaults: defaults, keychain: keychain)
