@@ -127,7 +127,7 @@ struct AnnotateBottomBarView: View {
         HStack(spacing: 10) {
             zoomPicker
             canvasPanButton
-            modeToggle
+            modeSwitcher
         }
     }
 
@@ -220,17 +220,41 @@ struct AnnotateBottomBarView: View {
             state.mockupRotationZ != 0
     }
 
-    private var modeToggle: some View {
-        Picker("", selection: $state.editorMode) {
-            Label(L10n.AnnotateUI.modeAnnotate, systemImage: "pencil.and.outline")
-                .tag(AnnotateState.EditorMode.annotate)
-            Label(L10n.AnnotateUI.modePreview, systemImage: "eye")
-                .tag(AnnotateState.EditorMode.preview)
-            Label(L10n.AnnotateUI.modeMockup, systemImage: "cube.transparent")
-                .tag(AnnotateState.EditorMode.mockup)
+    private var modeSwitcher: some View {
+        HStack(spacing: 2) {
+            ForEach(AnnotateState.EditorMode.allCases, id: \.self) { mode in
+                AnnotateModeSwitcherButton(
+                    systemImage: modeIcon(for: mode),
+                    title: modeTitle(for: mode),
+                    isSelected: state.editorMode == mode,
+                ) {
+                    state.editorMode = mode
+                }
+            }
         }
-        .pickerStyle(.segmented)
-        .frame(width: 220)
+        .padding(3)
+        .background(
+            RoundedRectangle(cornerRadius: 9, style: .continuous)
+                .fill(Color.primary.opacity(0.06)),
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
+        .fixedSize(horizontal: true, vertical: false)
+    }
+
+    private func modeIcon(for mode: AnnotateState.EditorMode) -> String {
+        switch mode {
+        case .annotate: "pencil.and.outline"
+        case .preview: "eye"
+        case .mockup: "cube.transparent"
+        }
+    }
+
+    private func modeTitle(for mode: AnnotateState.EditorMode) -> String {
+        switch mode {
+        case .annotate: L10n.AnnotateUI.modeAnnotate
+        case .preview: L10n.AnnotateUI.modePreview
+        case .mockup: L10n.AnnotateUI.modeMockup
+        }
     }
 
     // MARK: - Drag Handle (CleanShot-style)
@@ -548,6 +572,48 @@ struct AnnotateBottomBarView: View {
 
     private var uploadedMessage: String {
         L10n.Notinhas.uploadedAndCopied(provider: uploadConfiguration.provider.name)
+    }
+}
+
+private struct AnnotateModeSwitcherButton: View {
+    let systemImage: String
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+
+    @State private var isHovering = false
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: systemImage)
+                .font(.system(size: 14, weight: .medium))
+                .foregroundStyle(isSelected ? Color.accentColor : Color.secondary)
+                .frame(width: 28, height: 28)
+                .background(
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .fill(backgroundColor),
+                )
+                .overlay {
+                    if isSelected {
+                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                            .strokeBorder(Color.primary.opacity(0.12), lineWidth: 0.5)
+                            .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
+                    }
+                }
+        }
+        .buttonStyle(.plain)
+        .onHover { isHovering = $0 }
+        .help(title)
+        .accessibilityLabel(title)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityValue(isSelected ? NotinhasL10n.selected : "")
+    }
+
+    private var backgroundColor: Color {
+        if isSelected {
+            return Color(nsColor: .controlBackgroundColor)
+        }
+        return isHovering ? Color.primary.opacity(0.1) : .clear
     }
 }
 
