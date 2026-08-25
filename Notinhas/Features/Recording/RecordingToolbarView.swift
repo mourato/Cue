@@ -21,7 +21,6 @@
                     recordingOptions
                 }
                 .captureFloatingToolbarMaterial()
-                
                 outputActions
             }
             .frame(maxWidth: 280)
