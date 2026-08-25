@@ -49,7 +49,7 @@ usage() {
 ${BOLD}Usage:${NC} $0 [run|--logs|--telemetry|--debug|--verify] [options]
 
 ${BOLD}Modes:${NC}
-  run                 Kill, build, and launch Notinhas.app (default)
+  run                 Stop, build, and launch only the new app bundle (default)
   --logs, logs        Launch then stream unified logs for process == "Notinhas"
   --telemetry         Launch then stream unified logs for subsystem == "$LOG_SUBSYSTEM"
   --debug, debug      Build then launch the app binary under lldb
@@ -293,12 +293,50 @@ installed_release_app_path() {
   printf "%s/%s.app" "$APPLICATIONS_DIR" "$APP_NAME"
 }
 
+app_process_pids() {
+  pgrep -x "$APP_NAME" 2>/dev/null || true
+}
+
 stop_app() {
-  if pgrep -x "$APP_NAME" >/dev/null 2>&1; then
-    info "Stopping existing $APP_NAME process..."
-    pkill -x "$APP_NAME" >/dev/null 2>&1 || true
-    sleep 0.5
-  fi
+  local pids
+  pids="$(app_process_pids)"
+  [[ -n "$pids" ]] || return
+
+  info "Stopping existing $APP_NAME process(es)..."
+  pkill -TERM -x "$APP_NAME" >/dev/null 2>&1 || true
+
+  for _ in {1..40}; do
+    [[ -z "$(app_process_pids)" ]] && return
+    sleep 0.25
+  done
+
+  fail "Could not stop the existing $APP_NAME process. Close it manually and retry."
+}
+
+process_uses_binary() {
+  local pid="$1"
+  local expected_binary="$2"
+
+  /usr/sbin/lsof -a -p "$pid" -d txt -Fn 2>/dev/null \
+    | awk -v expected="n$expected_binary" '$0 == expected { found = 1 } END { exit !found }'
+}
+
+wait_for_app_binary() {
+  local expected_binary="$1"
+  local pid
+
+  for _ in {1..40}; do
+    while IFS= read -r pid; do
+      [[ -n "$pid" ]] || continue
+      if process_uses_binary "$pid" "$expected_binary"; then
+        printf '%s\n' "$pid"
+        return
+      fi
+    done < <(app_process_pids)
+    sleep 0.25
+  done
+
+  fail "Launched $APP_NAME, but no process is running the expected binary: $expected_binary"
 }
 
 filter_xcodebuild_output() {
@@ -396,12 +434,24 @@ build_app() {
   success "Build ready: $app_bundle"
 }
 
-open_app() {
-  local app_bundle
-  app_bundle="$(app_bundle_path)"
-  info "Launching $APP_NAME..."
+launch_app_bundle() {
+  local app_bundle="$1"
+  local expected_binary="$app_bundle/Contents/MacOS/$APP_NAME"
+  local pid
+
+  [[ -d "$app_bundle" ]] || fail "App bundle was not found: $app_bundle"
+  [[ -x "$expected_binary" ]] || fail "App binary is not executable: $expected_binary"
+
+  # Stop again immediately before launch; a long build can outlive the initial stop.
+  stop_app
+  info "Launching $app_bundle..."
   /usr/bin/open -n "$app_bundle"
-  success "Launched $APP_NAME"
+  pid="$(wait_for_app_binary "$expected_binary")"
+  success "Launched $app_bundle (pid $pid)"
+}
+
+open_app() {
+  launch_app_bundle "$(app_bundle_path)"
 }
 
 install_release_app() {
@@ -411,6 +461,10 @@ install_release_app() {
 
   [[ -d "$APPLICATIONS_DIR" ]] || fail "Applications directory was not found: $APPLICATIONS_DIR"
   [[ -w "$APPLICATIONS_DIR" ]] || fail "Applications directory is not writable: $APPLICATIONS_DIR"
+  [[ -d "$source_app" ]] || fail "Release app bundle was not found: $source_app"
+
+  # Do not replace an app bundle whose old executable is still running.
+  stop_app
 
   backup_directory="$(mktemp -d "${TMPDIR:-/tmp}/${APP_NAME}.install-backup.XXXXXX")"
   if [[ -e "$destination_app" ]]; then
@@ -419,6 +473,14 @@ install_release_app() {
   fi
 
   if /usr/bin/ditto "$source_app" "$destination_app"; then
+    if ! "$ROOT_DIR/scripts/clean-launch-services.sh" "$destination_app"; then
+      rm -rf "$destination_app"
+      if [[ -e "$backup_directory/$APP_NAME.app" ]]; then
+        mv "$backup_directory/$APP_NAME.app" "$destination_app"
+      fi
+      rmdir "$backup_directory" 2>/dev/null || true
+      fail "Could not remove stale LaunchServices registrations; the previous app was restored."
+    fi
     rm -rf "$backup_directory"
     success "Installed: $destination_app"
   else
@@ -432,17 +494,7 @@ install_release_app() {
 }
 
 open_installed_release_app() {
-  local installed_app
-  installed_app="$(installed_release_app_path)"
-  info "Launching installed $APP_NAME..."
-  /usr/bin/open -n "$installed_app"
-  sleep 2
-
-  if pgrep -x "$APP_NAME" >/dev/null 2>&1; then
-    success "Launched $installed_app"
-  else
-    fail "$APP_NAME did not remain running after launch. Check the code-signing identity and system logs."
-  fi
+  launch_app_bundle "$(installed_release_app_path)"
 }
 
 release_post_build_menu() {
@@ -453,9 +505,9 @@ release_post_build_menu() {
 
   while true; do
     printf "\nRelease build completed. What would you like to do?\n"
-    printf "  1) Open the .app from the build folder\n"
-    printf "  2) Install the .app in %s\n" "$APPLICATIONS_DIR"
-    printf "  3) Install the .app in %s and open it\n" "$APPLICATIONS_DIR"
+    printf "  1) Install the current .app in %s and open it (recommended)\n" "$APPLICATIONS_DIR"
+    printf "  2) Install the current .app in %s\n" "$APPLICATIONS_DIR"
+    printf "  3) Open the current .app from the build folder\n"
     printf "  4) Exit\n"
     printf "Choose [1-4]: "
 
@@ -463,7 +515,8 @@ release_post_build_menu() {
     read -r choice
     case "$choice" in
       1)
-        open_app
+        install_release_app
+        open_installed_release_app
         return
         ;;
       2)
@@ -471,8 +524,7 @@ release_post_build_menu() {
         return
         ;;
       3)
-        install_release_app
-        open_installed_release_app
+        open_app
         return
         ;;
       4)
@@ -488,13 +540,6 @@ release_post_build_menu() {
 
 verify_app() {
   open_app
-  sleep 2
-
-  if pgrep -x "$APP_NAME" >/dev/null 2>&1; then
-    success "$APP_NAME is running."
-  else
-    fail "$APP_NAME did not stay running after launch."
-  fi
 }
 
 stream_logs() {
@@ -504,8 +549,7 @@ stream_logs() {
 
   cleanup_stream() {
     printf "\n"
-    info "Stopping $APP_NAME..."
-    pkill -x "$APP_NAME" >/dev/null 2>&1 || true
+    stop_app
     success "App stopped."
   }
   trap cleanup_stream INT TERM
@@ -526,6 +570,7 @@ main() {
   require_command xcodebuild
   require_command pgrep
   require_command pkill
+  [[ -x /usr/sbin/lsof ]] || fail "Missing required command: /usr/sbin/lsof"
 
   cd "$ROOT_DIR"
   stop_app
