@@ -103,6 +103,7 @@ final class AnnotateExportSaveTests: XCTestCase {
     func testRenderFinalImageUsesCombinedBoundsGapAndPadding() throws {
         let state = makeAnnotateState()
         try state.loadImage(makeImage(width: 200, height: 100))
+        state.activateCombineMode(preferredMode: .autoStitch)
         try state.importImage(makeImage(width: 100, height: 100))
         state.setCombineDirection(.horizontal)
         state.setCombineGap(10)

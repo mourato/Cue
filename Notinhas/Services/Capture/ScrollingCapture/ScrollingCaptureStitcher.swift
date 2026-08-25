@@ -402,7 +402,19 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         let expectedDeltaPixels = expectedSignedDeltaPixels.map(abs)
         guard raster.width == lastRaster.width, raster.height == lastRaster.height else {
             matchNotFoundCount += 1
-            return currentUpdate(outcome: .ignoredAlignmentFailed, includeMergedImage: renderMergedImage)
+            return currentUpdate(
+                outcome: .ignoredAlignmentFailed,
+                includeMergedImage: renderMergedImage,
+                alignmentDebug: ScrollingCaptureAlignmentDebugInfo(
+                    path: .alignmentFailed,
+                    usedVisionEstimate: false,
+                    confidence: 0,
+                    pixelScore: nil,
+                    totalScore: nil,
+                    appendDeltaY: nil,
+                    visionAgreementCount: 0,
+                ),
+            )
         }
 
         let inferredHeaderHeight = headerHeight == 0
@@ -417,6 +429,23 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         let inferredTrailingStaticWidth = trailingStaticWidth == 0
             ? detectStaticSideBandWidth(previous: lastRaster, current: raster, fromLeading: false)
             : trailingStaticWidth
+        let contentHeight = lastRaster.height - inferredHeaderHeight - inferredFooterHeight
+        if let expectedDeltaPixels, expectedDeltaPixels >= contentHeight {
+            matchNotFoundCount += 1
+            return currentUpdate(
+                outcome: .ignoredAlignmentFailed,
+                includeMergedImage: renderMergedImage,
+                alignmentDebug: ScrollingCaptureAlignmentDebugInfo(
+                    path: .alignmentFailed,
+                    usedVisionEstimate: false,
+                    confidence: 0,
+                    pixelScore: nil,
+                    totalScore: nil,
+                    appendDeltaY: nil,
+                    visionAgreementCount: 0,
+                ),
+            )
+        }
         let frameDifference = contentDifference(
             previous: lastRaster,
             current: raster,
@@ -457,7 +486,12 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         var alignmentPath: ScrollingCaptureAlignmentPath = .fastGuided
         var match = fastGuidedMatch
         var visionAlignmentEstimate: VisionAlignmentEstimate?
-        let needsVision = shouldValidateFastGuidedMatch(match)
+        let expectedDeltaDisagrees = if let expectedDeltaPixels, let match {
+            abs(match.deltaY - expectedDeltaPixels) > max(28, expectedDeltaPixels / 2)
+        } else {
+            false
+        }
+        let needsVision = shouldValidateFastGuidedMatch(match) || expectedDeltaDisagrees
 
         if needsVision {
             visionAlignmentEstimate = estimateVisionAlignment(
@@ -470,7 +504,9 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             )
         }
 
-        if needsVision, let visionAlignmentEstimate {
+        if expectedDeltaDisagrees {
+            match = nil
+        } else if needsVision, let visionAlignmentEstimate {
             let guidedVisionMatch = bestMatch(
                 previous: lastRaster,
                 current: raster,
@@ -590,7 +626,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         guard let sliceStart = sliceStartRow(
             for: match.direction,
             in: raster,
-            deltaY: acceptedDelta,
+            deltaY: match.deltaY,
             headerHeight: candidateHeaderHeight,
             footerHeight: candidateFooterHeight,
         ) else {
