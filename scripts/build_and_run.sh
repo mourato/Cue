@@ -300,7 +300,7 @@ app_process_pids() {
 stop_app() {
   local pids
   pids="$(app_process_pids)"
-  [[ -n "$pids" ]] || return
+  [[ -n "$pids" ]] || return 0
 
   info "Stopping existing $APP_NAME process(es)..."
   pkill -TERM -x "$APP_NAME" >/dev/null 2>&1 || true
