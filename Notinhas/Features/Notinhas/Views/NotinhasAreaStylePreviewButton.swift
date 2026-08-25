@@ -71,6 +71,7 @@ struct NotinhasAreaStylePreviewButton: View {
         .help(style.localizedName)
         .accessibilityLabel(style.localizedName)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityValue(isSelected ? NotinhasL10n.selected : "")
     }
 }
 

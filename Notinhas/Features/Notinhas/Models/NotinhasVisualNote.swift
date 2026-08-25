@@ -10,14 +10,14 @@ import Foundation
 nonisolated struct NotinhasVisualNote: Codable, Equatable, Identifiable {
     static let legacyDefaultPinControlValue: CGFloat = 4
     static let defaultAreaStrokeWidth: CGFloat = 2
-    static let areaStrokeWidthRange: ClosedRange<CGFloat> = 1 ... 8
+    static let areaStrokeWidthRange: ClosedRange<CGFloat> = AnnotationStrokeWidth.pointsRange
 
     let id: UUID
     var text: String
     var target: NotinhasNoteTarget
     var color: RGBAColor
     var areaStyle: NotinhasAreaStyle
-    /// Stroke width for rectangular area markings (points ignore this).
+    /// Discrete stroke width for rectangular area markings (points ignore this).
     var areaStrokeWidth: CGFloat
     /// Quick-bar Size control value; diameter via `AnnotationProperties.counterDiameter(for:)`.
     var pinControlValue: CGFloat
@@ -79,7 +79,7 @@ nonisolated struct NotinhasVisualNote: Codable, Equatable, Identifiable {
     }
 
     static func clampedAreaStrokeWidth(_ value: CGFloat) -> CGFloat {
-        min(max(value, areaStrokeWidthRange.lowerBound), areaStrokeWidthRange.upperBound)
+        AnnotationStrokeWidth.clamped(value)
     }
 
     private enum CodingKeys: String, CodingKey {

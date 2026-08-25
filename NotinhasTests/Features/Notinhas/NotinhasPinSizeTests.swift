@@ -37,6 +37,22 @@ final class NotinhasPinSizeTests: XCTestCase {
         XCTAssertEqual(decoded.areaStrokeWidth, NotinhasVisualNote.defaultAreaStrokeWidth, accuracy: 0.001)
     }
 
+    func testLegacyAreaStrokeWidthSnapsToNearestPreset() throws {
+        let original = NotinhasVisualNote(
+            text: "Legacy",
+            target: .rect(CGRect(x: 0, y: 0, width: 40, height: 20)),
+            color: red,
+            creationOrder: 1,
+        )
+        var keyed = try XCTUnwrap(try JSONSerialization
+            .jsonObject(with: JSONEncoder().encode(original)) as? [String: Any])
+        keyed["areaStrokeWidth"] = 5
+        let data = try JSONSerialization.data(withJSONObject: keyed)
+        let decoded = try JSONDecoder().decode(NotinhasVisualNote.self, from: data)
+
+        XCTAssertEqual(decoded.areaStrokeWidth, AnnotationStrokeWidth.regular.points, accuracy: 0.001)
+    }
+
     func testPinDiameterUsesCounterFormula() {
         let note = NotinhasVisualNote(
             text: "Sized",

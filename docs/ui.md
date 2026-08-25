@@ -70,6 +70,9 @@ second canonical design-system document.
   annotate quick-properties stroke popover, sidebar, inline area controls, and
   recording annotation toolbar. Continuous stroke sliders are not used for drawn
   elements.
+- Rectangular Notinhas note editors keep compact Stroke, Style, and Color
+  triggers together in the header; point notes expose Color only. The note
+  Style picker keeps the shared shape previews while omitting `solid`.
 - In `AnnotateQuickPropertiesBar`, Color, Stroke/Size, and shape Style open as
   popovers that stay open until dismissed by clicking outside or pressing Esc.
   Stroke and Style triggers show a live preview of the current value. The bar

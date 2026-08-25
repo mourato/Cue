@@ -198,7 +198,7 @@ final class NotinhasAnnotateStateTests: XCTestCase {
         state.notinhasApplyLiveAppearance(live)
 
         XCTAssertEqual(state.notinhasNotes[0].color, live.color)
-        XCTAssertEqual(state.notinhasNotes[0].areaStrokeWidth, 5)
+        XCTAssertEqual(state.notinhasNotes[0].areaStrokeWidth, AnnotationStrokeWidth.regular.points)
         XCTAssertEqual(state.notinhasNotes[0].text, note.text)
         XCTAssertFalse(state.canUndo)
     }
@@ -214,7 +214,7 @@ final class NotinhasAnnotateStateTests: XCTestCase {
 
         XCTAssertEqual(
             state.notinhasNotes[0].areaStrokeWidth,
-            NotinhasVisualNote.areaStrokeWidthRange.upperBound,
+            AnnotationStrokeWidth.maxPoints,
             accuracy: 0.001,
         )
     }
@@ -230,7 +230,7 @@ final class NotinhasAnnotateStateTests: XCTestCase {
 
         XCTAssertEqual(
             state.notinhasNotes[0].areaStrokeWidth,
-            NotinhasVisualNote.areaStrokeWidthRange.lowerBound,
+            AnnotationStrokeWidth.minPoints,
             accuracy: 0.001,
         )
     }

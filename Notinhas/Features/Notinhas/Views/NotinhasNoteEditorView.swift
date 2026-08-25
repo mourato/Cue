@@ -17,6 +17,8 @@ struct NotinhasNoteEditorView: View {
 
     @FocusState private var isFocused: Bool
     @State private var showsColorPopover = false
+    @State private var showsStylePopover = false
+    @State private var showsStrokeWidthPopover = false
 
     private let panelShape = RoundedRectangle(cornerRadius: 12, style: .continuous)
 
@@ -24,10 +26,6 @@ struct NotinhasNoteEditorView: View {
         VStack(alignment: .leading, spacing: 10) {
             header
             noteTextField
-            if showsAreaStyle {
-                areaStyleControls
-                areaStrokeWidthControl
-            }
             footer
         }
         .padding(12)
@@ -46,7 +44,7 @@ struct NotinhasNoteEditorView: View {
     }
 
     private var header: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 6) {
             Text("\(displayNumber)")
                 .font(.system(size: 12, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
@@ -60,6 +58,11 @@ struct NotinhasNoteEditorView: View {
 
             Spacer(minLength: 0)
                 .allowsHitTesting(false)
+
+            if showsAreaStyle {
+                areaStrokeWidthMenu
+                areaStyleMenu
+            }
 
             colorMenu
         }
@@ -120,25 +123,15 @@ struct NotinhasNoteEditorView: View {
 
     private var colorMenu: some View {
         Button {
-            showsColorPopover.toggle()
+            toggleColorPopover()
         } label: {
-            Image(nsImage: NotinhasPaletteColor.makeSwatchImage(color: color.nsColor, diameter: 18))
-                .resizable()
-                .frame(width: 18, height: 18)
-                .frame(width: 28, height: 22)
-                .padding(.horizontal, 6)
-                .padding(.vertical, 5)
-                .background(
-                    RoundedRectangle(cornerRadius: 7, style: .continuous)
-                        .fill(Color.primary.opacity(0.06)),
-                )
-                .overlay {
-                    RoundedRectangle(cornerRadius: 7, style: .continuous)
-                        .stroke(Color.primary.opacity(0.12), lineWidth: 1)
-                }
+            compactPopoverTriggerLabel {
+                Image(nsImage: NotinhasPaletteColor.makeSwatchImage(color: color.nsColor, diameter: 16))
+                    .resizable()
+                    .frame(width: 16, height: 16)
+            }
         }
         .buttonStyle(.plain)
-        .fixedSize()
         .accessibilityLabel(NotinhasL10n.noteEditorColorButton)
         .accessibilityValue(
             AnnotateBuiltInColorPalette.annotationEntries
@@ -157,6 +150,121 @@ struct NotinhasNoteEditorView: View {
         }
     }
 
+    private var areaStyleMenu: some View {
+        Button {
+            toggleStylePopover()
+        } label: {
+            compactPopoverTriggerLabel {
+                NotinhasAreaStylePreview(
+                    style: areaStyle,
+                    color: color.color,
+                    width: 16,
+                    height: 12,
+                )
+            }
+        }
+        .buttonStyle(.plain)
+        .help(NotinhasL10n.areaStylePickerLabel)
+        .accessibilityLabel(NotinhasL10n.areaStylePickerLabel)
+        .accessibilityValue(areaStyle.localizedName)
+        .popover(isPresented: $showsStylePopover, arrowEdge: .bottom) {
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                Text(NotinhasL10n.areaStylePickerLabel)
+                    .font(Typography.labelMedium)
+                    .foregroundColor(SidebarColors.labelSecondary)
+                    .lineLimit(1)
+
+                HStack(spacing: 5) {
+                    ForEach(AnnotationShapeFillStyle.notinhasCases) { style in
+                        NotinhasAreaStylePreviewButton(
+                            style: style,
+                            isSelected: areaStyle == style,
+                            color: color.color,
+                            action: { areaStyle = style },
+                        )
+                    }
+                }
+            }
+            .padding(12)
+            .frame(minWidth: 164, alignment: .leading)
+        }
+    }
+
+    private var areaStrokeWidthMenu: some View {
+        Button {
+            toggleStrokeWidthPopover()
+        } label: {
+            compactPopoverTriggerLabel {
+                Capsule()
+                    .fill(Color.primary)
+                    .frame(
+                        width: 16,
+                        height: strokePreviewHeight(for: AnnotationStrokeWidth.nearest(to: areaStrokeWidth)),
+                    )
+            }
+        }
+        .buttonStyle(.plain)
+        .help(NotinhasL10n.areaStrokeWidthLabel)
+        .accessibilityLabel(NotinhasL10n.areaStrokeWidthLabel)
+        .accessibilityValue(
+            L10n.Common.strokeWidthOption(Int(AnnotationStrokeWidth.nearest(to: areaStrokeWidth).points)),
+        )
+        .popover(isPresented: $showsStrokeWidthPopover, arrowEdge: .bottom) {
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                Text(NotinhasL10n.areaStrokeWidthLabel)
+                    .font(Typography.labelMedium)
+                    .foregroundColor(SidebarColors.labelSecondary)
+                    .lineLimit(1)
+
+                AnnotationStrokeWidthPicker(value: $areaStrokeWidth)
+            }
+            .padding(12)
+            .frame(width: 196, alignment: .leading)
+        }
+    }
+
+    private func compactPopoverTriggerLabel(
+        @ViewBuilder content: () -> some View,
+    ) -> some View {
+        HStack(spacing: 5) {
+            content()
+            Image(systemName: "chevron.down")
+                .font(.system(size: 8, weight: .bold))
+                .foregroundColor(.secondary)
+        }
+        .frame(width: 42, height: 26)
+        .background(
+            RoundedRectangle(cornerRadius: 7)
+                .fill(SidebarColors.itemDefault),
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 7)
+                .stroke(Color.secondary.opacity(0.14), lineWidth: 1),
+        )
+    }
+
+    private func strokePreviewHeight(for width: AnnotationStrokeWidth) -> CGFloat {
+        min(max(width.points, 2), 8)
+    }
+
+    private func toggleColorPopover() {
+        showsColorPopover.toggle()
+        showsStylePopover = false
+        showsStrokeWidthPopover = false
+    }
+
+    private func toggleStylePopover() {
+        showsStylePopover.toggle()
+        showsColorPopover = false
+        showsStrokeWidthPopover = false
+    }
+
+    private func toggleStrokeWidthPopover() {
+        showsStrokeWidthPopover.toggle()
+        showsColorPopover = false
+        showsStylePopover = false
+    }
+
     private var colorBinding: Binding<Color> {
         Binding(
             get: { color.color },
@@ -165,58 +273,5 @@ struct NotinhasNoteEditorView: View {
                 color = rgba
             },
         )
-    }
-
-    private var areaStyleControls: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(NotinhasL10n.areaStylePickerLabel)
-                .font(.system(size: 11, weight: .medium))
-                .foregroundStyle(.secondary)
-                .allowsHitTesting(false)
-
-            HStack(spacing: 6) {
-                ForEach(AnnotationShapeFillStyle.notinhasCases) { style in
-                    NotinhasAreaStylePreviewButton(
-                        style: style,
-                        isSelected: areaStyle == style,
-                        color: color.color,
-                        action: { areaStyle = style },
-                    )
-                }
-                Spacer(minLength: 0)
-                    .allowsHitTesting(false)
-            }
-        }
-    }
-
-    private var areaStrokeWidthControl: some View {
-        HStack(spacing: 8) {
-            Text(NotinhasL10n.areaStrokeWidthLabel)
-                .font(.system(size: 11, weight: .medium))
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .allowsHitTesting(false)
-
-            SteppedSliderControl(
-                value: $areaStrokeWidth,
-                step: 0.5,
-                in: NotinhasVisualNote.areaStrokeWidthRange,
-            )
-
-            Text(areaStrokeWidthLabel)
-                .font(.system(size: 11, weight: .medium).monospacedDigit())
-                .foregroundStyle(.secondary)
-                .frame(width: 28, alignment: .trailing)
-                .allowsHitTesting(false)
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(NotinhasL10n.areaStrokeWidthLabel)
-    }
-
-    private var areaStrokeWidthLabel: String {
-        if areaStrokeWidth.truncatingRemainder(dividingBy: 1) == 0 {
-            return String(Int(areaStrokeWidth))
-        }
-        return String(format: "%.1f", areaStrokeWidth)
     }
 }
