@@ -143,7 +143,9 @@
             let state = VideoEditorState(url: URL(fileURLWithPath: "/tmp/notinhas-camera-overlay-test.mov"))
             state.markAsSaved()
             XCTAssertFalse(state.hasUnsavedChanges)
-            state.cameraOverlayLayout.position = .topLeading
+            var changedLayout = state.cameraOverlayLayout
+            changedLayout.position = .topLeading
+            state.cameraOverlayLayout = changedLayout
             XCTAssertTrue(state.hasUnsavedChanges)
             state.markAsSaved()
             XCTAssertFalse(state.hasUnsavedChanges)

@@ -1701,11 +1701,16 @@
 
             $cameraOverlayLayout
                 .dropFirst()
-                .sink { [weak self] _ in self?.updateHasUnsavedChanges() }
+                .sink { [weak self] layout in
+                    self?.updateHasUnsavedChanges(currentCameraOverlayLayout: layout)
+                }
                 .store(in: &cancellables)
         }
 
-        private func updateHasUnsavedChanges(currentZoomSegments: [ZoomSegment]? = nil) {
+        private func updateHasUnsavedChanges(
+            currentZoomSegments: [ZoomSegment]? = nil,
+            currentCameraOverlayLayout: VideoEditorCameraOverlayLayout? = nil,
+        ) {
             // GIF mode: only track dimension changes
             if isGIF {
                 let dimensionChanged = exportSettings.dimensionPreset != initialExportSettings.dimensionPreset
@@ -1729,7 +1734,8 @@
             let bgCornerChanged = backgroundCornerRadius != initialBackgroundCornerRadius
             let backgroundChanged = bgStyleChanged || bgPaddingChanged || bgShadowChanged || bgCornerChanged
             let exportSettingsChanged = exportSettings != initialExportSettings
-            let cameraLayoutChanged = cameraOverlayLayout != initialCameraOverlayLayout
+            let cameraLayout = currentCameraOverlayLayout ?? cameraOverlayLayout
+            let cameraLayoutChanged = cameraLayout != initialCameraOverlayLayout
 
             hasUnsavedChanges = startChanged || endChanged || muteChanged || zoomsChanged || speedsChanged ||
                 backgroundChanged || exportSettingsChanged || cameraLayoutChanged
