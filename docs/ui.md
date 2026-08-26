@@ -47,8 +47,8 @@ second canonical design-system document.
   containing the selection. Screenshot capture is not a pre-recording toolbar
   action.
 - The live recording camera preview is draggable within the selected area and
-  exposes session-only size and shape controls; it never writes those controls
-  to preferences.
+  exposes session-only size and shape controls through the camera popover or
+  the preview's contextual menu; it never writes those controls to preferences.
 - Sidebar and swatch states use semantic fills and borders: default, hover,
   selected, and disabled must remain distinguishable in Light and Dark.
 - Numbered pins/notes are the product identity. Preserve their ordering,

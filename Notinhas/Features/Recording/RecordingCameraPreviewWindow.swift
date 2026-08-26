@@ -197,6 +197,8 @@
         private var configuration: RecordingCameraPreviewConfiguration
         private var previewView: RecordingCameraPreviewView!
 
+        var onConfigurationChanged: ((RecordingCameraPreviewConfiguration) -> Void)?
+
         init?(
             deviceID: String?,
             selectionRect: CGRect,
@@ -235,6 +237,7 @@
             previewView.onMouseDown = { [weak self] event in self?.beginDrag(with: event) }
             previewView.onMouseDragged = { [weak self] event in self?.continueDrag(with: event) }
             previewView.onMouseUp = { [weak self] in self?.endDrag() }
+            previewView.contextMenuProvider = { [weak self] in self?.makeContextMenu() }
             previewView.onAccessibilityMove = { [weak self] delta in
                 self?.movePreview(by: delta) ?? false
             }
@@ -310,6 +313,73 @@
                 normalizedCenter: currentCenter,
             )
             applyFrame(resizedFrame)
+        }
+
+        private func makeContextMenu() -> NSMenu {
+            let menu = NSMenu()
+            menu.autoenablesItems = false
+
+            let sizeHeader = NSMenuItem(title: L10n.Camera.previewSize, action: nil, keyEquivalent: "")
+            sizeHeader.isEnabled = false
+            menu.addItem(sizeHeader)
+
+            for size in RecordingCameraPreviewSize.allCases {
+                let item = NSMenuItem(
+                    title: size.displayName,
+                    action: #selector(selectPreviewSize(_:)),
+                    keyEquivalent: "",
+                )
+                item.target = self
+                item.representedObject = size.rawValue
+                item.state = configuration.size == size ? .on : .off
+                menu.addItem(item)
+            }
+
+            menu.addItem(.separator())
+
+            let shapeHeader = NSMenuItem(title: L10n.Camera.previewShape, action: nil, keyEquivalent: "")
+            shapeHeader.isEnabled = false
+            menu.addItem(shapeHeader)
+
+            for shape in RecordingCameraPreviewShape.allCases {
+                let item = NSMenuItem(
+                    title: shape.displayName,
+                    action: #selector(selectPreviewShape(_:)),
+                    keyEquivalent: "",
+                )
+                item.target = self
+                item.representedObject = shape.rawValue
+                item.state = configuration.shape == shape ? .on : .off
+                menu.addItem(item)
+            }
+
+            return menu
+        }
+
+        @objc private func selectPreviewSize(_ sender: NSMenuItem) {
+            guard let rawValue = sender.representedObject as? String,
+                  let size = RecordingCameraPreviewSize(rawValue: rawValue)
+            else { return }
+
+            let nextConfiguration = RecordingCameraPreviewConfiguration(
+                size: size,
+                shape: configuration.shape,
+            )
+            updateConfiguration(nextConfiguration)
+            onConfigurationChanged?(nextConfiguration)
+        }
+
+        @objc private func selectPreviewShape(_ sender: NSMenuItem) {
+            guard let rawValue = sender.representedObject as? String,
+                  let shape = RecordingCameraPreviewShape(rawValue: rawValue)
+            else { return }
+
+            let nextConfiguration = RecordingCameraPreviewConfiguration(
+                size: configuration.size,
+                shape: shape,
+            )
+            updateConfiguration(nextConfiguration)
+            onConfigurationChanged?(nextConfiguration)
         }
 
         private func configureWindow() {
@@ -415,6 +485,7 @@
         var onMouseDown: ((NSEvent) -> Void)?
         var onMouseDragged: ((NSEvent) -> Void)?
         var onMouseUp: (() -> Void)?
+        var contextMenuProvider: (() -> NSMenu?)?
         var onAccessibilityMove: ((CGPoint) -> Bool)?
         var customAccessibilityActions: [NSAccessibilityCustomAction] = []
 
@@ -432,6 +503,10 @@
 
         override func mouseUp(with _: NSEvent) {
             onMouseUp?()
+        }
+
+        override func menu(for _: NSEvent) -> NSMenu? {
+            contextMenuProvider?()
         }
 
         override func accessibilityCustomActions() -> [NSAccessibilityCustomAction]? {

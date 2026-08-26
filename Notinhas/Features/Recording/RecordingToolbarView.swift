@@ -48,6 +48,12 @@
 
                 RecordingDimensionsEditor(state: state)
                     .frame(minWidth: 120, maxWidth: 220, minHeight: 40)
+
+                RecordingToolbarDivider()
+
+                RecordingToolbarPanelCell {
+                    ToolbarOutputModeDropdown(state: state)
+                }
             }
         }
 
@@ -83,10 +89,12 @@
                     ToolbarSystemAudioToggleButton(state: state)
                 }
 
-                RecordingToolbarDivider()
+                if state.outputMode != .gif {
+                    RecordingToolbarDivider()
 
-                RecordingToolbarPanelCell {
-                    ToolbarCameraToggleButton(state: state)
+                    RecordingToolbarPanelCell {
+                        ToolbarCameraToggleButton(state: state)
+                    }
                 }
 
                 RecordingToolbarDivider()

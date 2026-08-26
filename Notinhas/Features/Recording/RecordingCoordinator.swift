@@ -756,6 +756,12 @@
             }
 
             cameraPreviewWindow = previewWindow
+            previewWindow.onConfigurationChanged = { [weak self] configuration in
+                guard let self, let toolbarWindow = self.toolbarWindow else { return }
+                toolbarWindow.state.cameraPreviewSize = configuration.size
+                toolbarWindow.state.cameraPreviewShape = configuration.shape
+                updateCameraPreview()
+            }
             previewWindow.start()
         }
 

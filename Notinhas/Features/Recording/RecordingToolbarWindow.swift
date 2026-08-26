@@ -325,7 +325,7 @@
                 onCancel: { [weak self] in self?.onCancel?() },
             )
 
-            setContent(AnyView(view))
+            setContent(AnyView(view), usesWindowMaterial: false)
             showBelowRect(anchorRect)
         }
 
@@ -354,7 +354,7 @@
                 },
             )
 
-            setContent(AnyView(view))
+            setContent(AnyView(view), usesWindowMaterial: true)
             applyRecordingBarVisibility(visible)
 
             // Track live preference toggles during recording so the on-screen bar and the menu bar stop
@@ -496,40 +496,49 @@
             return CGRect(origin: origin, size: CGSize(width: width, height: height))
         }
 
-        private func setContent(_ view: AnyView) {
+        private func setContent(_ view: AnyView, usesWindowMaterial: Bool) {
             let themedView = view.preferredColorScheme(ThemeManager.shared.systemAppearance)
             let hosting = NSHostingView(rootView: AnyView(themedView))
-            hosting.translatesAutoresizingMaskIntoConstraints = false
 
-            // NSVisualEffectView provides native wallpaper-tinted material backing,
-            // matching AnnotateWindow's adaptive background behavior.
-            let effect = NSVisualEffectView()
-            effect.material = .hudWindow
-            effect.state = .active
-            effect.blendingMode = .behindWindow
-            effect.wantsLayer = true
-            effect.layer?.cornerRadius = ToolbarConstants.toolbarCornerRadius
-            effect.layer?.cornerCurve = .continuous
-            effect.layer?.masksToBounds = true
+            let fittingSize: CGSize
+            if usesWindowMaterial {
+                hosting.translatesAutoresizingMaskIntoConstraints = false
 
-            // Make hosting view transparent so material shows through
-            hosting.layer?.backgroundColor = .clear
+                // NSVisualEffectView provides native wallpaper-tinted material backing,
+                // matching AnnotateWindow's adaptive background behavior.
+                let effect = NSVisualEffectView()
+                effect.material = .hudWindow
+                effect.state = .active
+                effect.blendingMode = .behindWindow
+                effect.wantsLayer = true
+                effect.layer?.cornerRadius = ToolbarConstants.toolbarCornerRadius
+                effect.layer?.cornerCurve = .continuous
+                effect.layer?.masksToBounds = true
 
-            effect.addSubview(hosting)
-            NSLayoutConstraint.activate([
-                hosting.topAnchor.constraint(equalTo: effect.topAnchor),
-                hosting.bottomAnchor.constraint(equalTo: effect.bottomAnchor),
-                hosting.leadingAnchor.constraint(equalTo: effect.leadingAnchor),
-                hosting.trailingAnchor.constraint(equalTo: effect.trailingAnchor),
-            ])
+                // Make hosting view transparent so material shows through
+                hosting.layer?.backgroundColor = .clear
 
-            // Size the effect view to match hosting content
-            let fittingSize = hosting.fittingSize
-            effect.frame = CGRect(origin: .zero, size: fittingSize)
+                effect.addSubview(hosting)
+                NSLayoutConstraint.activate([
+                    hosting.topAnchor.constraint(equalTo: effect.topAnchor),
+                    hosting.bottomAnchor.constraint(equalTo: effect.bottomAnchor),
+                    hosting.leadingAnchor.constraint(equalTo: effect.leadingAnchor),
+                    hosting.trailingAnchor.constraint(equalTo: effect.trailingAnchor),
+                ])
 
-            contentView = effect
+                fittingSize = hosting.fittingSize
+                effect.frame = CGRect(origin: .zero, size: fittingSize)
+                contentView = effect
+                effectView = effect
+            } else {
+                hosting.translatesAutoresizingMaskIntoConstraints = true
+                fittingSize = hosting.fittingSize
+                hosting.frame = CGRect(origin: .zero, size: fittingSize)
+                contentView = hosting
+                effectView = nil
+            }
+
             hostingView = hosting
-            effectView = effect
 
             setContentSize(fittingSize)
             cachedContentSize = fittingSize
