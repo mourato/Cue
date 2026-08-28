@@ -2,10 +2,10 @@
 name: plan-execute-review
 description: >-
   Orchestrator loop for improve-skill plans — dispatch an implementer subagent,
-  integrate via commit/merge/cleanup/push, then thermo-nuclear review and fix
-  every finding before the next plan. Use when executing plans/, running the
-  advisor→executor→reviewer pipeline, or when the user asks to implement a plan
-  with Composer 2.5 / GPT 5.6 Medium and full integration.
+  run the review/remediation gates, then hand off through the global delivery
+  lifecycle. Use when executing plans/, running the advisor→executor→reviewer
+  pipeline, or when the user asks to implement a plan with Composer 2.5 / GPT
+  5.6 Medium and full integration.
 ---
 
 # Plan → Execute → Review
@@ -14,13 +14,12 @@ description: >-
 
 Canonical owner of the **orchestrator / executor / reviewer** loop for Notinhas
 handoff plans under `plans/`. Complements `/improve` (plan authoring) and
-`/thermo-nuclear-code-quality-review` (post-integration audit).
+`/thermo-nuclear-code-quality-review` (pre-merge maintainability review).
 
 ## Scope Boundary
 
-- Owns: dispatch model choice, executor git integration (commit → merge →
-  cleanup → push), thermo review trigger, finding remediation gate, and
-  sequential plan advancement.
+- Owns: dispatch model choice, executor handoff, thermo review trigger, finding
+  remediation gate, and sequential plan advancement.
 - Does **not** author new improve findings (that is `/improve`).
 - Does **not** replace `delivery-workflow` command tables — reuse them inside
   plan gates and review fixes.
@@ -53,13 +52,14 @@ model and owns review + finding fixes.
 2. One plan at a time. Do not start plan N+1 until plan N is integrated,
    thermo-reviewed, and every finding is fixed and committed.
 3. Executor works in an **isolated git worktree** (or equivalent isolation).
-4. After a successful executor run, the executor (or orchestrator if isolation
-   blocked integration) must run the guarded local protocol via
-   `./scripts/integrate-plan.sh`: **commit → merge into the integration branch →
-   remove worktree/branch cleanup → push**. Default to `--dry-run` for inspection;
-   use `--apply` only with explicit refs, evidence, and reviewed commit SHA.
-5. After integration, the orchestrator runs
-   `/thermo-nuclear-code-quality-review` on the integrated diff.
+4. After a successful executor run, leave its worktree and commit intact for
+   review. After review and remediation, the orchestrator follows the global
+   lifecycle through `./scripts/integrate-plan.sh`:
+   **commit → review → remediation → merge → validate → push → cleanup**.
+   Default to `--dry-run` for inspection; use `--apply` only with explicit
+   refs, evidence, and reviewed commit SHA.
+5. Before integration, the orchestrator runs
+   `/thermo-nuclear-code-quality-review` on the committed source diff.
 6. **Every** thermo finding must be treated (fixed or explicitly deferred with
    maintainer approval) and committed before advancing.
 7. Never skip plan STOP conditions, widen scope, or leave `plans/README.md`
@@ -75,14 +75,13 @@ model and owns review + finding fixes.
          ▼
 ┌─────────────────┐
 │ Executor        │  implement plan in worktree; run every gate
-│                 │  integrate-plan.sh (dry-run, then --apply when authorized)
-│                 │  commit → merge → cleanup → push
+│                 │  commit; leave worktree for review
 └────────┬────────┘
          │ return STATUS report + SHAs
          ▼
 ┌─────────────────┐
 │ Orchestrator    │  verify done criteria; scope audit; thermo-nuclear review
-│                 │  fix ALL findings; commit; push
+│                 │  fix ALL findings; then merge → validate → push → cleanup
 │                 │  mark plan DONE in plans/README.md
 └────────┬────────┘
          │ if more selected plans remain → repeat
@@ -118,12 +117,15 @@ Prompt the subagent to:
   capture reports under `build/plan-preflight/` and `build/verification/`.
 - Preview integration with `./scripts/integrate-plan.sh --dry-run` using
   explicit `--source-branch`, `--target-branch`, and `--remote`.
-- When the orchestrator authorizes mutation, run `./scripts/integrate-plan.sh
+- The executor never merges, pushes, or cleans up. After review and explicit
+  authorization, the orchestrator may run `./scripts/integrate-plan.sh
   --apply --fetch` with `--evidence` (integration manifest or passing reports)
   and `--reviewed-commit` matching the source tip; add `--cleanup` only after a
-  successful push and only for the recorded source branch/worktree.
-- The script performs merge (`--no-ff`), push (never `--force`), and optional
-  cleanup. It does not mark plans `DONE`; thermo review still follows.
+  successful post-merge validation and push for the recorded source
+  branch/worktree.
+- The script performs merge (`--no-ff`), `make validate`, push (never
+  `--force`), and optional cleanup in that order. It does not mark plans
+  `DONE`; thermo review still follows.
 - Reply with:
 
 ```
@@ -136,18 +138,20 @@ PUSH: yes | no
 NOTES: …
 ```
 
-If the executor cannot merge/push from isolation, it must return the commit SHA
-and stop; the orchestrator completes merge, cleanup, and push — then still runs
-thermo review.
+The executor returns the commit SHA and stops after its isolated work. The
+orchestrator completes review/remediation and, after explicit authorization,
+the global merge → validate → push → cleanup sequence.
 
-### 3. Orchestrator — thermo review
+### 3. Orchestrator — thermo review and remediation
 
 - Load `/thermo-nuclear-code-quality-review` and the project review profile.
-- Review the integrated diff (merge SHA), not only the executor’s summary.
+- Review the committed source diff, not only the executor’s summary.
 - Produce findings (Critical / Medium / Low).
-- Fix every finding (or get explicit deferral), re-run relevant gates, commit,
-  and push.
-- Update `plans/README.md` status to `DONE` with merge + review-fix SHAs.
+- Fix every finding (or get explicit deferral), re-run relevant gates, and
+  commit the remediation before integration.
+- Hand the reviewed source tip to the global merge → validate → push → cleanup
+  lifecycle. Update `plans/README.md` status to `DONE` only after integration
+  and record the merge plus review-fix SHAs.
 
 ### 4. Advance
 
@@ -156,9 +160,9 @@ Only then start the next selected plan with a **fresh** executor dispatch.
 ## Relationship to `/improve` execute
 
 `/improve`’s default `execute` variant keeps the advisor read-only and leaves
-merge/push to the human. **This skill overrides that for Notinhas** when the
-user invokes the plan-execute-review pipeline: integration (merge/push) and
-finding remediation are required parts of the loop.
+merge/push to the human. This skill adds the Notinhas review/remediation loop;
+it does not override global integration authority or reorder the global
+lifecycle when the user invokes the plan-execute-review pipeline.
 
 Plan authoring, finding tables, and `plans/` templates remain owned by
 `/improve`.
@@ -166,6 +170,6 @@ Plan authoring, finding tables, and `plans/` templates remain owned by
 ## Related Skills
 
 - `/improve` — survey and write `plans/`
-- `/thermo-nuclear-code-quality-review` — post-merge quality bar
+- `/thermo-nuclear-code-quality-review` — pre-merge maintainability review
 - `delivery-workflow` — build/test/format commands
 - `project-standards` — skill registry and AGENTS alignment

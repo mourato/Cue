@@ -1,5 +1,7 @@
 #!/bin/bash
 # Explicit local Git integration protocol for Notinhas handoff plans.
+# After review and remediation, follows the global merge -> validate -> push
+# -> cleanup lifecycle.
 #
 # Usage:
 #   ./scripts/integrate-plan.sh --dry-run \
@@ -44,8 +46,8 @@ Required arguments:
 
 Modes:
   --dry-run                 Preview the protocol (default).
-  --apply                   Perform the guarded merge/push sequence. Requires
-                            --evidence and --reviewed-commit.
+  --apply                   Perform the guarded merge/validate/push sequence.
+                            Requires --evidence and --reviewed-commit.
 
 Evidence and review (required with --apply):
   --evidence PATH           Integration evidence manifest or report file.
@@ -68,6 +70,7 @@ Optional apply flags:
 
 Safety policy:
   - No force-push, rebase, or automatic conflict resolution.
+  - Runs make validate after merge and before push.
   - Stops on dirty worktree, missing refs, merge conflicts, failed pushes,
     evidence gaps, or mismatched reviewed commits.
   - Never marks plans DONE in plans/README.md.
@@ -433,6 +436,7 @@ build_plan() {
   fi
   plan_command "git -C ${REPO_ROOT} checkout ${TARGET_BRANCH}"
   plan_command "git -C ${REPO_ROOT} merge --no-ff ${SOURCE_BRANCH}"
+  plan_command "make -C ${REPO_ROOT} validate"
   plan_command "git -C ${REPO_ROOT} push ${REMOTE} ${TARGET_BRANCH}"
   if [[ "$CLEANUP" -eq 1 ]]; then
     if [[ -n "$SOURCE_WORKTREE" ]]; then
@@ -457,6 +461,9 @@ run_apply() {
   git -C "$REPO_ROOT" checkout "$TARGET_BRANCH"
   if ! git -C "$REPO_ROOT" merge --no-ff "$SOURCE_BRANCH"; then
     stop "merge failed or conflicts detected"
+  fi
+  if ! make -C "$REPO_ROOT" validate; then
+    stop "post-merge validation failed; target remains merged and unpushed"
   fi
   if ! git -C "$REPO_ROOT" push "$REMOTE" "$TARGET_BRANCH"; then
     stop "push failed"

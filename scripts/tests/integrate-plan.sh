@@ -157,6 +157,7 @@ setup_repo() {
     git init -q
     git config user.email "fixture@example.com"
     git config user.name "Fixture"
+    printf 'validate:\n\t@touch validation-ran\n' >Makefile
     echo "base" >README.md
     git add .
     git commit -q -m "base"
@@ -221,6 +222,8 @@ main() {
     run_integrate "$repo" --dry-run --source-branch advisor/feature --target-branch main --remote origin
   assert_output_missing "dry-run avoids force push" "--force" \
     run_integrate "$repo" --dry-run --source-branch advisor/feature --target-branch main --remote origin
+  assert_output_contains "dry-run plans post-merge validation" "make -C" \
+    run_integrate "$repo" --dry-run --source-branch advisor/feature --target-branch main --remote origin
 
   manifest="$(write_evidence_bundle "$repo" "advisor/feature" "$sha")"
 
@@ -259,6 +262,15 @@ main() {
     run_integrate "$repo" --apply --fetch --cleanup \
       --source-branch advisor/feature --target-branch main --remote origin \
       --evidence "$manifest" --reviewed-commit "$sha"
+
+  TESTS_RUN=$((TESTS_RUN + 1))
+  if [[ -f "${repo}/validation-ran" ]]; then
+    pass
+    printf 'ok  post-merge validation ran\n'
+  else
+    fail "post-merge validation ran" "validation marker missing"
+  fi
+  rm -f "${repo}/validation-ran"
 
   TESTS_RUN=$((TESTS_RUN + 1))
   if git -C "$repo" show-ref --verify --quiet refs/heads/advisor/feature; then

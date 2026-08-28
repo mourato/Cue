@@ -46,6 +46,13 @@ the change establishes a reusable visual rule or invariant.
 Keep Notinhas behavior guidance aligned with Product Intent above; do not reintroduce
 unrelated product skills from other apps.
 
+## Delivery lifecycle
+
+The global `core/policies/worktrees.md` owns isolation, authorization, and the
+delivery order: `create → work → commit → review → remediation → merge →
+validate → push → cleanup`. Project skills and overlays add Notinhas facts,
+commands, and review gates without redefining that lifecycle.
+
 ## Build, Test, and Run
 
 - `open Notinhas.xcodeproj` — develop and run in Xcode (`⌘R`).

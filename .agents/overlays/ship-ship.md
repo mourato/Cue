@@ -51,9 +51,10 @@ reviewed source tip:
 
 `--evidence` accepts a Notinhas integration manifest, a passing
 plan-preflight JSON report (plan units), or verification evidence tied to
-the source commit. The script merges with `--no-ff`, pushes without
-`--force`, and never marks plans `DONE` — review and index updates stay
-with the orchestrator after ship.
+the source commit. After review and remediation, the script merges with
+`--no-ff`, runs `make validate`, pushes without `--force`, and only then
+performs optional recorded worktree/branch cleanup. It never marks plans
+`DONE` — review and index updates stay with the orchestrator after ship.
 
 ## Plans index
 
