@@ -111,12 +111,9 @@ final class AreaSelectionController: NSObject {
     private var manualSelectionStartPoint: CGPoint?
     private var manualSelectionCurrentPoint: CGPoint?
     private weak var manualSelectionSourceWindow: AreaSelectionWindow?
-    private var manualSelectionLocalMonitor: Any?
-    /// Observe-only global counterpart to `manualSelectionLocalMonitor`. The local monitor only
-    /// fires while Notinhas is the active app; on a `.nonactivatingPanel` shown via a global
-    /// shortcut (e.g. ⌘⇧4 while another app is frontmost) the first drag/up can land before the
-    /// app activates, so the local monitor never sees them and the selection silently resets.
-    /// A global monitor still receives those events, ensuring the first gesture commits.
+    /// Observe-only global monitor for the whole selection session. A `.nonactivatingPanel` shown
+    /// via a global shortcut can receive the first mouse event while another app is frontmost, so
+    /// a monitor installed only after the overlay's `mouseDown` is too late to recover that gesture.
     private var manualSelectionGlobalMonitor: Any?
 
     /// Backdrop grabs for magnifier / luma. Defaults to a synthetic capturer under XCTest so
@@ -126,7 +123,7 @@ final class AreaSelectionController: NSObject {
     private var manualSelectionKeyLocalMonitor: Any?
     private var manualSelectionKeyGlobalMonitor: Any?
     /// Re-asserts the crosshair if the app regains focus mid-drag (e.g. after a background capture
-    /// tool bounces focus). Installed alongside the drag monitors, torn down with them.
+    /// tool bounces focus). Installed with the per-drag keyboard monitors, torn down with them.
     private var appActivationObserver: Any?
     private var sessionSpaceChangeObserver: Any?
     private var sessionAppActivationObserver: Any?
@@ -436,6 +433,7 @@ final class AreaSelectionController: NSObject {
         removeEscapeMonitors()
         stopPointerTracking()
         clearManualSelectionTracking(render: false)
+        removeManualSelectionGlobalMonitor()
         cancelWindowSelectionTask()
         DiagnosticLogger.shared.log(
             .info,
@@ -504,6 +502,7 @@ final class AreaSelectionController: NSObject {
 
         // Activate pooled windows (instant show)
         activatePooledWindows()
+        installManualSelectionGlobalMonitorIfNeeded()
 
         // Keep live overlay sessions non-activating so foreground-window capture still observes the app
         // that was frontmost when the capture started. Cursor rect refresh plus pointer tracking gives
@@ -1047,7 +1046,7 @@ final class AreaSelectionController: NSObject {
     /// Added to `.common` run-loop modes so it keeps firing during window/event tracking. Once a
     /// manual selection starts, each tick re-asserts the crosshair through
     /// `reassertManualSelectionCursor()` instead — covering the stationary-hold gap between
-    /// mouseDown and the first drag event that the drag monitors cannot reach.
+    /// mouseDown and the first drag event that event monitors cannot reach.
     private func startPointerTrackingIfNeeded() {
         guard pointerTrackingTimer == nil else { return }
         let timer = Timer(timeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
@@ -1074,7 +1073,7 @@ final class AreaSelectionController: NSObject {
             return
         }
 
-        // A manual drag owns the cursor, but the drag monitors only re-assert it on pointer
+        // A manual drag owns the cursor, but the global monitor only re-asserts it on pointer
         // movement — and the WindowServer can reset the crosshair to the arrow right after
         // mouseDown (the activation handoff the click itself triggered, a backdrop recapture
         // blocking the run loop). With the button held and the pointer stationary, no drag event
@@ -1133,6 +1132,7 @@ final class AreaSelectionController: NSObject {
         isPresenting = false
         dismissesAfterSelection = true
         stopPointerTracking()
+        removeManualSelectionGlobalMonitor()
         lumaRecapturingTask?.cancel()
         lumaRecapturingTask = nil
         if let observer = sessionSpaceChangeObserver {
@@ -1206,11 +1206,9 @@ final class AreaSelectionController: NSObject {
         reassertManualSelectionCursor()
     }
 
-    /// Keep the crosshair asserted during a drag. The drag is driven by `NSEvent` monitors (not the
-    /// overlay view's own `mouseDragged`, which the local monitor consumes), so re-assert here — the
-    /// single convergence point for the local/global drag monitors and the pointer-tracking tick,
-    /// which covers stationary holds between mouseDown and the first drag event. `NSCursor.set()` is
-    /// process-global, so asserting via the source window's overlay view covers cross-display drags.
+    /// Keep the crosshair asserted during a drag. The overlay view handles local events while the
+    /// global monitor covers gestures received by another app. `NSCursor.set()` is process-global,
+    /// so asserting via the source window's overlay view covers cross-display drags.
     private func reassertManualSelectionCursor() {
         guard manualSelectionStartPoint != nil else { return }
         if let kind = cursorOwner?(NSEvent.mouseLocation) {
@@ -1280,7 +1278,6 @@ final class AreaSelectionController: NSObject {
     }
 
     private func installManualSelectionMonitorIfNeeded() {
-        guard manualSelectionLocalMonitor == nil else { return }
         if appActivationObserver == nil {
             appActivationObserver = NotificationCenter.default.addObserver(
                 forName: NSApplication.didBecomeActiveNotification,
@@ -1290,26 +1287,6 @@ final class AreaSelectionController: NSObject {
                 Task { @MainActor in
                     self?.reassertManualSelectionCursor()
                 }
-            }
-        }
-        manualSelectionLocalMonitor = NSEvent.addLocalMonitorForEvents(
-            matching: [.leftMouseDragged, .leftMouseUp],
-        ) { [weak self] event in
-            switch event.type {
-            case .leftMouseDragged:
-                let mouseLocation = NSEvent.mouseLocation
-                Task { @MainActor in
-                    self?.updateManualSelection(to: mouseLocation)
-                }
-                return nil
-            case .leftMouseUp:
-                let mouseLocation = NSEvent.mouseLocation
-                Task { @MainActor in
-                    self?.endManualSelection(at: mouseLocation)
-                }
-                return nil
-            default:
-                return event
             }
         }
 
@@ -1333,22 +1310,38 @@ final class AreaSelectionController: NSObject {
                 }
             }
         }
+    }
 
-        // Global monitor receives drag/up even while Notinhas is inactive (the first ⌘⇧4 gesture on a
-        // nonactivating overlay). The handlers are idempotent — `updateManualSelection` just records
-        // the current point and `endManualSelection` early-returns once the selection is torn down —
-        // so it is safe for both monitors to fire for the same event when the app is active.
+    /// Observe the first gesture before the overlay becomes the active application. Local mouse
+    /// events continue through `AreaSelectionOverlayView`, which keeps drag/up handling synchronous
+    /// and avoids discarding an event before its `@MainActor` task runs.
+    private func installManualSelectionGlobalMonitorIfNeeded() {
         guard manualSelectionGlobalMonitor == nil else { return }
         manualSelectionGlobalMonitor = NSEvent.addGlobalMonitorForEvents(
-            matching: [.leftMouseDragged, .leftMouseUp],
+            matching: [.leftMouseDown, .leftMouseDragged, .leftMouseUp],
         ) { [weak self] event in
             let mouseLocation = NSEvent.mouseLocation
             Task { @MainActor in
+                guard let self, self.isPresenting, self.interactionMode == .manualRegion else { return }
                 switch event.type {
+                case .leftMouseDown:
+                    guard self.manualSelectionStartPoint == nil,
+                          let window = self.window(containing: mouseLocation),
+                          !CaptureFloatingCursorExclusion.contains(
+                              mouseLocation,
+                              in: self.cursorExclusionFrames(),
+                          ) else {
+                        return
+                    }
+                    window.orderFrontRegardless()
+                    if let displayID = window.displayID, !self.selectionEnabled(for: displayID) {
+                        self.enableLiveFallbackSelection(for: displayID)
+                    }
+                    self.beginManualSelection(at: mouseLocation, from: window)
                 case .leftMouseDragged:
-                    self?.updateManualSelection(to: mouseLocation)
+                    self.updateManualSelection(to: mouseLocation)
                 case .leftMouseUp:
-                    self?.endManualSelection(at: mouseLocation)
+                    self.endManualSelection(at: mouseLocation)
                 default:
                     break
                 }
@@ -1357,14 +1350,6 @@ final class AreaSelectionController: NSObject {
     }
 
     private func removeManualSelectionMonitor() {
-        if let monitor = manualSelectionLocalMonitor {
-            NSEvent.removeMonitor(monitor)
-            manualSelectionLocalMonitor = nil
-        }
-        if let monitor = manualSelectionGlobalMonitor {
-            NSEvent.removeMonitor(monitor)
-            manualSelectionGlobalMonitor = nil
-        }
         if let monitor = manualSelectionKeyLocalMonitor {
             NSEvent.removeMonitor(monitor)
             manualSelectionKeyLocalMonitor = nil
@@ -1379,6 +1364,13 @@ final class AreaSelectionController: NSObject {
         }
         isMovingManualSelection = false
         manualSelectionLastPointerLocation = nil
+    }
+
+    private func removeManualSelectionGlobalMonitor() {
+        if let monitor = manualSelectionGlobalMonitor {
+            NSEvent.removeMonitor(monitor)
+            manualSelectionGlobalMonitor = nil
+        }
     }
 
     private func clearManualSelectionTracking(render: Bool) {
@@ -2073,7 +2065,7 @@ final class AreaSelectionOverlayView: NSView {
     /// Re-assert the crosshair while a manual drag is in progress. On a nonactivating panel the
     /// system can reset the cursor to the default arrow mid-drag (e.g. a background screen-composition
     /// capture); the panel never becomes key, so AppKit's cursor-rect machinery does not self-heal it.
-    /// The selection drag monitors call this on every drag update to keep the crosshair sticky.
+    /// The selection drag handlers call this on every drag update to keep the crosshair sticky.
     func reassertCursorDuringDrag() {
         guard isManualSelectionInProgress else { return }
         #if DEBUG

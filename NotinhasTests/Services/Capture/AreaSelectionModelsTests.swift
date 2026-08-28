@@ -142,17 +142,30 @@ final class AreaSelectionControllerTests: XCTestCase {
     func testStartSelectionSession_whenKeyboardOwnerIsNull_registersMonitors() {
         let controller = AreaSelectionController.shared
 
-        // Default mode .recording doesn't own keyboard directly in this setup, so it should register the monitor
+        // Default mode .recording doesn't own keyboard directly in this setup, so it should
+        // register the keyboard monitor. The global mouse monitor is session-wide so it can
+        // recover a first click before the panel activates.
         controller.startSelection(mode: .recording, backdrops: [:]) { _ in }
 
         let mirror = Mirror(reflecting: controller)
         let localMonitor = mirror.children.first { $0.label == "localEscapeMonitor" }?.value
+        let globalMouseMonitor = mirror.children.first { $0.label == "manualSelectionGlobalMonitor" }?.value
 
         if let value = localMonitor {
             let isNil = String(describing: value) == "nil"
             XCTAssertFalse(isNil, "localEscapeMonitor should be non-nil when keyboardOwnerDisplayID is nil")
         } else {
             XCTFail("localEscapeMonitor property not found")
+        }
+
+        if let value = globalMouseMonitor {
+            let isNil = String(describing: value) == "nil"
+            XCTAssertFalse(
+                isNil,
+                "manualSelectionGlobalMonitor should be non-nil before the first mouseDown",
+            )
+        } else {
+            XCTFail("manualSelectionGlobalMonitor property not found")
         }
 
         controller.cancelSelection()
