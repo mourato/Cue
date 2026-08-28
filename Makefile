@@ -1,4 +1,4 @@
-.PHONY: help b build run dmg test build-video test-video format-check format-fix lint lint-changed lint-fix agent-check guidance-check clean-build
+.PHONY: help b build run dmg test build-video test-video format-check format-fix lint lint-changed lint-fix agent-check validate guidance-check clean-build
 
 help:
 	@echo "Notinhas commands:"
@@ -14,6 +14,7 @@ help:
 	@echo "  make lint-changed Validate changed Swift"
 	@echo "  make lint-fix     Apply SwiftLint autocorrections"
 	@echo "  make agent-check  Run format, lint, and strict planner"
+	@echo "  make validate     Canonical changed-surface validation"
 	@echo "  make guidance-check Validate guidance files"
 	@echo "  make clean-build"
 
@@ -49,6 +50,8 @@ lint-fix:
 
 agent-check:
 	@./scripts/agent-check.sh
+
+validate: agent-check
 
 guidance-check:
 	@./scripts/guidance-check.sh

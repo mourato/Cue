@@ -59,8 +59,8 @@ unrelated product skills from other apps.
   preflight; use `--new-file <path>` when needed.
 - `./scripts/verify-local.sh --base <ref> [--plan-only|--execute] [--strict]`
   — changed-surface verification through `scripts/verification-map.tsv`.
-- `make format-check`, `make lint-changed`, and `make agent-check` — focused
-  local gates; use the full variants before merge.
+- `make validate` is the canonical focused local gate and delegates to
+  `make agent-check`; use the full variants before merge.
 
 Screen Recording and Accessibility permissions are required for affected
 manual checks. Test capture, annotation, clipboard output, and permission
@@ -107,7 +107,7 @@ screenshots or a short recording in the handoff.
 
 ## Completion
 
-- Behavior changes pass `make test` and `make agent-check`; guidance changes pass `make guidance-check`.
+- Behavior changes pass `make test` and `make validate`; guidance changes pass `make guidance-check`.
 - Capture, TCC, WindowServer, or permission changes include the required manual check; visual changes include screenshots or a recording.
 - The handoff records commands, results, assumptions, manual gates, and known baseline failures.
 

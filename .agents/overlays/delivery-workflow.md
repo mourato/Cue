@@ -22,6 +22,8 @@ precedence: project
   `./scripts/verify-local.sh --base <ref> --full --plan-only --strict` for
   changed-surface planning. Preserve manual Screen Recording/Accessibility
   checks when the changed surface requires them.
+- `make validate` is the canonical changed-surface entry and delegates to
+  `make agent-check`.
 - Screen Recording and Accessibility permissions are required for affected capture and accessibility checks.
 - Use `./scripts/build_and_run.sh`, `./scripts/run-tests.sh`, and `./scripts/verify-local.sh` for project validation. The default `run-tests.sh` mode is quiet; pass `--with-visual` only for an intentional on-screen UI integration run.
 - The optional Video module is compile-time gated by `NOTINHAS_VIDEO_MODULE` and runtime-gated by `VideoModuleAvailability` / `videoModule.enabled` (default off). Manual validation of capture → annotate → export requires the relevant permissions.
