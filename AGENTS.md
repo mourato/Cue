@@ -31,13 +31,9 @@ renaming, moving, or rewriting upstream code merely to match a new design.
 
 ## Skills
 
-Global macOS capabilities provide the portable rules for
-`swiftui-accessibility-audit`, `apple-design`, `code-quality`,
-`delivery-workflow`, `macos-app-engineering`, and `swift-conventions`. When one of these
-global skills is active, load its matching `.agents/overlays/<skill-name>.md`
-companion after the global skill; the overlay supplies Notinhas facts and must
-not weaken global safety, privacy, or repository-integrity rules. Do not create
-same-name local skill copies.
+Use the global routing, worktree, delivery, and validation policies. Project-
+specific skills remain under `.agents/skills/`; choose the narrowest one and
+load the matching project overlay after its global skill when present.
 
 Project-specific agent skills remain under `.agents/skills/`. Choose the
 narrowest relevant skill from its description; use `project-standards` for
@@ -111,12 +107,9 @@ screenshots or a short recording in the handoff.
 
 ## Completion
 
-A task is complete when:
-
-- The changed surface, risk/lane, and `reuse → extend → create` decision are recorded.
 - Behavior changes pass `make test` and `make agent-check`; guidance changes pass `make guidance-check`.
 - Capture, TCC, WindowServer, or permission changes include the required manual check; visual changes include screenshots or a recording.
-- The handoff records commands and results, assumptions, manual gates, and known baseline failures.
+- The handoff records commands, results, assumptions, manual gates, and known baseline failures.
 
 ## Distribution
 
