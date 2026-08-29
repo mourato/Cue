@@ -1070,3 +1070,53 @@ is recorded in `.agents/overlays/benchmarking.md`, and the human summary is in
 - A fragmented writer without current-SDK/container evidence: rejected as a
   speculative rewrite. Plan 104 keeps lifecycle/preservation as the required
   outcome and stops the fragmentation substep when validation fails.
+
+## Auto-zoom and Screendrop post-processing parity (109–110)
+
+Generated 2026-08-29 against commit `ee55c91a` after reconciling the Screendrop
+reference @ `57a48dd` (v0.31.3), the `$benchmarking` catalog, and the gap
+analysis between Notinhas Video Editor and Screendrop Studio. Statuses start at
+`TODO`. Local Screendrop clone:
+`~/Documents/Projects/References/Screendrop/`.
+
+| Plan | Title | Priority | Effort | Depends on | Status |
+|---|---|---:|---:|---|---|
+| 109 | [Auto-generate zoom segments from recorded clicks (MVP)](109-auto-zoom-from-clicks-mvp.md) | P1 | M | 104–107 | TODO |
+| 110 | [Full Screendrop recording/post-processing parity](110-screendrop-recording-post-parity.md) | P2 | L | 109 | TODO |
+
+### Dependency notes (109–110)
+
+- Execute **109 first**. It owns metadata v7 click capture, the segment
+  synthesizer mirroring `ZoomCueSynthesizer`, auto-populate on editor open,
+  regenerate-implicit UX, and preference wiring.
+- Execute **110 after 109** is integrated. It is phased (A→E): viewport springs
+  and anchor modes → synthetic pointer/click/keystroke layers → multi-clip
+  timeline → style/reframe/render cache → optional edit sidecar persistence.
+- No two plans that touch `RecordingMetadata`, `VideoEditorState`,
+  `VideoEditorZoomCompositor`, or `VideoEditorExporter` should run concurrently.
+- Plan 110 Fase B (hide cursor + reconstruct) ships behind a capture preference
+  until manual QA confirms legacy compatibility.
+
+### Product decisions (109–110)
+
+- Screendrop @ `57a48dd` is the behavioral reference for auto-zoom constants
+  and post-processing parity; Screen Studio is market inspiration only (closed
+  source).
+- Plan 109 delivers **functional** auto-zoom without changing capture cursor
+  behavior or viewport physics.
+- Plan 110 pursues **visual/structural** parity: springs, synthetic overlays,
+  multi-clip, reframe, cache — not transcription, teleprompter, or cloud.
+- Independent reimplementation; CC0 Screendrop does not require copying code.
+- Auto-zoom serves visual handoff (demos/tutorials); it does not expand Notinhas
+  into a generic Loom alternative.
+
+### Findings considered and rejected (109–110)
+
+- Inferring clicks from mouse samples only: rejected; explicit press capture
+  required (Plan 109).
+- Full session-folder packaging like `*.screendroprec`: deferred; keep Notinhas
+  single-file + metadata sidecars unless a future migration plan exists.
+- Transcription, teleprompter, cloud Studio features: rejected per ADR 070 /
+  product intent.
+- Plan 110 Fase E (edit sidecar): optional within 110; may ship after A–D if
+  master vs baked authority needs more design.
