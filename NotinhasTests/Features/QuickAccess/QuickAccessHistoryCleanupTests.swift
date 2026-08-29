@@ -11,13 +11,18 @@ import XCTest
 
 @MainActor
 final class QuickAccessHistoryCleanupTests: XCTestCase {
-    private var originalHistoryEnabled: Bool!
+    private var defaults: UserDefaults!
+    private var originalHistoryDefaults: UserDefaults!
     private var testFiles: [URL] = []
 
     override func setUp() {
         super.setUp()
-        originalHistoryEnabled = UserDefaults.standard.bool(forKey: PreferencesKeys.historyEnabled)
-        UserDefaults.standard.set(true, forKey: PreferencesKeys.historyEnabled)
+        defaults = UserDefaultsFactory.make()
+        defaults.set(true, forKey: PreferencesKeys.historyEnabled)
+        originalHistoryDefaults = CaptureHistoryStore.shared.userDefaults
+        CaptureHistoryStore.shared.userDefaults = defaults
+        QuickAccessManager.shared.testingSuppressPresentation = true
+        QuickAccessManager.shared.testingHistoryEnabled = true
     }
 
     override func tearDown() async throws {
@@ -29,7 +34,11 @@ final class QuickAccessHistoryCleanupTests: XCTestCase {
         }
         testFiles.removeAll()
 
-        UserDefaults.standard.set(originalHistoryEnabled, forKey: PreferencesKeys.historyEnabled)
+        CaptureHistoryStore.shared.userDefaults = originalHistoryDefaults
+        originalHistoryDefaults = nil
+        defaults = nil
+        QuickAccessManager.shared.testingSuppressPresentation = false
+        QuickAccessManager.shared.testingHistoryEnabled = nil
         try await super.tearDown()
     }
 

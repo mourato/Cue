@@ -11,16 +11,24 @@ enum VideoModuleAvailability {
     }
 
     static var isEnabled: Bool {
+        isEnabled(using: .standard)
+    }
+
+    static func isEnabled(using defaults: UserDefaults) -> Bool {
         guard isCompiledIn else { return false }
-        if UserDefaults.standard.object(forKey: PreferencesKeys.videoModuleEnabled) == nil {
+        if defaults.object(forKey: PreferencesKeys.videoModuleEnabled) == nil {
             return false
         }
-        return UserDefaults.standard.bool(forKey: PreferencesKeys.videoModuleEnabled)
+        return defaults.bool(forKey: PreferencesKeys.videoModuleEnabled)
     }
 
     static func setEnabled(_ enabled: Bool) {
+        setEnabled(enabled, using: .standard)
+    }
+
+    static func setEnabled(_ enabled: Bool, using defaults: UserDefaults) {
         guard isCompiledIn else { return }
-        UserDefaults.standard.set(enabled, forKey: PreferencesKeys.videoModuleEnabled)
+        defaults.set(enabled, forKey: PreferencesKeys.videoModuleEnabled)
         NotificationCenter.default.post(name: .videoModuleAvailabilityDidChange, object: nil)
     }
 }

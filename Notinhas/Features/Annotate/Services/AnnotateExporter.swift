@@ -116,7 +116,7 @@ final class AnnotateExporter {
         }
     }
 
-    static func copyToClipboard(state: AnnotateState) {
+    static func copyToClipboard(state: AnnotateState, to pasteboard: NSPasteboard = .general) {
         DiagnosticLogger.shared.log(
             .info,
             .annotate,
@@ -128,7 +128,7 @@ final class AnnotateExporter {
             return
         }
 
-        ClipboardHelper.copyImage(image)
+        ClipboardHelper.copyImage(image, to: pasteboard)
         SoundManager.play("Pop")
     }
 

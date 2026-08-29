@@ -158,6 +158,11 @@ final class QuickAccessManager: ObservableObject {
 
     let maxVisibleItems = 5
 
+    #if DEBUG
+        var testingSuppressPresentation = false
+        var testingHistoryEnabled: Bool?
+    #endif
+
     // MARK: - Private
 
     private let panelController = QuickAccessPanelController()
@@ -558,7 +563,12 @@ final class QuickAccessManager: ObservableObject {
             // Auto-delete temp files on dismiss (unsaved captures).
             // Skip deletion if history is enabled and the file has a history record —
             // the retention service will clean it up when the record ages out.
-            let historyEnabled = UserDefaults.standard.bool(forKey: PreferencesKeys.historyEnabled)
+            #if DEBUG
+                let historyEnabled = testingHistoryEnabled
+                    ?? UserDefaults.standard.bool(forKey: PreferencesKeys.historyEnabled)
+            #else
+                let historyEnabled = UserDefaults.standard.bool(forKey: PreferencesKeys.historyEnabled)
+            #endif
             let hasHistoryRecord = historyEnabled && CaptureHistoryStore.shared.hasRecord(forFilePath: url.path)
 
             if hasHistoryRecord {
@@ -1276,6 +1286,9 @@ final class QuickAccessManager: ObservableObject {
     }
 
     private func showPanelIfNeeded() {
+        #if DEBUG
+            guard !testingSuppressPresentation else { return }
+        #endif
         guard !panelController.isVisible else { return }
         showPanel()
     }

@@ -9,14 +9,21 @@
 import XCTest
 
 final class VideoModuleAvailabilityTests: XCTestCase {
+    private var defaults: UserDefaults!
+
+    override func setUp() {
+        super.setUp()
+        defaults = UserDefaultsFactory.make()
+    }
+
     override func tearDown() {
-        UserDefaults.standard.removeObject(forKey: PreferencesKeys.videoModuleEnabled)
+        defaults = nil
         super.tearDown()
     }
 
     func testRuntimeDefaultIsOffWhenKeyUnset() {
-        UserDefaults.standard.removeObject(forKey: PreferencesKeys.videoModuleEnabled)
-        XCTAssertFalse(VideoModuleAvailability.isEnabled)
+        defaults.removeObject(forKey: PreferencesKeys.videoModuleEnabled)
+        XCTAssertFalse(VideoModuleAvailability.isEnabled(using: defaults))
     }
 
     func testSetEnabledRoundTrip() throws {
@@ -25,13 +32,13 @@ final class VideoModuleAvailabilityTests: XCTestCase {
             "Requires NOTINHAS_VIDEO_MODULE (Notinhas Video / Debug+Video)",
         )
 
-        XCTAssertFalse(VideoModuleAvailability.isEnabled)
+        XCTAssertFalse(VideoModuleAvailability.isEnabled(using: defaults))
 
-        VideoModuleAvailability.setEnabled(true)
-        XCTAssertTrue(VideoModuleAvailability.isEnabled)
+        VideoModuleAvailability.setEnabled(true, using: defaults)
+        XCTAssertTrue(VideoModuleAvailability.isEnabled(using: defaults))
 
-        VideoModuleAvailability.setEnabled(false)
-        XCTAssertFalse(VideoModuleAvailability.isEnabled)
+        VideoModuleAvailability.setEnabled(false, using: defaults)
+        XCTAssertFalse(VideoModuleAvailability.isEnabled(using: defaults))
     }
 
     func testDisabledWhenNotCompiledIn() throws {
@@ -40,8 +47,8 @@ final class VideoModuleAvailabilityTests: XCTestCase {
             "Only meaningful on default Notinhas builds without NOTINHAS_VIDEO_MODULE",
         )
 
-        UserDefaults.standard.set(true, forKey: PreferencesKeys.videoModuleEnabled)
-        VideoModuleAvailability.setEnabled(true)
-        XCTAssertFalse(VideoModuleAvailability.isEnabled)
+        defaults.set(true, forKey: PreferencesKeys.videoModuleEnabled)
+        VideoModuleAvailability.setEnabled(true, using: defaults)
+        XCTAssertFalse(VideoModuleAvailability.isEnabled(using: defaults))
     }
 }

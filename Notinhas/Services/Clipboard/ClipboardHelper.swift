@@ -31,10 +31,9 @@ enum ClipboardHelper {
     ///
     /// Used for non-image captures and multi-selection where Finder-style file copy
     /// semantics are more appropriate than rendering image pixel data.
-    static func copyFileURLs(_ urls: [URL]) {
+    static func copyFileURLs(_ urls: [URL], to pasteboard: NSPasteboard = .general) {
         guard !urls.isEmpty else { return }
 
-        let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
         pasteboard.writeObjects(urls.map { $0 as NSURL })
 
@@ -53,7 +52,7 @@ enum ClipboardHelper {
     /// the security-scoped handoff receivers need for sandboxed file reads.
     /// The extra URL/string representations live on the same pasteboard item and
     /// help Electron/WebView targets that inspect item-level fallback flavors.
-    static func copyMediaFile(from url: URL) {
+    static func copyMediaFile(from url: URL, to pasteboard: NSPasteboard = .general) {
         DiagnosticLogger.shared.log(.info, .clipboard, "Copy media file", context: ["file": url.lastPathComponent])
         let fileAccess = SandboxFileAccessManager.shared.beginAccessingURL(url)
         defer { fileAccess.stop() }
@@ -69,7 +68,6 @@ enum ClipboardHelper {
             return
         }
 
-        let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
         let didWrite = pasteboard.writeObjects([url as NSURL])
         addFileURLFallbackRepresentations(to: pasteboard, fileURL: url)
@@ -97,7 +95,7 @@ enum ClipboardHelper {
     ///
     /// - Important: Do NOT delete the file after calling this — the receiving app
     ///   needs it to exist at paste time.
-    static func copyImage(from url: URL) {
+    static func copyImage(from url: URL, to pasteboard: NSPasteboard = .general) {
         DiagnosticLogger.shared.log(.info, .clipboard, "Copy image from file", context: ["file": url.lastPathComponent])
         let fileAccess = SandboxFileAccessManager.shared.beginAccessingURL(url)
         defer { fileAccess.stop() }
@@ -108,7 +106,6 @@ enum ClipboardHelper {
             return
         }
 
-        let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
 
         let image = NSImage(contentsOf: url)
@@ -206,7 +203,11 @@ enum ClipboardHelper {
     /// then writing the file URL. This ensures the pasted result uses the correct format.
     ///
     /// Used by Annotate / Mockup copy where the image is rendered on-the-fly.
-    static func copyImage(_ image: NSImage, format: ImageFormatOption? = nil) {
+    static func copyImage(
+        _ image: NSImage,
+        format: ImageFormatOption? = nil,
+        to pasteboard: NSPasteboard = .general,
+    ) {
         DiagnosticLogger.shared.log(
             .info,
             .clipboard,
@@ -225,7 +226,6 @@ enum ClipboardHelper {
                 context: ["format": resolvedFormat.rawValue],
             )
             // Fallback: write NSImage directly (will produce PNG but at least something lands)
-            let pasteboard = NSPasteboard.general
             pasteboard.clearContents()
             pasteboard.writeObjects([image])
             return
@@ -243,13 +243,11 @@ enum ClipboardHelper {
             logger.error("ClipboardHelper: failed to write temp file: \(error.localizedDescription)")
             DiagnosticLogger.shared.logError(.clipboard, error, "Temp file write failed")
             // Fallback
-            let pasteboard = NSPasteboard.general
             pasteboard.clearContents()
             pasteboard.writeObjects([image])
             return
         }
 
-        let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
         writeSingleImageItem(
             to: pasteboard,

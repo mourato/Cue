@@ -14,6 +14,7 @@ final class OverlayTooltipPresenterTests: XCTestCase {
     override func setUp() async throws {
         try await super.setUp()
         presenter = OverlayTooltipPresenter.shared
+        presenter.testingSuppressPresentation = true
         activeOwner = nil
     }
 
@@ -22,6 +23,7 @@ final class OverlayTooltipPresenterTests: XCTestCase {
             presenter.hide(owner: activeOwner)
         }
         activeOwner = nil
+        presenter.testingSuppressPresentation = false
         try await super.tearDown()
     }
 

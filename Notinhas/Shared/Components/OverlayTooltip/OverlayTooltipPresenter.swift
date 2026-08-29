@@ -9,6 +9,10 @@ final class OverlayTooltipPresenter {
     private var hostingView: NSHostingView<OverlayTooltipBubbleView>?
     private var currentOwner: UUID?
 
+    #if DEBUG
+        var testingSuppressPresentation = false
+    #endif
+
     private init() {}
 
     func show(
@@ -37,6 +41,12 @@ final class OverlayTooltipPresenter {
             visibleFrame: visibleFrame,
             preferred: preferred,
         )
+
+        #if DEBUG
+            if testingSuppressPresentation {
+                return
+            }
+        #endif
 
         let panel = panel ?? makePanel()
         panel.contentView = host

@@ -36,6 +36,10 @@ final class AllInOneSelectionRefinementController: NSObject {
     private var backdropTasks: [CGDirectDisplayID: Task<Void, Never>] = [:]
     private let frozenBackdrops: [CGDirectDisplayID: AreaSelectionBackdrop]?
 
+    #if DEBUG
+        var testingSuppressOverlayPresentation = false
+    #endif
+
     init(
         initialRect: CGRect,
         aspectLocked: Bool = false,
@@ -77,10 +81,17 @@ final class AllInOneSelectionRefinementController: NSObject {
 
     func present() {
         tearDownOverlays()
-        observeScreenParameters()
-        reconcileScreenOverlays()
-        startCursorTrackingIfNeeded()
-        installEscapeMonitorsIfNeeded()
+        #if DEBUG
+            let shouldPresentOverlays = !testingSuppressOverlayPresentation
+        #else
+            let shouldPresentOverlays = true
+        #endif
+        if shouldPresentOverlays {
+            observeScreenParameters()
+            reconcileScreenOverlays()
+            startCursorTrackingIfNeeded()
+            installEscapeMonitorsIfNeeded()
+        }
         refreshBackdropCache()
         publishRectChange()
     }

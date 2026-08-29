@@ -44,6 +44,7 @@ final class AnnotateShortcutManager: ObservableObject {
     private let disabledActionShortcutsKey = PreferencesKeys.disabledAnnotateActionShortcuts
     private let explicitEmptyActionShortcutData = Data("null".utf8)
     private let counterAbsorptionMigrationKey = "annotate.shortcut.counterAbsorption.v1"
+    private let defaults: UserDefaults
 
     /// Tools that support shortcuts (excludes mockup - internal only)
     static let configurableTools: [AnnotationToolType] = [
@@ -72,7 +73,8 @@ final class AnnotateShortcutManager: ObservableObject {
     /// No default shortcut; available for users who want a local Annotate action key.
     static let defaultAutoRedactSensitiveData: ShortcutConfig? = nil
 
-    private init() {
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
         copyAndCloseShortcut = Self.defaultCopyAndClose
         toggleSidebarShortcut = Self.defaultToggleSidebar
         togglePinShortcut = Self.defaultTogglePin
@@ -236,7 +238,7 @@ final class AnnotateShortcutManager: ObservableObject {
     private func loadShortcuts() {
         for tool in Self.configurableTools {
             let key = keyPrefix + tool.rawValue
-            if let stored = UserDefaults.standard.string(forKey: key) {
+            if let stored = defaults.string(forKey: key) {
                 if let char = stored.first {
                     shortcuts[tool] = char
                 } else {
@@ -250,17 +252,17 @@ final class AnnotateShortcutManager: ObservableObject {
     }
 
     func migrateCounterAbsorptionShortcutsIfNeeded() {
-        UserDefaults.standard.removeObject(forKey: keyPrefix + AnnotationToolType.counter.rawValue)
+        defaults.removeObject(forKey: keyPrefix + AnnotationToolType.counter.rawValue)
 
         if disabledToolShortcuts.contains(.counter) {
             disabledToolShortcuts.remove(.counter)
             saveDisabledToolShortcuts()
         }
 
-        guard !UserDefaults.standard.bool(forKey: counterAbsorptionMigrationKey) else { return }
+        guard !defaults.bool(forKey: counterAbsorptionMigrationKey) else { return }
 
         let noteShortcutKey = keyPrefix + AnnotationToolType.notinhasNote.rawValue
-        let storedNoteShortcut = UserDefaults.standard.string(forKey: noteShortcutKey)?.first
+        let storedNoteShortcut = defaults.string(forKey: noteShortcutKey)?.first
         let currentNoteShortcut = shortcuts[.notinhasNote]
         let shouldMigrateNoteShortcut = storedNoteShortcut == "i" ||
             (storedNoteShortcut == nil && currentNoteShortcut == "i")
@@ -270,7 +272,7 @@ final class AnnotateShortcutManager: ObservableObject {
             saveShortcut(for: .notinhasNote)
         }
 
-        UserDefaults.standard.set(true, forKey: counterAbsorptionMigrationKey)
+        defaults.set(true, forKey: counterAbsorptionMigrationKey)
     }
 
     private func migrateFilledRectangleAndOvalShortcutsIfNeeded() {
@@ -279,22 +281,22 @@ final class AnnotateShortcutManager: ObservableObject {
         let circleKey = keyPrefix + AnnotationToolType.circle.rawValue
 
         // Drop filled-rectangle shortcut; Rectangle remains on `r`.
-        UserDefaults.standard.removeObject(forKey: filledKey)
+        defaults.removeObject(forKey: filledKey)
 
-        if UserDefaults.standard.object(forKey: circleKey) == nil,
-           let ovalStored = UserDefaults.standard.string(forKey: ovalKey) {
-            UserDefaults.standard.set(ovalStored, forKey: circleKey)
+        if defaults.object(forKey: circleKey) == nil,
+           let ovalStored = defaults.string(forKey: ovalKey) {
+            defaults.set(ovalStored, forKey: circleKey)
             if let char = ovalStored.first {
                 shortcuts[.circle] = char
             } else {
                 shortcuts.removeValue(forKey: .circle)
             }
         }
-        UserDefaults.standard.removeObject(forKey: ovalKey)
+        defaults.removeObject(forKey: ovalKey)
     }
 
     private func loadDisabledToolShortcuts() {
-        guard let rawValues = UserDefaults.standard.array(forKey: disabledToolShortcutsKey) as? [String] else {
+        guard let rawValues = defaults.array(forKey: disabledToolShortcutsKey) as? [String] else {
             disabledToolShortcuts = []
             return
         }
@@ -304,15 +306,15 @@ final class AnnotateShortcutManager: ObservableObject {
     private func saveShortcut(for tool: AnnotationToolType) {
         let key = keyPrefix + tool.rawValue
         if let shortcut = shortcuts[tool] {
-            UserDefaults.standard.set(String(shortcut), forKey: key)
+            defaults.set(String(shortcut), forKey: key)
         } else {
-            UserDefaults.standard.set("", forKey: key)
+            defaults.set("", forKey: key)
         }
     }
 
     private func saveDisabledToolShortcuts() {
         let rawValues = disabledToolShortcuts.map(\.rawValue).sorted()
-        UserDefaults.standard.set(rawValues, forKey: disabledToolShortcutsKey)
+        defaults.set(rawValues, forKey: disabledToolShortcutsKey)
     }
 
     // MARK: - Action Shortcut Persistence
@@ -328,7 +330,7 @@ final class AnnotateShortcutManager: ObservableObject {
     }
 
     private func loadDisabledActionShortcuts() {
-        guard let rawValues = UserDefaults.standard.array(forKey: disabledActionShortcutsKey) as? [String] else {
+        guard let rawValues = defaults.array(forKey: disabledActionShortcutsKey) as? [String] else {
             disabledActionShortcuts = []
             return
         }
@@ -337,16 +339,16 @@ final class AnnotateShortcutManager: ObservableObject {
 
     private func saveActionShortcut(_ config: ShortcutConfig?, forKey key: String) {
         guard let config else {
-            UserDefaults.standard.set(explicitEmptyActionShortcutData, forKey: key)
+            defaults.set(explicitEmptyActionShortcutData, forKey: key)
             return
         }
         if let data = try? JSONEncoder().encode(config) {
-            UserDefaults.standard.set(data, forKey: key)
+            defaults.set(data, forKey: key)
         }
     }
 
     private func loadActionShortcut(forKey key: String, defaultValue: ShortcutConfig?) -> ShortcutConfig? {
-        guard let data = UserDefaults.standard.data(forKey: key) else { return defaultValue }
+        guard let data = defaults.data(forKey: key) else { return defaultValue }
         if data == explicitEmptyActionShortcutData {
             return nil
         }
@@ -355,7 +357,7 @@ final class AnnotateShortcutManager: ObservableObject {
 
     private func saveDisabledActionShortcuts() {
         let rawValues = disabledActionShortcuts.map(\.rawValue).sorted()
-        UserDefaults.standard.set(rawValues, forKey: disabledActionShortcutsKey)
+        defaults.set(rawValues, forKey: disabledActionShortcutsKey)
     }
 
     /// Check if an NSEvent matches a given ShortcutConfig

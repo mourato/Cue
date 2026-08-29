@@ -76,6 +76,7 @@ final class PostCaptureActionHandlerTests: XCTestCase {
 
     private func makeHandler(
         quickAccess: QuickAccessManaging,
+        clipboardAction: @escaping @MainActor (URL, Bool) -> Void = { _, _ in },
         annotateAction: @escaping (QuickAccessItem?, URL, AnnotationSessionData?) -> Void = { _, _, _ in },
         historyAction: ((URL) async -> Void)? = nil,
     ) -> PostCaptureActionHandler {
@@ -84,6 +85,7 @@ final class PostCaptureActionHandlerTests: XCTestCase {
             quickAccess: quickAccess,
             fileAccess: SandboxFileAccessManager.shared,
             screenshotPresetAutoApplier: screenshotPresetAutoApplier,
+            clipboardAction: clipboardAction,
             annotateAction: annotateAction,
             historyAction: historyAction,
         )
@@ -230,27 +232,27 @@ final class PostCaptureActionHandlerTests: XCTestCase {
     }
 
     func testHandleScreenshotCapture_copiesToClipboardBeforeQuickAccess() async throws {
-        let pasteboard = NSPasteboard.general
-        pasteboard.clearContents()
-        pasteboard.setString("stale clipboard value", forType: .string)
-
         let expectedURL = try XCTUnwrap(tempFileURL)
+        var copiedURL: URL?
+        var copiedAsVideo: Bool?
         let fakeQuickAccess = FakeQuickAccessManager()
         fakeQuickAccess.onAddScreenshot = { url in
             XCTAssertEqual(url, expectedURL)
-            let item = NSPasteboard.general.pasteboardItems?.first
-            XCTAssertTrue(item?.types.contains(.fileURL) ?? false)
-            XCTAssertTrue(item?.types.contains(.png) ?? false)
-            XCTAssertEqual(
-                (NSPasteboard.general.readObjects(forClasses: [NSURL.self], options: nil) as? [URL])?.first?
-                    .standardizedFileURL,
-                expectedURL.standardizedFileURL,
-            )
+            XCTAssertEqual(copiedURL, expectedURL)
+            XCTAssertFalse(copiedAsVideo ?? true)
         }
-        let handler = makeHandler(quickAccess: fakeQuickAccess)
+        let handler = makeHandler(
+            quickAccess: fakeQuickAccess,
+            clipboardAction: { url, isVideo in
+                copiedURL = url
+                copiedAsVideo = isVideo
+            },
+        )
 
         await handler.handleScreenshotCapture(url: tempFileURL)
 
+        XCTAssertEqual(copiedURL, expectedURL)
+        XCTAssertFalse(copiedAsVideo ?? true)
         XCTAssertEqual(fakeQuickAccess.addedScreenshots, [tempFileURL])
     }
 
@@ -258,29 +260,26 @@ final class PostCaptureActionHandlerTests: XCTestCase {
         let videoURL = tempDirectory.appendingPathComponent("test_recording.mp4")
         try Data([0, 1, 2, 3]).write(to: videoURL)
 
-        let pasteboard = NSPasteboard.general
-        pasteboard.clearContents()
-        pasteboard.setString("stale clipboard value", forType: .string)
-
+        var copiedURL: URL?
+        var copiedAsVideo: Bool?
         let fakeQuickAccess = FakeQuickAccessManager()
         fakeQuickAccess.onAddVideo = { url in
             XCTAssertEqual(url, videoURL)
-            let item = NSPasteboard.general.pasteboardItems?.first
-            XCTAssertTrue(item?.types.contains(.fileURL) ?? false)
-            XCTAssertTrue(item?.types.contains(.URL) ?? false)
-            XCTAssertTrue(item?.types.contains(.string) ?? false)
-            XCTAssertEqual(item?.string(forType: .URL), videoURL.absoluteString)
-            XCTAssertEqual(item?.string(forType: .string), videoURL.path)
-            XCTAssertEqual(
-                (NSPasteboard.general.readObjects(forClasses: [NSURL.self], options: nil) as? [URL])?.first?
-                    .standardizedFileURL,
-                videoURL.standardizedFileURL,
-            )
+            XCTAssertEqual(copiedURL, videoURL)
+            XCTAssertTrue(copiedAsVideo ?? false)
         }
-        let handler = makeHandler(quickAccess: fakeQuickAccess)
+        let handler = makeHandler(
+            quickAccess: fakeQuickAccess,
+            clipboardAction: { url, isVideo in
+                copiedURL = url
+                copiedAsVideo = isVideo
+            },
+        )
 
         await handler.handleVideoCapture(url: videoURL)
 
+        XCTAssertEqual(copiedURL, videoURL)
+        XCTAssertTrue(copiedAsVideo ?? false)
         XCTAssertEqual(fakeQuickAccess.addedVideos, [videoURL])
     }
 

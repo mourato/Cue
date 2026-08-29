@@ -5,8 +5,8 @@
 //  Characterization tests for AnnotateExporter render + save paths.
 //  ALWAYS-RUN: renderFinalImage non-nil + dims (NO pixel equality — retina
 //  pixel fidelity is already covered in AnnotateCoreTests), saveToOriginal /
-//  saveToFile writing to a temp dir. CI-SKIP: saveAs (NSSavePanel),
-//  copyToClipboard (NSPasteboard).
+//  saveToFile writing to a temp dir. saveAs remains a documented manual-only
+//  path because NSSavePanel has no supported headless seam.
 //
 
 import AppKit
@@ -19,17 +19,21 @@ final class AnnotateExportSaveTests: XCTestCase {
     private static var retainedAnnotateStates: [AnnotateState] = []
 
     private var tempDir: URL!
+    private var pasteboard: NSPasteboard!
 
     override func setUp() {
         super.setUp()
         tempDir = FileManager.default.temporaryDirectory
             .appendingPathComponent("NotinhasTests_ExportSave_\(UUID().uuidString)", isDirectory: true)
         try? FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        pasteboard = NSPasteboard.withUniqueName()
     }
 
     override func tearDown() {
         try? FileManager.default.removeItem(at: tempDir)
         tempDir = nil
+        pasteboard.clearContents()
+        pasteboard = nil
         super.tearDown()
     }
 
@@ -170,27 +174,26 @@ final class AnnotateExportSaveTests: XCTestCase {
         XCTAssertFalse(AnnotateExporter.saveToFile(image: rendered, state: state))
     }
 
-    // MARK: - CI-SKIP (NSPasteboard / NSSavePanel)
+    // MARK: - Clipboard / Save Panel
 
-    /// copyToClipboard mutates the shared NSPasteboard (process-global, nondeterministic
-    /// under parallel CI). Local-only smoke test: must not crash.
-    func testCopyToClipboardRunsWithoutCrashing() throws {
-        try skipIfRunningInCI("copyToClipboard touches shared NSPasteboard")
+    /// Uses a unique pasteboard so the export contract is covered without touching
+    /// the user's clipboard or depending on process-global state.
+    func testCopyToClipboardWritesOneImageItem() throws {
         let state = makeAnnotateState()
         try state.loadImage(makeImage(width: 50, height: 50))
 
-        AnnotateExporter.copyToClipboard(state: state)
-        // No return value; success = no crash + a non-nil render underneath.
-        XCTAssertNotNil(AnnotateExporter.renderFinalImage(state: state))
+        AnnotateExporter.copyToClipboard(state: state, to: pasteboard)
+
+        let item = try XCTUnwrap(pasteboard.pasteboardItems?.first)
+        XCTAssertEqual(pasteboard.pasteboardItems?.count, 1)
+        XCTAssertTrue(item.types.contains(.fileURL))
+        XCTAssertTrue(item.types.contains(.png))
+        XCTAssertTrue(item.types.contains(.tiff))
     }
 
-    /// saveAs presents a modal NSSavePanel; there is no headless path, so this is
-    /// documented as CI-SKIP and intentionally not driven (would block on the panel).
-    func testSaveAsIsCoveredByManualInteractionOnly() throws {
-        try skipIfRunningInCI("saveAs presents a modal NSSavePanel (no headless path)")
-        // Intentionally not invoked: AnnotateExporter.saveAs(state:) opens a modal
-        // panel that cannot be dismissed in an automated run. Placeholder to record
-        // the CI-SKIP classification without hanging the suite.
-        XCTAssertTrue(true)
+    /// Manual exception: run `open Notinhas.xcodeproj`, launch the app, open an
+    /// annotation, choose Save As, then cancel or complete the panel interaction.
+    func testSaveAsRequiresManualInteraction() throws {
+        throw XCTSkip("NSSavePanel is modal and has no supported headless seam")
     }
 }
