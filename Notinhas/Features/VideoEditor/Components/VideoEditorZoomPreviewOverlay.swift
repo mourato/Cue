@@ -59,6 +59,23 @@
                     )
                     .frame(width: videoCanvasSize.width, height: videoCanvasSize.height)
                     .padding(scaledPadding)
+                    if state.hasSyntheticOverlays {
+                        VideoEditorSyntheticOverlayView(
+                            pointerFrame: state.pointerTimeline.frame(
+                                at: CMTimeGetSeconds(playbackState.currentTime),
+                            ),
+                            keystrokeFrame: state.keystrokeCaptionTimeline.frame(
+                                at: CMTimeGetSeconds(playbackState.currentTime),
+                            ),
+                            contentRect: displayedVideoRect,
+                            showsSyntheticCursor: state.showsSyntheticCursor,
+                            showsClickEffects: state.showsClickEffects,
+                            showsKeystrokes: state.showsKeystrokes,
+                            keystrokePlacement: KeystrokeOverlayConfiguration().position,
+                        )
+                        .frame(width: videoCanvasSize.width, height: videoCanvasSize.height)
+                        .padding(scaledPadding)
+                    }
                     if let cameraPlayer = state.cameraPlayer, state.cameraOverlayLayout.isVisible {
                         cameraOverlay(cameraPlayer, in: videoCanvasSize)
                             .padding(scaledPadding)
@@ -77,6 +94,15 @@
                 updateZoomState(at: CMTimeGetSeconds(playbackState.currentTime))
             }
             .onChange(of: state.zoomTransitionDuration) { _ in
+                updateZoomState(at: CMTimeGetSeconds(playbackState.currentTime))
+            }
+            .onChange(of: state.showsSyntheticCursor) { _ in
+                updateZoomState(at: CMTimeGetSeconds(playbackState.currentTime))
+            }
+            .onChange(of: state.showsClickEffects) { _ in
+                updateZoomState(at: CMTimeGetSeconds(playbackState.currentTime))
+            }
+            .onChange(of: state.showsKeystrokes) { _ in
                 updateZoomState(at: CMTimeGetSeconds(playbackState.currentTime))
             }
         }

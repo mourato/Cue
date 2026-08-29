@@ -18,6 +18,12 @@
         private let zooms: [ZoomSegment]
         private let autoFocusPaths: [UUID: [AutoFocusCameraSample]]
         private let viewportTimeline: VideoEditorViewportTimeline
+        private let pointerTimeline: VideoEditorPointerTimeline
+        private let keystrokeCaptionTimeline: VideoEditorKeystrokeCaptionTimeline
+        private let showsSyntheticCursor: Bool
+        private let showsClickEffects: Bool
+        private let showsKeystrokes: Bool
+        private let keystrokePlacement: KeystrokeOverlayPosition
         private let renderSize: CGSize
         private let frameDuration: CMTime
         private let transitionDuration: TimeInterval
@@ -39,6 +45,12 @@
             zooms: [ZoomSegment],
             autoFocusPaths: [UUID: [AutoFocusCameraSample]] = [:],
             viewportTimeline: VideoEditorViewportTimeline = .identity,
+            pointerTimeline: VideoEditorPointerTimeline = .empty,
+            keystrokeCaptionTimeline: VideoEditorKeystrokeCaptionTimeline = .empty,
+            showsSyntheticCursor: Bool = false,
+            showsClickEffects: Bool = false,
+            showsKeystrokes: Bool = false,
+            keystrokePlacement: KeystrokeOverlayPosition = .bottomCenter,
             renderSize: CGSize,
             frameDuration: CMTime = CMTime(value: 1, timescale: 30),
             transitionDuration: TimeInterval = ZoomCalculator.defaultTransitionDuration,
@@ -54,6 +66,12 @@
             self.zooms = zooms.filter(\.isEnabled)
             self.autoFocusPaths = autoFocusPaths
             self.viewportTimeline = viewportTimeline
+            self.pointerTimeline = pointerTimeline
+            self.keystrokeCaptionTimeline = keystrokeCaptionTimeline
+            self.showsSyntheticCursor = showsSyntheticCursor
+            self.showsClickEffects = showsClickEffects
+            self.showsKeystrokes = showsKeystrokes
+            self.keystrokePlacement = keystrokePlacement
             self.renderSize = renderSize
             self.frameDuration = frameDuration
             self.transitionDuration = ZoomCalculator.clampTransitionDuration(transitionDuration)
@@ -122,6 +140,12 @@
                 zooms: zooms,
                 autoFocusPaths: autoFocusPaths,
                 viewportTimeline: viewportTimeline,
+                pointerTimeline: pointerTimeline,
+                keystrokeCaptionTimeline: keystrokeCaptionTimeline,
+                showsSyntheticCursor: showsSyntheticCursor,
+                showsClickEffects: showsClickEffects,
+                showsKeystrokes: showsKeystrokes,
+                keystrokePlacement: keystrokePlacement,
                 trackID: videoTrack.trackID,
                 renderSize: renderSize,
                 transitionDuration: transitionDuration,
@@ -173,6 +197,12 @@
         let zooms: [ZoomSegment]
         let autoFocusPaths: [UUID: [AutoFocusCameraSample]]
         let viewportTimeline: VideoEditorViewportTimeline
+        let pointerTimeline: VideoEditorPointerTimeline
+        let keystrokeCaptionTimeline: VideoEditorKeystrokeCaptionTimeline
+        let showsSyntheticCursor: Bool
+        let showsClickEffects: Bool
+        let showsKeystrokes: Bool
+        let keystrokePlacement: KeystrokeOverlayPosition
         let trackID: CMPersistentTrackID
         let renderSize: CGSize
         let transitionDuration: TimeInterval
@@ -210,6 +240,12 @@
             zooms: [ZoomSegment],
             autoFocusPaths: [UUID: [AutoFocusCameraSample]],
             viewportTimeline: VideoEditorViewportTimeline = .identity,
+            pointerTimeline: VideoEditorPointerTimeline = .empty,
+            keystrokeCaptionTimeline: VideoEditorKeystrokeCaptionTimeline = .empty,
+            showsSyntheticCursor: Bool = false,
+            showsClickEffects: Bool = false,
+            showsKeystrokes: Bool = false,
+            keystrokePlacement: KeystrokeOverlayPosition = .bottomCenter,
             trackID: CMPersistentTrackID,
             renderSize: CGSize,
             transitionDuration: TimeInterval,
@@ -226,6 +262,12 @@
             self.zooms = zooms
             self.autoFocusPaths = autoFocusPaths
             self.viewportTimeline = viewportTimeline
+            self.pointerTimeline = pointerTimeline
+            self.keystrokeCaptionTimeline = keystrokeCaptionTimeline
+            self.showsSyntheticCursor = showsSyntheticCursor
+            self.showsClickEffects = showsClickEffects
+            self.showsKeystrokes = showsKeystrokes
+            self.keystrokePlacement = keystrokePlacement
             self.trackID = trackID
             screenTrackID = trackID
             self.cameraTrackID = cameraTrackID
@@ -388,8 +430,11 @@
                 || abs(sourceSize.height - instruction.renderSize.height) > 0.5
 
             // If no zoom and no background, pass through original frame
+            let hasOverlays = instruction.showsSyntheticCursor
+                || instruction.showsClickEffects
+                || instruction.showsKeystrokes
             if cameraBuffer == nil, zoomLevel <= minimumRenderableZoomLevel, !instruction.hasBackground,
-               !needsCanvasFit {
+               !needsCanvasFit, !hasOverlays {
                 request.finish(withComposedVideoFrame: sourceBuffer)
                 return
             }
@@ -399,6 +444,7 @@
                 to: sourceBuffer,
                 zoomLevel: zoomLevel,
                 center: zoomCenter,
+                currentTime: currentTime,
                 instruction: instruction,
                 cameraBuffer: cameraBuffer,
             ) else {
@@ -422,6 +468,7 @@
             to sourceBuffer: CVPixelBuffer,
             zoomLevel: CGFloat,
             center: CGPoint,
+            currentTime: TimeInterval,
             instruction: ZoomVideoCompositionInstruction,
             cameraBuffer: CVPixelBuffer? = nil,
         ) -> CVPixelBuffer? {
@@ -522,6 +569,25 @@
                 )
                 .composited(over: processedImage)
             }
+
+            let canvasSize = instruction.hasBackground ? instruction.paddedRenderSize : instruction.renderSize
+            let contentRect = fittedRect.offsetBy(
+                dx: instruction.hasBackground ? instruction.backgroundPadding : 0,
+                dy: instruction.hasBackground ? instruction.backgroundPadding : 0,
+            )
+            let pointerFrame = instruction.pointerTimeline.frame(at: currentTime)
+            let keystrokeFrame = instruction.keystrokeCaptionTimeline.frame(at: currentTime)
+            processedImage = VideoEditorOverlayRenderer.compositeOverlays(
+                onto: processedImage,
+                canvasSize: canvasSize,
+                contentRect: contentRect,
+                pointerFrame: pointerFrame,
+                showsSyntheticCursor: instruction.showsSyntheticCursor,
+                showsClickEffects: instruction.showsClickEffects,
+                keystrokeFrame: keystrokeFrame,
+                showsKeystrokes: instruction.showsKeystrokes,
+                keystrokePlacement: instruction.keystrokePlacement,
+            )
 
             // Create output buffer
             guard let renderContext else { return nil }

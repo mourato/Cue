@@ -76,6 +76,7 @@ struct CaptureSettingsView: View {
         @AppStorage(PreferencesKeys.recordingRememberLastArea) private var rememberLastArea = true
         @AppStorage(PreferencesKeys.recordingIncludeOwnApp) private var includeOwnAppInRecordings = false
         @AppStorage(PreferencesKeys.recordingShowCursor) private var recordingShowCursor = true
+        @AppStorage(PreferencesKeys.recordingSmartPointer) private var recordingSmartPointer = false
         @AppStorage(PreferencesKeys.recordingHoverBarVisible) private var recordingHoverBarVisible = true
         @AppStorage(PreferencesKeys.recordingShowTimeOnMenuBar) private var recordingShowTimeOnMenuBar = true
 
@@ -493,6 +494,16 @@ struct CaptureSettingsView: View {
                                 description: L10n.PreferencesCapture.recordingShowCursorDescription,
                             ) {
                                 Toggle("", isOn: $recordingShowCursor)
+                                    .labelsHidden()
+                                    .disabled(recordingSmartPointer)
+                            }
+
+                            SettingRow(
+                                icon: "cursorarrow.motionlines",
+                                title: L10n.PreferencesCapture.recordingSmartPointerTitle,
+                                description: L10n.PreferencesCapture.recordingSmartPointerDescription,
+                            ) {
+                                Toggle("", isOn: $recordingSmartPointer)
                                     .labelsHidden()
                             }
 

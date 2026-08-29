@@ -164,6 +164,33 @@
                 }
                 .disabled(!state.canResynthesizeImplicitZoomSegments)
                 .help(L10n.VideoEditor.resynthesizeImplicitZoomsHelp)
+
+                if state.recordingMetadata != nil {
+                    Divider()
+
+                    Text(L10n.VideoEditor.syntheticOverlays)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(.secondary)
+
+                    Toggle(isOn: $state.showsSyntheticCursor) {
+                        Text(L10n.VideoEditor.showsSyntheticCursor)
+                            .font(.system(size: 11))
+                    }
+                    .disabled(!state.usesSyntheticPointer && !state.hasMouseTrackingData)
+                    .help(L10n.VideoEditor.showsSyntheticCursorHelp)
+
+                    Toggle(isOn: $state.showsClickEffects) {
+                        Text(L10n.VideoEditor.showsClickEffects)
+                            .font(.system(size: 11))
+                    }
+                    .disabled(!state.hasMouseTrackingData)
+
+                    Toggle(isOn: $state.showsKeystrokes) {
+                        Text(L10n.VideoEditor.showsKeystrokes)
+                            .font(.system(size: 11))
+                    }
+                    .disabled(!state.hasRecordedKeystrokes)
+                }
             }
             .accessibilityElement(children: .contain)
         }

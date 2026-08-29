@@ -83,6 +83,10 @@
             UserDefaults.standard.bool(forKey: PreferencesKeys.recordingIncludeOwnApp)
         }
 
+        private var recordingSmartPointerEnabled: Bool {
+            UserDefaults.standard.bool(forKey: PreferencesKeys.recordingSmartPointer)
+        }
+
         private func recordingCaptureExclusionConfiguration()
             -> (excludeOwnApplication: Bool, excludedWindowIDs: [CGWindowID]) {
             let excludeOwnApplication = !includeOwnAppInRecordings
@@ -674,6 +678,7 @@
                         captureCamera: savedCaptureCamera,
                         cameraDeviceID: savedCameraDeviceID,
                         showCursor: savedShowCursor,
+                        smartPointerEnabled: self.recordingSmartPointerEnabled,
                         saveDirectory: savePlan.finalDirectory,
                         processingDirectory: savePlan.processingDirectory,
                         excludeDesktopIcons: DesktopIconManager.shared.isIconHidingEnabled,
@@ -850,6 +855,7 @@
                         captureCamera: captureCamera,
                         cameraDeviceID: cameraDeviceID,
                         showCursor: showCursor,
+                        smartPointerEnabled: self.recordingSmartPointerEnabled,
                         saveDirectory: savePlan.finalDirectory,
                         processingDirectory: savePlan.processingDirectory,
                         excludeDesktopIcons: DesktopIconManager.shared.isIconHidingEnabled,
@@ -1015,6 +1021,7 @@
                         captureCamera: window.captureCamera && window.outputMode != .gif,
                         cameraDeviceID: window.cameraDeviceID,
                         showCursor: showCursor,
+                        smartPointerEnabled: self.recordingSmartPointerEnabled,
                         saveDirectory: savePlan.finalDirectory,
                         processingDirectory: savePlan.processingDirectory,
                         excludeDesktopIcons: DesktopIconManager.shared.isIconHidingEnabled,

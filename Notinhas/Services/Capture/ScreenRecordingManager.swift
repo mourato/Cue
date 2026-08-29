@@ -688,6 +688,8 @@
         private var recordingProcessingDirectory: URL?
         private var shouldPreserveProcessingOutputOnCleanup = false
         private var mouseTracker: RecordingMouseTracker?
+        private var keystrokeRecorder: RecordingKeystrokeRecorder?
+        private var pointerSynthesizedInRecording = false
         private var exportDirectoryAccess: SandboxFileAccessManager.ScopedAccess?
         private var registeredOutputTypes: Set<SCStreamOutputType> = []
         private var recordingActivity: NSObjectProtocol?
@@ -744,6 +746,7 @@
             captureCamera: Bool = false,
             cameraDeviceID: String? = nil,
             showCursor: Bool = true,
+            smartPointerEnabled: Bool = false,
             saveDirectory: URL,
             processingDirectory: URL? = nil,
             fileName: String? = nil,
@@ -776,6 +779,7 @@
                 "microphone": "\(captureMicrophone)",
                 "microphoneDevice": microphoneDeviceID ?? RecordingMicrophoneDevice.systemDefaultID,
                 "showCursor": "\(showCursor)",
+                "smartPointer": "\(smartPointerEnabled)",
                 "excludeOwnApp": "\(excludeOwnApplication)",
                 "excludeDesktopIcons": "\(excludeDesktopIcons)",
                 "excludeDesktopWidgets": "\(excludeDesktopWidgets)",
@@ -792,7 +796,8 @@
             self.microphoneDeviceID = microphoneDeviceID
             self.captureCamera = captureCamera
             self.cameraDeviceID = cameraDeviceID
-            showCursorInRecording = showCursor
+            pointerSynthesizedInRecording = smartPointerEnabled
+            showCursorInRecording = smartPointerEnabled ? false : showCursor
             excludeOwnApplicationFromCapture = excludeOwnApplication
             excludeDesktopIconsFromCapture = excludeDesktopIcons
             excludeDesktopWidgetsFromCapture = excludeDesktopWidgets
@@ -1034,6 +1039,9 @@
                 }
 
                 mouseTracker = RecordingMouseTracker(recordingRect: captureGeometry.globalCaptureRect, fps: fps)
+                if shouldRecordKeystrokes(smartPointerEnabled: smartPointerEnabled) {
+                    keystrokeRecorder = RecordingKeystrokeRecorder()
+                }
                 DiagnosticLogger.shared.log(.info, .recording, "Recording prepare completed", context: [
                     "file": outputURL?.lastPathComponent ?? "nil",
                     "outputSize": "\(captureGeometry.outputWidth)x\(captureGeometry.outputHeight)",
@@ -1086,6 +1094,7 @@
             session.setOnFirstVideoFrame { [weak self] in
                 Task { @MainActor [weak self] in
                     self?.mouseTracker?.start()
+                    self?.keystrokeRecorder?.start()
                 }
             }
 
@@ -1153,6 +1162,7 @@
             }
             session.isCapturing = false
             mouseTracker?.pause()
+            keystrokeRecorder?.pause()
             audioLevelMeter.freeze()
             pauseStartTime = Date()
             state = .paused
@@ -1186,6 +1196,7 @@
 
             session.isCapturing = true
             mouseTracker?.resume()
+            keystrokeRecorder?.resume()
             audioLevelMeter.unfreeze()
             state = .recording
             if let recordingProcessingDirectory {
@@ -1325,6 +1336,7 @@
             let mouseTrackingResult = mouseTracker?.stop()
             let mouseSamples = mouseTrackingResult?.samples ?? []
             let mousePresses = mouseTrackingResult?.presses ?? []
+            let recordedKeystrokes = keystrokeRecorder?.stop() ?? []
             let writerURL = outputURL
             await logRecordingFrameDiagnostics(outputURL: writerURL, stats: videoWriteStats)
             if terminationTimedOut {
@@ -1378,7 +1390,8 @@
                     for: editorAudioSourceURL,
                     roles: audioSourceTrackRoles,
                 )
-                if mouseSamples.count >= 2 || !mousePresses.isEmpty || editorAudioSourceURL != nil || captureCamera {
+                if mouseSamples.count >= 2 || !mousePresses.isEmpty || !recordedKeystrokes.isEmpty
+                    || pointerSynthesizedInRecording || editorAudioSourceURL != nil || captureCamera {
                     do {
                         let metadata = await RecordingMetadata(
                             coordinateSpace: .topLeftNormalized,
@@ -1386,6 +1399,8 @@
                             samplesPerSecond: trackerSamplesPerSecond,
                             mouseSamples: mouseSamples,
                             mousePresses: mousePresses,
+                            pointerSynthesized: pointerSynthesizedInRecording ? true : nil,
+                            keystrokes: recordedKeystrokes,
                             audioSourceURL: editorAudioSourceURL,
                             audioSourceTrackRoles: audioSourceTrackRoles,
                             audioSourceTracks: audioSourceTracks,
@@ -1508,6 +1523,7 @@
                 )
             }
             mouseTracker?.reset()
+            keystrokeRecorder?.reset()
             DiagnosticLogger.shared.log(.info, .recording, "Recording cancelled")
             if let url = outputURL {
                 guard FileManager.default.fileExists(atPath: url.path) else {
@@ -2392,6 +2408,11 @@
             DiagnosticLogger.shared.log(.info, .recording, "Recording frame diagnostics", context: context)
         }
 
+        private func shouldRecordKeystrokes(smartPointerEnabled: Bool) -> Bool {
+            smartPointerEnabled
+                || (UserDefaults.standard.object(forKey: PreferencesKeys.recordingShowKeystrokes) as? Bool ?? false)
+        }
+
         private func cleanup() {
             timer?.invalidate()
             timer = nil
@@ -2409,10 +2430,12 @@
             cameraDeviceID = nil
             cameraCapturer = nil
             showCursorInRecording = true
+            pointerSynthesizedInRecording = false
             excludeOwnApplicationFromCapture = true
             excludeDesktopIconsFromCapture = false
             excludeDesktopWidgetsFromCapture = false
             mouseTracker = nil
+            keystrokeRecorder = nil
             microphoneCapturer = nil
             audioLevelMeter.reset()
             endRecordingActivityIfNeeded()

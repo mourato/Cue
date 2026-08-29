@@ -252,6 +252,11 @@
         @Published private(set) var recordingMetadata: RecordingMetadata?
         @Published private(set) var autoFocusPaths: [UUID: [AutoFocusCameraSample]] = [:]
         @Published private(set) var viewportTimeline: VideoEditorViewportTimeline = .identity
+        @Published var showsSyntheticCursor = false
+        @Published var showsClickEffects = false
+        @Published var showsKeystrokes = false
+        @Published private(set) var pointerTimeline: VideoEditorPointerTimeline = .empty
+        @Published private(set) var keystrokeCaptionTimeline: VideoEditorKeystrokeCaptionTimeline = .empty
 
         // MARK: - GIF Metadata
 
@@ -362,6 +367,18 @@
 
         var canResynthesizeImplicitZoomSegments: Bool {
             recordingMetadata != nil && recordedClickCount > 0
+        }
+
+        var usesSyntheticPointer: Bool {
+            recordingMetadata?.pointerSynthesized == true
+        }
+
+        var hasRecordedKeystrokes: Bool {
+            !(recordingMetadata?.keystrokes.isEmpty ?? true)
+        }
+
+        var hasSyntheticOverlays: Bool {
+            showsSyntheticCursor || showsClickEffects || showsKeystrokes
         }
 
         var currentTime: CMTime {
@@ -1926,12 +1943,22 @@
                 autoFocusPaths = [:]
                 autoFocusPathInputs = [:]
                 viewportTimeline = .identity
+                pointerTimeline = .empty
+                keystrokeCaptionTimeline = .empty
                 return
             }
 
             recordingMetadata = Self.loadRecordingMetadata(for: sourceURL, originalURL: originalURL)
+            applyOverlayToggleDefaults(from: recordingMetadata)
 
             rebuildAutoFocusPaths(for: zoomSegments)
+        }
+
+        private func applyOverlayToggleDefaults(from metadata: RecordingMetadata?) {
+            let synthesized = metadata?.pointerSynthesized == true
+            showsSyntheticCursor = synthesized
+            showsClickEffects = synthesized
+            showsKeystrokes = synthesized && !(metadata?.keystrokes.isEmpty ?? true)
         }
 
         private func rebuildAutoFocusPaths(for segments: [ZoomSegment]) {
@@ -1995,6 +2022,22 @@
                 segments: enabledSegments,
                 metadata: recordingMetadata,
                 duration: videoDuration,
+            )
+            rebuildOverlayTimelines(duration: videoDuration)
+        }
+
+        private func rebuildOverlayTimelines(duration: TimeInterval) {
+            guard duration.isFinite, duration > 0 else {
+                pointerTimeline = .empty
+                keystrokeCaptionTimeline = .empty
+                return
+            }
+            pointerTimeline = VideoEditorPointerTimeline.build(
+                metadata: recordingMetadata,
+                duration: duration,
+            )
+            keystrokeCaptionTimeline = VideoEditorKeystrokeCaptionTimeline(
+                events: recordingMetadata?.keystrokes ?? [],
             )
         }
 

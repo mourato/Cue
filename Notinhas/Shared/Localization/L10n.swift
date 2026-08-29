@@ -2807,6 +2807,16 @@ nonisolated enum L10n {
             defaultValue: "Include mouse pointer in recorded videos and GIFs",
             comment: "Recording preferences setting description",
         )
+        static let recordingSmartPointerTitle = string(
+            "preferences-capture.recording-smart-pointer-title",
+            defaultValue: "Smart pointer (post-processed)",
+            comment: "Recording preferences setting title for synthetic pointer capture",
+        )
+        static let recordingSmartPointerDescription = string(
+            "preferences-capture.recording-smart-pointer-description",
+            defaultValue: "Hide the baked cursor and reconstruct a polished pointer in the video editor and export",
+            comment: "Recording preferences setting description for synthetic pointer capture",
+        )
         static let imageFormatTitle = string(
             "preferences-capture.image-format-title",
             defaultValue: "Image Format",
@@ -5683,6 +5693,31 @@ nonisolated enum L10n {
             "video-editor.anchor-pinned",
             defaultValue: "Pinned",
             comment: "Zoom anchor mode that keeps a fixed center point",
+        )
+        static let syntheticOverlays = string(
+            "video-editor.synthetic-overlays",
+            defaultValue: "Synthetic Overlays",
+            comment: "Section label for post-processed pointer and keystroke overlays",
+        )
+        static let showsSyntheticCursor = string(
+            "video-editor.shows-synthetic-cursor",
+            defaultValue: "Reconstructed pointer",
+            comment: "Toggle label for synthetic cursor overlay in the video editor",
+        )
+        static let showsClickEffects = string(
+            "video-editor.shows-click-effects",
+            defaultValue: "Click pulses",
+            comment: "Toggle label for synthetic click pulse overlay in the video editor",
+        )
+        static let showsKeystrokes = string(
+            "video-editor.shows-keystrokes",
+            defaultValue: "Shortcut captions",
+            comment: "Toggle label for synthetic keystroke captions in the video editor",
+        )
+        static let showsSyntheticCursorHelp = string(
+            "video-editor.shows-synthetic-cursor-help",
+            defaultValue: "Draws a smoothed pointer from recorded mouse metadata instead of the baked cursor.",
+            comment: "Help text for reconstructed pointer toggle",
         )
         static func originalDimensionsLabel(_ width: Int, _ height: Int) -> String {
             format(

@@ -279,6 +279,20 @@
                 trimEnd: trimEndSeconds,
                 speedMap: speedMap,
             )
+            let exportPointerTimeline = VideoEditorPointerTimeline.buildForExport(
+                metadata: state.recordingMetadata,
+                duration: exportDuration,
+                trimStart: trimStartSeconds,
+                trimEnd: trimEndSeconds,
+                speedMap: speedMap,
+            )
+            let exportKeystrokeTimeline = VideoEditorKeystrokeCaptionTimeline.buildForExport(
+                metadata: state.recordingMetadata,
+                trimStart: trimStartSeconds,
+                trimEnd: trimEndSeconds,
+                speedMap: speedMap,
+            )
+            let keystrokePlacement = KeystrokeOverlayConfiguration().position
 
             // Create composition
             let composition = AVMutableComposition()
@@ -391,6 +405,12 @@
                 zooms: adjustedZooms,
                 autoFocusPaths: adjustedAutoFocusPaths,
                 viewportTimeline: exportViewportTimeline,
+                pointerTimeline: exportPointerTimeline,
+                keystrokeCaptionTimeline: exportKeystrokeTimeline,
+                showsSyntheticCursor: state.showsSyntheticCursor,
+                showsClickEffects: state.showsClickEffects,
+                showsKeystrokes: state.showsKeystrokes,
+                keystrokePlacement: keystrokePlacement,
                 renderSize: baseRenderSize,
                 frameDuration: sourceFrameDuration,
                 transitionDuration: state.zoomTransitionDuration,

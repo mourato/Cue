@@ -23,6 +23,12 @@
         }
     }
 
+    struct RecordedKeystrokeEvent: Codable, Equatable {
+        var time: TimeInterval
+        var modifiers: [String]
+        var key: String
+    }
+
     struct RecordedMousePress: Codable, Equatable {
         enum PressPhase: String, Codable {
             case down
@@ -86,7 +92,7 @@
     }
 
     struct RecordingMetadata: Codable, Equatable {
-        static let currentVersion = 7
+        static let currentVersion = 8
 
         var version: Int
         var coordinateSpace: RecordingCoordinateSpace
@@ -94,6 +100,8 @@
         var samplesPerSecond: Int
         var mouseSamples: [RecordedMouseSample]
         var mousePresses: [RecordedMousePress]
+        var pointerSynthesized: Bool?
+        var keystrokes: [RecordedKeystrokeEvent]
         var audioSourceURL: URL?
         var audioSourceTrackRoles: [RecordingAudioSourceTrackRole]
         var audioSourceTracks: [RecordingAudioSourceTrack]
@@ -106,6 +114,8 @@
             samplesPerSecond: Int,
             mouseSamples: [RecordedMouseSample],
             mousePresses: [RecordedMousePress] = [],
+            pointerSynthesized: Bool? = nil,
+            keystrokes: [RecordedKeystrokeEvent] = [],
             audioSourceURL: URL? = nil,
             audioSourceTrackRoles: [RecordingAudioSourceTrackRole] = [],
             audioSourceTracks: [RecordingAudioSourceTrack] = [],
@@ -117,6 +127,8 @@
             self.samplesPerSecond = samplesPerSecond
             self.mouseSamples = mouseSamples
             self.mousePresses = mousePresses
+            self.pointerSynthesized = pointerSynthesized
+            self.keystrokes = keystrokes
             self.audioSourceURL = audioSourceURL
             self.audioSourceTrackRoles = audioSourceTrackRoles
             self.audioSourceTracks = audioSourceTracks
@@ -130,6 +142,8 @@
             case samplesPerSecond
             case mouseSamples
             case mousePresses
+            case pointerSynthesized
+            case keystrokes
             case audioSourceURL
             case audioSourceTrackRoles
             case audioSourceTracks
@@ -154,6 +168,8 @@
             samplesPerSecond = try container.decode(Int.self, forKey: .samplesPerSecond)
             mouseSamples = try container.decode([RecordedMouseSample].self, forKey: .mouseSamples)
             mousePresses = try container.decodeIfPresent([RecordedMousePress].self, forKey: .mousePresses) ?? []
+            pointerSynthesized = try container.decodeIfPresent(Bool.self, forKey: .pointerSynthesized)
+            keystrokes = try container.decodeIfPresent([RecordedKeystrokeEvent].self, forKey: .keystrokes) ?? []
             audioSourceURL = try container.decodeIfPresent(URL.self, forKey: .audioSourceURL)
             audioSourceTrackRoles = try container.decodeIfPresent(
                 [RecordingAudioSourceTrackRole].self,
@@ -178,6 +194,10 @@
             try container.encode(mouseSamples, forKey: .mouseSamples)
             if !mousePresses.isEmpty {
                 try container.encode(mousePresses, forKey: .mousePresses)
+            }
+            try container.encodeIfPresent(pointerSynthesized, forKey: .pointerSynthesized)
+            if !keystrokes.isEmpty {
+                try container.encode(keystrokes, forKey: .keystrokes)
             }
             try container.encodeIfPresent(audioSourceURL, forKey: .audioSourceURL)
             if !audioSourceTrackRoles.isEmpty {
@@ -779,6 +799,8 @@
                 samplesPerSecond: samplesPerSecond,
                 mouseSamples: normalizedSamples,
                 mousePresses: normalizedPresses,
+                pointerSynthesized: pointerSynthesized,
+                keystrokes: keystrokes,
                 audioSourceURL: audioSourceURL,
                 audioSourceTrackRoles: audioSourceTrackRoles,
                 audioSourceTracks: audioSourceTracks,
