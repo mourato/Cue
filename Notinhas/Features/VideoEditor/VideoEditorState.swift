@@ -227,6 +227,54 @@
             return seconds
         }
 
+        /// True when export uses crop-and-follow reframe into a target aspect ratio.
+        var usesReframeExport: Bool {
+            exportSettings.dimensionPreset.isAspectRatioPreset && exportContentMode == .fill
+        }
+
+        /// Preview/export camera state at the editor playhead, including reframe when active.
+        func previewCameraState(atPlayhead time: CMTime) -> VideoEditorCameraState {
+            let editorSeconds = CMTimeGetSeconds(time)
+            if let reframe = makeReframeTrack(
+                viewportTimeline: viewportTimeline,
+                pointerTimeline: pointerTimeline,
+                duration: CMTimeGetSeconds(playbackDuration),
+            ) {
+                let frame = reframe.frame(at: editorSeconds)
+                return VideoEditorCameraState(
+                    zoomLevel: CGFloat(frame.magnification),
+                    center: frame.anchor,
+                )
+            }
+            return cameraState(at: sourceTime(atPlayhead: time))
+        }
+
+        func makeReframeTrack(
+            viewportTimeline: VideoEditorViewportTimeline,
+            pointerTimeline: VideoEditorPointerTimeline,
+            duration: TimeInterval,
+        ) -> VideoEditorReframeTrack? {
+            guard usesReframeExport,
+                  naturalSize.width > 0,
+                  naturalSize.height > 0,
+                  duration.isFinite,
+                  duration > 0 else {
+                return nil
+            }
+            return VideoEditorReframeTrack.build(
+                preset: exportSettings.dimensionPreset,
+                sourceSize: naturalSize,
+                viewportTimeline: viewportTimeline,
+                duration: duration,
+                focus: { editorTime in
+                    if let pointer = pointerTimeline.frame(at: editorTime), pointer.opacity > 0.01 {
+                        return pointer.location
+                    }
+                    return viewportTimeline.frame(at: editorTime).anchor
+                },
+            )
+        }
+
         // MARK: - Audio Control
 
         @Published var isMuted: Bool = false {
@@ -310,6 +358,8 @@
         @Published var showsSyntheticCursor = false
         @Published var showsClickEffects = false
         @Published var showsKeystrokes = false
+        @Published var cursorScale: CGFloat = VideoEditorStylePreset.defaultCursorScale
+        @Published var exportContentMode: VideoEditorExportAspectContentMode = .fit
         @Published private(set) var pointerTimeline: VideoEditorPointerTimeline = .empty
         @Published private(set) var keystrokeCaptionTimeline: VideoEditorKeystrokeCaptionTimeline = .empty
 
@@ -767,6 +817,7 @@
                 // Calculate initial file size estimate after metadata loads
                 recalculateEstimatedFileSize()
                 applyInitialImplicitZoomSegmentsIfNeeded()
+                VideoEditorStylePresetStore.shared.applyActivePreset(to: self)
             } catch {
                 DiagnosticLogger.shared.logError(.editor, error, "Failed to load video metadata")
                 print("Failed to load video metadata: \(error)")
@@ -2273,6 +2324,14 @@
             if CMTimeCompare(trimEnd, newEnd) != 0 {
                 trimEnd = newEnd
             }
+        }
+
+        func applyStylePreset(_ preset: VideoEditorStylePreset) {
+            backgroundStyle = preset.backgroundStyle
+            backgroundPadding = preset.backgroundPadding
+            backgroundCornerRadius = preset.backgroundCornerRadius
+            backgroundShadowIntensity = preset.backgroundShadowIntensity
+            cursorScale = preset.cursorScale
         }
 
         private func rebuildPlaybackAsset(preserving editorTime: TimeInterval) {

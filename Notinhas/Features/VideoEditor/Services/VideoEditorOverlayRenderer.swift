@@ -32,6 +32,7 @@
             keystrokeFrame: VideoEditorKeystrokeCaptionFrame?,
             showsKeystrokes: Bool,
             keystrokePlacement: KeystrokeOverlayPosition,
+            cursorScale: CGFloat = VideoEditorStylePreset.defaultCursorScale,
         ) -> CIImage {
             var result = image
             let canvasHeight = canvasSize.height
@@ -60,7 +61,7 @@
                     contentRect: contentRect,
                     canvasHeight: canvasHeight,
                 )
-                let cursorHeight = contentRect.height * VideoEditorPointerTimeline.cursorHeightRatio
+                let cursorHeight = contentRect.height * VideoEditorPointerTimeline.cursorHeightRatio * cursorScale
                 if let cursorImage = systemCursorImage(
                     center: center,
                     height: cursorHeight * CGFloat(pointerFrame.magnification),

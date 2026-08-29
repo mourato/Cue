@@ -38,15 +38,39 @@
             let hasCustomAudio = state.exportSettings.audioMode == .custom
             let hasSpeed = state.hasSpeedSegments
             let hasClips = state.usesClipComposition
+            let usesCompositionExport = hasCameraEffects || hasBackground || hasCustomAudio || hasSpeed
+                || hasCameraOverlay || hasClips || state.hasSyntheticOverlays
+
+            let sourceFingerprint = VideoEditorSourceFingerprint.make(for: state.sourceURL)
+            let recipe = VideoEditorRenderRecipe.capture(from: state, sourceFingerprint: sourceFingerprint)
+            let cacheKey = recipe.cacheKey()
+            if usesCompositionExport,
+               let cached = VideoEditorRenderCacheStore.lookup(
+                   cacheKey: cacheKey,
+                   sourceFingerprint: sourceFingerprint,
+                   recipe: recipe,
+               ) {
+                try? FileManager.default.removeItem(at: scopedOutputURL)
+                try FileManager.default.copyItem(at: cached, to: scopedOutputURL)
+                progress(1.0)
+                DiagnosticLogger.shared.log(.info, .export, "Render cache hit", context: ["key": cacheKey])
+                return
+            }
 
             // If visual effects, custom audio, speed scaling, or clip edits are enabled, use composition-based
             // export. Speed scaling requires the composition path even with no other effects
             // (and even when muted — audio is simply dropped while the video is still time-scaled).
-            if hasCameraEffects || hasBackground || hasCustomAudio || hasSpeed || hasCameraOverlay || hasClips {
+            if usesCompositionExport {
                 try await exportWithZooms(state: state, to: scopedOutputURL, progress: progress)
                 try await normalizeExportAudioForCompatibilityIfNeeded(
                     at: scopedOutputURL,
                     fileExtension: state.fileExtension,
+                )
+                try? VideoEditorRenderCacheStore.store(
+                    renderedFile: scopedOutputURL,
+                    cacheKey: cacheKey,
+                    sourceFingerprint: sourceFingerprint,
+                    recipe: recipe,
                 )
                 return
             }
@@ -309,6 +333,11 @@
                 speedMap: speedMap,
             )
             let keystrokePlacement = KeystrokeOverlayConfiguration().position
+            let exportReframeTrack = state.makeReframeTrack(
+                viewportTimeline: exportViewportTimeline,
+                pointerTimeline: exportPointerTimeline,
+                duration: exportDuration,
+            )
 
             // Create composition
             let composition = AVMutableComposition()
@@ -324,6 +353,7 @@
             }
             print("🔍 [ZoomExport] Source video track ID: \(screenVideoTrack.trackID)")
             let sourceFrameDuration = try await sourceFrameDuration(for: screenVideoTrack)
+            let exportFrameDuration = compositionFrameDuration(source: sourceFrameDuration, state: state)
 
             let compositionVideoTrack: AVMutableCompositionTrack
             if usesClipComposition {
@@ -438,6 +468,7 @@
                 zooms: adjustedZooms,
                 autoFocusPaths: adjustedAutoFocusPaths,
                 viewportTimeline: exportViewportTimeline,
+                reframeTrack: exportReframeTrack,
                 pointerTimeline: exportPointerTimeline,
                 keystrokeCaptionTimeline: exportKeystrokeTimeline,
                 showsSyntheticCursor: state.showsSyntheticCursor,
@@ -445,7 +476,7 @@
                 showsKeystrokes: state.showsKeystrokes,
                 keystrokePlacement: keystrokePlacement,
                 renderSize: baseRenderSize,
-                frameDuration: sourceFrameDuration,
+                frameDuration: exportFrameDuration,
                 transitionDuration: state.zoomTransitionDuration,
                 backgroundStyle: state.backgroundStyle,
                 backgroundPadding: state.backgroundPadding,
@@ -455,6 +486,7 @@
                 cameraSize: state.cameraSize,
                 cameraIsMirrored: state.cameraIsMirrored,
                 screenTrackID: compositionVideoTrack.trackID,
+                cursorScale: state.cursorScale,
             )
 
             // Use actual composition duration to prevent frame boundary issues
@@ -1015,6 +1047,16 @@
             }
 
             return CMTime(value: 1, timescale: 30)
+        }
+
+        /// Use 60 fps compositor sampling when synthetic overlays, zoom motion, or reframe are active.
+        private static func compositionFrameDuration(source: CMTime, state: VideoEditorState) -> CMTime {
+            if state.hasSyntheticOverlays
+                || state.zoomSegments.contains(where: \.isEnabled)
+                || state.usesReframeExport {
+                return CMTime(value: 1, timescale: 60)
+            }
+            return source
         }
 
         // MARK: - Errors

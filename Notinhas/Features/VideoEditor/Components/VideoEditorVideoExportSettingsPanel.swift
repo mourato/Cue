@@ -260,6 +260,10 @@
 
                 aspectRatioPresetRow
 
+                if state.exportSettings.dimensionPreset.isAspectRatioPreset {
+                    exportContentModeRow
+                }
+
                 if state.exportSettings.dimensionPreset != .custom,
                    state.exportSettings.dimensionPreset != .original {
                     fileSizeReductionHint
@@ -306,6 +310,22 @@
                         aspectRatioPresetButton(preset)
                     }
                 }
+            }
+        }
+
+        private var exportContentModeRow: some View {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(L10n.VideoEditor.exportContentMode)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundColor(.secondary)
+
+                Picker("", selection: $state.exportContentMode) {
+                    ForEach(VideoEditorExportAspectContentMode.allCases, id: \.self) { mode in
+                        Text(mode.title).tag(mode)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
             }
         }
 

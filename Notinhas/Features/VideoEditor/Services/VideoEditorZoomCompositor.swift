@@ -18,6 +18,7 @@
         private let zooms: [ZoomSegment]
         private let autoFocusPaths: [UUID: [AutoFocusCameraSample]]
         private let viewportTimeline: VideoEditorViewportTimeline
+        private let reframeTrack: VideoEditorReframeTrack?
         private let pointerTimeline: VideoEditorPointerTimeline
         private let keystrokeCaptionTimeline: VideoEditorKeystrokeCaptionTimeline
         private let showsSyntheticCursor: Bool
@@ -38,6 +39,7 @@
         private let cameraLayout: VideoEditorCameraOverlayLayout?
         private let cameraSize: CGSize
         private let cameraIsMirrored: Bool
+        private let cursorScale: CGFloat
 
         // MARK: - Initialization
 
@@ -45,6 +47,7 @@
             zooms: [ZoomSegment],
             autoFocusPaths: [UUID: [AutoFocusCameraSample]] = [:],
             viewportTimeline: VideoEditorViewportTimeline = .identity,
+            reframeTrack: VideoEditorReframeTrack? = nil,
             pointerTimeline: VideoEditorPointerTimeline = .empty,
             keystrokeCaptionTimeline: VideoEditorKeystrokeCaptionTimeline = .empty,
             showsSyntheticCursor: Bool = false,
@@ -62,10 +65,12 @@
             cameraSize: CGSize = .zero,
             cameraIsMirrored: Bool = false,
             screenTrackID: CMPersistentTrackID? = nil,
+            cursorScale: CGFloat = VideoEditorStylePreset.defaultCursorScale,
         ) {
             self.zooms = zooms.filter(\.isEnabled)
             self.autoFocusPaths = autoFocusPaths
             self.viewportTimeline = viewportTimeline
+            self.reframeTrack = reframeTrack
             self.pointerTimeline = pointerTimeline
             self.keystrokeCaptionTimeline = keystrokeCaptionTimeline
             self.showsSyntheticCursor = showsSyntheticCursor
@@ -83,6 +88,7 @@
             self.cameraLayout = cameraLayout
             self.cameraSize = cameraSize
             self.cameraIsMirrored = cameraIsMirrored
+            self.cursorScale = cursorScale
 
             // Calculate padded render size
             if backgroundStyle != .none, backgroundPadding > 0 {
@@ -140,6 +146,7 @@
                 zooms: zooms,
                 autoFocusPaths: autoFocusPaths,
                 viewportTimeline: viewportTimeline,
+                reframeTrack: reframeTrack,
                 pointerTimeline: pointerTimeline,
                 keystrokeCaptionTimeline: keystrokeCaptionTimeline,
                 showsSyntheticCursor: showsSyntheticCursor,
@@ -157,6 +164,7 @@
                 cameraLayout: cameraLayout,
                 cameraSize: cameraSize,
                 cameraIsMirrored: cameraIsMirrored,
+                cursorScale: cursorScale,
             )
             print("🎬 [ZoomCompositor] Created instruction with trackID: \(videoTrack.trackID)")
 
@@ -197,6 +205,7 @@
         let zooms: [ZoomSegment]
         let autoFocusPaths: [UUID: [AutoFocusCameraSample]]
         let viewportTimeline: VideoEditorViewportTimeline
+        let reframeTrack: VideoEditorReframeTrack?
         let pointerTimeline: VideoEditorPointerTimeline
         let keystrokeCaptionTimeline: VideoEditorKeystrokeCaptionTimeline
         let showsSyntheticCursor: Bool
@@ -216,6 +225,7 @@
         let cameraLayout: VideoEditorCameraOverlayLayout?
         let cameraSize: CGSize
         let cameraIsMirrored: Bool
+        let cursorScale: CGFloat
 
         var enablePostProcessing: Bool {
             true
@@ -240,6 +250,7 @@
             zooms: [ZoomSegment],
             autoFocusPaths: [UUID: [AutoFocusCameraSample]],
             viewportTimeline: VideoEditorViewportTimeline = .identity,
+            reframeTrack: VideoEditorReframeTrack? = nil,
             pointerTimeline: VideoEditorPointerTimeline = .empty,
             keystrokeCaptionTimeline: VideoEditorKeystrokeCaptionTimeline = .empty,
             showsSyntheticCursor: Bool = false,
@@ -257,11 +268,13 @@
             cameraLayout: VideoEditorCameraOverlayLayout? = nil,
             cameraSize: CGSize = .zero,
             cameraIsMirrored: Bool = false,
+            cursorScale: CGFloat = VideoEditorStylePreset.defaultCursorScale,
         ) {
             self.timeRange = timeRange
             self.zooms = zooms
             self.autoFocusPaths = autoFocusPaths
             self.viewportTimeline = viewportTimeline
+            self.reframeTrack = reframeTrack
             self.pointerTimeline = pointerTimeline
             self.keystrokeCaptionTimeline = keystrokeCaptionTimeline
             self.showsSyntheticCursor = showsSyntheticCursor
@@ -274,6 +287,7 @@
             self.cameraLayout = cameraLayout
             self.cameraSize = cameraSize
             self.cameraIsMirrored = cameraIsMirrored
+            self.cursorScale = cursorScale
             self.renderSize = renderSize
             self.transitionDuration = transitionDuration
             self.backgroundStyle = backgroundStyle
@@ -413,13 +427,22 @@
                 print("🎥 [Compositor] Processing frame \(frameCount) at time \(String(format: "%.2f", currentTime))s")
             }
 
-            let cameraState = VideoEditorAutoFocusEngine.resolvedCameraState(
-                at: currentTime,
-                segments: instruction.zooms,
-                autoFocusPaths: instruction.autoFocusPaths,
-                transitionDuration: instruction.transitionDuration,
-                viewportTimeline: instruction.viewportTimeline,
-            )
+            let cameraState: VideoEditorCameraState
+            if let reframeTrack = instruction.reframeTrack {
+                let frame = reframeTrack.frame(at: currentTime)
+                cameraState = VideoEditorCameraState(
+                    zoomLevel: CGFloat(frame.magnification),
+                    center: frame.anchor,
+                )
+            } else {
+                cameraState = VideoEditorAutoFocusEngine.resolvedCameraState(
+                    at: currentTime,
+                    segments: instruction.zooms,
+                    autoFocusPaths: instruction.autoFocusPaths,
+                    transitionDuration: instruction.transitionDuration,
+                    viewportTimeline: instruction.viewportTimeline,
+                )
+            }
             let zoomLevel = cameraState.zoomLevel
             let zoomCenter = cameraState.center
             let sourceSize = CGSize(
@@ -587,6 +610,7 @@
                 keystrokeFrame: keystrokeFrame,
                 showsKeystrokes: instruction.showsKeystrokes,
                 keystrokePlacement: instruction.keystrokePlacement,
+                cursorScale: instruction.cursorScale,
             )
 
             // Create output buffer

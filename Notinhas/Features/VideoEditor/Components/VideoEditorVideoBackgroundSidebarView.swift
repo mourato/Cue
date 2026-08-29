@@ -13,12 +13,14 @@
     /// Sidebar content for video background and padding customization
     struct VideoBackgroundSidebarView: View {
         @ObservedObject var state: VideoEditorState
+        @ObservedObject private var stylePresetStore = VideoEditorStylePresetStore.shared
         @StateObject private var wallpaperManager = SystemWallpaperManager.shared
         @State private var aspectRatioOrientation: AspectRatioOrientation = .horizontal
 
         var body: some View {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack(alignment: .leading, spacing: Spacing.md) {
+                    stylePresetSection
                     noneButton
                     gradientSection
                     wallpaperSection
@@ -39,6 +41,40 @@
             }
             .onChange(of: state.exportSettings.dimensionPreset) { _ in
                 syncAspectRatioOrientationWithExportPreset()
+            }
+        }
+
+        // MARK: - Style Presets
+
+        private var stylePresetSection: some View {
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                VideoSidebarSectionHeader(title: L10n.VideoEditor.stylePresets)
+
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: Spacing.sm) {
+                        ForEach(stylePresetStore.presets) { preset in
+                            Button {
+                                stylePresetStore.setActivePreset(id: preset.id)
+                                state.applyStylePreset(preset)
+                            } label: {
+                                Text(preset.name)
+                                    .font(Typography.labelMedium)
+                                    .foregroundColor(SidebarColors.labelPrimary)
+                                    .padding(.horizontal, Spacing.sm)
+                                    .padding(.vertical, Spacing.xs)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: Size.radiusSm)
+                                            .fill(
+                                                stylePresetStore.activePresetID == preset.id
+                                                    ? Color.accentColor.opacity(0.28)
+                                                    : SidebarColors.itemDefault,
+                                            ),
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
             }
         }
 
@@ -256,6 +292,13 @@
                 )
                 VideoSliderRow(label: L10n.Common.shadow, value: $state.backgroundShadowIntensity, range: 0 ... 1)
                 VideoSliderRow(label: L10n.Common.corners, value: $state.backgroundCornerRadius, range: 0 ... 60)
+                if state.hasSyntheticOverlays {
+                    VideoSliderRow(
+                        label: L10n.VideoEditor.cursorScale,
+                        value: $state.cursorScale,
+                        range: 1 ... 3,
+                    )
+                }
             }
         }
 

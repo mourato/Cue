@@ -72,6 +72,7 @@
                             showsClickEffects: state.showsClickEffects,
                             showsKeystrokes: state.showsKeystrokes,
                             keystrokePlacement: KeystrokeOverlayConfiguration().position,
+                            cursorScale: state.cursorScale,
                         )
                         .frame(width: videoCanvasSize.width, height: videoCanvasSize.height)
                         .padding(scaledPadding)
@@ -85,25 +86,31 @@
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignmentValue)
             }
             .onReceive(playbackState.$currentTime) { time in
-                updateZoomState(at: state.sourceTime(atPlayhead: time))
+                updateZoomState(at: state.previewCameraState(atPlayhead: time))
             }
             .onChange(of: state.zoomSegments) { _ in
-                updateZoomState(at: state.sourceTime(atPlayhead: playbackState.currentTime))
+                updateZoomState(at: state.previewCameraState(atPlayhead: playbackState.currentTime))
             }
             .onChange(of: state.autoFocusPaths) { _ in
-                updateZoomState(at: state.sourceTime(atPlayhead: playbackState.currentTime))
+                updateZoomState(at: state.previewCameraState(atPlayhead: playbackState.currentTime))
             }
             .onChange(of: state.zoomTransitionDuration) { _ in
-                updateZoomState(at: state.sourceTime(atPlayhead: playbackState.currentTime))
+                updateZoomState(at: state.previewCameraState(atPlayhead: playbackState.currentTime))
+            }
+            .onChange(of: state.exportSettings.dimensionPreset) { _ in
+                updateZoomState(at: state.previewCameraState(atPlayhead: playbackState.currentTime))
+            }
+            .onChange(of: state.exportContentMode) { _ in
+                updateZoomState(at: state.previewCameraState(atPlayhead: playbackState.currentTime))
             }
             .onChange(of: state.showsSyntheticCursor) { _ in
-                updateZoomState(at: CMTimeGetSeconds(playbackState.currentTime))
+                updateZoomState(at: state.previewCameraState(atPlayhead: playbackState.currentTime))
             }
             .onChange(of: state.showsClickEffects) { _ in
-                updateZoomState(at: CMTimeGetSeconds(playbackState.currentTime))
+                updateZoomState(at: state.previewCameraState(atPlayhead: playbackState.currentTime))
             }
             .onChange(of: state.showsKeystrokes) { _ in
-                updateZoomState(at: CMTimeGetSeconds(playbackState.currentTime))
+                updateZoomState(at: state.previewCameraState(atPlayhead: playbackState.currentTime))
             }
         }
 
@@ -337,8 +344,7 @@
 
         // MARK: - State Updates
 
-        private func updateZoomState(at time: TimeInterval) {
-            let cameraState = state.cameraState(at: time)
+        private func updateZoomState(at cameraState: VideoEditorCameraState) {
             currentZoomLevel = cameraState.zoomLevel
             currentZoomCenter = cameraState.center
         }

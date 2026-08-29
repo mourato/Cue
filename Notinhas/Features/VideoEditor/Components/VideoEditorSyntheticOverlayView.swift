@@ -16,6 +16,7 @@
         let showsClickEffects: Bool
         let showsKeystrokes: Bool
         let keystrokePlacement: KeystrokeOverlayPosition
+        let cursorScale: CGFloat
 
         var body: some View {
             ZStack(alignment: .topLeading) {
@@ -31,7 +32,10 @@
                    let pointerFrame,
                    pointerFrame.opacity > 0.01 {
                     Image(systemName: "arrow.up.left")
-                        .font(.system(size: max(12, contentRect.height * VideoEditorPointerTimeline.cursorHeightRatio)))
+                        .font(.system(size: max(
+                            12,
+                            contentRect.height * VideoEditorPointerTimeline.cursorHeightRatio * cursorScale,
+                        )))
                         .foregroundStyle(.white)
                         .shadow(color: .black.opacity(0.35), radius: 2, x: 0, y: 1)
                         .scaleEffect(pointerFrame.magnification)

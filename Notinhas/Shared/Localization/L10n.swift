@@ -5147,6 +5147,31 @@ nonisolated enum L10n {
             defaultValue: "Reset Clips",
             comment: "Action to restore a single full-span clip timeline",
         )
+        static let exportContentModeFill = string(
+            "video-editor.export-content-mode-fill",
+            defaultValue: "Fill",
+            comment: "Export content mode that crops to follow the pointer",
+        )
+        static let exportContentModeFit = string(
+            "video-editor.export-content-mode-fit",
+            defaultValue: "Fit",
+            comment: "Export content mode that fits the full recording on the canvas",
+        )
+        static let exportContentMode = string(
+            "video-editor.export-content-mode",
+            defaultValue: "Content",
+            comment: "Label for export fill/fit content mode control",
+        )
+        static let stylePresets = string(
+            "video-editor.style-presets",
+            defaultValue: "Style Presets",
+            comment: "Section title for named background/style presets",
+        )
+        static let cursorScale = string(
+            "video-editor.cursor-scale",
+            defaultValue: "Cursor Size",
+            comment: "Slider label for synthetic cursor scale",
+        )
         static let speedZoomOverlapHint = string(
             "video-editor.speed-zoom-overlap-hint",
             defaultValue: "This region overlaps a zoom — the zoom plays at the adjusted speed.",
