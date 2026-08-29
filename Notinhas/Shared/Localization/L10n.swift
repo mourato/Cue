@@ -5634,6 +5634,36 @@ nonisolated enum L10n {
             defaultValue: "Auto Segments",
             comment: "Label for the number of auto-generated zoom segments in the video editor",
         )
+        static let recordedClicks = string(
+            "video-editor.recorded-clicks",
+            defaultValue: "Recorded Clicks",
+            comment: "Label for the number of click events stored in recording metadata",
+        )
+        static let resynthesizeImplicitZooms = string(
+            "video-editor.resynthesize-implicit-zooms",
+            defaultValue: "Regenerate Automatic Zooms",
+            comment: "Button title to rebuild implicit zoom segments from recorded clicks",
+        )
+        static let resynthesizeImplicitZoomsHelp = string(
+            "video-editor.resynthesize-implicit-zooms-help",
+            defaultValue: "Rebuilds zoom segments from recorded clicks. Manual zoom segments are kept.",
+            comment: "Help text for the regenerate automatic zooms button",
+        )
+        static let autoGenerateZoomOnOpen = string(
+            "video-editor.auto-generate-zoom-on-open",
+            defaultValue: "Generate zooms when opening recordings",
+            comment: "Preference toggle label for automatic zoom generation on editor open",
+        )
+        static let autoGenerateZoomOnOpenHelp = string(
+            "video-editor.auto-generate-zoom-on-open-help",
+            defaultValue: "Creates Follow Mouse zoom segments from clicks recorded in the capture area.",
+            comment: "Help text for automatic zoom generation preference",
+        )
+        static let implicitZoomSegments = string(
+            "video-editor.implicit-zoom-segments",
+            defaultValue: "Automatic Zoom Segments",
+            comment: "Label for implicit zoom segment count in the video editor",
+        )
         static func originalDimensionsLabel(_ width: Int, _ height: Int) -> String {
             format(
                 "video-editor.original-dimensions-label",

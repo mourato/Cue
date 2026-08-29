@@ -4,11 +4,17 @@
     //  Notinhas
 //
     //  Polls the global mouse location while recording so the editor can
-    //  reconstruct a smooth follow-camera path later.
+    //  reconstruct a smooth follow-camera path later, and records discrete
+    //  click events for automatic zoom synthesis.
 //
 
     import AppKit
     import Foundation
+
+    struct RecordingMouseTrackingStopResult: Equatable {
+        let samples: [RecordedMouseSample]
+        let presses: [RecordedMousePress]
+    }
 
     @MainActor
     final class RecordingMouseTracker {
@@ -27,10 +33,14 @@
         private let mouseLocationProvider: () -> CGPoint
         private let mouseMonitorInstaller: (@escaping () -> Void) -> Any?
         private let mouseMonitorRemover: (Any) -> Void
+        private let pressMonitorInstaller: (@escaping (NSEvent) -> Void) -> Any?
+        private let pressMonitorRemover: (Any) -> Void
 
         private var timer: Timer?
         private var globalMouseMonitor: Any?
+        private var pressMonitor: Any?
         private var samples: [RecordedMouseSample] = []
+        private var presses: [RecordedMousePress] = []
         private var startUptime: TimeInterval?
         private var pausedAtUptime: TimeInterval?
         private var accumulatedPausedDuration: TimeInterval = 0
@@ -53,6 +63,14 @@
                 }
             },
             mouseMonitorRemover: @escaping (Any) -> Void = { NSEvent.removeMonitor($0) },
+            pressMonitorInstaller: @escaping (@escaping (NSEvent) -> Void) -> Any? = { handler in
+                NSEvent.addGlobalMonitorForEvents(
+                    matching: [.leftMouseDown, .rightMouseDown, .leftMouseUp, .rightMouseUp],
+                ) { event in
+                    handler(event)
+                }
+            },
+            pressMonitorRemover: @escaping (Any) -> Void = { NSEvent.removeMonitor($0) },
         ) {
             self.recordingRect = recordingRect
             let samplesPerSecond = Self.resolvedSamplesPerSecond(for: fps)
@@ -62,6 +80,8 @@
             self.mouseLocationProvider = mouseLocationProvider
             self.mouseMonitorInstaller = mouseMonitorInstaller
             self.mouseMonitorRemover = mouseMonitorRemover
+            self.pressMonitorInstaller = pressMonitorInstaller
+            self.pressMonitorRemover = pressMonitorRemover
         }
 
         var samplesPerSecond: Int {
@@ -74,6 +94,7 @@
             startUptime = uptimeProvider()
             appendCurrentSample(force: true, location: nil)
             installGlobalMouseMonitor()
+            installPressMonitor()
 
             let timer = Timer(timeInterval: sampleInterval, repeats: true) { [weak self] _ in
                 Task { @MainActor [weak self] in
@@ -98,7 +119,7 @@
             appendCurrentSample(force: true, location: nil)
         }
 
-        func stop() -> [RecordedMouseSample] {
+        func stop() -> RecordingMouseTrackingStopResult {
             appendCurrentSample(force: true, location: nil)
             timer?.invalidate()
             timer = nil
@@ -106,9 +127,13 @@
                 mouseMonitorRemover(globalMouseMonitor)
                 self.globalMouseMonitor = nil
             }
+            if let pressMonitor {
+                pressMonitorRemover(pressMonitor)
+                self.pressMonitor = nil
+            }
             pausedAtUptime = nil
             diagnostics = buildDiagnostics(from: samples)
-            return samples
+            return RecordingMouseTrackingStopResult(samples: samples, presses: presses)
         }
 
         func reset() {
@@ -118,7 +143,12 @@
                 mouseMonitorRemover(globalMouseMonitor)
                 self.globalMouseMonitor = nil
             }
+            if let pressMonitor {
+                pressMonitorRemover(pressMonitor)
+                self.pressMonitor = nil
+            }
             samples.removeAll(keepingCapacity: true)
+            presses.removeAll(keepingCapacity: true)
             startUptime = nil
             pausedAtUptime = nil
             accumulatedPausedDuration = 0
@@ -138,15 +168,12 @@
             }
 
             let cursorLocation = location ?? mouseLocationProvider()
-            let rawX = (cursorLocation.x - recordingRect.minX) / recordingRect.width
-            let rawY = (cursorLocation.y - recordingRect.minY) / recordingRect.height
-            // Convert AppKit global coordinates (bottom-left origin) into top-left normalized space.
-            let topLeftY = 1 - rawY
+            let normalized = normalizedPoint(for: cursorLocation)
 
             let sample = RecordedMouseSample(
                 time: elapsedTime,
-                normalizedX: rawX.clamped(to: 0 ... 1),
-                normalizedY: topLeftY.clamped(to: 0 ... 1),
+                normalizedX: normalized.x,
+                normalizedY: normalized.y,
                 isInsideCapture: recordingRect.contains(cursorLocation),
             )
 
@@ -163,12 +190,90 @@
             samples.append(sample)
         }
 
+        private func appendPress(from event: NSEvent) {
+            if pausedAtUptime != nil {
+                return
+            }
+
+            guard let elapsedTime = currentElapsedTime(),
+                  recordingRect.width > 0,
+                  recordingRect.height > 0
+            else {
+                return
+            }
+
+            let cursorLocation = mouseLocationProvider()
+            guard recordingRect.contains(cursorLocation) else { return }
+
+            let normalized = normalizedPoint(for: cursorLocation)
+            let phase: RecordedMousePress.PressPhase
+            let button: Int
+            switch event.type {
+            case .leftMouseDown, .rightMouseDown:
+                phase = .down
+            case .leftMouseUp, .rightMouseUp:
+                phase = .up
+            default:
+                return
+            }
+
+            switch event.type {
+            case .leftMouseDown, .leftMouseUp:
+                button = 0
+            case .rightMouseDown, .rightMouseUp:
+                button = 1
+            default:
+                button = 0
+            }
+
+            let press = RecordedMousePress(
+                time: elapsedTime,
+                normalizedX: normalized.x,
+                normalizedY: normalized.y,
+                button: button,
+                phase: phase,
+            )
+
+            if let lastPress = presses.last {
+                let duplicateWindow: TimeInterval = 0.05
+                if press.phase == lastPress.phase,
+                   press.button == lastPress.button,
+                   press.time - lastPress.time < duplicateWindow,
+                   press.normalizedX == lastPress.normalizedX,
+                   press.normalizedY == lastPress.normalizedY {
+                    return
+                }
+            }
+
+            presses.append(press)
+        }
+
+        private func normalizedPoint(for cursorLocation: CGPoint) -> (x: CGFloat, y: CGFloat) {
+            let rawX = (cursorLocation.x - recordingRect.minX) / recordingRect.width
+            let rawY = (cursorLocation.y - recordingRect.minY) / recordingRect.height
+            let topLeftY = 1 - rawY
+            return (
+                x: rawX.clamped(to: 0 ... 1),
+                y: topLeftY.clamped(to: 0 ... 1),
+            )
+        }
+
         private func installGlobalMouseMonitor() {
             guard globalMouseMonitor == nil else { return }
 
             globalMouseMonitor = mouseMonitorInstaller { [weak self] in
                 Task { @MainActor [weak self] in
                     self?.appendCurrentSample(force: false, location: nil)
+                }
+            }
+        }
+
+        private func installPressMonitor() {
+            guard pressMonitor == nil else { return }
+
+            pressMonitor = pressMonitorInstaller { [weak self] event in
+                MainActor.assumeIsolated {
+                    self?.appendPress(from: event)
                 }
             }
         }

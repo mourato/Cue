@@ -57,7 +57,8 @@ flowchart TD
 
 ## Zoom Segments
 
-- `ZoomSegment` (`Models/VideoEditorZoomSegment.swift`): `duration` 0.5–30 s (default 2), `zoomLevel` 1–4x (default 2), `zoomCenter` normalized 0...1, `ZoomType.auto/.manual`, `followSpeed`, `focusMargin`. `ZoomSegment.centered(at:)` places a new segment centered on the playhead; the **Z** key adds one (`VideoEditorMainView` keyboard shortcut).
+- `ZoomSegment` (`Models/VideoEditorZoomSegment.swift`): `duration` 0.5–30 s (default 2), `zoomLevel` 1–4x (default 2), `zoomCenter` normalized 0...1, `ZoomType.auto/.manual`, `followSpeed`, `focusMargin`, `isImplicit` for auto-generated segments. `ZoomSegment.centered(at:)` places a new segment centered on the playhead; the **Z** key adds one (`VideoEditorMainView` keyboard shortcut).
+- **Automatic zoom (Plan 109):** when a Notinhas recording opens with click metadata and an empty zoom timeline, `VideoEditorZoomSegmentSynthesizer` builds implicit Follow Mouse segments (Screendrop-aligned timing: 0.3 s pre-roll, 2.5 s post-roll, 1.5× magnification, merge within 2.5 s). Preference `videoEditor.autoGenerateZoomOnOpen` defaults on. **Regenerate Automatic Zooms** in the right sidebar rebuilds implicit segments and preserves manual ones.
 - Transitions: ease-in-out cubic (`ZoomCalculator.easeInOutCubic`), `transitionDuration` default 0.4 s clamped to 0.15–0.75 and to 45 % of the segment per edge; the editor-wide `state.zoomTransitionDuration` is user-adjustable in the right sidebar.
 - `Services/VideoEditorZoomCalculator.swift` computes per-frame zoom progress/crop rects; shared by preview and the export compositor.
 - UI: zoom timeline track (`VideoEditorZoomTimelineTrack` + `VideoEditorZoomBlockView`), center picker (`VideoEditorZoomCenterPicker`, with presets top-left/top-right/bottom-left/bottom-right/center), live preview overlay (`VideoEditorZoomPreviewOverlay`), settings popover (`VideoEditorZoomSettingsPopover`).
@@ -152,7 +153,8 @@ discardable deliverable, and reopening a baked output never reapplies a recipe.
 | `Notinhas/Features/VideoEditor/Services/VideoEditorZoomCompositor.swift` | Custom `AVVideoCompositing` per-frame zoom/background renderer |
 | `Notinhas/Features/VideoEditor/Services/GIFResizer.swift` | ImageIO GIF resize preserving loop/delays |
 | `Notinhas/Features/VideoEditor/Components/VideoEditorBottomBar.swift` | Cancel / Convert-Save bar |
-| `Notinhas/Services/Capture/RecordingMetadata.swift` | Metadata consumed by Follow Mouse and multitrack audio |
+| `Notinhas/Features/VideoEditor/Services/VideoEditorZoomSegmentSynthesizer.swift` | Click-driven implicit zoom segment synthesis |
+| `Notinhas/Services/Capture/RecordingMetadata.swift` | Metadata consumed by Follow Mouse, auto-zoom, and multitrack audio |
 
 ## Related docs
 
