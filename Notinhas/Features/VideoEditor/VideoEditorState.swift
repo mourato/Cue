@@ -251,6 +251,7 @@
 
         @Published private(set) var recordingMetadata: RecordingMetadata?
         @Published private(set) var autoFocusPaths: [UUID: [AutoFocusCameraSample]] = [:]
+        @Published private(set) var viewportTimeline: VideoEditorViewportTimeline = .identity
 
         // MARK: - GIF Metadata
 
@@ -1285,6 +1286,8 @@
             followSpeed: Double? = nil,
             focusMargin: CGFloat? = nil,
             isEnabled: Bool? = nil,
+            anchorMode: ZoomAnchorMode? = nil,
+            boundsBias: CGFloat? = nil,
         ) {
             guard let index = zoomSegments.firstIndex(where: { $0.id == id }) else { return }
 
@@ -1308,6 +1311,17 @@
             }
             if let zoomType {
                 segment.zoomType = zoomType
+                if zoomType == .manual {
+                    segment.anchorMode = .pinned
+                } else if segment.anchorMode == .pinned {
+                    segment.anchorMode = .pointer
+                }
+            }
+            if let anchorMode {
+                segment.anchorMode = anchorMode
+            }
+            if let boundsBias {
+                segment.boundsBias = min(max(boundsBias, 0), 1)
             }
             if let followSpeed {
                 segment.followSpeed = AutoFocusSettings.clampFollowSpeed(followSpeed)
@@ -1339,6 +1353,7 @@
                 segments: zoomSegments,
                 autoFocusPaths: autoFocusPaths,
                 transitionDuration: effectiveDuration,
+                viewportTimeline: viewportTimeline,
             )
         }
 
@@ -1910,6 +1925,7 @@
                 recordingMetadata = nil
                 autoFocusPaths = [:]
                 autoFocusPathInputs = [:]
+                viewportTimeline = .identity
                 return
             }
 
@@ -1922,6 +1938,7 @@
             guard let recordingMetadata, hasMouseTrackingData else {
                 autoFocusPaths = [:]
                 autoFocusPathInputs = [:]
+                rebuildViewportTimeline(for: segments)
                 return
             }
 
@@ -1960,6 +1977,25 @@
 
             autoFocusPathInputs = rebuiltInputs
             autoFocusPaths = rebuiltPaths
+            rebuildViewportTimeline(for: segments)
+        }
+
+        private func rebuildViewportTimeline(for segments: [ZoomSegment]) {
+            let videoDuration = CMTimeGetSeconds(duration)
+            let enabledSegments = segments.filter(\.isEnabled)
+            guard videoDuration.isFinite,
+                  videoDuration > 0,
+                  !enabledSegments.isEmpty
+            else {
+                viewportTimeline = .identity
+                return
+            }
+
+            viewportTimeline = VideoEditorViewportTimeline.build(
+                segments: enabledSegments,
+                metadata: recordingMetadata,
+                duration: videoDuration,
+            )
         }
 
         /// Apply Gaussian blur to image (computed once, reused during render)

@@ -200,7 +200,16 @@
             segments: [ZoomSegment],
             autoFocusPaths: [UUID: [AutoFocusCameraSample]],
             transitionDuration: TimeInterval,
+            viewportTimeline: VideoEditorViewportTimeline = .identity,
         ) -> VideoEditorCameraState {
+            if viewportTimeline != .identity {
+                let frame = viewportTimeline.frame(at: time)
+                return VideoEditorCameraState(
+                    zoomLevel: CGFloat(frame.magnification),
+                    center: frame.anchor,
+                )
+            }
+
             guard let activeSegment = ZoomCalculator.activeSegment(at: time, in: segments) else {
                 return .identity
             }

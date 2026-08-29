@@ -17,6 +17,7 @@
 
         private let zooms: [ZoomSegment]
         private let autoFocusPaths: [UUID: [AutoFocusCameraSample]]
+        private let viewportTimeline: VideoEditorViewportTimeline
         private let renderSize: CGSize
         private let frameDuration: CMTime
         private let transitionDuration: TimeInterval
@@ -37,6 +38,7 @@
         init(
             zooms: [ZoomSegment],
             autoFocusPaths: [UUID: [AutoFocusCameraSample]] = [:],
+            viewportTimeline: VideoEditorViewportTimeline = .identity,
             renderSize: CGSize,
             frameDuration: CMTime = CMTime(value: 1, timescale: 30),
             transitionDuration: TimeInterval = ZoomCalculator.defaultTransitionDuration,
@@ -51,6 +53,7 @@
         ) {
             self.zooms = zooms.filter(\.isEnabled)
             self.autoFocusPaths = autoFocusPaths
+            self.viewportTimeline = viewportTimeline
             self.renderSize = renderSize
             self.frameDuration = frameDuration
             self.transitionDuration = ZoomCalculator.clampTransitionDuration(transitionDuration)
@@ -118,6 +121,7 @@
                 timeRange: timeRange,
                 zooms: zooms,
                 autoFocusPaths: autoFocusPaths,
+                viewportTimeline: viewportTimeline,
                 trackID: videoTrack.trackID,
                 renderSize: renderSize,
                 transitionDuration: transitionDuration,
@@ -168,6 +172,7 @@
         let timeRange: CMTimeRange
         let zooms: [ZoomSegment]
         let autoFocusPaths: [UUID: [AutoFocusCameraSample]]
+        let viewportTimeline: VideoEditorViewportTimeline
         let trackID: CMPersistentTrackID
         let renderSize: CGSize
         let transitionDuration: TimeInterval
@@ -204,6 +209,7 @@
             timeRange: CMTimeRange,
             zooms: [ZoomSegment],
             autoFocusPaths: [UUID: [AutoFocusCameraSample]],
+            viewportTimeline: VideoEditorViewportTimeline = .identity,
             trackID: CMPersistentTrackID,
             renderSize: CGSize,
             transitionDuration: TimeInterval,
@@ -219,6 +225,7 @@
             self.timeRange = timeRange
             self.zooms = zooms
             self.autoFocusPaths = autoFocusPaths
+            self.viewportTimeline = viewportTimeline
             self.trackID = trackID
             screenTrackID = trackID
             self.cameraTrackID = cameraTrackID
@@ -369,6 +376,7 @@
                 segments: instruction.zooms,
                 autoFocusPaths: instruction.autoFocusPaths,
                 transitionDuration: instruction.transitionDuration,
+                viewportTimeline: instruction.viewportTimeline,
             )
             let zoomLevel = cameraState.zoomLevel
             let zoomCenter = cameraState.center

@@ -20,6 +20,9 @@
         var focusMargin: CGFloat
         var isEnabled: Bool
         var isImplicit: Bool
+        var anchorMode: ZoomAnchorMode
+        var boundsBias: CGFloat
+        var skipsEasing: Bool
 
         // MARK: - Computed Properties
 
@@ -49,6 +52,9 @@
             focusMargin: CGFloat = AutoFocusSettings.defaultFocusMargin,
             isEnabled: Bool = true,
             isImplicit: Bool = false,
+            anchorMode: ZoomAnchorMode? = nil,
+            boundsBias: CGFloat = 0.25,
+            skipsEasing: Bool = false,
         ) {
             self.id = id
             self.startTime = max(0, startTime)
@@ -63,6 +69,9 @@
             self.focusMargin = AutoFocusSettings.clampFocusMargin(focusMargin)
             self.isEnabled = isEnabled
             self.isImplicit = isImplicit
+            self.anchorMode = anchorMode ?? (zoomType == .auto ? .pointer : .pinned)
+            self.boundsBias = boundsBias.clamped(to: 0 ... 1)
+            self.skipsEasing = skipsEasing
         }
 
         // MARK: - Validation
@@ -103,6 +112,20 @@
             switch self {
             case .auto: "cursorarrow.click"
             case .manual: "hand.tap"
+            }
+        }
+    }
+
+    enum ZoomAnchorMode: String, Codable, CaseIterable, Equatable {
+        case pointer
+        case smart
+        case pinned
+
+        var displayName: String {
+            switch self {
+            case .pointer: L10n.VideoEditor.anchorPointer
+            case .smart: L10n.VideoEditor.anchorSmart
+            case .pinned: L10n.VideoEditor.anchorPinned
             }
         }
     }
@@ -158,6 +181,12 @@
             } else {
                 String(format: "%.1fs", duration)
             }
+        }
+    }
+
+    private extension CGFloat {
+        func clamped(to range: ClosedRange<CGFloat>) -> CGFloat {
+            Swift.min(Swift.max(self, range.lowerBound), range.upperBound)
         }
     }
 #endif

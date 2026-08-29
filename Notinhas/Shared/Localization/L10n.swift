@@ -5664,6 +5664,26 @@ nonisolated enum L10n {
             defaultValue: "Automatic Zoom Segments",
             comment: "Label for implicit zoom segment count in the video editor",
         )
+        static let anchorMode = string(
+            "video-editor.anchor-mode",
+            defaultValue: "Anchor Mode",
+            comment: "Label for zoom anchor mode picker in the video editor",
+        )
+        static let anchorPointer = string(
+            "video-editor.anchor-pointer",
+            defaultValue: "Pointer",
+            comment: "Zoom anchor mode that follows the recorded pointer path",
+        )
+        static let anchorSmart = string(
+            "video-editor.anchor-smart",
+            defaultValue: "Smart",
+            comment: "Zoom anchor mode that clusters click activity within the segment",
+        )
+        static let anchorPinned = string(
+            "video-editor.anchor-pinned",
+            defaultValue: "Pinned",
+            comment: "Zoom anchor mode that keeps a fixed center point",
+        )
         static func originalDimensionsLabel(_ width: Int, _ height: Int) -> String {
             format(
                 "video-editor.original-dimensions-label",

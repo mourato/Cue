@@ -270,6 +270,16 @@
                 )
             }
 
+            let exportDuration = CMTimeGetSeconds(state.effectiveOutputDuration)
+            let exportViewportTimeline = VideoEditorViewportTimeline.buildForExport(
+                segments: adjustedZooms,
+                metadata: state.recordingMetadata,
+                duration: exportDuration,
+                trimStart: trimStartSeconds,
+                trimEnd: trimEndSeconds,
+                speedMap: speedMap,
+            )
+
             // Create composition
             let composition = AVMutableComposition()
             print("🔍 [ZoomExport] Created AVMutableComposition")
@@ -380,6 +390,7 @@
             let zoomCompositor = ZoomCompositor(
                 zooms: adjustedZooms,
                 autoFocusPaths: adjustedAutoFocusPaths,
+                viewportTimeline: exportViewportTimeline,
                 renderSize: baseRenderSize,
                 frameDuration: sourceFrameDuration,
                 transitionDuration: state.zoomTransitionDuration,

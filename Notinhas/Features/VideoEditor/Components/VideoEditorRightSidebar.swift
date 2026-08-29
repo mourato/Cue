@@ -39,6 +39,7 @@
         @State private var localCenter: CGPoint = .init(x: 0.5, y: 0.5)
         @State private var localFollowSpeed: Double = AutoFocusSettings.defaultFollowSpeed
         @State private var localFocusMargin: CGFloat = AutoFocusSettings.defaultFocusMargin
+        @State private var localAnchorMode: ZoomAnchorMode = .pointer
         @State private var localTransitionDuration: TimeInterval = ZoomCalculator.defaultTransitionDuration
         @AppStorage(PreferencesKeys.videoEditorAutoGenerateZoomOnOpen)
         private var autoGenerateZoomOnOpen = true
@@ -50,6 +51,7 @@
             let zoomCenter: CGPoint
             let followSpeed: Double
             let focusMargin: CGFloat
+            let anchorMode: ZoomAnchorMode
             let transitionDuration: TimeInterval
         }
 
@@ -66,6 +68,7 @@
                 zoomCenter: segment.zoomCenter,
                 followSpeed: segment.followSpeed,
                 focusMargin: segment.focusMargin,
+                anchorMode: segment.anchorMode,
                 transitionDuration: state.zoomTransitionDuration,
             )
         }
@@ -234,6 +237,8 @@
                     } else {
                         availabilityWarning
                     }
+
+                    anchorModeSection
                 } else if state.hasMouseTrackingData {
                     Text(L10n.VideoEditor.manualModeDescription)
                         .font(.system(size: 10))
@@ -277,6 +282,26 @@
             .buttonStyle(.plain)
             .disabled(isDisabled)
             .opacity(isDisabled ? 0.45 : 1.0)
+        }
+
+        private var anchorModeSection: some View {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(L10n.VideoEditor.anchorMode)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(.secondary)
+
+                Picker("", selection: $localAnchorMode) {
+                    Text(L10n.VideoEditor.anchorPointer).tag(ZoomAnchorMode.pointer)
+                    Text(L10n.VideoEditor.anchorSmart).tag(ZoomAnchorMode.smart)
+                    Text(L10n.VideoEditor.anchorPinned).tag(ZoomAnchorMode.pinned)
+                }
+                .labelsHidden()
+                .pickerStyle(.segmented)
+                .disabled(!state.hasMouseTrackingData)
+                .onChange(of: localAnchorMode) { _, _ in
+                    applyAnchorMode()
+                }
+            }
         }
 
         private var availabilityWarning: some View {
@@ -622,6 +647,12 @@
             localCenter = segment.zoomCenter
             localFollowSpeed = segment.followSpeed
             localFocusMargin = segment.focusMargin
+            localAnchorMode = segment.anchorMode
+        }
+
+        private func applyAnchorMode() {
+            guard let id = state.selectedZoomId else { return }
+            state.updateZoom(id: id, anchorMode: localAnchorMode)
         }
 
         private func applyZoomMode(_ zoomType: ZoomType) {

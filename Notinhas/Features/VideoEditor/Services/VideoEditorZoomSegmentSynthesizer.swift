@@ -69,6 +69,7 @@
                     zoomCenter: candidate.center,
                     zoomType: .auto,
                     isImplicit: true,
+                    anchorMode: .pointer,
                 ).clamped(to: duration)
             }
         }
