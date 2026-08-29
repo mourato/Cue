@@ -27,6 +27,7 @@ final class PostCaptureActionHandler {
     private let quickAccess: QuickAccessManaging
     private let fileAccess: SandboxFileAccessing
     private let screenshotPresetAutoApplier: ScreenshotPresetAutoApplier
+    private let clipboardAction: @MainActor (URL, Bool) -> Void
     private let annotateAction: (QuickAccessItem?, URL, AnnotationSessionData?) -> Void
     private let historyAction: ((URL) async -> Void)?
 
@@ -35,6 +36,13 @@ final class PostCaptureActionHandler {
         quickAccess: QuickAccessManaging,
         fileAccess: SandboxFileAccessing,
         screenshotPresetAutoApplier: ScreenshotPresetAutoApplier,
+        clipboardAction: @escaping @MainActor (URL, Bool) -> Void = { url, isVideo in
+            if isVideo {
+                ClipboardHelper.copyMediaFile(from: url)
+            } else {
+                ClipboardHelper.copyImage(from: url)
+            }
+        },
         annotateAction: @escaping (QuickAccessItem?, URL, AnnotationSessionData?) -> Void = { item, url, sessionData in
             if let item {
                 AnnotateManager.shared.openAnnotation(for: item)
@@ -48,6 +56,7 @@ final class PostCaptureActionHandler {
         self.quickAccess = quickAccess
         self.fileAccess = fileAccess
         self.screenshotPresetAutoApplier = screenshotPresetAutoApplier
+        self.clipboardAction = clipboardAction
         self.annotateAction = annotateAction
         self.historyAction = historyAction
     }
@@ -455,23 +464,16 @@ final class PostCaptureActionHandler {
 
     /// Copy file to clipboard (format-aware image data for screenshots, file URL for videos)
     private func copyToClipboard(url: URL, isVideo: Bool) {
-        if isVideo {
-            ClipboardHelper.copyMediaFile(from: url)
-            DiagnosticLogger.shared.log(
-                .debug,
-                .clipboard,
-                "File URL written to clipboard",
-                context: ["fileName": url.lastPathComponent, "kind": "video"],
-            )
-        } else {
-            ClipboardHelper.copyImage(from: url)
-            DiagnosticLogger.shared.log(
-                .debug,
-                .clipboard,
-                "Image written to clipboard",
-                context: ["fileName": url.lastPathComponent],
-            )
-        }
+        clipboardAction(url, isVideo)
+        let context: [String: String] = isVideo
+            ? ["fileName": url.lastPathComponent, "kind": "video"]
+            : ["fileName": url.lastPathComponent]
+        DiagnosticLogger.shared.log(
+            .debug,
+            .clipboard,
+            isVideo ? "File URL written to clipboard" : "Image written to clipboard",
+            context: context,
+        )
     }
 
     private func persistAnnotationSessionIfNeeded(_ sessionData: AnnotationSessionData, for url: URL) {

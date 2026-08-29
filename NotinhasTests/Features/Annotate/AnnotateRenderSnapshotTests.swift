@@ -16,6 +16,17 @@ final class AnnotateRenderSnapshotTests: XCTestCase {
     /// crash while deinitializing this MainActor app-level ObservableObject.
     @MainActor private static var retainedStates: [AnnotateState] = []
 
+    override func setUp() {
+        super.setUp()
+        QuickAccessManager.shared.testingSuppressPresentation = true
+    }
+
+    override func tearDown() {
+        QuickAccessManager.shared.dismissAll()
+        QuickAccessManager.shared.testingSuppressPresentation = false
+        super.tearDown()
+    }
+
     @MainActor
     private func makeState() -> AnnotateState {
         let state = AnnotateState()

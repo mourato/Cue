@@ -67,13 +67,13 @@ final class AllInOneCaptureCoordinatorTests: XCTestCase {
 
     func testFloatingHUD_clearContent_dropsHostingView() {
         let window = CaptureFloatingHUDWindow()
+        defer { window.close() }
         window.setContent(AnyView(Text("All-In-One")))
         XCTAssertNotNil(window.contentView)
 
         window.clearContent()
 
         XCTAssertNil(window.contentView)
-        window.close()
     }
 
     func testSessionState_defaultsToAreaMode() {
@@ -131,27 +131,31 @@ final class AllInOneCaptureCoordinatorTests: XCTestCase {
         XCTAssertFalse(AllInOneCaptureCoordinator.isSelectedModeActivationKey(UInt16(kVK_ANSI_A)))
     }
 
-    func testFloatingHUD_canBeRaisedAboveCaptureOverlay() {
+    func testFloatingHUD_setDisplayLevel_raisesAboveCaptureOverlay() {
         let window = CaptureFloatingHUDWindow()
+        defer { window.close() }
         window.setContent(AnyView(Text("All-In-One")))
-        window.showAboveCaptureOverlay()
+        window.setDisplayLevel(.aboveCaptureOverlay)
 
         XCTAssertEqual(window.displayLevel, .aboveCaptureOverlay)
         XCTAssertEqual(window.level, .screenSaver)
-        window.close()
     }
 
     func testFloatingHUD_acceptsFirstMouseWhileRemainingNonKey() {
         let window = CaptureFloatingHUDWindow()
+        defer { window.close() }
         window.setContent(AnyView(Text("All-In-One")))
         XCTAssertTrue(window.contentView?.acceptsFirstMouse(for: nil) == true)
         XCTAssertFalse(window.canBecomeKey)
-        window.close()
     }
 
     func testCoordinatorHUDLevelState_restoresStandardOnTeardown() {
         let modeHUD = CaptureFloatingHUDWindow()
         let actionHUD = CaptureFloatingHUDWindow()
+        defer {
+            modeHUD.close()
+            actionHUD.close()
+        }
         modeHUD.setDisplayLevel(.aboveCaptureOverlay)
         actionHUD.setDisplayLevel(.aboveCaptureOverlay)
 
@@ -160,8 +164,6 @@ final class AllInOneCaptureCoordinatorTests: XCTestCase {
 
         XCTAssertEqual(modeHUD.displayLevel, .standard)
         XCTAssertEqual(actionHUD.displayLevel, .standard)
-        modeHUD.close()
-        actionHUD.close()
     }
 
     func testFrozenBackdropWindowLevel_isBelowSelectionOverlay() {
@@ -234,9 +236,10 @@ final class AllInOneCaptureCoordinatorTests: XCTestCase {
             frozenBackdrops: [1: backdrop],
         )
 
+        defer { controller.tearDown() }
+        controller.testingSuppressOverlayPresentation = true
         controller.present()
 
         XCTAssertEqual(controller.backdropCacheCountForTesting, 1)
-        controller.tearDown()
     }
 }

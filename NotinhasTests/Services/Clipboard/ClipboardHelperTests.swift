@@ -11,30 +11,27 @@ import XCTest
 
 @MainActor
 final class ClipboardHelperTests: XCTestCase {
-    private var originalFormat: String?
+    private var pasteboard: NSPasteboard!
 
     override func setUp() {
         super.setUp()
-        originalFormat = UserDefaults.standard.string(forKey: PreferencesKeys.screenshotFormat)
+        pasteboard = NSPasteboard.withUniqueName()
     }
 
     override func tearDown() {
-        if let originalFormat {
-            UserDefaults.standard.set(originalFormat, forKey: PreferencesKeys.screenshotFormat)
-        } else {
-            UserDefaults.standard.removeObject(forKey: PreferencesKeys.screenshotFormat)
-        }
+        pasteboard.clearContents()
+        pasteboard = nil
         super.tearDown()
     }
 
     func testCopyFileURLs_emptyArray_noOp() {
-        ClipboardHelper.copyFileURLs([])
+        ClipboardHelper.copyFileURLs([], to: pasteboard)
         // Should not crash
     }
 
     func testCopyImageFromURL_missingFile_logsAndReturns() {
         let missingURL = URL(fileURLWithPath: "/tmp/\(UUID().uuidString)_nonexistent.png")
-        ClipboardHelper.copyImage(from: missingURL)
+        ClipboardHelper.copyImage(from: missingURL, to: pasteboard)
         // Should not crash; pasteboard may be empty or unchanged
     }
 
@@ -55,8 +52,7 @@ final class ClipboardHelperTests: XCTestCase {
         let fileURL = tempDir.appendingPathComponent("test.png")
         try data.write(to: fileURL)
 
-        ClipboardHelper.copyImage(from: fileURL)
-        let pasteboard = NSPasteboard.general
+        ClipboardHelper.copyImage(from: fileURL, to: pasteboard)
         let item = try XCTUnwrap(pasteboard.pasteboardItems?.first)
         XCTAssertEqual(pasteboard.pasteboardItems?.count, 1)
 
@@ -71,14 +67,12 @@ final class ClipboardHelperTests: XCTestCase {
     }
 
     func testCopyRenderedImage_withPNGFormat() throws {
-        UserDefaults.standard.set(ImageFormatOption.png.rawValue, forKey: PreferencesKeys.screenshotFormat)
         guard let cgImage = TestImageFactory.solidColor(width: 10, height: 10) else {
             XCTFail("Failed to create test image")
             return
         }
         let nsImage = NSImage(cgImage: cgImage, size: NSSize(width: 10, height: 10))
-        ClipboardHelper.copyImage(nsImage)
-        let pasteboard = NSPasteboard.general
+        ClipboardHelper.copyImage(nsImage, format: .png, to: pasteboard)
         let item = try XCTUnwrap(pasteboard.pasteboardItems?.first)
         XCTAssertEqual(pasteboard.pasteboardItems?.count, 1)
         XCTAssertTrue(item.types.contains(.fileURL))
@@ -89,14 +83,12 @@ final class ClipboardHelperTests: XCTestCase {
     }
 
     func testCopyRenderedImage_withJPEGFormat() throws {
-        UserDefaults.standard.set(ImageFormatOption.jpeg.rawValue, forKey: PreferencesKeys.screenshotFormat)
         guard let cgImage = TestImageFactory.solidColor(width: 10, height: 10) else {
             XCTFail("Failed to create test image")
             return
         }
         let nsImage = NSImage(cgImage: cgImage, size: NSSize(width: 10, height: 10))
-        ClipboardHelper.copyImage(nsImage)
-        let pasteboard = NSPasteboard.general
+        ClipboardHelper.copyImage(nsImage, format: .jpeg, to: pasteboard)
         let item = try XCTUnwrap(pasteboard.pasteboardItems?.first)
         let jpegType = NSPasteboard.PasteboardType("public.jpeg")
         XCTAssertEqual(pasteboard.pasteboardItems?.count, 1)
@@ -108,14 +100,12 @@ final class ClipboardHelperTests: XCTestCase {
     }
 
     func testCopyRenderedImage_withWebPFormat() throws {
-        UserDefaults.standard.set(ImageFormatOption.webp.rawValue, forKey: PreferencesKeys.screenshotFormat)
         guard let cgImage = TestImageFactory.solidColor(width: 10, height: 10) else {
             XCTFail("Failed to create test image")
             return
         }
         let nsImage = NSImage(cgImage: cgImage, size: NSSize(width: 10, height: 10))
-        ClipboardHelper.copyImage(nsImage)
-        let pasteboard = NSPasteboard.general
+        ClipboardHelper.copyImage(nsImage, format: .webp, to: pasteboard)
         let item = try XCTUnwrap(pasteboard.pasteboardItems?.first)
         let webpType = NSPasteboard.PasteboardType("org.webmproject.webp")
         XCTAssertEqual(pasteboard.pasteboardItems?.count, 1)
@@ -134,8 +124,7 @@ final class ClipboardHelperTests: XCTestCase {
         let fileURL = tempDir.appendingPathComponent("test.webp")
         try Data([0x52, 0x49, 0x46, 0x46]).write(to: fileURL)
 
-        ClipboardHelper.copyImage(from: fileURL)
-        let pasteboard = NSPasteboard.general
+        ClipboardHelper.copyImage(from: fileURL, to: pasteboard)
         let item = try XCTUnwrap(pasteboard.pasteboardItems?.first)
         let webPType = NSPasteboard.PasteboardType("org.webmproject.webp")
 
@@ -154,9 +143,7 @@ final class ClipboardHelperTests: XCTestCase {
         let fileURL = tempDir.appendingPathComponent("recording.mp4")
         try Data([0, 1, 2, 3]).write(to: fileURL)
 
-        ClipboardHelper.copyMediaFile(from: fileURL)
-
-        let pasteboard = NSPasteboard.general
+        ClipboardHelper.copyMediaFile(from: fileURL, to: pasteboard)
         let item = try XCTUnwrap(pasteboard.pasteboardItems?.first)
         XCTAssertEqual(pasteboard.pasteboardItems?.count, 1)
         XCTAssertTrue(item.types.contains(.fileURL))
@@ -181,9 +168,7 @@ final class ClipboardHelperTests: XCTestCase {
         try Data([1, 2, 3]).write(to: url1)
         try Data([4, 5, 6]).write(to: url2)
 
-        ClipboardHelper.copyFileURLs([url1, url2])
-
-        let pasteboard = NSPasteboard.general
+        ClipboardHelper.copyFileURLs([url1, url2], to: pasteboard)
         let items = try XCTUnwrap(pasteboard.pasteboardItems)
         XCTAssertEqual(items.count, 2)
         XCTAssertTrue(items[0].types.contains(.fileURL))

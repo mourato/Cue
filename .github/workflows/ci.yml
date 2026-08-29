@@ -47,8 +47,6 @@ jobs:
             NotinhasTests/AppStatusBarControllerTests
             NotinhasTests/RecordingAudioLevelMeterTests
             NotinhasTests/CaptureViewModelTests/testHiddenWindowSession_restore_postsSyntheticMouseMovedEvent
-            NotinhasTests/AnnotateExportSaveTests/testCopyToClipboardRunsWithoutCrashing
-            NotinhasTests/AnnotateExportSaveTests/testSaveAsIsCoveredByManualInteractionOnly
             NotinhasTests/AnnotateBackgroundRedactionTests/testApplyBackgroundCutoutStartsProcessingOnSupportedOS
             NotinhasTests/AnnotateBackgroundRedactionTests/testAutoRedactSensitiveDataStartsScan
             NotinhasTests/AnnotateMockupTests/testMockupExporterRenderProducesImageWithSourceImage

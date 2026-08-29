@@ -11,15 +11,18 @@ import XCTest
 @MainActor
 final class AnnotateShortcutManagerTests: XCTestCase {
     private var manager: AnnotateShortcutManager!
+    private var defaults: UserDefaults!
 
     override func setUp() async throws {
         try await super.setUp()
-        manager = AnnotateShortcutManager.shared
+        defaults = UserDefaultsFactory.make()
+        manager = AnnotateShortcutManager(defaults: defaults)
         manager.resetToDefaults()
     }
 
     override func tearDown() async throws {
-        manager.resetToDefaults()
+        manager = nil
+        defaults = nil
         try await super.tearDown()
     }
 
@@ -143,23 +146,23 @@ final class AnnotateShortcutManagerTests: XCTestCase {
         let noteKey = "annotate.shortcut.\(AnnotationToolType.notinhasNote.rawValue)"
         let migrationKey = "annotate.shortcut.counterAbsorption.v1"
         let counterKey = "annotate.shortcut.\(AnnotationToolType.counter.rawValue)"
-        UserDefaults.standard.set("i", forKey: noteKey)
-        UserDefaults.standard.set("n", forKey: counterKey)
-        UserDefaults.standard.set(false, forKey: migrationKey)
+        defaults.set("i", forKey: noteKey)
+        defaults.set("n", forKey: counterKey)
+        defaults.set(false, forKey: migrationKey)
         manager.setShortcut("i", for: .notinhasNote)
 
         manager.migrateCounterAbsorptionShortcutsIfNeeded()
 
         XCTAssertEqual(manager.shortcut(for: .notinhasNote), "n")
-        XCTAssertNil(UserDefaults.standard.string(forKey: counterKey))
-        XCTAssertTrue(UserDefaults.standard.bool(forKey: migrationKey))
+        XCTAssertNil(defaults.string(forKey: counterKey))
+        XCTAssertTrue(defaults.bool(forKey: migrationKey))
     }
 
     func testCounterAbsorptionShortcutMigration_keepsIWhenNIsTaken() {
         let noteKey = "annotate.shortcut.\(AnnotationToolType.notinhasNote.rawValue)"
         let migrationKey = "annotate.shortcut.counterAbsorption.v1"
-        UserDefaults.standard.set("i", forKey: noteKey)
-        UserDefaults.standard.set(false, forKey: migrationKey)
+        defaults.set("i", forKey: noteKey)
+        defaults.set(false, forKey: migrationKey)
         manager.setShortcut("i", for: .notinhasNote)
         manager.setShortcut("n", for: .pencil)
 
@@ -167,12 +170,12 @@ final class AnnotateShortcutManagerTests: XCTestCase {
 
         XCTAssertEqual(manager.shortcut(for: .notinhasNote), "i")
         XCTAssertEqual(manager.shortcut(for: .pencil), "n")
-        XCTAssertTrue(UserDefaults.standard.bool(forKey: migrationKey))
+        XCTAssertTrue(defaults.bool(forKey: migrationKey))
     }
 
     func testCounterAbsorptionShortcutMigration_removesOrphanDisabledCounter() {
         let migrationKey = "annotate.shortcut.counterAbsorption.v1"
-        UserDefaults.standard.set(true, forKey: migrationKey)
+        defaults.set(true, forKey: migrationKey)
         manager.setShortcutEnabled(false, for: .counter)
         XCTAssertFalse(manager.isShortcutEnabled(for: .counter))
 
