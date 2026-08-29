@@ -106,6 +106,36 @@ final class CaptureSelectionSnappingTests: XCTestCase {
         XCTAssertTrue(looseCandidates.count >= strictCandidates.count)
     }
 
+    func testBoundaryIndex_findsStrongBoundaryAcrossSelectionSpan() throws {
+        let backdrop = makeTwoRegionBackdrop(leftColor: (0, 0, 0), rightColor: (255, 255, 255))
+        let index = try XCTUnwrap(
+            CaptureSelectionBoundaryIndex(
+                image: backdrop.image,
+                drawRect: CGRect(x: 0, y: 0, width: 400, height: 300),
+            ),
+        )
+        let proposed = CGRect(x: 175, y: 40, width: 20, height: 220)
+        let candidates = CaptureSelectionSnapping.imageCandidates(
+            proposedRect: proposed,
+            handle: .right,
+            backdrop: backdrop,
+            screenFrame: CGRect(x: 0, y: 0, width: 400, height: 300),
+            configuration: CaptureSelectionSnappingConfiguration(snapDistance: 20, colorSensitivity: 3),
+            boundaryIndex: index,
+        )
+
+        let result = CaptureSelectionSnapping.resolve(
+            proposedRect: proposed,
+            handle: .right,
+            candidates: candidates,
+            configuration: CaptureSelectionSnappingConfiguration(snapDistance: 20, colorSensitivity: 3),
+            minSize: 1,
+        )
+
+        XCTAssertEqual(result.rect.maxX, 200, accuracy: 0.01)
+        XCTAssertEqual(result.appliedCoordinates[.maxX] ?? -1, 200, accuracy: 0.01)
+    }
+
     func testResolve_leftEdgeSnapsWithinRadius() {
         let proposed = CGRect(x: 102, y: 100, width: 200, height: 120)
         let candidates = [
@@ -300,6 +330,18 @@ final class CaptureSelectionSnappingTests: XCTestCase {
         let config = CaptureSelectionSnappingConfiguration(snapDistance: 99, colorSensitivity: 99)
         XCTAssertEqual(config.snapDistance, 20)
         XCTAssertEqual(config.colorSensitivity, 5)
+    }
+
+    func testConfiguration_snapGuidesDefaultToEnabledAndRespectPreference() throws {
+        let suiteName = "CaptureSelectionSnappingTests.guides"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+
+        XCTAssertTrue(CaptureSelectionSnappingConfiguration.fromPreferences(defaults).showSnapGuides)
+        defaults.set(false, forKey: PreferencesKeys.captureSelectionShowSnapGuides)
+        XCTAssertFalse(CaptureSelectionSnappingConfiguration.fromPreferences(defaults).showSnapGuides)
+
+        defaults.removePersistentDomain(forName: suiteName)
     }
 
     func testHandleCursorGeometry_mapsCornersBeforeEdges() {

@@ -67,6 +67,7 @@ enum PreferencesKeys {
     static let captureAllInOneEnabledModes = "capture.allInOne.enabledModes.v1"
     static let captureSelectionSnapDistance = "capture.selection.snapDistance"
     static let captureSelectionColorSensitivity = "capture.selection.colorSensitivity"
+    static let captureSelectionShowSnapGuides = "capture.selection.showSnapGuides"
     static let backgroundCutoutAutoCropEnabled = "backgroundCutout.autoCropEnabled"
     static let annotateCanvasPresets = "annotate.canvasPresets.v1"
     static let annotateDefaultCanvasPresetId = "annotate.defaultCanvasPresetId.v1"

@@ -33,7 +33,11 @@ final class AllInOneSelectionRefinementController: NSObject {
     private let backdropCapturer: any AreaSelectionBackdropCapturing
     private var backdropCache: [CGDirectDisplayID: AreaSelectionBackdrop] = [:]
     private var backdropSamplers: [CGDirectDisplayID: CaptureSelectionSnappingCGImageSampler] = [:]
+    private var backdropBoundaryIndices: [CGDirectDisplayID: CaptureSelectionBoundaryIndex] = [:]
     private var backdropTasks: [CGDirectDisplayID: Task<Void, Never>] = [:]
+    private var backdropIndexTasks: [CGDirectDisplayID: Task<Void, Never>] = [:]
+    private var backdropCacheGeneration = UUID()
+    private var boundarySnapGuides: [CaptureSelectionSnappingEdge: CGFloat] = [:]
     private let frozenBackdrops: [CGDirectDisplayID: AreaSelectionBackdrop]?
 
     #if DEBUG
@@ -74,6 +78,7 @@ final class AllInOneSelectionRefinementController: NSObject {
         }
         cursorTrackingTimer?.invalidate()
         backdropTasks.values.forEach { $0.cancel() }
+        backdropIndexTasks.values.forEach { $0.cancel() }
         regionOverlayWindows.removeAll()
     }
 
@@ -105,6 +110,7 @@ final class AllInOneSelectionRefinementController: NSObject {
         tearDownOverlays()
         resizeStartRect = nil
         activeResizeHandle = nil
+        setBoundarySnapGuides([:])
         onRectChanged = nil
         onCancel = nil
     }
@@ -142,6 +148,7 @@ final class AllInOneSelectionRefinementController: NSObject {
     private func makeRegionOverlay(for screen: NSScreen) -> RecordingRegionOverlayWindow {
         let overlay = RecordingRegionOverlayWindow(screen: screen, highlightRect: currentRect)
         overlay.setDrawsContinuousBorder(false)
+        overlay.updateBoundarySnapGuides(boundarySnapGuides)
         overlay.interactionDelegate = self
         overlay.setInteractionEnabled(true)
         overlay.orderFrontRegardless()
@@ -295,6 +302,7 @@ final class AllInOneSelectionRefinementController: NSObject {
         updateRect(finalRect)
         resizeStartRect = nil
         activeResizeHandle = nil
+        setBoundarySnapGuides([:])
         semanticProvider.clearCache()
     }
 
@@ -329,8 +337,17 @@ final class AllInOneSelectionRefinementController: NSObject {
         )
     }
 
-    private func applySnapping(to rawProposedRect: CGRect, pointer: CGPoint) -> CGRect {
+    private func applySnapping(
+        to rawProposedRect: CGRect,
+        pointer: CGPoint,
+        modifiers: NSEvent.ModifierFlags = [],
+    ) -> CGRect {
+        guard !modifiers.contains(.option) else {
+            setBoundarySnapGuides([:])
+            return rawProposedRect
+        }
         guard let handle = activeResizeHandle else {
+            setBoundarySnapGuides([:])
             return rawProposedRect
         }
 
@@ -360,6 +377,7 @@ final class AllInOneSelectionRefinementController: NSObject {
                     screenFrame: screenFrame,
                     configuration: snappingConfiguration,
                     sampler: backdropSamplers[displayID],
+                    boundaryIndex: backdropBoundaryIndices[displayID],
                 ),
             )
         }
@@ -373,12 +391,22 @@ final class AllInOneSelectionRefinementController: NSObject {
             desktopBounds: desktopBounds,
             minSize: CaptureSelectionSnapping.refinementMinimumSize,
         )
+        setBoundarySnapGuides(result.appliedCoordinates)
         return result.rect
+    }
+
+    private func setBoundarySnapGuides(_ guides: [CaptureSelectionSnappingEdge: CGFloat]) {
+        boundarySnapGuides = snappingConfiguration.showSnapGuides ? guides : [:]
+        for overlay in regionOverlayWindows.values {
+            overlay.updateBoundarySnapGuides(boundarySnapGuides)
+        }
     }
 
     private func refreshBackdropCache() {
         cancelBackdropTasks()
         backdropCache.removeAll()
+        backdropBoundaryIndices.removeAll()
+        backdropCacheGeneration = UUID()
 
         if let frozenBackdrops, !frozenBackdrops.isEmpty {
             backdropCache = frozenBackdrops
@@ -386,6 +414,7 @@ final class AllInOneSelectionRefinementController: NSObject {
                 if let sampler = CaptureSelectionSnappingCGImageSampler(image: backdrop.image) {
                     backdropSamplers[displayID] = sampler
                 }
+                prepareBoundaryIndex(for: displayID, backdrop: backdrop)
             }
             return
         }
@@ -407,15 +436,36 @@ final class AllInOneSelectionRefinementController: NSObject {
                 if let sampler = CaptureSelectionSnappingCGImageSampler(image: backdrop.image) {
                     backdropSamplers[displayID] = sampler
                 }
+                prepareBoundaryIndex(for: displayID, backdrop: backdrop)
             }
+        }
+    }
+
+    private func prepareBoundaryIndex(for displayID: CGDirectDisplayID, backdrop: AreaSelectionBackdrop) {
+        backdropIndexTasks[displayID]?.cancel()
+        let generation = backdropCacheGeneration
+        let screenFrame = NSScreen.screens.first(where: { $0.displayID == displayID })?.frame
+            ?? CGDisplayBounds(displayID)
+        let buildTask = Task.detached(priority: .userInitiated) {
+            CaptureSelectionBoundaryIndex(image: backdrop.image, drawRect: screenFrame)
+        }
+        backdropIndexTasks[displayID] = Task { @MainActor [weak self] in
+            guard let index = await buildTask.value,
+                  let self,
+                  backdropCacheGeneration == generation,
+                  !Task.isCancelled else { return }
+            backdropBoundaryIndices[displayID] = index
         }
     }
 
     private func cancelBackdropTasks() {
         backdropTasks.values.forEach { $0.cancel() }
         backdropTasks.removeAll()
+        backdropIndexTasks.values.forEach { $0.cancel() }
+        backdropIndexTasks.removeAll()
         backdropCache.removeAll()
         backdropSamplers.removeAll()
+        backdropBoundaryIndices.removeAll()
     }
 
     private var unifiedDesktopFrame: CGRect {
@@ -552,9 +602,13 @@ extension AllInOneSelectionRefinementController: RecordingRegionOverlayDelegate 
         finishInteraction(with: rect)
     }
 
-    func overlay(_ overlay: RecordingRegionOverlayWindow, didResizeRegionTo rect: CGRect) {
+    func overlay(
+        _ overlay: RecordingRegionOverlayWindow,
+        didResizeRegionTo rect: CGRect,
+        modifiers: NSEvent.ModifierFlags,
+    ) {
         beginResizeIfNeeded(with: rect, overlay: overlay)
-        let snappedRect = applySnapping(to: rect, pointer: NSEvent.mouseLocation)
+        let snappedRect = applySnapping(to: rect, pointer: NSEvent.mouseLocation, modifiers: modifiers)
         updateRect(aspectLocked ? aspectLockedResizeRect(from: snappedRect) : snappedRect)
     }
 

@@ -188,6 +188,9 @@ enum NotinhasConfigurationImporter {
         ) {
             defaults.set($0, forKey: PreferencesKeys.captureSelectionColorSensitivity)
         }
+        collectBool(&reader, "capture", "screenshot", "show_selection_snap_guides", mutations: &mutations) {
+            defaults.set($0, forKey: PreferencesKeys.captureSelectionShowSnapGuides)
+        }
         collectBool(&reader, "capture", "scrolling", "show_hints", mutations: &mutations) {
             defaults.set($0, forKey: PreferencesKeys.scrollingCaptureShowHints)
         }

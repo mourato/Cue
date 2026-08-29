@@ -2746,6 +2746,16 @@ nonisolated enum L10n {
             defaultValue: "How strongly color and visual edges attract a resize handle. Semantic snapping uses Accessibility when permission is granted; image fallback works without it.",
             comment: "Capture preferences setting description",
         )
+        static let selectionSnapGuidesTitle = string(
+            "preferences-capture.selection-snap-guides-title",
+            defaultValue: "Show snap guides",
+            comment: "Capture preferences setting title",
+        )
+        static let selectionSnapGuidesDescription = string(
+            "preferences-capture.selection-snap-guides-description",
+            defaultValue: "Show guide lines when a selection edge snaps to a detected boundary",
+            comment: "Capture preferences setting description",
+        )
 
         static func selectionColorSensitivityLabel(_ value: Int) -> String {
             switch CaptureSelectionSnappingConfiguration.clampedColorSensitivity(value) {

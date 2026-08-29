@@ -53,6 +53,8 @@ struct CaptureSettingsView: View {
     )
     @AppStorage(PreferencesKeys.captureSelectionColorSensitivity) private var captureSelectionColorSensitivity =
         CaptureSelectionSnappingConfiguration.defaultColorSensitivity
+    @AppStorage(PreferencesKeys.captureSelectionShowSnapGuides) private var captureSelectionShowSnapGuides =
+        CaptureSelectionSnappingConfiguration.defaultShowSnapGuides
 
     @AppStorage(PreferencesKeys.screenshotFormat) private var screenshotFormat = "png"
     @AppStorage(PreferencesKeys.scrollingCaptureShowHints) private var scrollingCaptureShowHints = true
@@ -245,6 +247,15 @@ struct CaptureSettingsView: View {
                             }
                             .labelsHidden()
                             .pickerStyle(.menu)
+                        }
+
+                        SettingRow(
+                            icon: "ruler",
+                            title: L10n.PreferencesCapture.selectionSnapGuidesTitle,
+                            description: L10n.PreferencesCapture.selectionSnapGuidesDescription,
+                        ) {
+                            Toggle("", isOn: $captureSelectionShowSnapGuides)
+                                .labelsHidden()
                         }
                     }
 

@@ -1897,7 +1897,11 @@ extension ScrollingCaptureCoordinator: RecordingRegionOverlayDelegate {
         )
     }
 
-    func overlay(_: RecordingRegionOverlayWindow, didResizeRegionTo rect: CGRect) {
+    func overlay(
+        _: RecordingRegionOverlayWindow,
+        didResizeRegionTo rect: CGRect,
+        modifiers _: NSEvent.ModifierFlags,
+    ) {
         guard let sessionModel, sessionModel.phase == .ready else { return }
         updateSelectedRect(rect, reprepareSession: false)
         sessionModel.setStatus(

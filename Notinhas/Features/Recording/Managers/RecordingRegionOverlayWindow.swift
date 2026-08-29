@@ -42,7 +42,11 @@ protocol RecordingRegionOverlayDelegate: AnyObject {
     func overlay(_ overlay: RecordingRegionOverlayWindow, didMoveRegionTo rect: CGRect)
     func overlayDidFinishMoving(_ overlay: RecordingRegionOverlayWindow)
     func overlay(_ overlay: RecordingRegionOverlayWindow, didReselectWithRect rect: CGRect)
-    func overlay(_ overlay: RecordingRegionOverlayWindow, didResizeRegionTo rect: CGRect)
+    func overlay(
+        _ overlay: RecordingRegionOverlayWindow,
+        didResizeRegionTo rect: CGRect,
+        modifiers: NSEvent.ModifierFlags,
+    )
     func overlayDidFinishResizing(_ overlay: RecordingRegionOverlayWindow)
 }
 
@@ -115,6 +119,10 @@ final class RecordingRegionOverlayWindow: NSPanel {
         overlayView.setNeedsDisplay(dirtyRect)
     }
 
+    func updateBoundarySnapGuides(_ guides: [CaptureSelectionSnappingEdge: CGFloat]) {
+        overlayView.boundarySnapGuides = guides
+    }
+
     func updateGuidance(_ guidance: RecordingRegionOverlayGuidance?) {
         overlayView.guidance = guidance
     }
@@ -141,6 +149,9 @@ final class RecordingRegionOverlayWindow: NSPanel {
     func setInteractionEnabled(_ enabled: Bool) {
         ignoresMouseEvents = !enabled
         overlayView.isInteractionEnabled = enabled
+        if !enabled {
+            overlayView.boundarySnapGuides = [:]
+        }
         if enabled {
             overlayView.overlayWindow = self
         }
@@ -215,6 +226,12 @@ final class RecordingRegionOverlayView: NSView {
     var drawsContinuousBorder: Bool = true
     var isInteractionEnabled: Bool = false
     var guidance: RecordingRegionOverlayGuidance? {
+        didSet {
+            needsDisplay = true
+        }
+    }
+
+    var boundarySnapGuides: [CaptureSelectionSnappingEdge: CGFloat] = [:] {
         didSet {
             needsDisplay = true
         }
@@ -402,7 +419,11 @@ final class RecordingRegionOverlayView: NSView {
 // MARK: - Drawing helpers (continued)
 
 extension RecordingRegionOverlayView {
-    private func calculateResizedRect(handle: RecordingResizeHandle, delta: CGPoint) -> CGRect {
+    private func calculateResizedRect(
+        handle: RecordingResizeHandle,
+        delta: CGPoint,
+        modifiers: NSEvent.ModifierFlags,
+    ) -> CGRect {
         let resized = CaptureSelectionGeometry.resizedRect(
             original: resizeStartRect,
             handle: handle,
@@ -411,6 +432,7 @@ extension RecordingRegionOverlayView {
             aspectRatio: nil,
             minSize: minimumSelectionSize,
         )
+        guard !modifiers.contains(.option) else { return resized }
         let candidates = CaptureSelectionSnapping.screenBoundaryCandidates(for: Self.unifiedDesktopFrame)
         return CaptureSelectionSnapping.resolve(
             proposedRect: resized,
@@ -448,7 +470,7 @@ extension RecordingRegionOverlayView {
             let screenPoint = NSEvent.mouseLocation
             switch event.type {
             case .leftMouseDragged:
-                handleCrossDisplayDrag(screenPoint: screenPoint)
+                handleCrossDisplayDrag(screenPoint: screenPoint, modifiers: event.modifierFlags)
             case .leftMouseUp:
                 handleCrossDisplayMouseUp(screenPoint: screenPoint)
             default:
@@ -464,7 +486,7 @@ extension RecordingRegionOverlayView {
             let screenPoint = NSEvent.mouseLocation
             switch event.type {
             case .leftMouseDragged:
-                self?.handleCrossDisplayDrag(screenPoint: screenPoint)
+                self?.handleCrossDisplayDrag(screenPoint: screenPoint, modifiers: event.modifierFlags)
             case .leftMouseUp:
                 self?.handleCrossDisplayMouseUp(screenPoint: screenPoint)
             default:
@@ -529,15 +551,21 @@ extension RecordingRegionOverlayView {
         return r
     }
 
-    private func handleCrossDisplayDrag(screenPoint: CGPoint) {
+    private func handleCrossDisplayDrag(screenPoint: CGPoint, modifiers: NSEvent.ModifierFlags) {
         guard let overlayWindow else { return }
 
         if isResizing, let handle = activeHandle {
             // Resize: compute delta in screen coordinates relative to the start point.
             let screenStartPoint = convertToScreenCoords(resizeStartPoint)
             let delta = CGPoint(x: screenPoint.x - screenStartPoint.x, y: screenPoint.y - screenStartPoint.y)
-            let newRect = clampResizedRectToDesktop(calculateResizedRect(handle: handle, delta: delta))
-            overlayWindow.interactionDelegate?.overlay(overlayWindow, didResizeRegionTo: newRect)
+            let newRect = clampResizedRectToDesktop(
+                calculateResizedRect(handle: handle, delta: delta, modifiers: modifiers),
+            )
+            overlayWindow.interactionDelegate?.overlay(
+                overlayWindow,
+                didResizeRegionTo: newRect,
+                modifiers: modifiers,
+            )
             return
         }
 
@@ -547,7 +575,11 @@ extension RecordingRegionOverlayView {
             // Trigger redraw on all overlay windows via the delegate's highlight update.
             let rect = calculateNewSelectionScreenRect()
             if rect.width > 0, rect.height > 0 {
-                overlayWindow.interactionDelegate?.overlay(overlayWindow, didResizeRegionTo: rect)
+                overlayWindow.interactionDelegate?.overlay(
+                    overlayWindow,
+                    didResizeRegionTo: rect,
+                    modifiers: modifiers,
+                )
             }
             return
         }
@@ -700,6 +732,7 @@ extension RecordingRegionOverlayView {
         // Draw dim overlay — only the dirty region
         dimColor.setFill()
         dirtyRect.fill()
+        drawBoundarySnapGuides(in: dirtyRect)
 
         // If actively making new selection, draw that instead
         if isNewSelecting {
@@ -750,6 +783,32 @@ extension RecordingRegionOverlayView {
         if let guidance, bounds.contains(CGPoint(x: localRect.midX, y: localRect.midY)) {
             drawGuidance(guidance, in: clampedRect)
         }
+    }
+
+    private func drawBoundarySnapGuides(in _: NSRect) {
+        guard !boundarySnapGuides.isEmpty else { return }
+        let windowOrigin = overlayWindow?.frame.origin ?? .zero
+        let guideColor = NSColor.systemTeal.withAlphaComponent(0.9)
+        let guidePath = NSBezierPath()
+        guidePath.lineWidth = 1
+        guidePath.setLineDash([4, 3], count: 2, phase: 0)
+        guideColor.setStroke()
+
+        for x in [boundarySnapGuides[.minX], boundarySnapGuides[.maxX]].compactMap(\.self) {
+            let localX = x - windowOrigin.x
+            if bounds.insetBy(dx: -1, dy: 0).contains(CGPoint(x: localX, y: bounds.midY)) {
+                guidePath.move(to: CGPoint(x: localX, y: bounds.minY))
+                guidePath.line(to: CGPoint(x: localX, y: bounds.maxY))
+            }
+        }
+        for y in [boundarySnapGuides[.minY], boundarySnapGuides[.maxY]].compactMap(\.self) {
+            let localY = y - windowOrigin.y
+            if bounds.insetBy(dx: 0, dy: -1).contains(CGPoint(x: bounds.midX, y: localY)) {
+                guidePath.move(to: CGPoint(x: bounds.minX, y: localY))
+                guidePath.line(to: CGPoint(x: bounds.maxX, y: localY))
+            }
+        }
+        guidePath.stroke()
     }
 
     private func drawGuidance(_ guidance: RecordingRegionOverlayGuidance, in rect: CGRect) {

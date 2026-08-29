@@ -1445,7 +1445,11 @@
             updateSelectedRect(rect)
         }
 
-        func overlay(_: RecordingRegionOverlayWindow, didResizeRegionTo rect: CGRect) {
+        func overlay(
+            _: RecordingRegionOverlayWindow,
+            didResizeRegionTo rect: CGRect,
+            modifiers _: NSEvent.ModifierFlags,
+        ) {
             // Lightweight path: update overlay visuals only, skip persistence + toolbar reposition
             updateOverlayHighlightsOnly(rect)
         }

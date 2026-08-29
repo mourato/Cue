@@ -93,6 +93,13 @@ enum NotinhasConfigurationExporter {
                 default: CaptureSelectionSnappingConfiguration.defaultColorSensitivity,
             ),
         )
+        writer.value(
+            "show_selection_snap_guides",
+            defaults.boolValue(
+                PreferencesKeys.captureSelectionShowSnapGuides,
+                default: CaptureSelectionSnappingConfiguration.defaultShowSnapGuides,
+            ),
+        )
 
         writer.section("capture.scrolling")
         writer.value("show_hints", defaults.boolValue(PreferencesKeys.scrollingCaptureShowHints, default: true))

@@ -16,24 +16,34 @@ struct CaptureSelectionSnappingConfiguration: Equatable, Sendable {
     static let snapDistanceRange: ClosedRange<Int> = 1 ... 20
     static let defaultColorSensitivity = 3
     static let colorSensitivityRange: ClosedRange<Int> = 1 ... 5
+    static let defaultShowSnapGuides = true
 
     let snapDistance: CGFloat
     let colorSensitivity: Int
+    let showSnapGuides: Bool
 
     static func fromPreferences(_ defaults: UserDefaults = .standard) -> CaptureSelectionSnappingConfiguration {
         let snapDistance = defaults.object(forKey: PreferencesKeys.captureSelectionSnapDistance) as? Int
             ?? Int(defaultSnapDistance)
         let colorSensitivity = defaults.object(forKey: PreferencesKeys.captureSelectionColorSensitivity) as? Int
             ?? defaultColorSensitivity
+        let showSnapGuides = defaults.object(forKey: PreferencesKeys.captureSelectionShowSnapGuides) as? Bool
+            ?? defaultShowSnapGuides
         return CaptureSelectionSnappingConfiguration(
             snapDistance: CGFloat(snapDistance),
             colorSensitivity: colorSensitivity,
+            showSnapGuides: showSnapGuides,
         )
     }
 
-    init(snapDistance: CGFloat = Self.defaultSnapDistance, colorSensitivity: Int = Self.defaultColorSensitivity) {
+    init(
+        snapDistance: CGFloat = Self.defaultSnapDistance,
+        colorSensitivity: Int = Self.defaultColorSensitivity,
+        showSnapGuides: Bool = Self.defaultShowSnapGuides,
+    ) {
         self.snapDistance = Self.clampedSnapDistance(snapDistance)
         self.colorSensitivity = Self.clampedColorSensitivity(colorSensitivity)
+        self.showSnapGuides = showSnapGuides
     }
 
     static func clampedSnapDistance(_ value: CGFloat) -> CGFloat {
@@ -79,6 +89,226 @@ struct CaptureSelectionSnappingCandidate: Equatable, Sendable {
 struct CaptureSelectionSnappingResult: Equatable, Sendable {
     let rect: CGRect
     let appliedSources: [CaptureSelectionSnappingEdge: CaptureSelectionSnappingSource]
+    let appliedCoordinates: [CaptureSelectionSnappingEdge: CGFloat]
+
+    init(
+        rect: CGRect,
+        appliedSources: [CaptureSelectionSnappingEdge: CaptureSelectionSnappingSource],
+        appliedCoordinates: [CaptureSelectionSnappingEdge: CGFloat] = [:],
+    ) {
+        self.rect = rect
+        self.appliedSources = appliedSources
+        self.appliedCoordinates = appliedCoordinates
+    }
+}
+
+// MARK: - Backdrop Edge Index
+
+/// Pixel-boundary differences for one backdrop. The expensive image walk happens once; drag
+/// updates only inspect the small radius around the moving edge and the selection's span.
+struct CaptureSelectionBoundaryIndex: Sendable {
+    let drawRect: CGRect
+    let imageSize: CGSize
+    private let verticalDifferences: [UInt16]
+    private let horizontalDifferences: [UInt16]
+
+    init?(image: CGImage, drawRect: CGRect) {
+        let width = image.width
+        let height = image.height
+        guard width > 1, height > 1, drawRect.width > 0, drawRect.height > 0,
+              width <= Int.max / max(height, 1) else {
+            return nil
+        }
+
+        let bytesPerRow = width * 4
+        let totalBytes = bytesPerRow * height
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        guard let context = CGContext(
+            data: nil,
+            width: width,
+            height: height,
+            bitsPerComponent: 8,
+            bytesPerRow: bytesPerRow,
+            space: colorSpace,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue,
+        ) else {
+            return nil
+        }
+        context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
+        guard let data = context.data else { return nil }
+
+        let pixels = UnsafeBufferPointer(
+            start: data.assumingMemoryBound(to: UInt8.self),
+            count: totalBytes,
+        )
+        var vertical = [UInt16](repeating: 0, count: (width - 1) * height)
+        var horizontal = [UInt16](repeating: 0, count: width * (height - 1))
+
+        for y in 0 ..< height {
+            let rowOffset = y * bytesPerRow
+            for x in 1 ..< width {
+                vertical[y * (width - 1) + x - 1] = Self.difference(
+                    pixels,
+                    lhs: rowOffset + (x - 1) * 4,
+                    rhs: rowOffset + x * 4,
+                )
+            }
+        }
+        for y in 1 ..< height {
+            let rowOffset = y * bytesPerRow
+            let previousRowOffset = (y - 1) * bytesPerRow
+            for x in 0 ..< width {
+                horizontal[(y - 1) * width + x] = Self.difference(
+                    pixels,
+                    lhs: previousRowOffset + x * 4,
+                    rhs: rowOffset + x * 4,
+                )
+            }
+        }
+
+        self.drawRect = drawRect
+        imageSize = CGSize(width: width, height: height)
+        verticalDifferences = vertical
+        horizontalDifferences = horizontal
+    }
+
+    func nearestCandidate(
+        for edge: CaptureSelectionSnappingEdge,
+        proposedCoordinate: CGFloat,
+        selectionRect: CGRect,
+        radius: CGFloat,
+        minimumMeanDifference: CGFloat,
+        minimumSupport: CGFloat = 0.55,
+        source: CaptureSelectionSnappingSource,
+    ) -> CaptureSelectionSnappingCandidate? {
+        guard let span = pixelSpan(for: edge, selectionRect: selectionRect) else { return nil }
+        let pixelBoundary = boundaryPixel(for: edge, coordinate: proposedCoordinate)
+        let pixelRadius = max(
+            1,
+            Int(ceil(radius / (edge == .minX || edge == .maxX ? drawRect.width : drawRect.height)
+                    * (edge == .minX || edge == .maxX ? imageSize.width : imageSize.height))),
+        )
+        let boundaryCount = edge == .minX || edge == .maxX ? Int(imageSize.width) - 1 : Int(imageSize.height) - 1
+        let firstBoundary = max(1, Int(pixelBoundary.rounded()) - pixelRadius)
+        let lastBoundary = min(boundaryCount, Int(pixelBoundary.rounded()) + pixelRadius)
+        guard firstBoundary <= lastBoundary else { return nil }
+
+        var best: (distance: CGFloat, coordinate: CGFloat)?
+        for boundary in firstBoundary ... lastBoundary {
+            let statistics = statistics(
+                for: edge,
+                boundary: boundary,
+                span: span,
+                minimumDifference: minimumMeanDifference,
+            )
+            let mean = statistics.mean
+            let support = statistics.support
+            guard mean >= minimumMeanDifference, support >= minimumSupport else { continue }
+
+            let coordinate = screenCoordinate(for: edge, boundary: boundary)
+            let distance = abs(coordinate - proposedCoordinate)
+            if best == nil || distance < best!.distance {
+                best = (distance, coordinate)
+            }
+        }
+
+        guard let best else { return nil }
+        return CaptureSelectionSnappingCandidate(edge: edge, coordinate: best.coordinate, source: source)
+    }
+
+    private func statistics(
+        for edge: CaptureSelectionSnappingEdge,
+        boundary: Int,
+        span: ClosedRange<Int>,
+        minimumDifference: CGFloat,
+    ) -> (mean: CGFloat, support: CGFloat) {
+        var total = 0
+        var supported = 0
+        var count = 0
+        switch edge {
+        case .minX, .maxX:
+            let width = Int(imageSize.width) - 1
+            for pixel in span {
+                let difference = verticalDifferences[pixel * width + boundary - 1]
+                total += Int(difference)
+                supported += CGFloat(difference) / 1_000 >= minimumDifference ? 1 : 0
+                count += 1
+            }
+        case .minY, .maxY:
+            let width = Int(imageSize.width)
+            let start = boundary - 1
+            for pixel in span {
+                let difference = horizontalDifferences[start * width + pixel]
+                total += Int(difference)
+                supported += CGFloat(difference) / 1_000 >= minimumDifference ? 1 : 0
+                count += 1
+            }
+        }
+        guard count > 0 else { return (0, 0) }
+        return (
+            CGFloat(total) / CGFloat(count * 1_000),
+            CGFloat(supported) / CGFloat(count),
+        )
+    }
+
+    private func pixelSpan(
+        for edge: CaptureSelectionSnappingEdge,
+        selectionRect: CGRect,
+    ) -> ClosedRange<Int>? {
+        let lower: CGFloat
+        let upper: CGFloat
+        let origin: CGFloat
+        let length: CGFloat
+        let pixels: CGFloat
+        switch edge {
+        case .minX, .maxX:
+            lower = max(selectionRect.minY, drawRect.minY)
+            upper = min(selectionRect.maxY, drawRect.maxY)
+            origin = drawRect.minY
+            length = drawRect.height
+            pixels = imageSize.height
+        case .minY, .maxY:
+            lower = max(selectionRect.minX, drawRect.minX)
+            upper = min(selectionRect.maxX, drawRect.maxX)
+            origin = drawRect.minX
+            length = drawRect.width
+            pixels = imageSize.width
+        }
+        guard upper > lower else { return nil }
+        let first = max(0, min(Int(pixels) - 1, Int(floor((lower - origin) / length * pixels))))
+        let last = max(first, min(Int(pixels) - 1, Int(ceil((upper - origin) / length * pixels)) - 1))
+        return first ... last
+    }
+
+    private func boundaryPixel(for edge: CaptureSelectionSnappingEdge, coordinate: CGFloat) -> CGFloat {
+        switch edge {
+        case .minX, .maxX:
+            (coordinate - drawRect.minX) / drawRect.width * imageSize.width
+        case .minY, .maxY:
+            (drawRect.maxY - coordinate) / drawRect.height * imageSize.height
+        }
+    }
+
+    private func screenCoordinate(for edge: CaptureSelectionSnappingEdge, boundary: Int) -> CGFloat {
+        switch edge {
+        case .minX, .maxX:
+            drawRect.minX + CGFloat(boundary) / imageSize.width * drawRect.width
+        case .minY, .maxY:
+            drawRect.maxY - CGFloat(boundary) / imageSize.height * drawRect.height
+        }
+    }
+
+    private static func difference(
+        _ pixels: UnsafeBufferPointer<UInt8>,
+        lhs: Int,
+        rhs: Int,
+    ) -> UInt16 {
+        let red = Float(pixels[lhs]) - Float(pixels[rhs])
+        let green = Float(pixels[lhs + 1]) - Float(pixels[rhs + 1])
+        let blue = Float(pixels[lhs + 2]) - Float(pixels[rhs + 2])
+        let normalized = sqrt(red * red + green * green + blue * blue) / 255
+        return UInt16(min(65_535, max(0, (normalized * 1_000).rounded())))
+    }
 }
 
 // MARK: - Image Sampling Protocol
@@ -168,6 +398,7 @@ enum CaptureSelectionSnapping {
         let normalizedProposed = CaptureSelectionGeometry.normalized(proposedRect, minSize: minSize)
         var rect = normalizedProposed
         var appliedSources: [CaptureSelectionSnappingEdge: CaptureSelectionSnappingSource] = [:]
+        var appliedCoordinates: [CaptureSelectionSnappingEdge: CGFloat] = [:]
 
         for edge in activeEdges(for: handle) {
             let proposedCoordinate = coordinate(for: edge, in: normalizedProposed)
@@ -181,6 +412,7 @@ enum CaptureSelectionSnapping {
             }
             rect = rectBySetting(edge: edge, coordinate: candidate.coordinate, in: rect)
             appliedSources[edge] = candidate.source
+            appliedCoordinates[edge] = candidate.coordinate
         }
 
         rect = CaptureSelectionGeometry.normalized(rect, minSize: minSize)
@@ -188,7 +420,11 @@ enum CaptureSelectionSnapping {
             rect = clamp(rect, within: desktopBounds, handle: handle, minSize: minSize)
         }
 
-        return CaptureSelectionSnappingResult(rect: rect, appliedSources: appliedSources)
+        return CaptureSelectionSnappingResult(
+            rect: rect,
+            appliedSources: appliedSources,
+            appliedCoordinates: appliedCoordinates,
+        )
     }
 
     static func bestCandidate(
@@ -326,12 +562,36 @@ enum CaptureSelectionSnapping {
         screenFrame: CGRect,
         configuration: CaptureSelectionSnappingConfiguration,
         sampler: CaptureSelectionSnappingPixelSampling? = nil,
+        boundaryIndex: CaptureSelectionBoundaryIndex? = nil,
     ) -> [CaptureSelectionSnappingCandidate] {
         guard backdrop.isVisible else { return [] }
         let image = backdrop.image
         let width = image.width
         let height = image.height
         guard width > 1, height > 1 else { return [] }
+
+        if let boundaryIndex = boundaryIndex ?? CaptureSelectionBoundaryIndex(image: image, drawRect: screenFrame) {
+            return activeEdges(for: handle).flatMap { edge in
+                [
+                    boundaryIndex.nearestCandidate(
+                        for: edge,
+                        proposedCoordinate: coordinate(for: edge, in: proposedRect),
+                        selectionRect: proposedRect,
+                        radius: configuration.snapDistance,
+                        minimumMeanDifference: configuration.visualEdgeThreshold,
+                        source: .visual,
+                    ),
+                    boundaryIndex.nearestCandidate(
+                        for: edge,
+                        proposedCoordinate: coordinate(for: edge, in: proposedRect),
+                        selectionRect: proposedRect,
+                        radius: configuration.snapDistance,
+                        minimumMeanDifference: configuration.colorDifferenceThreshold,
+                        source: .color,
+                    ),
+                ].compactMap(\.self)
+            }
+        }
 
         let pixelSampler = sampler ?? CaptureSelectionSnappingCGImageSampler(image: image)
         guard let pixelSampler else { return [] }

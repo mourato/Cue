@@ -8247,6 +8247,28 @@
         }
       }
     },
+    "preferences-capture.selection-snap-guides-description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show guide lines when a selection edge snaps to a detected boundary"
+          }
+        }
+      }
+    },
+    "preferences-capture.selection-snap-guides-title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show snap guides"
+          }
+        }
+      }
+    },
     "preferences-capture.show-cursor-description" : {
       "extractionState" : "stale",
       "localizations" : {

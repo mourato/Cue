@@ -514,6 +514,7 @@ final class NotinhasConfigurationImporterTests: XCTestCase {
         [capture.screenshot]
         selection_snap_distance = 12
         selection_color_sensitivity = 4
+        show_selection_snap_guides = false
         """
 
         let result = NotinhasConfigurationImporter.importTOML(source, defaults: defaults)
@@ -521,6 +522,7 @@ final class NotinhasConfigurationImporterTests: XCTestCase {
         XCTAssertFalse(result.hasErrors)
         XCTAssertEqual(defaults.object(forKey: PreferencesKeys.captureSelectionSnapDistance) as? Int, 12)
         XCTAssertEqual(defaults.object(forKey: PreferencesKeys.captureSelectionColorSensitivity) as? Int, 4)
+        XCTAssertEqual(defaults.object(forKey: PreferencesKeys.captureSelectionShowSnapGuides) as? Bool, false)
     }
 
     func testImportSelectionSnappingKeysClampOutOfRangeValues() {

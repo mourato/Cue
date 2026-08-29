@@ -14,6 +14,11 @@ speed, visual reference, and clipboard-ready output. Do not add unrelated
 product chrome or broaden the inherited capture machinery merely to make it
 look different.
 
+- Selection edges use the current backdrop's cached boundary index during the
+  initial drag and All-In-One refinement. Hold `Option` to bypass snapping for
+  the current gesture. Snap guide lines are configurable in Capture settings
+  and are enabled by default.
+
 ## Sources of truth
 
 - Shared tokens and controls: [`Notinhas/Shared/Styles/DesignTokens.swift`](../Notinhas/Shared/Styles/DesignTokens.swift)

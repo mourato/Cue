@@ -69,6 +69,7 @@ enum NotinhasConfigurationDefaultDocument {
         writer.value("reverse_magnifier_zoom_direction", false)
         writer.value("selection_snap_distance", Int(CaptureSelectionSnappingConfiguration.defaultSnapDistance))
         writer.value("selection_color_sensitivity", CaptureSelectionSnappingConfiguration.defaultColorSensitivity)
+        writer.value("show_selection_snap_guides", CaptureSelectionSnappingConfiguration.defaultShowSnapGuides)
 
         writer.section("capture.scrolling")
         writer.value("show_hints", true)

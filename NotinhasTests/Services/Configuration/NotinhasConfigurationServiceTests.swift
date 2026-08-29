@@ -394,6 +394,7 @@ final class NotinhasConfigurationServiceTests: XCTestCase {
 
         XCTAssertEqual(document.value(at: "capture", "screenshot", "selection_snap_distance")?.intValue, 5)
         XCTAssertEqual(document.value(at: "capture", "screenshot", "selection_color_sensitivity")?.intValue, 3)
+        XCTAssertEqual(document.value(at: "capture", "screenshot", "show_selection_snap_guides")?.boolValue, true)
         XCTAssertEqual(document.value(at: "uploads", "optimize_images")?.boolValue, true)
         XCTAssertEqual(document.value(at: "uploads", "image_format")?.stringValue, "webp")
         XCTAssertEqual(document.value(at: "uploads", "maximum_dimension")?.intValue, 2048)
@@ -404,12 +405,14 @@ final class NotinhasConfigurationServiceTests: XCTestCase {
         let defaults = UserDefaultsFactory.make()
         defaults.set(8, forKey: PreferencesKeys.captureSelectionSnapDistance)
         defaults.set(2, forKey: PreferencesKeys.captureSelectionColorSensitivity)
+        defaults.set(false, forKey: PreferencesKeys.captureSelectionShowSnapGuides)
 
         let source = NotinhasConfigurationExporter.exportTOML(defaults: defaults)
         let document = try SimpleTOMLParser.parse(source)
 
         XCTAssertEqual(document.value(at: "capture", "screenshot", "selection_snap_distance")?.intValue, 8)
         XCTAssertEqual(document.value(at: "capture", "screenshot", "selection_color_sensitivity")?.intValue, 2)
+        XCTAssertEqual(document.value(at: "capture", "screenshot", "show_selection_snap_guides")?.boolValue, false)
     }
 
     func testExportIncludesImageUploadSettings() throws {
