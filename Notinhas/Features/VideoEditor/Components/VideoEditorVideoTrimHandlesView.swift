@@ -25,40 +25,47 @@
 
         var body: some View {
             ZStack(alignment: .leading) {
-                // Dimmed region before trim start
-                Rectangle()
-                    .fill(Color.black.opacity(0.5))
-                    .frame(width: startHandleOffset)
-
-                // Dimmed region after trim end
-                Rectangle()
-                    .fill(Color.black.opacity(0.5))
-                    .frame(width: timelineWidth - endHandleOffset)
-                    .offset(x: endHandleOffset)
-
-                // Yellow rounded border between trim handles
-                let leftEdge = max(0, min(startHandleOffset - handleWidth / 2, timelineWidth - handleWidth))
-                let rightEdge = max(0, min(endHandleOffset - handleWidth / 2, timelineWidth - handleWidth)) +
-                    handleWidth
-                let borderWidth = max(0, rightEdge - leftEdge)
-
-                RoundedRectangle(cornerRadius: 6)
-                    .strokeBorder(Color.yellow, lineWidth: 3)
-                    .frame(width: borderWidth, height: handleHeight)
-                    .offset(x: leftEdge)
-                    .allowsHitTesting(false)
-
-                // Start handle — clamped so it stays fully visible within timeline
-                TrimHandle(isStart: true, isDragging: isDraggingStart)
-                    .offset(x: max(0, min(startHandleOffset - handleWidth / 2, timelineWidth - handleWidth)))
-                    .gesture(startHandleGesture)
-
-                // End handle — clamped so it stays fully visible within timeline
-                TrimHandle(isStart: false, isDragging: isDraggingEnd)
-                    .offset(x: max(0, min(endHandleOffset - handleWidth / 2, timelineWidth - handleWidth)))
-                    .gesture(endHandleGesture)
+                if !state.hasClipEdits {
+                    trimHandlesContent
+                }
             }
             .frame(height: handleHeight)
+        }
+
+        @ViewBuilder
+        private var trimHandlesContent: some View {
+            // Dimmed region before trim start
+            Rectangle()
+                .fill(Color.black.opacity(0.5))
+                .frame(width: startHandleOffset)
+
+            // Dimmed region after trim end
+            Rectangle()
+                .fill(Color.black.opacity(0.5))
+                .frame(width: timelineWidth - endHandleOffset)
+                .offset(x: endHandleOffset)
+
+            // Yellow rounded border between trim handles
+            let leftEdge = max(0, min(startHandleOffset - handleWidth / 2, timelineWidth - handleWidth))
+            let rightEdge = max(0, min(endHandleOffset - handleWidth / 2, timelineWidth - handleWidth)) +
+                handleWidth
+            let borderWidth = max(0, rightEdge - leftEdge)
+
+            RoundedRectangle(cornerRadius: 6)
+                .strokeBorder(Color.yellow, lineWidth: 3)
+                .frame(width: borderWidth, height: handleHeight)
+                .offset(x: leftEdge)
+                .allowsHitTesting(false)
+
+            // Start handle — clamped so it stays fully visible within timeline
+            TrimHandle(isStart: true, isDragging: isDraggingStart)
+                .offset(x: max(0, min(startHandleOffset - handleWidth / 2, timelineWidth - handleWidth)))
+                .gesture(startHandleGesture)
+
+            // End handle — clamped so it stays fully visible within timeline
+            TrimHandle(isStart: false, isDragging: isDraggingEnd)
+                .offset(x: max(0, min(endHandleOffset - handleWidth / 2, timelineWidth - handleWidth)))
+                .gesture(endHandleGesture)
         }
 
         // MARK: - Computed Properties

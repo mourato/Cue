@@ -62,10 +62,10 @@
                     if state.hasSyntheticOverlays {
                         VideoEditorSyntheticOverlayView(
                             pointerFrame: state.pointerTimeline.frame(
-                                at: CMTimeGetSeconds(playbackState.currentTime),
+                                at: state.sourceTime(atPlayhead: playbackState.currentTime),
                             ),
                             keystrokeFrame: state.keystrokeCaptionTimeline.frame(
-                                at: CMTimeGetSeconds(playbackState.currentTime),
+                                at: state.sourceTime(atPlayhead: playbackState.currentTime),
                             ),
                             contentRect: displayedVideoRect,
                             showsSyntheticCursor: state.showsSyntheticCursor,
@@ -85,16 +85,16 @@
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignmentValue)
             }
             .onReceive(playbackState.$currentTime) { time in
-                updateZoomState(at: CMTimeGetSeconds(time))
+                updateZoomState(at: state.sourceTime(atPlayhead: time))
             }
             .onChange(of: state.zoomSegments) { _ in
-                updateZoomState(at: CMTimeGetSeconds(playbackState.currentTime))
+                updateZoomState(at: state.sourceTime(atPlayhead: playbackState.currentTime))
             }
             .onChange(of: state.autoFocusPaths) { _ in
-                updateZoomState(at: CMTimeGetSeconds(playbackState.currentTime))
+                updateZoomState(at: state.sourceTime(atPlayhead: playbackState.currentTime))
             }
             .onChange(of: state.zoomTransitionDuration) { _ in
-                updateZoomState(at: CMTimeGetSeconds(playbackState.currentTime))
+                updateZoomState(at: state.sourceTime(atPlayhead: playbackState.currentTime))
             }
             .onChange(of: state.showsSyntheticCursor) { _ in
                 updateZoomState(at: CMTimeGetSeconds(playbackState.currentTime))

@@ -30,6 +30,7 @@
             oldShadow: CGFloat, newShadow: CGFloat,
             oldCorner: CGFloat, newCorner: CGFloat,
         )
+        case replaceClipTimeline(old: VideoEditorClipTimeline, new: VideoEditorClipTimeline)
     }
 
     /// Playback state changes frequently, so it stays isolated from the broader editor model.
@@ -141,6 +142,16 @@
 
         @Published var selectedSpeedId: UUID? = nil
 
+        // MARK: - Clip Timeline (Plan 110 / Phase C)
+
+        @Published var clipTimeline: VideoEditorClipTimeline = .init(segments: []) {
+            didSet { syncTrimFromClipTimeline() }
+        }
+
+        @Published var selectedClipId: UUID?
+
+        private var initialClipTimeline: VideoEditorClipTimeline = .init(segments: [])
+
         private var cachedSpeedTimeMap: SpeedTimeMap?
 
         /// Cached original↔scaled time map. Rebuilt lazily after any change to
@@ -168,9 +179,52 @@
         }
 
         /// Final output length after trim + speed scaling. Equals `trimmedDuration` when no
-        /// speed segments are active.
+        /// speed segments are active. Clip edits and per-clip speed use `clipTimeline.duration`.
         var effectiveOutputDuration: CMTime {
-            hasSpeedSegments ? speedTimeMap.scaledCMDuration() : trimmedDuration
+            if usesClipComposition {
+                return CMTime(seconds: clipTimeline.duration, preferredTimescale: 600)
+            }
+            return hasSpeedSegments ? speedTimeMap.scaledCMDuration() : trimmedDuration
+        }
+
+        /// True when the clip lane drives playback/export instead of a single full-span trim.
+        var usesClipComposition: Bool {
+            guard !isGIF else { return false }
+            let sourceSeconds = CMTimeGetSeconds(duration)
+            guard sourceSeconds.isFinite, sourceSeconds > 0 else { return false }
+            return !clipTimeline.isUnedited(sourceDuration: sourceSeconds) || clipTimeline.hasPerClipSpeed
+        }
+
+        /// Timeline duration used for scrubbing and playhead UI.
+        var playbackDuration: CMTime {
+            usesClipComposition
+                ? CMTime(seconds: clipTimeline.duration, preferredTimescale: 600)
+                : duration
+        }
+
+        var hasClipEdits: Bool {
+            guard !isGIF else { return false }
+            let sourceSeconds = CMTimeGetSeconds(duration)
+            guard sourceSeconds.isFinite, sourceSeconds > 0 else { return false }
+            return !clipTimeline.isUnedited(sourceDuration: sourceSeconds)
+        }
+
+        var canDeleteSelectedClip: Bool {
+            selectedClipId != nil && clipTimeline.segments.count > 1
+        }
+
+        var selectedClipSegment: VideoEditorClipSegment? {
+            guard let selectedClipId else { return nil }
+            return clipTimeline.segments.first { $0.id == selectedClipId }
+        }
+
+        /// Maps playhead time to absolute source time for zoom/pointer lookup.
+        func sourceTime(atPlayhead time: CMTime) -> TimeInterval {
+            let seconds = CMTimeGetSeconds(time)
+            if usesClipComposition {
+                return clipTimeline.sourceTime(at: seconds)
+            }
+            return seconds
         }
 
         // MARK: - Audio Control
@@ -232,6 +286,7 @@
         @Published var selectedZoomId: UUID? = nil
         @Published var isZoomTrackVisible: Bool = true
         @Published var isSpeedTrackVisible: Bool = true
+        @Published var isClipTrackVisible: Bool = true
         @Published var isVideoInfoSidebarVisible: Bool = false
         @Published var isLeftSidebarVisible: Bool = false
         @Published var isRightSidebarVisible: Bool = false
@@ -662,6 +717,10 @@
                 trimEnd = loadedDuration
                 initialTrimStart = .zero
                 initialTrimEnd = loadedDuration
+                let sourceSeconds = CMTimeGetSeconds(loadedDuration)
+                clipTimeline = .full(sourceDuration: sourceSeconds)
+                initialClipTimeline = clipTimeline
+                selectedClipId = clipTimeline.segments.first?.id
 
                 if let track = try await asset.loadTracks(withMediaType: .video).first {
                     let size = try await track.load(.naturalSize)
@@ -730,6 +789,11 @@
         /// editor keeps its absolute-asset-time coordinate system (playhead, trim, zoom overlay,
         /// thumbnails all unchanged). Export remains the frame-accurate path (see VideoEditorExporter).
         func currentPreviewRate(at time: CMTime) -> Float {
+            if usesClipComposition {
+                let editorSeconds = CMTimeGetSeconds(time)
+                guard let location = clipTimeline.location(at: editorSeconds) else { return 1.0 }
+                return Float(clipTimeline.segments[location.segmentIndex].speed)
+            }
             guard hasSpeedSegments else { return 1.0 }
             let trimRelative = CMTimeGetSeconds(time) - CMTimeGetSeconds(trimStart)
             return Float(speedTimeMap.rate(atOriginal: max(0, trimRelative)))
@@ -976,6 +1040,7 @@
             hasUnsavedChanges = false
             initialTrimStart = trimStart
             initialTrimEnd = trimEnd
+            initialClipTimeline = clipTimeline
             initialIsMuted = isMuted
             initialZoomSegments = zoomSegments
             initialSpeedSegments = speedSegments
@@ -1086,6 +1151,15 @@
                     oldCorner: newCorner,
                     newCorner: oldCorner,
                 ))
+
+            case .replaceClipTimeline(let old, let new):
+                applyClipTimeline(
+                    old,
+                    selectedID: old.segments.first?.id,
+                    playheadTime: min(CMTimeGetSeconds(currentTime), old.duration),
+                    recordUndo: false,
+                )
+                redoStack.append(.replaceClipTimeline(old: new, new: old))
             }
         }
 
@@ -1174,6 +1248,15 @@
                     oldCorner: newCorner,
                     newCorner: oldCorner,
                 ))
+
+            case .replaceClipTimeline(let old, let new):
+                applyClipTimeline(
+                    old,
+                    selectedID: old.segments.first?.id,
+                    playheadTime: min(CMTimeGetSeconds(currentTime), old.duration),
+                    recordUndo: false,
+                )
+                undoStack.append(.replaceClipTimeline(old: new, new: old))
             }
         }
 
@@ -1682,6 +1765,23 @@
                     guard let self, !self.playbackState.isScrubbing else { return }
                     self.playbackState.setCurrentTime(time)
 
+                    if self.usesClipComposition {
+                        let end = CMTime(seconds: self.clipTimeline.duration, preferredTimescale: 600)
+                        if CMTimeCompare(time, end) >= 0 {
+                            self.pause()
+                            self.seek(to: .zero)
+                            return
+                        }
+                        if self.isPlaying, self.player.rate != 0 {
+                            let desiredRate = self.currentPreviewRate(at: time)
+                            if abs(self.player.rate - desiredRate) > 0.001 {
+                                self.player.rate = desiredRate
+                                self.cameraPlayer?.rate = desiredRate
+                            }
+                        }
+                        return
+                    }
+
                     // Stop at trim end
                     if CMTimeCompare(time, self.trimEnd) >= 0 {
                         self.pause()
@@ -1841,6 +1941,7 @@
             let segments = currentZoomSegments ?? zoomSegments
             let zoomsChanged = segments != initialZoomSegments
             let speedsChanged = speedSegments != initialSpeedSegments
+            let clipsChanged = clipTimeline != initialClipTimeline
             // Background changes
             let bgStyleChanged = backgroundStyle != initialBackgroundStyle
             let bgPaddingChanged = backgroundPadding != initialBackgroundPadding
@@ -1852,7 +1953,7 @@
             let cameraLayoutChanged = cameraLayout != initialCameraOverlayLayout
 
             hasUnsavedChanges = startChanged || endChanged || muteChanged || zoomsChanged || speedsChanged ||
-                backgroundChanged || exportSettingsChanged || cameraLayoutChanged
+                clipsChanged || backgroundChanged || exportSettingsChanged || cameraLayoutChanged
         }
 
         private func prepareCameraPreview(trackID: CMPersistentTrackID) async {
@@ -1875,7 +1976,11 @@
         }
 
         private func clampTime(_ time: CMTime) -> CMTime {
-            CMTimeClampToRange(time, range: CMTimeRange(start: trimStart, end: trimEnd))
+            if usesClipComposition {
+                let end = CMTime(seconds: clipTimeline.duration, preferredTimescale: 600)
+                return CMTimeClampToRange(time, range: CMTimeRange(start: .zero, end: end))
+            }
+            return CMTimeClampToRange(time, range: CMTimeRange(start: trimStart, end: trimEnd))
         }
 
         private func formatTime(_ time: CMTime) -> String {
@@ -2058,6 +2163,154 @@
             let blurred = NSImage(size: rep.size)
             blurred.addRepresentation(rep)
             return blurred
+        }
+
+        // MARK: - Clip Timeline (Plan 110 / Phase C)
+
+        func selectClip(id: UUID?) {
+            selectedClipId = id
+            if id != nil {
+                selectedZoomId = nil
+                selectedSpeedId = nil
+            }
+        }
+
+        func splitClip(at editorTime: TimeInterval) {
+            guard let result = clipTimeline.split(at: editorTime) else { return }
+            applyClipTimeline(
+                result.timeline,
+                selectedID: result.selectedID,
+                playheadTime: min(max(editorTime, 0), result.timeline.duration),
+                recordUndo: true,
+            )
+        }
+
+        func splitClipAtPlayhead() {
+            splitClip(at: CMTimeGetSeconds(currentTime))
+        }
+
+        func deleteSelectedClip() {
+            guard let selectedClipId,
+                  let deletedRange = clipTimeline.editorRange(for: selectedClipId),
+                  let next = clipTimeline.deleting(segmentID: selectedClipId) else {
+                return
+            }
+            let seekTime = min(deletedRange.lowerBound, next.duration)
+            let nextSelection = next.location(at: seekTime)?.segmentID ?? next.segments.last?.id
+            applyClipTimeline(
+                next,
+                selectedID: nextSelection,
+                playheadTime: seekTime,
+                recordUndo: true,
+            )
+        }
+
+        func setClipSpeed(_ speed: Double, forClipID id: UUID) {
+            guard let segment = clipTimeline.segments.first(where: { $0.id == id }) else { return }
+            let clamped = min(
+                max(speed, VideoEditorClipSegment.minimumSpeed),
+                VideoEditorClipSegment.maximumSpeed,
+            )
+            guard abs(segment.speed - clamped) > 0.000_001 else { return }
+            var replacement = segment
+            replacement.speed = clamped
+            let next = clipTimeline.replacing(replacement)
+            applyClipTimeline(
+                next,
+                selectedID: id,
+                playheadTime: min(CMTimeGetSeconds(currentTime), next.duration),
+                recordUndo: true,
+            )
+        }
+
+        func resetClipTimeline(recordUndo: Bool = true) {
+            let sourceSeconds = CMTimeGetSeconds(duration)
+            guard sourceSeconds.isFinite, sourceSeconds > 0 else { return }
+            let full = VideoEditorClipTimeline.full(sourceDuration: sourceSeconds)
+            guard full != clipTimeline else { return }
+            applyClipTimeline(
+                full,
+                selectedID: full.segments.first?.id,
+                playheadTime: 0,
+                recordUndo: recordUndo,
+            )
+        }
+
+        private func applyClipTimeline(
+            _ requestedTimeline: VideoEditorClipTimeline,
+            selectedID: UUID?,
+            playheadTime: TimeInterval,
+            recordUndo: Bool,
+        ) {
+            let sourceSeconds = CMTimeGetSeconds(duration)
+            let next = requestedTimeline.normalized(to: sourceSeconds)
+            guard !next.segments.isEmpty, next != clipTimeline else { return }
+
+            let previousTimeline = clipTimeline
+            if recordUndo {
+                recordAction(.replaceClipTimeline(old: previousTimeline, new: next))
+            }
+
+            pause()
+            clipTimeline = next
+            selectedClipId = selectedID.flatMap { id in
+                next.segments.contains(where: { $0.id == id }) ? id : nil
+            } ?? next.segments.first?.id
+
+            rebuildAutoFocusPaths(for: zoomSegments)
+            rebuildPlaybackAsset(preserving: min(max(playheadTime, 0), next.duration))
+            updateHasUnsavedChanges()
+        }
+
+        private func syncTrimFromClipTimeline() {
+            guard let first = clipTimeline.segments.first,
+                  let last = clipTimeline.segments.last else { return }
+            let newStart = CMTime(seconds: first.sourceStart, preferredTimescale: 600)
+            let newEnd = CMTime(seconds: last.sourceEnd, preferredTimescale: 600)
+            if CMTimeCompare(trimStart, newStart) != 0 {
+                trimStart = newStart
+            }
+            if CMTimeCompare(trimEnd, newEnd) != 0 {
+                trimEnd = newEnd
+            }
+        }
+
+        private func rebuildPlaybackAsset(preserving editorTime: TimeInterval) {
+            guard !isGIF else { return }
+            let sourceSeconds = CMTimeGetSeconds(duration)
+            guard sourceSeconds.isFinite, sourceSeconds > 0 else { return }
+
+            let clampedTime = min(max(editorTime, 0), clipTimeline.duration)
+            let seekTime = CMTime(seconds: clampedTime, preferredTimescale: 600)
+
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                do {
+                    let playbackAsset: AVAsset = if usesClipComposition {
+                        try VideoEditorCompositionBuilder.makeAsset(
+                            from: asset,
+                            clipTimeline: clipTimeline,
+                            sourceDuration: sourceSeconds,
+                        )
+                    } else {
+                        asset
+                    }
+
+                    let item = AVPlayerItem(asset: playbackAsset)
+                    item.audioTimePitchAlgorithm = .spectral
+                    player.replaceCurrentItem(with: item)
+                    playbackState.setCurrentTime(seekTime)
+                    player.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero)
+
+                    if hasCameraTrack {
+                        let sourceTime = sourceTime(atPlayhead: seekTime)
+                        let cameraSeek = CMTime(seconds: sourceTime, preferredTimescale: 600)
+                        cameraPlayer?.seek(to: cameraSeek, toleranceBefore: .zero, toleranceAfter: .zero)
+                    }
+                } catch {
+                    DiagnosticLogger.shared.logError(.editor, error, "Clip playback rebuild failed")
+                }
+            }
         }
     }
 #endif

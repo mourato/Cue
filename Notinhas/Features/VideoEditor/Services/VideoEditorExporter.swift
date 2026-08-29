@@ -37,11 +37,12 @@
             let hasBackground = state.backgroundStyle != .none && state.backgroundPadding > 0
             let hasCustomAudio = state.exportSettings.audioMode == .custom
             let hasSpeed = state.hasSpeedSegments
+            let hasClips = state.usesClipComposition
 
-            // If visual effects, custom audio, or speed scaling are enabled, use composition-based
+            // If visual effects, custom audio, speed scaling, or clip edits are enabled, use composition-based
             // export. Speed scaling requires the composition path even with no other effects
             // (and even when muted — audio is simply dropped while the video is still time-scaled).
-            if hasCameraEffects || hasBackground || hasCustomAudio || hasSpeed || hasCameraOverlay {
+            if hasCameraEffects || hasBackground || hasCustomAudio || hasSpeed || hasCameraOverlay || hasClips {
                 try await exportWithZooms(state: state, to: scopedOutputURL, progress: progress)
                 try await normalizeExportAudioForCompatibilityIfNeeded(
                     at: scopedOutputURL,
@@ -214,12 +215,15 @@
             let hasTrimChanges = trimStartSeconds > 0.1 || (fullDuration - trimEndSeconds) > 0.1
             print("🔍 [ZoomExport] Has trim changes: \(hasTrimChanges)")
 
+            let usesClipComposition = state.usesClipComposition
             let timeRange = CMTimeRange(start: state.trimStart, end: state.trimEnd)
 
             // Speed (timelapse) map: original (trim-relative) → scaled timeline. Nil when no speed
             // segments are active so the zoom/auto-focus paths stay on the existing (trim-relative)
-            // timeline exactly as before.
-            let speedMap: SpeedTimeMap? = state.hasSpeedSegments ? state.speedTimeMap : nil
+            // timeline exactly as before. Per-clip speed is applied in the clip composition instead.
+            let speedMap: SpeedTimeMap? = usesClipComposition && state.clipTimeline.hasPerClipSpeed
+                ? nil
+                : (state.hasSpeedSegments ? state.speedTimeMap : nil)
             let hasCameraOverlay = state.hasCameraTrack && state.cameraOverlayLayout.isVisible
             if let speedMap {
                 print(
@@ -229,20 +233,32 @@
 
             // Adjust zoom times relative to trim start, then map into the scaled timeline so the
             // per-frame compositor (which samples by composition/scaled time) stays aligned.
-            let adjustedZooms = state.zoomSegments.map { segment -> ZoomSegment in
-                var adjusted = segment
-                adjusted.startTime = segment.startTime - trimStartSeconds
-                if let map = speedMap {
-                    let trimRelStart = max(0, min(adjusted.startTime, map.originalDuration))
-                    let trimRelEnd = max(0, min(adjusted.startTime + adjusted.duration, map.originalDuration))
-                    let scaledStart = map.toScaled(trimRelStart)
-                    adjusted.startTime = scaledStart
-                    adjusted.duration = max(0, map.toScaled(trimRelEnd) - scaledStart)
+            let adjustedZooms: [ZoomSegment] = if usesClipComposition {
+                VideoEditorClipTimeline.mapZoomSegmentsToEditorTimeline(
+                    state.zoomSegments,
+                    clipTimeline: state.clipTimeline,
+                )
+                .filter {
+                    $0.startTime + $0.duration > 0
+                        && $0.startTime < CMTimeGetSeconds(state.effectiveOutputDuration)
                 }
-                return adjusted
-            }
-            .filter {
-                $0.startTime + $0.duration > 0 && $0.startTime < CMTimeGetSeconds(state.effectiveOutputDuration)
+            } else {
+                state.zoomSegments.map { segment -> ZoomSegment in
+                    var adjusted = segment
+                    adjusted.startTime = segment.startTime - trimStartSeconds
+                    if let map = speedMap {
+                        let trimRelStart = max(0, min(adjusted.startTime, map.originalDuration))
+                        let trimRelEnd = max(0, min(adjusted.startTime + adjusted.duration, map.originalDuration))
+                        let scaledStart = map.toScaled(trimRelStart)
+                        adjusted.startTime = scaledStart
+                        adjusted.duration = max(0, map.toScaled(trimRelEnd) - scaledStart)
+                    }
+                    return adjusted
+                }
+                .filter {
+                    $0.startTime + $0.duration > 0
+                        && $0.startTime < CMTimeGetSeconds(state.effectiveOutputDuration)
+                }
             }
 
             let adjustedAutoFocusPaths = Dictionary(
@@ -309,36 +325,53 @@
             print("🔍 [ZoomExport] Source video track ID: \(screenVideoTrack.trackID)")
             let sourceFrameDuration = try await sourceFrameDuration(for: screenVideoTrack)
 
-            guard let compositionVideoTrack = composition.addMutableTrack(
-                withMediaType: .video,
-                preferredTrackID: screenVideoTrack.trackID,
-            ) else {
-                print("❌ [ZoomExport] ERROR: Failed to add video track to composition")
-                DiagnosticLogger.shared.log(.error, .export, "Zoom export failed to add video track to composition")
-                throw ExportError.exportFailed
+            let compositionVideoTrack: AVMutableCompositionTrack
+            if usesClipComposition {
+                do {
+                    let (track, compositionDuration) = try await VideoEditorCompositionBuilder.insertClips(
+                        from: state.asset,
+                        videoTrackID: state.screenTrackID,
+                        clipTimeline: state.clipTimeline,
+                        sourceDuration: fullDuration,
+                        into: composition,
+                    )
+                    compositionVideoTrack = track
+                    print(
+                        "🔍 [ZoomExport] Inserted clip composition duration: \(CMTimeGetSeconds(compositionDuration))s",
+                    )
+                } catch {
+                    print("❌ [ZoomExport] ERROR inserting clip composition: \(error)")
+                    DiagnosticLogger.shared.logError(.export, error, "Failed to insert clip composition")
+                    throw error
+                }
+            } else {
+                guard let track = composition.addMutableTrack(
+                    withMediaType: .video,
+                    preferredTrackID: screenVideoTrack.trackID,
+                ) else {
+                    print("❌ [ZoomExport] ERROR: Failed to add video track to composition")
+                    DiagnosticLogger.shared.log(.error, .export, "Zoom export failed to add video track to composition")
+                    throw ExportError.exportFailed
+                }
+                do {
+                    try track.insertTimeRange(timeRange, of: screenVideoTrack, at: .zero)
+                    print(
+                        "🔍 [ZoomExport] Inserted video time range: \(CMTimeGetSeconds(timeRange.start))s - \(CMTimeGetSeconds(timeRange.end))s (duration: \(CMTimeGetSeconds(timeRange.duration))s)",
+                    )
+                } catch {
+                    print("❌ [ZoomExport] ERROR inserting video time range: \(error)")
+                    DiagnosticLogger.shared.logError(.export, error, "Failed to insert video time range")
+                    throw error
+                }
+                compositionVideoTrack = track
             }
             print("🔍 [ZoomExport] Composition video track ID: \(compositionVideoTrack.trackID)")
 
-            do {
-                try compositionVideoTrack.insertTimeRange(timeRange, of: screenVideoTrack, at: .zero)
-                print(
-                    "🔍 [ZoomExport] Inserted video time range: \(CMTimeGetSeconds(timeRange.start))s - \(CMTimeGetSeconds(timeRange.end))s (duration: \(CMTimeGetSeconds(timeRange.duration))s)",
-                )
-            } catch {
-                print("❌ [ZoomExport] ERROR inserting video time range: \(error)")
-                DiagnosticLogger.shared.logError(.export, error, "Failed to insert video time range")
-                throw error
-            }
-
-            // Copy video track transform
             let transform = try await screenVideoTrack.load(.preferredTransform)
             compositionVideoTrack.preferredTransform = transform
             print("🔍 [ZoomExport] Applied video transform: \(transform)")
 
-            // Apply per-segment speed scaling to the video track (reverse order so earlier ranges
-            // are not shifted by later scaling). Composition time is already trim-relative, so the
-            // map's span coordinates map directly.
-            if let speedMap {
+            if let speedMap, !usesClipComposition {
                 applySpeedScaling(to: compositionVideoTrack, map: speedMap, logPrefix: "[ZoomExport] video")
             }
 

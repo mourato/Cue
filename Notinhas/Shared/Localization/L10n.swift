@@ -5122,6 +5122,31 @@ nonisolated enum L10n {
             defaultValue: "Speed up or slow down a region (timelapse)",
             comment: "Tooltip describing the speed track",
         )
+        static let clips = string(
+            "video-editor.clips",
+            defaultValue: "Clips",
+            comment: "Label for the multi-clip track in the video editor timeline",
+        )
+        static let splitClipAtPlayhead = string(
+            "video-editor.split-clip-at-playhead",
+            defaultValue: "Split at Playhead",
+            comment: "Context menu action to split the clip at the current playhead",
+        )
+        static let deleteClip = string(
+            "video-editor.delete-clip",
+            defaultValue: "Delete Clip",
+            comment: "Context menu action to delete the selected clip",
+        )
+        static let clipSpeed = string(
+            "video-editor.clip-speed",
+            defaultValue: "Clip Speed",
+            comment: "Menu title for per-clip speed presets",
+        )
+        static let resetClips = string(
+            "video-editor.reset-clips",
+            defaultValue: "Reset Clips",
+            comment: "Action to restore a single full-span clip timeline",
+        )
         static let speedZoomOverlapHint = string(
             "video-editor.speed-zoom-overlap-hint",
             defaultValue: "This region overlaps a zoom — the zoom plays at the adjusted speed.",

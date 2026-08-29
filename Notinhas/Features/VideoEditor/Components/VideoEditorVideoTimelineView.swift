@@ -19,6 +19,9 @@
 
         private var totalHeight: CGFloat {
             var height = frameStripHeight
+            if state.isClipTrackVisible, !state.isGIF {
+                height += spacing + zoomTrackHeight
+            }
             if state.isZoomTrackVisible {
                 height += spacing + zoomTrackHeight
             }
@@ -47,7 +50,7 @@
                         // Playhead indicator (extends across both tracks)
                         TimelinePlayheadView(
                             playbackState: state.playbackState,
-                            duration: state.duration,
+                            duration: state.playbackDuration,
                             timelineWidth: timelineWidth,
                             totalHeight: totalHeight,
                         )
@@ -56,6 +59,10 @@
                     .clipShape(RoundedRectangle(cornerRadius: 6))
                     .contentShape(Rectangle())
                     .gesture(scrubGesture(timelineWidth: timelineWidth))
+
+                    if state.isClipTrackVisible, !state.isGIF {
+                        VideoEditorClipTimelineTrack(state: state, timelineWidth: timelineWidth)
+                    }
 
                     // Zoom timeline track
                     if state.isZoomTrackVisible {
@@ -82,8 +89,9 @@
                         state.startScrubbing()
                     }
                     let progress = max(0, min(value.location.x / timelineWidth, 1))
+                    let durationSeconds = CMTimeGetSeconds(state.playbackDuration)
                     let newTime = CMTime(
-                        seconds: progress * CMTimeGetSeconds(state.duration),
+                        seconds: progress * durationSeconds,
                         preferredTimescale: 600,
                     )
                     state.scrub(to: newTime)

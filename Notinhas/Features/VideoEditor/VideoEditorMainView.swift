@@ -63,12 +63,22 @@
                     Button("") {
                         if let id = state.selectedZoomId {
                             state.removeZoom(id: id)
+                        } else if state.canDeleteSelectedClip {
+                            state.deleteSelectedClip()
                         }
                     }
                     .keyboardShortcut(.delete, modifiers: [])
                     .opacity(0)
                     .frame(width: 0, height: 0)
-                    .disabled(state.selectedZoomId == nil)
+                    .disabled(state.selectedZoomId == nil && !state.canDeleteSelectedClip)
+
+                    Button("") {
+                        state.splitClipAtPlayhead()
+                    }
+                    .keyboardShortcut("s", modifiers: [.command, .shift])
+                    .opacity(0)
+                    .frame(width: 0, height: 0)
+                    .disabled(state.isGIF)
                 }
             }
             .overlay {
