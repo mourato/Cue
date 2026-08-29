@@ -688,6 +688,8 @@
         private var recordingProcessingDirectory: URL?
         private var shouldPreserveProcessingOutputOnCleanup = false
         private var mouseTracker: RecordingMouseTracker?
+        private var pointerActivityRecorder: RecordingPointerActivityRecorder?
+        private nonisolated(unsafe) var pointerRecorderForFrames: RecordingPointerActivityRecorder?
         private var keystrokeRecorder: RecordingKeystrokeRecorder?
         private var pointerSynthesizedInRecording = false
         private var exportDirectoryAccess: SandboxFileAccessManager.ScopedAccess?
@@ -1038,7 +1040,24 @@
                     cameraCapturer = capturer
                 }
 
-                mouseTracker = RecordingMouseTracker(recordingRect: captureGeometry.globalCaptureRect, fps: fps)
+                if pointerSynthesizedInRecording {
+                    let inputMapping = RecordingInputMapping.fromNotinhasCapture(
+                        globalCaptureRect: captureGeometry.globalCaptureRect,
+                        pixelWidth: captureGeometry.outputWidth,
+                        pixelHeight: captureGeometry.outputHeight,
+                    )
+                    pointerActivityRecorder = RecordingPointerActivityRecorder()
+                    pointerRecorderForFrames = pointerActivityRecorder
+                    pointerActivityRecorder?.start(
+                        mapping: inputMapping,
+                        tracksDynamicGeometry: captureWindowTarget != nil,
+                    )
+                } else {
+                    mouseTracker = RecordingMouseTracker(
+                        recordingRect: captureGeometry.globalCaptureRect,
+                        fps: fps,
+                    )
+                }
                 if shouldRecordKeystrokes(smartPointerEnabled: smartPointerEnabled) {
                     keystrokeRecorder = RecordingKeystrokeRecorder()
                 }
@@ -1096,6 +1115,10 @@
                     self?.mouseTracker?.start()
                     self?.keystrokeRecorder?.start()
                 }
+            }
+
+            if pointerActivityRecorder != nil {
+                keystrokeRecorder?.start()
             }
 
             do {
@@ -1162,6 +1185,7 @@
             }
             session.isCapturing = false
             mouseTracker?.pause()
+            pointerActivityRecorder?.pause()
             keystrokeRecorder?.pause()
             audioLevelMeter.freeze()
             pauseStartTime = Date()
@@ -1196,6 +1220,7 @@
 
             session.isCapturing = true
             mouseTracker?.resume()
+            pointerActivityRecorder?.resume()
             keystrokeRecorder?.resume()
             audioLevelMeter.unfreeze()
             state = .recording
@@ -1332,10 +1357,30 @@
 
             let videoWriteStats = session.videoWriteStats()
 
-            let trackerSamplesPerSecond = mouseTracker?.samplesPerSecond ?? fps
-            let mouseTrackingResult = mouseTracker?.stop()
-            let mouseSamples = mouseTrackingResult?.samples ?? []
-            let mousePresses = mouseTrackingResult?.presses ?? []
+            let trackerSamplesPerSecond: Int
+            let mouseSamples: [RecordedMouseSample]
+            let mousePresses: [RecordedMousePress]
+            let pointerArtwork: [RecordedPointerArtwork]
+
+            if let pointerActivityRecorder {
+                pointerActivityRecorder.stop()
+                let sessionStart = session.firstVideoTimestampSeconds ?? 0
+                let duration = max(TimeInterval(elapsedSeconds), 0.001)
+                let captureResult = pointerActivityRecorder.finish(
+                    sessionStartUptime: sessionStart,
+                    duration: duration,
+                )
+                mouseSamples = captureResult.samples
+                mousePresses = captureResult.presses
+                pointerArtwork = captureResult.artwork
+                trackerSamplesPerSecond = 120
+            } else {
+                trackerSamplesPerSecond = mouseTracker?.samplesPerSecond ?? fps
+                let mouseTrackingResult = mouseTracker?.stop()
+                mouseSamples = mouseTrackingResult?.samples ?? []
+                mousePresses = mouseTrackingResult?.presses ?? []
+                pointerArtwork = []
+            }
             let recordedKeystrokes = keystrokeRecorder?.stop() ?? []
             let writerURL = outputURL
             await logRecordingFrameDiagnostics(outputURL: writerURL, stats: videoWriteStats)
@@ -1399,6 +1444,7 @@
                             samplesPerSecond: trackerSamplesPerSecond,
                             mouseSamples: mouseSamples,
                             mousePresses: mousePresses,
+                            pointerArtwork: pointerArtwork,
                             pointerSynthesized: pointerSynthesizedInRecording ? true : nil,
                             keystrokes: recordedKeystrokes,
                             audioSourceURL: editorAudioSourceURL,
@@ -2435,6 +2481,8 @@
             excludeDesktopIconsFromCapture = false
             excludeDesktopWidgetsFromCapture = false
             mouseTracker = nil
+            pointerActivityRecorder = nil
+            pointerRecorderForFrames = nil
             keystrokeRecorder = nil
             microphoneCapturer = nil
             audioLevelMeter.reset()
@@ -2593,6 +2641,7 @@
                 // Write frames using the thread-safe session (no @MainActor crossing)
                 switch type {
                 case .screen:
+                    pointerRecorderForFrames?.recordFrameGeometry(sampleBuffer)
                     session.appendVideoSample(sampleBuffer)
                 case .audio:
                     session.appendAudioSample(sampleBuffer)

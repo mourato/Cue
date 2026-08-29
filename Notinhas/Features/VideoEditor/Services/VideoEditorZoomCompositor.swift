@@ -605,12 +605,15 @@
                 canvasSize: canvasSize,
                 contentRect: contentRect,
                 pointerFrame: pointerFrame,
+                pointerTimeline: instruction.pointerTimeline,
                 showsSyntheticCursor: instruction.showsSyntheticCursor,
                 showsClickEffects: instruction.showsClickEffects,
                 keystrokeFrame: keystrokeFrame,
                 showsKeystrokes: instruction.showsKeystrokes,
                 keystrokePlacement: instruction.keystrokePlacement,
                 cursorScale: instruction.cursorScale,
+                zoomLevel: zoomLevel,
+                zoomCenter: center,
             )
 
             // Create output buffer

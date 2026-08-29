@@ -133,17 +133,5 @@
                 duration: duration,
             )
         }
-
-        private init(
-            preset: ExportDimensionPreset,
-            sourceAspect: CGFloat,
-            frames: [VideoEditorViewportFrame],
-            duration: TimeInterval,
-        ) {
-            self.preset = preset
-            self.sourceAspect = sourceAspect
-            self.frames = frames
-            self.duration = duration
-        }
     }
 #endif

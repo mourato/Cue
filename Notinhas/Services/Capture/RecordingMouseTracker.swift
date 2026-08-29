@@ -39,6 +39,7 @@
         private var timer: Timer?
         private var globalMouseMonitor: Any?
         private var pressMonitor: Any?
+        private var localPressMonitor: Any?
         private var samples: [RecordedMouseSample] = []
         private var presses: [RecordedMousePress] = []
         private var startUptime: TimeInterval?
@@ -131,6 +132,10 @@
                 pressMonitorRemover(pressMonitor)
                 self.pressMonitor = nil
             }
+            if let localPressMonitor {
+                NSEvent.removeMonitor(localPressMonitor)
+                self.localPressMonitor = nil
+            }
             pausedAtUptime = nil
             diagnostics = buildDiagnostics(from: samples)
             return RecordingMouseTrackingStopResult(samples: samples, presses: presses)
@@ -146,6 +151,10 @@
             if let pressMonitor {
                 pressMonitorRemover(pressMonitor)
                 self.pressMonitor = nil
+            }
+            if let localPressMonitor {
+                NSEvent.removeMonitor(localPressMonitor)
+                self.localPressMonitor = nil
             }
             samples.removeAll(keepingCapacity: true)
             presses.removeAll(keepingCapacity: true)
@@ -202,7 +211,7 @@
                 return
             }
 
-            let cursorLocation = mouseLocationProvider()
+            let cursorLocation = event.cgEvent?.location ?? mouseLocationProvider()
             guard recordingRect.contains(cursorLocation) else { return }
 
             let normalized = normalizedPoint(for: cursorLocation)
@@ -275,6 +284,14 @@
                 MainActor.assumeIsolated {
                     self?.appendPress(from: event)
                 }
+            }
+            localPressMonitor = NSEvent.addLocalMonitorForEvents(
+                matching: [.leftMouseDown, .rightMouseDown, .leftMouseUp, .rightMouseUp],
+            ) { [weak self] event in
+                MainActor.assumeIsolated {
+                    self?.appendPress(from: event)
+                }
+                return event
             }
         }
 

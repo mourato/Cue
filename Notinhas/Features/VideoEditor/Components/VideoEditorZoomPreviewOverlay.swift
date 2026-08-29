@@ -64,6 +64,7 @@
                             pointerFrame: state.pointerTimeline.frame(
                                 at: state.sourceTime(atPlayhead: playbackState.currentTime),
                             ),
+                            pointerTimeline: state.pointerTimeline,
                             keystrokeFrame: state.keystrokeCaptionTimeline.frame(
                                 at: state.sourceTime(atPlayhead: playbackState.currentTime),
                             ),
@@ -73,6 +74,8 @@
                             showsKeystrokes: state.showsKeystrokes,
                             keystrokePlacement: KeystrokeOverlayConfiguration().position,
                             cursorScale: state.cursorScale,
+                            zoomLevel: currentZoomLevel,
+                            zoomCenter: currentZoomCenter,
                         )
                         .frame(width: videoCanvasSize.width, height: videoCanvasSize.height)
                         .padding(scaledPadding)

@@ -16,30 +16,38 @@
 
     struct VideoEditorPointerFrame: Sendable, Equatable {
         var location: CGPoint
+        var artworkID: String?
         var magnification: Double
+        var tiltDegrees: Double
         var opacity: Double
+        var blurRadius: Double
         var press: VideoEditorPointerPressFrame?
     }
 
     struct VideoEditorPointerTimeline: Sendable, Equatable {
         static let stepRate: Double = 120
-        static let cursorHeightRatio: CGFloat = 0.032
+        static let cursorHeightRatio: CGFloat = VideoEditorPointerArtworkMetrics.heightRatio
 
         private static let anticipationWindow: TimeInterval = 0.5
         private static let interceptWindow: TimeInterval = 0.175
         private static let pressAnticipation: TimeInterval = 0.13
         private static let orphanPressHold: TimeInterval = 0.15
         private static let pulseDuration = VideoEditorPointerPressEffectStyle.duration
+        private static let tiltSampleWindow: TimeInterval = 0.4
+        private static let tiltGain = 0.03
+        private static let tiltWeight = 0.5
 
         private let frames: [VideoEditorPointerFrame]
         private let duration: TimeInterval
+        private let artworkByID: [String: RecordedPointerArtwork]
+        private let fallbackArtwork: RecordedPointerArtwork?
 
-        static let empty = VideoEditorPointerTimeline(frames: [], duration: 0)
-
-        private init(frames: [VideoEditorPointerFrame], duration: TimeInterval) {
-            self.frames = frames
-            self.duration = duration
-        }
+        static let empty = VideoEditorPointerTimeline(
+            frames: [],
+            duration: 0,
+            artworkByID: [:],
+            fallbackArtwork: nil,
+        )
 
         func frame(at time: TimeInterval) -> VideoEditorPointerFrame? {
             guard !frames.isEmpty else { return nil }
@@ -57,10 +65,18 @@
                     x: a.location.x + (b.location.x - a.location.x) * fraction,
                     y: a.location.y + (b.location.y - a.location.y) * fraction,
                 ),
+                artworkID: fraction < 0.5 ? a.artworkID : b.artworkID,
                 magnification: a.magnification + (b.magnification - a.magnification) * fraction,
+                tiltDegrees: a.tiltDegrees + (b.tiltDegrees - a.tiltDegrees) * fraction,
                 opacity: a.opacity + (b.opacity - a.opacity) * fraction,
+                blurRadius: a.blurRadius + (b.blurRadius - a.blurRadius) * fraction,
                 press: fraction < 0.5 ? a.press : b.press,
             )
+        }
+
+        func artwork(id: String?) -> RecordedPointerArtwork? {
+            guard let id else { return fallbackArtwork }
+            return artworkByID[id] ?? fallbackArtwork
         }
 
         static func build(
@@ -72,8 +88,15 @@
             let samples = streamEvents(from: metadata)
             guard let firstSample = samples.first else { return .empty }
 
+            var artworkByID: [String: RecordedPointerArtwork] = [:]
+            for artwork in metadata?.pointerArtwork ?? [] where artworkByID[artwork.artworkID] == nil {
+                artworkByID[artwork.artworkID] = artwork
+            }
+            let fallbackArtwork = artworkByID["pointer-default"] ?? metadata?.pointerArtwork.first
+
             let pressSamples = samples.filter { $0.kind == .press }
             let intervals = pressIntervals(from: samples, duration: duration)
+            let recordingWidth = max(metadata?.captureSize.width ?? 1_000, 1)
 
             let frameCount = max(2, Int((duration * stepRate).rounded(.up)) + 1)
             let dt = 1 / stepRate
@@ -81,10 +104,12 @@
             var ySpring = VideoEditorDampedSpring(position: firstSample.point.y)
             var magnificationSpring = VideoEditorDampedSpring(position: 1)
             var opacitySpring = VideoEditorDampedSpring(position: 1)
+            var blurSpring = VideoEditorDampedSpring(position: 0)
 
             var sampleIndex = -1
             var latestPressIndex = -1
             var pressIntervalIndex = 0
+            var currentArtworkID = firstSample.artworkID
             var builtFrames: [VideoEditorPointerFrame] = []
             builtFrames.reserveCapacity(frameCount)
 
@@ -93,6 +118,7 @@
 
                 while sampleIndex + 1 < samples.count, samples[sampleIndex + 1].time <= time {
                     sampleIndex += 1
+                    currentArtworkID = samples[sampleIndex].artworkID
                 }
                 while latestPressIndex + 1 < pressSamples.count,
                       pressSamples[latestPressIndex + 1].time <= time {
@@ -117,7 +143,10 @@
 
                 let isPressed = pressIntervalIndex < intervals.count
                     && intervals[pressIntervalIndex].contains(time)
-                let motion = approachingPress ? PointerSpring.intercept : PointerSpring.glide
+                let isDragging = latest.kind == .drag
+                let motion = isDragging
+                    ? PointerSpring.track
+                    : (approachingPress ? PointerSpring.intercept : PointerSpring.glide)
                 if frameIndex > 0 {
                     xSpring.step(toward: target.x, using: motion, dt: dt)
                     ySpring.step(toward: target.y, using: motion, dt: dt)
@@ -127,6 +156,7 @@
                 if frameIndex > 0 {
                     magnificationSpring.step(toward: targetMagnification, using: PointerSpring.settle, dt: dt)
                     opacitySpring.step(toward: 1, using: PointerSpring.settle, dt: dt)
+                    blurSpring.step(toward: 0, using: PointerSpring.settle, dt: dt)
                 }
 
                 let press: VideoEditorPointerPressFrame?
@@ -146,14 +176,33 @@
                 builtFrames.append(
                     VideoEditorPointerFrame(
                         location: CGPoint(x: xSpring.position, y: ySpring.position),
+                        artworkID: currentArtworkID,
                         magnification: magnificationSpring.position,
+                        tiltDegrees: 0,
                         opacity: min(max(opacitySpring.position, 0), 1),
+                        blurRadius: max(0, blurSpring.position),
                         press: press,
                     ),
                 )
             }
 
-            return VideoEditorPointerTimeline(frames: builtFrames, duration: duration)
+            let tiltOffset = max(1, Int((tiltSampleWindow * stepRate).rounded()))
+            for index in builtFrames.indices {
+                let previous = builtFrames[max(0, index - tiltOffset)].location
+                let current = builtFrames[index].location
+                let deltaInPoints = (current.x - previous.x) * recordingWidth
+                builtFrames[index].tiltDegrees = min(max(
+                    deltaInPoints * tiltGain * tiltWeight,
+                    -20,
+                ), 20)
+            }
+
+            return VideoEditorPointerTimeline(
+                frames: builtFrames,
+                duration: duration,
+                artworkByID: artworkByID,
+                fallbackArtwork: fallbackArtwork,
+            )
         }
 
         static func buildForExport(
@@ -217,12 +266,13 @@
         // MARK: - Private
 
         private struct StreamEvent: Equatable {
-            enum Kind { case travel, press, release }
+            enum Kind { case travel, drag, press, release }
 
             var time: TimeInterval
             var point: CGPoint
             var kind: Kind
             var button: Int
+            var artworkID: String?
         }
 
         private struct PressInterval {
@@ -247,6 +297,7 @@
                         point: normalized(sample.normalizedPoint),
                         kind: .travel,
                         button: 0,
+                        artworkID: sample.artworkID,
                     ),
                 )
             }
@@ -257,6 +308,7 @@
                         point: normalized(press.normalizedPoint),
                         kind: press.phase == .down ? .press : .release,
                         button: press.button,
+                        artworkID: press.artworkID,
                     ),
                 )
             }
@@ -331,6 +383,7 @@
     private enum PointerSpring {
         static let glide = VideoEditorSpringConstant(tension: 470, friction: 70, inertia: 3)
         static let intercept = VideoEditorSpringConstant(tension: 538, friction: 40, inertia: 1)
+        static let track = VideoEditorSpringConstant(tension: 1_000, friction: 40, inertia: 1)
         static let settle = VideoEditorSpringConstant(tension: 300, friction: 30, inertia: 0.3)
     }
 #endif

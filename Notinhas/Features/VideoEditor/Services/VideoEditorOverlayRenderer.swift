@@ -12,41 +12,37 @@
     import CoreText
 
     enum VideoEditorOverlayRenderer {
-        static func normalizedPointInCanvas(
-            _ normalized: CGPoint,
-            contentRect: CGRect,
-            canvasHeight: CGFloat,
-        ) -> CGPoint {
-            let x = contentRect.minX + normalized.x * contentRect.width
-            let topLeftY = contentRect.minY + normalized.y * contentRect.height
-            return CGPoint(x: x, y: canvasHeight - topLeftY)
-        }
-
         static func compositeOverlays(
             onto image: CIImage,
             canvasSize: CGSize,
             contentRect: CGRect,
             pointerFrame: VideoEditorPointerFrame?,
+            pointerTimeline: VideoEditorPointerTimeline,
             showsSyntheticCursor: Bool,
             showsClickEffects: Bool,
             keystrokeFrame: VideoEditorKeystrokeCaptionFrame?,
             showsKeystrokes: Bool,
             keystrokePlacement: KeystrokeOverlayPosition,
             cursorScale: CGFloat = VideoEditorStylePreset.defaultCursorScale,
+            zoomLevel: CGFloat = 1,
+            zoomCenter: CGPoint = ZoomCalculator.neutralCenter,
         ) -> CIImage {
             var result = image
             let canvasHeight = canvasSize.height
 
             if showsClickEffects,
                let press = pointerFrame?.press {
-                let center = normalizedPointInCanvas(
+                let center = VideoEditorOverlayPlacement.pointInCanvas(
                     press.location,
                     contentRect: contentRect,
                     canvasHeight: canvasHeight,
+                    zoomLevel: zoomLevel,
+                    zoomCenter: zoomCenter,
                 )
                 let geometry = VideoEditorPointerPressEffectStyle.geometry(
                     progress: press.progress,
                     referenceHeight: contentRect.height,
+                    cursorScale: cursorScale,
                 )
                 if let clickImage = clickEffectImage(geometry: geometry, center: center) {
                     result = clickImage.composited(over: result)
@@ -56,16 +52,19 @@
             if showsSyntheticCursor,
                let pointerFrame,
                pointerFrame.opacity > 0.01 {
-                let center = normalizedPointInCanvas(
+                let tip = VideoEditorOverlayPlacement.pointInCanvas(
                     pointerFrame.location,
                     contentRect: contentRect,
                     canvasHeight: canvasHeight,
+                    zoomLevel: zoomLevel,
+                    zoomCenter: zoomCenter,
                 )
-                let cursorHeight = contentRect.height * VideoEditorPointerTimeline.cursorHeightRatio * cursorScale
-                if let cursorImage = systemCursorImage(
-                    center: center,
-                    height: cursorHeight * CGFloat(pointerFrame.magnification),
-                    opacity: pointerFrame.opacity,
+                if let cursorImage = pointerArtworkImage(
+                    pointerFrame: pointerFrame,
+                    timeline: pointerTimeline,
+                    tip: tip,
+                    referenceHeight: contentRect.height,
+                    cursorScale: cursorScale,
                 ) {
                     result = cursorImage.composited(over: result)
                 }
@@ -83,6 +82,70 @@
             }
 
             return result
+        }
+
+        private static func pointerArtworkImage(
+            pointerFrame: VideoEditorPointerFrame,
+            timeline: VideoEditorPointerTimeline,
+            tip: CGPoint,
+            referenceHeight: CGFloat,
+            cursorScale: CGFloat,
+        ) -> CIImage? {
+            let artwork = timeline.artwork(id: pointerFrame.artworkID)
+            let height = referenceHeight
+                * VideoEditorPointerArtworkMetrics.heightRatio
+                * cursorScale
+                * (artwork?.intrinsicScale ?? 1)
+                * CGFloat(max(pointerFrame.magnification, 0.1))
+            let width = height * (artwork?.aspectRatio ?? 1)
+            let anchor = artwork?.normalizedAnchor ?? CGPoint(x: 0.1, y: 0.1)
+
+            guard let cgImage = resolvedCGImage(for: artwork) else { return nil }
+            let source = CIImage(cgImage: cgImage)
+            let scaleX = width / max(source.extent.width, 1)
+            let scaleY = height / max(source.extent.height, 1)
+            let sized = source.transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
+
+            let drawOrigin = CGPoint(
+                x: tip.x - anchor.x * width,
+                y: tip.y - (1 - anchor.y) * height,
+            )
+            var transformed = sized
+                .transformed(by: CGAffineTransform(translationX: drawOrigin.x, y: drawOrigin.y))
+                .applyingFilter("CIColorMatrix", parameters: [
+                    "inputAVector": CIVector(x: 0, y: 0, z: 0, w: pointerFrame.opacity),
+                ])
+
+            if pointerFrame.blurRadius > 0.01 {
+                transformed = transformed
+                    .clampedToExtent()
+                    .applyingFilter("CIGaussianBlur", parameters: [
+                        kCIInputRadiusKey: pointerFrame.blurRadius,
+                    ])
+                    .cropped(to: CGRect(
+                        x: drawOrigin.x,
+                        y: drawOrigin.y,
+                        width: width,
+                        height: height,
+                    ))
+            }
+
+            if abs(pointerFrame.tiltDegrees) > 0.01 {
+                let radians = CGFloat(-pointerFrame.tiltDegrees * .pi / 180)
+                transformed = transformed
+                    .transformed(by: CGAffineTransform(translationX: -tip.x, y: -tip.y))
+                    .transformed(by: CGAffineTransform(rotationAngle: radians))
+                    .transformed(by: CGAffineTransform(translationX: tip.x, y: tip.y))
+            }
+
+            return transformed
+        }
+
+        private static func resolvedCGImage(for artwork: RecordedPointerArtwork?) -> CGImage? {
+            if let artwork, let image = VideoEditorPointerArtworkCache.cgImage(for: artwork) {
+                return image
+            }
+            return NSCursor.arrow.image.cgImage(forProposedRect: nil, context: nil, hints: nil)
         }
 
         private static func clickEffectImage(
@@ -126,28 +189,6 @@
             return layers.reduce(nil as CIImage?) { partial, layer in
                 partial.map { layer.composited(over: $0) } ?? layer
             }
-        }
-
-        private static func systemCursorImage(
-            center: CGPoint,
-            height: CGFloat,
-            opacity: Double,
-        ) -> CIImage? {
-            guard let cgImage = NSCursor.arrow.image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
-                return nil
-            }
-            let source = CIImage(cgImage: cgImage)
-            let scale = height / max(source.extent.height, 1)
-            let sized = source.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
-            let origin = CGPoint(
-                x: center.x,
-                y: center.y - sized.extent.height * 0.1,
-            )
-            return sized
-                .transformed(by: CGAffineTransform(translationX: origin.x, y: origin.y))
-                .applyingFilter("CIColorMatrix", parameters: [
-                    "inputAVector": CIVector(x: 0, y: 0, z: 0, w: opacity),
-                ])
         }
 
         private static func keystrokeCaptionImage(

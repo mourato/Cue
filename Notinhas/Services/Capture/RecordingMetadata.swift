@@ -12,11 +12,29 @@
 
     private let recordingMetadataLogger = Logger(subsystem: "Notinhas", category: "RecordingMetadata")
 
+    struct RecordedPointerArtwork: Codable, Equatable, Sendable {
+        struct Point: Codable, Equatable, Sendable {
+            var x: Double
+            var y: Double
+        }
+
+        struct Size: Codable, Equatable, Sendable {
+            var width: Double
+            var height: Double
+        }
+
+        var artworkID: String
+        var imageData: Data
+        var anchorPoint: Point
+        var referenceSize: Size
+    }
+
     struct RecordedMouseSample: Codable, Equatable {
         var time: TimeInterval
         var normalizedX: CGFloat
         var normalizedY: CGFloat
         var isInsideCapture: Bool
+        var artworkID: String?
 
         var normalizedPoint: CGPoint {
             CGPoint(x: normalizedX, y: normalizedY)
@@ -40,6 +58,7 @@
         var normalizedY: CGFloat
         var button: Int
         var phase: PressPhase
+        var artworkID: String?
 
         var normalizedPoint: CGPoint {
             CGPoint(x: normalizedX, y: normalizedY)
@@ -92,7 +111,7 @@
     }
 
     struct RecordingMetadata: Codable, Equatable {
-        static let currentVersion = 8
+        static let currentVersion = 9
 
         var version: Int
         var coordinateSpace: RecordingCoordinateSpace
@@ -100,6 +119,7 @@
         var samplesPerSecond: Int
         var mouseSamples: [RecordedMouseSample]
         var mousePresses: [RecordedMousePress]
+        var pointerArtwork: [RecordedPointerArtwork]
         var pointerSynthesized: Bool?
         var keystrokes: [RecordedKeystrokeEvent]
         var audioSourceURL: URL?
@@ -114,6 +134,7 @@
             samplesPerSecond: Int,
             mouseSamples: [RecordedMouseSample],
             mousePresses: [RecordedMousePress] = [],
+            pointerArtwork: [RecordedPointerArtwork] = [],
             pointerSynthesized: Bool? = nil,
             keystrokes: [RecordedKeystrokeEvent] = [],
             audioSourceURL: URL? = nil,
@@ -127,6 +148,7 @@
             self.samplesPerSecond = samplesPerSecond
             self.mouseSamples = mouseSamples
             self.mousePresses = mousePresses
+            self.pointerArtwork = pointerArtwork
             self.pointerSynthesized = pointerSynthesized
             self.keystrokes = keystrokes
             self.audioSourceURL = audioSourceURL
@@ -142,6 +164,7 @@
             case samplesPerSecond
             case mouseSamples
             case mousePresses
+            case pointerArtwork
             case pointerSynthesized
             case keystrokes
             case audioSourceURL
@@ -168,6 +191,7 @@
             samplesPerSecond = try container.decode(Int.self, forKey: .samplesPerSecond)
             mouseSamples = try container.decode([RecordedMouseSample].self, forKey: .mouseSamples)
             mousePresses = try container.decodeIfPresent([RecordedMousePress].self, forKey: .mousePresses) ?? []
+            pointerArtwork = try container.decodeIfPresent([RecordedPointerArtwork].self, forKey: .pointerArtwork) ?? []
             pointerSynthesized = try container.decodeIfPresent(Bool.self, forKey: .pointerSynthesized)
             keystrokes = try container.decodeIfPresent([RecordedKeystrokeEvent].self, forKey: .keystrokes) ?? []
             audioSourceURL = try container.decodeIfPresent(URL.self, forKey: .audioSourceURL)
@@ -194,6 +218,9 @@
             try container.encode(mouseSamples, forKey: .mouseSamples)
             if !mousePresses.isEmpty {
                 try container.encode(mousePresses, forKey: .mousePresses)
+            }
+            if !pointerArtwork.isEmpty {
+                try container.encode(pointerArtwork, forKey: .pointerArtwork)
             }
             try container.encodeIfPresent(pointerSynthesized, forKey: .pointerSynthesized)
             if !keystrokes.isEmpty {
@@ -799,6 +826,7 @@
                 samplesPerSecond: samplesPerSecond,
                 mouseSamples: normalizedSamples,
                 mousePresses: normalizedPresses,
+                pointerArtwork: pointerArtwork,
                 pointerSynthesized: pointerSynthesized,
                 keystrokes: keystrokes,
                 audioSourceURL: audioSourceURL,

@@ -36,11 +36,6 @@
 
         static let identity = VideoEditorViewportTimeline(frames: [.identity], duration: 0)
 
-        private init(frames: [VideoEditorViewportFrame], duration: TimeInterval) {
-            self.frames = frames
-            self.duration = duration
-        }
-
         func frame(at time: TimeInterval) -> VideoEditorViewportFrame {
             guard frames.count > 1, duration > 0 else { return frames.first ?? .identity }
 

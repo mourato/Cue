@@ -10,6 +10,7 @@
 
     struct VideoEditorSyntheticOverlayView: View {
         let pointerFrame: VideoEditorPointerFrame?
+        let pointerTimeline: VideoEditorPointerTimeline
         let keystrokeFrame: VideoEditorKeystrokeCaptionFrame?
         let contentRect: CGRect
         let showsSyntheticCursor: Bool
@@ -17,6 +18,8 @@
         let showsKeystrokes: Bool
         let keystrokePlacement: KeystrokeOverlayPosition
         let cursorScale: CGFloat
+        let zoomLevel: CGFloat
+        let zoomCenter: CGPoint
 
         var body: some View {
             ZStack(alignment: .topLeading) {
@@ -31,16 +34,7 @@
                 if showsSyntheticCursor,
                    let pointerFrame,
                    pointerFrame.opacity > 0.01 {
-                    Image(systemName: "arrow.up.left")
-                        .font(.system(size: max(
-                            12,
-                            contentRect.height * VideoEditorPointerTimeline.cursorHeightRatio * cursorScale,
-                        )))
-                        .foregroundStyle(.white)
-                        .shadow(color: .black.opacity(0.35), radius: 2, x: 0, y: 1)
-                        .scaleEffect(pointerFrame.magnification)
-                        .opacity(pointerFrame.opacity)
-                        .position(pointInView(pointerFrame.location))
+                    pointerView(for: pointerFrame)
                 }
 
                 if showsKeystrokes,
@@ -54,10 +48,43 @@
         }
 
         @ViewBuilder
+        private func pointerView(for pointerFrame: VideoEditorPointerFrame) -> some View {
+            let tip = pointInView(pointerFrame.location)
+            let artwork = pointerTimeline.artwork(id: pointerFrame.artworkID)
+            let anchor = artwork?.normalizedAnchor ?? CGPoint(x: 0.1, y: 0.1)
+            let height = contentRect.height
+                * VideoEditorPointerArtworkMetrics.heightRatio
+                * cursorScale
+                * (artwork?.intrinsicScale ?? 1)
+            let size = CGSize(width: height * (artwork?.aspectRatio ?? 1), height: height)
+
+            Group {
+                if let artwork, let image = VideoEditorPointerArtworkCache.image(for: artwork) {
+                    Image(nsImage: image)
+                        .resizable()
+                        .frame(width: size.width, height: size.height)
+                } else {
+                    Image(nsImage: NSCursor.arrow.image)
+                        .resizable()
+                        .frame(width: size.width, height: size.height)
+                }
+            }
+            .scaleEffect(pointerFrame.magnification, anchor: UnitPoint(x: anchor.x, y: anchor.y))
+            .rotationEffect(.degrees(pointerFrame.tiltDegrees), anchor: UnitPoint(x: anchor.x, y: anchor.y))
+            .blur(radius: pointerFrame.blurRadius)
+            .opacity(pointerFrame.opacity)
+            .position(
+                x: tip.x + (0.5 - anchor.x) * size.width,
+                y: tip.y + (0.5 - anchor.y) * size.height,
+            )
+        }
+
+        @ViewBuilder
         private func clickEffect(for press: VideoEditorPointerPressFrame) -> some View {
             let geometry = VideoEditorPointerPressEffectStyle.geometry(
                 progress: press.progress,
                 referenceHeight: contentRect.height,
+                cursorScale: cursorScale,
             )
             let center = pointInView(press.location)
             ZStack {
@@ -98,9 +125,11 @@
         }
 
         private func pointInView(_ normalized: CGPoint) -> CGPoint {
-            CGPoint(
-                x: normalized.x * contentRect.width,
-                y: normalized.y * contentRect.height,
+            VideoEditorOverlayPlacement.pointInContent(
+                normalized,
+                contentSize: contentRect.size,
+                zoomLevel: zoomLevel,
+                zoomCenter: zoomCenter,
             )
         }
 

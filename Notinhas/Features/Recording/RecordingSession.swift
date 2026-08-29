@@ -129,6 +129,13 @@
             }
         }
 
+        var firstVideoTimestampSeconds: TimeInterval? {
+            lock.withLock {
+                guard let timestamp = _firstTimestamp, timestamp.isNumeric else { return nil }
+                return timestamp.seconds
+            }
+        }
+
         func configureExpectedVideoDimensions(width: Int, height: Int) {
             lock.withLock {
                 _expectedVideoWidth = width
