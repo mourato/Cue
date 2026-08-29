@@ -23,6 +23,23 @@
         }
     }
 
+    struct RecordedMousePress: Codable, Equatable {
+        enum PressPhase: String, Codable {
+            case down
+            case up
+        }
+
+        var time: TimeInterval
+        var normalizedX: CGFloat
+        var normalizedY: CGFloat
+        var button: Int
+        var phase: PressPhase
+
+        var normalizedPoint: CGPoint {
+            CGPoint(x: normalizedX, y: normalizedY)
+        }
+    }
+
     enum RecordingCoordinateSpace: String, Codable {
         case bottomLeftNormalized
         case topLeftNormalized
@@ -69,13 +86,14 @@
     }
 
     struct RecordingMetadata: Codable, Equatable {
-        static let currentVersion = 6
+        static let currentVersion = 7
 
         var version: Int
         var coordinateSpace: RecordingCoordinateSpace
         var captureSize: CGSize
         var samplesPerSecond: Int
         var mouseSamples: [RecordedMouseSample]
+        var mousePresses: [RecordedMousePress]
         var audioSourceURL: URL?
         var audioSourceTrackRoles: [RecordingAudioSourceTrackRole]
         var audioSourceTracks: [RecordingAudioSourceTrack]
@@ -87,6 +105,7 @@
             captureSize: CGSize,
             samplesPerSecond: Int,
             mouseSamples: [RecordedMouseSample],
+            mousePresses: [RecordedMousePress] = [],
             audioSourceURL: URL? = nil,
             audioSourceTrackRoles: [RecordingAudioSourceTrackRole] = [],
             audioSourceTracks: [RecordingAudioSourceTrack] = [],
@@ -97,6 +116,7 @@
             self.captureSize = captureSize
             self.samplesPerSecond = samplesPerSecond
             self.mouseSamples = mouseSamples
+            self.mousePresses = mousePresses
             self.audioSourceURL = audioSourceURL
             self.audioSourceTrackRoles = audioSourceTrackRoles
             self.audioSourceTracks = audioSourceTracks
@@ -109,6 +129,7 @@
             case captureSize
             case samplesPerSecond
             case mouseSamples
+            case mousePresses
             case audioSourceURL
             case audioSourceTrackRoles
             case audioSourceTracks
@@ -132,6 +153,7 @@
             captureSize = try container.decode(CGSize.self, forKey: .captureSize)
             samplesPerSecond = try container.decode(Int.self, forKey: .samplesPerSecond)
             mouseSamples = try container.decode([RecordedMouseSample].self, forKey: .mouseSamples)
+            mousePresses = try container.decodeIfPresent([RecordedMousePress].self, forKey: .mousePresses) ?? []
             audioSourceURL = try container.decodeIfPresent(URL.self, forKey: .audioSourceURL)
             audioSourceTrackRoles = try container.decodeIfPresent(
                 [RecordingAudioSourceTrackRole].self,
@@ -154,6 +176,9 @@
             try container.encode(captureSize, forKey: .captureSize)
             try container.encode(samplesPerSecond, forKey: .samplesPerSecond)
             try container.encode(mouseSamples, forKey: .mouseSamples)
+            if !mousePresses.isEmpty {
+                try container.encode(mousePresses, forKey: .mousePresses)
+            }
             try container.encodeIfPresent(audioSourceURL, forKey: .audioSourceURL)
             if !audioSourceTrackRoles.isEmpty {
                 try container.encode(audioSourceTrackRoles, forKey: .audioSourceTrackRoles)
@@ -736,12 +761,24 @@
                 }
             }
 
+            let normalizedPresses: [RecordedMousePress] = switch coordinateSpace {
+            case .topLeftNormalized:
+                mousePresses
+            case .bottomLeftNormalized:
+                mousePresses.map { press in
+                    var normalized = press
+                    normalized.normalizedY = (1 - press.normalizedY).clamped(to: 0 ... 1)
+                    return normalized
+                }
+            }
+
             return RecordingMetadata(
                 version: RecordingMetadata.currentVersion,
                 coordinateSpace: .topLeftNormalized,
                 captureSize: captureSize,
                 samplesPerSecond: samplesPerSecond,
                 mouseSamples: normalizedSamples,
+                mousePresses: normalizedPresses,
                 audioSourceURL: audioSourceURL,
                 audioSourceTrackRoles: audioSourceTrackRoles,
                 audioSourceTracks: audioSourceTracks,

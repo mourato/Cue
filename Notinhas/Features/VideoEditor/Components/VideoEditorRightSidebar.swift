@@ -40,6 +40,8 @@
         @State private var localFollowSpeed: Double = AutoFocusSettings.defaultFollowSpeed
         @State private var localFocusMargin: CGFloat = AutoFocusSettings.defaultFocusMargin
         @State private var localTransitionDuration: TimeInterval = ZoomCalculator.defaultTransitionDuration
+        @AppStorage(PreferencesKeys.videoEditorAutoGenerateZoomOnOpen)
+        private var autoGenerateZoomOnOpen = true
 
         private struct LocalStateSnapshot: Equatable {
             let id: UUID
@@ -82,6 +84,10 @@
                             .fixedSize(horizontal: false, vertical: true)
                             .accessibilityAddTraits(.isStaticText)
                     }
+                    if state.recordingMetadata != nil {
+                        recordingInteractionSection
+                        Divider()
+                    }
                     if state.hasCameraTrack {
                         cameraOverlaySection
                         Divider()
@@ -119,6 +125,44 @@
             .onChange(of: localStateSnapshot) { _ in
                 syncLocalState()
             }
+        }
+
+        private var recordingInteractionSection: some View {
+            VStack(alignment: .leading, spacing: 10) {
+                Label(L10n.VideoEditor.zoomEffects, systemImage: "cursorarrow.click")
+                    .font(.system(size: 12, weight: .semibold))
+
+                HStack {
+                    Text(L10n.VideoEditor.recordedClicks)
+                        .font(.system(size: 11))
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text("\(state.recordedClickCount)")
+                        .font(.system(size: 11, weight: .medium))
+                }
+
+                HStack {
+                    Text(L10n.VideoEditor.implicitZoomSegments)
+                        .font(.system(size: 11))
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text("\(state.implicitZoomSegmentCount)")
+                        .font(.system(size: 11, weight: .medium))
+                }
+
+                Toggle(isOn: $autoGenerateZoomOnOpen) {
+                    Text(L10n.VideoEditor.autoGenerateZoomOnOpen)
+                        .font(.system(size: 11))
+                }
+                .help(L10n.VideoEditor.autoGenerateZoomOnOpenHelp)
+
+                Button(L10n.VideoEditor.resynthesizeImplicitZooms) {
+                    state.resynthesizeImplicitZoomSegments()
+                }
+                .disabled(!state.canResynthesizeImplicitZoomSegments)
+                .help(L10n.VideoEditor.resynthesizeImplicitZoomsHelp)
+            }
+            .accessibilityElement(children: .contain)
         }
 
         private var cameraOverlaySection: some View {

@@ -277,6 +277,39 @@
             )
         }
 
+        func testRecordingMetadata_v6DecodesWithEmptyMousePresses() throws {
+            let legacy = RecordingMetadata(
+                version: 6,
+                coordinateSpace: .topLeftNormalized,
+                captureSize: CGSize(width: 1_280, height: 720),
+                samplesPerSecond: 60,
+                mouseSamples: [
+                    RecordedMouseSample(time: 0, normalizedX: 0.5, normalizedY: 0.5, isInsideCapture: true),
+                ],
+            )
+            let data = try JSONEncoder().encode(legacy)
+            let decoded = try JSONDecoder().decode(RecordingMetadata.self, from: data)
+            XCTAssertEqual(decoded.version, 6)
+            XCTAssertTrue(decoded.mousePresses.isEmpty)
+        }
+
+        func testRecordingMetadata_v7RoundTripsMousePresses() throws {
+            var metadata = makeCurrentMetadata()
+            metadata.mousePresses = [
+                RecordedMousePress(
+                    time: 1.2,
+                    normalizedX: 0.3,
+                    normalizedY: 0.7,
+                    button: 0,
+                    phase: .down,
+                ),
+            ]
+            let data = try JSONEncoder().encode(metadata)
+            let decoded = try JSONDecoder().decode(RecordingMetadata.self, from: data)
+            XCTAssertEqual(decoded.version, RecordingMetadata.currentVersion)
+            XCTAssertEqual(decoded.mousePresses, metadata.mousePresses)
+        }
+
         private func makeCurrentMetadata() -> RecordingMetadata {
             RecordingMetadata(
                 coordinateSpace: .topLeftNormalized,

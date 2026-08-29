@@ -19,6 +19,7 @@
         case addZoom(segment: ZoomSegment)
         case removeZoom(segment: ZoomSegment)
         case updateZoom(old: ZoomSegment, new: ZoomSegment)
+        case replaceImplicitZoomSegments(old: [ZoomSegment], new: [ZoomSegment])
         case addSpeed(segment: SpeedSegment)
         case removeSpeed(segment: SpeedSegment)
         case updateSpeed(old: SpeedSegment, new: SpeedSegment)
@@ -350,6 +351,18 @@
             autoZoomSegmentCount > 0
         }
 
+        var recordedClickCount: Int {
+            recordingMetadata?.mousePresses.filter { $0.phase == .down }.count ?? 0
+        }
+
+        var implicitZoomSegmentCount: Int {
+            zoomSegments.filter(\.isImplicit).count
+        }
+
+        var canResynthesizeImplicitZoomSegments: Bool {
+            recordingMetadata != nil && recordedClickCount > 0
+        }
+
         var currentTime: CMTime {
             playbackState.currentTime
         }
@@ -676,6 +689,7 @@
                 ])
                 // Calculate initial file size estimate after metadata loads
                 recalculateEstimatedFileSize()
+                applyInitialImplicitZoomSegmentsIfNeeded()
             } catch {
                 DiagnosticLogger.shared.logError(.editor, error, "Failed to load video metadata")
                 print("Failed to load video metadata: \(error)")
@@ -1005,6 +1019,10 @@
                 }
                 redoStack.append(.updateZoom(old: new, new: old))
 
+            case .replaceImplicitZoomSegments(let old, let new):
+                zoomSegments = old
+                redoStack.append(.replaceImplicitZoomSegments(old: new, new: old))
+
             case .addSpeed(let segment):
                 speedSegments.removeAll { $0.id == segment.id }
                 if selectedSpeedId == segment.id {
@@ -1088,6 +1106,10 @@
                     zoomSegments[index] = old
                 }
                 undoStack.append(.updateZoom(old: new, new: old))
+
+            case .replaceImplicitZoomSegments(let old, let new):
+                zoomSegments = old
+                undoStack.append(.replaceImplicitZoomSegments(old: new, new: old))
 
             case .addSpeed(let segment):
                 speedSegments.removeAll { $0.id == segment.id }
@@ -1322,6 +1344,31 @@
 
         func autoFocusPath(for segment: ZoomSegment) -> [AutoFocusCameraSample] {
             autoFocusPaths[segment.id] ?? []
+        }
+
+        /// Regenerate implicit zoom segments from recorded clicks, preserving manual segments.
+        func resynthesizeImplicitZoomSegments() {
+            guard let metadata = recordingMetadata else { return }
+
+            let videoDuration = CMTimeGetSeconds(duration)
+            guard videoDuration.isFinite, videoDuration > 0 else { return }
+
+            let previousSegments = zoomSegments
+            let manualSegments = zoomSegments.filter { !$0.isImplicit }
+            let synthesized = VideoEditorZoomSegmentSynthesizer.segments(
+                from: metadata.mousePresses,
+                duration: videoDuration,
+            )
+            let merged = (manualSegments + synthesized).sorted { $0.startTime < $1.startTime }
+            guard merged != previousSegments else { return }
+
+            zoomSegments = merged
+            selectedZoomId = nil
+            recordAction(.replaceImplicitZoomSegments(old: previousSegments, new: merged))
+            DiagnosticLogger.shared.log(.info, .editor, "Resynthesized implicit zoom segments", context: [
+                "implicitCount": "\(synthesized.count)",
+                "manualPreserved": "\(manualSegments.count)",
+            ])
         }
 
         /// Select a zoom segment
@@ -1630,6 +1677,41 @@
             }
 
             return ZoomCalculator.clampTransitionDuration(stored)
+        }
+
+        static func autoGenerateZoomOnOpen(defaults: UserDefaults = .standard) -> Bool {
+            if defaults.object(forKey: PreferencesKeys.videoEditorAutoGenerateZoomOnOpen) == nil {
+                return true
+            }
+            return defaults.bool(forKey: PreferencesKeys.videoEditorAutoGenerateZoomOnOpen)
+        }
+
+        private func applyInitialImplicitZoomSegmentsIfNeeded() {
+            guard !isGIF,
+                  zoomSegments.isEmpty,
+                  Self.autoGenerateZoomOnOpen(),
+                  let metadata = recordingMetadata,
+                  !metadata.mousePresses.isEmpty
+            else {
+                return
+            }
+
+            let videoDuration = CMTimeGetSeconds(duration)
+            guard videoDuration.isFinite, videoDuration > 0 else { return }
+
+            let synthesized = VideoEditorZoomSegmentSynthesizer.segments(
+                from: metadata.mousePresses,
+                duration: videoDuration,
+            )
+            guard !synthesized.isEmpty else { return }
+
+            zoomSegments = synthesized
+            initialZoomSegments = synthesized
+            rebuildAutoFocusPaths(for: synthesized)
+            DiagnosticLogger.shared.log(.info, .editor, "Applied initial implicit zoom segments", context: [
+                "count": "\(synthesized.count)",
+                "clicks": "\(recordedClickCount)",
+            ])
         }
 
         private func setupEndObserver() {

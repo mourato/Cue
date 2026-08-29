@@ -39,10 +39,48 @@
 
             tracker.start()
             clock.uptime += 0.02
-            let samples = tracker.stop()
-            XCTAssertGreaterThanOrEqual(samples.count, 2)
-            XCTAssertEqual(samples.first?.normalizedX, 0.5)
-            XCTAssertEqual(samples.first?.normalizedY, 0.5)
+            let result = tracker.stop()
+            XCTAssertGreaterThanOrEqual(result.samples.count, 2)
+            XCTAssertEqual(result.samples.first?.normalizedX, 0.5)
+            XCTAssertEqual(result.samples.first?.normalizedY, 0.5)
+            tracker.reset()
+        }
+
+        func testPressCapture_recordsMouseDownInsideRect() {
+            let clock = TestClock()
+            var capturedEvents: [NSEvent] = []
+            let tracker = RecordingMouseTracker(
+                recordingRect: CGRect(x: 0, y: 0, width: 100, height: 100),
+                fps: 30,
+                uptimeProvider: { clock.uptime },
+                mouseLocationProvider: { CGPoint(x: 50, y: 50) },
+                mouseMonitorInstaller: { _ in TestMouseMonitor() },
+                mouseMonitorRemover: { _ in },
+                pressMonitorInstaller: { handler in
+                    let event = NSEvent.mouseEvent(
+                        with: .leftMouseDown,
+                        location: CGPoint(x: 50, y: 50),
+                        modifierFlags: [],
+                        timestamp: 0,
+                        windowNumber: 0,
+                        context: nil,
+                        eventNumber: 0,
+                        clickCount: 1,
+                        pressure: 0,
+                    )!
+                    capturedEvents.append(event)
+                    handler(event)
+                    return TestMouseMonitor()
+                },
+                pressMonitorRemover: { _ in },
+            )
+
+            tracker.start()
+            clock.uptime += 0.02
+            let result = tracker.stop()
+            XCTAssertEqual(result.presses.count, 1)
+            XCTAssertEqual(result.presses.first?.phase, .down)
+            XCTAssertEqual(result.presses.first?.button, 0)
             tracker.reset()
         }
 

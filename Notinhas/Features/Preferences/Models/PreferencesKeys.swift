@@ -135,6 +135,7 @@ enum PreferencesKeys {
     static let recordingShowTimeOnMenuBar = "recording.showTimeOnMenuBar"
     static let recordingHoverBarFrameOrigin = "recording.hoverBarFrameOrigin"
     static let videoEditorZoomTransitionDuration = "videoEditor.zoom.transitionDuration"
+    static let videoEditorAutoGenerateZoomOnOpen = "videoEditor.autoGenerateZoomOnOpen"
     static let videoModuleEnabled = "videoModule.enabled"
 
     // Mouse Highlight Customization

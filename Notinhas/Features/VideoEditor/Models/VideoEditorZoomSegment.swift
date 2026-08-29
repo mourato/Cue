@@ -19,6 +19,7 @@
         var followSpeed: Double
         var focusMargin: CGFloat
         var isEnabled: Bool
+        var isImplicit: Bool
 
         // MARK: - Computed Properties
 
@@ -47,6 +48,7 @@
             followSpeed: Double = AutoFocusSettings.defaultFollowSpeed,
             focusMargin: CGFloat = AutoFocusSettings.defaultFocusMargin,
             isEnabled: Bool = true,
+            isImplicit: Bool = false,
         ) {
             self.id = id
             self.startTime = max(0, startTime)
@@ -60,6 +62,7 @@
             self.followSpeed = AutoFocusSettings.clampFollowSpeed(followSpeed)
             self.focusMargin = AutoFocusSettings.clampFocusMargin(focusMargin)
             self.isEnabled = isEnabled
+            self.isImplicit = isImplicit
         }
 
         // MARK: - Validation

@@ -1321,7 +1321,10 @@
 
             let videoWriteStats = session.videoWriteStats()
 
-            let mouseSamples = mouseTracker?.stop() ?? []
+            let trackerSamplesPerSecond = mouseTracker?.samplesPerSecond ?? fps
+            let mouseTrackingResult = mouseTracker?.stop()
+            let mouseSamples = mouseTrackingResult?.samples ?? []
+            let mousePresses = mouseTrackingResult?.presses ?? []
             let writerURL = outputURL
             await logRecordingFrameDiagnostics(outputURL: writerURL, stats: videoWriteStats)
             if terminationTimedOut {
@@ -1375,13 +1378,14 @@
                     for: editorAudioSourceURL,
                     roles: audioSourceTrackRoles,
                 )
-                if mouseSamples.count >= 2 || editorAudioSourceURL != nil || captureCamera {
+                if mouseSamples.count >= 2 || !mousePresses.isEmpty || editorAudioSourceURL != nil || captureCamera {
                     do {
                         let metadata = await RecordingMetadata(
                             coordinateSpace: .topLeftNormalized,
                             captureSize: recordingRect.size,
-                            samplesPerSecond: mouseTracker?.samplesPerSecond ?? fps,
+                            samplesPerSecond: trackerSamplesPerSecond,
                             mouseSamples: mouseSamples,
+                            mousePresses: mousePresses,
                             audioSourceURL: editorAudioSourceURL,
                             audioSourceTrackRoles: audioSourceTrackRoles,
                             audioSourceTracks: audioSourceTracks,
@@ -1391,6 +1395,7 @@
                         DiagnosticLogger.shared.log(.info, .recording, "Recording metadata saved", context: [
                             "file": url.lastPathComponent,
                             "samples": "\(mouseSamples.count)",
+                            "presses": "\(mousePresses.count)",
                             "hasEditorAudioSource": editorAudioSourceURL == nil ? "false" : "true",
                             "editorAudioSourceRoles": audioSourceTrackRoles.map(\.rawValue).joined(separator: ","),
                             "editorAudioSourceTrackIDs": audioSourceTracks.map { "\($0.trackID):\($0.role.rawValue)" }
