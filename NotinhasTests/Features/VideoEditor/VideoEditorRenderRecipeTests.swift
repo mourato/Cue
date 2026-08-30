@@ -30,5 +30,35 @@
             let keyB = VideoEditorRenderRecipe.capture(from: stateB, sourceFingerprint: fingerprint).cacheKey()
             XCTAssertNotEqual(keyA, keyB)
         }
+
+        func testCacheKey_changesWhenCameraLayoutChanges() {
+            let url = URL(fileURLWithPath: "/tmp/sample.mov")
+            let state = VideoEditorState(url: url)
+            let fingerprint = "test|100|0"
+            let baseline = VideoEditorRenderRecipe.capture(from: state, sourceFingerprint: fingerprint)
+
+            var reactsToZoom = state.cameraOverlayLayout
+            reactsToZoom.reactsToZoom.toggle()
+            var position = state.cameraOverlayLayout
+            position.position = .topLeading
+            var size = state.cameraOverlayLayout
+            size.size = .large
+
+            for layout in [reactsToZoom, position, size] {
+                let changedState = VideoEditorState(url: url)
+                changedState.cameraOverlayLayout = layout
+                XCTAssertNotEqual(
+                    baseline.cacheKey(),
+                    VideoEditorRenderRecipe.capture(from: changedState, sourceFingerprint: fingerprint).cacheKey(),
+                )
+            }
+        }
+
+        func testRecipeUsesCurrentExporterImplementationVersion() {
+            let state = VideoEditorState(url: URL(fileURLWithPath: "/tmp/sample.mov"))
+            let recipe = VideoEditorRenderRecipe.capture(from: state, sourceFingerprint: "test|100|0")
+            XCTAssertEqual(recipe.exporterImplementationVersion, 2)
+            XCTAssertFalse(recipe.cameraOverlayLayoutPayload.isEmpty)
+        }
     }
 #endif

@@ -202,6 +202,8 @@
                 Toggle(L10n.VideoEditor.showCamera, isOn: $state.cameraOverlayLayout.isVisible)
                     .accessibilityValue(state.cameraOverlayLayout.isVisible ? L10n.Common.on : L10n.Common.off)
                 if state.cameraOverlayLayout.isVisible {
+                    Toggle(L10n.VideoEditor.cameraReactsToZoom, isOn: $state.cameraOverlayLayout.reactsToZoom)
+                        .accessibilityValue(state.cameraOverlayLayout.reactsToZoom ? L10n.Common.on : L10n.Common.off)
                     Picker(L10n.VideoEditor.cameraPosition, selection: $state.cameraOverlayLayout.position) {
                         Text(L10n.VideoEditor.topLeading).tag(VideoEditorCameraOverlayPosition.topLeading)
                         Text(L10n.VideoEditor.topTrailing).tag(VideoEditorCameraOverlayPosition.topTrailing)

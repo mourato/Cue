@@ -95,6 +95,10 @@ second canonical design-system document.
   system colors. User-added customs remain in `AnnotateColorPaletteStore`.
 - Use one owner for each scrollable surface. Avoid nested decorative panels
   that compete with the capture or annotation canvas.
+- Video Editor keeps the camera bubble as an independent overlay outside the
+  screen zoom layer. `VideoEditorCameraOverlayLayout` owns the shared
+  corner-anchored, aspect-fit geometry used by preview and export, including
+  optional inverse zoom scaling.
 - In `AnnotateMainView`, contextual properties and bottom actions float over the
   central canvas host. The side dock remains in normal layout flow and reduces
   that host's bounds; full-width separator or background bands must not appear

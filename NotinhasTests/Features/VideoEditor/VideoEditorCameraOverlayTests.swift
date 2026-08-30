@@ -19,6 +19,108 @@
             XCTAssertEqual(frame.width / frame.height, 640.0 / 480.0, accuracy: 0.001)
         }
 
+        func testZoomOnePreservesLegacyCameraFrameForEveryCorner() {
+            for position in VideoEditorCameraOverlayPosition.allCases {
+                var layout = VideoEditorCameraOverlayLayout.default
+                layout.position = position
+                let legacy = layout.cameraFrame(
+                    in: CGSize(width: 1600, height: 900),
+                    cameraSize: CGSize(width: 1600, height: 900),
+                )
+                let zoomed = layout.cameraFrame(
+                    in: CGSize(width: 1600, height: 900),
+                    cameraSize: CGSize(width: 1600, height: 900),
+                    zoomLevel: 1,
+                )
+                XCTAssertEqual(zoomed, legacy, "Unexpected frame for \(position)")
+            }
+        }
+
+        func testZoomTwoHalvesCameraFrameAndPreservesCornerMargin() {
+            let canvasSize = CGSize(width: 1600, height: 1600)
+            let cameraSize = CGSize(width: 1600, height: 900)
+
+            for position in VideoEditorCameraOverlayPosition.allCases {
+                var layout = VideoEditorCameraOverlayLayout.default
+                layout.position = position
+                let base = layout.cameraFrame(in: canvasSize, cameraSize: cameraSize)
+                let zoomed = layout.cameraFrame(in: canvasSize, cameraSize: cameraSize, zoomLevel: 2)
+
+                XCTAssertEqual(zoomed.width, base.width / 2, accuracy: 0.001)
+                XCTAssertEqual(zoomed.height, base.height / 2, accuracy: 0.001)
+                if position == .topLeading || position == .bottomLeading {
+                    XCTAssertEqual(zoomed.minX, base.minX, accuracy: 0.001)
+                } else {
+                    XCTAssertEqual(zoomed.maxX, base.maxX, accuracy: 0.001)
+                }
+                if position == .topLeading || position == .topTrailing {
+                    XCTAssertEqual(zoomed.minY, base.minY, accuracy: 0.001)
+                } else {
+                    XCTAssertEqual(zoomed.maxY, base.maxY, accuracy: 0.001)
+                }
+            }
+        }
+
+        func testZoomReactionOptOutPreservesLegacyFrameAtEveryZoom() {
+            var layout = VideoEditorCameraOverlayLayout.default
+            layout.reactsToZoom = false
+            let legacy = layout.cameraFrame(
+                in: CGSize(width: 1600, height: 900),
+                cameraSize: CGSize(width: 640, height: 480),
+            )
+
+            for zoomLevel in [CGFloat(1), CGFloat(2), CGFloat(4)] {
+                XCTAssertEqual(
+                    layout.cameraFrame(
+                        in: CGSize(width: 1600, height: 900),
+                        cameraSize: CGSize(width: 640, height: 480),
+                        zoomLevel: zoomLevel,
+                    ),
+                    legacy,
+                )
+            }
+        }
+
+        func testInvalidAndLargeZoomValuesProduceFiniteClampedFrames() {
+            let layout = VideoEditorCameraOverlayLayout.default
+            let canvasSize = CGSize(width: 1600, height: 900)
+            let cameraSize = CGSize(width: 480, height: 640)
+
+            for zoomLevel in [CGFloat.zero, -1, .nan, .infinity, .greatestFiniteMagnitude] {
+                let frame = layout.cameraFrame(in: canvasSize, cameraSize: cameraSize, zoomLevel: zoomLevel)
+                XCTAssertTrue(frame.minX.isFinite && frame.minY.isFinite)
+                XCTAssertTrue(frame.width.isFinite && frame.height.isFinite)
+                XCTAssertGreaterThanOrEqual(frame.minX, 0)
+                XCTAssertGreaterThanOrEqual(frame.minY, 0)
+                XCTAssertLessThanOrEqual(frame.maxX, canvasSize.width)
+                XCTAssertLessThanOrEqual(frame.maxY, canvasSize.height)
+            }
+        }
+
+        func testZoomAwareFramePreservesPortraitCameraAspectFit() {
+            let frame = VideoEditorCameraOverlayLayout.default.cameraFrame(
+                in: CGSize(width: 1600, height: 900),
+                cameraSize: CGSize(width: 480, height: 640),
+                zoomLevel: 2,
+            )
+            XCTAssertEqual(frame.width / frame.height, 480.0 / 640.0, accuracy: 0.001)
+        }
+
+        func testZoomAwareFrameKeepsClampedCornerAnchor() {
+            var layout = VideoEditorCameraOverlayLayout.default
+            layout.position = .bottomTrailing
+            layout.margin = 0.9
+            let canvasSize = CGSize(width: 1000, height: 1000)
+            let cameraSize = CGSize(width: 1000, height: 1000)
+            let base = layout.cameraFrame(in: canvasSize, cameraSize: cameraSize)
+            let zoomed = layout.cameraFrame(in: canvasSize, cameraSize: cameraSize, zoomLevel: 2)
+
+            XCTAssertEqual(base.maxX, canvasSize.width, accuracy: 0.001)
+            XCTAssertEqual(base.maxY, canvasSize.height, accuracy: 0.001)
+            XCTAssertEqual(zoomed.maxX, base.maxX, accuracy: 0.001)
+            XCTAssertEqual(zoomed.maxY, base.maxY, accuracy: 0.001)
+        }
+
         func testTrackResolutionUsesRoleAndRealTrackID() async throws {
             let composition = AVMutableComposition()
             let camera = try XCTUnwrap(composition.addMutableTrack(withMediaType: .video, preferredTrackID: 42))

@@ -9,9 +9,14 @@ metadata track IDs; external multi-track videos are never inferred by array
 position. The editor keeps camera video separate from the existing audio mix
 and previews it muted, synchronized to the screen playhead. The MVP offers a
 visible toggle, four corner presets, three sizes, normalized aspect-fit layout,
-and a rounded mask. Export uses the same layout and bakes the overlay when it
-is visible. Hiding it exports screen-only. GIF output and the default scheme
-remain screen-only. A missing or invalid camera ID degrades to screen-only.
+and a rounded mask. The optional “Webcam reacts to zoom” toggle is on by
+default: it geometrically scales the bubble inversely with screen zoom and
+recalculates its corner-anchored placement without following the zoom center.
+This is geometric compensation, not face tracking or auto-framing; disabling
+it keeps the configured bubble size. Preview and export use the same layout and
+export bakes the overlay when it is visible. Hiding it exports screen-only. GIF
+output and the default scheme remain screen-only. A missing or invalid camera ID
+degrades to screen-only.
 
 ## Entry and Windowing
 
