@@ -17,9 +17,9 @@ struct OverlayTooltipBubbleView: View {
             }
 
             if !content.keys.isEmpty {
-                HStack(spacing: 4) {
+                HStack(spacing: KeyCapMetrics.chipSpacing) {
                     ForEach(Array(content.keys.enumerated()), id: \.offset) { _, key in
-                        KeyCapView(symbol: key, fontSize: 11)
+                        KeyCapView(symbol: key)
                     }
                 }
             }
