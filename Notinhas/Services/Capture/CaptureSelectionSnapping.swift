@@ -387,6 +387,70 @@ enum CaptureSelectionSnapping {
         }
     }
 
+    /// Snaps the moving cursor during an initial rubber-band drag (macshot-style): only the
+    /// cursor corner is adjusted against a pre-built boundary index, avoiding full candidate
+    /// resolution on every mouse event.
+    static func snapMovingPoint(
+        point: CGPoint,
+        anchor: CGPoint,
+        boundaryIndex: CaptureSelectionBoundaryIndex,
+        configuration: CaptureSelectionSnappingConfiguration,
+    ) -> CaptureSelectionSnappingResult {
+        let spanRect = CGRect(
+            x: min(anchor.x, point.x),
+            y: min(anchor.y, point.y),
+            width: max(abs(point.x - anchor.x), 1),
+            height: max(abs(point.y - anchor.y), 1),
+        )
+        var snappedPoint = point
+        var appliedSources: [CaptureSelectionSnappingEdge: CaptureSelectionSnappingSource] = [:]
+        var appliedCoordinates: [CaptureSelectionSnappingEdge: CGFloat] = [:]
+
+        let movingXEdge: CaptureSelectionSnappingEdge = point.x >= anchor.x ? .maxX : .minX
+        if
+            let xCandidate = boundaryIndex.nearestCandidate(
+                for: movingXEdge,
+                proposedCoordinate: point.x,
+                selectionRect: spanRect,
+                radius: configuration.snapDistance,
+                minimumMeanDifference: configuration.visualEdgeThreshold,
+                source: .visual,
+            ),
+            abs(xCandidate.coordinate - point.x) <= configuration.snapDistance {
+            snappedPoint.x = xCandidate.coordinate
+            appliedSources[xCandidate.edge] = xCandidate.source
+            appliedCoordinates[xCandidate.edge] = xCandidate.coordinate
+        }
+
+        let movingYEdge: CaptureSelectionSnappingEdge = point.y >= anchor.y ? .maxY : .minY
+        if
+            let yCandidate = boundaryIndex.nearestCandidate(
+                for: movingYEdge,
+                proposedCoordinate: point.y,
+                selectionRect: spanRect,
+                radius: configuration.snapDistance,
+                minimumMeanDifference: configuration.visualEdgeThreshold,
+                source: .visual,
+            ),
+            abs(yCandidate.coordinate - point.y) <= configuration.snapDistance {
+            snappedPoint.y = yCandidate.coordinate
+            appliedSources[yCandidate.edge] = yCandidate.source
+            appliedCoordinates[yCandidate.edge] = yCandidate.coordinate
+        }
+
+        let rect = CGRect(
+            x: min(anchor.x, snappedPoint.x),
+            y: min(anchor.y, snappedPoint.y),
+            width: abs(snappedPoint.x - anchor.x),
+            height: abs(snappedPoint.y - anchor.y),
+        )
+        return CaptureSelectionSnappingResult(
+            rect: rect,
+            appliedSources: appliedSources,
+            appliedCoordinates: appliedCoordinates,
+        )
+    }
+
     static func resolve(
         proposedRect: CGRect,
         handle: CaptureSelectionResizeHandle,

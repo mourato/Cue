@@ -134,6 +134,8 @@ final class AreaSelectionController: NSObject {
     private var isMovingManualSelection = false
     private var manualSelectionLastPointerLocation: CGPoint?
     private var manualSelectionModifierFlags: NSEvent.ModifierFlags = []
+    private var lastDisplayActivationRequestTime: TimeInterval = 0
+    private let displayActivationRequestInterval: TimeInterval = 0.12
 
     /// Screen-space frames (e.g. All-In-One floating HUDs) that must keep the arrow cursor
     /// instead of the selection crosshair while this controller is presenting.
@@ -1320,38 +1322,20 @@ final class AreaSelectionController: NSObject {
               !manualSelectionModifierFlags.contains(.option),
               let start = manualSelectionStartPoint,
               let current = manualSelectionCurrentPoint,
-              let rawRect = rawManualSelectionRect,
               let screen = NSScreen.screens.first(where: { $0.frame.contains(current) })
               ?? NSScreen.screens.first(where: { $0.frame.insetBy(dx: -1, dy: -1).contains(current) }),
               let displayID = screen.displayID,
               let backdrop = selectionBackdrops[displayID],
+              backdrop.isVisible,
               let boundaryIndex = boundarySnapIndices[displayID] else {
             return nil
         }
 
-        let horizontalDirection = current.x >= start.x
-        let verticalDirection = current.y >= start.y
-        let handle: CaptureSelectionResizeHandle = switch (horizontalDirection, verticalDirection) {
-        case (true, true): .topRight
-        case (true, false): .bottomRight
-        case (false, true): .topLeft
-        case (false, false): .bottomLeft
-        }
-        let configuration = CaptureSelectionSnappingConfiguration.fromPreferences()
-        let candidates = CaptureSelectionSnapping.imageCandidates(
-            proposedRect: rawRect,
-            handle: handle,
-            backdrop: backdrop,
-            screenFrame: screen.frame,
-            configuration: configuration,
+        return CaptureSelectionSnapping.snapMovingPoint(
+            point: current,
+            anchor: start,
             boundaryIndex: boundaryIndex,
-        )
-        return CaptureSelectionSnapping.resolve(
-            proposedRect: rawRect,
-            handle: handle,
-            candidates: candidates,
-            configuration: configuration,
-            minSize: 1,
+            configuration: CaptureSelectionSnappingConfiguration.fromPreferences(),
         )
     }
 
@@ -1487,7 +1471,9 @@ final class AreaSelectionController: NSObject {
         let rect = manualSelectionRect
         let currentPoint = manualSelectionCurrentPoint
         let guides = manualSelectionSnapResult?.appliedCoordinates ?? [:]
-        for (_, window) in windowPool {
+        let targetDisplayIDs = manualSelectionRenderDisplayIDs(rect: rect, currentPoint: currentPoint)
+        for displayID in targetDisplayIDs {
+            guard let window = windowPool[displayID] else { continue }
             window.overlayView.renderManualSelection(
                 screenRect: rect,
                 currentScreenPoint: currentPoint,
@@ -1498,8 +1484,32 @@ final class AreaSelectionController: NSObject {
         }
     }
 
+    private func manualSelectionRenderDisplayIDs(rect: CGRect?, currentPoint: CGPoint?) -> Set<CGDirectDisplayID> {
+        var targetDisplayIDs = Set<CGDirectDisplayID>()
+        if let rect, !rect.isEmpty {
+            targetDisplayIDs.formUnion(displayIDsIntersecting(rect))
+        }
+        if let currentPoint {
+            for screen in NSScreen.screens where screen.frame.contains(currentPoint) {
+                if let displayID = screen.displayID {
+                    targetDisplayIDs.insert(displayID)
+                }
+            }
+        }
+        if let sourceDisplayID = manualSelectionSourceWindow?.displayID {
+            targetDisplayIDs.insert(sourceDisplayID)
+        }
+        if targetDisplayIDs.isEmpty {
+            return Set(windowPool.keys)
+        }
+        return targetDisplayIDs
+    }
+
     private func requestDisplayActivationForManualSelection() {
         guard selectionMode == .screenshot else { return }
+        let now = ProcessInfo.processInfo.systemUptime
+        guard now - lastDisplayActivationRequestTime >= displayActivationRequestInterval else { return }
+        lastDisplayActivationRequestTime = now
         let rect = manualSelectionRect
         let currentPoint = manualSelectionCurrentPoint
         for screen in NSScreen.screens {
@@ -1942,6 +1952,7 @@ final class AreaSelectionOverlayView: NSView {
     private var backdropWidth = 0
     private var backdropHeight = 0
     private var backdropScale: CGFloat = 1.0
+    private var backdropPixelCacheGeneration = 0
     private var insideOverlayIsDark = true
     /// Throttles the "no luma pixel data" warning to once per selection (see `updateInsideOverlayAppearance`).
     private var didLogMissingLumaData = false
@@ -2320,13 +2331,17 @@ final class AreaSelectionOverlayView: NSView {
         )
     }
 
-    private func cacheBackdropPixels(from cgImage: CGImage, scale: CGFloat) {
+    private struct BackdropPixelCache: Sendable {
+        let data: [UInt8]?
+        let width: Int
+        let height: Int
+        let scale: CGFloat
+    }
+
+    private nonisolated static func extractBackdropPixelCache(from cgImage: CGImage,
+                                                              scale: CGFloat) -> BackdropPixelCache {
         let width = cgImage.width
         let height = cgImage.height
-        backdropWidth = width
-        backdropHeight = height
-        backdropScale = scale
-
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         guard let context = CGContext(
             data: nil,
@@ -2337,38 +2352,73 @@ final class AreaSelectionOverlayView: NSView {
             space: colorSpace,
             bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue,
         ) else {
-            backdropPixelDataArray = nil
-            DiagnosticLogger.shared.log(
-                .error,
-                .capture,
-                "Failed to create CGContext for backdrop pixel caching",
-                context: ["width": "\(width)", "height": "\(height)"],
-            )
-            return
+            return BackdropPixelCache(data: nil, width: width, height: height, scale: scale)
         }
 
         context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
-
-        if let dataPtr = context.data {
-            let totalBytes = width * height * 4
-            let bufferPointer = UnsafeBufferPointer(
-                start: dataPtr.assumingMemoryBound(to: UInt8.self),
-                count: totalBytes,
-            )
-            backdropPixelDataArray = Array(bufferPointer)
-        } else {
-            backdropPixelDataArray = nil
+        guard let dataPtr = context.data else {
+            return BackdropPixelCache(data: nil, width: width, height: height, scale: scale)
         }
 
+        let totalBytes = width * height * 4
+        let bufferPointer = UnsafeBufferPointer(
+            start: dataPtr.assumingMemoryBound(to: UInt8.self),
+            count: totalBytes,
+        )
+        return BackdropPixelCache(
+            data: Array(bufferPointer),
+            width: width,
+            height: height,
+            scale: scale,
+        )
+    }
+
+    private func scheduleBackdropPixelCache(from cgImage: CGImage, scale: CGFloat) {
+        backdropPixelCacheGeneration += 1
+        let generation = backdropPixelCacheGeneration
+        backdropWidth = cgImage.width
+        backdropHeight = cgImage.height
+        backdropScale = scale
+        backdropPixelDataArray = nil
+
+        Task.detached(priority: .userInitiated) {
+            let cache = Self.extractBackdropPixelCache(from: cgImage, scale: scale)
+            await MainActor.run { [weak self] in
+                guard let self, generation == backdropPixelCacheGeneration else { return }
+                backdropPixelDataArray = cache.data
+                backdropWidth = cache.width
+                backdropHeight = cache.height
+                backdropScale = cache.scale
+                DiagnosticLogger.shared.log(
+                    .debug,
+                    .capture,
+                    "cacheBackdropPixels completed",
+                    context: [
+                        "width": "\(cache.width)",
+                        "height": "\(cache.height)",
+                        "scale": "\(cache.scale)",
+                        "cachedBytes": "\(cache.data?.count ?? 0)",
+                    ],
+                )
+            }
+        }
+    }
+
+    private func cacheBackdropPixels(from cgImage: CGImage, scale: CGFloat) {
+        let cache = Self.extractBackdropPixelCache(from: cgImage, scale: scale)
+        backdropWidth = cache.width
+        backdropHeight = cache.height
+        backdropScale = cache.scale
+        backdropPixelDataArray = cache.data
         DiagnosticLogger.shared.log(
             .debug,
             .capture,
             "cacheBackdropPixels completed",
             context: [
-                "width": "\(width)",
-                "height": "\(height)",
-                "scale": "\(scale)",
-                "cachedBytes": "\(backdropPixelDataArray?.count ?? 0)",
+                "width": "\(cache.width)",
+                "height": "\(cache.height)",
+                "scale": "\(cache.scale)",
+                "cachedBytes": "\(cache.data?.count ?? 0)",
             ],
         )
     }
@@ -2497,7 +2547,13 @@ final class AreaSelectionOverlayView: NSView {
         CATransaction.commit()
 
         currentBackdropImage = backdrop.image
-        cacheBackdropPixels(from: backdrop.image, scale: backdrop.scaleFactor)
+        let overlayEnabled = UserDefaults.standard
+            .object(forKey: PreferencesKeys.screenshotShowSelectionAreaOverlay) as? Bool ?? true
+        if overlayEnabled {
+            scheduleBackdropPixelCache(from: backdrop.image, scale: backdrop.scaleFactor)
+        } else {
+            cacheBackdropPixels(from: backdrop.image, scale: backdrop.scaleFactor)
+        }
         if magnifier.zoom > 1.0 {
             updateMagnifier(at: currentMousePosition)
         }
@@ -2507,6 +2563,7 @@ final class AreaSelectionOverlayView: NSView {
     }
 
     func clearBackdrop() {
+        backdropPixelCacheGeneration += 1
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         snapshotLayer.contents = nil

@@ -65,6 +65,8 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
     private let tempCaptureManager = TempCaptureManager.shared
     private var isAreaSelectionActive = false
     private var activeAreaSelectionSessionID: UUID?
+    private var activeParallelFrozenSession: FrozenAreaCaptureSession?
+    private var parallelFrozenPrepareTask: Task<Void, Never>?
     private var lazyAreaSnapshotTasks: [CGDirectDisplayID: Task<Void, Never>] = [:]
     private var lazyAreaSnapshotFailedDisplayIDs = Set<CGDirectDisplayID>()
     private var cancellables = Set<AnyCancellable>()
@@ -797,66 +799,106 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 return
             }
 
-            Task { @MainActor in
-                let frozenSession: FrozenAreaCaptureSession
-                do {
-                    self.isCapturing = true
-                    let snapshotStartedAt = Date()
-                    let preparedSession = try await AllDisplayFrozenSessionPreparer.prepare(
-                        showCursor: showCursor,
-                        excludeDesktopIcons: excludeDesktopIcons,
-                        excludeDesktopWidgets: excludeDesktopWidgets,
-                        excludeOwnApplication: excludeOwnApplication,
-                        prefetchedContentTask: prefetchedContentTask,
-                    )
-                    frozenSession = preparedSession.session
-                    let captureMode = preparedSession.mode
-                    let snapshotDurationMs = Int(Date().timeIntervalSince(snapshotStartedAt) * 1000)
-                    DiagnosticLogger.shared.log(
-                        .info,
-                        .capture,
-                        "Frozen area snapshot prepared",
-                        context: [
-                            "displayCount": "\(frozenSession.displayIDs.count)",
-                            "duration_ms": "\(snapshotDurationMs)",
-                            "mode": captureMode,
-                        ],
-                    )
-                    self.isCapturing = false
-                } catch let error as CaptureError {
-                    self.isCapturing = false
-                    self.isAreaSelectionActive = false
-                    self.lastCaptureResult = .failure(error)
-                    hiddenWindowSession.restore()
-                    DiagnosticLogger.shared.log(
-                        .error,
-                        .capture,
-                        "Frozen area capture setup failed: \(error.localizedDescription)",
-                    )
-                    return
-                } catch {
-                    self.isCapturing = false
-                    self.isAreaSelectionActive = false
-                    self.lastCaptureResult = .failure(.captureFailed(error.localizedDescription))
-                    hiddenWindowSession.restore()
-                    DiagnosticLogger.shared.log(
-                        .error,
-                        .capture,
-                        "Frozen area capture setup failed: \(error.localizedDescription)",
-                    )
-                    return
-                }
-                self.startFrozenAreaSelection(
-                    with: frozenSession,
-                    saveDirectory: resolvedSaveDirectory,
-                    prefetchedContentTask: prefetchedContentTask,
+            beginParallelFrozenAreaSelection(
+                saveDirectory: resolvedSaveDirectory,
+                prefetchedContentTask: prefetchedContentTask,
+                showCursor: showCursor,
+                excludeDesktopIcons: excludeDesktopIcons,
+                excludeDesktopWidgets: excludeDesktopWidgets,
+                excludeOwnApplication: excludeOwnApplication,
+                initialInteractionMode: initialInteractionMode,
+                hiddenWindowSession: hiddenWindowSession,
+                context: captureContext,
+            )
+        }
+    }
+
+    /// Shows the selection overlay immediately while frozen snapshots are captured in parallel.
+    private func beginParallelFrozenAreaSelection(
+        saveDirectory resolvedSaveDirectory: URL,
+        prefetchedContentTask: ShareableContentPrefetchTask?,
+        showCursor: Bool,
+        excludeDesktopIcons: Bool,
+        excludeDesktopWidgets: Bool,
+        excludeOwnApplication: Bool,
+        initialInteractionMode: AreaSelectionInteractionMode,
+        hiddenWindowSession: HiddenWindowSession,
+        context: CaptureContext,
+    ) {
+        cancelParallelFrozenPrepare()
+        let placeholderSession = FrozenAreaCaptureSession.fromSnapshots([])
+        activeParallelFrozenSession = placeholderSession
+        startFrozenAreaSelection(
+            with: placeholderSession,
+            initialBackdrops: [:],
+            saveDirectory: resolvedSaveDirectory,
+            prefetchedContentTask: prefetchedContentTask,
+            showCursor: showCursor,
+            excludeDesktopIcons: excludeDesktopIcons,
+            excludeDesktopWidgets: excludeDesktopWidgets,
+            excludeOwnApplication: excludeOwnApplication,
+            initialInteractionMode: initialInteractionMode,
+            hiddenWindowSession: hiddenWindowSession,
+            context: context,
+            frozenSessionProvider: { [weak self] in self?.activeParallelFrozenSession },
+        )
+
+        let sessionID = activeAreaSelectionSessionID
+        parallelFrozenPrepareTask = Task { @MainActor [weak self] in
+            guard let self else { return }
+            defer { parallelFrozenPrepareTask = nil }
+            do {
+                let snapshotStartedAt = Date()
+                let preparedSession = try await AllDisplayFrozenSessionPreparer.prepare(
                     showCursor: showCursor,
                     excludeDesktopIcons: excludeDesktopIcons,
                     excludeDesktopWidgets: excludeDesktopWidgets,
                     excludeOwnApplication: excludeOwnApplication,
-                    initialInteractionMode: initialInteractionMode,
-                    hiddenWindowSession: hiddenWindowSession,
-                    context: captureContext,
+                    prefetchedContentTask: prefetchedContentTask,
+                )
+                guard activeAreaSelectionSessionID == sessionID else {
+                    preparedSession.session.invalidate()
+                    return
+                }
+                activeParallelFrozenSession?.invalidate()
+                activeParallelFrozenSession = preparedSession.session
+                let snapshotDurationMs = Int(Date().timeIntervalSince(snapshotStartedAt) * 1_000)
+                DiagnosticLogger.shared.log(
+                    .info,
+                    .capture,
+                    "Parallel frozen area snapshot prepared",
+                    context: [
+                        "displayCount": "\(preparedSession.session.displayIDs.count)",
+                        "duration_ms": "\(snapshotDurationMs)",
+                        "mode": preparedSession.mode,
+                    ],
+                )
+                for (displayID, backdrop) in preparedSession.session.backdrops {
+                    AreaSelectionController.shared.applyBackdrop(backdrop, for: displayID)
+                }
+            } catch let error as CaptureError {
+                guard activeAreaSelectionSessionID == sessionID else { return }
+                isAreaSelectionActive = false
+                lastCaptureResult = .failure(error)
+                hiddenWindowSession.restore()
+                AreaSelectionController.shared.cancelSelection()
+                cancelParallelFrozenPrepare()
+                DiagnosticLogger.shared.log(
+                    .error,
+                    .capture,
+                    "Parallel frozen area capture setup failed: \(error.localizedDescription)",
+                )
+            } catch {
+                guard activeAreaSelectionSessionID == sessionID else { return }
+                isAreaSelectionActive = false
+                lastCaptureResult = .failure(.captureFailed(error.localizedDescription))
+                hiddenWindowSession.restore()
+                AreaSelectionController.shared.cancelSelection()
+                cancelParallelFrozenPrepare()
+                DiagnosticLogger.shared.log(
+                    .error,
+                    .capture,
+                    "Parallel frozen area capture setup failed: \(error.localizedDescription)",
                 )
             }
         }
@@ -1050,6 +1092,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
 
     private func startFrozenAreaSelection(
         with frozenSession: FrozenAreaCaptureSession,
+        initialBackdrops: [CGDirectDisplayID: AreaSelectionBackdrop]? = nil,
         saveDirectory resolvedSaveDirectory: URL,
         prefetchedContentTask: ShareableContentPrefetchTask?,
         showCursor: Bool,
@@ -1059,24 +1102,28 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         initialInteractionMode: AreaSelectionInteractionMode = .manualRegion,
         hiddenWindowSession: HiddenWindowSession,
         context: CaptureContext = .empty,
+        frozenSessionProvider: (() -> FrozenAreaCaptureSession?)? = nil,
     ) {
         cancelLazyAreaSnapshotTasks()
         let sessionID = UUID()
         activeAreaSelectionSessionID = sessionID
+        let resolvedSession = { frozenSessionProvider?() ?? frozenSession }
 
         AreaSelectionController.shared.startSelection(
             mode: .screenshot,
-            backdrops: frozenSession.backdrops,
+            backdrops: initialBackdrops ?? frozenSession.backdrops,
             applicationConfiguration: AreaSelectionApplicationConfiguration(
                 prefetchedContentTask: prefetchedContentTask,
                 excludeOwnApplication: excludeOwnApplication,
             ),
             initialInteractionMode: initialInteractionMode,
             onDisplayActivationRequested: { [weak self] displayID in
+                let session = resolvedSession()
+                guard !session.displayIDs.isEmpty else { return }
                 self?.prepareLazyFrozenDisplay(
                     displayID,
                     sessionID: sessionID,
-                    frozenSession: frozenSession,
+                    frozenSession: session,
                     prefetchedContentTask: prefetchedContentTask,
                     showCursor: showCursor,
                     excludeDesktopIcons: excludeDesktopIcons,
@@ -1085,9 +1132,11 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 )
             },
             onTransitionRecapture: { [weak self] in
+                let session = resolvedSession()
+                guard !session.displayIDs.isEmpty else { return }
                 self?.refreshFrozenDisplaysAfterTransition(
                     sessionID: sessionID,
-                    frozenSession: frozenSession,
+                    frozenSession: session,
                     showCursor: showCursor,
                     excludeDesktopIcons: excludeDesktopIcons,
                     excludeDesktopWidgets: excludeDesktopWidgets,
@@ -1097,20 +1146,33 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         ) { [weak self] selection in
             guard let self else {
                 DiagnosticLogger.shared.log(.warning, .capture, "captureArea completion: self deallocated")
-                frozenSession.invalidate()
+                resolvedSession().invalidate()
                 hiddenWindowSession.restore()
                 return
             }
             defer {
                 self.isAreaSelectionActive = false
+                self.cancelParallelFrozenPrepare()
             }
 
             guard let selection else {
                 cancelLazyAreaSnapshotTasks()
-                frozenSession.invalidate()
+                resolvedSession().invalidate()
                 hiddenWindowSession.restore()
                 DiagnosticLogger.shared.log(.info, .capture, "Area capture cancelled by user")
                 lastCaptureResult = .failure(.cancelled)
+                return
+            }
+
+            let frozenSession = resolvedSession()
+            guard !frozenSession.displayIDs.isEmpty else {
+                hiddenWindowSession.restore()
+                lastCaptureResult = .failure(.captureFailed("Frozen snapshot unavailable"))
+                DiagnosticLogger.shared.log(
+                    .error,
+                    .capture,
+                    "Frozen area selection completed before snapshots were ready",
+                )
                 return
             }
 
@@ -1669,6 +1731,13 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 }
             }
         }
+    }
+
+    private func cancelParallelFrozenPrepare() {
+        parallelFrozenPrepareTask?.cancel()
+        parallelFrozenPrepareTask = nil
+        activeParallelFrozenSession?.invalidate()
+        activeParallelFrozenSession = nil
     }
 
     private func cancelLazyAreaSnapshotTasks(clearFailures: Bool = true) {

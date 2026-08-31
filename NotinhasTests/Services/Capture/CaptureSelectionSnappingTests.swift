@@ -136,6 +136,27 @@ final class CaptureSelectionSnappingTests: XCTestCase {
         XCTAssertEqual(result.appliedCoordinates[.maxX] ?? -1, 200, accuracy: 0.01)
     }
 
+    func testSnapMovingPoint_snapsCursorCornerToBoundary() throws {
+        let backdrop = makeTwoRegionBackdrop(leftColor: (0, 0, 0), rightColor: (255, 255, 255))
+        let index = try XCTUnwrap(
+            CaptureSelectionBoundaryIndex(
+                image: backdrop.image,
+                drawRect: CGRect(x: 0, y: 0, width: 400, height: 300),
+            ),
+        )
+        let anchor = CGPoint(x: 120, y: 80)
+        let moving = CGPoint(x: 188, y: 180)
+        let result = CaptureSelectionSnapping.snapMovingPoint(
+            point: moving,
+            anchor: anchor,
+            boundaryIndex: index,
+            configuration: CaptureSelectionSnappingConfiguration(snapDistance: 20, colorSensitivity: 3),
+        )
+
+        XCTAssertEqual(result.rect.maxX, 200, accuracy: 0.01)
+        XCTAssertEqual(result.appliedCoordinates[.maxX] ?? -1, 200, accuracy: 0.01)
+    }
+
     func testResolve_leftEdgeSnapsWithinRadius() {
         let proposed = CGRect(x: 102, y: 100, width: 200, height: 120)
         let candidates = [
