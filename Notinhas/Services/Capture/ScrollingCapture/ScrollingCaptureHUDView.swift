@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ScrollingCaptureHUDView: View {
     @ObservedObject var model: ScrollingCaptureSessionModel
-    let onStart: () -> Void
     let onDone: () -> Void
     let onCancel: () -> Void
     let onToggleAutoScroll: () -> Void
@@ -60,38 +59,27 @@ struct ScrollingCaptureHUDView: View {
 
     private var actionButtons: some View {
         HStack(spacing: 8) {
-            if model.phase == .ready {
-                Button(L10n.Common.cancel, action: onCancel)
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-
-                Button(L10n.ScrollingCapture.startCapture, action: onStart)
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.small)
-                    .disabled(!model.canStartCapture)
-            } else {
-                Button(L10n.Common.cancel, action: onCancel)
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                    .disabled(!model.canCancelSession)
-
-                Button(action: onToggleAutoScroll) {
-                    Label(
-                        model.isAutoScrolling ? L10n.ScrollingCapture.stopAutoScroll : L10n.ScrollingCapture.autoScroll,
-                        systemImage: model.isAutoScrolling ? "stop.circle.fill" : "play.circle.fill",
-                    )
-                    .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
-                }
+            Button(L10n.Common.cancel, action: onCancel)
                 .buttonStyle(.bordered)
                 .controlSize(.small)
-                .disabled(!model.canToggleAutoScroll)
+                .disabled(!model.canCancelSession)
 
-                Button(L10n.Common.done, action: onDone)
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.small)
-                    .disabled(!model.canFinishCapture)
+            Button(action: onToggleAutoScroll) {
+                Label(
+                    model.isAutoScrolling ? L10n.ScrollingCapture.stopAutoScroll : L10n.ScrollingCapture.autoScroll,
+                    systemImage: model.isAutoScrolling ? "stop.circle.fill" : "play.circle.fill",
+                )
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
             }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+            .disabled(!model.canToggleAutoScroll)
+
+            Button(L10n.Common.done, action: onDone)
+                .buttonStyle(.borderedProminent)
+                .controlSize(.small)
+                .disabled(!model.canFinishCapture)
         }
     }
 }

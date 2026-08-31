@@ -9,8 +9,8 @@
 import Foundation
 
 enum ScrollingCaptureCommitFrameSource {
+    case onDemand
     case stream
-    case stillFallback
 }
 
 struct ScrollingCaptureFrame: Sendable {

@@ -304,7 +304,7 @@ final class ScrollingCaptureSessionModel: ObservableObject {
     @Published var runtimeState: ScrollingCaptureRuntimeState = .ready
     @Published var statusText = L10n.ScrollingCaptureStatus.adjustRegion
     @Published var guidanceKind: ScrollingCaptureSelectionGuidanceKind = .frameOnlyScrollingContent
-    @Published var previewCaption = L10n.ScrollingCapture.captionStartCaptureToLockFirstFrame
+    @Published var previewCaption = L10n.ScrollingCapture.captionLockingFirstFrame
     @Published var previewImage: CGImage?
     @Published var livePreviewImage: CGImage?
     @Published var isUsingLivePreview = false
@@ -330,10 +330,6 @@ final class ScrollingCaptureSessionModel: ObservableObject {
 
     var isInteractionLocked: Bool {
         phase == .finalizing || phase == .saving
-    }
-
-    var canStartCapture: Bool {
-        phase == .ready && !isInteractionLocked
     }
 
     var canCancelSession: Bool {

@@ -989,6 +989,26 @@ or push still require explicit authorization.
 - Run the focused scrolling-capture tests after each plan, then run the full
   repository gates during the final integrated review.
 
+## Scrolling-capture macshot parity (111)
+
+Generated 2026-08-30 against commit `0992174` after a comparative audit of
+Notinhas scrolling capture vs [macshot](https://github.com/sw33tLie/macshot)
+(GPL-3.0 — inspiration only). Execute phases **in order** within the plan;
+Phase 1 is the P0 streaming-commit cadence fix.
+
+| Plan | Title | Priority | Effort | Depends on | Status |
+| --- | --- | ---: | ---: | --- | --- |
+| [111](111-scrolling-capture-macshot-parity.md) | Scroll capture parity with macshot (smoothness + preview UX) | P1 | L | 100–103 | TODO (Phases 1–5 implemented on branch) |
+
+### Dependency notes (111)
+
+- Phase 1 (streaming commits during scroll) should land before preview/entry UX
+  changes so manual QA measures the correct commit cadence.
+- Phases 2–4 are independently reviewable but share the scrolling-capture folder;
+  serialize implementation.
+- Phase 5 (hybrid on-demand commit capture) is metric-gated; skip unless Phase 1–2
+  still show stale stream commits in session metrics.
+
 ### Findings considered and deferred
 
 - Reduced-resolution matcher: deferred until real stitch-duration and

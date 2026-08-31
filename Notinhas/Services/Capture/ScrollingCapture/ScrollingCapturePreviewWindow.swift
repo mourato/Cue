@@ -16,6 +16,7 @@ struct ScrollingCapturePreviewLayoutSignature: Equatable {
     let caption: String
     let badgeLabel: String?
     let phase: String
+    let maxImageHeight: Int
 }
 
 final class ScrollingCapturePreviewWindow: NSPanel {
@@ -47,7 +48,7 @@ final class ScrollingCapturePreviewWindow: NSPanel {
         hidesOnDeactivate = false
         ignoresMouseEvents = true
         collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
-        contentView = NSHostingView(rootView: ScrollingCapturePreviewView(model: model))
+        refreshContentView()
         modelObservation = model.objectWillChange.sink { [weak self] _ in
             self?.scheduleLayoutUpdate()
         }
@@ -57,7 +58,17 @@ final class ScrollingCapturePreviewWindow: NSPanel {
 
     func updateAnchorRect(_ rect: CGRect) {
         anchorRect = rect
-        position(near: rect, size: frame.size)
+        refreshContentView()
+        updateLayout()
+    }
+
+    private func refreshContentView() {
+        contentView = NSHostingView(
+            rootView: ScrollingCapturePreviewView(
+                model: model,
+                maxImageHeight: currentMaxImageHeight(),
+            ),
+        )
     }
 
     private func updateLayout() {
@@ -70,17 +81,23 @@ final class ScrollingCapturePreviewWindow: NSPanel {
                     width: ScrollingCapturePreviewLayout.panelWidth,
                     height: 236,
                 )
-        guard frame.size != size else {
-            position(near: anchorRect, size: frame.size)
-            return
-        }
+        let targetFrame = Self.panelFrame(
+            anchorRect: anchorRect,
+            panelSize: size,
+            visibleFrame: targetVisibleFrame(),
+        )
 
-        NSAnimationContext.runAnimationGroup { ctx in
-            ctx.duration = 0.25
-            ctx.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-            self.animator().setContentSize(size)
+        if frame != targetFrame {
+            if model.phase == .capturing {
+                setFrame(targetFrame, display: true)
+            } else {
+                NSAnimationContext.runAnimationGroup { ctx in
+                    ctx.duration = 0.25
+                    ctx.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                    self.animator().setFrame(targetFrame, display: true)
+                }
+            }
         }
-        position(near: anchorRect, size: size)
     }
 
     private func scheduleLayoutUpdate() {
@@ -89,7 +106,11 @@ final class ScrollingCapturePreviewWindow: NSPanel {
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
             layoutUpdateScheduled = false
-            guard Self.layoutSignature(for: model, anchorRect: anchorRect) != lastLayoutSignature else { return }
+            let signature = Self.layoutSignature(for: model, anchorRect: anchorRect)
+            guard signature != lastLayoutSignature else { return }
+            if signature.maxImageHeight != lastLayoutSignature?.maxImageHeight {
+                refreshContentView()
+            }
             updateLayout()
         }
     }
@@ -98,14 +119,81 @@ final class ScrollingCapturePreviewWindow: NSPanel {
         for model: ScrollingCaptureSessionModel,
         anchorRect: CGRect,
     ) -> ScrollingCapturePreviewLayoutSignature {
-        ScrollingCapturePreviewLayoutSignature(
+        let visibleFrame = targetVisibleFrame(for: anchorRect)
+        let maxImageHeight = Int(ScrollingCapturePreviewLayout.maxImageHeight(
+            anchorRect: anchorRect,
+            visibleFrame: visibleFrame,
+        ).rounded())
+        return ScrollingCapturePreviewLayoutSignature(
             anchorRect: anchorRect,
             selectedRect: model.selectedRect,
             imageSize: model.activePreviewImage.map { CGSize(width: $0.width, height: $0.height) },
             caption: model.previewCaption,
             badgeLabel: model.previewTruthState.badgeLabel,
             phase: phaseName(model.phase),
+            maxImageHeight: maxImageHeight,
         )
+    }
+
+    static func panelFrame(
+        anchorRect: CGRect,
+        panelSize: CGSize,
+        visibleFrame: CGRect,
+    ) -> CGRect {
+        let origin = panelOrigin(
+            anchorRect: anchorRect,
+            panelSize: panelSize,
+            visibleFrame: visibleFrame,
+        )
+        return CGRect(origin: origin, size: panelSize)
+    }
+
+    static func panelOrigin(
+        anchorRect: CGRect,
+        panelSize: CGSize,
+        visibleFrame: CGRect,
+    ) -> CGPoint {
+        let x = horizontalOrigin(
+            anchorRect: anchorRect,
+            panelWidth: panelSize.width,
+            visibleFrame: visibleFrame,
+        )
+        let anchorBottom = anchorRect.minY - ScrollingCapturePreviewLayout.selectionBorderOutset
+        let ceilingY = visibleFrame.maxY - ScrollingCapturePreviewLayout.panelTopInset
+        let panelBottom = anchorBottom + panelSize.height <= ceilingY
+            ? anchorBottom
+            : ceilingY - panelSize.height
+        return CGPoint(x: x, y: panelBottom)
+    }
+
+    static func horizontalOrigin(
+        anchorRect: CGRect,
+        panelWidth: CGFloat,
+        visibleFrame: CGRect,
+    ) -> CGFloat {
+        let margin = ScrollingCapturePreviewLayout.panelHorizontalMargin
+        let inset = ScrollingCapturePreviewLayout.panelScreenEdgeInset
+        let preferredX = anchorRect.maxX + margin
+        let fallbackX = anchorRect.minX - margin - panelWidth
+        return preferredX + panelWidth <= visibleFrame.maxX - inset
+            ? preferredX
+            : max(visibleFrame.minX + inset, fallbackX)
+    }
+
+    private func currentMaxImageHeight() -> CGFloat {
+        ScrollingCapturePreviewLayout.maxImageHeight(
+            anchorRect: anchorRect,
+            visibleFrame: targetVisibleFrame(),
+        )
+    }
+
+    private func targetVisibleFrame() -> CGRect {
+        Self.targetVisibleFrame(for: anchorRect)
+    }
+
+    private static func targetVisibleFrame(for anchorRect: CGRect) -> CGRect {
+        let screen = NSScreen.screens.first(where: { $0.frame.intersects(anchorRect) }) ?? NSScreen.main
+        return screen?.visibleFrame ?? .zero
     }
 
     private static func phaseName(_ phase: ScrollingCapturePhase) -> String {
@@ -115,21 +203,6 @@ final class ScrollingCapturePreviewWindow: NSPanel {
         case .finalizing: "finalizing"
         case .saving: "saving"
         }
-    }
-
-    private func position(near rect: CGRect, size: CGSize) {
-        guard let screen = NSScreen.screens.first(where: { $0.frame.intersects(rect) }) ?? NSScreen.main else {
-            return
-        }
-
-        let visible = screen.visibleFrame
-        let preferredX = rect.maxX + 20
-        let fallbackX = rect.minX - size.width - 20
-        let x = preferredX + size.width <= visible.maxX - 12
-            ? preferredX
-            : max(visible.minX + 12, fallbackX)
-        let y = min(max(visible.minY + 12, rect.midY - size.height / 2), visible.maxY - size.height - 12)
-        setFrame(CGRect(x: x, y: y, width: size.width, height: size.height), display: false)
     }
 
     override var canBecomeKey: Bool {

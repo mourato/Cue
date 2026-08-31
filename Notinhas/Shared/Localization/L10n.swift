@@ -5929,8 +5929,8 @@ nonisolated enum L10n {
         )
         static let previewPressStartToBegin = string(
             "scrolling-capture.preview-press-start-to-begin",
-            defaultValue: "Press Start Capture to begin.",
-            comment: "Preview description shown before scrolling capture starts",
+            defaultValue: "Scroll to begin capturing.",
+            comment: "Preview description shown before the first stitched frame is ready",
         )
         static let previewShowingLatestStitchedCapture = string(
             "scrolling-capture.preview-showing-latest-stitched-capture",
@@ -5994,8 +5994,8 @@ nonisolated enum L10n {
         )
         static let guidanceThenPressStartCapture = string(
             "scrolling-capture.guidance-then-press-start-capture",
-            defaultValue: "Then press Start Capture",
-            comment: "Selection guidance detail shown before starting scrolling capture",
+            defaultValue: "Scroll in one direction at a steady pace",
+            comment: "Selection guidance detail shown after scrolling capture begins",
         )
         static let guidanceKeepOneDirection = string(
             "scrolling-capture.guidance-keep-one-direction",
@@ -6161,10 +6161,15 @@ nonisolated enum L10n {
             )
         }
 
+        static let captionLockingFirstFrame = string(
+            "scrolling-capture.caption-locking-first-frame",
+            defaultValue: "Locking the first frame",
+            comment: "Preview caption shown while scrolling capture locks the first frame",
+        )
         static let captionStartCaptureToLockFirstFrame = string(
             "scrolling-capture.caption-start-capture-to-lock-first-frame",
             defaultValue: "Start Capture to lock the first frame",
-            comment: "Preview caption shown before scrolling capture starts",
+            comment: "Legacy preview caption retained for configuration import compatibility",
         )
         static let captionNoSavableResultReady = string(
             "scrolling-capture.caption-no-savable-result-ready",
@@ -7414,8 +7419,8 @@ nonisolated enum L10n {
         )
         static let readyHintToast = string(
             "scrolling-capture-status.ready-hint-toast",
-            defaultValue: "Select only the moving content, press Start Capture, then keep scrolling in one direction at a steady pace.",
-            comment: "Toast shown when a scrolling capture session first appears",
+            defaultValue: "Frame only the scrolling content, then scroll in one direction at a steady pace.",
+            comment: "Toast shown when a scrolling capture session begins",
         )
     }
 

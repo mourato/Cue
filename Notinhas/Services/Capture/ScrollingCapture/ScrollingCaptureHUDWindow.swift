@@ -16,7 +16,6 @@ final class ScrollingCaptureHUDWindow: NSPanel {
     init(
         anchorRect: CGRect,
         model: ScrollingCaptureSessionModel,
-        onStart: @escaping () -> Void,
         onDone: @escaping () -> Void,
         onCancel: @escaping () -> Void,
         onToggleAutoScroll: @escaping () -> Void,
@@ -40,7 +39,6 @@ final class ScrollingCaptureHUDWindow: NSPanel {
         collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
         contentView = NSHostingView(rootView: ScrollingCaptureHUDView(
             model: model,
-            onStart: onStart,
             onDone: onDone,
             onCancel: onCancel,
             onToggleAutoScroll: onToggleAutoScroll,

@@ -414,7 +414,7 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
 
     func testPreviewOutputChanged_onlyPublishesWhenOutputChanges() {
         XCTAssertFalse(
-            ScrollingCaptureCoordinator.previewOutputChanged(
+            ScrollingCaptureSessionPolicy.previewOutputChanged(
                 previousAcceptedFrameCount: 2,
                 previousOutputHeight: 200,
                 acceptedFrameCount: 2,
@@ -422,7 +422,7 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
             ),
         )
         XCTAssertTrue(
-            ScrollingCaptureCoordinator.previewOutputChanged(
+            ScrollingCaptureSessionPolicy.previewOutputChanged(
                 previousAcceptedFrameCount: 2,
                 previousOutputHeight: 200,
                 acceptedFrameCount: 3,
@@ -430,7 +430,7 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
             ),
         )
         XCTAssertTrue(
-            ScrollingCaptureCoordinator.previewOutputChanged(
+            ScrollingCaptureSessionPolicy.previewOutputChanged(
                 previousAcceptedFrameCount: 2,
                 previousOutputHeight: 200,
                 acceptedFrameCount: 2,

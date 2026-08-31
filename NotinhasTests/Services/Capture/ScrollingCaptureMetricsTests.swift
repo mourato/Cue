@@ -272,15 +272,23 @@ final class ScrollingCaptureMetricsTests: XCTestCase {
     func testRecordCommitFrameSelected_tracksSourcesAgeAndDuplicates() {
         var metrics = ScrollingCaptureSessionMetrics()
 
+        metrics.recordCommitFrameSelected(source: .onDemand, frameAgeMs: nil, isDuplicateFrame: false)
         metrics.recordCommitFrameSelected(source: .stream, frameAgeMs: 25, isDuplicateFrame: false)
         metrics.recordCommitFrameSelected(source: .stream, frameAgeMs: 60, isDuplicateFrame: true)
-        metrics.recordCommitFrameSelected(source: .stillFallback, frameAgeMs: nil, isDuplicateFrame: false)
 
+        XCTAssertEqual(metrics.onDemandCommitFrameCount, 1)
         XCTAssertEqual(metrics.streamCommitFrameCount, 2)
-        XCTAssertEqual(metrics.stillFallbackCommitFrameCount, 1)
         XCTAssertEqual(metrics.duplicateCommitFrameCount, 1)
         XCTAssertEqual(metrics.commitFrameAgeTotalMs, 85)
         XCTAssertEqual(metrics.commitFrameAgeMaxMs, 60)
+    }
+
+    func testRecordMouseMoveSuppressionInstalled() {
+        var metrics = ScrollingCaptureSessionMetrics()
+        metrics.recordMouseMoveSuppressionInstalled(active: true)
+
+        XCTAssertTrue(metrics.mouseMoveSuppressionActive)
+        XCTAssertEqual(metrics.summaryContext(reason: "done")["mouseMoveSuppressionActive"], "true")
     }
 
     // MARK: - Finalizing
@@ -349,13 +357,13 @@ final class ScrollingCaptureMetricsTests: XCTestCase {
             "visionEstimates", "matcherConfidenceAvg", "appendDeltaAvgPx", "appendDeltaMaxPx",
             "livePreviewStarts", "livePreviewStartFailures", "livePreviewFallbacks",
             "livePreviewFailures", "livePreviewFrames", "commitSchedules", "commitCoalesced",
-            "streamCommitFrames", "stillFallbackCommitFrames", "duplicateCommitFrames",
+            "streamCommitFrames", "onDemandCommitFrames", "duplicateCommitFrames",
             "commitFrameAgeAvgMs", "commitFrameAgeMaxMs",
             "livePreviewPublishAvgMs", "livePreviewGapAvgMs", "livePreviewGapMaxMs",
             "previewTruthLiveAhead", "previewTruthLiveAheadMaxLagMs",
             "tentativeStitches", "unsafeStitches",
             "finalizingStarts", "finalizingAvgMs", "finalizingBlockedInput",
-            "preStartEscapeCancels",
+            "preStartEscapeCancels", "mouseMoveSuppressionActive",
         ]
 
         for key in expectedKeys {

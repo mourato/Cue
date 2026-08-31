@@ -9,7 +9,7 @@ For trigger plumbing shared with other capture modes, see [`CAPTURE.md`](CAPTURE
 - Entry point: `ScreenCaptureViewModel.captureScrolling()` (`Notinhas/Features/Capture/CaptureViewModel.swift`), fired from the menu bar, the global shortcut (default `⇧⌘6`), or `notinhas://capture/scrolling`.
 - The entry resolves the save directory (`SandboxFileAccessManager.ensureExportDirectoryForOperation` → `TempCaptureManager.resolveSaveDirectory(for: .screenshot)`), hides own windows when excluded, then starts `AreaSelectionController.startSelection(mode: .scrollingCapture)`.
 - The user drags a rect around **only the moving content** (fixed headers/footers confuse stitching).
-- The rect, save directory, `ImageFormat`, and prefetched `SCShareableContent` task are handed to `ScrollingCaptureCoordinator.beginSession(rect:saveDirectory:format:prefetchedContentTask:onSessionEnded:)`.
+- The rect, save directory, `ImageFormat`, and prefetched `SCShareableContent` task are handed to `ScrollingCaptureCoordinator.beginSession(rect:saveDirectory:format:prefetchedContentTask:onSessionEnded:)`, which **starts capturing immediately** (no separate Start step).
 - The subsystem is intentionally self-contained: session model, region overlay, HUD, preview rail, frame source, commit scheduling, stitcher, and metrics all live under `Services/Capture/ScrollingCapture/`. Treat the folder as one unit.
 
 ## Architecture
@@ -22,8 +22,8 @@ flowchart TD
 
     D --> E["Prewarm region capture context (ScreenCaptureManager.prepareAreaCapture)"]
     D --> F["RecordingRegionOverlayWindow per screen (movable/resizable)"]
-    D --> G["ScrollingCaptureHUDWindow (Start/Done/Cancel/Auto Scroll)"]
-    D --> H["ScrollingCapturePreviewWindow (floating live rail)"]
+    D --> G["ScrollingCaptureHUDWindow (Cancel/Auto Scroll/Done)"]
+    D --> H["ScrollingCapturePreviewWindow (bottom-anchored live rail)"]
     D --> I["ScrollingCaptureFrameSource + ScrollingCaptureFrameRing"]
     D --> J["ScrollingCaptureCommitScheduler"]
 
@@ -32,7 +32,7 @@ flowchart TD
 
     F --> K["Global scrollWheel monitor + settle timers"]
     K --> J
-    J --> L["refreshPreview() commits newest eligible frame or still fallback"]
+    J --> L["refreshPreview() prefers on-demand still, stream fallback"]
     L --> M["ScrollingCaptureStitcher: append / ignore / height-limit"]
     M --> N["ScrollingCaptureSessionModel updates badge, caption, metrics"]
 
@@ -47,16 +47,14 @@ flowchart TD
 - `ScrollingCaptureSessionModel` (in `ScrollingCaptureTypes.swift`) is the single observable state object. Phases: `ready` → `capturing` → `finalizing` → `saving`. Runtime states: `ready`, `streaming`, `previewing`, `committing`, `paused`, `finalizing`, `saving`.
 - The region overlay reuses `RecordingRegionOverlayWindow` (one per screen, same class as pre-recording setup) with guidance text bound from the session model. Move/resize/reselect is allowed only in `.ready`; starting capture locks interaction.
 - `ScrollingCaptureHUDWindow` is a borderless non-activating `NSPanel` at `.popUpMenu` level anchored above the region; `ScrollingCaptureHUDView` renders Start (ready phase), then Cancel / Auto Scroll / Done (capturing phase).
-- `ScrollingCapturePreviewWindow` is a non-interactive (`ignoresMouseEvents`) panel one level above the region overlay, positioned beside the region (right side preferred, left fallback). `ScrollingCapturePreviewView` + `ScrollingCapturePreviewRenderer` draw the rail (layer-backed, `.fit` scaling, 244pt panel, 220pt preview width, 160–420pt height).
+- `ScrollingCapturePreviewWindow` is a non-interactive (`ignoresMouseEvents`) panel one level above the region overlay, positioned beside the region (right side preferred, left fallback) with its **bottom edge aligned to the capture region** so the rail grows upward as content is stitched. `ScrollingCapturePreviewView` + `ScrollingCapturePreviewRenderer` draw the rail (layer-backed, top-aligned `.fit` scaling for stitched output, 244pt panel, 220pt preview width, dynamic height up to available screen space).
 - `Esc` cancels a `ready` session via local + global key monitors; during `capturing` it is ignored, and during `finalizing`/`saving` it is recorded as blocked input.
 
 ## Frame Pipeline
 
 - The capture context is prewarmed at session start (and re-prewarmed after region edits) through `ScreenCaptureManager.prepareAreaCapture(rect:excludeDesktopIcons:excludeDesktopWidgets:excludeOwnApplication:prefetchedContentTask:)`, producing a reusable `PreparedAreaCaptureContext` with the session scale factor.
-- **Live lane**: `ScrollingCaptureFrameSource` starts a region-scoped `SCStream` (30 fps max, cursor hidden, `.userInteractive` sample queue). Buffers are throttled to the publish interval, converted through a shared `CIContext`, sequenced, and delivered on the main actor. Incomplete frame statuses are dropped.
-- **Shared timeline**: every published frame is appended to `ScrollingCaptureFrameRing` (capacity 2). Preview rendering and commit selection read the same ring, so the two lanes never diverge on different frame histories. `markCommitted(sequenceNumber:)` tracks progress.
-- **Commit lane**: `ScrollingCaptureCommitScheduler` serializes stitch work and coalesces requests — only the latest pending request survives (`onRequestCoalesced` feeds metrics). `refreshPreview(reason:)` picks the newest ring frame after the last committed sequence number.
-- **Still fallback**: when the ring has no usable new frame (stream not started, failed, or starved), the commit falls back to a still capture through the prewarmed context (`capturePreparedArea`). Commit frame source is logged as `stream` vs `still-fallback`.
+- **Live lane**: `ScrollingCaptureFrameSource` starts a region-scoped `SCStream` (30 fps max, cursor hidden, `.userInteractive` sample queue). Buffers are throttled to the publish interval, converted through a shared `CIContext`, sequenced, and delivered on the main actor. Every published frame is appended to `ScrollingCaptureFrameRing` (capacity 2) for preview truth/lag metrics and stream-fallback commits. UI publication remains throttled independently of commit selection.
+- **Commit lane**: `ScrollingCaptureCommitScheduler` serializes stitch work and coalesces requests — only the latest pending request survives (`onRequestCoalesced` feeds metrics). `refreshPreview(reason:)` captures commit frames through a **hybrid path**: a fresh on-demand still snapshot via `capturePreparedArea` is preferred; the live ring remains the fallback when still capture is unavailable. Commit frame source is logged as `on-demand` vs `stream`. `markCommitted(sequenceNumber:)` tracks ring progress when a stream sequence is available.
 - `ScrollingCaptureCommitFrameNormalizer` keeps every frame submitted to the stitcher at one pixel scale: it clamps the output scale to `max(sourceScaleFactor, minimumOutputScaleFactor)` and reuses `FrozenAreaCaptureSession.imageByPromotingScaleIfNeeded`, so region frames honor the same minimum 2x screenshot baseline as other modes — long screenshots from non-Retina displays do not save as 1x output.
 - Stitching runs off the main actor on a serial `processingQueue` (`com.notinhas.scrolling-capture.processing`, `.userInitiated`); the full merged image render is skipped while the live preview is the visible surface.
 
@@ -65,7 +63,7 @@ flowchart TD
 - A global `NSEvent` monitor watches `.scrollWheel` while `phase == .capturing`.
 - Events count only when the pointer is inside the region expanded by 32pt hit slop, and only when vertical dominates (`|deltaY| >= |deltaX|`). Non-precise deltas are multiplied by 18; sub-0.5pt deltas are dropped.
 - Deltas accumulate into `pendingScrollDistancePoints` with direction tracking. A direction reversal against the locked direction discards pending work and warns ("keep one direction"); mixed directions within a batch pause the commit and warn.
-- The 50ms live-refresh loop schedules a commit when thresholds pass, with two gears — default (before the first accepted delta) and fast (after):
+- The 50ms live-refresh loop schedules commits when thresholds pass, with two gears — default (before the first accepted delta) and fast (after):
 
 | Threshold | Default | Fast (locked) |
 | --- | --- | --- |
@@ -73,7 +71,11 @@ flowchart TD
 | Forced refresh distance | 42 pt | 28 pt (adaptive: ~42% of last accepted delta, clamped) |
 | Scroll settle delay | 0.05 s | 0.03 s |
 | Min spacing between commits | 0.09 s | 0.06 s |
+| **Streaming commit interval (active scroll)** | **0.15 s** | **0.15 s** |
 | Scroll idle timeout (flush remaining) | 0.28 s | 0.28 s |
+
+- While scroll is active (`idleDuration < scrollIdleTimeout`), commits can fire every **150 ms** when pending motion exists, without waiting for settle — matching continuous scroll stitching. Settle, forced distance, and idle flush remain for the final visible strip.
+- During `capturing`, `ScrollingCaptureMouseMoveSuppressor` installs an Accessibility-gated `CGEvent` tap that swallows `mouseMoved` events in the target app when permission is granted. This reduces hover/tooltip churn that can destabilize stitch alignment. When Accessibility is denied, capture continues without suppression.
 
 - Accumulated points convert into `expectedSignedDeltaPixels` (points × scale factor), blended and clamped against the last accepted delta (55%–185% band) so the stitcher searches a realistic delta window.
 
@@ -125,7 +127,7 @@ flowchart TD
 
 ## Metrics and Debug Logging
 
-- `ScrollingCaptureSessionMetrics` (`ScrollingCaptureMetrics.swift`) accumulates per-session counters: scroll events, live-preview starts/failures/gaps, commit schedule/coalesce counts, stream vs still-fallback commits, refresh durations by reason, stitch outcomes, alignment paths, safety counts, finalizing duration, blocked inputs.
+- `ScrollingCaptureSessionMetrics` (`ScrollingCaptureMetrics.swift`) accumulates per-session counters: scroll events, live-preview starts/failures/gaps, commit schedule/coalesce counts, on-demand vs stream commit frames, mouse-move suppression, refresh durations by reason, stitch outcomes, alignment paths, safety counts, finalizing duration, blocked inputs.
 - The summary flushes once per session (reason `saved`/`cancelled`) as a `ScrollingCaptureDebug session-summary` debug line plus an info-level metrics line.
 - Debug lines go through `DiagnosticLogger` into `~/Library/Logs/Notinhas/notinhas_YYYY-MM-DD.txt`. Filter them with:
 
@@ -147,11 +149,12 @@ grep 'ScrollingCaptureDebug' "$HOME/Library/Logs/Notinhas/notinhas_$(date +%F).t
 | `Notinhas/Services/Capture/ScrollingCapture/ScrollingCaptureFrameRing.swift` | Bounded frame history (capacity 2) shared by preview and commit lanes |
 | `Notinhas/Services/Capture/ScrollingCapture/ScrollingCaptureCommitScheduler.swift` | Serial commit lane coalescing to the latest pending request |
 | `Notinhas/Services/Capture/ScrollingCapture/ScrollingCaptureCommitFrameNormalizer.swift` | Uniform pixel scale for frames entering the stitcher |
-| `Notinhas/Services/Capture/ScrollingCapture/ScrollingCaptureHUDWindow.swift` | Floating non-activating control panel (Start/Done/Cancel/Auto Scroll) |
+| `Notinhas/Services/Capture/ScrollingCapture/ScrollingCaptureHUDWindow.swift` | Floating non-activating control panel (Cancel/Done/Auto Scroll) |
 | `Notinhas/Services/Capture/ScrollingCapture/ScrollingCaptureHUDView.swift` | SwiftUI HUD content and action buttons |
-| `Notinhas/Services/Capture/ScrollingCapture/ScrollingCapturePreviewWindow.swift` | Non-interactive floating preview rail window |
+| `Notinhas/Services/Capture/ScrollingCapture/ScrollingCaptureMouseMoveSuppressor.swift` | Accessibility-gated `mouseMoved` suppression during capture |
+| `Notinhas/Services/Capture/ScrollingCapture/ScrollingCapturePreviewWindow.swift` | Non-interactive floating preview rail window (bottom-anchored) |
 | `Notinhas/Services/Capture/ScrollingCapture/ScrollingCapturePreviewView.swift` | SwiftUI rail content: truth badge, preview, caption, layout constants |
-| `Notinhas/Services/Capture/ScrollingCapture/ScrollingCapturePreviewRenderer.swift` | Layer-backed `NSViewRepresentable` image surface (`.fit` scaling) |
+| `Notinhas/Services/Capture/ScrollingCapture/ScrollingCapturePreviewRenderer.swift` | Layer-backed `NSViewRepresentable` image surface (`.fit` / `.fitTopAligned`) |
 | `Notinhas/Services/Capture/ScrollingCapture/ScrollingCaptureMetrics.swift` | Per-session metrics counters and summary context |
 
 ## Related docs

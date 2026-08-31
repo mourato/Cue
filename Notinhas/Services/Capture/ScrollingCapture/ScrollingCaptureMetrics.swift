@@ -26,7 +26,7 @@ nonisolated struct ScrollingCaptureSessionMetrics {
     private(set) var commitScheduleCount = 0
     private(set) var commitCoalescedCount = 0
     private(set) var streamCommitFrameCount = 0
-    private(set) var stillFallbackCommitFrameCount = 0
+    private(set) var onDemandCommitFrameCount = 0
     private(set) var duplicateCommitFrameCount = 0
     private(set) var commitFrameAgeTotalMs = 0
     private(set) var commitFrameAgeMaxMs = 0
@@ -62,6 +62,7 @@ nonisolated struct ScrollingCaptureSessionMetrics {
     private(set) var finalizingDurationTotalMs = 0
     private(set) var finalizingBlockedInputCount = 0
     private(set) var preStartEscapeCancelCount = 0
+    private(set) var mouseMoveSuppressionActive = false
 
     private var lastLivePreviewFrameAt: TimeInterval?
     private var currentAlignmentFailureStreak = 0
@@ -133,10 +134,10 @@ nonisolated struct ScrollingCaptureSessionMetrics {
         isDuplicateFrame: Bool,
     ) {
         switch source {
+        case .onDemand:
+            onDemandCommitFrameCount += 1
         case .stream:
             streamCommitFrameCount += 1
-        case .stillFallback:
-            stillFallbackCommitFrameCount += 1
         }
 
         if isDuplicateFrame {
@@ -256,6 +257,10 @@ nonisolated struct ScrollingCaptureSessionMetrics {
         preStartEscapeCancelCount += 1
     }
 
+    mutating func recordMouseMoveSuppressionInstalled(active: Bool) {
+        mouseMoveSuppressionActive = active
+    }
+
     func summaryContext(reason: String) -> [String: String] {
         let sessionDurationSeconds = max(0, ProcessInfo.processInfo.systemUptime - sessionStartedAt)
         let livePreviewGapCount = max(0, livePreviewFrameCount - 1)
@@ -304,7 +309,7 @@ nonisolated struct ScrollingCaptureSessionMetrics {
             "commitSchedules": "\(commitScheduleCount)",
             "commitCoalesced": "\(commitCoalescedCount)",
             "streamCommitFrames": "\(streamCommitFrameCount)",
-            "stillFallbackCommitFrames": "\(stillFallbackCommitFrameCount)",
+            "onDemandCommitFrames": "\(onDemandCommitFrameCount)",
             "duplicateCommitFrames": "\(duplicateCommitFrameCount)",
             "commitFrameAgeAvgMs": Self.averageString(total: commitFrameAgeTotalMs, count: streamCommitFrameCount),
             "commitFrameAgeMaxMs": "\(commitFrameAgeMaxMs)",
@@ -322,6 +327,7 @@ nonisolated struct ScrollingCaptureSessionMetrics {
             "finalizingAvgMs": Self.averageString(total: finalizingDurationTotalMs, count: finalizingStartCount),
             "finalizingBlockedInput": "\(finalizingBlockedInputCount)",
             "preStartEscapeCancels": "\(preStartEscapeCancelCount)",
+            "mouseMoveSuppressionActive": String(mouseMoveSuppressionActive),
         ]
     }
 

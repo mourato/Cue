@@ -12,19 +12,52 @@ enum ScrollingCapturePreviewLayout {
     static let previewWidth: CGFloat = 220
     static let minPreviewHeight: CGFloat = 160
     static let maxPreviewHeight: CGFloat = 420
+    static let panelHorizontalMargin: CGFloat = 20
+    static let panelScreenEdgeInset: CGFloat = 12
+    static let panelTopInset: CGFloat = 20
+    static let panelPadding: CGFloat = 12
+    static let previewSectionSpacing: CGFloat = 8
+    static let previewHeaderApproxHeight: CGFloat = 28
+    /// Matches the region overlay stroke inset so the preview aligns with the visible border bottom.
+    static let selectionBorderOutset: CGFloat = 1.25
 
-    static func previewHeight(for image: CGImage?) -> CGFloat {
+    /// Non-image chrome: panel padding, header row, caption spacing, and caption line.
+    static var panelChromeHeight: CGFloat {
+        (panelWidth - previewWidth)
+            + panelPadding * 2
+            + previewSectionSpacing * 2
+            + previewHeaderApproxHeight
+    }
+
+    static func previewHeight(for image: CGImage?, maxAvailableHeight: CGFloat? = nil) -> CGFloat {
         guard let image, image.width > 0, image.height > 0 else {
             return minPreviewHeight
         }
 
+        let ceiling = maxAvailableHeight ?? maxPreviewHeight
         let scaledHeight = previewWidth * CGFloat(image.height) / CGFloat(image.width)
-        return min(maxPreviewHeight, max(minPreviewHeight, scaledHeight))
+        return min(ceiling, max(minPreviewHeight, scaledHeight))
+    }
+
+    static func maxImageHeight(anchorRect: CGRect, visibleFrame: CGRect) -> CGFloat {
+        let anchorBottom = anchorRect.minY - selectionBorderOutset
+        let ceilingY = visibleFrame.maxY - panelTopInset
+        let available = ceilingY - anchorBottom - panelChromeHeight
+        return max(minPreviewHeight, available)
     }
 }
 
 struct ScrollingCapturePreviewView: View {
     @ObservedObject var model: ScrollingCaptureSessionModel
+    var maxImageHeight: CGFloat?
+
+    private var displayedPreviewImage: CGImage? {
+        model.previewImage ?? model.livePreviewImage
+    }
+
+    private var previewScaling: ScrollingCapturePreviewScaling {
+        model.previewImage != nil ? .fitTopAligned : .fit
+    }
 
     private var badgeColor: Color {
         switch model.previewTruthState {
@@ -44,7 +77,10 @@ struct ScrollingCapturePreviewView: View {
     }
 
     var body: some View {
-        let previewHeight = ScrollingCapturePreviewLayout.previewHeight(for: model.activePreviewImage)
+        let previewHeight = ScrollingCapturePreviewLayout.previewHeight(
+            for: displayedPreviewImage,
+            maxAvailableHeight: maxImageHeight,
+        )
 
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 6) {
@@ -66,16 +102,16 @@ struct ScrollingCapturePreviewView: View {
             }
 
             Group {
-                if let previewImage = model.activePreviewImage {
+                if let previewImage = displayedPreviewImage {
                     GeometryReader { geometry in
                         ScrollingCapturePreviewRenderer(
                             image: previewImage,
-                            scaling: .fit,
+                            scaling: previewScaling,
                         )
                         .frame(
                             width: geometry.size.width,
                             height: geometry.size.height,
-                            alignment: .center,
+                            alignment: .top,
                         )
                         .clipped()
                     }
@@ -84,7 +120,7 @@ struct ScrollingCapturePreviewView: View {
                         Image(systemName: "photo")
                             .font(.system(size: 22, weight: .medium))
                             .foregroundStyle(.secondary)
-                        Text(L10n.ScrollingCapture.captionStartCaptureToLockFirstFrame + ".")
+                        Text(L10n.ScrollingCapture.captionLockingFirstFrame + ".")
                             .font(.system(size: 11))
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
@@ -93,7 +129,7 @@ struct ScrollingCapturePreviewView: View {
                 }
             }
             .frame(width: ScrollingCapturePreviewLayout.previewWidth, height: previewHeight)
-            .animation(.easeInOut(duration: 0.25), value: previewHeight)
+            .animation(model.phase == .capturing ? nil : .easeInOut(duration: 0.25), value: previewHeight)
             .background(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .fill(Color.black.opacity(0.08)),

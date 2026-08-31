@@ -15,42 +15,6 @@ import ScreenCaptureKit
 final class ScrollingCaptureCoordinator {
     static let shared = ScrollingCaptureCoordinator()
 
-    nonisolated static func previewOutputChanged(
-        previousAcceptedFrameCount: Int,
-        previousOutputHeight: Int,
-        acceptedFrameCount: Int,
-        outputHeight: Int,
-    ) -> Bool {
-        acceptedFrameCount != previousAcceptedFrameCount || outputHeight != previousOutputHeight
-    }
-
-    nonisolated static func shouldPublishLivePreviewFrame(
-        hasCommittedPreview: Bool,
-        capturedAt: TimeInterval,
-        lastPublishedAt: TimeInterval?,
-        minimumInterval: TimeInterval,
-    ) -> Bool {
-        guard hasCommittedPreview else { return true }
-        guard let lastPublishedAt else { return true }
-        return capturedAt - lastPublishedAt >= minimumInterval
-    }
-
-    nonisolated static func previewCommitLagMs(
-        latestCapturedAt: TimeInterval?,
-        lastCommittedObservationAt: TimeInterval?,
-        isUsingLivePreview: Bool,
-        toleranceMs: Int,
-    ) -> Int {
-        guard let latestCapturedAt else { return 0 }
-        if let lastCommittedObservationAt {
-            return max(
-                0,
-                Int(((latestCapturedAt - lastCommittedObservationAt) * 1_000).rounded()),
-            )
-        }
-        return isUsingLivePreview ? toleranceMs + 1 : 0
-    }
-
     private let captureManager = ScreenCaptureManager.shared
     private let maxOutputHeight = ScrollingCaptureConfiguration.maxOutputHeight
     private let liveRefreshIntervalNanoseconds: UInt64 = 50_000_000
@@ -64,6 +28,7 @@ final class ScrollingCaptureCoordinator {
     private let fastMinimumPendingScrollPoints: CGFloat = 8
     private let defaultForcedRefreshScrollPoints: CGFloat = 42
     private let fastForcedRefreshScrollPoints: CGFloat = 28
+    private let duringScrollCommitInterval: TimeInterval = 0.15
     private let previewTruthLagToleranceMs = 90
     private let liveFrameDebugSampleInterval = 30
     private let scrollHitSlop: CGFloat = 32
@@ -95,6 +60,7 @@ final class ScrollingCaptureCoordinator {
     private var scrollMonitor: Any?
     private var localSessionKeyMonitor: Any?
     private var globalSessionKeyMonitor: Any?
+    private let mouseMoveSuppressor = ScrollingCaptureMouseMoveSuppressor()
     private var pendingRefreshTask: Task<Void, Never>?
     private var autoScrollTask: Task<Void, Never>?
     private var autoScrollTaskID: UUID?
@@ -169,7 +135,6 @@ final class ScrollingCaptureCoordinator {
         hudWindow = ScrollingCaptureHUDWindow(
             anchorRect: rect,
             model: model,
-            onStart: { [weak self] in self?.startCapture() },
             onDone: { [weak self] in self?.finish() },
             onCancel: { [weak self] in self?.cancel() },
             onToggleAutoScroll: { [weak self] in self?.toggleAutoScrolling() },
@@ -196,6 +161,8 @@ final class ScrollingCaptureCoordinator {
             "Scrolling capture session ready",
             context: ["rect": "\(Int(rect.width))x\(Int(rect.height))"],
         )
+
+        startCapture()
     }
 
     func cancel() {
@@ -210,6 +177,7 @@ final class ScrollingCaptureCoordinator {
         commitScheduler = nil
         stopLivePreviewIfNeeded()
         removeSessionKeyMonitors()
+        mouseMoveSuppressor.remove()
         sessionModelObservation?.cancel()
         sessionModelObservation = nil
 
@@ -270,10 +238,24 @@ final class ScrollingCaptureCoordinator {
         )
         updatePreviewTruthState()
         installScrollMonitorIfNeeded()
+        installMouseMoveSuppressionIfNeeded()
 
         Task { @MainActor in
             await startLivePreviewIfPossible()
             _ = await refreshPreview(reason: "Initial frame captured")
+        }
+    }
+
+    private func installMouseMoveSuppressionIfNeeded() {
+        let installed = mouseMoveSuppressor.installIfAuthorized()
+        sessionMetrics.recordMouseMoveSuppressionInstalled(active: installed)
+        if installed {
+            logScrollingCaptureDebug("mouse-move-suppression-active", context: [:])
+        } else {
+            logScrollingCaptureDebug(
+                "mouse-move-suppression-unavailable",
+                context: ["accessibilityGranted": String(AXIsProcessTrusted())],
+            )
         }
     }
 
@@ -685,13 +667,18 @@ final class ScrollingCaptureCoordinator {
             if let mergedImage = update.mergedImage {
                 latestImage = mergedImage
             }
-            let outputChanged = Self.previewOutputChanged(
+            let outputChanged = ScrollingCaptureSessionPolicy.previewOutputChanged(
                 previousAcceptedFrameCount: sessionModel.acceptedFrameCount,
                 previousOutputHeight: sessionModel.stitchedPixelHeight,
                 acceptedFrameCount: update.acceptedFrameCount,
                 outputHeight: update.outputHeight,
             )
-            if outputChanged, let processedStitcher {
+            if
+                ScrollingCaptureSessionPolicy.shouldUpdateStitchedPreview(
+                    outputChanged: outputChanged,
+                    outcome: update.outcome,
+                ),
+                let processedStitcher {
                 sessionModel.previewImage =
                     makePreviewImage(from: processedStitcher)
                         ?? update.mergedImage
@@ -931,7 +918,7 @@ final class ScrollingCaptureCoordinator {
         sessionModel.previewImage = nil
         sessionModel.livePreviewImage = nil
         sessionModel.isUsingLivePreview = false
-        sessionModel.previewCaption = L10n.ScrollingCapture.captionStartCaptureToLockFirstFrame
+        sessionModel.previewCaption = L10n.ScrollingCapture.captionLockingFirstFrame
         sessionModel.acceptedFrameCount = 0
         sessionModel.stitchedPixelHeight = 0
         sessionModel.runtimeState = .ready
@@ -1016,46 +1003,45 @@ final class ScrollingCaptureCoordinator {
         }
     }
 
-    private struct CommitFrame {
-        let image: CGImage
-        let sequenceNumber: Int?
-        let source: ScrollingCaptureCommitFrameSource
-        let frameAgeMs: Int?
-        let isDuplicateFrame: Bool
-    }
-
-    private func captureFrameForCommit() async throws -> CommitFrame? {
+    private func captureFrameForCommit() async throws -> ScrollingCaptureCommitFrame? {
         let context = try await ensurePreparedCaptureContext()
-        let streamFrame: ScrollingCaptureFrame? = if let lastCommittedSequenceNumber = liveFrameRing
-            .lastCommittedSequenceNumber {
-            liveFrameRing.latestFrame(after: lastCommittedSequenceNumber)
-        } else {
-            liveFrameRing.latest
+        let streamFrame = ScrollingCaptureCommitFrameSelection.streamFrameForCommit(ring: liveFrameRing)
+
+        if let capturedImage = try await capturePreparedAreaForSession() {
+            if let normalizedImage = normalizeCommitFrame(capturedImage, context: context) {
+                let commitFrame = ScrollingCaptureCommitFrameSelection.makeOnDemandFrame(
+                    streamFrame: streamFrame,
+                    normalizedImage: normalizedImage,
+                )
+                recordCommitFrameSelection(commitFrame)
+                return commitFrame
+            }
+
+            logScrollingCaptureDebug(
+                "commit-frame-normalization-failed",
+                context: [
+                    "source": "on-demand",
+                    "inputSize": "\(capturedImage.width)x\(capturedImage.height)",
+                    "logicalSize": "\(Int(context.logicalCropSize.width))x\(Int(context.logicalCropSize.height))",
+                    "sourceScale": Self.formattedDebugDouble(Double(context.scaleFactor)),
+                    "outputScale": Self.formattedDebugDouble(Double(captureScaleFactor)),
+                ],
+            )
         }
 
-        if let streamFrame,
-           let normalizedImage = normalizeCommitFrame(streamFrame.image, context: context) {
-            let now = ProcessInfo.processInfo.systemUptime
-            let isDuplicate = liveFrameRing.lastCommittedSequenceNumber
-                .map { streamFrame.sequenceNumber <= $0 } ?? false
-            let frameAgeMs = max(0, Int(((now - streamFrame.capturedAt) * 1_000).rounded()))
-            sessionMetrics.recordCommitFrameSelected(
-                source: .stream,
-                frameAgeMs: frameAgeMs,
-                isDuplicateFrame: isDuplicate,
+        guard let streamFrame else {
+            logScrollingCaptureDebug(
+                "commit-frame-missing",
+                context: [
+                    "reason": "on-demand-and-stream-unavailable",
+                    "ringFrames": "\(liveFrameRing.frames.count)",
+                    "lastCommittedSequence": optionalString(liveFrameRing.lastCommittedSequenceNumber),
+                ],
             )
-            let commitFrame = CommitFrame(
-                image: normalizedImage,
-                sequenceNumber: streamFrame.sequenceNumber,
-                source: .stream,
-                frameAgeMs: frameAgeMs,
-                isDuplicateFrame: isDuplicate,
-            )
-            logScrollingCaptureCommitFrameSelected(commitFrame)
-            return commitFrame
+            return nil
         }
 
-        if let streamFrame {
+        guard let normalizedImage = normalizeCommitFrame(streamFrame.image, context: context) else {
             logScrollingCaptureDebug(
                 "commit-frame-normalization-failed",
                 context: [
@@ -1066,46 +1052,33 @@ final class ScrollingCaptureCoordinator {
                     "outputScale": Self.formattedDebugDouble(Double(captureScaleFactor)),
                 ],
             )
-        }
-
-        guard let capturedImage = try await capturePreparedAreaForSession() else {
             logScrollingCaptureDebug(
                 "commit-frame-missing",
                 context: [
-                    "reason": "prepared-capture-returned-nil",
+                    "reason": "on-demand-and-stream-unavailable",
                     "ringFrames": "\(liveFrameRing.frames.count)",
                     "lastCommittedSequence": optionalString(liveFrameRing.lastCommittedSequenceNumber),
                 ],
             )
             return nil
         }
-        guard let normalizedImage = normalizeCommitFrame(capturedImage, context: context) else {
-            logScrollingCaptureDebug(
-                "commit-frame-normalization-failed",
-                context: [
-                    "source": "still-fallback",
-                    "inputSize": "\(capturedImage.width)x\(capturedImage.height)",
-                    "logicalSize": "\(Int(context.logicalCropSize.width))x\(Int(context.logicalCropSize.height))",
-                    "sourceScale": Self.formattedDebugDouble(Double(context.scaleFactor)),
-                    "outputScale": Self.formattedDebugDouble(Double(captureScaleFactor)),
-                ],
-            )
-            return nil
-        }
-        sessionMetrics.recordCommitFrameSelected(
-            source: .stillFallback,
-            frameAgeMs: nil,
-            isDuplicateFrame: false,
+
+        let commitFrame = ScrollingCaptureCommitFrameSelection.makeStreamFrame(
+            streamFrame: streamFrame,
+            normalizedImage: normalizedImage,
+            lastCommittedSequenceNumber: liveFrameRing.lastCommittedSequenceNumber,
         )
-        let commitFrame = CommitFrame(
-            image: normalizedImage,
-            sequenceNumber: nil,
-            source: .stillFallback,
-            frameAgeMs: nil,
-            isDuplicateFrame: false,
+        recordCommitFrameSelection(commitFrame)
+        return commitFrame
+    }
+
+    private func recordCommitFrameSelection(_ commitFrame: ScrollingCaptureCommitFrame) {
+        sessionMetrics.recordCommitFrameSelected(
+            source: commitFrame.source,
+            frameAgeMs: commitFrame.frameAgeMs,
+            isDuplicateFrame: commitFrame.isDuplicateFrame,
         )
         logScrollingCaptureCommitFrameSelected(commitFrame)
-        return commitFrame
     }
 
     private func normalizeCommitFrame(
@@ -1139,19 +1112,33 @@ final class ScrollingCaptureCoordinator {
                 let idleDuration = lastScrollEventTime.map { now - $0 } ?? .greatestFiniteMagnitude
                 let pendingDistance = abs(pendingScrollDistancePoints)
                 let hasPendingMotion = pendingDistance > 2
+                let canRefresh = canStartRefresh(at: now)
+                let timeSinceLastRefresh = lastRefreshTime.map { now - $0 }
+                let streamingCommitDue = ScrollingCaptureSessionPolicy.shouldScheduleStreamingCommit(
+                    hasPendingMotion: hasPendingMotion,
+                    idleDuration: idleDuration,
+                    activeScrollThreshold: scrollIdleTimeout,
+                    timeSinceLastRefresh: timeSinceLastRefresh,
+                    minimumStreamingInterval: duringScrollCommitInterval,
+                    canStartRefresh: canRefresh,
+                )
                 let hasEnoughSettledMotion = pendingDistance >= minimumPendingScrollPoints()
                     && idleDuration >= scrollSettleDelay()
+                let forcedRefresh = pendingDistance >= forcedRefreshScrollPoints()
                 let shouldRefresh = hasPendingMotion
-                    && (hasEnoughSettledMotion || pendingDistance >= forcedRefreshScrollPoints())
-                    && canStartRefresh(at: now)
+                    && canRefresh
+                    && (streamingCommitDue || hasEnoughSettledMotion || forcedRefresh)
 
                 if shouldRefresh {
-                    scheduleCommitRefresh(reason: "Live stitched preview")
+                    let reason = streamingCommitDue && idleDuration < scrollSettleDelay()
+                        ? "Streaming stitched preview"
+                        : "Live stitched preview"
+                    scheduleCommitRefresh(reason: reason)
                     return
                 }
 
                 if idleDuration >= scrollIdleTimeout {
-                    if hasPendingMotion, canStartRefresh(at: now) {
+                    if hasPendingMotion, canRefresh {
                         scheduleCommitRefresh(reason: "Latest visible frame")
                     }
                     return
@@ -1245,7 +1232,7 @@ final class ScrollingCaptureCoordinator {
         let observedFrame = liveFrameRing.append(frame)
         livePreviewFrameSequence = observedFrame.sequenceNumber
         lastCapturedFrameAt = observedFrame.capturedAt
-        let shouldPublish = Self.shouldPublishLivePreviewFrame(
+        let shouldPublish = ScrollingCaptureSessionPolicy.shouldPublishLivePreviewFrame(
             hasCommittedPreview: sessionModel.previewImage != nil,
             capturedAt: observedFrame.capturedAt,
             lastPublishedAt: lastLivePreviewPublishedAt,
@@ -1579,7 +1566,7 @@ final class ScrollingCaptureCoordinator {
         let schedulerPendingCount = commitScheduler?.activeRequestCount ?? 0
         let pendingCommitCount = max(schedulerPendingCount, isRefreshingPreview ? 1 : 0)
 
-        let previewLagMs = Self.previewCommitLagMs(
+        let previewLagMs = ScrollingCaptureSessionPolicy.previewCommitLagMs(
             latestCapturedAt: lastCapturedFrameAt,
             lastCommittedObservationAt: lastCommittedObservationAt,
             isUsingLivePreview: sessionModel.isUsingLivePreview,
@@ -1635,7 +1622,7 @@ final class ScrollingCaptureCoordinator {
         }
     }
 
-    private func logScrollingCaptureCommitFrameSelected(_ commitFrame: CommitFrame) {
+    private func logScrollingCaptureCommitFrameSelected(_ commitFrame: ScrollingCaptureCommitFrame) {
         logScrollingCaptureDebug(
             "commit-frame-selected",
             context: [
@@ -1654,7 +1641,7 @@ final class ScrollingCaptureCoordinator {
         reason: String,
         expectedSignedDeltaPixels: Int?,
         shouldRenderMergedImage: Bool,
-        commitFrame: CommitFrame,
+        commitFrame: ScrollingCaptureCommitFrame,
         update: ScrollingCaptureStitchUpdate,
         captureDurationMs: Int,
         stitchDurationMs: Int,
@@ -1712,7 +1699,7 @@ final class ScrollingCaptureCoordinator {
         captureDurationMs: Int,
         stitchDurationMs: Int,
         totalDurationMs: Int,
-        commitFrame: CommitFrame? = nil,
+        commitFrame: ScrollingCaptureCommitFrame? = nil,
         errorDescription: String? = nil,
     ) {
         var context: [String: String] = [
@@ -1777,10 +1764,10 @@ final class ScrollingCaptureCoordinator {
 
     private func commitFrameSourceName(_ source: ScrollingCaptureCommitFrameSource) -> String {
         switch source {
+        case .onDemand:
+            "on-demand"
         case .stream:
             "stream"
-        case .stillFallback:
-            "still-fallback"
         }
     }
 
