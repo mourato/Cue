@@ -3953,6 +3953,16 @@ nonisolated enum L10n {
             defaultValue: "Preview shape",
             comment: "Camera preview shape section label",
         )
+        static let showDuringRecording = string(
+            "camera.show-during-recording",
+            defaultValue: "Show preview while recording",
+            comment: "Camera preview visibility setting title",
+        )
+        static let showDuringRecordingDescription = string(
+            "camera.show-during-recording-description",
+            defaultValue: "Keep the live camera preview visible on screen during recording.",
+            comment: "Camera preview visibility setting description",
+        )
         static let small = string("camera.small", defaultValue: "Small", comment: "Small camera preview size")
         static let medium = string("camera.medium", defaultValue: "Medium", comment: "Medium camera preview size")
         static let large = string("camera.large", defaultValue: "Large", comment: "Large camera preview size")

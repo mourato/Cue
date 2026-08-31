@@ -53,7 +53,9 @@ second canonical design-system document.
   action.
 - The live recording camera preview is draggable within the selected area and
   exposes session-only size and shape controls through the camera popover or
-  the preview's contextual menu; it never writes those controls to preferences.
+  the preview's contextual menu. The persisted `Show preview while recording`
+  option is enabled by default and controls whether that preview remains on
+  screen after recording starts; size and shape remain session-only.
 - Sidebar and swatch states use semantic fills and borders: default, hover,
   selected, and disabled must remain distinguishable in Light and Dark.
 - Numbered pins/notes are the product identity. Preserve their ordering,

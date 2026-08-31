@@ -21,6 +21,7 @@ final class NotinhasConfigurationImporterTests: XCTestCase {
 
         [recording]
         fps = 60
+        show_camera_preview_during_recording = false
         """
 
         let result = NotinhasConfigurationImporter.importTOML(source, defaults: defaults)
@@ -35,6 +36,10 @@ final class NotinhasConfigurationImporterTests: XCTestCase {
         XCTAssertEqual(defaults.object(forKey: PreferencesKeys.screenshotShowCursor) as? Bool, true)
         #if NOTINHAS_VIDEO_MODULE
             XCTAssertEqual(defaults.object(forKey: PreferencesKeys.recordingFPS) as? Int, 60)
+            XCTAssertEqual(
+                defaults.object(forKey: PreferencesKeys.recordingShowCameraPreviewDuringRecording) as? Bool,
+                false,
+            )
         #endif
     }
 

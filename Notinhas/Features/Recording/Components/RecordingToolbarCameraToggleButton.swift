@@ -151,6 +151,24 @@
                         state.onCameraPreviewConfigurationChanged?()
                     }
                 }
+
+                Divider()
+                    .padding(.vertical, PopoverTokens.menuDividerPadding)
+
+                Toggle(
+                    L10n.Camera.showDuringRecording,
+                    isOn: Binding(
+                        get: { state.showCameraPreviewDuringRecording },
+                        set: { isVisible in
+                            state.showCameraPreviewDuringRecording = isVisible
+                            UserDefaults.standard.set(
+                                isVisible,
+                                forKey: PreferencesKeys.recordingShowCameraPreviewDuringRecording,
+                            )
+                        },
+                    ),
+                )
+                .accessibilityHint(L10n.Camera.showDuringRecordingDescription)
             }
         }
 

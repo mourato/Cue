@@ -124,6 +124,7 @@ enum PreferencesKeys {
     static let recordingMicrophoneDeviceID = "recording.microphoneDeviceID"
     static let recordingCaptureCamera = "recording.captureCamera"
     static let recordingCameraDeviceID = "recording.cameraDeviceID"
+    static let recordingShowCameraPreviewDuringRecording = "recording.showCameraPreviewDuringRecording"
     static let recordingShortcut = "recordingShortcut"
     static let recordingLastAreaRect = "recording.lastAreaRect"
     static let recordingRememberLastArea = "recording.rememberLastArea"

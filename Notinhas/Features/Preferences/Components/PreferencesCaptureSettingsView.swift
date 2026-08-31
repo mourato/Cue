@@ -79,6 +79,8 @@ struct CaptureSettingsView: View {
         @AppStorage(PreferencesKeys.recordingIncludeOwnApp) private var includeOwnAppInRecordings = false
         @AppStorage(PreferencesKeys.recordingShowCursor) private var recordingShowCursor = true
         @AppStorage(PreferencesKeys.recordingSmartPointer) private var recordingSmartPointer = false
+        @AppStorage(PreferencesKeys.recordingShowCameraPreviewDuringRecording)
+        private var recordingShowCameraPreviewDuringRecording = true
         @AppStorage(PreferencesKeys.recordingHoverBarVisible) private var recordingHoverBarVisible = true
         @AppStorage(PreferencesKeys.recordingShowTimeOnMenuBar) private var recordingShowTimeOnMenuBar = true
 
@@ -515,6 +517,15 @@ struct CaptureSettingsView: View {
                                 description: L10n.PreferencesCapture.recordingSmartPointerDescription,
                             ) {
                                 Toggle("", isOn: $recordingSmartPointer)
+                                    .labelsHidden()
+                            }
+
+                            SettingRow(
+                                icon: "video",
+                                title: L10n.Camera.showDuringRecording,
+                                description: L10n.Camera.showDuringRecordingDescription,
+                            ) {
+                                Toggle("", isOn: $recordingShowCameraPreviewDuringRecording)
                                     .labelsHidden()
                             }
 
