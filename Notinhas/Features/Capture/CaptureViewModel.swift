@@ -1152,7 +1152,8 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
             }
             defer {
                 self.isAreaSelectionActive = false
-                self.cancelParallelFrozenPrepare()
+                // The async crop task owns the selected session and invalidates it after saving.
+                self.cancelParallelFrozenPrepare(invalidateSession: false)
             }
 
             guard let selection else {
@@ -1733,10 +1734,12 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         }
     }
 
-    private func cancelParallelFrozenPrepare() {
+    private func cancelParallelFrozenPrepare(invalidateSession: Bool = true) {
         parallelFrozenPrepareTask?.cancel()
         parallelFrozenPrepareTask = nil
-        activeParallelFrozenSession?.invalidate()
+        if invalidateSession {
+            activeParallelFrozenSession?.invalidate()
+        }
         activeParallelFrozenSession = nil
     }
 
