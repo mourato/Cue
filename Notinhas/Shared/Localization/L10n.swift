@@ -5634,6 +5634,11 @@ nonisolated enum L10n {
             defaultValue: "Show camera",
             comment: "Toggle label for showing the recorded camera overlay",
         )
+        static let cameraReactsToZoom = string(
+            "video-editor.camera-reacts-to-zoom",
+            defaultValue: "Webcam reacts to zoom",
+            comment: "Toggle label for shrinking the webcam overlay during screen zoom",
+        )
         static let cameraPosition = string(
             "video-editor.camera-position",
             defaultValue: "Position",

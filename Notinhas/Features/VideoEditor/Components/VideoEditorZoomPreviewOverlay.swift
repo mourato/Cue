@@ -118,7 +118,11 @@
         }
 
         private func cameraOverlay(_ player: AVPlayer, in canvasSize: CGSize) -> some View {
-            let frame = state.cameraOverlayLayout.cameraFrame(in: canvasSize, cameraSize: state.cameraSize)
+            let frame = state.cameraOverlayLayout.cameraFrame(
+                in: canvasSize,
+                cameraSize: state.cameraSize,
+                zoomLevel: currentZoomLevel,
+            )
             return VideoPlayerSection(player: player)
                 .frame(width: frame.width, height: frame.height)
                 .clipShape(RoundedRectangle(cornerRadius: min(frame.width, frame.height) * 0.08, style: .continuous))

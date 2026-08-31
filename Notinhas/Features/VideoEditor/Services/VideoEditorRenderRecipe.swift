@@ -12,7 +12,7 @@
 
     struct VideoEditorRenderRecipe: Codable, Equatable, Sendable {
         static let schemaVersion = 1
-        static let exporterImplementationVersion = 1
+        static let exporterImplementationVersion = 2
 
         var schemaVersion: Int
         var exporterImplementationVersion: Int
@@ -37,6 +37,7 @@
         var showsKeystrokes: Bool
         var cursorScale: Double
         var exportContentMode: String
+        var cameraOverlayLayoutPayload: Data
 
         @MainActor
         static func capture(from state: VideoEditorState, sourceFingerprint: String) -> VideoEditorRenderRecipe {
@@ -47,6 +48,7 @@
             let zoomPayload = (try? encoder.encode(state.zoomSegments)) ?? Data()
             let speedPayload = (try? encoder.encode(state.speedSegments)) ?? Data()
             let backgroundPayload = (try? encoder.encode(VideoEditorStoredBackgroundStyle(from: state))) ?? Data()
+            let cameraOverlayLayoutPayload = (try? encoder.encode(state.cameraOverlayLayout)) ?? Data()
 
             return VideoEditorRenderRecipe(
                 schemaVersion: schemaVersion,
@@ -72,6 +74,7 @@
                 showsKeystrokes: state.showsKeystrokes,
                 cursorScale: Double(state.cursorScale),
                 exportContentMode: state.exportContentMode.rawValue,
+                cameraOverlayLayoutPayload: cameraOverlayLayoutPayload,
             )
         }
 

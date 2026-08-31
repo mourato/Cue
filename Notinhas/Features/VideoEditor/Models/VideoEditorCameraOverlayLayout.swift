@@ -30,8 +30,50 @@
         var position: VideoEditorCameraOverlayPosition = .bottomTrailing
         var size: VideoEditorCameraOverlaySize = .small
         var margin: CGFloat = 0.04
+        var reactsToZoom = true
 
         static let `default` = Self()
+
+        private enum CodingKeys: String, CodingKey {
+            case isVisible
+            case position
+            case size
+            case margin
+            case reactsToZoom
+        }
+
+        init(
+            isVisible: Bool = true,
+            position: VideoEditorCameraOverlayPosition = .bottomTrailing,
+            size: VideoEditorCameraOverlaySize = .small,
+            margin: CGFloat = 0.04,
+            reactsToZoom: Bool = true,
+        ) {
+            self.isVisible = isVisible
+            self.position = position
+            self.size = size
+            self.margin = margin
+            self.reactsToZoom = reactsToZoom
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            isVisible = try container.decodeIfPresent(Bool.self, forKey: .isVisible) ?? true
+            position = try container.decodeIfPresent(VideoEditorCameraOverlayPosition.self, forKey: .position)
+                ?? .bottomTrailing
+            size = try container.decodeIfPresent(VideoEditorCameraOverlaySize.self, forKey: .size) ?? .small
+            margin = try container.decodeIfPresent(CGFloat.self, forKey: .margin) ?? 0.04
+            reactsToZoom = try container.decodeIfPresent(Bool.self, forKey: .reactsToZoom) ?? true
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(isVisible, forKey: .isVisible)
+            try container.encode(position, forKey: .position)
+            try container.encode(size, forKey: .size)
+            try container.encode(margin, forKey: .margin)
+            try container.encode(reactsToZoom, forKey: .reactsToZoom)
+        }
 
         func normalizedRect(canvasSize: CGSize, cameraSize: CGSize) -> CGRect {
             guard canvasSize.width > 0, canvasSize.height > 0,
@@ -51,6 +93,30 @@
 
         func cameraFrame(in canvasSize: CGSize, cameraSize: CGSize) -> CGRect {
             let target = frame(in: canvasSize, cameraSize: cameraSize)
+            let fitted = VideoEditorExportLayout.aspectFitRect(sourceSize: cameraSize, in: target.size)
+            return CGRect(x: target.minX + fitted.minX, y: target.minY + fitted.minY,
+                          width: fitted.width, height: fitted.height)
+        }
+
+        func cameraFrame(in canvasSize: CGSize, cameraSize: CGSize, zoomLevel: CGFloat) -> CGRect {
+            let sanitizedZoomLevel = zoomLevel.isFinite ? max(zoomLevel, 1) : 1
+            guard reactsToZoom, sanitizedZoomLevel > 1 else {
+                return cameraFrame(in: canvasSize, cameraSize: cameraSize)
+            }
+
+            let baseRect = normalizedRect(canvasSize: canvasSize, cameraSize: cameraSize)
+            let width = baseRect.width / sanitizedZoomLevel
+            let height = baseRect.height / sanitizedZoomLevel
+            let x = position == .topTrailing || position == .bottomTrailing
+                ? baseRect.maxX - width
+                : baseRect.minX
+            let y = position == .bottomLeading || position == .bottomTrailing
+                ? baseRect.maxY - height
+                : baseRect.minY
+            let target = CGRect(x: x, y: y, width: width, height: height)
+                .standardized
+                .clampedToUnitRect()
+                .applying(CGAffineTransform(scaleX: canvasSize.width, y: canvasSize.height))
             let fitted = VideoEditorExportLayout.aspectFitRect(sourceSize: cameraSize, in: target.size)
             return CGRect(x: target.minX + fitted.minX, y: target.minY + fitted.minY,
                           width: fitted.width, height: fitted.height)

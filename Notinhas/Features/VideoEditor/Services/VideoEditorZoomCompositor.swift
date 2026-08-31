@@ -569,8 +569,12 @@
                     cameraImage = cameraImage.transformed(by: CGAffineTransform(scaleX: -1, y: 1))
                         .transformed(by: CGAffineTransform(translationX: cameraImage.extent.width, y: 0))
                 }
-                let target = layout.cameraFrame(in: instruction.renderSize, cameraSize: instruction.cameraSize)
-                    .offsetBy(dx: instruction.backgroundPadding, dy: instruction.backgroundPadding)
+                let target = layout.cameraFrame(
+                    in: instruction.renderSize,
+                    cameraSize: instruction.cameraSize,
+                    zoomLevel: zoomLevel,
+                )
+                .offsetBy(dx: instruction.backgroundPadding, dy: instruction.backgroundPadding)
                 let effectiveCanvasSize = instruction.paddedRenderSize
                 let fitted = VideoEditorExportLayout.aspectFitRect(sourceSize: cameraImage.extent.size, in: target.size)
                     .offsetBy(dx: target.minX, dy: target.minY)
