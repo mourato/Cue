@@ -59,7 +59,7 @@ camada opcional de handoff; seu limite está definido nos planos 106–107.
   não importa código ou assets.
 - O catálogo operacional correspondente, com classificação, licença/versionamento,
   decisão de reutilização, estado de clone e touchpoints, fica em
-  `.agents/overlays/benchmarking.md`.
+  `.agents/overlays/reference-apps.md`.
 - Antes de adotar qualquer implementação, conferir a licença da versão exata,
   os avisos de terceiros e os touchpoints no Notinhas; consulta remota não
   autoriza copiar código ou assets.

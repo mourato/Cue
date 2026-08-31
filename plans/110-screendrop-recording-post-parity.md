@@ -287,5 +287,5 @@ Fases A–D primeiro e fatie E.
 - Fase B é a mais invasiva na captura; ship atrás de flag até QA manual amplo.
 - Se Fase E atrasar, 109+110A–D ainda entregam valor; E é conforto, não bloqueio
   de zoom automático.
-- Atualizar `.agents/overlays/benchmarking.md` consulta Screendrop para
+- Atualizar `.agents/overlays/reference-apps.md` consulta Screendrop para
   `57a48dd` após integração.

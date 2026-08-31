@@ -1023,10 +1023,10 @@ Phase 1 is the P0 streaming-commit cadence fix.
 ## Screendrop recording follow-ups and camera PiP (104–108)
 
 Generated 2026-08-23 against commit `6106c84` after reconciling the
-Screendrop reference, the `$benchmarking` catalog rules, and a focused audit of
+Screendrop reference, the `$reference-apps` catalog rules, and a focused audit of
 the current recording/editor surfaces. These are local handoff artifacts for a
 different implementation chat; statuses start at `TODO`. The reference catalog
-is recorded in `.agents/overlays/benchmarking.md`, and the human summary is in
+is recorded in `.agents/overlays/reference-apps.md`, and the human summary is in
 `docs/REFERENCES.md`.
 
 | Plan | Title | Priority | Effort | Depends on | Status |
@@ -1094,7 +1094,7 @@ is recorded in `.agents/overlays/benchmarking.md`, and the human summary is in
 ## Auto-zoom and Screendrop post-processing parity (109–110)
 
 Generated 2026-08-29 against commit `ee55c91a` after reconciling the Screendrop
-reference @ `57a48dd` (v0.31.3), the `$benchmarking` catalog, and the gap
+reference @ `57a48dd` (v0.31.3), the `$reference-apps` catalog, and the gap
 analysis between Notinhas Video Editor and Screendrop Studio. Statuses start at
 `TODO`. Local Screendrop clone:
 `~/Documents/Projects/References/Screendrop/`.

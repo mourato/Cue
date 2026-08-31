@@ -162,7 +162,7 @@ SHA efetivamente verificado e registre a troca no handoff. Não rode o comando
 1. Crie o worktree obrigatório em `.worktrees/recording-lifecycle-recovery` e
    branch `recording-lifecycle-recovery` a partir do SHA verificado.
 2. Faça commits pequenos e nomeados por superfície; não inclua alterações de
-   `docs/REFERENCES.md` ou do overlay de benchmarking neste branch.
+   `docs/REFERENCES.md` ou do overlay de `reference-apps` neste branch.
 3. Rode os testes focados após cada mudança de contrato e os gates completos ao
    final.
 4. Deixe branch e worktree para o revisor. Não faça merge, push, reset, clean
