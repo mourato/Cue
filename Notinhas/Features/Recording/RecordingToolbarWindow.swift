@@ -76,6 +76,10 @@
                 .systemDefaultID
         }
 
+        static func showCameraPreviewDuringRecording(defaults: UserDefaults = .standard) -> Bool {
+            defaults.object(forKey: PreferencesKeys.recordingShowCameraPreviewDuringRecording) as? Bool ?? true
+        }
+
         static func outputMode(defaults: UserDefaults = .standard) -> RecordingOutputMode {
             guard let modeString = defaults.string(forKey: PreferencesKeys.recordingOutputMode),
                   let mode = RecordingOutputMode(rawValue: modeString)
@@ -138,6 +142,7 @@
         @Published var microphoneDeviceID: String
         @Published var captureCamera: Bool
         @Published var cameraDeviceID: String
+        @Published var showCameraPreviewDuringRecording: Bool
         @Published var cameraPreviewSize: RecordingCameraPreviewSize
         @Published var cameraPreviewShape: RecordingCameraPreviewShape
         @Published var captureMode: RecordingCaptureMode
@@ -164,6 +169,7 @@
             microphoneDeviceID = RecordingToolbarPreferences.microphoneDeviceID()
             captureCamera = RecordingToolbarPreferences.captureCamera()
             cameraDeviceID = RecordingToolbarPreferences.cameraDeviceID()
+            showCameraPreviewDuringRecording = RecordingToolbarPreferences.showCameraPreviewDuringRecording()
             cameraPreviewSize = .small
             cameraPreviewShape = .rectangle
             captureMode = .area
@@ -241,6 +247,11 @@
         var cameraDeviceID: String {
             get { state.cameraDeviceID }
             set { state.cameraDeviceID = newValue }
+        }
+
+        var showCameraPreviewDuringRecording: Bool {
+            get { state.showCameraPreviewDuringRecording }
+            set { state.showCameraPreviewDuringRecording = newValue }
         }
 
         var cameraPreviewConfiguration: RecordingCameraPreviewConfiguration {

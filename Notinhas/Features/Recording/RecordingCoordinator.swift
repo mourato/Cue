@@ -51,6 +51,7 @@
             let microphoneDeviceID: String
             let captureCamera: Bool
             let cameraDeviceID: String
+            let showCameraPreviewDuringRecording: Bool
             let cameraPreviewSize: RecordingCameraPreviewSize
             let cameraPreviewShape: RecordingCameraPreviewShape
             let outputMode: RecordingOutputMode
@@ -380,6 +381,7 @@
                 microphoneDeviceID: toolbarWindow.microphoneDeviceID,
                 captureCamera: toolbarWindow.captureCamera,
                 cameraDeviceID: toolbarWindow.cameraDeviceID,
+                showCameraPreviewDuringRecording: toolbarWindow.showCameraPreviewDuringRecording,
                 cameraPreviewSize: toolbarWindow.state.cameraPreviewSize,
                 cameraPreviewShape: toolbarWindow.state.cameraPreviewShape,
                 outputMode: toolbarWindow.outputMode,
@@ -401,6 +403,7 @@
                 toolbar.microphoneDeviceID = configuration.microphoneDeviceID
                 toolbar.captureCamera = configuration.captureCamera
                 toolbar.cameraDeviceID = configuration.cameraDeviceID
+                toolbar.showCameraPreviewDuringRecording = configuration.showCameraPreviewDuringRecording
                 toolbar.state.cameraPreviewSize = configuration.cameraPreviewSize
                 toolbar.state.cameraPreviewShape = configuration.cameraPreviewShape
                 toolbar.outputMode = configuration.outputMode
@@ -786,7 +789,9 @@
                 return
             }
             guard beginRecordingStartAttempt(source: "toolbar") else { return }
-            closeCameraPreview()
+            if !window.showCameraPreviewDuringRecording {
+                closeCameraPreview()
+            }
 
             let format = window.selectedFormat
             DiagnosticLogger.shared.log(.info, .recording, "Start recording", context: [

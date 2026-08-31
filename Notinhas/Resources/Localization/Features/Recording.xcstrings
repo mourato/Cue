@@ -161,6 +161,36 @@
         "zh-Hant": { "stringUnit": { "state": "translated", "value": "預覽大小" } }
       }
     },
+    "camera.show-during-recording": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Vorschau während der Aufnahme anzeigen" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Show preview while recording" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Mostrar la vista previa durante la grabación" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Afficher l’aperçu pendant l’enregistrement" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "録画中にプレビューを表示" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "녹화 중 미리보기 표시" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Показывать предпросмотр во время записи" } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Hiển thị bản xem trước khi ghi" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "录制时显示预览" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "錄製時顯示預覽" } }
+      }
+    },
+    "camera.show-during-recording-description": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": { "stringUnit": { "state": "translated", "value": "Die Live-Kameravorschau während der Aufnahme auf dem Bildschirm anzeigen." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Keep the live camera preview visible on screen during recording." } },
+        "es": { "stringUnit": { "state": "translated", "value": "Mantén visible la vista previa de la cámara durante la grabación." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Garder l’aperçu vidéo visible à l’écran pendant l’enregistrement." } },
+        "ja": { "stringUnit": { "state": "translated", "value": "録画中もライブカメラのプレビューを画面に表示します。" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "녹화 중 라이브 카메라 미리보기를 화면에 표시합니다." } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Оставлять предпросмотр камеры видимым на экране во время записи." } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Giữ bản xem trước camera trực tiếp hiển thị trên màn hình khi ghi." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "录制期间在屏幕上保持显示实时摄像头预览。" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "錄製期間在螢幕上保持顯示即時相機預覽。" } }
+      }
+    },
     "camera.rectangle": {
       "extractionState": "manual",
       "localizations": {

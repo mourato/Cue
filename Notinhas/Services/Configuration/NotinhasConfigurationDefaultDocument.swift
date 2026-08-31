@@ -94,6 +94,7 @@ enum NotinhasConfigurationDefaultDocument {
             writer.value("capture_system_audio", true)
             writer.value("capture_microphone", false)
             writer.value("microphone_device_id", "")
+            writer.value("show_camera_preview_during_recording", true)
             writer.value("remember_last_area", true)
             writer.value("include_own_app", false)
             writer.value("show_cursor", true)

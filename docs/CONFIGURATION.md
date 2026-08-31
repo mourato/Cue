@@ -144,6 +144,7 @@ quality = "high"
 fps = 30
 capture_system_audio = false
 capture_microphone = false
+show_camera_preview_during_recording = true
 show_cursor = true
 highlight_clicks = false
 show_keystrokes = false
