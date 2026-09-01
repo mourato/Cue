@@ -1,6 +1,6 @@
 # Video Editor
 
-This doc covers the video editor in `Cue/Features/VideoEditor/`: windowing, trim, cursor controls, zoom segments, Follow Mouse (Smart Camera), speed (timelapse) segments, background/padding, audio mixing, export, GIF resizing, and undo/redo. How recordings and their mouse/audio metadata are produced lives in [`RECORDING.md`](RECORDING.md).
+This doc covers the video editor in `Cue/Features/VideoEditor/`: windowing, trim, cursor controls, zoom segments, mouse tracking, speed regions, background/padding, audio mixing, export, GIF resizing, and undo/redo. How recordings and their mouse/audio metadata are produced lives in [`RECORDING.md`](RECORDING.md).
 
 ## Cursor
 
@@ -78,28 +78,29 @@ flowchart TD
 ## Zoom Segments
 
 - `ZoomSegment` (`Models/VideoEditorZoomSegment.swift`): `duration` 0.5–30 s (default 2), `zoomLevel` 1–4x (default 2), `zoomCenter` normalized 0...1, `ZoomType.auto/.manual`, `followSpeed`, `focusMargin`, `isImplicit` for auto-generated segments. `ZoomSegment.centered(at:)` places a new segment centered on the playhead; the **Z** key adds one (`VideoEditorMainView` keyboard shortcut).
-- **Automatic zoom (Plan 109):** when a Cue recording opens with click metadata and an empty zoom timeline, `VideoEditorZoomSegmentSynthesizer` builds implicit Follow Mouse segments (Screendrop-aligned timing: 0.3 s pre-roll, 2.5 s post-roll, 1.5× magnification, merge within 2.5 s). Preference `videoEditor.autoGenerateZoomOnOpen` defaults on. **Regenerate Automatic Zooms** in the right sidebar rebuilds implicit segments and preserves manual ones.
-- Transitions: ease-in-out cubic (`ZoomCalculator.easeInOutCubic`), `transitionDuration` default 0.4 s clamped to 0.15–0.75 and to 45 % of the segment per edge; the editor-wide `state.zoomTransitionDuration` is user-adjustable in the right sidebar.
+- **Automatic zoom (Plan 109):** when a Cue recording opens with click metadata and an empty zoom timeline, `VideoEditorZoomSegmentSynthesizer` builds implicit camera-follow segments (Screendrop-aligned timing: 0.3 s pre-roll, 2.5 s post-roll, 1.5× magnification, merge within 2.5 s). Preference `videoEditor.autoGenerateZoomOnOpen` defaults on. **Regenerate Automatic Zooms** in the right sidebar rebuilds implicit segments and preserves fixed-position ones.
+- Transitions: ease-in-out cubic (`ZoomCalculator.easeInOutCubic`), `transitionDuration` default 0.4 s clamped to 0.15–0.75 and to 45 % of the segment per edge. The current viewport renderer uses its fixed motion profile; the stored transition setting remains compatibility data until a live control can affect that renderer.
 - `Services/VideoEditorZoomCalculator.swift` computes per-frame zoom progress/crop rects; shared by preview and the export compositor.
-- UI: zoom timeline track (`VideoEditorZoomTimelineTrack` + `VideoEditorZoomBlockView`), center picker (`VideoEditorZoomCenterPicker`, with presets top-left/top-right/bottom-left/bottom-right/center), live preview overlay (`VideoEditorZoomPreviewOverlay`), settings popover (`VideoEditorZoomSettingsPopover`).
+- UI: zoom timeline track (`VideoEditorZoomTimelineTrack` + `VideoEditorZoomBlockView`), live preview overlay (`VideoEditorZoomPreviewOverlay`), and right-sidebar controls for camera behavior (`Follow pointer`, `Follow activity`, or `Fixed position`), zoom level, and fixed-position center. Center presets are top-left/top-right/bottom-left/bottom-right/center. The legacy settings popover (`VideoEditorZoomSettingsPopover`) is not part of the active editor surface.
 
-## Follow Mouse (Smart Camera)
+## Mouse Tracking
 
 - `Services/VideoEditorAutoFocusEngine.swift` `buildPath` consumes `RecordingMetadata` (see [`RECORDING.md`](RECORDING.md)) and reconstructs a smooth camera path: dead-zone around the current center with adaptive shrink under motion, exponential smoothing, cursor-speed clamp, last-visible-position fallback when the cursor leaves the capture, resample to ≤60 Hz, all clamped to the frame.
-- `AutoFocusSettings` (`Models/VideoEditorAutoFocusSettings.swift`): `followSpeed` range 0.2–1.0 (default 0.55), `focusMargin` range 0.2–0.9 (default 0.45), `defaultZoomLevel` 2.0.
+- `AutoFocusSettings` (`Models/VideoEditorAutoFocusSettings.swift`) remains the model for recorded-camera calculations (`followSpeed` range 0.2–1.0, `focusMargin` range 0.2–0.9, `defaultZoomLevel` 2.0); these tuning values are not exposed in the active sidebar because the viewport renderer currently owns its motion profile.
 - New zoom segments default to `.auto` when mouse metadata exists; otherwise manual.
 
 ## Speed (Timelapse) Segments
 
 - `SpeedSegment` (`Models/VideoEditorSpeedSegment.swift`): `rate` 0.25–8x (presets 0.25/0.5/1/2/4/8), min duration 0.5 s; segments cannot overlap (state-level validation).
 - `Services/VideoEditorSpeedTimeMap.swift` is the single original↔scaled time-mapping authority reused by export, preview, playhead, and thumbnails.
-- Export applies `scaleTimeRange` to composition video + audio tracks in reverse segment order, remaps zoom times and auto-focus keyframes into the scaled timeline, and preserves audio pitch via `audioTimePitchAlgorithm = .spectral`.
+- Export applies `scaleTimeRange` to composition video + audio tracks in reverse segment order, remaps zoom times and auto-focus keyframes into the scaled timeline, and preserves audio pitch via `audioTimePitchAlgorithm = .spectral` when the clip composition path is not active.
 - Live preview is approximate: it drives `AVPlayer.rate` per active segment instead of rebuilding a scaled composition.
+- The Clips context menu also exposes **Clip Playback Speed**, which changes the per-clip composition rate. It remains separate from **Speed Regions** until both controls can share one speed model without composition conflicts.
 - Video only — the GIF save path does not bake timeline edits, so the speed track is hidden for GIF sources.
 
 ## Background and Padding
 
-- `BackgroundStyle` (shared `Cue/Features/Annotate/Models/AnnotateBackgroundStyle.swift`): `none`, `gradient`, `wallpaper(URL)`, `blurred(URL)`, `solidColor`. Combined with padding, shadow, corner radius, alignment, and aspect controls in the left sidebar (`VideoEditorVideoBackgroundSidebarView`); background changes are undoable.
+- `BackgroundStyle` (shared `Cue/Features/Annotate/Models/AnnotateBackgroundStyle.swift`): `none`, `gradient`, `wallpaper(URL)`, `blurred(URL)`, `solidColor`. Combined with padding, shadow, corner radius, and alignment controls in the left sidebar (`VideoEditorVideoBackgroundSidebarView`); background changes are undoable. Output aspect ratio and dimensions live in the export settings panel.
 
 ## Audio in the Editor
 
@@ -164,9 +165,9 @@ discardable deliverable, and reopening a baked output never reapplies a recipe.
 | `Cue/Features/VideoEditor/VideoEditorState.swift` | Central editor model, playback, trim/zoom/speed mutations, undo/redo |
 | `Cue/Features/VideoEditor/Models/VideoEditorZoomSegment.swift` | Zoom segment model and clamps |
 | `Cue/Features/VideoEditor/Models/VideoEditorSpeedSegment.swift` | Speed segment model and rate presets |
-| `Cue/Features/VideoEditor/Models/VideoEditorAutoFocusSettings.swift` | Follow Mouse tunables (followSpeed, focusMargin) |
+| `Cue/Features/VideoEditor/Models/VideoEditorAutoFocusSettings.swift` | Recorded camera tuning data (followSpeed, focusMargin) |
 | `Cue/Features/VideoEditor/Models/VideoEditorExportSettings.swift` | Dimension presets, audio roles/mix factory, quality presets |
-| `Cue/Features/VideoEditor/Services/VideoEditorAutoFocusEngine.swift` | Smart Camera path reconstruction from `RecordingMetadata` |
+| `Cue/Features/VideoEditor/Services/VideoEditorAutoFocusEngine.swift` | Pointer/activity camera path reconstruction from `RecordingMetadata` |
 | `Cue/Features/VideoEditor/Services/VideoEditorZoomCalculator.swift` | Per-frame zoom progress/crop math, easing, transition clamps |
 | `Cue/Features/VideoEditor/Services/VideoEditorSpeedTimeMap.swift` | Original↔scaled time mapping for speed segments |
 | `Cue/Features/VideoEditor/Services/VideoEditorExporter.swift` | Export routing, composition build, replace/copy, audio normalization |
@@ -174,10 +175,10 @@ discardable deliverable, and reopening a baked output never reapplies a recipe.
 | `Cue/Features/VideoEditor/Services/GIFResizer.swift` | ImageIO GIF resize preserving loop/delays |
 | `Cue/Features/VideoEditor/Components/VideoEditorBottomBar.swift` | Cancel / Convert-Save bar |
 | `Cue/Features/VideoEditor/Services/VideoEditorZoomSegmentSynthesizer.swift` | Click-driven implicit zoom segment synthesis |
-| `Cue/Services/Capture/RecordingMetadata.swift` | Metadata consumed by Follow Mouse, auto-zoom, and multitrack audio |
+| `Cue/Services/Capture/RecordingMetadata.swift` | Metadata consumed by mouse tracking, automatic zoom, and multitrack audio |
 
 ## Related docs
 
-- [`RECORDING.md`](RECORDING.md) — recording pipeline, GIF conversion, Smart Camera metadata format and store
+- [`RECORDING.md`](RECORDING.md) — recording pipeline, GIF conversion, mouse-tracking metadata format and store
 - [`CAPTURE.md`](CAPTURE.md) — post-capture routing, Quick Access actions, history restore
 - [`STRUCTURE.md`](STRUCTURE.md) — runtime map and persistence layout

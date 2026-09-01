@@ -102,6 +102,10 @@ second canonical design-system document.
   used by preview and export: new recordings use their captured normalized
   frame and shape, while older recordings retain corner-anchored aspect-fit
   defaults and optional inverse zoom scaling.
+- Video Editor's selected-zoom sidebar exposes one Camera Behavior control:
+  Follow pointer, Follow activity, or Fixed position. The center picker is
+  available only for Fixed position; output aspect ratio and dimensions belong
+  to export settings, not the background sidebar.
 - Video Editor cursor controls live in a dedicated Cursor section. A recording
   with a baked cursor never enables a reconstructed cursor overlay; Smart
   Pointer recordings own reconstructed cursor visibility, size, and smoothing

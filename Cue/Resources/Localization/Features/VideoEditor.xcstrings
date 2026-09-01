@@ -663,7 +663,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Auto"
+            "value": "Automatic"
           }
         },
         "es": {
@@ -3458,7 +3458,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Camera position follows the recorded mouse path only while this zoom item is active."
+            "value": "Camera follows the pointer or click activity while this zoom is active."
           }
         },
         "es": {
@@ -3523,7 +3523,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Follow Mouse only works with videos recorded by Cue after mouse tracking was added."
+            "value": "Pointer tracking only works with Cue recordings that include mouse tracking data."
           }
         },
         "es": {
@@ -4238,7 +4238,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Manual"
+            "value": "Fixed"
           }
         },
         "es": {
@@ -4303,7 +4303,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Manual camera control is available only in Manual mode."
+            "value": "Fixed position lets you choose the camera center."
           }
         },
         "es": {
@@ -4368,7 +4368,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Manual mode keeps camera framing fixed. Switch to Auto when this zoom item should follow the mouse."
+            "value": "Camera stays fixed on the selected position."
           }
         },
         "es": {
@@ -6643,7 +6643,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Smart Camera"
+            "value": "Mouse Tracking"
           }
         },
         "es": {
@@ -6838,7 +6838,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Speed up or slow down a region (timelapse)"
+            "value": "Change playback speed for a region"
           }
         },
         "es": {
@@ -6968,7 +6968,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Speed"
+            "value": "Speed Regions"
           }
         },
         "es": {
@@ -7943,7 +7943,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Zoom Effects"
+            "value": "Automatic Zooms"
           }
         },
         "es": {
@@ -8008,7 +8008,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Zoom Item"
+            "value": "Selected Zoom"
           }
         },
         "es": {
