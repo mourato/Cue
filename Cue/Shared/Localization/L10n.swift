@@ -5192,6 +5192,46 @@ nonisolated enum L10n {
             defaultValue: "Cursor Size",
             comment: "Slider label for synthetic cursor scale",
         )
+        static let cursor = string(
+            "video-editor.cursor",
+            defaultValue: "Cursor",
+            comment: "Section title for cursor controls in the video editor",
+        )
+        static let cursorBakedDescription = string(
+            "video-editor.cursor-baked-description",
+            defaultValue: "This cursor is part of the video. Record again with Smart Pointer to edit it.",
+            comment: "Explanation shown when the source video contains a baked cursor",
+        )
+        static let cursorDataUnavailable = string(
+            "video-editor.cursor-data-unavailable",
+            defaultValue: "Editable cursor data is unavailable for this recording.",
+            comment: "Explanation shown when synthetic cursor metadata has no usable samples",
+        )
+        static let cursorSmoothing = string(
+            "video-editor.cursor-smoothing",
+            defaultValue: "Cursor Movement",
+            comment: "Picker label for synthetic cursor movement smoothing",
+        )
+        static let cursorSmoothingOriginal = string(
+            "video-editor.cursor-smoothing-original",
+            defaultValue: "Original",
+            comment: "Cursor smoothing preset that follows the existing recorded motion",
+        )
+        static let cursorSmoothingSmooth = string(
+            "video-editor.cursor-smoothing-smooth",
+            defaultValue: "Smooth",
+            comment: "Cursor smoothing preset with slower, softer motion",
+        )
+        static let cursorSmoothingFast = string(
+            "video-editor.cursor-smoothing-fast",
+            defaultValue: "Fast",
+            comment: "Cursor smoothing preset with more responsive motion",
+        )
+        static let cursorSmoothingHelp = string(
+            "video-editor.cursor-smoothing-help",
+            defaultValue: "Choose how closely the reconstructed pointer follows the recorded path.",
+            comment: "Help text for synthetic cursor smoothing presets",
+        )
         static let speedZoomOverlapHint = string(
             "video-editor.speed-zoom-overlap-hint",
             defaultValue: "This region overlaps a zoom — the zoom plays at the adjusted speed.",

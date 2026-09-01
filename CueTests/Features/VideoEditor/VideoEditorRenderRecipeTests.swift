@@ -4,8 +4,8 @@
     //  NotinhasTests
 //
 
-    import Foundation
     @testable import Cue
+    import Foundation
     import XCTest
 
     @MainActor
@@ -29,6 +29,23 @@
             let keyA = VideoEditorRenderRecipe.capture(from: stateA, sourceFingerprint: fingerprint).cacheKey()
             let keyB = VideoEditorRenderRecipe.capture(from: stateB, sourceFingerprint: fingerprint).cacheKey()
             XCTAssertNotEqual(keyA, keyB)
+        }
+
+        func testCacheKey_changesWhenCursorSmoothingChanges() {
+            let url = URL(fileURLWithPath: "/tmp/sample.mov")
+            let stateA = VideoEditorState(url: url)
+            let stateB = VideoEditorState(url: url)
+            stateB.cursorSmoothingPreset = .smooth
+            let fingerprint = "test|100|0"
+            let keyA = VideoEditorRenderRecipe.capture(from: stateA, sourceFingerprint: fingerprint).cacheKey()
+            let keyB = VideoEditorRenderRecipe.capture(from: stateB, sourceFingerprint: fingerprint).cacheKey()
+            XCTAssertNotEqual(keyA, keyB)
+        }
+
+        func testCursorSettings_markEditorAsChanged() {
+            let state = VideoEditorState(url: URL(fileURLWithPath: "/tmp/sample.mov"))
+            state.cursorSmoothingPreset = .smooth
+            XCTAssertTrue(state.hasUnsavedChanges)
         }
 
         func testCacheKey_changesWhenCameraLayoutChanges() {
@@ -57,7 +74,7 @@
         func testRecipeUsesCurrentExporterImplementationVersion() {
             let state = VideoEditorState(url: URL(fileURLWithPath: "/tmp/sample.mov"))
             let recipe = VideoEditorRenderRecipe.capture(from: state, sourceFingerprint: "test|100|0")
-            XCTAssertEqual(recipe.exporterImplementationVersion, 2)
+            XCTAssertEqual(recipe.exporterImplementationVersion, 3)
             XCTAssertFalse(recipe.cameraOverlayLayoutPayload.isEmpty)
         }
     }

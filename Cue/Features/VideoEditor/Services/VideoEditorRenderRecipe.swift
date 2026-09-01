@@ -12,7 +12,7 @@
 
     struct VideoEditorRenderRecipe: Codable, Equatable, Sendable {
         static let schemaVersion = 1
-        static let exporterImplementationVersion = 2
+        static let exporterImplementationVersion = 3
 
         var schemaVersion: Int
         var exporterImplementationVersion: Int
@@ -36,6 +36,7 @@
         var showsClickEffects: Bool
         var showsKeystrokes: Bool
         var cursorScale: Double
+        var cursorSmoothingPreset: VideoEditorCursorSmoothingPreset
         var exportContentMode: String
         var cameraOverlayLayoutPayload: Data
 
@@ -73,6 +74,7 @@
                 showsClickEffects: state.showsClickEffects,
                 showsKeystrokes: state.showsKeystrokes,
                 cursorScale: Double(state.cursorScale),
+                cursorSmoothingPreset: state.cursorSmoothingPreset,
                 exportContentMode: state.exportContentMode.rawValue,
                 cameraOverlayLayoutPayload: cameraOverlayLayoutPayload,
             )

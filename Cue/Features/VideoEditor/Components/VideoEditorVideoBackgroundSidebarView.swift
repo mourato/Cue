@@ -292,13 +292,6 @@
                 )
                 VideoSliderRow(label: L10n.Common.shadow, value: $state.backgroundShadowIntensity, range: 0 ... 1)
                 VideoSliderRow(label: L10n.Common.corners, value: $state.backgroundCornerRadius, range: 0 ... 60)
-                if state.hasSyntheticOverlays {
-                    VideoSliderRow(
-                        label: L10n.VideoEditor.cursorScale,
-                        value: $state.cursorScale,
-                        range: 1 ... 3,
-                    )
-                }
             }
         }
 

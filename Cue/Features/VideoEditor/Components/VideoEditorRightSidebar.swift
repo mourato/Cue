@@ -90,6 +90,8 @@
                     if state.recordingMetadata != nil {
                         recordingInteractionSection
                         Divider()
+                        cursorSection
+                        Divider()
                     }
                     if state.hasCameraTrack {
                         cameraOverlaySection
@@ -164,26 +166,61 @@
                 }
                 .disabled(!state.canResynthesizeImplicitZoomSegments)
                 .help(L10n.VideoEditor.resynthesizeImplicitZoomsHelp)
+            }
+            .accessibilityElement(children: .contain)
+        }
 
-                if state.recordingMetadata != nil {
+        private var cursorSection: some View {
+            VStack(alignment: .leading, spacing: 10) {
+                Label(L10n.VideoEditor.cursor, systemImage: "cursorarrow")
+                    .font(.system(size: 12, weight: .semibold))
+
+                if state.canShowSyntheticCursor {
+                    Toggle(isOn: $state.showsSyntheticCursor) {
+                        Text(L10n.VideoEditor.showsSyntheticCursor)
+                            .font(.system(size: 11))
+                    }
+                    .help(L10n.VideoEditor.showsSyntheticCursorHelp)
+
+                    VideoSliderRow(
+                        label: L10n.VideoEditor.cursorScale,
+                        value: $state.cursorScale,
+                        range: 1 ... 3,
+                    )
+
+                    Picker(L10n.VideoEditor.cursorSmoothing, selection: $state.cursorSmoothingPreset) {
+                        Text(L10n.VideoEditor.cursorSmoothingOriginal)
+                            .tag(VideoEditorCursorSmoothingPreset.original)
+                        Text(L10n.VideoEditor.cursorSmoothingSmooth)
+                            .tag(VideoEditorCursorSmoothingPreset.smooth)
+                        Text(L10n.VideoEditor.cursorSmoothingFast)
+                            .tag(VideoEditorCursorSmoothingPreset.fast)
+                    }
+                    .pickerStyle(.segmented)
+                    .help(L10n.VideoEditor.cursorSmoothingHelp)
+                } else if state.usesSyntheticPointer {
+                    Text(L10n.VideoEditor.cursorDataUnavailable)
+                        .font(.system(size: 10))
+                        .foregroundColor(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                } else {
+                    Text(L10n.VideoEditor.cursorBakedDescription)
+                        .font(.system(size: 10))
+                        .foregroundColor(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                if state.hasMouseTrackingData {
                     Divider()
 
                     Text(L10n.VideoEditor.syntheticOverlays)
                         .font(.system(size: 11, weight: .medium))
                         .foregroundColor(.secondary)
 
-                    Toggle(isOn: $state.showsSyntheticCursor) {
-                        Text(L10n.VideoEditor.showsSyntheticCursor)
-                            .font(.system(size: 11))
-                    }
-                    .disabled(!state.usesSyntheticPointer && !state.hasMouseTrackingData)
-                    .help(L10n.VideoEditor.showsSyntheticCursorHelp)
-
                     Toggle(isOn: $state.showsClickEffects) {
                         Text(L10n.VideoEditor.showsClickEffects)
                             .font(.system(size: 11))
                     }
-                    .disabled(!state.hasMouseTrackingData)
 
                     Toggle(isOn: $state.showsKeystrokes) {
                         Text(L10n.VideoEditor.showsKeystrokes)

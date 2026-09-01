@@ -325,6 +325,7 @@
                 trimStart: trimStartSeconds,
                 trimEnd: trimEndSeconds,
                 speedMap: speedMap,
+                smoothingPreset: state.cursorSmoothingPreset,
             )
             let exportKeystrokeTimeline = VideoEditorKeystrokeCaptionTimeline.buildForExport(
                 metadata: state.recordingMetadata,

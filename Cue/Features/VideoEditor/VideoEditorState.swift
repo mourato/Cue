@@ -355,10 +355,35 @@
         @Published private(set) var recordingMetadata: RecordingMetadata?
         @Published private(set) var autoFocusPaths: [UUID: [AutoFocusCameraSample]] = [:]
         @Published private(set) var viewportTimeline: VideoEditorViewportTimeline = .identity
-        @Published var showsSyntheticCursor = false
-        @Published var showsClickEffects = false
-        @Published var showsKeystrokes = false
-        @Published var cursorScale: CGFloat = VideoEditorStylePreset.defaultCursorScale
+        @Published var showsSyntheticCursor = false {
+            didSet {
+                guard !showsSyntheticCursor || canShowSyntheticCursor else {
+                    showsSyntheticCursor = false
+                    return
+                }
+                cursorSettingDidChange()
+            }
+        }
+
+        @Published var showsClickEffects = false {
+            didSet { cursorSettingDidChange() }
+        }
+
+        @Published var showsKeystrokes = false {
+            didSet { cursorSettingDidChange() }
+        }
+
+        @Published var cursorScale: CGFloat = VideoEditorStylePreset.defaultCursorScale {
+            didSet { cursorSettingDidChange() }
+        }
+
+        @Published var cursorSmoothingPreset: VideoEditorCursorSmoothingPreset = .original {
+            didSet {
+                rebuildOverlayTimelines(duration: CMTimeGetSeconds(duration))
+                cursorSettingDidChange()
+            }
+        }
+
         @Published var exportContentMode: VideoEditorExportAspectContentMode = .fit
         @Published private(set) var pointerTimeline: VideoEditorPointerTimeline = .empty
         @Published private(set) var keystrokeCaptionTimeline: VideoEditorKeystrokeCaptionTimeline = .empty
@@ -419,6 +444,11 @@
         private var initialBackgroundCornerRadius: CGFloat = 0
         private var initialExportSettings: ExportSettings = .init()
         private var initialCameraOverlayLayout = VideoEditorCameraOverlayLayout.default
+        private var initialShowsSyntheticCursor = false
+        private var initialShowsClickEffects = false
+        private var initialShowsKeystrokes = false
+        private var initialCursorScale = VideoEditorStylePreset.defaultCursorScale
+        private var initialCursorSmoothingPreset: VideoEditorCursorSmoothingPreset = .original
         private var cameraLayoutMutationCount = 0
 
         @Published var quickAccessItemId: UUID?
@@ -476,6 +506,10 @@
 
         var usesSyntheticPointer: Bool {
             recordingMetadata?.pointerSynthesized == true
+        }
+
+        var canShowSyntheticCursor: Bool {
+            usesSyntheticPointer && hasMouseTrackingData
         }
 
         var hasRecordedKeystrokes: Bool {
@@ -817,7 +851,12 @@
                 // Calculate initial file size estimate after metadata loads
                 recalculateEstimatedFileSize()
                 applyInitialImplicitZoomSegmentsIfNeeded()
+                if zoomSegments.isEmpty {
+                    rebuildAutoFocusPaths(for: zoomSegments)
+                }
                 VideoEditorStylePresetStore.shared.applyActivePreset(to: self)
+                establishInitialCursorSettings()
+                updateHasUnsavedChanges()
             } catch {
                 DiagnosticLogger.shared.logError(.editor, error, "Failed to load video metadata")
                 print("Failed to load video metadata: \(error)")
@@ -1101,7 +1140,21 @@
             initialBackgroundCornerRadius = backgroundCornerRadius
             initialExportSettings = exportSettings
             initialCameraOverlayLayout = cameraOverlayLayout
+            establishInitialCursorSettings()
             clearUndoHistory()
+        }
+
+        private func establishInitialCursorSettings() {
+            initialShowsSyntheticCursor = showsSyntheticCursor
+            initialShowsClickEffects = showsClickEffects
+            initialShowsKeystrokes = showsKeystrokes
+            initialCursorScale = cursorScale
+            initialCursorSmoothingPreset = cursorSmoothingPreset
+        }
+
+        private func cursorSettingDidChange() {
+            updateHasUnsavedChanges()
+            recalculateEstimatedFileSize()
         }
 
         // MARK: - Undo/Redo Actions
@@ -2002,9 +2055,14 @@
             let exportSettingsChanged = exportSettings != initialExportSettings
             let cameraLayout = currentCameraOverlayLayout ?? cameraOverlayLayout
             let cameraLayoutChanged = cameraLayout != initialCameraOverlayLayout
+            let cursorChanged = showsSyntheticCursor != initialShowsSyntheticCursor
+                || showsClickEffects != initialShowsClickEffects
+                || showsKeystrokes != initialShowsKeystrokes
+                || cursorScale != initialCursorScale
+                || cursorSmoothingPreset != initialCursorSmoothingPreset
 
             hasUnsavedChanges = startChanged || endChanged || muteChanged || zoomsChanged || speedsChanged ||
-                clipsChanged || backgroundChanged || exportSettingsChanged || cameraLayoutChanged
+                clipsChanged || backgroundChanged || exportSettingsChanged || cameraLayoutChanged || cursorChanged
         }
 
         private func prepareCameraPreview(trackID: CMPersistentTrackID) async {
@@ -2112,9 +2170,10 @@
 
         private func applyOverlayToggleDefaults(from metadata: RecordingMetadata?) {
             let synthesized = metadata?.pointerSynthesized == true
-            showsSyntheticCursor = synthesized
-            showsClickEffects = synthesized
-            showsKeystrokes = synthesized && !(metadata?.keystrokes.isEmpty ?? true)
+            let hasMouseData = !(metadata?.mouseSamples.isEmpty ?? true)
+            showsSyntheticCursor = synthesized && hasMouseData
+            showsClickEffects = synthesized && hasMouseData
+            showsKeystrokes = synthesized && hasMouseData && !(metadata?.keystrokes.isEmpty ?? true)
         }
 
         private func rebuildAutoFocusPaths(for segments: [ZoomSegment]) {
@@ -2166,19 +2225,21 @@
         private func rebuildViewportTimeline(for segments: [ZoomSegment]) {
             let videoDuration = CMTimeGetSeconds(duration)
             let enabledSegments = segments.filter(\.isEnabled)
-            guard videoDuration.isFinite,
-                  videoDuration > 0,
-                  !enabledSegments.isEmpty
-            else {
+            guard videoDuration.isFinite, videoDuration > 0 else {
                 viewportTimeline = .identity
+                rebuildOverlayTimelines(duration: videoDuration)
                 return
             }
 
-            viewportTimeline = VideoEditorViewportTimeline.build(
-                segments: enabledSegments,
-                metadata: recordingMetadata,
-                duration: videoDuration,
-            )
+            if enabledSegments.isEmpty {
+                viewportTimeline = .identity
+            } else {
+                viewportTimeline = VideoEditorViewportTimeline.build(
+                    segments: enabledSegments,
+                    metadata: recordingMetadata,
+                    duration: videoDuration,
+                )
+            }
             rebuildOverlayTimelines(duration: videoDuration)
         }
 
@@ -2191,6 +2252,7 @@
             pointerTimeline = VideoEditorPointerTimeline.build(
                 metadata: recordingMetadata,
                 duration: duration,
+                smoothingPreset: cursorSmoothingPreset,
             )
             keystrokeCaptionTimeline = VideoEditorKeystrokeCaptionTimeline(
                 events: recordingMetadata?.keystrokes ?? [],
