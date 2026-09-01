@@ -5099,8 +5099,8 @@ nonisolated enum L10n {
         )
         static let speeds = string(
             "video-editor.speeds",
-            defaultValue: "Speed",
-            comment: "Label for the speed (timelapse) track in the video editor timeline",
+            defaultValue: "Speed Regions",
+            comment: "Label for the playback-speed regions track in the video editor timeline",
         )
         static let addSpeedHere = string(
             "video-editor.add-speed-here",
@@ -5139,7 +5139,7 @@ nonisolated enum L10n {
         )
         static let speedTrackTooltip = string(
             "video-editor.speed-track-tooltip",
-            defaultValue: "Speed up or slow down a region (timelapse)",
+            defaultValue: "Change playback speed for a region",
             comment: "Tooltip describing the speed track",
         )
         static let clips = string(
@@ -5159,7 +5159,7 @@ nonisolated enum L10n {
         )
         static let clipSpeed = string(
             "video-editor.clip-speed",
-            defaultValue: "Clip Speed",
+            defaultValue: "Clip Playback Speed",
             comment: "Menu title for per-clip speed presets",
         )
         static let resetClips = string(
@@ -5184,8 +5184,8 @@ nonisolated enum L10n {
         )
         static let stylePresets = string(
             "video-editor.style-presets",
-            defaultValue: "Style Presets",
-            comment: "Section title for named background/style presets",
+            defaultValue: "Video Presets",
+            comment: "Section title for named video appearance presets",
         )
         static let cursorScale = string(
             "video-editor.cursor-scale",
@@ -5209,7 +5209,7 @@ nonisolated enum L10n {
         )
         static let cursorSmoothing = string(
             "video-editor.cursor-smoothing",
-            defaultValue: "Cursor Movement",
+            defaultValue: "Cursor Smoothing",
             comment: "Picker label for synthetic cursor movement smoothing",
         )
         static let cursorSmoothingOriginal = string(
@@ -5234,7 +5234,7 @@ nonisolated enum L10n {
         )
         static let speedZoomOverlapHint = string(
             "video-editor.speed-zoom-overlap-hint",
-            defaultValue: "This region overlaps a zoom — the zoom plays at the adjusted speed.",
+            defaultValue: "This speed region overlaps a zoom; the zoom follows the adjusted playback speed.",
             comment: "Informational hint when a speed segment overlaps a zoom segment",
         )
         static let backgroundTab = string(
@@ -5254,8 +5254,8 @@ nonisolated enum L10n {
         )
         static let zoomItem = string(
             "video-editor.zoom-item",
-            defaultValue: "Zoom Item",
-            comment: "Header title for the selected zoom item in the video editor sidebar",
+            defaultValue: "Selected Zoom",
+            comment: "Header title for the selected zoom in the video editor sidebar",
         )
         static let followMouse = string(
             "video-editor.follow-mouse",
@@ -5264,13 +5264,13 @@ nonisolated enum L10n {
         )
         static let manual = string(
             "video-editor.manual",
-            defaultValue: "Manual",
-            comment: "Label for the manual zoom mode",
+            defaultValue: "Fixed",
+            comment: "Label for the fixed camera behavior",
         )
         static let auto = string(
             "video-editor.auto",
-            defaultValue: "Auto",
-            comment: "Label for the automatic zoom mode",
+            defaultValue: "Automatic",
+            comment: "Label for the automatic camera behavior",
         )
         static let mouseTrackingDataUnavailable = string(
             "video-editor.mouse-tracking-data-unavailable",
@@ -5279,18 +5279,18 @@ nonisolated enum L10n {
         )
         static let followMouseOnlyWorksWithCue = string(
             "video-editor.follow-mouse-only-works-with-notinhas",
-            defaultValue: "Follow Mouse only works with videos recorded by Cue after mouse tracking was added.",
+            defaultValue: "Pointer tracking only works with Cue recordings that include mouse tracking data.",
             comment: "Warning message shown when follow-mouse zoom mode is unavailable",
         )
         static let followMouseActiveDescription = string(
             "video-editor.follow-mouse-active-description",
-            defaultValue: "Camera position follows the recorded mouse path only while this zoom item is active.",
-            comment: "Description shown when follow-mouse zoom mode is active",
+            defaultValue: "Camera follows the pointer or click activity while this zoom is active.",
+            comment: "Description shown when a zoom follows recorded pointer activity",
         )
         static let manualModeDescription = string(
             "video-editor.manual-mode-description",
-            defaultValue: "Manual mode keeps camera framing fixed. Switch to Auto when this zoom item should follow the mouse.",
-            comment: "Description shown when manual zoom mode is active and mouse tracking data is available",
+            defaultValue: "Camera stays fixed on the selected position.",
+            comment: "Description shown when a zoom uses a fixed camera position",
         )
         static let noZoomSelected = string(
             "video-editor.no-zoom-selected",
@@ -5349,7 +5349,7 @@ nonisolated enum L10n {
         )
         static let manualCameraControlOnlyInManualMode = string(
             "video-editor.manual-camera-control-only-in-manual-mode",
-            defaultValue: "Manual camera control is available only in Manual mode.",
+            defaultValue: "Fixed position lets you choose the camera center.",
             comment: "Description shown below zoom center controls",
         )
         static let save = string(
@@ -5661,13 +5661,13 @@ nonisolated enum L10n {
         )
         static let zoomEffects = string(
             "video-editor.zoom-effects",
-            defaultValue: "Zoom Effects",
-            comment: "Section title for zoom effect metadata in the video editor",
+            defaultValue: "Automatic Zooms",
+            comment: "Section title for automatic zoom metadata and generation controls",
         )
         static let smartCamera = string(
             "video-editor.smart-camera",
-            defaultValue: "Smart Camera",
-            comment: "Section title for smart camera metadata in the video editor",
+            defaultValue: "Mouse Tracking",
+            comment: "Section title for recorded mouse tracking metadata in the video editor",
         )
         static let cameraOverlay = string(
             "video-editor.camera-overlay",
@@ -5686,7 +5686,7 @@ nonisolated enum L10n {
         )
         static let cameraReactsToZoom = string(
             "video-editor.camera-reacts-to-zoom",
-            defaultValue: "Webcam reacts to zoom",
+            defaultValue: "Scale webcam with zoom",
             comment: "Toggle label for shrinking the webcam overlay during screen zoom",
         )
         static let cameraPosition = string(
@@ -5781,7 +5781,7 @@ nonisolated enum L10n {
         )
         static let autoGenerateZoomOnOpenHelp = string(
             "video-editor.auto-generate-zoom-on-open-help",
-            defaultValue: "Creates Follow Mouse zoom segments from clicks recorded in the capture area.",
+            defaultValue: "Creates camera-follow zoom segments from clicks recorded in the capture area.",
             comment: "Help text for automatic zoom generation preference",
         )
         static let implicitZoomSegments = string(
@@ -5791,27 +5791,27 @@ nonisolated enum L10n {
         )
         static let anchorMode = string(
             "video-editor.anchor-mode",
-            defaultValue: "Anchor Mode",
-            comment: "Label for zoom anchor mode picker in the video editor",
+            defaultValue: "Camera Behavior",
+            comment: "Label for the selected zoom camera behavior picker",
         )
         static let anchorPointer = string(
             "video-editor.anchor-pointer",
-            defaultValue: "Pointer",
+            defaultValue: "Follow pointer",
             comment: "Zoom anchor mode that follows the recorded pointer path",
         )
         static let anchorSmart = string(
             "video-editor.anchor-smart",
-            defaultValue: "Smart",
+            defaultValue: "Follow activity",
             comment: "Zoom anchor mode that clusters click activity within the segment",
         )
         static let anchorPinned = string(
             "video-editor.anchor-pinned",
-            defaultValue: "Pinned",
+            defaultValue: "Fixed position",
             comment: "Zoom anchor mode that keeps a fixed center point",
         )
         static let syntheticOverlays = string(
             "video-editor.synthetic-overlays",
-            defaultValue: "Synthetic Overlays",
+            defaultValue: "Click & Shortcut Overlays",
             comment: "Section label for post-processed pointer and keystroke overlays",
         )
         static let showsSyntheticCursor = string(

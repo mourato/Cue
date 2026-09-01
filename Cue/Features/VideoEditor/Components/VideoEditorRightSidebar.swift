@@ -37,10 +37,7 @@
 
         @State private var localZoomLevel: CGFloat = ZoomSegment.defaultZoomLevel
         @State private var localCenter: CGPoint = .init(x: 0.5, y: 0.5)
-        @State private var localFollowSpeed: Double = AutoFocusSettings.defaultFollowSpeed
-        @State private var localFocusMargin: CGFloat = AutoFocusSettings.defaultFocusMargin
         @State private var localAnchorMode: ZoomAnchorMode = .pointer
-        @State private var localTransitionDuration: TimeInterval = ZoomCalculator.defaultTransitionDuration
         @AppStorage(PreferencesKeys.videoEditorAutoGenerateZoomOnOpen)
         private var autoGenerateZoomOnOpen = true
 
@@ -49,10 +46,7 @@
             let zoomType: ZoomType
             let zoomLevel: CGFloat
             let zoomCenter: CGPoint
-            let followSpeed: Double
-            let focusMargin: CGFloat
             let anchorMode: ZoomAnchorMode
-            let transitionDuration: TimeInterval
         }
 
         private var selectedSegment: ZoomSegment? {
@@ -66,15 +60,8 @@
                 zoomType: segment.zoomType,
                 zoomLevel: segment.zoomLevel,
                 zoomCenter: segment.zoomCenter,
-                followSpeed: segment.followSpeed,
-                focusMargin: segment.focusMargin,
                 anchorMode: segment.anchorMode,
-                transitionDuration: state.zoomTransitionDuration,
             )
-        }
-
-        private var canSwitchSelectedSegmentToAuto: Bool {
-            state.hasMouseTrackingData || selectedSegment?.isAutoMode == true
         }
 
         var body: some View {
@@ -103,12 +90,8 @@
                         Divider()
 
                         zoomLevelSection
-                        transitionSmoothnessSection
 
-                        if segment.isAutoMode {
-                            followSpeedSection
-                            focusMarginSection
-                        } else {
+                        if localAnchorMode == .pinned {
                             centerPickerSection
                         }
 
@@ -127,7 +110,7 @@
             .onAppear {
                 syncLocalState()
             }
-            .onChange(of: localStateSnapshot) { _ in
+            .onChange(of: localStateSnapshot) {
                 syncLocalState()
             }
         }
@@ -265,107 +248,42 @@
 
                     Spacer()
 
-                    Text(segment.isAutoMode ? L10n.VideoEditor.followMouse : L10n.VideoEditor.manual)
+                    Text(segment.anchorMode.displayName)
                         .font(.system(size: 9, weight: .semibold))
                         .padding(.horizontal, 6)
                         .padding(.vertical, 3)
-                        .background((segment.isAutoMode ? Color.green : ZoomColors.primary).opacity(0.18))
-                        .foregroundColor(segment.isAutoMode ? .green : ZoomColors.primary)
+                        .background((segment.anchorMode == .pinned ? ZoomColors.primary : Color.green).opacity(0.18))
+                        .foregroundColor(segment.anchorMode == .pinned ? ZoomColors.primary : .green)
                         .cornerRadius(4)
                 }
 
-                HStack(spacing: 8) {
-                    modeButton(
-                        title: L10n.VideoEditor.manual,
-                        icon: "hand.tap",
-                        isSelected: !segment.isAutoMode,
-                        isDisabled: false,
-                    ) {
-                        applyZoomMode(.manual)
-                    }
-
-                    modeButton(
-                        title: L10n.VideoEditor.auto,
-                        icon: "camera.metering.center.weighted",
-                        isSelected: segment.isAutoMode,
-                        isDisabled: !canSwitchSelectedSegmentToAuto,
-                    ) {
-                        applyZoomMode(.auto)
-                    }
+                Picker(L10n.VideoEditor.anchorMode, selection: $localAnchorMode) {
+                    Text(L10n.VideoEditor.anchorPointer)
+                        .tag(ZoomAnchorMode.pointer)
+                        .disabled(!state.hasMouseTrackingData)
+                    Text(L10n.VideoEditor.anchorSmart)
+                        .tag(ZoomAnchorMode.smart)
+                        .disabled(!state.hasMouseTrackingData)
+                    Text(L10n.VideoEditor.anchorPinned)
+                        .tag(ZoomAnchorMode.pinned)
+                }
+                .pickerStyle(.segmented)
+                .onChange(of: localAnchorMode) {
+                    applyCameraBehavior()
                 }
 
-                if segment.isAutoMode {
-                    if state.hasMouseTrackingData {
-                        Text(L10n.VideoEditor.followMouseActiveDescription)
-                            .font(.system(size: 10))
-                            .foregroundColor(.secondary.opacity(0.8))
-                            .fixedSize(horizontal: false, vertical: true)
-                    } else {
-                        availabilityWarning
-                    }
-
-                    anchorModeSection
-                } else if state.hasMouseTrackingData {
+                if localAnchorMode == .pinned {
                     Text(L10n.VideoEditor.manualModeDescription)
+                        .font(.system(size: 10))
+                        .foregroundColor(.secondary.opacity(0.8))
+                        .fixedSize(horizontal: false, vertical: true)
+                } else if state.hasMouseTrackingData {
+                    Text(L10n.VideoEditor.followMouseActiveDescription)
                         .font(.system(size: 10))
                         .foregroundColor(.secondary.opacity(0.8))
                         .fixedSize(horizontal: false, vertical: true)
                 } else {
                     availabilityWarning
-                }
-            }
-        }
-
-        private func modeButton(
-            title: String,
-            icon: String,
-            isSelected: Bool,
-            isDisabled: Bool,
-            action: @escaping () -> Void,
-        ) -> some View {
-            Button(action: action) {
-                HStack(spacing: 6) {
-                    Image(systemName: icon)
-                        .font(.system(size: 10, weight: .semibold))
-
-                    Text(title)
-                        .font(.system(size: 11, weight: .medium))
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 7)
-                .background(
-                    isSelected
-                        ? ZoomColors.primary.opacity(0.22)
-                        : Color.white.opacity(0.08),
-                )
-                .foregroundColor(isDisabled ? .secondary : .primary)
-                .cornerRadius(8)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .strokeBorder(isSelected ? ZoomColors.primary.opacity(0.45) : Color.clear, lineWidth: 1),
-                )
-            }
-            .buttonStyle(.plain)
-            .disabled(isDisabled)
-            .opacity(isDisabled ? 0.45 : 1.0)
-        }
-
-        private var anchorModeSection: some View {
-            VStack(alignment: .leading, spacing: 6) {
-                Text(L10n.VideoEditor.anchorMode)
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundColor(.secondary)
-
-                Picker("", selection: $localAnchorMode) {
-                    Text(L10n.VideoEditor.anchorPointer).tag(ZoomAnchorMode.pointer)
-                    Text(L10n.VideoEditor.anchorSmart).tag(ZoomAnchorMode.smart)
-                    Text(L10n.VideoEditor.anchorPinned).tag(ZoomAnchorMode.pinned)
-                }
-                .labelsHidden()
-                .pickerStyle(.segmented)
-                .disabled(!state.hasMouseTrackingData)
-                .onChange(of: localAnchorMode) { _, _ in
-                    applyAnchorMode()
                 }
             }
         }
@@ -465,140 +383,6 @@
             }
         }
 
-        private var followSpeedSection: some View {
-            VStack(alignment: .leading, spacing: 6) {
-                HStack {
-                    Text(L10n.VideoEditor.followSpeed)
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(.secondary)
-
-                    Spacer()
-
-                    Text("\(Int((localFollowSpeed * 100).rounded()))%")
-                        .font(.system(size: 11, weight: .semibold))
-                        .monospacedDigit()
-                }
-
-                Slider(
-                    value: $localFollowSpeed.stepped(by: 0.05, in: AutoFocusSettings.followSpeedRange),
-                    in: AutoFocusSettings.followSpeedRange,
-                ) { isEditing in
-                    if !isEditing {
-                        applyFollowSpeed()
-                    }
-                }
-
-                Text(L10n.VideoEditor.followSpeedDescription)
-                    .font(.system(size: 10))
-                    .foregroundColor(.secondary.opacity(0.8))
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-
-        private struct TransitionPreset {
-            let title: String
-            let value: TimeInterval
-        }
-
-        private var transitionPresets: [TransitionPreset] {
-            [
-                TransitionPreset(title: L10n.VideoEditor.fast, value: ZoomCalculator.fastTransitionDuration),
-                TransitionPreset(title: L10n.VideoEditor.balanced, value: ZoomCalculator.balancedTransitionDuration),
-                TransitionPreset(title: L10n.VideoEditor.smooth, value: ZoomCalculator.smoothTransitionDuration),
-            ]
-        }
-
-        private var transitionSmoothnessSection: some View {
-            VStack(alignment: .leading, spacing: 6) {
-                HStack {
-                    Text(L10n.VideoEditor.transitionSmoothness)
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(.secondary)
-
-                    Spacer()
-
-                    Text(transitionDisplayValue(for: localTransitionDuration))
-                        .font(.system(size: 11, weight: .semibold))
-                        .monospacedDigit()
-                }
-
-                HStack(spacing: 8) {
-                    Text(L10n.VideoEditor.fast)
-                        .font(.system(size: 9))
-                        .foregroundColor(.secondary)
-
-                    Slider(
-                        value: $localTransitionDuration.stepped(by: 0.05, in: ZoomCalculator.transitionDurationRange),
-                        in: ZoomCalculator.transitionDurationRange,
-                    ) { isEditing in
-                        if !isEditing {
-                            applyTransitionDuration()
-                        }
-                    }
-
-                    Text(L10n.VideoEditor.smooth)
-                        .font(.system(size: 9))
-                        .foregroundColor(.secondary)
-                }
-
-                HStack(spacing: 4) {
-                    ForEach(transitionPresets, id: \.title) { preset in
-                        Button {
-                            localTransitionDuration = preset.value
-                            applyTransitionDuration()
-                        } label: {
-                            Text(preset.title)
-                                .font(.system(size: 9, weight: .medium))
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 3)
-                                .background(
-                                    abs(localTransitionDuration - preset.value) < 0.02
-                                        ? ZoomColors.primary.opacity(0.3)
-                                        : Color.white.opacity(0.1),
-                                )
-                                .cornerRadius(4)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-
-                Text(L10n.VideoEditor.transitionAppliesDescription)
-                    .font(.system(size: 10))
-                    .foregroundColor(.secondary.opacity(0.8))
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-
-        private var focusMarginSection: some View {
-            VStack(alignment: .leading, spacing: 6) {
-                HStack {
-                    Text(L10n.VideoEditor.focusMargin)
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(.secondary)
-
-                    Spacer()
-
-                    Text("\(Int((localFocusMargin * 100).rounded()))%")
-                        .font(.system(size: 11, weight: .semibold))
-                        .monospacedDigit()
-                }
-
-                Slider(
-                    value: $localFocusMargin.stepped(by: 0.05, in: AutoFocusSettings.focusMarginRange),
-                    in: AutoFocusSettings.focusMarginRange,
-                ) { isEditing in
-                    if !isEditing {
-                        applyFocusMargin()
-                    }
-                }
-
-                Text(L10n.VideoEditor.focusMarginDescription)
-                    .font(.system(size: 10))
-                    .foregroundColor(.secondary.opacity(0.8))
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-
         private var centerPickerSection: some View {
             VStack(alignment: .leading, spacing: 6) {
                 Text(L10n.VideoEditor.zoomCenter)
@@ -609,8 +393,8 @@
                     center: $localCenter,
                     previewImage: previewImage,
                 )
-                .onChange(of: localCenter) { newValue in
-                    applyCenter(newValue)
+                .onChange(of: localCenter) {
+                    applyCenter(localCenter)
                 }
 
                 HStack(spacing: 4) {
@@ -706,24 +490,21 @@
         }
 
         private func syncLocalState() {
-            localTransitionDuration = state.zoomTransitionDuration
-
             guard let segment = selectedSegment else { return }
             localZoomLevel = segment.zoomLevel
             localCenter = segment.zoomCenter
-            localFollowSpeed = segment.followSpeed
-            localFocusMargin = segment.focusMargin
             localAnchorMode = segment.anchorMode
         }
 
-        private func applyAnchorMode() {
+        private func applyCameraBehavior() {
             guard let id = state.selectedZoomId else { return }
-            state.updateZoom(id: id, anchorMode: localAnchorMode)
-        }
-
-        private func applyZoomMode(_ zoomType: ZoomType) {
-            guard let id = state.selectedZoomId else { return }
-            state.setZoomMode(id: id, zoomType: zoomType)
+            switch localAnchorMode {
+            case .pinned:
+                state.updateZoom(id: id, zoomType: .manual, anchorMode: .pinned)
+            case .pointer, .smart:
+                guard state.hasMouseTrackingData else { return }
+                state.updateZoom(id: id, zoomType: .auto, anchorMode: localAnchorMode)
+            }
         }
 
         private func applyZoomLevel() {
@@ -731,23 +512,9 @@
             state.updateZoom(id: id, zoomLevel: localZoomLevel)
         }
 
-        private func applyFollowSpeed() {
-            guard let id = state.selectedZoomId else { return }
-            state.updateZoom(id: id, followSpeed: localFollowSpeed)
-        }
-
-        private func applyFocusMargin() {
-            guard let id = state.selectedZoomId else { return }
-            state.updateZoom(id: id, focusMargin: localFocusMargin)
-        }
-
         private func applyCenter(_ center: CGPoint) {
             guard let id = state.selectedZoomId else { return }
             state.updateZoom(id: id, zoomCenter: center)
-        }
-
-        private func applyTransitionDuration() {
-            state.zoomTransitionDuration = localTransitionDuration
         }
 
         private func zoomDisplayValue(for level: CGFloat) -> String {
@@ -755,10 +522,6 @@
                 return String(format: "%.0fx", level)
             }
             return String(format: "%.1fx", level)
-        }
-
-        private func transitionDisplayValue(for duration: TimeInterval) -> String {
-            "\(Int((duration * 1000).rounded())) ms"
         }
     }
 #endif
