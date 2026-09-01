@@ -9,6 +9,12 @@
     import CoreGraphics
     import Foundation
 
+    enum VideoEditorCursorSmoothingPreset: String, Codable, CaseIterable, Equatable, Sendable {
+        case original
+        case smooth
+        case fast
+    }
+
     struct VideoEditorPointerPressFrame: Sendable, Equatable {
         var location: CGPoint
         var progress: Double
@@ -82,6 +88,7 @@
         static func build(
             metadata: RecordingMetadata?,
             duration: TimeInterval,
+            smoothingPreset: VideoEditorCursorSmoothingPreset = .original,
         ) -> VideoEditorPointerTimeline {
             guard duration.isFinite, duration > 0 else { return .empty }
 
@@ -97,13 +104,14 @@
             let pressSamples = samples.filter { $0.kind == .press }
             let intervals = pressIntervals(from: samples, duration: duration)
             let recordingWidth = max(metadata?.captureSize.width ?? 1_000, 1)
+            let springs = PointerSpring.profile(for: smoothingPreset)
 
             let frameCount = max(2, Int((duration * stepRate).rounded(.up)) + 1)
             let dt = 1 / stepRate
             var xSpring = VideoEditorDampedSpring(position: firstSample.point.x)
             var ySpring = VideoEditorDampedSpring(position: firstSample.point.y)
             var magnificationSpring = VideoEditorDampedSpring(position: 1)
-            var opacitySpring = VideoEditorDampedSpring(position: 1)
+            var opacitySpring = VideoEditorDampedSpring(position: firstSample.isInsideCapture ? 1 : 0)
             var blurSpring = VideoEditorDampedSpring(position: 0)
 
             var sampleIndex = -1
@@ -145,8 +153,8 @@
                     && intervals[pressIntervalIndex].contains(time)
                 let isDragging = latest.kind == .drag
                 let motion = isDragging
-                    ? PointerSpring.track
-                    : (approachingPress ? PointerSpring.intercept : PointerSpring.glide)
+                    ? springs.track
+                    : (approachingPress ? springs.intercept : springs.glide)
                 if frameIndex > 0 {
                     xSpring.step(toward: target.x, using: motion, dt: dt)
                     ySpring.step(toward: target.y, using: motion, dt: dt)
@@ -154,16 +162,20 @@
 
                 let targetMagnification = isPressed ? 0.8 : 1
                 if frameIndex > 0 {
-                    magnificationSpring.step(toward: targetMagnification, using: PointerSpring.settle, dt: dt)
-                    opacitySpring.step(toward: 1, using: PointerSpring.settle, dt: dt)
-                    blurSpring.step(toward: 0, using: PointerSpring.settle, dt: dt)
+                    magnificationSpring.step(toward: targetMagnification, using: springs.settle, dt: dt)
+                    opacitySpring.step(
+                        toward: latest.isInsideCapture ? 1 : 0,
+                        using: springs.visibility,
+                        dt: dt,
+                    )
+                    blurSpring.step(toward: 0, using: springs.settle, dt: dt)
                 }
 
                 let press: VideoEditorPointerPressFrame?
                 if latestPressIndex >= 0 {
                     let event = pressSamples[latestPressIndex]
                     let elapsed = time - event.time
-                    press = elapsed <= pulseDuration
+                    press = event.isInsideCapture && elapsed <= pulseDuration
                         ? VideoEditorPointerPressFrame(
                             location: event.point,
                             progress: min(max(elapsed / pulseDuration, 0), 1),
@@ -211,6 +223,7 @@
             trimStart: TimeInterval,
             trimEnd: TimeInterval,
             speedMap: SpeedTimeMap?,
+            smoothingPreset: VideoEditorCursorSmoothingPreset = .original,
         ) -> VideoEditorPointerTimeline {
             build(
                 metadata: exportAdjustedMetadata(
@@ -220,6 +233,7 @@
                     speedMap: speedMap,
                 ),
                 duration: duration,
+                smoothingPreset: smoothingPreset,
             )
         }
 
@@ -273,6 +287,7 @@
             var kind: Kind
             var button: Int
             var artworkID: String?
+            var isInsideCapture: Bool
         }
 
         private struct PressInterval {
@@ -289,8 +304,9 @@
 
             var events: [StreamEvent] = []
             events.reserveCapacity(metadata.mouseSamples.count + metadata.mousePresses.count)
+            let sortedMouseSamples = metadata.mouseSamples.sorted { $0.time < $1.time }
 
-            for sample in metadata.mouseSamples {
+            for sample in sortedMouseSamples {
                 events.append(
                     StreamEvent(
                         time: sample.time,
@@ -298,10 +314,14 @@
                         kind: .travel,
                         button: 0,
                         artworkID: sample.artworkID,
+                        isInsideCapture: sample.isInsideCapture,
                     ),
                 )
             }
             for press in metadata.mousePresses {
+                let isInsideCapture = sortedMouseSamples.last { $0.time <= press.time }?.isInsideCapture
+                    ?? sortedMouseSamples.first?.isInsideCapture
+                    ?? false
                 events.append(
                     StreamEvent(
                         time: press.time,
@@ -309,6 +329,7 @@
                         kind: press.phase == .down ? .press : .release,
                         button: press.button,
                         artworkID: press.artworkID,
+                        isInsideCapture: isInsideCapture,
                     ),
                 )
             }
@@ -381,9 +402,41 @@
     }
 
     private enum PointerSpring {
-        static let glide = VideoEditorSpringConstant(tension: 470, friction: 70, inertia: 3)
-        static let intercept = VideoEditorSpringConstant(tension: 538, friction: 40, inertia: 1)
-        static let track = VideoEditorSpringConstant(tension: 1_000, friction: 40, inertia: 1)
-        static let settle = VideoEditorSpringConstant(tension: 300, friction: 30, inertia: 0.3)
+        struct Profile {
+            let glide: VideoEditorSpringConstant
+            let intercept: VideoEditorSpringConstant
+            let track: VideoEditorSpringConstant
+            let settle: VideoEditorSpringConstant
+            let visibility: VideoEditorSpringConstant
+        }
+
+        static func profile(for preset: VideoEditorCursorSmoothingPreset) -> Profile {
+            switch preset {
+            case .original:
+                Profile(
+                    glide: VideoEditorSpringConstant(tension: 470, friction: 70, inertia: 3),
+                    intercept: VideoEditorSpringConstant(tension: 538, friction: 40, inertia: 1),
+                    track: VideoEditorSpringConstant(tension: 1_000, friction: 40, inertia: 1),
+                    settle: VideoEditorSpringConstant(tension: 300, friction: 30, inertia: 0.3),
+                    visibility: VideoEditorSpringConstant(tension: 360, friction: 34, inertia: 0.4),
+                )
+            case .smooth:
+                Profile(
+                    glide: VideoEditorSpringConstant(tension: 260, friction: 62, inertia: 3),
+                    intercept: VideoEditorSpringConstant(tension: 330, friction: 48, inertia: 1.2),
+                    track: VideoEditorSpringConstant(tension: 650, friction: 44, inertia: 1.2),
+                    settle: VideoEditorSpringConstant(tension: 220, friction: 34, inertia: 0.5),
+                    visibility: VideoEditorSpringConstant(tension: 300, friction: 38, inertia: 0.5),
+                )
+            case .fast:
+                Profile(
+                    glide: VideoEditorSpringConstant(tension: 700, friction: 82, inertia: 2.5),
+                    intercept: VideoEditorSpringConstant(tension: 780, friction: 50, inertia: 0.8),
+                    track: VideoEditorSpringConstant(tension: 1_400, friction: 55, inertia: 0.8),
+                    settle: VideoEditorSpringConstant(tension: 420, friction: 34, inertia: 0.2),
+                    visibility: VideoEditorSpringConstant(tension: 460, friction: 38, inertia: 0.25),
+                )
+            }
+        }
     }
 #endif

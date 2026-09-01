@@ -1,6 +1,17 @@
 # Video Editor
 
-This doc covers the video editor in `Cue/Features/VideoEditor/`: windowing, trim, zoom segments, Follow Mouse (Smart Camera), speed (timelapse) segments, background/padding, audio mixing, export, GIF resizing, and undo/redo. How recordings and their mouse/audio metadata are produced lives in [`RECORDING.md`](RECORDING.md).
+This doc covers the video editor in `Cue/Features/VideoEditor/`: windowing, trim, cursor controls, zoom segments, Follow Mouse (Smart Camera), speed (timelapse) segments, background/padding, audio mixing, export, GIF resizing, and undo/redo. How recordings and their mouse/audio metadata are produced lives in [`RECORDING.md`](RECORDING.md).
+
+## Cursor
+
+Recordings with Smart Pointer metadata hide the cursor baked by ScreenCaptureKit
+and reconstruct it in the editor. The Cursor section owns the reconstructed
+cursor's visibility, size, and movement smoothing (`Original`, `Smooth`, or
+`Fast`). Click effects and keystroke captions are independent metadata
+overlays. Recordings without Smart Pointer metadata keep their native cursor
+baked into the video; the editor does not offer a second cursor over that
+source. When the recorded pointer leaves the capture area, the reconstructed
+cursor fades out until it re-enters.
 
 ## Camera overlay (Plan 107)
 
@@ -32,7 +43,7 @@ flowchart TD
     E --> G
     F -->|Video dropped| E
     G --> H{"RecordingMetadata available?"}
-    H -->|Yes| I["VideoEditorAutoFocusEngine.buildPath — Follow Mouse"]
+    H -->|Yes| I["Cursor controls + VideoEditorAutoFocusEngine.buildPath"]
     H -->|No| J["Manual zoom workflow only"]
     I --> K["Trim / zoom / speed / background / audio / export settings"]
     J --> K

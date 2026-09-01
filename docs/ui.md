@@ -101,6 +101,12 @@ second canonical design-system document.
   screen zoom layer. `VideoEditorCameraOverlayLayout` owns the shared
   corner-anchored, aspect-fit geometry used by preview and export, including
   optional inverse zoom scaling.
+- Video Editor cursor controls live in a dedicated Cursor section. A recording
+  with a baked cursor never enables a reconstructed cursor overlay; Smart
+  Pointer recordings own reconstructed cursor visibility, size, and smoothing
+  preset. Click effects and shortcut captions remain independent metadata
+  overlays and do not add a second cursor. A reconstructed cursor is hidden
+  while its recorded position is outside the capture area.
 - In `AnnotateMainView`, contextual properties and bottom actions float over the
   central canvas host. The side dock remains in normal layout flow and reduces
   that host's bounds; full-width separator or background bands must not appear
