@@ -127,7 +127,7 @@
             )
             let cameraView = VideoPlayerSection(
                 player: player,
-                videoGravity: layout.usesCapturedGeometry ? .resizeAspectFill : .resizeAspect,
+                videoGravity: .resizeAspectFill,
             )
             .frame(width: frame.width, height: frame.height)
 

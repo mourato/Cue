@@ -77,6 +77,13 @@
             }
             return devices().first
         }
+
+        static func captureSize(matching id: String?) -> CGSize? {
+            guard let device = device(matching: id) else { return nil }
+            let dimensions = CMVideoFormatDescriptionGetDimensions(device.activeFormat.formatDescription)
+            guard dimensions.width > 0, dimensions.height > 0 else { return nil }
+            return CGSize(width: CGFloat(dimensions.width), height: CGFloat(dimensions.height))
+        }
     }
 
     nonisolated struct AVFoundationCameraCaptureSessionFactory: CameraCaptureSessionFactory {
