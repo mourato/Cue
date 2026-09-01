@@ -16,6 +16,7 @@ enum PreferencesKeys {
     static let legacyLicenseCleanupCompleted = "legacyLicenseCleanupCompleted"
     static let sandboxOffMigrationCompleted = "migration.sandboxOff.completed"
     static let notinhasIdentityMigrationCompleted = "migration.notinhasIdentity.completed"
+    static let cueIdentityMigrationCompleted = "migration.cueIdentity.completed"
 
     // General
     static let playSounds = "playSounds"
