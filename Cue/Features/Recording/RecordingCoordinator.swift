@@ -628,6 +628,10 @@
             let savedMicrophoneDeviceID = window.microphoneDeviceID
             let savedCaptureCamera = window.captureCamera
             let savedCameraDeviceID = window.cameraDeviceID
+            let savedCameraPreviewConfiguration = window.cameraPreviewConfiguration
+            let savedCameraOverlayLayout = savedCaptureCamera && window.outputMode != .gif
+                ? recordedCameraOverlayLayout(in: rect, configuration: savedCameraPreviewConfiguration)
+                : nil
             let savedShowCursor = window.state.showCursor
             DiagnosticLogger.shared.log(.info, .recording, "Recording restart requested", context: [
                 "format": savedFormat.rawValue,
@@ -680,6 +684,7 @@
                         microphoneDeviceID: savedMicrophoneDeviceID,
                         captureCamera: savedCaptureCamera,
                         cameraDeviceID: savedCameraDeviceID,
+                        cameraOverlayLayout: savedCameraOverlayLayout,
                         showCursor: savedShowCursor,
                         smartPointerEnabled: self.recordingSmartPointerEnabled,
                         saveDirectory: savePlan.finalDirectory,
@@ -779,6 +784,22 @@
             cameraPreviewWindow = nil
         }
 
+        private func recordedCameraOverlayLayout(
+            in selectionRect: CGRect,
+            configuration: RecordingCameraPreviewConfiguration,
+        ) -> RecordedCameraOverlayLayout? {
+            guard let normalizedRect = RecordingCameraPreviewPlacement.topLeftNormalizedRect(
+                in: selectionRect,
+                configuration: configuration,
+                normalizedCenter: cameraPreviewWindow?.normalizedCenter ?? cameraPreviewNormalizedCenter,
+            ) else { return nil }
+
+            return RecordedCameraOverlayLayout(
+                normalizedRect: normalizedRect,
+                shape: configuration.shape,
+            )
+        }
+
         private func startRecording() {
             guard let rect = selectedRect, let window = toolbarWindow else {
                 DiagnosticLogger.shared.log(
@@ -817,6 +838,9 @@
             let microphoneDeviceID = window.microphoneDeviceID
             let captureCamera = window.captureCamera && window.outputMode != .gif
             let cameraDeviceID = window.cameraDeviceID
+            let cameraOverlayLayout = captureCamera
+                ? recordedCameraOverlayLayout(in: rect, configuration: window.cameraPreviewConfiguration)
+                : nil
             DiagnosticLogger.shared.log(.debug, .recording, "Recording options resolved", context: [
                 "quality": quality.rawValue,
                 "fps": "\(fps)",
@@ -859,6 +883,7 @@
                         microphoneDeviceID: microphoneDeviceID,
                         captureCamera: captureCamera,
                         cameraDeviceID: cameraDeviceID,
+                        cameraOverlayLayout: cameraOverlayLayout,
                         showCursor: showCursor,
                         smartPointerEnabled: self.recordingSmartPointerEnabled,
                         saveDirectory: savePlan.finalDirectory,
@@ -999,6 +1024,10 @@
             let quality = VideoQuality(rawValue: qualityString) ?? .high
             let captureSystemAudio = window.captureAudio
             let showCursor = window.state.showCursor
+            let captureCamera = window.captureCamera && window.outputMode != .gif
+            let cameraOverlayLayout = captureCamera
+                ? recordedCameraOverlayLayout(in: rect, configuration: window.cameraPreviewConfiguration)
+                : nil
 
             guard let saveDirectory = resolveSaveDirectoryForOperation() else {
                 DiagnosticLogger.shared.log(.warning, .recording, "Microphone retry blocked: no save directory access")
@@ -1023,8 +1052,9 @@
                         fps: fps,
                         captureSystemAudio: captureSystemAudio,
                         captureMicrophone: false,
-                        captureCamera: window.captureCamera && window.outputMode != .gif,
+                        captureCamera: captureCamera,
                         cameraDeviceID: window.cameraDeviceID,
+                        cameraOverlayLayout: cameraOverlayLayout,
                         showCursor: showCursor,
                         smartPointerEnabled: self.recordingSmartPointerEnabled,
                         saveDirectory: savePlan.finalDirectory,

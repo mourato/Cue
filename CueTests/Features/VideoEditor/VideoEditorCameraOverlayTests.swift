@@ -19,6 +19,48 @@
             XCTAssertEqual(frame.width / frame.height, 640.0 / 480.0, accuracy: 0.001)
         }
 
+        func testRecordedLayoutUsesExactNormalizedFrame() {
+            let recorded = RecordedCameraOverlayLayout(
+                normalizedRect: CGRect(x: 0.1, y: 0.2, width: 0.3, height: 0.4),
+                shape: .circle,
+            )
+            let layout = VideoEditorCameraOverlayLayout(recordedLayout: recorded)
+            let frame = layout.cameraFrame(
+                in: CGSize(width: 1600, height: 900),
+                cameraSize: CGSize(width: 640, height: 480),
+            )
+
+            XCTAssertTrue(layout.usesCapturedGeometry)
+            XCTAssertEqual(frame.minX, 160, accuracy: 0.001)
+            XCTAssertEqual(frame.minY, 180, accuracy: 0.001)
+            XCTAssertEqual(frame.width, 480, accuracy: 0.001)
+            XCTAssertEqual(frame.height, 360, accuracy: 0.001)
+            XCTAssertEqual(layout.shape, .circle)
+        }
+
+        func testChangingEditorPresetInvalidatesRecordedGeometry() {
+            let recorded = RecordedCameraOverlayLayout(
+                normalizedRect: CGRect(x: 0.1, y: 0.2, width: 0.3, height: 0.4),
+                shape: .rectangle,
+            )
+            var layout = VideoEditorCameraOverlayLayout(recordedLayout: recorded)
+
+            layout.position = .topLeading
+
+            XCTAssertFalse(layout.usesCapturedGeometry)
+            XCTAssertNil(layout.capturedNormalizedRect)
+        }
+
+        func testInvalidRecordedGeometryFallsBackToLegacyLayout() {
+            let recorded = RecordedCameraOverlayLayout(
+                normalizedRect: CGRect(x: 2, y: 0.2, width: 0.3, height: 0.4),
+                shape: .rectangle,
+            )
+            let layout = VideoEditorCameraOverlayLayout(recordedLayout: recorded)
+
+            XCTAssertFalse(layout.usesCapturedGeometry)
+        }
+
         func testZoomOnePreservesLegacyCameraFrameForEveryCorner() {
             for position in VideoEditorCameraOverlayPosition.allCases {
                 var layout = VideoEditorCameraOverlayLayout.default

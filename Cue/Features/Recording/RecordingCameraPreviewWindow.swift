@@ -37,7 +37,7 @@
         }
     }
 
-    enum RecordingCameraPreviewShape: String, CaseIterable, Identifiable {
+    enum RecordingCameraPreviewShape: String, Codable, CaseIterable, Identifiable, Sendable {
         case circle, square, rectangle, vertical
 
         var id: String {
@@ -116,6 +116,33 @@
                     height: fittedFrame.height,
                 ),
                 in: selectionRect,
+            )
+        }
+
+        static func topLeftNormalizedRect(
+            in selectionRect: CGRect,
+            configuration: RecordingCameraPreviewConfiguration,
+            normalizedCenter: CGPoint?,
+        ) -> CGRect? {
+            guard selectionRect.width > 0, selectionRect.height > 0 else { return nil }
+
+            let previewFrame = frame(
+                in: selectionRect,
+                configuration: configuration,
+                normalizedCenter: normalizedCenter,
+            )
+            guard !previewFrame.isEmpty else { return nil }
+
+            let normalizedX = (previewFrame.minX - selectionRect.minX) / selectionRect.width
+            let normalizedBottomY = (previewFrame.minY - selectionRect.minY) / selectionRect.height
+            let normalizedWidth = previewFrame.width / selectionRect.width
+            let normalizedHeight = previewFrame.height / selectionRect.height
+
+            return CGRect(
+                x: normalizedX,
+                y: 1 - normalizedBottomY - normalizedHeight,
+                width: normalizedWidth,
+                height: normalizedHeight,
             )
         }
 

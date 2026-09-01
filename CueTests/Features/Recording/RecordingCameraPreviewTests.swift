@@ -88,5 +88,62 @@
             XCTAssertEqual((preview.midX - selection.minX) / selection.width, 0.25, accuracy: 0.001)
             XCTAssertEqual((preview.midY - selection.minY) / selection.height, 0.75, accuracy: 0.001)
         }
+
+        func testTopLeftNormalizedRectConvertsFromAppKitCoordinates() throws {
+            let selection = CGRect(x: 100, y: 200, width: 1200, height: 800)
+            let configuration = RecordingCameraPreviewConfiguration(
+                size: .medium,
+                shape: .vertical,
+            )
+            let preview = RecordingCameraPreviewPlacement.frame(
+                in: selection,
+                configuration: configuration,
+                normalizedCenter: CGPoint(x: 0.25, y: 0.75),
+            )
+            let normalized = try XCTUnwrap(RecordingCameraPreviewPlacement.topLeftNormalizedRect(
+                in: selection,
+                configuration: configuration,
+                normalizedCenter: CGPoint(x: 0.25, y: 0.75),
+            ))
+
+            XCTAssertEqual(normalized.minX, (preview.minX - selection.minX) / selection.width, accuracy: 0.001)
+            XCTAssertEqual(normalized.width, preview.width / selection.width, accuracy: 0.001)
+            XCTAssertEqual(normalized.height, preview.height / selection.height, accuracy: 0.001)
+            XCTAssertEqual(
+                normalized.minY,
+                1 - (preview.minY - selection.minY + preview.height) / selection.height,
+                accuracy: 0.001,
+            )
+        }
+
+        func testRecordedCameraOverlayLayoutRoundTripsThroughCodable() throws {
+            let layout = RecordedCameraOverlayLayout(
+                normalizedRect: CGRect(x: 0.1, y: 0.2, width: 0.3, height: 0.4),
+                shape: .circle,
+            )
+
+            let data = try JSONEncoder().encode(layout)
+            let decoded = try JSONDecoder().decode(RecordedCameraOverlayLayout.self, from: data)
+
+            XCTAssertEqual(decoded, layout)
+        }
+
+        func testRecordingMetadataCarriesCameraOverlayLayout() throws {
+            let layout = RecordedCameraOverlayLayout(
+                normalizedRect: CGRect(x: 0.1, y: 0.2, width: 0.3, height: 0.4),
+                shape: .vertical,
+            )
+            let metadata = RecordingMetadata(
+                captureSize: CGSize(width: 1280, height: 720),
+                samplesPerSecond: 30,
+                mouseSamples: [],
+                cameraOverlayLayout: layout,
+            )
+
+            let data = try JSONEncoder().encode(metadata)
+            let decoded = try JSONDecoder().decode(RecordingMetadata.self, from: data)
+
+            XCTAssertEqual(decoded.cameraOverlayLayout, layout)
+        }
     }
 #endif

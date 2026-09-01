@@ -676,6 +676,7 @@
         private var microphoneDeviceID: String?
         private var captureCamera = false
         private var cameraDeviceID: String?
+        private var recordedCameraOverlayLayout: RecordedCameraOverlayLayout?
         private var showCursorInRecording: Bool = true
         private var excludeOwnApplicationFromCapture: Bool = true
         private var excludeDesktopIconsFromCapture: Bool = false
@@ -747,6 +748,7 @@
             microphoneDeviceID: String? = nil,
             captureCamera: Bool = false,
             cameraDeviceID: String? = nil,
+            cameraOverlayLayout: RecordedCameraOverlayLayout? = nil,
             showCursor: Bool = true,
             smartPointerEnabled: Bool = false,
             saveDirectory: URL,
@@ -798,6 +800,7 @@
             self.microphoneDeviceID = microphoneDeviceID
             self.captureCamera = captureCamera
             self.cameraDeviceID = cameraDeviceID
+            recordedCameraOverlayLayout = cameraOverlayLayout
             pointerSynthesizedInRecording = smartPointerEnabled
             showCursorInRecording = smartPointerEnabled ? false : showCursor
             excludeOwnApplicationFromCapture = excludeOwnApplication
@@ -1451,6 +1454,7 @@
                             audioSourceTrackRoles: audioSourceTrackRoles,
                             audioSourceTracks: audioSourceTracks,
                             videoSourceTracks: recordingVideoSourceTracks(for: url, stats: videoWriteStats),
+                            cameraOverlayLayout: recordedCameraOverlayLayout,
                         )
                         try RecordingMetadataStore.save(metadata, for: url)
                         DiagnosticLogger.shared.log(.info, .recording, "Recording metadata saved", context: [
@@ -2474,6 +2478,7 @@
             session.setOnFirstVideoFrame(nil)
             microphoneDeviceID = nil
             cameraDeviceID = nil
+            recordedCameraOverlayLayout = nil
             cameraCapturer = nil
             showCursorInRecording = true
             pointerSynthesizedInRecording = false

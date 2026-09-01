@@ -110,8 +110,13 @@
         }
     }
 
+    struct RecordedCameraOverlayLayout: Codable, Equatable, Sendable {
+        var normalizedRect: CGRect
+        var shape: RecordingCameraPreviewShape
+    }
+
     struct RecordingMetadata: Codable, Equatable {
-        static let currentVersion = 9
+        static let currentVersion = 10
 
         var version: Int
         var coordinateSpace: RecordingCoordinateSpace
@@ -126,6 +131,7 @@
         var audioSourceTrackRoles: [RecordingAudioSourceTrackRole]
         var audioSourceTracks: [RecordingAudioSourceTrack]
         var videoSourceTracks: [RecordingVideoSourceTrack]
+        var cameraOverlayLayout: RecordedCameraOverlayLayout?
 
         init(
             version: Int = RecordingMetadata.currentVersion,
@@ -141,6 +147,7 @@
             audioSourceTrackRoles: [RecordingAudioSourceTrackRole] = [],
             audioSourceTracks: [RecordingAudioSourceTrack] = [],
             videoSourceTracks: [RecordingVideoSourceTrack] = [],
+            cameraOverlayLayout: RecordedCameraOverlayLayout? = nil,
         ) {
             self.version = version
             self.coordinateSpace = coordinateSpace
@@ -155,6 +162,7 @@
             self.audioSourceTrackRoles = audioSourceTrackRoles
             self.audioSourceTracks = audioSourceTracks
             self.videoSourceTracks = videoSourceTracks
+            self.cameraOverlayLayout = cameraOverlayLayout
         }
 
         private enum CodingKeys: String, CodingKey {
@@ -171,6 +179,7 @@
             case audioSourceTrackRoles
             case audioSourceTracks
             case videoSourceTracks
+            case cameraOverlayLayout
         }
 
         init(from decoder: Decoder) throws {
@@ -207,6 +216,10 @@
                 [RecordingVideoSourceTrack].self,
                 forKey: .videoSourceTracks,
             ) ?? []
+            cameraOverlayLayout = try container.decodeIfPresent(
+                RecordedCameraOverlayLayout.self,
+                forKey: .cameraOverlayLayout,
+            )
         }
 
         func encode(to encoder: Encoder) throws {
@@ -236,6 +249,7 @@
             if !videoSourceTracks.isEmpty {
                 try container.encode(videoSourceTracks, forKey: .videoSourceTracks)
             }
+            try container.encodeIfPresent(cameraOverlayLayout, forKey: .cameraOverlayLayout)
         }
     }
 
@@ -833,6 +847,7 @@
                 audioSourceTrackRoles: audioSourceTrackRoles,
                 audioSourceTracks: audioSourceTracks,
                 videoSourceTracks: videoSourceTracks,
+                cameraOverlayLayout: cameraOverlayLayout,
             )
         }
     }

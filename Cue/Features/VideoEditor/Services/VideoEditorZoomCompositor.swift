@@ -576,20 +576,30 @@
                 )
                 .offsetBy(dx: instruction.backgroundPadding, dy: instruction.backgroundPadding)
                 let effectiveCanvasSize = instruction.paddedRenderSize
-                let fitted = VideoEditorExportLayout.aspectFitRect(sourceSize: cameraImage.extent.size, in: target.size)
-                    .offsetBy(dx: target.minX, dy: target.minY)
+                let cameraSourceRect = layout.usesCapturedGeometry
+                    ? VideoEditorExportLayout.aspectFillRect(sourceSize: cameraImage.extent.size, in: target.size)
+                    : VideoEditorExportLayout.aspectFitRect(sourceSize: cameraImage.extent.size, in: target.size)
+                let placedCameraRect = cameraSourceRect.offsetBy(dx: target.minX, dy: target.minY)
                 let scale = min(
-                    fitted.width / max(cameraImage.extent.width, 1),
-                    fitted.height / max(cameraImage.extent.height, 1),
+                    placedCameraRect.width / max(cameraImage.extent.width, 1),
+                    placedCameraRect.height / max(cameraImage.extent.height, 1),
                 )
                 cameraImage = cameraImage.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
                     .transformed(by: CGAffineTransform(
-                        translationX: fitted.minX,
-                        y: effectiveCanvasSize.height - fitted.maxY,
+                        translationX: placedCameraRect.minX,
+                        y: effectiveCanvasSize.height - placedCameraRect.maxY,
                     ))
-                let mask = roundedMask(rect: CGRect(x: fitted.minX, y: effectiveCanvasSize.height - fitted.maxY,
-                                                    width: fitted.width, height: fitted.height),
-                                       canvasSize: effectiveCanvasSize)
+                let maskRect = layout.usesCapturedGeometry ? target : placedCameraRect
+                let mask = cameraMask(
+                    rect: CGRect(
+                        x: maskRect.minX,
+                        y: effectiveCanvasSize.height - maskRect.maxY,
+                        width: maskRect.width,
+                        height: maskRect.height,
+                    ),
+                    canvasSize: effectiveCanvasSize,
+                    shape: layout.usesCapturedGeometry ? layout.shape : nil,
+                )
                 processedImage = cameraImage.applyingFilter(
                     "CIBlendWithAlphaMask",
                     parameters: [kCIInputMaskImageKey: mask],
@@ -695,6 +705,37 @@
 
         private func cameraImageExtent(_ buffer: CVPixelBuffer) -> CGRect {
             CIImage(cvPixelBuffer: buffer).extent
+        }
+
+        private func cameraMask(
+            rect: CGRect,
+            canvasSize: CGSize,
+            shape: RecordingCameraPreviewShape?,
+        ) -> CIImage {
+            guard shape == .circle else {
+                return roundedMask(rect: rect, canvasSize: canvasSize)
+            }
+
+            let extent = CGRect(origin: .zero, size: canvasSize)
+            guard let context = CGContext(
+                data: nil,
+                width: max(Int(canvasSize.width), 1),
+                height: max(Int(canvasSize.height), 1),
+                bitsPerComponent: 8,
+                bytesPerRow: max(Int(canvasSize.width), 1) * 4,
+                space: CGColorSpaceCreateDeviceRGB(),
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+            ) else {
+                return CIImage(color: .white).cropped(to: rect)
+            }
+
+            context.clear(extent)
+            context.setFillColor(CGColor.white)
+            context.fillEllipse(in: rect)
+            guard let image = context.makeImage() else {
+                return CIImage(color: .white).cropped(to: rect)
+            }
+            return CIImage(cgImage: image).cropped(to: extent)
         }
 
         private func roundedMask(rect: CGRect, canvasSize: CGSize) -> CIImage {

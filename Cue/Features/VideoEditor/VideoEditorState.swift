@@ -631,6 +631,9 @@
             player.isMuted = SoundManager.isPlaybackSuppressedForTests
             zoomTransitionDuration = Self.loadZoomTransitionDuration()
             recordingMetadata = initialMetadata
+            if let recordedCameraOverlayLayout = initialMetadata?.cameraOverlayLayout {
+                cameraOverlayLayout = VideoEditorCameraOverlayLayout(recordedLayout: recordedCameraOverlayLayout)
+            }
 
             setupTimeObserver()
             setupEndObserver()

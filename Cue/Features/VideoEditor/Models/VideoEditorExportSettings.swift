@@ -63,6 +63,29 @@
             )
         }
 
+        static func aspectFillRect(sourceSize: CGSize, in canvasSize: CGSize) -> CGRect {
+            guard sourceSize.width > 0,
+                  sourceSize.height > 0,
+                  canvasSize.width > 0,
+                  canvasSize.height > 0
+            else {
+                return CGRect(origin: .zero, size: canvasSize)
+            }
+
+            let scale = max(canvasSize.width / sourceSize.width, canvasSize.height / sourceSize.height)
+            let filledSize = CGSize(
+                width: sourceSize.width * scale,
+                height: sourceSize.height * scale,
+            )
+
+            return CGRect(
+                x: (canvasSize.width - filledSize.width) / 2,
+                y: (canvasSize.height - filledSize.height) / 2,
+                width: filledSize.width,
+                height: filledSize.height,
+            )
+        }
+
         static func aspectRatioString(for size: CGSize) -> String? {
             let width = Int(size.width.rounded())
             let height = Int(size.height.rounded())

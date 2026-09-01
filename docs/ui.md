@@ -98,9 +98,10 @@ second canonical design-system document.
 - Use one owner for each scrollable surface. Avoid nested decorative panels
   that compete with the capture or annotation canvas.
 - Video Editor keeps the camera bubble as an independent overlay outside the
-  screen zoom layer. `VideoEditorCameraOverlayLayout` owns the shared
-  corner-anchored, aspect-fit geometry used by preview and export, including
-  optional inverse zoom scaling.
+  screen zoom layer. `VideoEditorCameraOverlayLayout` owns the shared geometry
+  used by preview and export: new recordings use their captured normalized
+  frame and shape, while older recordings retain corner-anchored aspect-fit
+  defaults and optional inverse zoom scaling.
 - Video Editor cursor controls live in a dedicated Cursor section. A recording
   with a baked cursor never enables a reconstructed cursor overlay; Smart
   Pointer recordings own reconstructed cursor visibility, size, and smoothing
