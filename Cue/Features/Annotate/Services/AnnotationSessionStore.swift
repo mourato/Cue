@@ -248,7 +248,7 @@ final class AnnotationSessionStore {
     private nonisolated static func defaultRootDirectory() -> URL {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         return appSupport
-            .appendingPathComponent(NotinhasStoragePaths.destinationAppSupportFolderName, isDirectory: true)
+            .appendingPathComponent(CueStoragePaths.destinationAppSupportFolderName, isDirectory: true)
             .appendingPathComponent("AnnotationSessions", isDirectory: true)
     }
 

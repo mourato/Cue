@@ -34,7 +34,7 @@ enum DatabaseInitializationError: LocalizedError {
     }
 
     var recoverySuggestion: String? {
-        "Try repairing the database, reset it after backing up the existing files, or quit Notinhas."
+        "Try repairing the database, reset it after backing up the existing files, or quit Cue."
     }
 
     var databaseURL: URL {
@@ -42,7 +42,7 @@ enum DatabaseInitializationError: LocalizedError {
         case let .directoryCreationFailed(directoryURL, _):
             directoryURL.appendingPathComponent(
                 NotinhasStoragePaths.databaseFileName(
-                    baseName: NotinhasStoragePaths.destinationDatabaseBaseName,
+                    baseName: CueStoragePaths.destinationDatabaseBaseName,
                     suffix: "",
                 ),
             )
@@ -61,13 +61,13 @@ final class DatabaseManager: @unchecked Sendable {
     private nonisolated(unsafe) static var sharedInstance: DatabaseManager?
     private nonisolated(unsafe) static var sharedFailure: DatabaseInitializationError?
     private static let databaseFileNames = [
-        NotinhasStoragePaths.databaseFileName(baseName: NotinhasStoragePaths.destinationDatabaseBaseName, suffix: ""),
+        NotinhasStoragePaths.databaseFileName(baseName: CueStoragePaths.destinationDatabaseBaseName, suffix: ""),
         NotinhasStoragePaths.databaseFileName(
-            baseName: NotinhasStoragePaths.destinationDatabaseBaseName,
+            baseName: CueStoragePaths.destinationDatabaseBaseName,
             suffix: "-wal",
         ),
         NotinhasStoragePaths.databaseFileName(
-            baseName: NotinhasStoragePaths.destinationDatabaseBaseName,
+            baseName: CueStoragePaths.destinationDatabaseBaseName,
             suffix: "-shm",
         ),
     ]
@@ -165,7 +165,7 @@ final class DatabaseManager: @unchecked Sendable {
     static var defaultDatabaseURL: URL {
         databaseDirectory().appendingPathComponent(
             NotinhasStoragePaths.databaseFileName(
-                baseName: NotinhasStoragePaths.destinationDatabaseBaseName,
+                baseName: CueStoragePaths.destinationDatabaseBaseName,
                 suffix: "",
             ),
         )
@@ -186,7 +186,7 @@ final class DatabaseManager: @unchecked Sendable {
             for: .applicationSupportDirectory, in: .userDomainMask,
         ).first!
         return appSupport.appendingPathComponent(
-            NotinhasStoragePaths.destinationAppSupportFolderName,
+            CueStoragePaths.destinationAppSupportFolderName,
             isDirectory: true,
         )
     }

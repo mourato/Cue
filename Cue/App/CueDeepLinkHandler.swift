@@ -1,15 +1,15 @@
 //
-//  NotinhasDeepLinkHandler.swift
-//  Notinhas
+//  CueDeepLinkHandler.swift
+//  Cue
 //
-//  Handles notinhas:// automation URLs for external launchers and workflows.
+//  Handles cue:// automation URLs for external launchers and workflows.
 //
 
 import AppKit
 import Foundation
 
 @MainActor
-struct NotinhasDeepLinkHandler {
+struct CueDeepLinkHandler {
     private let screenCaptureViewModel: ScreenCaptureViewModel
 
     init(screenCaptureViewModel: ScreenCaptureViewModel) {
@@ -27,7 +27,7 @@ struct NotinhasDeepLinkHandler {
             return
         }
 
-        guard let action = NotinhasDeepLinkAction(url: url) else {
+        guard let action = CueDeepLinkAction(url: url) else {
             DiagnosticLogger.shared.log(
                 .warning,
                 .action,
@@ -113,7 +113,7 @@ struct NotinhasDeepLinkHandler {
         }
     }
 
-    private func logIgnoredVideoDeepLink(action: NotinhasDeepLinkAction) {
+    private func logIgnoredVideoDeepLink(action: CueDeepLinkAction) {
         DiagnosticLogger.shared.log(
             .info,
             .action,
@@ -123,7 +123,7 @@ struct NotinhasDeepLinkHandler {
     }
 }
 
-enum NotinhasDeepLinkAction: Equatable {
+enum CueDeepLinkAction: Equatable {
     case captureFullscreen
     case captureArea
     case captureAllInOne
@@ -144,7 +144,7 @@ enum NotinhasDeepLinkAction: Equatable {
     case openSettings(PreferencesTab?)
 
     init?(url: URL) {
-        guard url.scheme?.lowercased() == "notinhas" else { return nil }
+        guard url.scheme?.lowercased() == "cue" else { return nil }
 
         let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
         let host = url.host?.lowercased()

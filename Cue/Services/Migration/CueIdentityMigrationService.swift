@@ -773,8 +773,21 @@ private extension CloudKeychainItem {
         [
             KeychainLocation(
                 service: CueStoragePaths.legacyCurrentKeychainService,
-                account: account,
+                account: cueMigrationLegacyAccount,
             ),
         ]
+    }
+
+    var cueMigrationLegacyAccount: String {
+        switch self {
+        case .accessKey: "com.mourato.notinhas.cloud.accessKey"
+        case .secretKey: "com.mourato.notinhas.cloud.secretKey"
+        case .passwordHash: "com.mourato.notinhas.cloud.passwordHash"
+        case .googleRefreshToken: "com.mourato.notinhas.cloud.google.refreshToken"
+        case .googleClientId: "com.mourato.notinhas.cloud.google.clientId"
+        case .googleClientSecret: "com.mourato.notinhas.cloud.google.clientSecret"
+        case .imgbbAPIKey: "com.mourato.notinhas.cloud.imgbbAPIKey"
+        case .imageKitPrivateKey: "com.mourato.notinhas.cloud.imagekitPrivateKey"
+        }
     }
 }

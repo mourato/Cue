@@ -1,6 +1,6 @@
 //
-//  NotinhasApp.swift
-//  Notinhas
+//  CueApp.swift
+//  Cue
 //
 //  Main app entry point - Menu Bar App
 //
@@ -16,7 +16,7 @@ extension Notification.Name {
 }
 
 @main
-struct NotinhasApp: App {
+struct CueApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @ObservedObject private var themeManager = ThemeManager.shared
 
@@ -163,6 +163,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         guard ensureNotinhasIdentityMigrationReadyForLaunch() else {
+            return
+        }
+
+        guard ensureCueIdentityMigrationReadyForLaunch() else {
             return
         }
 
@@ -318,7 +322,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         alert.addButton(withTitle: "Try Again")
         alert.addButton(withTitle: "Start Fresh…")
-        alert.addButton(withTitle: "Quit Notinhas")
+        alert.addButton(withTitle: "Quit Cue")
 
         switch alert.runModal() {
         case .alertFirstButtonReturn:
@@ -447,7 +451,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         alert.addButton(withTitle: "Try Again")
         alert.addButton(withTitle: "Start Fresh…")
-        alert.addButton(withTitle: "Quit Notinhas")
+        alert.addButton(withTitle: "Quit Cue")
 
         switch alert.runModal() {
         case .alertFirstButtonReturn:
@@ -468,6 +472,135 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         Your old data remains in the previous Snapzy storage locations and is not deleted. You can access it manually at:
         ~/Library/Application Support/Snapzy
+
+        Current error:
+        \(error.localizedDescription)
+        """
+        alert.addButton(withTitle: "Start Fresh")
+        alert.addButton(withTitle: "Cancel")
+        return alert.runModal() == .alertFirstButtonReturn
+    }
+
+    private enum CueIdentityMigrationRecoveryAction {
+        case retry
+        case startFresh
+        case quit
+    }
+
+    private func runCueIdentityMigration() throws -> CueIdentityMigrationResult {
+        guard Thread.isMainThread else {
+            return try CueIdentityMigrationService().runIfNeeded()
+        }
+
+        return try DispatchQueue.global(qos: .userInitiated).sync {
+            try CueIdentityMigrationService().runIfNeeded()
+        }
+    }
+
+    private func ensureCueIdentityMigrationReadyForLaunch() -> Bool {
+        var note: String?
+
+        while true {
+            do {
+                let result = try runCueIdentityMigration()
+                if result.didRun {
+                    DiagnosticLogger.shared.log(
+                        .info,
+                        .lifecycle,
+                        "Cue identity migration completed",
+                        context: [
+                            "appSupportCopied": "\(result.copiedApplicationSupportItems)",
+                            "appSupportSkipped": "\(result.skippedApplicationSupportItems)",
+                            "appSupportErrorSkipped": "\(result.errorSkippedApplicationSupportItems)",
+                            "databaseFilesMigrated": "\(result.migratedDatabaseFiles)",
+                            "preferencesImported": "\(result.importedPreferenceKeys)",
+                            "preferencesSkipped": "\(result.skippedPreferenceKeys)",
+                            "logsCopied": "\(result.copiedLogItems)",
+                            "configCopied": "\(result.copiedConfigItems)",
+                            "keychainMigrated": "\(result.migratedKeychainItems)",
+                        ],
+                    )
+                }
+                return true
+            } catch {
+                switch presentCueIdentityMigrationRecoveryAlert(error: error, note: note) {
+                case .retry:
+                    note = "Previous attempt also failed. If this keeps happening, Start Fresh will let you use Cue without old data."
+                    continue
+
+                case .startFresh:
+                    guard confirmCueIdentityMigrationSkip(error: error) else {
+                        note = nil
+                        continue
+                    }
+                    do {
+                        try CueIdentityMigrationService().skipMigration()
+                        DiagnosticLogger.shared.log(
+                            .warning,
+                            .lifecycle,
+                            "Cue identity migration skipped by user (Start Fresh)",
+                        )
+                        return true
+                    } catch {
+                        note = "Could not mark migration as skipped: \(error.localizedDescription)"
+                        continue
+                    }
+
+                case .quit:
+                    NSApp.terminate(nil)
+                    return false
+                }
+            }
+        }
+    }
+
+    private func presentCueIdentityMigrationRecoveryAlert(
+        error: Error,
+        note: String? = nil,
+    ) -> CueIdentityMigrationRecoveryAction {
+        NSApp.activate(ignoringOtherApps: true)
+
+        let alert = NSAlert()
+        alert.alertStyle = .critical
+        alert.messageText = "Cue could not migrate your existing data from Notinhas storage."
+
+        var informativeText = """
+        Cue needs to move data from the previous Notinhas storage paths before opening.
+
+        No new database was opened yet, so your existing data has not been replaced.
+
+        Error:
+        \(error.localizedDescription)
+        """
+        if let note {
+            informativeText += "\n\n\(note)"
+        }
+        informativeText += "\n\nTry again if the error is temporary. Start Fresh launches Cue with default settings — your old data stays in place and is not deleted."
+        alert.informativeText = informativeText
+
+        alert.addButton(withTitle: "Try Again")
+        alert.addButton(withTitle: "Start Fresh…")
+        alert.addButton(withTitle: "Quit Cue")
+
+        switch alert.runModal() {
+        case .alertFirstButtonReturn:
+            return .retry
+        case .alertSecondButtonReturn:
+            return .startFresh
+        default:
+            return .quit
+        }
+    }
+
+    private func confirmCueIdentityMigrationSkip(error: Error) -> Bool {
+        let alert = NSAlert()
+        alert.alertStyle = .critical
+        alert.messageText = "Start Fresh Without Old Data?"
+        alert.informativeText = """
+        Cue will launch with default settings and an empty capture history.
+
+        Your old data remains in the previous Notinhas storage locations and is not deleted. You can access it manually at:
+        ~/Library/Application Support/Notinhas
 
         Current error:
         \(error.localizedDescription)
@@ -498,7 +631,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     return true
                 } catch {
                     currentError = error
-                    note = "Repair did not succeed. You can reset the database after backing up the current files, or quit Notinhas."
+                    note = "Repair did not succeed. You can reset the database after backing up the current files, or quit Cue."
                 }
 
             case .reset:
@@ -522,11 +655,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         return true
                     case let .failure(error):
                         currentError = error
-                        note = "Reset moved the old database files aside, but Notinhas still could not create a fresh database."
+                        note = "Reset moved the old database files aside, but Cue still could not create a fresh database."
                     }
                 } catch {
                     currentError = error
-                    note = "Reset failed before Notinhas could create a fresh database."
+                    note = "Reset failed before Cue could create a fresh database."
                 }
 
             case .quit:
@@ -544,10 +677,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         let alert = NSAlert()
         alert.alertStyle = .critical
-        alert.messageText = "Notinhas could not open its database."
+        alert.messageText = "Cue could not open its database."
 
         var informativeText = """
-        Notinhas needs this database for capture history and legacy record compatibility.
+        Cue needs this database for capture history and legacy record compatibility.
 
         Database:
         \(DatabaseManager.defaultDatabaseURL.path)
@@ -563,7 +696,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         alert.addButton(withTitle: "Try Repair")
         alert.addButton(withTitle: "Reset Database...")
-        alert.addButton(withTitle: "Quit Notinhas")
+        alert.addButton(withTitle: "Quit Cue")
 
         switch alert.runModal() {
         case .alertFirstButtonReturn:
@@ -578,11 +711,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func confirmDatabaseReset(error: Error) -> Bool {
         let alert = NSAlert()
         alert.alertStyle = .critical
-        alert.messageText = "Reset Notinhas Database?"
+        alert.messageText = "Reset Cue Database?"
         alert.informativeText = """
-        Notinhas will move the current database files into a recovery folder, then create a new empty database.
+        Cue will move the current database files into a recovery folder, then create a new empty database.
 
-        This resets capture history inside Notinhas. Capture files on disk, Keychain entries, and remote files are not deleted.
+        This resets capture history inside Cue. Capture files on disk, Keychain entries, and remote files are not deleted.
 
         Database:
         \(DatabaseManager.defaultDatabaseURL.path)
@@ -635,7 +768,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     /// Note: macOS 13+ prefers `application(_:open:)` over the legacy
     /// `application(_:openFiles:)`, and the latter is silently skipped on
     /// recent OS releases. We only act on file URLs here; URL-scheme events are
-    /// handled separately and only the registered `notinhas://` scheme is
+    /// handled separately and only the registered `cue://` scheme is
     /// accepted.
     func application(_: NSApplication, open urls: [URL]) {
         let fileURLs = urls.filter(\.isFileURL)

@@ -1,57 +1,57 @@
 //
-//  NotinhasDeepLinkHandlerTests.swift
-//  NotinhasTests
+//  CueDeepLinkHandlerTests.swift
+//  CueTests
 //
-//  Unit tests for notinhas:// automation URL parsing.
+//  Unit tests for cue:// automation URL parsing.
 //
 
 @testable import Cue
 import XCTest
 
 @MainActor
-final class NotinhasDeepLinkHandlerTests: XCTestCase {
+final class CueDeepLinkHandlerTests: XCTestCase {
     func testCanonicalRoutesParseExpectedActions() throws {
-        let cases: [(String, NotinhasDeepLinkAction)] = [
-            ("notinhas://capture/fullscreen", .captureFullscreen),
-            ("notinhas://capture/all-in-one", .captureAllInOne),
-            ("notinhas://capture/area", .captureArea),
-            ("notinhas://capture/application", .captureApplication),
-            ("notinhas://capture/area-annotate", .captureAreaAnnotate),
-            ("notinhas://capture/scrolling", .captureScrolling),
-            ("notinhas://capture/ocr", .captureOCR),
-            ("notinhas://capture/smart-element", .captureSmartElement),
-            ("notinhas://capture/object-cutout", .captureObjectCutout),
-            ("notinhas://record/screen", .recordScreen),
-            ("notinhas://record/application", .recordApplication),
-            ("notinhas://open/annotate", .openAnnotate),
-            ("notinhas://open/combine", .openCombine([])),
-            ("notinhas://open/video-editor", .openVideoEditor),
-            ("notinhas://open/history", .openHistory),
-            ("notinhas://show/shortcuts", .showShortcuts),
-            ("notinhas://settings", .openSettings(nil)),
+        let cases: [(String, CueDeepLinkAction)] = [
+            ("cue://capture/fullscreen", .captureFullscreen),
+            ("cue://capture/all-in-one", .captureAllInOne),
+            ("cue://capture/area", .captureArea),
+            ("cue://capture/application", .captureApplication),
+            ("cue://capture/area-annotate", .captureAreaAnnotate),
+            ("cue://capture/scrolling", .captureScrolling),
+            ("cue://capture/ocr", .captureOCR),
+            ("cue://capture/smart-element", .captureSmartElement),
+            ("cue://capture/object-cutout", .captureObjectCutout),
+            ("cue://record/screen", .recordScreen),
+            ("cue://record/application", .recordApplication),
+            ("cue://open/annotate", .openAnnotate),
+            ("cue://open/combine", .openCombine([])),
+            ("cue://open/video-editor", .openVideoEditor),
+            ("cue://open/history", .openHistory),
+            ("cue://show/shortcuts", .showShortcuts),
+            ("cue://settings", .openSettings(nil)),
         ]
 
         for (urlString, expectedAction) in cases {
             let url = try XCTUnwrap(URL(string: urlString))
-            XCTAssertEqual(NotinhasDeepLinkAction(url: url), expectedAction, urlString)
+            XCTAssertEqual(CueDeepLinkAction(url: url), expectedAction, urlString)
         }
     }
 
     func testCombineAliasesParseExpectedAction() throws {
         let aliases = [
-            "notinhas://combine",
-            "notinhas://combine-images",
-            "notinhas://open-combine",
+            "cue://combine",
+            "cue://combine-images",
+            "cue://open-combine",
         ]
 
         for urlString in aliases {
             let url = try XCTUnwrap(URL(string: urlString))
-            XCTAssertEqual(NotinhasDeepLinkAction(url: url), .openCombine([]), urlString)
+            XCTAssertEqual(CueDeepLinkAction(url: url), .openCombine([]), urlString)
         }
     }
 
     func testCombineRouteParsesRepeatedFileParameters() throws {
-        var components = try XCTUnwrap(URLComponents(string: "notinhas://open/combine"))
+        var components = try XCTUnwrap(URLComponents(string: "cue://open/combine"))
         components.queryItems = [
             URLQueryItem(name: "file", value: "/tmp/first image.png"),
             URLQueryItem(name: "file", value: "file:///tmp/second.jpg"),
@@ -60,7 +60,7 @@ final class NotinhasDeepLinkHandlerTests: XCTestCase {
 
         let url = try XCTUnwrap(components.url)
         XCTAssertEqual(
-            NotinhasDeepLinkAction(url: url),
+            CueDeepLinkAction(url: url),
             .openCombine([
                 URL(fileURLWithPath: "/tmp/first image.png"),
                 URL(fileURLWithPath: "/tmp/second.jpg"),
@@ -70,29 +70,29 @@ final class NotinhasDeepLinkHandlerTests: XCTestCase {
 
     func testApplicationCaptureAliasesParseExpectedAction() throws {
         let aliases = [
-            "notinhas://capture/window",
-            "notinhas://application-capture",
-            "notinhas://window-capture",
-            "notinhas://screenshot/window",
+            "cue://capture/window",
+            "cue://application-capture",
+            "cue://window-capture",
+            "cue://screenshot/window",
         ]
 
         for urlString in aliases {
             let url = try XCTUnwrap(URL(string: urlString))
-            XCTAssertEqual(NotinhasDeepLinkAction(url: url), .captureApplication, urlString)
+            XCTAssertEqual(CueDeepLinkAction(url: url), .captureApplication, urlString)
         }
     }
 
     func testApplicationRecordingAliasesParseExpectedAction() throws {
         let aliases = [
-            "notinhas://record/window",
-            "notinhas://application-recording",
-            "notinhas://window-recording",
-            "notinhas://recording/window",
+            "cue://record/window",
+            "cue://application-recording",
+            "cue://window-recording",
+            "cue://recording/window",
         ]
 
         for urlString in aliases {
             let url = try XCTUnwrap(URL(string: urlString))
-            XCTAssertEqual(NotinhasDeepLinkAction(url: url), .recordApplication, urlString)
+            XCTAssertEqual(CueDeepLinkAction(url: url), .recordApplication, urlString)
         }
     }
 
@@ -110,17 +110,17 @@ final class NotinhasDeepLinkHandlerTests: XCTestCase {
         ]
 
         for (tabName, expectedTab) in cases {
-            let queryURL = try XCTUnwrap(URL(string: "notinhas://settings?tab=\(tabName)"))
-            XCTAssertEqual(NotinhasDeepLinkAction(url: queryURL), .openSettings(expectedTab), tabName)
+            let queryURL = try XCTUnwrap(URL(string: "cue://settings?tab=\(tabName)"))
+            XCTAssertEqual(CueDeepLinkAction(url: queryURL), .openSettings(expectedTab), tabName)
 
-            let pathURL = try XCTUnwrap(URL(string: "notinhas://settings/\(tabName)"))
-            XCTAssertEqual(NotinhasDeepLinkAction(url: pathURL), .openSettings(expectedTab), tabName)
+            let pathURL = try XCTUnwrap(URL(string: "cue://settings/\(tabName)"))
+            XCTAssertEqual(CueDeepLinkAction(url: pathURL), .openSettings(expectedTab), tabName)
         }
     }
 
     func testAboutSettingsRouteIsRejected() throws {
-        let url = try XCTUnwrap(URL(string: "notinhas://settings/about"))
-        XCTAssertNil(NotinhasDeepLinkAction(url: url))
+        let url = try XCTUnwrap(URL(string: "cue://settings/about"))
+        XCTAssertNil(CueDeepLinkAction(url: url))
     }
 
     func testLegacySnapzySchemeIsRejected() throws {
@@ -134,22 +134,37 @@ final class NotinhasDeepLinkHandlerTests: XCTestCase {
 
         for urlString in urls {
             let url = try XCTUnwrap(URL(string: urlString))
-            XCTAssertNil(NotinhasDeepLinkAction(url: url), urlString)
+            XCTAssertNil(CueDeepLinkAction(url: url), urlString)
+        }
+    }
+
+    func testLegacyNotinhasSchemeIsRejected() throws {
+        let urls = [
+            "notinhas://capture/area",
+            "notinhas://settings",
+            "notinhas://open/combine",
+            "notinhas://capture/fullscreen",
+            "notinhas://settings/cloud",
+        ]
+
+        for urlString in urls {
+            let url = try XCTUnwrap(URL(string: urlString))
+            XCTAssertNil(CueDeepLinkAction(url: url), urlString)
         }
     }
 
     func testUnsupportedRoutesReturnNil() throws {
         let urls = [
             "https://capture/area",
-            "notinhas://",
-            "notinhas://capture/unknown",
-            "notinhas://record/stop",
-            "notinhas://open/unknown",
+            "cue://",
+            "cue://capture/unknown",
+            "cue://record/stop",
+            "cue://open/unknown",
         ]
 
         for urlString in urls {
             let url = try XCTUnwrap(URL(string: urlString))
-            XCTAssertNil(NotinhasDeepLinkAction(url: url), urlString)
+            XCTAssertNil(CueDeepLinkAction(url: url), urlString)
         }
     }
 
@@ -166,8 +181,8 @@ final class NotinhasDeepLinkHandlerTests: XCTestCase {
 
         defaults.set(false, forKey: PreferencesKeys.urlSchemeEnabled)
         let viewModel = ScreenCaptureViewModel()
-        let handler = NotinhasDeepLinkHandler(screenCaptureViewModel: viewModel)
-        let url = try XCTUnwrap(URL(string: "notinhas://capture/fullscreen"))
+        let handler = CueDeepLinkHandler(screenCaptureViewModel: viewModel)
+        let url = try XCTUnwrap(URL(string: "cue://capture/fullscreen"))
         handler.handle(url)
     }
 
@@ -193,17 +208,16 @@ final class NotinhasDeepLinkHandlerTests: XCTestCase {
         )
 
         let viewModel = ScreenCaptureViewModel()
-        let handler = NotinhasDeepLinkHandler(screenCaptureViewModel: viewModel)
+        let handler = CueDeepLinkHandler(screenCaptureViewModel: viewModel)
         let urls = [
-            "notinhas://record/screen",
-            "notinhas://record/application",
-            "notinhas://open/video-editor",
+            "cue://record/screen",
+            "cue://record/application",
+            "cue://open/video-editor",
         ]
 
         for urlString in urls {
             let url = try XCTUnwrap(URL(string: urlString))
-            // URLs still parse; the handler must gate dispatch, not drop parsing.
-            XCTAssertNotNil(NotinhasDeepLinkAction(url: url), urlString)
+            XCTAssertNotNil(CueDeepLinkAction(url: url), urlString)
             handler.handle(url)
             XCTAssertFalse(
                 VideoModuleMediaRouting.shouldDispatchVideoAction(),

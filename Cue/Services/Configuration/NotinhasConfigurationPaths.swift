@@ -41,7 +41,7 @@ nonisolated enum NotinhasConfigurationPaths {
     static func suggestedConfigDirectoryURL(homeDirectory: URL) -> URL {
         homeDirectory
             .appendingPathComponent(".config", isDirectory: true)
-            .appendingPathComponent(NotinhasStoragePaths.destinationConfigFolderName, isDirectory: true)
+            .appendingPathComponent(CueStoragePaths.destinationConfigFolderName, isDirectory: true)
     }
 
     static func collapsingHomePath(_ path: String) -> String {

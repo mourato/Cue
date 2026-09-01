@@ -101,7 +101,7 @@ final class AppCoordinator {
     }
 
     func handleDeepLink(_ url: URL) {
-        NotinhasDeepLinkHandler(screenCaptureViewModel: screenCaptureViewModel)
+        CueDeepLinkHandler(screenCaptureViewModel: screenCaptureViewModel)
             .handle(url)
     }
 

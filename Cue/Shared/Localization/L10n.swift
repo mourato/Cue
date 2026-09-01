@@ -222,7 +222,7 @@ nonisolated enum L10n {
         )
         static let urlSchemeDescription = string(
             "preferences-advanced.url-scheme-description",
-            defaultValue: "Allow external triggers via notinhas:// URLs",
+            defaultValue: "Allow external triggers via cue:// URLs",
             comment: "Advanced preferences setting description",
         )
         static let diagnosticsSection = PreferencesGeneral.diagnosticsSection

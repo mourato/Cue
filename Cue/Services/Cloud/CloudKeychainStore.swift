@@ -33,21 +33,21 @@ enum CloudKeychainItem {
     var account: String {
         switch self {
         case .accessKey:
-            "com.mourato.notinhas.cloud.accessKey"
+            "com.mourato.cue.cloud.accessKey"
         case .secretKey:
-            "com.mourato.notinhas.cloud.secretKey"
+            "com.mourato.cue.cloud.secretKey"
         case .passwordHash:
-            "com.mourato.notinhas.cloud.passwordHash"
+            "com.mourato.cue.cloud.passwordHash"
         case .googleRefreshToken:
-            "com.mourato.notinhas.cloud.google.refreshToken"
+            "com.mourato.cue.cloud.google.refreshToken"
         case .googleClientId:
-            "com.mourato.notinhas.cloud.google.clientId"
+            "com.mourato.cue.cloud.google.clientId"
         case .googleClientSecret:
-            "com.mourato.notinhas.cloud.google.clientSecret"
+            "com.mourato.cue.cloud.google.clientSecret"
         case .imgbbAPIKey:
-            "com.mourato.notinhas.cloud.imgbbAPIKey"
+            "com.mourato.cue.cloud.imgbbAPIKey"
         case .imageKitPrivateKey:
-            "com.mourato.notinhas.cloud.imagekitPrivateKey"
+            "com.mourato.cue.cloud.imagekitPrivateKey"
         }
     }
 
@@ -55,26 +55,28 @@ enum CloudKeychainItem {
         switch self {
         case .accessKey:
             [
+                "com.mourato.notinhas.cloud.accessKey",
                 "com.trongduong.snapzy.cloud.accessKey",
                 "com.snapzy.cloud.accessKey",
             ]
         case .secretKey:
             [
+                "com.mourato.notinhas.cloud.secretKey",
                 "com.trongduong.snapzy.cloud.secretKey",
                 "com.snapzy.cloud.secretKey",
             ]
         case .passwordHash:
-            ["com.trongduong.snapzy.cloud.passwordHash"]
+            ["com.mourato.notinhas.cloud.passwordHash", "com.trongduong.snapzy.cloud.passwordHash"]
         case .googleRefreshToken:
-            ["com.trongduong.snapzy.cloud.google.refreshToken"]
+            ["com.mourato.notinhas.cloud.google.refreshToken", "com.trongduong.snapzy.cloud.google.refreshToken"]
         case .googleClientId:
-            ["com.trongduong.snapzy.cloud.google.clientId"]
+            ["com.mourato.notinhas.cloud.google.clientId", "com.trongduong.snapzy.cloud.google.clientId"]
         case .googleClientSecret:
-            ["com.trongduong.snapzy.cloud.google.clientSecret"]
+            ["com.mourato.notinhas.cloud.google.clientSecret", "com.trongduong.snapzy.cloud.google.clientSecret"]
         case .imgbbAPIKey:
-            []
+            ["com.mourato.notinhas.cloud.imgbbAPIKey"]
         case .imageKitPrivateKey:
-            []
+            ["com.mourato.notinhas.cloud.imagekitPrivateKey"]
         }
     }
 }
@@ -117,8 +119,9 @@ enum CloudKeychainStore {
     }
 
     private static let logger = Logger(subsystem: "Notinhas", category: "CloudKeychainStore")
-    private static let currentService = NotinhasStoragePaths.destinationKeychainService
+    private static let currentService = CueStoragePaths.destinationKeychainService
     private static let legacyServices = [
+        NotinhasStoragePaths.destinationKeychainService,
         NotinhasStoragePaths.legacyCurrentKeychainService,
         NotinhasStoragePaths.legacyOlderKeychainService,
     ]

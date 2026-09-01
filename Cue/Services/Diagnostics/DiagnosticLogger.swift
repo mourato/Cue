@@ -14,8 +14,8 @@ import IOKit
 /// by work submitted to `writeQueue`, so the focused unchecked boundary does
 /// not expose the handle or queue to callers.
 private final class DiagnosticLoggerState: @unchecked Sendable {
-    private let logDirectoryName = NotinhasStoragePaths.destinationLogsFolderName
-    private let filePrefix = NotinhasStoragePaths.destinationLogFilePrefix
+    private let logDirectoryName = CueStoragePaths.destinationLogsFolderName
+    private let filePrefix = CueStoragePaths.destinationLogFilePrefix
     private let fileExtension = "txt"
     private let writeQueue = DispatchQueue(label: "com.mourato.notinhas.diagnosticlogger", qos: .utility)
     private var currentFileHandle: FileHandle?

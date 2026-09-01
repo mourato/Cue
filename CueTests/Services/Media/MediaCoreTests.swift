@@ -20,6 +20,7 @@ final class MediaCoreTests: XCTestCase {
     func testQRPayloadClassifier_distinguishesPlainTextAndCustomSchemes() {
         XCTAssertEqual(QRPayloadClassifier.classify("hello world"), .plainText)
         XCTAssertEqual(QRPayloadClassifier.classify("mailto:hello@example.com"), .urlScheme("mailto"))
+        XCTAssertEqual(QRPayloadClassifier.classify("cue://capture/area"), .urlScheme("cue"))
         XCTAssertEqual(QRPayloadClassifier.classify("notinhas://capture/area"), .urlScheme("notinhas"))
         XCTAssertEqual(QRPayloadClassifier.classify("snapzy://capture/area"), .urlScheme("snapzy"))
     }

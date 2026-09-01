@@ -89,6 +89,8 @@ final class LogCleanupScheduler {
 
     private nonisolated static func date(fromLogFileName fileName: String) -> Date? {
         let prefixes = [
+            CueStoragePaths.destinationLogFilePrefix,
+            CueStoragePaths.legacyLogFilePrefix,
             NotinhasStoragePaths.destinationLogFilePrefix,
             NotinhasStoragePaths.legacyLogFilePrefix,
         ]
