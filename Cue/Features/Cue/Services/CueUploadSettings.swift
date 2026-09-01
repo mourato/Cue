@@ -242,7 +242,7 @@ nonisolated enum CueUploadImageEncoder {
         }.value
 
         let temporaryDirectory = FileManager.default.temporaryDirectory
-            .appendingPathComponent("NotinhasUpload-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("CueUpload-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: temporaryDirectory, withIntermediateDirectories: true)
 
         let originalBaseName = fileURL.deletingPathExtension().lastPathComponent

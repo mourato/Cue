@@ -1,6 +1,6 @@
 //
 //  OnboardingSurfaceBackground.swift
-//  Notinhas
+//  Cue
 //
 //  Opaque adaptive background for onboarding — subtle gradient + noise texture
 //

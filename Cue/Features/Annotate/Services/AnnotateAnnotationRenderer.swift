@@ -1,6 +1,6 @@
 //
 //  AnnotateAnnotationRenderer.swift
-//  Notinhas
+//  Cue
 //
 //  Handles rendering annotations to CGContext
 //
@@ -158,7 +158,7 @@ nonisolated struct AnnotationRenderer {
         arrowEndHead: ArrowEndpointStyle = .arrow,
         rectangleCornerRadius: CGFloat = 0,
         shapeFillStyle: AnnotationShapeFillStyle = .outline,
-        watermarkText: String = "Notinhas",
+        watermarkText: String = "Cue",
         watermarkStyle: WatermarkStyle = .diagonal,
         watermarkOpacity: CGFloat = 0.22,
         watermarkRotationDegrees: CGFloat = -24,

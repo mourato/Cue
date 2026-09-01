@@ -13,7 +13,7 @@
     import os.log
     import UniformTypeIdentifiers
 
-    private let logger = Logger(subsystem: "Notinhas", category: "GIFResizer")
+    private let logger = Logger(subsystem: "Cue", category: "GIFResizer")
 
     /// Resizes an animated GIF to target dimensions using ImageIO
     @MainActor

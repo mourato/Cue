@@ -66,7 +66,7 @@ struct AnnotationStrokeWidthPicker: View {
         .help(L10n.Common.strokeWidthOption(Int(width.points)))
         .accessibilityLabel(L10n.Common.strokeWidthOption(Int(width.points)))
         .accessibilityAddTraits(isSelected ? .isSelected : [])
-        .accessibilityValue(isSelected ? L10n.Notinhas.selected : "")
+        .accessibilityValue(isSelected ? L10n.Cue.selected : "")
     }
 
     private func dotDiameter(for width: AnnotationStrokeWidth) -> CGFloat {

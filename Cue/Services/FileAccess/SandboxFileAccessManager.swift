@@ -9,7 +9,7 @@ import AppKit
 import Foundation
 import os.log
 
-private let logger = Logger(subsystem: "Notinhas", category: "SandboxFileAccess")
+private let logger = Logger(subsystem: "Cue", category: "SandboxFileAccess")
 
 @MainActor
 final class SandboxFileAccessManager {
@@ -41,9 +41,9 @@ final class SandboxFileAccessManager {
 
     var defaultExportDirectory: URL {
         if let desktop = FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first {
-            return desktop.appendingPathComponent("Notinhas", isDirectory: true)
+            return desktop.appendingPathComponent("Cue", isDirectory: true)
         }
-        return FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Notinhas", isDirectory: true)
+        return FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Cue", isDirectory: true)
     }
 
     func ensureExportLocationInitialized() {

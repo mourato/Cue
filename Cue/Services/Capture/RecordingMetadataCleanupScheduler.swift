@@ -10,7 +10,7 @@
     import os.log
 
     private let recordingMetadataCleanupLogger = Logger(
-        subsystem: "Notinhas",
+        subsystem: "Cue",
         category: "RecordingMetadataCleanup",
     )
 

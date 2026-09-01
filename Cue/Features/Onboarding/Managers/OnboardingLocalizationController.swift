@@ -1,6 +1,6 @@
 //
 //  OnboardingLocalizationController.swift
-//  Notinhas
+//  Cue
 //
 //  Drives immediate in-flow localization updates for onboarding without an app relaunch.
 //

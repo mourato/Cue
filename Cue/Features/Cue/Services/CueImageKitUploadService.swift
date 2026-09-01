@@ -12,13 +12,13 @@ enum CueImageKitUploadError: LocalizedError, Equatable {
 
     var errorDescription: String? {
         switch self {
-        case .missingPrivateKey: L10n.Notinhas.imageKitMissingPrivateKey
-        case .invalidImageData: L10n.Notinhas.invalidImageData
-        case .unauthorized: L10n.Notinhas.imageKitUnauthorized
-        case .rateLimited: L10n.Notinhas.imageKitRateLimited
-        case .providerRejected: L10n.Notinhas.imageKitUploadFailed
-        case .transport: L10n.Notinhas.imageKitOffline
-        case .malformedResponse, .missingPublicURL: L10n.Notinhas.imageKitInvalidResponse
+        case .missingPrivateKey: L10n.Cue.imageKitMissingPrivateKey
+        case .invalidImageData: L10n.Cue.invalidImageData
+        case .unauthorized: L10n.Cue.imageKitUnauthorized
+        case .rateLimited: L10n.Cue.imageKitRateLimited
+        case .providerRejected: L10n.Cue.imageKitUploadFailed
+        case .transport: L10n.Cue.imageKitOffline
+        case .malformedResponse, .missingPublicURL: L10n.Cue.imageKitInvalidResponse
         }
     }
 }

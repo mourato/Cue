@@ -567,11 +567,11 @@ struct AnnotateBottomBarView: View {
     }
 
     private var uploadingMessage: String {
-        L10n.Notinhas.uploadingTo(provider: uploadConfiguration.provider.name)
+        L10n.Cue.uploadingTo(provider: uploadConfiguration.provider.name)
     }
 
     private var uploadedMessage: String {
-        L10n.Notinhas.uploadedAndCopied(provider: uploadConfiguration.provider.name)
+        L10n.Cue.uploadedAndCopied(provider: uploadConfiguration.provider.name)
     }
 }
 

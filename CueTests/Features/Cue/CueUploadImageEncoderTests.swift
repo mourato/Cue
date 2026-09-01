@@ -1,6 +1,6 @@
 import AppKit
-import ImageIO
 @testable import Cue
+import ImageIO
 import XCTest
 
 @MainActor
@@ -60,7 +60,7 @@ final class CueUploadImageEncoderTests: XCTestCase {
     func testPrepareWritesDerivativeWithoutChangingOriginal() async throws {
         let originalData = try XCTUnwrap(makeTestImage(hasAlpha: true).tiffRepresentation)
         let sourceURL = FileManager.default.temporaryDirectory
-            .appendingPathComponent("NotinhasUploadTest-\(UUID().uuidString).tiff")
+            .appendingPathComponent("CueUploadTest-\(UUID().uuidString).tiff")
         try originalData.write(to: sourceURL, options: .atomic)
         defer { try? FileManager.default.removeItem(at: sourceURL) }
 

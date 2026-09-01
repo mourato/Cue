@@ -1,6 +1,6 @@
 //
 //  L10n.swift
-//  Notinhas
+//  Cue
 //
 //  Small localization helper for AppKit and shared string surfaces.
 //
@@ -339,7 +339,7 @@ nonisolated enum L10n {
         )
         static let configSyncQueuedDescription = string(
             "preferences-advanced.config-sync-queued-description",
-            defaultValue: "Sync queued. Notinhas will update config.toml shortly.",
+            defaultValue: "Sync queued. Cue will update config.toml shortly.",
             comment: "Config sync row description when sync is queued",
         )
         static let configSyncWritingDescription = string(
@@ -368,12 +368,12 @@ nonisolated enum L10n {
         static let configAccessWarningTitle = string(
             "preferences-advanced.config-access-warning-title",
             defaultValue: "Config folder access needed",
-            comment: "Warning title when Notinhas has not been granted config folder access",
+            comment: "Warning title when Cue has not been granted config folder access",
         )
         static func configAccessWarningDescription(_ path: String) -> String {
             format(
                 "preferences-advanced.config-access-warning-description",
-                defaultValue: "Grant access to %@ once so Notinhas can create config.toml and apply direct edits on launch.",
+                defaultValue: "Grant access to %@ once so Cue can create config.toml and apply direct edits on launch.",
                 comment: "Warning description when config folder access is missing. %@ is the expected config directory path.",
                 path,
             )
@@ -407,17 +407,17 @@ nonisolated enum L10n {
         static let configSyncing = string(
             "preferences-advanced.config-syncing",
             defaultValue: "Syncing config.toml...",
-            comment: "Toast shown while Notinhas syncs current settings into config.toml",
+            comment: "Toast shown while Cue syncs current settings into config.toml",
         )
         static let configSynced = string(
             "preferences-advanced.config-synced",
             defaultValue: "config.toml synced.",
-            comment: "Toast shown after Notinhas syncs current settings into config.toml",
+            comment: "Toast shown after Cue syncs current settings into config.toml",
         )
         static let configSyncNeedsConfirmation = string(
             "preferences-advanced.config-sync-needs-confirmation",
             defaultValue: "config.toml has external changes.",
-            comment: "Toast shown when Notinhas needs confirmation before replacing externally changed config.toml",
+            comment: "Toast shown when Cue needs confirmation before replacing externally changed config.toml",
         )
         static let configSyncConfirmationTitle = string(
             "preferences-advanced.config-sync-confirmation-title",
@@ -426,7 +426,7 @@ nonisolated enum L10n {
         )
         static let configSyncConfirmationMessage = string(
             "preferences-advanced.config-sync-confirmation-message",
-            defaultValue: "config.toml no longer matches Notinhas settings and may have edits from outside the app. Syncing will replace it with current settings.",
+            defaultValue: "config.toml no longer matches Cue settings and may have edits from outside the app. Syncing will replace it with current settings.",
             comment: "Confirmation alert message before replacing a config file with external changes",
         )
         static let syncConfigConfirmButton = string(
@@ -461,12 +461,12 @@ nonisolated enum L10n {
         )
         static let exportPanelTitle = string(
             "preferences-advanced.export-panel-title",
-            defaultValue: "Export Notinhas Config",
+            defaultValue: "Export Cue Config",
             comment: "Config export save panel title",
         )
         static let importPanelTitle = string(
             "preferences-advanced.import-panel-title",
-            defaultValue: "Import Notinhas Config",
+            defaultValue: "Import Cue Config",
             comment: "Config import open panel title",
         )
         static let configDirectoryPanelTitle = string(
@@ -477,7 +477,7 @@ nonisolated enum L10n {
         static func configDirectoryPanelMessage(_ path: String) -> String {
             format(
                 "preferences-advanced.config-directory-panel-message",
-                defaultValue: "Grant access for %@. If the folder is missing, Notinhas will create it automatically.",
+                defaultValue: "Grant access for %@. If the folder is missing, Cue will create it automatically.",
                 comment: "Config directory access panel message. %@ is the suggested directory path.",
                 path,
             )
@@ -491,7 +491,7 @@ nonisolated enum L10n {
         static func configDirectoryPanelOnboardingMessage(_ path: String) -> String {
             format(
                 "preferences-advanced.config-directory-panel-onboarding-message",
-                defaultValue: "Grant access for %@. Notinhas will create config.toml there if it is missing.",
+                defaultValue: "Grant access for %@. Cue will create config.toml there if it is missing.",
                 comment: "Config directory access panel message from onboarding. %@ is the suggested directory path.",
                 path,
             )
@@ -500,7 +500,7 @@ nonisolated enum L10n {
         static func configDirectoryMismatch(_ path: String) -> String {
             format(
                 "preferences-advanced.config-directory-mismatch",
-                defaultValue: "Choose %@ to keep Notinhas config in the default dotfiles location.",
+                defaultValue: "Choose %@ to keep Cue config in the default dotfiles location.",
                 comment: "Config directory mismatch validation message. %@ is the expected directory path.",
                 path,
             )
@@ -573,7 +573,7 @@ nonisolated enum L10n {
         )
         static let restoreDefaultsConfirmationMessage = string(
             "preferences-advanced.restore-defaults-confirmation-message",
-            defaultValue: "If you confirm, Notinhas will replace config.toml with default values and reset app settings. Saved captures and Keychain entries are not deleted.",
+            defaultValue: "If you confirm, Cue will replace config.toml with default values and reset app settings. Saved captures and Keychain entries are not deleted.",
             comment: "Restore defaults confirmation alert message",
         )
         static func importFailedWithErrors(_ count: Int) -> String {
@@ -743,9 +743,9 @@ nonisolated enum L10n {
             defaultValue: "Preferences...",
             comment: "Status bar menu item title for opening preferences",
         )
-        static let quitNotinhas = string(
+        static let quitCue = string(
             "menu.quit-notinhas",
-            defaultValue: "Quit Notinhas",
+            defaultValue: "Quit Cue",
             comment: "Status bar menu item title for quitting the app",
         )
     }
@@ -1464,7 +1464,7 @@ nonisolated enum L10n {
     enum Splash {
         static let welcomeTitle = string(
             "splash.welcome-title",
-            defaultValue: "Welcome to Notinhas",
+            defaultValue: "Welcome to Cue",
             comment: "Splash screen welcome title",
         )
         static let welcomeSubtitle = string(
@@ -1535,7 +1535,7 @@ nonisolated enum L10n {
         )
         static let languageSubtitle = string(
             "onboarding.language.subtitle",
-            defaultValue: "Notinhas can follow your Mac or preview a specific app language during setup.",
+            defaultValue: "Cue can follow your Mac or preview a specific app language during setup.",
             comment: "Onboarding language step subtitle",
         )
         static let languageAutoTitle = string(
@@ -1570,7 +1570,7 @@ nonisolated enum L10n {
         )
         static let permissionsSubtitle = string(
             "onboarding.permissions.subtitle",
-            defaultValue: "Notinhas needs permissions for capture, audio, and save location.",
+            defaultValue: "Cue needs permissions for capture, audio, and save location.",
             comment: "Onboarding permissions step subtitle",
         )
         static let screenRecording = string(
@@ -1640,7 +1640,7 @@ nonisolated enum L10n {
         )
         static let chooseFolderMessage = string(
             "onboarding.permissions.choose-folder-message",
-            defaultValue: "Choose a folder for Notinhas captures (default: Desktop/Notinhas)",
+            defaultValue: "Choose a folder for Cue captures (default: Desktop/Cue)",
             comment: "Open panel message for selecting export directory during onboarding",
         )
         static let screenRecordingIdentityBlocked = string(
@@ -1656,7 +1656,7 @@ nonisolated enum L10n {
         )
         static let configAccessSubtitle = string(
             "onboarding.config-access.subtitle",
-            defaultValue: "Notinhas uses a TOML file for portable settings, backups, and dotfile workflows.",
+            defaultValue: "Cue uses a TOML file for portable settings, backups, and dotfile workflows.",
             comment: "Onboarding config access step subtitle",
         )
         static let configAccessFolderTitle = string(
@@ -1671,12 +1671,12 @@ nonisolated enum L10n {
         )
         static let configAccessFolderDescription = string(
             "onboarding.config-access.folder-description",
-            defaultValue: "Grant access once. Notinhas will create config.toml if needed and apply valid direct edits on launch.",
+            defaultValue: "Grant access once. Cue will create config.toml if needed and apply valid direct edits on launch.",
             comment: "Onboarding config access description",
         )
         static let configAccessPrivacyNote = string(
             "onboarding.config-access.privacy-note",
-            defaultValue: "This only grants Notinhas access to its config folder. It does not import secrets or scan your files.",
+            defaultValue: "This only grants Cue access to its config folder. It does not import secrets or scan your files.",
             comment: "Privacy note on onboarding config access step",
         )
         static let configAccessReady = string(
@@ -1697,7 +1697,7 @@ nonisolated enum L10n {
         )
         static let shortcutsSubtitle = string(
             "onboarding.shortcuts.subtitle",
-            defaultValue: "Assign system shortcuts to Notinhas for quick access.",
+            defaultValue: "Assign system shortcuts to Cue for quick access.",
             comment: "Onboarding shortcuts step subtitle",
         )
         static let recordingSection = string(
@@ -1713,7 +1713,7 @@ nonisolated enum L10n {
         static let resolveShortcutOverlap = string(
             "onboarding.shortcuts.resolve-overlap",
             defaultValue: "Resolve macOS shortcut overlap",
-            comment: "Warning title when system screenshot shortcuts overlap with Notinhas shortcuts",
+            comment: "Warning title when system screenshot shortcuts overlap with Cue shortcuts",
         )
         static let openSettings = string(
             "onboarding.shortcuts.open-settings",
@@ -1732,7 +1732,7 @@ nonisolated enum L10n {
         )
         static let guideStep3 = string(
             "onboarding.shortcuts.guide-step-3",
-            defaultValue: "Uncheck the macOS screenshot shortcuts that overlap with the Notinhas shortcuts you want to keep on",
+            defaultValue: "Uncheck the macOS screenshot shortcuts that overlap with the Cue shortcuts you want to keep on",
             comment: "Step 3 in onboarding shortcut conflict resolution guide",
         )
         static let noConflictDetected = string(
@@ -1763,7 +1763,7 @@ nonisolated enum L10n {
         )
         static let diagnosticsDescription = string(
             "onboarding.diagnostics.description",
-            defaultValue: "Notinhas can collect anonymous diagnostic logs when something goes wrong. These logs help us find and fix bugs faster.",
+            defaultValue: "Cue can collect anonymous diagnostic logs when something goes wrong. These logs help us find and fix bugs faster.",
             comment: "Diagnostics opt-in description",
         )
         static let enableDiagnosticLogging = string(
@@ -1815,7 +1815,7 @@ nonisolated enum L10n {
         )
         static let completionDescription = string(
             "onboarding.completion.description",
-            defaultValue: "Notinhas is ready. Access it from the menu bar or use your keyboard shortcuts.",
+            defaultValue: "Cue is ready. Access it from the menu bar or use your keyboard shortcuts.",
             comment: "Onboarding completion description",
         )
         static let menuBar = string(
@@ -2090,7 +2090,7 @@ nonisolated enum L10n {
         )
         static let startAtLoginDescription = string(
             "preferences-general.start-at-login-description",
-            defaultValue: "Launch Notinhas when you log in",
+            defaultValue: "Launch Cue when you log in",
             comment: "General preferences setting description",
         )
         static let playSoundsTitle = string(
@@ -2110,7 +2110,7 @@ nonisolated enum L10n {
         )
         static let menuBarIconDescription = string(
             "preferences-general.menu-bar-icon-description",
-            defaultValue: "Access Notinhas from the menu bar. When hidden, open Notinhas again to show settings.",
+            defaultValue: "Access Cue from the menu bar. When hidden, open Cue again to show settings.",
             comment: "General preferences setting description",
         )
         static let themeTitle = string(
@@ -2130,7 +2130,7 @@ nonisolated enum L10n {
         )
         static let languageDescription = string(
             "preferences-general.language-description",
-            defaultValue: "Choose the language used across Notinhas",
+            defaultValue: "Choose the language used across Cue",
             comment: "General preferences setting description",
         )
         static let languageSystem = string(
@@ -2145,22 +2145,22 @@ nonisolated enum L10n {
         )
         static let languageRelaunchConfirmationTitle = string(
             "preferences-general.language-relaunch-confirmation-title",
-            defaultValue: "Relaunch Notinhas?",
+            defaultValue: "Relaunch Cue?",
             comment: "Alert title shown before the app relaunches to apply a language change",
         )
         static let languageRelaunchConfirmationMessage = string(
             "preferences-general.language-relaunch-confirmation-message",
-            defaultValue: "Notinhas needs to quit and reopen to apply this language change everywhere.",
+            defaultValue: "Cue needs to quit and reopen to apply this language change everywhere.",
             comment: "Alert message shown before the app relaunches to apply a language change",
         )
         static let languageRelaunchConfirmationAction = string(
             "preferences-general.language-relaunch-confirmation-action",
-            defaultValue: "Relaunch Notinhas",
+            defaultValue: "Relaunch Cue",
             comment: "Alert button title that confirms relaunching the app after changing language",
         )
         static let languageRelaunchErrorTitle = string(
             "preferences-general.language-relaunch-error-title",
-            defaultValue: "Could Not Relaunch Notinhas",
+            defaultValue: "Could Not Relaunch Cue",
             comment: "Alert title shown when the app cannot relaunch after changing language",
         )
         static let saveLocationTitle = string(
@@ -2170,7 +2170,7 @@ nonisolated enum L10n {
         )
         static let saveLocationDescription = string(
             "preferences-general.save-location-description",
-            defaultValue: "Where Notinhas stores captures",
+            defaultValue: "Where Cue stores captures",
             comment: "General preferences setting description",
         )
         static let chooseButton = string(
@@ -2239,7 +2239,7 @@ nonisolated enum L10n {
         )
         static let defaultSaveLocation = string(
             "preferences-general.default-save-location",
-            defaultValue: "Desktop/Notinhas",
+            defaultValue: "Desktop/Cue",
             comment: "Default export location display label",
         )
         static func accessNotGranted(_ folderName: String) -> String {
@@ -2253,7 +2253,7 @@ nonisolated enum L10n {
 
         static let chooseSaveLocationMessage = string(
             "preferences-general.choose-save-location-message",
-            defaultValue: "Choose where Notinhas saves captures",
+            defaultValue: "Choose where Cue saves captures",
             comment: "Open panel message for selecting the default export location",
         )
         static let saveHereButton = string(
@@ -2266,7 +2266,7 @@ nonisolated enum L10n {
     enum PreferencesPermissions {
         static let intro = string(
             "preferences-permissions.intro",
-            defaultValue: "Notinhas requires certain permissions to capture your screen and audio.",
+            defaultValue: "Cue requires certain permissions to capture your screen and audio.",
             comment: "Introductory text for the permissions preferences tab",
         )
     }
@@ -2673,7 +2673,7 @@ nonisolated enum L10n {
         )
         static let includeInScreenshotsDescription = string(
             "preferences-capture.include-in-screenshots-description",
-            defaultValue: "Show Notinhas windows such as Annotate in captured images",
+            defaultValue: "Show Cue windows such as Annotate in captured images",
             comment: "Capture preferences setting description",
         )
         static let includeInRecordingsTitle = string(
@@ -2683,7 +2683,7 @@ nonisolated enum L10n {
         )
         static let includeInRecordingsDescription = string(
             "preferences-capture.include-in-recordings-description",
-            defaultValue: "Show Notinhas windows such as Annotate in recorded videos",
+            defaultValue: "Show Cue windows such as Annotate in recorded videos",
             comment: "Capture preferences setting description",
         )
         static let hideDesktopIconsTitle = string(
@@ -2844,7 +2844,7 @@ nonisolated enum L10n {
         )
         static let jpegCutoutNote = string(
             "preferences-capture.jpeg-cutout-note",
-            defaultValue: "Object cutout captures require transparency. Notinhas will save them as PNG even when JPEG is selected.",
+            defaultValue: "Object cutout captures require transparency. Cue will save them as PNG even when JPEG is selected.",
             comment: "Informational note shown when JPEG screenshot format is selected",
         )
         static let defaultPresetTitle = string(
@@ -3211,7 +3211,7 @@ nonisolated enum L10n {
         )
         static let bringForwardAfterDragDescription = string(
             "preferences-capture.annotate-bring-forward-after-drag-description",
-            defaultValue: "When the editor stays open, bring Notinhas to the front and focus Annotate after the drop completes",
+            defaultValue: "When the editor stays open, bring Cue to the front and focus Annotate after the drop completes",
             comment: "Annotate preferences setting description for activating Annotate after drag-to-app",
         )
         static let chromeSection = string(
@@ -3246,18 +3246,18 @@ nonisolated enum L10n {
         )
     }
 
-    enum Notinhas {
-        static let noteTool = string("annotate.notinhas.note-tool", defaultValue: "Note", comment: "Notinhas note tool")
+    enum Cue {
+        static let noteTool = string("annotate.notinhas.note-tool", defaultValue: "Note", comment: "Cue note tool")
         static let noteToolGestureHint = string(
             "annotate.notinhas.note-tool-gesture-hint",
             defaultValue: "Click to pin · Drag for area",
-            comment: "Tooltip hint explaining the Notinhas note tool: a click places a numbered pin, a drag creates an area rectangle",
+            comment: "Tooltip hint explaining the Cue note tool: a click places a numbered pin, a drag creates an area rectangle",
         )
         static func noteToolTooltip(title: String, gestureHint: String) -> String {
             L10n.format(
                 "annotate.notinhas.note-tool-tooltip",
                 defaultValue: "%@ · %@",
-                comment: "Notinhas note tool tooltip. First %@ is the tool title (optionally with shortcut), second %@ is the click/drag gesture hint.",
+                comment: "Cue note tool tooltip. First %@ is the tool title (optionally with shortcut), second %@ is the click/drag gesture hint.",
                 title,
                 gestureHint,
             )
@@ -3266,64 +3266,64 @@ nonisolated enum L10n {
         static let noteEditorTitle = string(
             "annotate.notinhas.note-editor-title",
             defaultValue: "Note",
-            comment: "Notinhas note editor title",
+            comment: "Cue note editor title",
         )
         static let noteEditorPlaceholder = string(
             "annotate.notinhas.note-editor-placeholder",
             defaultValue: "Describe the change...",
-            comment: "Notinhas note editor placeholder",
+            comment: "Cue note editor placeholder",
         )
-        static let save = string("annotate.notinhas.save", defaultValue: "Save", comment: "Save Notinhas note")
+        static let save = string("annotate.notinhas.save", defaultValue: "Save", comment: "Save Cue note")
         static let cancel = string(
             "annotate.notinhas.cancel",
             defaultValue: "Cancel",
-            comment: "Cancel Notinhas note editing",
+            comment: "Cancel Cue note editing",
         )
         static let sidePanelTitle = string(
             "annotate.notinhas.side-panel-title",
             defaultValue: "Notes",
-            comment: "Notinhas notes panel title",
+            comment: "Cue notes panel title",
         )
         static let sidePanelEmpty = string(
             "annotate.notinhas.side-panel-empty",
             defaultValue: "No notes yet",
-            comment: "Empty Notinhas notes panel",
+            comment: "Empty Cue notes panel",
         )
         static let emptyNoteLabel = string(
             "annotate.notinhas.empty-note",
             defaultValue: "Empty note",
-            comment: "Empty Notinhas note",
+            comment: "Empty Cue note",
         )
         static let deleteNote = string(
             "annotate.notinhas.delete-note",
             defaultValue: "Delete note",
-            comment: "Delete Notinhas note",
+            comment: "Delete Cue note",
         )
         static let noteEditorColorButton = string(
             "annotate.notinhas.note-editor-color-button",
             defaultValue: "Note color",
-            comment: "Notinhas note editor color button accessibility label",
+            comment: "Cue note editor color button accessibility label",
         )
         static let noteEditorDragHint = string(
             "annotate.notinhas.note-editor-drag-hint",
             defaultValue: "Drag to move this note editor",
-            comment: "VoiceOver hint for draggable regions of the contextual Notinhas note editor",
+            comment: "VoiceOver hint for draggable regions of the contextual Cue note editor",
         )
         static let pointTargetLabel = string(
             "annotate.notinhas.point-target",
             defaultValue: "Point",
-            comment: "Notinhas point target",
+            comment: "Cue point target",
         )
         static let areaTargetLabel = string(
             "annotate.notinhas.area-target",
             defaultValue: "Area",
-            comment: "Notinhas area target",
+            comment: "Cue area target",
         )
         static func noteRowLabel(number: Int, text: String, target: String) -> String {
             format(
                 "annotate.notinhas.note-row-label",
                 defaultValue: "Note %d: %@, %@",
-                comment: "Accessibility label for a Notinhas side-panel row. The placeholders are the note number, note text, and target type.",
+                comment: "Accessibility label for a Cue side-panel row. The placeholders are the note number, note text, and target type.",
                 number,
                 text,
                 target,
@@ -3333,43 +3333,43 @@ nonisolated enum L10n {
         static let areaStyleOutline = string(
             "annotate.notinhas.area-style-outline",
             defaultValue: "Outline",
-            comment: "Notinhas area outline style",
+            comment: "Cue area outline style",
         )
         static let areaStyleTinted = string(
             "annotate.notinhas.area-style-tinted",
             defaultValue: "Tinted",
-            comment: "Notinhas area tinted style",
+            comment: "Cue area tinted style",
         )
         static let areaStyleHatched = string(
             "annotate.notinhas.area-style-hatched",
             defaultValue: "Hatched",
-            comment: "Notinhas area hatched style",
+            comment: "Cue area hatched style",
         )
         static let areaStylePicker = string(
             "annotate.notinhas.area-style-picker",
             defaultValue: "Style",
-            comment: "Notinhas area style picker",
+            comment: "Cue area style picker",
         )
         static let settingsSection = string(
             "annotate.notinhas.settings-section",
-            defaultValue: "Notinhas",
-            comment: "Notinhas settings section",
+            defaultValue: "Cue",
+            comment: "Cue settings section",
         )
         static let panelSideTitle = string(
             "annotate.notinhas.panel-side-title",
             defaultValue: "Notes panel side",
-            comment: "Notinhas export panel side setting",
+            comment: "Cue export panel side setting",
         )
         static let panelSideDescription = string(
             "annotate.notinhas.panel-side-description",
             defaultValue: "Choose where the exported notes panel appears.",
-            comment: "Notinhas export panel side setting description",
+            comment: "Cue export panel side setting description",
         )
-        static let left = string("annotate.notinhas.left", defaultValue: "Left", comment: "Notinhas left panel side")
+        static let left = string("annotate.notinhas.left", defaultValue: "Left", comment: "Cue left panel side")
         static let right = string(
             "annotate.notinhas.right",
             defaultValue: "Right",
-            comment: "Notinhas right panel side",
+            comment: "Cue right panel side",
         )
         static let imgbbMissingAPIKey = string(
             "annotate.notinhas.imgbb-missing-api-key",
@@ -3485,37 +3485,37 @@ nonisolated enum L10n {
         static let colorRed = string(
             "annotate.notinhas.color-red",
             defaultValue: "Red",
-            comment: "Notinhas palette color name",
+            comment: "Cue palette color name",
         )
         static let colorOrange = string(
             "annotate.notinhas.color-orange",
             defaultValue: "Orange",
-            comment: "Notinhas palette color name",
+            comment: "Cue palette color name",
         )
         static let colorBlue = string(
             "annotate.notinhas.color-blue",
             defaultValue: "Blue",
-            comment: "Notinhas palette color name",
+            comment: "Cue palette color name",
         )
         static let colorGreen = string(
             "annotate.notinhas.color-green",
             defaultValue: "Green",
-            comment: "Notinhas palette color name",
+            comment: "Cue palette color name",
         )
         static let colorPurple = string(
             "annotate.notinhas.color-purple",
             defaultValue: "Purple",
-            comment: "Notinhas palette color name",
+            comment: "Cue palette color name",
         )
         static let colorMagenta = string(
             "annotate.notinhas.color-magenta",
             defaultValue: "Magenta",
-            comment: "Notinhas palette color name",
+            comment: "Cue palette color name",
         )
         static let colorBlack = string(
             "annotate.notinhas.color-black",
             defaultValue: "Black",
-            comment: "Notinhas palette color name",
+            comment: "Cue palette color name",
         )
         static let colorYellow = string(
             "annotate.notinhas.color-yellow",
@@ -3560,7 +3560,7 @@ nonisolated enum L10n {
         static let areaStrokeWidthLabel = string(
             "annotate.notinhas.area-stroke-width",
             defaultValue: "Stroke",
-            comment: "Notinhas area stroke width control label",
+            comment: "Cue area stroke width control label",
         )
     }
 
@@ -3577,12 +3577,12 @@ nonisolated enum L10n {
         )
         static let systemConflictTitle = string(
             "preferences-shortcuts.system-conflict-title",
-            defaultValue: "macOS screenshot shortcuts overlap with Notinhas",
+            defaultValue: "macOS screenshot shortcuts overlap with Cue",
             comment: "Title for system shortcut conflict warning",
         )
         static let systemConflictDescription = string(
             "preferences-shortcuts.system-conflict-description",
-            defaultValue: "Turn off the overlapping macOS shortcuts to avoid conflicts with the Notinhas shortcuts you keep enabled.",
+            defaultValue: "Turn off the overlapping macOS shortcuts to avoid conflicts with the Cue shortcuts you keep enabled.",
             comment: "Description for system shortcut conflict warning",
         )
         static let howToDisable = string(
@@ -3602,7 +3602,7 @@ nonisolated enum L10n {
         )
         static let noConflictsDescription = string(
             "preferences-shortcuts.no-conflicts-description",
-            defaultValue: "No overlapping macOS screenshot shortcuts were found for the Notinhas shortcuts you currently have enabled.",
+            defaultValue: "No overlapping macOS screenshot shortcuts were found for the Cue shortcuts you currently have enabled.",
             comment: "Description for success state when there are no system shortcut conflicts",
         )
         static let globalSection = string(
@@ -3637,7 +3637,7 @@ nonisolated enum L10n {
         )
         static let disableShortcutsMessage = string(
             "preferences-shortcuts.disable-shortcuts-message",
-            defaultValue: "You won't be able to capture screenshots or recordings using keyboard shortcuts from any app. You'll need to open Notinhas manually to use capture features.",
+            defaultValue: "You won't be able to capture screenshots or recordings using keyboard shortcuts from any app. You'll need to open Cue manually to use capture features.",
             comment: "Alert message for disabling global shortcuts",
         )
         static let captureSection = string(
@@ -3855,12 +3855,12 @@ nonisolated enum L10n {
         )
         static let preferencesMessage = string(
             "microphone.preferences-message",
-            defaultValue: "Notinhas needs microphone permission. Please enable it in System Settings > Privacy & Security > Microphone.",
+            defaultValue: "Cue needs microphone permission. Please enable it in System Settings > Privacy & Security > Microphone.",
             comment: "Alert message when microphone permission is missing from preferences or toolbar",
         )
         static let recordingMessage = string(
             "microphone.recording-message",
-            defaultValue: "Notinhas needs microphone permission to record audio. Please grant access in System Settings.",
+            defaultValue: "Cue needs microphone permission to record audio. Please grant access in System Settings.",
             comment: "Alert message when microphone permission is missing while starting a recording",
         )
         static let continueWithoutMic = string(
@@ -4011,7 +4011,7 @@ nonisolated enum L10n {
         )
         static let permissionMessage = string(
             "camera.permission-message",
-            defaultValue: "Notinhas needs camera permission to record a camera track.",
+            defaultValue: "Cue needs camera permission to record a camera track.",
             comment: "Camera permission alert message",
         )
         static let unavailableTitle = string(
@@ -4505,7 +4505,7 @@ nonisolated enum L10n {
         )
         static let saveFailedMessage = string(
             "annotate.save-failed-message",
-            defaultValue: "Notinhas couldn't write to the selected location. Please choose another folder.",
+            defaultValue: "Cue couldn't write to the selected location. Please choose another folder.",
             comment: "Alert message shown when annotate save fails",
         )
         static let defaultAnnotatedFileName = string(
@@ -5237,9 +5237,9 @@ nonisolated enum L10n {
             defaultValue: "Mouse tracking data unavailable",
             comment: "Warning title shown when mouse tracking data is not available for follow-mouse zooms",
         )
-        static let followMouseOnlyWorksWithNotinhas = string(
+        static let followMouseOnlyWorksWithCue = string(
             "video-editor.follow-mouse-only-works-with-notinhas",
-            defaultValue: "Follow Mouse only works with videos recorded by Notinhas after mouse tracking was added.",
+            defaultValue: "Follow Mouse only works with videos recorded by Cue after mouse tracking was added.",
             comment: "Warning message shown when follow-mouse zoom mode is unavailable",
         )
         static let followMouseActiveDescription = string(
@@ -5527,7 +5527,7 @@ nonisolated enum L10n {
         static func cannotReplaceOriginalMessage(_ details: String) -> String {
             format(
                 "video-editor.cannot-replace-original-message",
-                defaultValue: "Notinhas doesn't have write access to this file location. Save as a copy instead.\n\n%@",
+                defaultValue: "Cue doesn't have write access to this file location. Save as a copy instead.\n\n%@",
                 comment: "Alert message shown when replacing the original video file is not allowed. %@ is the lower-level error message.",
                 details,
             )
@@ -5944,12 +5944,12 @@ nonisolated enum L10n {
         )
         static let previewShowingLatestWhileLockingNewerContent = string(
             "scrolling-capture.preview-showing-latest-while-locking-newer-content",
-            defaultValue: "Showing the latest stitched result while Notinhas locks newer content.",
+            defaultValue: "Showing the latest stitched result while Cue locks newer content.",
             comment: "Preview description shown while scrolling capture syncs newer content",
         )
         static let previewPausedScrollSlowly = string(
             "scrolling-capture.preview-paused-scroll-slowly",
-            defaultValue: "Preview paused - scroll slowly so Notinhas can re-align.",
+            defaultValue: "Preview paused - scroll slowly so Cue can re-align.",
             comment: "Preview description shown when scrolling capture needs recovery",
         )
         static let previewFinishingSavingCapture = string(
@@ -6064,7 +6064,7 @@ nonisolated enum L10n {
         )
         static let guidanceLockingFirstFrame = string(
             "scrolling-capture.guidance-locking-first-frame",
-            defaultValue: "Notinhas is locking the first frame",
+            defaultValue: "Cue is locking the first frame",
             comment: "Selection guidance detail shown while the first scrolling capture frame is locking",
         )
         static let guidanceSlowDown = string(
@@ -6074,7 +6074,7 @@ nonisolated enum L10n {
         )
         static let guidanceKeepOneDirectionForRealignment = string(
             "scrolling-capture.guidance-keep-one-direction-for-realignment",
-            defaultValue: "Keep one direction so Notinhas can re-align",
+            defaultValue: "Keep one direction so Cue can re-align",
             comment: "Selection guidance detail shown when scrolling capture needs recovery",
         )
         static let guidanceKeepSteadierPace = string(
@@ -6129,7 +6129,7 @@ nonisolated enum L10n {
         )
         static let guidanceSealingStitchedResult = string(
             "scrolling-capture.guidance-sealing-stitched-result",
-            defaultValue: "Notinhas is sealing the stitched result",
+            defaultValue: "Cue is sealing the stitched result",
             comment: "Selection guidance detail shown while scrolling capture finalizes",
         )
         static let guidanceSavingLongScreenshot = string(
@@ -6206,7 +6206,7 @@ nonisolated enum L10n {
 
         static let captionLivePreviewRunning = string(
             "scrolling-capture.caption-live-preview-running",
-            defaultValue: "Live preview running while Notinhas locks the stitched frame.",
+            defaultValue: "Live preview running while Cue locks the stitched frame.",
             comment: "Preview caption shown while the scrolling capture live preview stream is active",
         )
         static let captionFinalizingStitchedResult = string(
@@ -6551,12 +6551,12 @@ nonisolated enum L10n {
         )
         static let saveLocationAccessRequiredMessage = string(
             "recording.save-location-access-required-message",
-            defaultValue: "Notinhas needs a save folder permission to continue. Please choose a folder in onboarding or grant it now.",
+            defaultValue: "Cue needs a save folder permission to continue. Please choose a folder in onboarding or grant it now.",
             comment: "Alert message shown when save location access is missing",
         )
         static let chooseSaveLocationMessage = string(
             "recording.choose-save-location-message",
-            defaultValue: "Choose where Notinhas should save screenshots and recordings",
+            defaultValue: "Choose where Cue should save screenshots and recordings",
             comment: "Prompt shown when asking for an export directory during recording flows",
         )
         static let screenPermissionDenied = string(
@@ -6651,23 +6651,23 @@ nonisolated enum L10n {
     enum FileAccess {
         nonisolated static let chooseCapturesFolderMessage = string(
             "file-access.choose-captures-folder-message",
-            defaultValue: "Choose where Notinhas should save screenshots and recordings",
-            comment: "Open panel message shown when Notinhas asks the user to grant access to a save folder",
+            defaultValue: "Choose where Cue should save screenshots and recordings",
+            comment: "Open panel message shown when Cue asks the user to grant access to a save folder",
         )
         nonisolated static let grantAccessPrompt = string(
             "file-access.grant-access-prompt",
             defaultValue: "Grant Access",
-            comment: "Open panel prompt shown when Notinhas asks the user to grant folder access",
+            comment: "Open panel prompt shown when Cue asks the user to grant folder access",
         )
         nonisolated static let chooseFolderPrompt = string(
             "file-access.choose-folder-prompt",
             defaultValue: "Choose Folder",
-            comment: "Open panel prompt shown when Notinhas asks the user to choose a folder",
+            comment: "Open panel prompt shown when Cue asks the user to choose a folder",
         )
         nonisolated static let desktopPicturesAccessMessage = string(
             "file-access.desktop-pictures-access-message",
             defaultValue: "Select the Desktop Pictures folder to grant access",
-            comment: "Open panel message shown when Notinhas asks for access to the system Desktop Pictures folder",
+            comment: "Open panel message shown when Cue asks for access to the system Desktop Pictures folder",
         )
         static let bookmarkSaveFailedTitle = string(
             "file-access.bookmark-save-failed-title",
@@ -6676,7 +6676,7 @@ nonisolated enum L10n {
         )
         static let bookmarkSaveFailedMessage = string(
             "file-access.bookmark-save-failed-message",
-            defaultValue: "Notinhas could not persist access to this folder. Please choose the folder again and confirm permission.",
+            defaultValue: "Cue could not persist access to this folder. Please choose the folder again and confirm permission.",
             comment: "Alert message when security-scoped bookmark persistence fails",
         )
     }
@@ -6955,23 +6955,23 @@ nonisolated enum L10n {
         nonisolated static let saveLocationPermissionRequired = string(
             "screen-capture.save-location-permission-required",
             defaultValue: "Save location permission is required.",
-            comment: "Error shown when Notinhas cannot save a screenshot because folder access has not been granted",
+            comment: "Error shown when Cue cannot save a screenshot because folder access has not been granted",
         )
         nonisolated static let unableToCaptureSelectedArea = string(
             "screen-capture.unable-to-capture-selected-area",
             defaultValue: "Unable to capture the selected area.",
-            comment: "Error shown when Notinhas cannot capture the selected screenshot area",
+            comment: "Error shown when Cue cannot capture the selected screenshot area",
         )
         nonisolated static let failedToCropCapturedImage = string(
             "screen-capture.failed-to-crop-captured-image",
             defaultValue: "Failed to crop the captured image",
-            comment: "Error shown when Notinhas captures an image but fails to crop it to the selected area",
+            comment: "Error shown when Cue captures an image but fails to crop it to the selected area",
         )
         nonisolated static func couldNotCreateDirectory(_ message: String) -> String {
             format(
                 "screen-capture.could-not-create-directory",
                 defaultValue: "Could not create the save folder: %@",
-                comment: "Error shown when Notinhas cannot create the selected save folder. %@ is the underlying filesystem error.",
+                comment: "Error shown when Cue cannot create the selected save folder. %@ is the underlying filesystem error.",
                 message,
             )
         }
@@ -6979,23 +6979,23 @@ nonisolated enum L10n {
         nonisolated static let webpEncodingFailed = string(
             "screen-capture.webp-encoding-failed",
             defaultValue: "WebP encoding failed",
-            comment: "Error shown when Notinhas cannot encode a screenshot as WebP",
+            comment: "Error shown when Cue cannot encode a screenshot as WebP",
         )
         nonisolated static let couldNotCreateImageDestination = string(
             "screen-capture.could-not-create-image-destination",
             defaultValue: "Could not create the image destination",
-            comment: "Error shown when Notinhas cannot create an image writer for the screenshot",
+            comment: "Error shown when Cue cannot create an image writer for the screenshot",
         )
         nonisolated static let failedToWriteImageToDisk = string(
             "screen-capture.failed-to-write-image-to-disk",
             defaultValue: "Failed to write the image to disk",
-            comment: "Error shown when Notinhas fails while writing a screenshot to disk",
+            comment: "Error shown when Cue fails while writing a screenshot to disk",
         )
         nonisolated static func fileWriteVerificationFailed(_ fileName: String) -> String {
             format(
                 "screen-capture.file-write-verification-failed",
                 defaultValue: "File write verification failed for %@",
-                comment: "Error shown when Notinhas writes a screenshot file but cannot verify it afterward. %@ is the file name.",
+                comment: "Error shown when Cue writes a screenshot file but cannot verify it afterward. %@ is the file name.",
                 fileName,
             )
         }
@@ -7008,7 +7008,7 @@ nonisolated enum L10n {
         nonisolated static let failedToCreateImageFromFrame = string(
             "screen-capture.failed-to-create-image-from-frame",
             defaultValue: "Failed to create an image from the captured frame",
-            comment: "Error shown when Notinhas cannot convert a captured stream frame into an image",
+            comment: "Error shown when Cue cannot convert a captured stream frame into an image",
         )
         nonisolated static let captureTimedOut = string(
             "screen-capture.capture-timed-out",
@@ -7086,7 +7086,7 @@ nonisolated enum L10n {
         )
         static let qrTextOnlyUnsupported = string(
             "ocr.qr-text-only-unsupported",
-            defaultValue: "QR code detected, but Notinhas can only copy text-based QR content.",
+            defaultValue: "QR code detected, but Cue can only copy text-based QR content.",
             comment: "Warning shown when OCR capture detects a QR code whose content cannot be represented as text",
         )
         static func recognitionFailed(_ message: String) -> String {
@@ -7276,7 +7276,7 @@ nonisolated enum L10n {
         )
         static let noSavableResultReady = string(
             "scrolling-capture-status.no-savable-result-ready",
-            defaultValue: "Notinhas couldn't lock a savable stitched image yet. You can keep capturing, try Done again, or Cancel.",
+            defaultValue: "Cue couldn't lock a savable stitched image yet. You can keep capturing, try Done again, or Cancel.",
             comment: "Status shown when Done is pressed before a savable stitched result exists",
         )
         static let savingStitchedImage = string(
@@ -7301,7 +7301,7 @@ nonisolated enum L10n {
         )
         static let autoScrollNeedsAccessibility = string(
             "scrolling-capture-status.auto-scroll-needs-accessibility",
-            defaultValue: "Auto Scroll needs Accessibility permission. Enable Notinhas in System Settings > Privacy & Security > Accessibility.",
+            defaultValue: "Auto Scroll needs Accessibility permission. Enable Cue in System Settings > Privacy & Security > Accessibility.",
             comment: "Status shown when auto-scroll cannot start because Accessibility permission is missing",
         )
         static let autoScrollPausedMoveMouseInside = string(
@@ -7316,12 +7316,12 @@ nonisolated enum L10n {
         )
         static let mixedDirectionsDetected = string(
             "scrolling-capture-status.mixed-directions-detected",
-            defaultValue: "Mixed scroll directions detected. Keep one direction so Notinhas can align.",
+            defaultValue: "Mixed scroll directions detected. Keep one direction so Cue can align.",
             comment: "Status shown when mixed scroll directions are detected during scrolling capture",
         )
         static let couldntCaptureLastFrame = string(
             "scrolling-capture-status.couldnt-capture-last-frame",
-            defaultValue: "Couldn't capture the last frame. Notinhas will save the current stitched result.",
+            defaultValue: "Couldn't capture the last frame. Cue will save the current stitched result.",
             comment: "Status shown when the final scrolling capture frame cannot be captured",
         )
         static let unableToCaptureArea = string(
@@ -7331,7 +7331,7 @@ nonisolated enum L10n {
         )
         static let couldntRefreshLastFrame = string(
             "scrolling-capture-status.couldnt-refresh-last-frame",
-            defaultValue: "Couldn't refresh the last frame. Notinhas will save the current stitched result.",
+            defaultValue: "Couldn't refresh the last frame. Cue will save the current stitched result.",
             comment: "Status shown when the final scrolling capture refresh fails",
         )
         static let unableToRenderPreview = string(
@@ -7366,7 +7366,7 @@ nonisolated enum L10n {
         )
         static let alignmentPaused = string(
             "scrolling-capture-status.alignment-paused",
-            defaultValue: "Alignment paused. Slow down and keep one direction so Notinhas can recover.",
+            defaultValue: "Alignment paused. Slow down and keep one direction so Cue can recover.",
             comment: "Status shown when scrolling capture pauses to recover alignment",
         )
         static let couldntAlignFrame = string(
@@ -7390,13 +7390,13 @@ nonisolated enum L10n {
         )
         static let finalizingCurrentCapture = string(
             "scrolling-capture-status.finalizing-current-capture",
-            defaultValue: "Finalizing the current capture. Notinhas is locking the latest stitched result before saving.",
+            defaultValue: "Finalizing the current capture. Cue is locking the latest stitched result before saving.",
             comment: "Status shown when the scrolling capture result is being finalized",
         )
         static func finalizingFrames(_ count: Int) -> String {
             format(
                 "scrolling-capture-status.finalizing-frames",
-                defaultValue: "Locking the current capture. Notinhas is sealing %d stitched frames before saving.",
+                defaultValue: "Locking the current capture. Cue is sealing %d stitched frames before saving.",
                 comment: "Status shown while finalizing a scrolling capture with stitched frames. %d is the number of stitched frames.",
                 count,
             )
@@ -7404,17 +7404,17 @@ nonisolated enum L10n {
 
         static let finalizingNoNewContent = string(
             "scrolling-capture-status.finalizing-no-new-content",
-            defaultValue: "No new content was detected. Notinhas is saving the current stitched result.",
+            defaultValue: "No new content was detected. Cue is saving the current stitched result.",
             comment: "Status shown while finalizing a scrolling capture after reaching the end of content",
         )
         static let finalizingCouldntAlignLastFrame = string(
             "scrolling-capture-status.finalizing-couldnt-align-last-frame",
-            defaultValue: "Couldn't align the last frame cleanly. Notinhas will save the current stitched result.",
+            defaultValue: "Couldn't align the last frame cleanly. Cue will save the current stitched result.",
             comment: "Status shown while finalizing when the last frame could not be aligned",
         )
         static let finalizingHeightLimitReached = string(
             "scrolling-capture-status.finalizing-height-limit-reached",
-            defaultValue: "Height limit reached. Notinhas is saving the current stitched result.",
+            defaultValue: "Height limit reached. Cue is saving the current stitched result.",
             comment: "Status shown while finalizing after the scrolling capture reaches the height limit",
         )
         static let readyHintToast = string(
@@ -7444,7 +7444,7 @@ nonisolated enum L10n {
         static func outsideApplications(_ bundlePath: String) -> String {
             format(
                 "app-identity.outside-applications",
-                defaultValue: "Install Notinhas in /Applications before granting permissions. Current path: %@",
+                defaultValue: "Install Cue in /Applications before granting permissions. Current path: %@",
                 comment: "Identity issue message. %@ is the current app bundle path.",
                 bundlePath,
             )
@@ -7645,7 +7645,7 @@ nonisolated enum L10n {
         )
         static let clearHistoryAlertMessage = string(
             "preferences-history.clear-history-alert-message",
-            defaultValue: "This will move all capture files to Trash and remove them from History. This action cannot be undone in Notinhas.",
+            defaultValue: "This will move all capture files to Trash and remove them from History. This action cannot be undone in Cue.",
             comment: "Alert message when clearing history",
         )
         static let clearHistoryConfirm = string(

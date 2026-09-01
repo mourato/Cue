@@ -1,6 +1,6 @@
 //
 //  OnboardingPermissionRow.swift
-//  Notinhas
+//  Cue
 //
 //  Reusable permission row component for onboarding — adaptive dark/light theme
 //

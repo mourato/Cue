@@ -10,7 +10,7 @@
     import Foundation
     import os.log
 
-    private let recordingMetadataLogger = Logger(subsystem: "Notinhas", category: "RecordingMetadata")
+    private let recordingMetadataLogger = Logger(subsystem: "Cue", category: "RecordingMetadata")
 
     struct RecordedPointerArtwork: Codable, Equatable, Sendable {
         struct Point: Codable, Equatable, Sendable {
@@ -263,7 +263,7 @@
             case delete
         }
 
-        private nonisolated static let appSupportFolderName = "Notinhas"
+        private nonisolated static let appSupportFolderName = CueStoragePaths.destinationAppSupportFolderName
         private nonisolated static let capturesFolderName = "Captures"
         private nonisolated static let storeFolderName = "RecordingMetadata"
         private nonisolated static let entriesFolderName = "Entries"

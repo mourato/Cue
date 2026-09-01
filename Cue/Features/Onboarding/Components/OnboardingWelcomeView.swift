@@ -1,6 +1,6 @@
 //
 //  OnboardingWelcomeView.swift
-//  Notinhas
+//  Cue
 //
 //  Welcome screen for onboarding flow
 //
@@ -22,7 +22,7 @@ struct WelcomeView: View {
                 .frame(width: 128, height: 128)
 
             // Title
-            Text(verbatim: "Notinhas")
+            Text(verbatim: "Cue")
                 .vsHeading()
 
             // Subtitle

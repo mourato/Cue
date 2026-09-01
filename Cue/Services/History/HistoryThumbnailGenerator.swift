@@ -12,7 +12,7 @@ import ImageIO
 import os.log
 import UniformTypeIdentifiers
 
-private let logger = Logger(subsystem: "Notinhas", category: "HistoryThumbnailGenerator")
+private let logger = Logger(subsystem: "Cue", category: "HistoryThumbnailGenerator")
 
 /// Generates and caches thumbnails for capture history items
 final class HistoryThumbnailGenerator {
@@ -55,7 +55,7 @@ final class HistoryThumbnailGenerator {
             for: .applicationSupportDirectory, in: .userDomainMask,
         ).first!
         return appSupport
-            .appendingPathComponent("Notinhas", isDirectory: true)
+            .appendingPathComponent(CueStoragePaths.destinationAppSupportFolderName, isDirectory: true)
             .appendingPathComponent("HistoryThumbnails", isDirectory: true)
     }
 

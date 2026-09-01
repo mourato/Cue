@@ -257,8 +257,8 @@ final class TempCaptureManagerTests: XCTestCase {
     func testTempCaptureDirectory_isInAppSupport() {
         let path = manager.tempCaptureDirectory.path
         XCTAssertTrue(
-            path.contains("Application Support/Notinhas/Captures")
-                || path.contains("Notinhas_Captures"),
+            path.contains("Application Support/Cue/Captures")
+                || path.contains("Cue_Captures"),
             "Temp directory should be in App Support or fallback: \(path)",
         )
     }

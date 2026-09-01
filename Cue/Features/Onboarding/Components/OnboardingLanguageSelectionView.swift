@@ -1,6 +1,6 @@
 //
 //  OnboardingLanguageSelectionView.swift
-//  Notinhas
+//  Cue
 //
 //  Onboarding step that lets users preview and choose the onboarding language.
 //
@@ -114,7 +114,7 @@ struct OnboardingLanguageSelectionView: View {
     private var languageSubtitle: String {
         onboardingLocalization.string(
             "onboarding.language.subtitle",
-            defaultValue: "Notinhas can follow your Mac or preview a specific app language during setup.",
+            defaultValue: "Cue can follow your Mac or preview a specific app language during setup.",
             comment: "Onboarding language step subtitle",
         )
     }

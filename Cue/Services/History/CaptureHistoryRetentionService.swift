@@ -8,7 +8,7 @@
 import Foundation
 import os.log
 
-private let logger = Logger(subsystem: "Notinhas", category: "CaptureHistoryRetentionService")
+private let logger = Logger(subsystem: "Cue", category: "CaptureHistoryRetentionService")
 
 /// Enforces retention policies for capture history records
 @MainActor

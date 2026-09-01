@@ -1,6 +1,6 @@
 //
 //  OnboardingFlowView.swift
-//  Notinhas
+//  Cue
 //
 //  Static helpers for onboarding state — flow is now managed by SplashOnboardingRootView
 //

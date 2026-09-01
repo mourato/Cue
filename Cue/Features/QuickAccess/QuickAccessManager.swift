@@ -12,7 +12,7 @@ import Foundation
 import os.log
 import SwiftUI
 
-private let logger = Logger(subsystem: "Notinhas", category: "QuickAccessManager")
+private let logger = Logger(subsystem: "Cue", category: "QuickAccessManager")
 
 enum QuickAccessAnimationStyle: String, CaseIterable, Identifiable {
     case slide

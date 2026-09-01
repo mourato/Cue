@@ -37,7 +37,7 @@ struct GradientPresetButton: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(preset.displayName)
-        .accessibilityValue(isSelected ? L10n.Notinhas.selected : "")
+        .accessibilityValue(isSelected ? L10n.Cue.selected : "")
     }
 }
 
@@ -66,7 +66,7 @@ struct WallpaperPresetButton: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(preset.displayName)
-        .accessibilityValue(isSelected ? L10n.Notinhas.selected : "")
+        .accessibilityValue(isSelected ? L10n.Cue.selected : "")
     }
 }
 
@@ -98,7 +98,7 @@ struct CustomWallpaperButton: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel("\(L10n.Common.custom): \(url.lastPathComponent)")
-            .accessibilityValue(isSelected ? L10n.Notinhas.selected : "")
+            .accessibilityValue(isSelected ? L10n.Cue.selected : "")
 
             if isHovering {
                 Button(action: onRemove) {
@@ -177,7 +177,7 @@ struct DefaultWallpaperButton: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(item.name)
-        .accessibilityValue(isSelected ? L10n.Notinhas.selected : "")
+        .accessibilityValue(isSelected ? L10n.Cue.selected : "")
         .onAppear {
             loadCachedThumbnail()
         }
@@ -248,7 +248,7 @@ struct BlurredBackgroundEffectButton: View {
         .buttonStyle(.plain)
         .help(effect.displayName)
         .accessibilityLabel(effect.displayName)
-        .accessibilityValue(isSelected ? L10n.Notinhas.selected : "")
+        .accessibilityValue(isSelected ? L10n.Cue.selected : "")
     }
 
     @ViewBuilder
@@ -368,7 +368,7 @@ struct ColorSwatch: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(name)
-        .accessibilityValue(isSelected ? L10n.Notinhas.selected : "")
+        .accessibilityValue(isSelected ? L10n.Cue.selected : "")
     }
 }
 
@@ -385,7 +385,7 @@ struct AnnotateColorSwatchButton: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(L10n.Common.color)
-        .accessibilityValue(isSelected ? L10n.Notinhas.selected : "")
+        .accessibilityValue(isSelected ? L10n.Cue.selected : "")
         .overlay(alignment: .topTrailing) {
             deleteButton
         }
@@ -975,7 +975,7 @@ struct AlignmentCell: View {
         .buttonStyle(.plain)
         .onHover { isHovering = $0 }
         .accessibilityLabel(alignment.accessibilityName)
-        .accessibilityValue(isSelected ? L10n.Notinhas.selected : "")
+        .accessibilityValue(isSelected ? L10n.Cue.selected : "")
     }
 
     private var backgroundColor: Color {

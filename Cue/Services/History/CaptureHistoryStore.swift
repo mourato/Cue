@@ -10,7 +10,7 @@ import Foundation
 import GRDB
 import os.log
 
-private let logger = Logger(subsystem: "Notinhas", category: "CaptureHistoryStore")
+private let logger = Logger(subsystem: "Cue", category: "CaptureHistoryStore")
 
 extension Notification.Name {
     static let captureHistoryFileDidChange = Notification.Name("captureHistoryFileDidChange")

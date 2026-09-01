@@ -423,7 +423,7 @@ extension DragHandleNSView {
         let fileManager = FileManager.default
         if let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first {
             let url = appSupport
-                .appendingPathComponent("Notinhas", isDirectory: true)
+                .appendingPathComponent(CueStoragePaths.destinationAppSupportFolderName, isDirectory: true)
                 .appendingPathComponent("Captures", isDirectory: true)
                 .appendingPathComponent("AnnotateDrag", isDirectory: true)
             try? fileManager.createDirectory(at: url, withIntermediateDirectories: true)
@@ -431,7 +431,7 @@ extension DragHandleNSView {
         }
 
         let fallback = fileManager.temporaryDirectory
-            .appendingPathComponent("Notinhas_Captures", isDirectory: true)
+            .appendingPathComponent("Cue_Captures", isDirectory: true)
             .appendingPathComponent("AnnotateDrag", isDirectory: true)
         try? fileManager.createDirectory(at: fallback, withIntermediateDirectories: true)
         return fallback

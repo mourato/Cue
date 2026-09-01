@@ -118,7 +118,7 @@ enum CloudKeychainStore {
         case addFailed(OSStatus)
     }
 
-    private static let logger = Logger(subsystem: "Notinhas", category: "CloudKeychainStore")
+    private static let logger = Logger(subsystem: "Cue", category: "CloudKeychainStore")
     private static let currentService = CueStoragePaths.destinationKeychainService
     private static let legacyServices = [
         NotinhasStoragePaths.destinationKeychainService,

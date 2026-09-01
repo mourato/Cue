@@ -327,18 +327,18 @@ final class AppStatusBarController: ObservableObject {
             if isMenuBarActingAsStopControl {
                 return L10n.RecordingToolbar.clickToStop(recorder.formattedDuration)
             }
-            guard isVideoModuleEnabled else { return "Notinhas" }
+            guard isVideoModuleEnabled else { return "Cue" }
             switch state {
             case .recording:
                 return "\(L10n.RecordingToolbar.recordingInProgress) (\(recorder.formattedDuration))"
             case .paused:
                 return "\(L10n.RecordingToolbar.recordingPaused) (\(recorder.formattedDuration))"
             case .preparing:
-                return "Notinhas"
+                return "Cue"
             case .stopping:
-                return "Notinhas"
+                return "Cue"
             case .idle:
-                return "Notinhas"
+                return "Cue"
             }
         }
 
@@ -368,7 +368,7 @@ final class AppStatusBarController: ObservableObject {
             button.image = idleStatusImage
             button.contentTintColor = nil
             button.attributedTitle = NSAttributedString(string: "")
-            button.toolTip = "Notinhas"
+            button.toolTip = "Cue"
         }
     #endif
 
@@ -694,7 +694,7 @@ final class AppStatusBarController: ObservableObject {
 
         // Quit
         let quitItem = NSMenuItem(
-            title: L10n.Menu.quitNotinhas,
+            title: L10n.Menu.quitCue,
             action: #selector(quitAction),
             keyEquivalent: "q",
         )

@@ -4,346 +4,1236 @@
     "camera.circle": {
       "extractionState": "manual",
       "localizations": {
-        "de": { "stringUnit": { "state": "translated", "value": "Kreis" } },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kreis"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Circle"
           }
         },
-        "es": { "stringUnit": { "state": "translated", "value": "Círculo" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Cercle" } },
-        "ja": { "stringUnit": { "state": "translated", "value": "円" } },
-        "ko": { "stringUnit": { "state": "translated", "value": "원형" } },
-        "ru": { "stringUnit": { "state": "translated", "value": "Круг" } },
-        "vi": { "stringUnit": { "state": "translated", "value": "Hình tròn" } },
-        "zh-Hans": { "stringUnit": { "state": "translated", "value": "圆形" } },
-        "zh-Hant": { "stringUnit": { "state": "translated", "value": "圓形" } }
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Círculo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cercle"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "円"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "원형"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Круг"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hình tròn"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "圆形"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "圓形"
+          }
+        }
       }
     },
     "camera.huge": {
       "extractionState": "manual",
       "localizations": {
-        "de": { "stringUnit": { "state": "translated", "value": "Sehr groß" } },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sehr groß"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Huge"
           }
         },
-        "es": { "stringUnit": { "state": "translated", "value": "Enorme" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Très grande" } },
-        "ja": { "stringUnit": { "state": "translated", "value": "特大" } },
-        "ko": { "stringUnit": { "state": "translated", "value": "매우 크게" } },
-        "ru": { "stringUnit": { "state": "translated", "value": "Огромный" } },
-        "vi": { "stringUnit": { "state": "translated", "value": "Rất lớn" } },
-        "zh-Hans": { "stringUnit": { "state": "translated", "value": "超大" } },
-        "zh-Hant": { "stringUnit": { "state": "translated", "value": "超大" } }
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enorme"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Très grande"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "特大"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "매우 크게"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Огромный"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rất lớn"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "超大"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "超大"
+          }
+        }
       }
     },
     "camera.large": {
       "extractionState": "manual",
       "localizations": {
-        "de": { "stringUnit": { "state": "translated", "value": "Groß" } },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Groß"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Large"
           }
         },
-        "es": { "stringUnit": { "state": "translated", "value": "Grande" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Grande" } },
-        "ja": { "stringUnit": { "state": "translated", "value": "大" } },
-        "ko": { "stringUnit": { "state": "translated", "value": "크게" } },
-        "ru": { "stringUnit": { "state": "translated", "value": "Большой" } },
-        "vi": { "stringUnit": { "state": "translated", "value": "Lớn" } },
-        "zh-Hans": { "stringUnit": { "state": "translated", "value": "大" } },
-        "zh-Hant": { "stringUnit": { "state": "translated", "value": "大" } }
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grande"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grande"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "大"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "크게"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Большой"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lớn"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "大"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "大"
+          }
+        }
       }
     },
     "camera.medium": {
       "extractionState": "manual",
       "localizations": {
-        "de": { "stringUnit": { "state": "translated", "value": "Mittel" } },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mittel"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Medium"
           }
         },
-        "es": { "stringUnit": { "state": "translated", "value": "Mediano" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Moyenne" } },
-        "ja": { "stringUnit": { "state": "translated", "value": "中" } },
-        "ko": { "stringUnit": { "state": "translated", "value": "중간" } },
-        "ru": { "stringUnit": { "state": "translated", "value": "Средний" } },
-        "vi": { "stringUnit": { "state": "translated", "value": "Trung bình" } },
-        "zh-Hans": { "stringUnit": { "state": "translated", "value": "中" } },
-        "zh-Hant": { "stringUnit": { "state": "translated", "value": "中" } }
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mediano"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moyenne"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "中"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "중간"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Средний"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trung bình"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "中"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "中"
+          }
+        }
       }
     },
     "camera.preview": {
       "extractionState": "manual",
       "localizations": {
-        "de": { "stringUnit": { "state": "translated", "value": "Kameravorschau" } },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kameravorschau"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Camera preview"
           }
         },
-        "es": { "stringUnit": { "state": "translated", "value": "Vista previa de la cámara" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Aperçu de la caméra" } },
-        "ja": { "stringUnit": { "state": "translated", "value": "カメラプレビュー" } },
-        "ko": { "stringUnit": { "state": "translated", "value": "카메라 미리보기" } },
-        "ru": { "stringUnit": { "state": "translated", "value": "Предпросмотр камеры" } },
-        "vi": { "stringUnit": { "state": "translated", "value": "Bản xem trước camera" } },
-        "zh-Hans": { "stringUnit": { "state": "translated", "value": "摄像头预览" } },
-        "zh-Hant": { "stringUnit": { "state": "translated", "value": "相機預覽" } }
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vista previa de la cámara"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aperçu de la caméra"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "カメラプレビュー"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "카메라 미리보기"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Предпросмотр камеры"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bản xem trước camera"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "摄像头预览"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "相機預覽"
+          }
+        }
       }
     },
     "camera.preview-drag-hint": {
       "extractionState": "manual",
       "localizations": {
-        "de": { "stringUnit": { "state": "translated", "value": "Ziehen, um die Position innerhalb des Aufnahmebereichs zu ändern." } },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ziehen, um die Position innerhalb des Aufnahmebereichs zu ändern."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Drag to reposition within the recording area."
           }
         },
-        "es": { "stringUnit": { "state": "translated", "value": "Arrastra para cambiar la posición dentro del área de grabación." } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Faites glisser pour repositionner dans la zone d’enregistrement." } },
-        "ja": { "stringUnit": { "state": "translated", "value": "録画領域内でドラッグして位置を変更します。" } },
-        "ko": { "stringUnit": { "state": "translated", "value": "녹화 영역 안에서 드래그하여 위치를 변경합니다." } },
-        "ru": { "stringUnit": { "state": "translated", "value": "Перетащите, чтобы изменить положение в области записи." } },
-        "vi": { "stringUnit": { "state": "translated", "value": "Kéo để định vị lại trong vùng ghi." } },
-        "zh-Hans": { "stringUnit": { "state": "translated", "value": "拖动以在录制区域内重新定位。" } },
-        "zh-Hant": { "stringUnit": { "state": "translated", "value": "拖曳以在錄製區域內重新定位。" } }
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrastra para cambiar la posición dentro del área de grabación."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Faites glisser pour repositionner dans la zone d’enregistrement."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "録画領域内でドラッグして位置を変更します。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "녹화 영역 안에서 드래그하여 위치를 변경합니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перетащите, чтобы изменить положение в области записи."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kéo để định vị lại trong vùng ghi."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拖动以在录制区域内重新定位。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拖曳以在錄製區域內重新定位。"
+          }
+        }
       }
     },
     "camera.preview-shape": {
       "extractionState": "manual",
       "localizations": {
-        "de": { "stringUnit": { "state": "translated", "value": "Vorschauform" } },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorschauform"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Preview shape"
           }
         },
-        "es": { "stringUnit": { "state": "translated", "value": "Forma de la vista previa" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Forme de l’aperçu" } },
-        "ja": { "stringUnit": { "state": "translated", "value": "プレビューの形" } },
-        "ko": { "stringUnit": { "state": "translated", "value": "미리보기 모양" } },
-        "ru": { "stringUnit": { "state": "translated", "value": "Форма предпросмотра" } },
-        "vi": { "stringUnit": { "state": "translated", "value": "Hình dạng bản xem trước" } },
-        "zh-Hans": { "stringUnit": { "state": "translated", "value": "预览形状" } },
-        "zh-Hant": { "stringUnit": { "state": "translated", "value": "預覽形狀" } }
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forma de la vista previa"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forme de l’aperçu"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プレビューの形"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "미리보기 모양"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Форма предпросмотра"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hình dạng bản xem trước"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "预览形状"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "預覽形狀"
+          }
+        }
       }
     },
     "camera.preview-size": {
       "extractionState": "manual",
       "localizations": {
-        "de": { "stringUnit": { "state": "translated", "value": "Vorschaugröße" } },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorschaugröße"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Preview size"
           }
         },
-        "es": { "stringUnit": { "state": "translated", "value": "Tamaño de la vista previa" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Taille de l’aperçu" } },
-        "ja": { "stringUnit": { "state": "translated", "value": "プレビューのサイズ" } },
-        "ko": { "stringUnit": { "state": "translated", "value": "미리보기 크기" } },
-        "ru": { "stringUnit": { "state": "translated", "value": "Размер предпросмотра" } },
-        "vi": { "stringUnit": { "state": "translated", "value": "Kích thước bản xem trước" } },
-        "zh-Hans": { "stringUnit": { "state": "translated", "value": "预览大小" } },
-        "zh-Hant": { "stringUnit": { "state": "translated", "value": "預覽大小" } }
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tamaño de la vista previa"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taille de l’aperçu"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プレビューのサイズ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "미리보기 크기"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Размер предпросмотра"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kích thước bản xem trước"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "预览大小"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "預覽大小"
+          }
+        }
       }
     },
     "camera.show-during-recording": {
       "extractionState": "manual",
       "localizations": {
-        "de": { "stringUnit": { "state": "translated", "value": "Vorschau während der Aufnahme anzeigen" } },
-        "en": { "stringUnit": { "state": "translated", "value": "Show preview while recording" } },
-        "es": { "stringUnit": { "state": "translated", "value": "Mostrar la vista previa durante la grabación" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Afficher l’aperçu pendant l’enregistrement" } },
-        "ja": { "stringUnit": { "state": "translated", "value": "録画中にプレビューを表示" } },
-        "ko": { "stringUnit": { "state": "translated", "value": "녹화 중 미리보기 표시" } },
-        "ru": { "stringUnit": { "state": "translated", "value": "Показывать предпросмотр во время записи" } },
-        "vi": { "stringUnit": { "state": "translated", "value": "Hiển thị bản xem trước khi ghi" } },
-        "zh-Hans": { "stringUnit": { "state": "translated", "value": "录制时显示预览" } },
-        "zh-Hant": { "stringUnit": { "state": "translated", "value": "錄製時顯示預覽" } }
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorschau während der Aufnahme anzeigen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show preview while recording"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar la vista previa durante la grabación"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher l’aperçu pendant l’enregistrement"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "録画中にプレビューを表示"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "녹화 중 미리보기 표시"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Показывать предпросмотр во время записи"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hiển thị bản xem trước khi ghi"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "录制时显示预览"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "錄製時顯示預覽"
+          }
+        }
       }
     },
     "camera.show-during-recording-description": {
       "extractionState": "manual",
       "localizations": {
-        "de": { "stringUnit": { "state": "translated", "value": "Die Live-Kameravorschau während der Aufnahme auf dem Bildschirm anzeigen." } },
-        "en": { "stringUnit": { "state": "translated", "value": "Keep the live camera preview visible on screen during recording." } },
-        "es": { "stringUnit": { "state": "translated", "value": "Mantén visible la vista previa de la cámara durante la grabación." } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Garder l’aperçu vidéo visible à l’écran pendant l’enregistrement." } },
-        "ja": { "stringUnit": { "state": "translated", "value": "録画中もライブカメラのプレビューを画面に表示します。" } },
-        "ko": { "stringUnit": { "state": "translated", "value": "녹화 중 라이브 카메라 미리보기를 화면에 표시합니다." } },
-        "ru": { "stringUnit": { "state": "translated", "value": "Оставлять предпросмотр камеры видимым на экране во время записи." } },
-        "vi": { "stringUnit": { "state": "translated", "value": "Giữ bản xem trước camera trực tiếp hiển thị trên màn hình khi ghi." } },
-        "zh-Hans": { "stringUnit": { "state": "translated", "value": "录制期间在屏幕上保持显示实时摄像头预览。" } },
-        "zh-Hant": { "stringUnit": { "state": "translated", "value": "錄製期間在螢幕上保持顯示即時相機預覽。" } }
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Live-Kameravorschau während der Aufnahme auf dem Bildschirm anzeigen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep the live camera preview visible on screen during recording."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mantén visible la vista previa de la cámara durante la grabación."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Garder l’aperçu vidéo visible à l’écran pendant l’enregistrement."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "録画中もライブカメラのプレビューを画面に表示します。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "녹화 중 라이브 카메라 미리보기를 화면에 표시합니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Оставлять предпросмотр камеры видимым на экране во время записи."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giữ bản xem trước camera trực tiếp hiển thị trên màn hình khi ghi."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "录制期间在屏幕上保持显示实时摄像头预览。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "錄製期間在螢幕上保持顯示即時相機預覽。"
+          }
+        }
       }
     },
     "camera.rectangle": {
       "extractionState": "manual",
       "localizations": {
-        "de": { "stringUnit": { "state": "translated", "value": "Rechteck" } },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rechteck"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Rectangle"
           }
         },
-        "es": { "stringUnit": { "state": "translated", "value": "Rectángulo" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Rectangle" } },
-        "ja": { "stringUnit": { "state": "translated", "value": "長方形" } },
-        "ko": { "stringUnit": { "state": "translated", "value": "직사각형" } },
-        "ru": { "stringUnit": { "state": "translated", "value": "Прямоугольник" } },
-        "vi": { "stringUnit": { "state": "translated", "value": "Hình chữ nhật" } },
-        "zh-Hans": { "stringUnit": { "state": "translated", "value": "矩形" } },
-        "zh-Hant": { "stringUnit": { "state": "translated", "value": "矩形" } }
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rectángulo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rectangle"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "長方形"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "직사각형"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прямоугольник"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hình chữ nhật"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "矩形"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "矩形"
+          }
+        }
       }
     },
     "camera.small": {
       "extractionState": "manual",
       "localizations": {
-        "de": { "stringUnit": { "state": "translated", "value": "Klein" } },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Klein"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Small"
           }
         },
-        "es": { "stringUnit": { "state": "translated", "value": "Pequeño" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Petite" } },
-        "ja": { "stringUnit": { "state": "translated", "value": "小" } },
-        "ko": { "stringUnit": { "state": "translated", "value": "작게" } },
-        "ru": { "stringUnit": { "state": "translated", "value": "Маленький" } },
-        "vi": { "stringUnit": { "state": "translated", "value": "Nhỏ" } },
-        "zh-Hans": { "stringUnit": { "state": "translated", "value": "小" } },
-        "zh-Hant": { "stringUnit": { "state": "translated", "value": "小" } }
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pequeño"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Petite"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "小"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "작게"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Маленький"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhỏ"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "小"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "小"
+          }
+        }
       }
     },
     "camera.square": {
       "extractionState": "manual",
       "localizations": {
-        "de": { "stringUnit": { "state": "translated", "value": "Quadrat" } },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadrat"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Square"
           }
         },
-        "es": { "stringUnit": { "state": "translated", "value": "Cuadrado" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Carré" } },
-        "ja": { "stringUnit": { "state": "translated", "value": "正方形" } },
-        "ko": { "stringUnit": { "state": "translated", "value": "정사각형" } },
-        "ru": { "stringUnit": { "state": "translated", "value": "Квадрат" } },
-        "vi": { "stringUnit": { "state": "translated", "value": "Hình vuông" } },
-        "zh-Hans": { "stringUnit": { "state": "translated", "value": "正方形" } },
-        "zh-Hant": { "stringUnit": { "state": "translated", "value": "正方形" } }
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuadrado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Carré"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正方形"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "정사각형"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Квадрат"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hình vuông"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正方形"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正方形"
+          }
+        }
       }
     },
     "camera.vertical": {
       "extractionState": "manual",
       "localizations": {
-        "de": { "stringUnit": { "state": "translated", "value": "Hochformat" } },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hochformat"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Vertical"
           }
         },
-        "es": { "stringUnit": { "state": "translated", "value": "Vertical" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Vertical" } },
-        "ja": { "stringUnit": { "state": "translated", "value": "縦長" } },
-        "ko": { "stringUnit": { "state": "translated", "value": "세로형" } },
-        "ru": { "stringUnit": { "state": "translated", "value": "Вертикальный" } },
-        "vi": { "stringUnit": { "state": "translated", "value": "Dọc" } },
-        "zh-Hans": { "stringUnit": { "state": "translated", "value": "竖直" } },
-        "zh-Hant": { "stringUnit": { "state": "translated", "value": "垂直" } }
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vertical"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vertical"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "縦長"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "세로형"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вертикальный"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dọc"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "竖直"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "垂直"
+          }
+        }
       }
     },
     "camera.preview-position": {
       "extractionState": "manual",
       "localizations": {
-        "de": { "stringUnit": { "state": "translated", "value": "Horizontal %d%%, vertikal %d%%" } },
-        "en": { "stringUnit": { "state": "translated", "value": "Horizontal %d%%, vertical %d%%" } },
-        "es": { "stringUnit": { "state": "translated", "value": "Horizontal %d%%, vertical %d%%" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Horizontal %d%%, vertical %d%%" } },
-        "ja": { "stringUnit": { "state": "translated", "value": "横 %d%%、縦 %d%%" } },
-        "ko": { "stringUnit": { "state": "translated", "value": "가로 %d%%, 세로 %d%%" } },
-        "ru": { "stringUnit": { "state": "translated", "value": "По горизонтали: %d%%, по вертикали: %d%%" } },
-        "vi": { "stringUnit": { "state": "translated", "value": "Ngang %d%%, dọc %d%%" } },
-        "zh-Hans": { "stringUnit": { "state": "translated", "value": "水平 %d%%，垂直 %d%%" } },
-        "zh-Hant": { "stringUnit": { "state": "translated", "value": "水平 %d%%，垂直 %d%%" } }
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Horizontal %d%%, vertikal %d%%"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Horizontal %d%%, vertical %d%%"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Horizontal %d%%, vertical %d%%"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Horizontal %d%%, vertical %d%%"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "横 %d%%、縦 %d%%"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "가로 %d%%, 세로 %d%%"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "По горизонтали: %d%%, по вертикали: %d%%"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ngang %d%%, dọc %d%%"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "水平 %d%%，垂直 %d%%"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "水平 %d%%，垂直 %d%%"
+          }
+        }
       }
     },
     "camera.move-down": {
       "extractionState": "manual",
       "localizations": {
-        "de": { "stringUnit": { "state": "translated", "value": "Nach unten verschieben" } },
-        "en": { "stringUnit": { "state": "translated", "value": "Move down" } },
-        "es": { "stringUnit": { "state": "translated", "value": "Mover abajo" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Déplacer vers le bas" } },
-        "ja": { "stringUnit": { "state": "translated", "value": "下に移動" } },
-        "ko": { "stringUnit": { "state": "translated", "value": "아래로 이동" } },
-        "ru": { "stringUnit": { "state": "translated", "value": "Переместить вниз" } },
-        "vi": { "stringUnit": { "state": "translated", "value": "Di chuyển xuống" } },
-        "zh-Hans": { "stringUnit": { "state": "translated", "value": "下移" } },
-        "zh-Hant": { "stringUnit": { "state": "translated", "value": "下移" } }
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach unten verschieben"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move down"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mover abajo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déplacer vers le bas"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下に移動"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "아래로 이동"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Переместить вниз"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Di chuyển xuống"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下移"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下移"
+          }
+        }
       }
     },
     "camera.move-left": {
       "extractionState": "manual",
       "localizations": {
-        "de": { "stringUnit": { "state": "translated", "value": "Nach links verschieben" } },
-        "en": { "stringUnit": { "state": "translated", "value": "Move left" } },
-        "es": { "stringUnit": { "state": "translated", "value": "Mover a la izquierda" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Déplacer vers la gauche" } },
-        "ja": { "stringUnit": { "state": "translated", "value": "左に移動" } },
-        "ko": { "stringUnit": { "state": "translated", "value": "왼쪽으로 이동" } },
-        "ru": { "stringUnit": { "state": "translated", "value": "Переместить влево" } },
-        "vi": { "stringUnit": { "state": "translated", "value": "Di chuyển sang trái" } },
-        "zh-Hans": { "stringUnit": { "state": "translated", "value": "左移" } },
-        "zh-Hant": { "stringUnit": { "state": "translated", "value": "左移" } }
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach links verschieben"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move left"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mover a la izquierda"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déplacer vers la gauche"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "左に移動"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "왼쪽으로 이동"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Переместить влево"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Di chuyển sang trái"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "左移"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "左移"
+          }
+        }
       }
     },
     "camera.move-right": {
       "extractionState": "manual",
       "localizations": {
-        "de": { "stringUnit": { "state": "translated", "value": "Nach rechts verschieben" } },
-        "en": { "stringUnit": { "state": "translated", "value": "Move right" } },
-        "es": { "stringUnit": { "state": "translated", "value": "Mover a la derecha" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Déplacer vers la droite" } },
-        "ja": { "stringUnit": { "state": "translated", "value": "右に移動" } },
-        "ko": { "stringUnit": { "state": "translated", "value": "오른쪽으로 이동" } },
-        "ru": { "stringUnit": { "state": "translated", "value": "Переместить вправо" } },
-        "vi": { "stringUnit": { "state": "translated", "value": "Di chuyển sang phải" } },
-        "zh-Hans": { "stringUnit": { "state": "translated", "value": "右移" } },
-        "zh-Hant": { "stringUnit": { "state": "translated", "value": "右移" } }
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach rechts verschieben"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move right"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mover a la derecha"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déplacer vers la droite"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "右に移動"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "오른쪽으로 이동"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Переместить вправо"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Di chuyển sang phải"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "右移"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "右移"
+          }
+        }
       }
     },
     "camera.move-up": {
       "extractionState": "manual",
       "localizations": {
-        "de": { "stringUnit": { "state": "translated", "value": "Nach oben verschieben" } },
-        "en": { "stringUnit": { "state": "translated", "value": "Move up" } },
-        "es": { "stringUnit": { "state": "translated", "value": "Mover arriba" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Déplacer vers le haut" } },
-        "ja": { "stringUnit": { "state": "translated", "value": "上に移動" } },
-        "ko": { "stringUnit": { "state": "translated", "value": "위로 이동" } },
-        "ru": { "stringUnit": { "state": "translated", "value": "Переместить вверх" } },
-        "vi": { "stringUnit": { "state": "translated", "value": "Di chuyển lên" } },
-        "zh-Hans": { "stringUnit": { "state": "translated", "value": "上移" } },
-        "zh-Hant": { "stringUnit": { "state": "translated", "value": "上移" } }
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach oben verschieben"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move up"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mover arriba"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déplacer vers le haut"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上に移動"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "위로 이동"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Переместить вверх"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Di chuyển lên"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上移"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上移"
+          }
+        }
       }
     },
     "gif.cannot-create-output-file": {
@@ -1782,61 +2672,61 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas benötigt eine Mikrofonberechtigung. Bitte aktivieren Sie es in den Systemeinstellungen > Datenschutz und Sicherheit > Mikrofon."
+            "value": "Cue benötigt eine Mikrofonberechtigung. Bitte aktivieren Sie es in den Systemeinstellungen > Datenschutz und Sicherheit > Mikrofon."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas needs microphone permission. Please enable it in System Settings > Privacy & Security > Microphone."
+            "value": "Cue needs microphone permission. Please enable it in System Settings > Privacy & Security > Microphone."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas necesita permiso del micrófono. Habilítelo en Configuración del sistema > Privacidad y seguridad > Micrófono."
+            "value": "Cue necesita permiso del micrófono. Habilítelo en Configuración del sistema > Privacidad y seguridad > Micrófono."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas a besoin de l'autorisation du microphone. Veuillez l'activer dans Paramètres système > Confidentialité et sécurité > Microphone."
+            "value": "Cue a besoin de l'autorisation du microphone. Veuillez l'activer dans Paramètres système > Confidentialité et sécurité > Microphone."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas にはマイクの許可が必要です。 [システム設定] > [プライバシーとセキュリティ] > [マイク] で有効にしてください。"
+            "value": "Cue にはマイクの許可が必要です。 [システム設定] > [プライバシーとセキュリティ] > [マイク] で有効にしてください。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas에는 마이크 권한이 필요합니다. 시스템 설정 > 개인 정보 보호 및 보안 > 마이크에서 활성화해 주세요."
+            "value": "Cue에는 마이크 권한이 필요합니다. 시스템 설정 > 개인 정보 보호 및 보안 > 마이크에서 활성화해 주세요."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas требуется разрешение микрофона. Включите его в «Настройки системы» > «Конфиденциальность и безопасность» > «Микрофон»."
+            "value": "Cue требуется разрешение микрофона. Включите его в «Настройки системы» > «Конфиденциальность и безопасность» > «Микрофон»."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas cần quyền Microphone. Vui lòng bật trong Cài đặt hệ thống > Quyền riêng tư & Bảo mật > Microphone."
+            "value": "Cue cần quyền Microphone. Vui lòng bật trong Cài đặt hệ thống > Quyền riêng tư & Bảo mật > Microphone."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas 需要麦克风权限。请在系统设置 > 隐私和安全 > 麦克风中启用它。"
+            "value": "Cue 需要麦克风权限。请在系统设置 > 隐私和安全 > 麦克风中启用它。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas 需要麥克風權限。請在系統設置 > 隱私和安全 > 麥克風中啓用它。"
+            "value": "Cue 需要麥克風權限。請在系統設置 > 隱私和安全 > 麥克風中啓用它。"
           }
         }
       }
@@ -1847,61 +2737,61 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas benötigt eine Mikrofonberechtigung, um Audio aufzunehmen. Bitte gewähren Sie den Zugriff in den Systemeinstellungen."
+            "value": "Cue benötigt eine Mikrofonberechtigung, um Audio aufzunehmen. Bitte gewähren Sie den Zugriff in den Systemeinstellungen."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas needs microphone permission to record audio. Please grant access in System Settings."
+            "value": "Cue needs microphone permission to record audio. Please grant access in System Settings."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas necesita permiso del micrófono para grabar audio. Conceda acceso en Configuración del sistema."
+            "value": "Cue necesita permiso del micrófono para grabar audio. Conceda acceso en Configuración del sistema."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas a besoin de l'autorisation du microphone pour enregistrer de l'audio. Veuillez accorder l'accès dans les paramètres système."
+            "value": "Cue a besoin de l'autorisation du microphone pour enregistrer de l'audio. Veuillez accorder l'accès dans les paramètres système."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas が音声を録音するにはマイクの許可が必要です。システム設定でアクセスを許可してください。"
+            "value": "Cue が音声を録音するにはマイクの許可が必要です。システム設定でアクセスを許可してください。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas가 오디오를 녹음하려면 마이크 권한이 필요합니다. 시스템 설정에서 액세스 권한을 부여하세요."
+            "value": "Cue가 오디오를 녹음하려면 마이크 권한이 필요합니다. 시스템 설정에서 액세스 권한을 부여하세요."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas требуется разрешение микрофона для записи звука. Пожалуйста, предоставьте доступ в настройках системы."
+            "value": "Cue требуется разрешение микрофона для записи звука. Пожалуйста, предоставьте доступ в настройках системы."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas cần quyền Microphone để ghi âm. Vui lòng cấp quyền trong Cài đặt hệ thống."
+            "value": "Cue cần quyền Microphone để ghi âm. Vui lòng cấp quyền trong Cài đặt hệ thống."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas 需要麦克风权限才能录制音频。请在系统设置中授予访问权限。"
+            "value": "Cue 需要麦克风权限才能录制音频。请在系统设置中授予访问权限。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas 需要麥克風權限才能錄製音頻。請在系統設置中授予訪問權限。"
+            "value": "Cue 需要麥克風權限才能錄製音頻。請在系統設置中授予訪問權限。"
           }
         }
       }
@@ -5227,61 +6117,61 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Wählen Sie, wo Notinhas Screenshots und Aufnahmen speichern soll"
+            "value": "Wählen Sie, wo Cue Screenshots und Aufnahmen speichern soll"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Choose where Notinhas should save screenshots and recordings"
+            "value": "Choose where Cue should save screenshots and recordings"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Elija dónde Notinhas debe guardar capturas de pantalla y grabaciones"
+            "value": "Elija dónde Cue debe guardar capturas de pantalla y grabaciones"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Choisissez où Notinhas doit enregistrer les captures d'écran et les enregistrements"
+            "value": "Choisissez où Cue doit enregistrer les captures d'écran et les enregistrements"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas がスクリーンショットと録画を保存する場所を選択します"
+            "value": "Cue がスクリーンショットと録画を保存する場所を選択します"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas가 스크린샷과 녹음을 저장할 위치를 선택하세요"
+            "value": "Cue가 스크린샷과 녹음을 저장할 위치를 선택하세요"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Выберите, где Notinhas должен сохранять снимки экрана и записи"
+            "value": "Выберите, где Cue должен сохранять снимки экрана и записи"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Chọn nơi Notinhas sẽ lưu ảnh chụp và bản ghi"
+            "value": "Chọn nơi Cue sẽ lưu ảnh chụp và bản ghi"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "选择 Notinhas 保存屏幕截图和录屏的位置"
+            "value": "选择 Cue 保存屏幕截图和录屏的位置"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "選擇 Notinhas 保存螢幕截圖和錄屏的位置"
+            "value": "選擇 Cue 保存螢幕截圖和錄屏的位置"
           }
         }
       }
@@ -6202,61 +7092,61 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas benötigt eine Berechtigung zum Speichern des Ordners, um fortfahren zu können. Bitte wählen Sie im Onboarding einen Ordner aus oder gewähren Sie ihn jetzt."
+            "value": "Cue benötigt eine Berechtigung zum Speichern des Ordners, um fortfahren zu können. Bitte wählen Sie im Onboarding einen Ordner aus oder gewähren Sie ihn jetzt."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas needs a save folder permission to continue. Please choose a folder in onboarding or grant it now."
+            "value": "Cue needs a save folder permission to continue. Please choose a folder in onboarding or grant it now."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas necesita un permiso para guardar la carpeta para continuar. Elija una carpeta en la incorporación o concédala ahora."
+            "value": "Cue necesita un permiso para guardar la carpeta para continuar. Elija una carpeta en la incorporación o concédala ahora."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas a besoin d'une autorisation de dossier de sauvegarde pour continuer. Veuillez choisir un dossier lors de l'intégration ou l'accorder maintenant."
+            "value": "Cue a besoin d'une autorisation de dossier de sauvegarde pour continuer. Veuillez choisir un dossier lors de l'intégration ou l'accorder maintenant."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "続行するには Notinhas に保存フォルダの権限が必要です。オンボーディングでフォルダを選択するか、今すぐ権限を許可してください。"
+            "value": "続行するには Cue に保存フォルダの権限が必要です。オンボーディングでフォルダを選択するか、今すぐ権限を許可してください。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "계속하려면 Notinhas에 폴더 저장 권한이 필요합니다. 온보딩에서 폴더를 선택하거나 지금 부여하세요."
+            "value": "계속하려면 Cue에 폴더 저장 권한이 필요합니다. 온보딩에서 폴더를 선택하거나 지금 부여하세요."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Чтобы продолжить, Notinhas требуется разрешение на сохранение папки. Пожалуйста, выберите папку при регистрации или предоставьте ее сейчас."
+            "value": "Чтобы продолжить, Cue требуется разрешение на сохранение папки. Пожалуйста, выберите папку при регистрации или предоставьте ее сейчас."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas cần quyền vào thư mục lưu để tiếp tục. Hãy chọn thư mục trong onboarding hoặc cấp quyền ngay bây giờ."
+            "value": "Cue cần quyền vào thư mục lưu để tiếp tục. Hãy chọn thư mục trong onboarding hoặc cấp quyền ngay bây giờ."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas 需要访问保存文件夹才能继续。请在引导中选择文件夹，或现在授予访问权限。"
+            "value": "Cue 需要访问保存文件夹才能继续。请在引导中选择文件夹，或现在授予访问权限。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notinhas 需要存取儲存資料夾才能繼續。請在引導流程中選擇資料夾，或立即授予存取權限。"
+            "value": "Cue 需要存取儲存資料夾才能繼續。請在引導流程中選擇資料夾，或立即授予存取權限。"
           }
         }
       }

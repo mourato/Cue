@@ -112,7 +112,7 @@ struct VisionOCRProfile {
 
 private extension VisionOCRProfile {
     static let sharedProductWords = [
-        "Notinhas",
+        "Cue",
         "OCR",
         "Quick Access",
         "Annotate",
@@ -320,7 +320,7 @@ private extension VisionOCRProfile {
         id: "code",
         recognitionLanguages: ["en-US"],
         customWords: [
-            "Notinhas",
+            "Cue",
             "OCRService",
             "QuickAccessSound",
             "captureOCR",

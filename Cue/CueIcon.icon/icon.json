@@ -24,7 +24,7 @@
           "fill" : "automatic",
           "glass" : true,
           "hidden" : false,
-          "image-name" : "NotinhasIcon.png",
+          "image-name" : "CueIcon.png",
           "name" : "Icon",
           "opacity" : 1,
           "position" : {

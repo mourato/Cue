@@ -1,6 +1,6 @@
 //
 //  CaptureOutputNaming.swift
-//  Notinhas
+//  Cue
 //
 //  Shared output filename generation for screenshots and recordings.
 //
@@ -39,7 +39,7 @@ struct CaptureContext: Equatable {
     static func fromFrontmostApp() -> CaptureContext {
         guard let app = NSWorkspace.shared.frontmostApplication else { return .empty }
         let ownBundleID = Bundle.main.bundleIdentifier
-        // Don't resolve Notinhas itself as the app name
+        // Don't resolve Cue itself as the app name
         if app.bundleIdentifier == ownBundleID {
             return .empty
         }
@@ -57,9 +57,9 @@ enum CaptureOutputKind {
     var defaultTemplate: String {
         switch self {
         case .screenshot:
-            "Notinhas_{datetime}_{ms}"
+            "Cue_{datetime}_{ms}"
         case .recording:
-            "Notinhas_Recording_{datetime}"
+            "Cue_Recording_{datetime}"
         }
     }
 
@@ -223,9 +223,9 @@ enum CaptureOutputNaming {
     private static func fallbackName(for kind: CaptureOutputKind, date: Date) -> String {
         switch kind {
         case .screenshot:
-            "Notinhas_\(format(date, style: "yyyy-MM-dd_HH-mm-ss-SSS"))"
+            "Cue_\(format(date, style: "yyyy-MM-dd_HH-mm-ss-SSS"))"
         case .recording:
-            "Notinhas_Recording_\(format(date, style: "yyyy-MM-dd_HH-mm-ss"))"
+            "Cue_Recording_\(format(date, style: "yyyy-MM-dd_HH-mm-ss"))"
         }
     }
 }

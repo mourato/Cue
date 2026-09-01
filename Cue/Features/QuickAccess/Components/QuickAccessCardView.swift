@@ -408,7 +408,7 @@ struct QuickAccessCardView: View {
         case .edit:
             editActionTitle
         case .uploadToImgBB:
-            L10n.Notinhas.uploadTo(provider: uploadConfiguration.provider.name)
+            L10n.Cue.uploadTo(provider: uploadConfiguration.provider.name)
         case .pinToScreen:
             item.isPinned ? L10n.PreferencesQuickAccess.unpinAction : L10n.PreferencesQuickAccess.pinToScreenAction
         }

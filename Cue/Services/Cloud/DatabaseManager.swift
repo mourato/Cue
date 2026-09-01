@@ -9,7 +9,7 @@ import Foundation
 import GRDB
 import os.log
 
-private let logger = Logger(subsystem: "Notinhas", category: "DatabaseManager")
+private let logger = Logger(subsystem: "Cue", category: "DatabaseManager")
 
 struct DatabaseRecoveryArchive {
     let archiveDirectoryURL: URL?

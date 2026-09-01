@@ -9,7 +9,7 @@
 import Foundation
 import os.log
 
-private let logger = Logger(subsystem: "Notinhas", category: "CaptureStorageManager")
+private let logger = Logger(subsystem: "Cue", category: "CaptureStorageManager")
 
 @MainActor
 final class CaptureStorageManager {
@@ -165,7 +165,7 @@ final class CaptureStorageManager {
         let deletedPaths = await Task.detached(priority: .utility) { () -> [String] in
             let fm = FileManager.default
             var deletedPaths: [String] = []
-            let backgroundLogger = Logger(subsystem: "Notinhas", category: "CaptureStorageManager")
+            let backgroundLogger = Logger(subsystem: "Cue", category: "CaptureStorageManager")
 
             guard let contents = try? fm.contentsOfDirectory(
                 at: dirURL,

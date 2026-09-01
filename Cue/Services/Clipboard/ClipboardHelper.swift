@@ -1,6 +1,6 @@
 //
 //  ClipboardHelper.swift
-//  Notinhas
+//  Cue
 //
 //  Format-aware clipboard write utility.
 //  Writes one pasteboard item with file and pixel-data representations
@@ -12,7 +12,7 @@ import Foundation
 import os.log
 import UniformTypeIdentifiers
 
-private nonisolated let logger = Logger(subsystem: "Notinhas", category: "ClipboardHelper")
+private nonisolated let logger = Logger(subsystem: "Cue", category: "ClipboardHelper")
 
 /// Centralized helper for copying images to clipboard while respecting the configured format.
 ///
@@ -233,7 +233,7 @@ enum ClipboardHelper {
 
         // Write to a temp file so the pasteboard can reference it
         let tempDir = TempCaptureManager.shared.tempCaptureDirectory
-        let fileName = "Notinhas_clipboard_\(UUID().uuidString).\(ext)"
+        let fileName = "Cue_clipboard_\(UUID().uuidString).\(ext)"
         let tempURL = tempDir.appendingPathComponent(fileName)
 
         do {

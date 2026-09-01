@@ -48,8 +48,8 @@ final class CaptureOutputNamingTests: XCTestCase {
             date: fixedDate,
             defaults: defaults,
         )
-        // Default template: "Notinhas_{datetime}_{ms}"
-        XCTAssertTrue(result.hasPrefix("Notinhas_"), "Expected template-based name, got: \(result)")
+        // Default template: "Cue_{datetime}_{ms}"
+        XCTAssertTrue(result.hasPrefix("Cue_"), "Expected template-based name, got: \(result)")
         XCTAssertTrue(result.contains("_"), "Expected datetime separators")
     }
 
@@ -60,7 +60,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             date: fixedDate,
             defaults: defaults,
         )
-        XCTAssertTrue(result.hasPrefix("Notinhas_"), "Expected template-based name, got: \(result)")
+        XCTAssertTrue(result.hasPrefix("Cue_"), "Expected template-based name, got: \(result)")
     }
 
     func testResolveBaseName_withWhitespaceOnlyCustomName_fallsBackToTemplate() {
@@ -70,7 +70,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             date: fixedDate,
             defaults: defaults,
         )
-        XCTAssertTrue(result.hasPrefix("Notinhas_"))
+        XCTAssertTrue(result.hasPrefix("Cue_"))
     }
 
     // MARK: - Template Token Expansion
@@ -249,12 +249,12 @@ final class CaptureOutputNamingTests: XCTestCase {
 
     func testResolveTemplateBaseName_returnsPreviewSubpath() {
         let result = CaptureOutputNaming.resolveTemplateBaseName(
-            "Shots/{timestamp}/Notinhas_{ms}",
+            "Shots/{timestamp}/Cue_{ms}",
             kind: .screenshot,
             date: fixedDate,
         )
 
-        XCTAssertEqual(result, "Shots/\(Int(fixedDate.timeIntervalSince1970))/Notinhas_123")
+        XCTAssertEqual(result, "Shots/\(Int(fixedDate.timeIntervalSince1970))/Cue_123")
     }
 
     private static func format(_ date: Date, style: String) -> String {
@@ -477,8 +477,8 @@ final class CaptureOutputNamingTests: XCTestCase {
     // MARK: - CaptureOutputKind Properties
 
     func testCaptureOutputKind_defaultTemplates() {
-        XCTAssertEqual(CaptureOutputKind.screenshot.defaultTemplate, "Notinhas_{datetime}_{ms}")
-        XCTAssertEqual(CaptureOutputKind.recording.defaultTemplate, "Notinhas_Recording_{datetime}")
+        XCTAssertEqual(CaptureOutputKind.screenshot.defaultTemplate, "Cue_{datetime}_{ms}")
+        XCTAssertEqual(CaptureOutputKind.recording.defaultTemplate, "Cue_Recording_{datetime}")
     }
 
     func testCaptureOutputKind_typeTokenValues() {
@@ -499,8 +499,8 @@ final class CaptureOutputNamingTests: XCTestCase {
             defaults: defaults,
         )
 
-        // Fallback format: "Notinhas_{yyyy-MM-dd_HH-mm-ss-SSS}"
-        XCTAssertTrue(result.hasPrefix("Notinhas_"), "Expected fallback name, got: \(result)")
+        // Fallback format: "Cue_{yyyy-MM-dd_HH-mm-ss-SSS}"
+        XCTAssertTrue(result.hasPrefix("Cue_"), "Expected fallback name, got: \(result)")
     }
 
     // MARK: - App Name Tokens

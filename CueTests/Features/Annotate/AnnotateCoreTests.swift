@@ -1247,7 +1247,7 @@ final class AnnotateCoreTests: XCTestCase {
         guard case .watermark(let text) = annotation.type else {
             return XCTFail("Expected watermark annotation, got \(annotation.type)")
         }
-        XCTAssertEqual(text, "Notinhas")
+        XCTAssertEqual(text, "Cue")
         XCTAssertEqual(annotation.bounds, CGRect(x: 290, y: 205, width: 420, height: 90))
     }
 
@@ -2336,7 +2336,7 @@ final class AnnotateCoreTests: XCTestCase {
         arrowBendDirection: ArrowBendDirection = .primary,
         blurType: BlurType = .pixelated,
         counterValue: Int = 1,
-        watermarkText: String = "Notinhas",
+        watermarkText: String = "Cue",
         bounds: CGRect = CGRect(x: 0, y: 0, width: 400, height: 300),
     ) -> AnnotationFactory.CreationContext {
         AnnotationFactory.CreationContext(

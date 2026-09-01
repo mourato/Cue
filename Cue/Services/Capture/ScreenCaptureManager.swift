@@ -15,7 +15,7 @@ import ImageIO
 import os.log
 @preconcurrency import ScreenCaptureKit
 
-private let logger = Logger(subsystem: "Notinhas", category: "ScreenCaptureManager")
+private let logger = Logger(subsystem: "Cue", category: "ScreenCaptureManager")
 
 /// Main-actor box keeps ScreenCaptureKit's NSObject graph on the actor that owns capture.
 @MainActor
@@ -1119,7 +1119,7 @@ final class ScreenCaptureManager: ObservableObject {
     /// Runs on caller's thread (designed for background execution).
     private nonisolated static func verifyFileWritten(at url: URL, maxAttempts: Int = 3,
                                                       delayMs: UInt64 = 50) async -> Bool {
-        let logger = Logger(subsystem: "Notinhas", category: "ScreenCaptureManager")
+        let logger = Logger(subsystem: "Cue", category: "ScreenCaptureManager")
         for attempt in 1 ... maxAttempts {
             if FileManager.default.fileExists(atPath: url.path) {
                 let attrs = try? FileManager.default.attributesOfItem(atPath: url.path)

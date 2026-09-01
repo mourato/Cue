@@ -25,7 +25,7 @@ final class AnnotateAnnotationFactoryTests: XCTestCase {
             arrowBendDirection: .primary,
             blurType: blurType,
             counterValue: 1,
-            watermarkText: "Notinhas",
+            watermarkText: "Cue",
             activeAnnotationBounds: CGRect(x: 0, y: 0, width: 400, height: 300),
         )
     }

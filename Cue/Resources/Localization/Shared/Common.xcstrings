@@ -1318,61 +1318,61 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Installieren Sie Notinhas in /Applications, bevor Sie Berechtigungen erteilen. Aktueller Pfad: %@"
+            "value": "Installieren Sie Cue in /Applications, bevor Sie Berechtigungen erteilen. Aktueller Pfad: %@"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Install Notinhas in /Applications before granting permissions. Current path: %@"
+            "value": "Install Cue in /Applications before granting permissions. Current path: %@"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Instale Notinhas en /Aplicaciones antes de otorgar permisos. Ruta actual: %@"
+            "value": "Instale Cue en /Aplicaciones antes de otorgar permisos. Ruta actual: %@"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Installez Notinhas dans /Applications avant d'accorder les autorisations. Chemin actuel : %@"
+            "value": "Installez Cue dans /Applications avant d'accorder les autorisations. Chemin actuel : %@"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "権限を付与する前に、/Applications に Notinhas をインストールします。現在のパス: %@"
+            "value": "権限を付与する前に、/Applications に Cue をインストールします。現在のパス: %@"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "권한을 부여하기 전에 /Applications에 Notinhas를 설치하세요. 현재 경로: %@"
+            "value": "권한을 부여하기 전에 /Applications에 Cue를 설치하세요. 현재 경로: %@"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Прежде чем предоставлять разрешения, установите Notinhas в каталоге /Applications. Текущий путь: %@"
+            "value": "Прежде чем предоставлять разрешения, установите Cue в каталоге /Applications. Текущий путь: %@"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hãy cài Notinhas trong /Applications trước khi cấp quyền. Đường dẫn hiện tại: %@"
+            "value": "Hãy cài Cue trong /Applications trước khi cấp quyền. Đường dẫn hiện tại: %@"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "请先将 Notinhas 安装到 /Applications，再授予权限。当前路径：%@"
+            "value": "请先将 Cue 安装到 /Applications，再授予权限。当前路径：%@"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "請先將 Notinhas 安裝到 /Applications，再授予權限。目前路徑：%@"
+            "value": "請先將 Cue 安裝到 /Applications，再授予權限。目前路徑：%@"
           }
         }
       }

@@ -531,7 +531,7 @@ private struct QuickPropertiesColorPopoverControl: View {
                     .accessibilityLabel(title)
                     .accessibilityValue(
                         AnnotateColorPaletteStore.colorsMatch(selectedColor, color)
-                            ? L10n.Notinhas.selected
+                            ? L10n.Cue.selected
                             : "",
                     )
                     .annotateColorDraggable(color, sourceFavoriteRole: role)
@@ -1029,7 +1029,7 @@ private struct QuickPropertiesPaletteColorButton: View {
             .buttonStyle(.plain)
             .help(title)
             .accessibilityLabel(title)
-            .accessibilityValue(isSelected ? L10n.Notinhas.selected : "")
+            .accessibilityValue(isSelected ? L10n.Cue.selected : "")
             .annotateColorDraggable(color, sourceFavoriteRole: sourceFavoriteRole)
 
             if let overlayAction {
@@ -1357,7 +1357,7 @@ private struct QuickTextPresentationControl: View {
                     .buttonStyle(.plain)
                     .help(presentation.helpText)
                     .accessibilityLabel(presentation.helpText)
-                    .accessibilityValue(selectedPresentation == presentation ? L10n.Notinhas.selected : "")
+                    .accessibilityValue(selectedPresentation == presentation ? L10n.Cue.selected : "")
                 }
             }
         }
@@ -1431,7 +1431,7 @@ private struct QuickWatermarkStyleControl: View {
                     .buttonStyle(.plain)
                     .help(style.displayName)
                     .accessibilityLabel(style.displayName)
-                    .accessibilityValue(selectedStyle == style ? L10n.Notinhas.selected : "")
+                    .accessibilityValue(selectedStyle == style ? L10n.Cue.selected : "")
                 }
             }
         }
@@ -1591,7 +1591,7 @@ private struct QuickBlurTypeControl: View {
                     .buttonStyle(.plain)
                     .help(blurType.displayName)
                     .accessibilityLabel(blurType.displayName)
-                    .accessibilityValue(selectedType == blurType ? L10n.Notinhas.selected : "")
+                    .accessibilityValue(selectedType == blurType ? L10n.Cue.selected : "")
                 }
             }
         }
@@ -1725,7 +1725,7 @@ private struct QuickArrowStyleControl: View {
                         .buttonStyle(.plain)
                         .help(style.displayName)
                         .accessibilityLabel(style.displayName)
-                        .accessibilityValue(selectedStyle == style ? L10n.Notinhas.selected : "")
+                        .accessibilityValue(selectedStyle == style ? L10n.Cue.selected : "")
                     }
 
                     if showsBendDirection {
@@ -1794,7 +1794,7 @@ private struct QuickArrowStyleControl: View {
                         .buttonStyle(.plain)
                         .help(type.displayName)
                         .accessibilityLabel(type.displayName)
-                        .accessibilityValue(selectedType == type ? L10n.Notinhas.selected : "")
+                        .accessibilityValue(selectedType == type ? L10n.Cue.selected : "")
                     }
                 }
             }
@@ -1839,7 +1839,7 @@ private struct QuickArrowStyleControl: View {
                     .buttonStyle(.plain)
                     .help(head.displayName)
                     .accessibilityLabel(head.displayName)
-                    .accessibilityValue(selection.wrappedValue == head ? L10n.Notinhas.selected : "")
+                    .accessibilityValue(selection.wrappedValue == head ? L10n.Cue.selected : "")
                 }
             }
         }

@@ -1,6 +1,6 @@
 //
 //  OnboardingDiagnosticsOptInView.swift
-//  Notinhas
+//  Cue
 //
 //  Onboarding step for diagnostic logging opt-in — adaptive dark/light theme
 //
@@ -92,7 +92,7 @@ struct DiagnosticsOptInView: View {
     private var diagnosticsTitle: String {
         onboardingLocalization.string(
             "onboarding.diagnostics.title",
-            defaultValue: "Help improve Notinhas?",
+            defaultValue: "Help improve Cue?",
             comment: "Diagnostics onboarding step title",
         )
     }
@@ -100,7 +100,7 @@ struct DiagnosticsOptInView: View {
     private var diagnosticsDescription: String {
         onboardingLocalization.string(
             "onboarding.diagnostics.description",
-            defaultValue: "Allow local diagnostic logs so Notinhas can recover better when something goes wrong.",
+            defaultValue: "Allow local diagnostic logs so Cue can recover better when something goes wrong.",
             comment: "Diagnostics onboarding step description",
         )
     }

@@ -1,6 +1,6 @@
 //
 //  TempCaptureManager.swift
-//  Notinhas
+//  Cue
 //
 //  Manages temporary capture files for the "Auto-save" toggle.
 //  When auto-save is OFF, captures are stored in a temp directory.
@@ -13,7 +13,7 @@ import os.log
     import AVFoundation
 #endif
 
-private let logger = Logger(subsystem: "Notinhas", category: "TempCaptureManager")
+private let logger = Logger(subsystem: "Cue", category: "TempCaptureManager")
 
 struct RecordingSavePlan {
     let finalDirectory: URL
@@ -120,7 +120,7 @@ final class TempCaptureManager {
         self.defaults = defaults
     }
 
-    /// Temp directory for unsaved captures (Application Support/Notinhas/Captures/).
+    /// Temp directory for unsaved captures (Application Support/Cue/Captures/).
     /// Uses Application Support instead of /tmp/ so macOS won't purge files
     /// during drag-and-drop — same pattern as CleanShot X.
     let tempCaptureDirectory: URL = {
@@ -129,12 +129,12 @@ final class TempCaptureManager {
         ).first else {
             // Fallback if Application Support unavailable
             let fallback = FileManager.default.temporaryDirectory
-                .appendingPathComponent("Notinhas_Captures", isDirectory: true)
+                .appendingPathComponent("Cue_Captures", isDirectory: true)
             try? FileManager.default.createDirectory(at: fallback, withIntermediateDirectories: true)
             return fallback
         }
         let capturesDir = appSupport
-            .appendingPathComponent("Notinhas", isDirectory: true)
+            .appendingPathComponent(CueStoragePaths.destinationAppSupportFolderName, isDirectory: true)
             .appendingPathComponent("Captures", isDirectory: true)
         try? FileManager.default.createDirectory(at: capturesDir, withIntermediateDirectories: true)
         return capturesDir
@@ -594,11 +594,11 @@ final class TempCaptureManager {
             for: .applicationSupportDirectory, in: .userDomainMask,
         ).first else {
             return FileManager.default.temporaryDirectory
-                .appendingPathComponent("Notinhas_Captures", isDirectory: true)
+                .appendingPathComponent("Cue_Captures", isDirectory: true)
         }
 
         return appSupport
-            .appendingPathComponent("Notinhas", isDirectory: true)
+            .appendingPathComponent(CueStoragePaths.destinationAppSupportFolderName, isDirectory: true)
             .appendingPathComponent("Captures", isDirectory: true)
     }
 

@@ -11,7 +11,7 @@ import CoreGraphics
 import Foundation
 import os.log
 
-private let logger = Logger(subsystem: "Notinhas", category: "PostCaptureActionHandler")
+private let logger = Logger(subsystem: "Cue", category: "PostCaptureActionHandler")
 
 /// Handles execution of post-capture actions based on user preferences
 @MainActor

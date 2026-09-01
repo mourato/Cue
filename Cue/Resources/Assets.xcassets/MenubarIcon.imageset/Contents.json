@@ -1,26 +1,26 @@
 {
-  "images" : [
+  "images": [
     {
-      "filename" : "NotinhasMenubar.png",
-      "idiom" : "universal",
-      "scale" : "1x"
+      "filename": "CueMenubar.png",
+      "idiom": "universal",
+      "scale": "1x"
     },
     {
-      "filename" : "NotinhasMenubar@2x.png",
-      "idiom" : "universal",
-      "scale" : "2x"
+      "filename": "CueMenubar@2x.png",
+      "idiom": "universal",
+      "scale": "2x"
     },
     {
-      "filename" : "NotinhasMenubar@3x.png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename": "CueMenubar@3x.png",
+      "idiom": "universal",
+      "scale": "3x"
     }
   ],
-  "info" : {
-    "author" : "xcode",
-    "version" : 1
+  "info": {
+    "author": "xcode",
+    "version": 1
   },
-  "properties" : {
-    "template-rendering-intent" : "template"
+  "properties": {
+    "template-rendering-intent": "template"
   }
 }

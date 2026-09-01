@@ -34,7 +34,8 @@
                 appropriateFor: nil,
                 create: true,
             )
-            let root = support.appendingPathComponent("Notinhas", isDirectory: true)
+            let root = support
+                .appendingPathComponent(CueStoragePaths.destinationAppSupportFolderName, isDirectory: true)
                 .appendingPathComponent(rootFolderName, isDirectory: true)
             try fileManager.createDirectory(at: root, withIntermediateDirectories: true)
             return root

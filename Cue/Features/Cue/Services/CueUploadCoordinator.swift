@@ -81,13 +81,13 @@ final class CueUploadCoordinator: ObservableObject {
     }
 
     private var invalidImageMessage: String {
-        L10n.Notinhas.invalidImageData
+        L10n.Cue.invalidImageData
     }
 
     private func missingCredentialMessage(for provider: CueUploadProvider) -> String {
         switch provider {
         case .imgbb: CueL10n.imgbbMissingAPIKey
-        case .imageKit: L10n.Notinhas.imageKitMissingPrivateKey
+        case .imageKit: L10n.Cue.imageKitMissingPrivateKey
         }
     }
 }

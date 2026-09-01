@@ -1,6 +1,6 @@
 //
 //  OnboardingShortcutsView.swift
-//  Notinhas
+//  Cue
 //
 //  Shortcuts setup screen for onboarding flow — adaptive dark/light theme
 //
@@ -252,7 +252,7 @@ struct ShortcutsView: View {
     private var shortcutsSubtitle: String {
         onboardingLocalization.string(
             "onboarding.shortcuts.subtitle",
-            defaultValue: "Assign system shortcuts to Notinhas for quick access.",
+            defaultValue: "Assign system shortcuts to Cue for quick access.",
             comment: "Onboarding shortcuts step subtitle",
         )
     }
@@ -333,7 +333,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "onboarding.shortcuts.resolve-overlap",
             defaultValue: "Resolve macOS shortcut overlap",
-            comment: "Warning title when system screenshot shortcuts overlap with Notinhas shortcuts",
+            comment: "Warning title when system screenshot shortcuts overlap with Cue shortcuts",
         )
     }
 
@@ -364,7 +364,7 @@ struct ShortcutsView: View {
     private var guideStep3Title: String {
         onboardingLocalization.string(
             "onboarding.shortcuts.guide-step-3",
-            defaultValue: "Uncheck the macOS screenshot shortcuts that overlap with the Notinhas shortcuts you want to keep on",
+            defaultValue: "Uncheck the macOS screenshot shortcuts that overlap with the Cue shortcuts you want to keep on",
             comment: "Step 3 in onboarding shortcut conflict resolution guide",
         )
     }

@@ -1,6 +1,6 @@
 //
 //  OnboardingStepContainer.swift
-//  Notinhas
+//  Cue
 //
 //  Reusable container for onboarding steps — consistent width, vertical centering, scroll fallback
 //

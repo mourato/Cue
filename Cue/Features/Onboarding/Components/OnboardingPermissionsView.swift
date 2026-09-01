@@ -1,6 +1,6 @@
 //
 //  OnboardingPermissionsView.swift
-//  Notinhas
+//  Cue
 //
 //  Permissions grant screen for onboarding flow — dark/frosted theme
 //
@@ -262,7 +262,7 @@ struct PermissionsView: View {
         case .outsideApplications(let bundleURL):
             onboardingLocalization.format(
                 "app-identity.outside-applications",
-                defaultValue: "Install Notinhas in /Applications before granting permissions. Current path: %@",
+                defaultValue: "Install Cue in /Applications before granting permissions. Current path: %@",
                 comment: "Identity issue message. %@ is the current app bundle path.",
                 arguments: [bundleURL.path],
             )
@@ -286,7 +286,7 @@ struct PermissionsView: View {
     private var permissionsSubtitle: String {
         onboardingLocalization.string(
             "onboarding.permissions.subtitle",
-            defaultValue: "Notinhas needs permissions for capture, audio, and save location.",
+            defaultValue: "Cue needs permissions for capture, audio, and save location.",
             comment: "Onboarding permissions step subtitle",
         )
     }
@@ -386,7 +386,7 @@ struct PermissionsView: View {
     private var chooseFolderMessageTitle: String {
         onboardingLocalization.string(
             "onboarding.permissions.choose-folder-message",
-            defaultValue: "Choose a folder for Notinhas captures (default: Desktop/Notinhas)",
+            defaultValue: "Choose a folder for Cue captures (default: Desktop/Cue)",
             comment: "Open panel message for selecting export directory during onboarding",
         )
     }

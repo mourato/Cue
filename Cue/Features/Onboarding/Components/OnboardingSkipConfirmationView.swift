@@ -1,6 +1,6 @@
 //
 //  OnboardingSkipConfirmationView.swift
-//  Notinhas
+//  Cue
 //
 //  Confirmation screen when user taps Skip — adaptive dark/light theme
 //

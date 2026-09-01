@@ -17,7 +17,7 @@ private final class DiagnosticLoggerState: @unchecked Sendable {
     private let logDirectoryName = CueStoragePaths.destinationLogsFolderName
     private let filePrefix = CueStoragePaths.destinationLogFilePrefix
     private let fileExtension = "txt"
-    private let writeQueue = DispatchQueue(label: "com.mourato.notinhas.diagnosticlogger", qos: .utility)
+    private let writeQueue = DispatchQueue(label: "com.mourato.cue.diagnosticlogger", qos: .utility)
     private var currentFileHandle: FileHandle?
     private var currentDateString: String?
     private var hasWrittenSessionHeader = false

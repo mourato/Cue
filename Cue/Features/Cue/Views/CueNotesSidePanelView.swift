@@ -62,7 +62,7 @@ struct CueNotesSidePanelView: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel(
-                L10n.Notinhas.noteRowLabel(
+                L10n.Cue.noteRowLabel(
                     number: displayNumber,
                     text: note.text.isEmpty ? CueL10n.emptyNoteLabel : note.text,
                     target: note.target.kindLabel,

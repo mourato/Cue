@@ -30,7 +30,7 @@ final class AnnotateWatermarkTests: XCTestCase {
         return state
     }
 
-    private func makeWatermarkAnnotation(_ text: String = "Notinhas") -> AnnotationItem {
+    private func makeWatermarkAnnotation(_ text: String = "Cue") -> AnnotationItem {
         AnnotationItem(
             type: .watermark(text),
             bounds: CGRect(x: 0, y: 0, width: 420, height: 90),
@@ -40,7 +40,7 @@ final class AnnotateWatermarkTests: XCTestCase {
 
     func testUpdateWatermarkTextReplacesText() throws {
         let state = makeAnnotateState()
-        let annotation = makeWatermarkAnnotation("Notinhas")
+        let annotation = makeWatermarkAnnotation("Cue")
         state.annotations = [annotation]
 
         state.updateWatermarkText(id: annotation.id, text: "Confidential")
@@ -68,7 +68,7 @@ final class AnnotateWatermarkTests: XCTestCase {
 
     func testUpdateWatermarkTextIgnoresUnknownId() throws {
         let state = makeAnnotateState()
-        let annotation = makeWatermarkAnnotation("Notinhas")
+        let annotation = makeWatermarkAnnotation("Cue")
         state.annotations = [annotation]
 
         state.updateWatermarkText(id: UUID(), text: "Ghost")
@@ -77,7 +77,7 @@ final class AnnotateWatermarkTests: XCTestCase {
         guard case .watermark(let text) = unchanged.type else {
             return XCTFail("Expected watermark annotation, got \(unchanged.type)")
         }
-        XCTAssertEqual(text, "Notinhas")
+        XCTAssertEqual(text, "Cue")
     }
 
     func testSetActiveWatermarkStyleAppliesEveryStyleToSelectedWatermark() throws {

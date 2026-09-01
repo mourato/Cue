@@ -1,6 +1,6 @@
 //
 //  OnboardingVSDesignSystem.swift
-//  Notinhas
+//  Cue
 //
 //  Design system for onboarding views — adaptive dark/light theme for opaque surface
 //

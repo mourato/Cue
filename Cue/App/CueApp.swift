@@ -267,7 +267,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             } catch {
                 switch presentSandboxOffMigrationRecoveryAlert(error: error, note: note) {
                 case .retry:
-                    note = "Previous attempt also failed. If this keeps happening, Start Fresh will let you use Notinhas without old data."
+                    note = "Previous attempt also failed. If this keeps happening, Start Fresh will let you use Cue without old data."
                     continue
 
                 case .startFresh:
@@ -304,10 +304,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         let alert = NSAlert()
         alert.alertStyle = .critical
-        alert.messageText = "Notinhas could not migrate your existing data."
+        alert.messageText = "Cue could not migrate your existing data."
 
         var informativeText = """
-        Notinhas needs to move data from the old sandboxed storage before opening the unsandboxed version.
+        Cue needs to move data from the old sandboxed storage before opening the unsandboxed version.
 
         No new database was opened yet, so your existing data has not been replaced.
 
@@ -317,7 +317,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let note {
             informativeText += "\n\n\(note)"
         }
-        informativeText += "\n\nTry again if the error is temporary. Start Fresh launches Notinhas with default settings — your old data stays in the sandbox container and is not deleted."
+        informativeText += "\n\nTry again if the error is temporary. Start Fresh launches Cue with default settings — your old data stays in the sandbox container and is not deleted."
         alert.informativeText = informativeText
 
         alert.addButton(withTitle: "Try Again")
@@ -339,10 +339,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         alert.alertStyle = .critical
         alert.messageText = "Start Fresh Without Old Data?"
         alert.informativeText = """
-        Notinhas will launch with default settings and an empty capture history.
+        Cue will launch with default settings and an empty capture history.
 
         Your old data remains in the sandbox container and is not deleted. You can access it manually at:
-        ~/Library/Containers/\(Bundle.main.bundleIdentifier ?? "com.duongductrong.Notinhas")
+        ~/Library/Containers/\(Bundle.main.bundleIdentifier ?? "com.mourato.cue")
 
         Current error:
         \(error.localizedDescription)
@@ -396,7 +396,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             } catch {
                 switch presentNotinhasIdentityMigrationRecoveryAlert(error: error, note: note) {
                 case .retry:
-                    note = "Previous attempt also failed. If this keeps happening, Start Fresh will let you use Notinhas without old data."
+                    note = "Previous attempt also failed. If this keeps happening, Start Fresh will let you use Cue without old data."
                     continue
 
                 case .startFresh:
@@ -433,10 +433,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         let alert = NSAlert()
         alert.alertStyle = .critical
-        alert.messageText = "Notinhas could not migrate your existing data from Snapzy storage."
+        alert.messageText = "Cue could not migrate your existing data from Snapzy storage."
 
         var informativeText = """
-        Notinhas needs to move data from the old Snapzy storage paths before opening the Notinhas version.
+        Cue needs to move data from the old Snapzy storage paths before opening.
 
         No new database was opened yet, so your existing data has not been replaced.
 
@@ -446,7 +446,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let note {
             informativeText += "\n\n\(note)"
         }
-        informativeText += "\n\nTry again if the error is temporary. Start Fresh launches Notinhas with default settings — your old data stays in place and is not deleted."
+        informativeText += "\n\nTry again if the error is temporary. Start Fresh launches Cue with default settings — your old data stays in place and is not deleted."
         alert.informativeText = informativeText
 
         alert.addButton(withTitle: "Try Again")
@@ -468,7 +468,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         alert.alertStyle = .critical
         alert.messageText = "Start Fresh Without Old Data?"
         alert.informativeText = """
-        Notinhas will launch with default settings and an empty capture history.
+        Cue will launch with default settings and an empty capture history.
 
         Your old data remains in the previous Snapzy storage locations and is not deleted. You can access it manually at:
         ~/Library/Application Support/Snapzy

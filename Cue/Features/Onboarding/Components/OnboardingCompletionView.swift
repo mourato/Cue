@@ -1,6 +1,6 @@
 //
 //  OnboardingCompletionView.swift
-//  Notinhas
+//  Cue
 //
 //  Completion screen for onboarding flow — adaptive dark/light theme
 //
@@ -94,7 +94,7 @@ struct CompletionView: View {
     private var completionDescription: String {
         onboardingLocalization.string(
             "onboarding.completion.description",
-            defaultValue: "Notinhas is ready. Access it from the menu bar or use your keyboard shortcuts.",
+            defaultValue: "Cue is ready. Access it from the menu bar or use your keyboard shortcuts.",
             comment: "Onboarding completion description",
         )
     }
