@@ -4,7 +4,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-PBXPROJ="${PROJECT_ROOT}/Notinhas.xcodeproj/project.pbxproj"
+PBXPROJ="${PROJECT_ROOT}/Cue.xcodeproj/project.pbxproj"
 
 if [[ "${SKIP_DAILY_VERSION_BUMP:-0}" == "1" ]]; then
   exit 0
@@ -125,7 +125,7 @@ if ! awk -v new_version="${target_version}" -v new_build="${next_build}" '
     if ($0 ~ /isa = XCBuildConfiguration;/) {
       is_xc_configuration = 1
     }
-    if ($0 ~ /PRODUCT_BUNDLE_IDENTIFIER = com\.mourato\.notinhas(\.debug)?;/) {
+    if ($0 ~ /PRODUCT_BUNDLE_IDENTIFIER = com\.mourato\.cue(\.debug)?;/) {
       is_app_configuration = 1
     }
 

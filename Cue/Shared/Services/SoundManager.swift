@@ -37,7 +37,8 @@ enum SoundManager {
     static var isPlaybackSuppressedForTests: Bool {
         let environment = ProcessInfo.processInfo.environment
         guard environment["CUE_ALLOW_TEST_SOUNDS"] != "1" else { return false }
-        return environment["NOTINHAS_QUIET_TESTS"] == "1"
+        return environment["CUE_QUIET_TESTS"] == "1"
+            || environment["NOTINHAS_QUIET_TESTS"] == "1"
             || environment["XCTestConfigurationFilePath"] != nil
             || NSClassFromString("XCTestCase") != nil
     }

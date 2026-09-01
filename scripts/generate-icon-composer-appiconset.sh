@@ -42,7 +42,7 @@ Examples:
   ./generate-icon-composer-appiconset.sh MyIcon.icon
   ./generate-icon-composer-appiconset.sh MyIcon.icon --appiconset MyApp/Assets.xcassets/AppIcon.appiconset
   ./generate-icon-composer-appiconset.sh --source-png IconComposerExport.png --filename-prefix MyIcon
-  ./generate-icon-composer-appiconset.sh --source-png NotinhasIcon.png --full-bleed --filename-prefix NotinhasIcon
+  ./generate-icon-composer-appiconset.sh --source-png CueIcon.png --full-bleed --filename-prefix CueIcon
 
 Dependencies:
   - macOS + Xcode's Icon Composer ictool, unless --source-png is used.

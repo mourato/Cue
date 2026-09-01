@@ -1,97 +1,97 @@
 glob	profile	selector	manual	reason
-Notinhas/Features/Notinhas/**	xctest	NotinhasTests/NotinhasAnnotateStateTests	no	Notinhas note geometry composer and export logic
-Notinhas/Features/Notinhas/**	xctest	NotinhasTests/NotinhasImgBBConfigurationTests	no	Notinhas note geometry composer and export logic
-Notinhas/Features/Notinhas/**	xctest	NotinhasTests/NotinhasImgBBUploadServiceTests	no	Notinhas note geometry composer and export logic
-Notinhas/Features/Notinhas/**	xctest	NotinhasTests/NotinhasNoteGeometryTests	no	Notinhas note geometry composer and export logic
-Notinhas/Features/Notinhas/**	xctest	NotinhasTests/NotinhasNoteRendererTests	no	Notinhas note geometry composer and export logic
-Notinhas/Features/Notinhas/**	xctest	NotinhasTests/NotinhasNotesComposerTests	no	Notinhas note geometry composer and export logic
-Notinhas/Features/Notinhas/**	xctest	NotinhasTests/NotinhasPinSizeTests	no	Notinhas note geometry composer and export logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateAnnotationFactoryTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateBackgroundRedactionTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateBlurCacheManagerTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateBlurEffectRendererTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateCanvasPresetActionTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateColorPaletteStoreTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateCoreTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateCreationTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateCropTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateExportPreviewTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateExportSaveTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateExporterTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateImageDropLoaderTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateImageOpsTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateImageRotationTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateMockupTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateOverlayTooltipKeysTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateRenderOrderTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateRenderSnapshotTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateSelectionEditingTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateShortcutManagerTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateTextEditingTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateUndoRedoTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateViewportUIStateTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotateWatermarkTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotationItemHitTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/AnnotationSessionStoreTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/ArrowGeometryTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/CombineImagesLayoutTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/CombineSnappingTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/InlineAreaAnnotateSessionTests	no	Annotate session export and rendering logic
-Notinhas/Features/Annotate/**	xctest	NotinhasTests/PersistedCombineSessionTests	no	Annotate session export and rendering logic
-NotinhasTests/App/AppStatusBarControllerTests.swift	xctest	NotinhasTests/AppStatusBarControllerTests	no	App status bar activation policy regression coverage
-Notinhas/Features/Capture/AllInOne/**	xctest	NotinhasTests/AllInOneCaptureCoordinatorTests	yes	All-In-One HUD ordering and capture startup require manual capture smoke
-Notinhas/Features/Capture/AllInOne/**	xctest	NotinhasTests/CaptureFloatingHUDWindowTests	yes	All-In-One HUD ordering and capture startup require manual capture smoke
-Notinhas/Features/Capture/AllInOne/**	xctest	NotinhasTests/CaptureSelectionCursorPolicyTests	yes	All-In-One HUD ordering and capture startup require manual capture smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/AXElementInspectorTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/AllDisplayFrozenSessionPreparerTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/AreaSelectionBackdropCapturerTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/AreaSelectionCaptureCoordinateSpaceTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/AreaSelectionModelsTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/AreaSelectionMultiMonitorReconciliationTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/AreaSelectionOverlayBackdropTransitionTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/AreaSelectionOverlayCursorDragTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/AreaSelectionOverlayDimmingTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/AreaSelectionOverlayLumaSamplingTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/AreaSelectionOverlayMagnifierLayoutTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/AreaSelectionOverlayMagnifierTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/AreaSelectionOverlayTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/AreaSelectionSessionLifecycleTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/CaptureFloatingHUDWindowTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/CaptureFloatingToolbarPlacementTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/CaptureLastSelectionStoreTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/CaptureOutputNamingTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/CaptureOverlayShortcutSettingsTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/CaptureSelectionGeometryTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/CaptureSelectionSnappingTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/FrozenAreaCaptureSessionTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/LiveAreaMouseUpSnapshotTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/MouseClickHighlightServiceTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/PostCaptureActionHandlerTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/RecordingAudioLevelMeterTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/RecordingEncodingSettingsTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/RecordingMetadataCleanupSchedulerTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/RecordingMetadataStoreTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/ScreenCaptureAreaCropTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/ScreenRecordingEncodingSettingsTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/ScrollingCaptureCommitFrameNormalizerTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/ScrollingCaptureCommitSchedulerTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/ScrollingCaptureMetricsTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/ScrollingCaptureStitcherTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/ScrollingCaptureWindowSharingTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/SmartElementCaptureControllerTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/SmartElementQueryServiceTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/SmartElementWindowOwnerResolverTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-Notinhas/Services/Capture/**	xctest	NotinhasTests/TempCaptureManagerTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
-NotinhasTests/Services/Capture/AreaSelectionMultiMonitorReconciliationTests.swift	xctest	NotinhasTests/AreaSelectionMultiMonitorReconciliationTests	no	Capture pointer tracking regression coverage
-Notinhas/Features/Recording/**	video-module	NotinhasTests/MicrophoneAudioCapturerTests	yes	Recording flows require Video module build and manual AV permissions smoke
-Notinhas/Features/Recording/**	video-module	NotinhasTests/RecordingAnnotationStateTests	yes	Recording flows require Video module build and manual AV permissions smoke
-Notinhas/Features/Recording/**	video-module	NotinhasTests/RecordingConfigurationTests	yes	Recording flows require Video module build and manual AV permissions smoke
-Notinhas/Features/Recording/**	video-module	NotinhasTests/RecordingMouseTrackerTests	yes	Recording flows require Video module build and manual AV permissions smoke
-Notinhas/Features/Recording/**	video-module	NotinhasTests/RecordingSessionTests	yes	Recording flows require Video module build and manual AV permissions smoke
-Notinhas/Features/Recording/**	video-module	NotinhasTests/RecordingToolbarWindowTests	yes	Recording flows require Video module build and manual AV permissions smoke
-Notinhas/Features/VideoEditor/**	video-module	NotinhasTests/VideoEditorExportSettingsTests	yes	Video Editor flows require Video module build and manual export smoke
-Notinhas/Features/VideoEditor/**	video-module	NotinhasTests/VideoEditorSpeedTimeMapTests	yes	Video Editor flows require Video module build and manual export smoke
-Notinhas/Features/VideoEditor/**	video-module	NotinhasTests/VideoEditorZoomAndAutoFocusTests	yes	Video Editor flows require Video module build and manual export smoke
+Cue/Features/Cue/**	xctest	CueTests/CueAnnotateStateTests	no	Cue note geometry composer and export logic
+Cue/Features/Cue/**	xctest	CueTests/CueImgBBConfigurationTests	no	Cue note geometry composer and export logic
+Cue/Features/Cue/**	xctest	CueTests/CueImgBBUploadServiceTests	no	Cue note geometry composer and export logic
+Cue/Features/Cue/**	xctest	CueTests/CueNoteGeometryTests	no	Cue note geometry composer and export logic
+Cue/Features/Cue/**	xctest	CueTests/CueNoteRendererTests	no	Cue note geometry composer and export logic
+Cue/Features/Cue/**	xctest	CueTests/CueNotesComposerTests	no	Cue note geometry composer and export logic
+Cue/Features/Cue/**	xctest	CueTests/CuePinSizeTests	no	Cue note geometry composer and export logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateAnnotationFactoryTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateBackgroundRedactionTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateBlurCacheManagerTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateBlurEffectRendererTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateCanvasPresetActionTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateColorPaletteStoreTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateCoreTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateCreationTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateCropTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateExportPreviewTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateExportSaveTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateExporterTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateImageDropLoaderTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateImageOpsTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateImageRotationTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateMockupTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateOverlayTooltipKeysTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateRenderOrderTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateRenderSnapshotTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateSelectionEditingTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateShortcutManagerTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateTextEditingTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateUndoRedoTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateViewportUIStateTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotateWatermarkTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotationItemHitTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/AnnotationSessionStoreTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/ArrowGeometryTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/CombineImagesLayoutTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/CombineSnappingTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/InlineAreaAnnotateSessionTests	no	Annotate session export and rendering logic
+Cue/Features/Annotate/**	xctest	CueTests/PersistedCombineSessionTests	no	Annotate session export and rendering logic
+CueTests/App/AppStatusBarControllerTests.swift	xctest	CueTests/AppStatusBarControllerTests	no	App status bar activation policy regression coverage
+Cue/Features/Capture/AllInOne/**	xctest	CueTests/AllInOneCaptureCoordinatorTests	yes	All-In-One HUD ordering and capture startup require manual capture smoke
+Cue/Features/Capture/AllInOne/**	xctest	CueTests/CaptureFloatingHUDWindowTests	yes	All-In-One HUD ordering and capture startup require manual capture smoke
+Cue/Features/Capture/AllInOne/**	xctest	CueTests/CaptureSelectionCursorPolicyTests	yes	All-In-One HUD ordering and capture startup require manual capture smoke
+Cue/Services/Capture/**	xctest	CueTests/AXElementInspectorTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/AllDisplayFrozenSessionPreparerTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/AreaSelectionBackdropCapturerTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/AreaSelectionCaptureCoordinateSpaceTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/AreaSelectionModelsTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/AreaSelectionMultiMonitorReconciliationTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/AreaSelectionOverlayBackdropTransitionTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/AreaSelectionOverlayCursorDragTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/AreaSelectionOverlayDimmingTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/AreaSelectionOverlayLumaSamplingTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/AreaSelectionOverlayMagnifierLayoutTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/AreaSelectionOverlayMagnifierTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/AreaSelectionOverlayTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/AreaSelectionSessionLifecycleTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/CaptureFloatingHUDWindowTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/CaptureFloatingToolbarPlacementTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/CaptureLastSelectionStoreTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/CaptureOutputNamingTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/CaptureOverlayShortcutSettingsTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/CaptureSelectionGeometryTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/CaptureSelectionSnappingTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/FrozenAreaCaptureSessionTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/LiveAreaMouseUpSnapshotTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/MouseClickHighlightServiceTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/PostCaptureActionHandlerTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/RecordingAudioLevelMeterTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/RecordingEncodingSettingsTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/RecordingMetadataCleanupSchedulerTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/RecordingMetadataStoreTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/ScreenCaptureAreaCropTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/ScreenRecordingEncodingSettingsTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/ScrollingCaptureCommitFrameNormalizerTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/ScrollingCaptureCommitSchedulerTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/ScrollingCaptureMetricsTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/ScrollingCaptureStitcherTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/ScrollingCaptureWindowSharingTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/SmartElementCaptureControllerTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/SmartElementQueryServiceTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/SmartElementWindowOwnerResolverTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+Cue/Services/Capture/**	xctest	CueTests/TempCaptureManagerTests	yes	Capture overlays and TCC may need manual Screen Recording Accessibility smoke
+CueTests/Services/Capture/AreaSelectionMultiMonitorReconciliationTests.swift	xctest	CueTests/AreaSelectionMultiMonitorReconciliationTests	no	Capture pointer tracking regression coverage
+Cue/Features/Recording/**	video-module	CueTests/MicrophoneAudioCapturerTests	yes	Recording flows require Video module build and manual AV permissions smoke
+Cue/Features/Recording/**	video-module	CueTests/RecordingAnnotationStateTests	yes	Recording flows require Video module build and manual AV permissions smoke
+Cue/Features/Recording/**	video-module	CueTests/RecordingConfigurationTests	yes	Recording flows require Video module build and manual AV permissions smoke
+Cue/Features/Recording/**	video-module	CueTests/RecordingMouseTrackerTests	yes	Recording flows require Video module build and manual AV permissions smoke
+Cue/Features/Recording/**	video-module	CueTests/RecordingSessionTests	yes	Recording flows require Video module build and manual AV permissions smoke
+Cue/Features/Recording/**	video-module	CueTests/RecordingToolbarWindowTests	yes	Recording flows require Video module build and manual AV permissions smoke
+Cue/Features/VideoEditor/**	video-module	CueTests/VideoEditorExportSettingsTests	yes	Video Editor flows require Video module build and manual export smoke
+Cue/Features/VideoEditor/**	video-module	CueTests/VideoEditorSpeedTimeMapTests	yes	Video Editor flows require Video module build and manual export smoke
+Cue/Features/VideoEditor/**	video-module	CueTests/VideoEditorZoomAndAutoFocusTests	yes	Video Editor flows require Video module build and manual export smoke
 scripts/**	shell		no	Bash syntax and help checks for touched scripts
 docs/**	docs		no	Documentation routing review
 .agents/skills/**	docs		no	Skill routing review
@@ -102,9 +102,9 @@ plans/**	docs		no	Plan metadata review
 .swiftformat	format		no	SwiftFormat policy validation is part of the delivery baseline
 .swiftlint.yml	lint		no	SwiftLint policy validation is part of the delivery baseline
 Makefile	tooling		no	Canonical project command validation is part of the delivery baseline
-Notinhas.xcodeproj/**	build		no	Owned Xcode configuration validation is part of the delivery baseline
-NotinhasTests/Features/Recording/**	video-module		yes	Recording tests require the Video configuration and manual AV permission smoke
-NotinhasTests/Features/VideoEditor/**	video-module		yes	Video Editor tests require the Video configuration and manual export smoke
-NotinhasTests/Services/Capture/**	xctest		yes	Capture tests may need manual Screen Recording and Accessibility smoke
-NotinhasTests/**	xctest		no	Default XCTest suite covers owned test-source changes
-Notinhas/**	manual-required		required	No mapped XCTest selector for this application path
+Cue.xcodeproj/**	build		no	Owned Xcode configuration validation is part of the delivery baseline
+CueTests/Features/Recording/**	video-module		yes	Recording tests require the Video configuration and manual AV permission smoke
+CueTests/Features/VideoEditor/**	video-module		yes	Video Editor tests require the Video configuration and manual export smoke
+CueTests/Services/Capture/**	xctest		yes	Capture tests may need manual Screen Recording and Accessibility smoke
+CueTests/**	xctest		no	Default XCTest suite covers owned test-source changes
+Cue/**	manual-required		required	No mapped XCTest selector for this application path

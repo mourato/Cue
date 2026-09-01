@@ -1,5 +1,5 @@
 #!/bin/bash
-# Changed-surface local verification planner/runner for Notinhas.
+# Changed-surface local verification planner/runner for Cue.
 #
 # Usage:
 #   ./scripts/verify-local.sh --base main --plan-only

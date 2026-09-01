@@ -1,6 +1,6 @@
 //
 //  CITestGate.swift
-//  NotinhasTests
+//  CueTests
 //
 //  Shared gate for interaction / nondeterministic tests. Tests that exercise
 //  real UI surfaces (NSSavePanel, NSPasteboard, drag-to-app), async ML/OCR
@@ -11,9 +11,10 @@
 //  NOTE ON CI SKIPPING: `xcodebuild test` does NOT forward the shell's `CI` /
 //  `GITHUB_ACTIONS` env vars to the separate XCTest host process, so this
 //  runtime gate does NOT trip during `xcodebuild test` in GitHub Actions.
-//  Guaranteed CI skipping is done by the `NOTINHAS_CI_SKIP_TESTS` allowlist in
-//  .github/workflows/ci.yml (passed as `-skip-testing:` identifiers). Any test
-//  calling `skipIfRunningInCI()` MUST also be listed there. This gate remains
+//  Guaranteed CI skipping is done by the `CUE_CI_SKIP_TESTS` allowlist in
+//  .github/workflows/ci.yml (passed as `-skip-testing:` identifiers). Legacy
+//  `NOTINHAS_CI_SKIP_TESTS` is still honored in the workflow shell step.
+//  Any test calling `skipIfRunningInCI()` MUST also be listed there. This gate remains
 //  as defense-in-depth: it trips when env IS forwarded (Xcode scheme env, or a
 //  `TEST_RUNNER_CI=1` / `CI=1` value the runner actually sees), and documents
 //  intent at the call site.

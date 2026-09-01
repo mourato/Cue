@@ -88,7 +88,7 @@ validate_selectors_exist() {
   while IFS=$'\t' read -r _glob profile selector _manual _reason; do
     [[ "$_glob" == "glob" || -z "$selector" ]] && continue
     [[ "$profile" == "xctest" || "$profile" == "video-module" ]] || continue
-    local class="${selector#NotinhasTests/}"
+    local class="${selector#CueTests/}"
     local found
     found="$(find "${ROOT_DIR}/NotinhasTests" -name "${class}.swift" | head -n 1 || true)"
     if [[ -z "$found" ]]; then
@@ -130,9 +130,9 @@ setup_repo() {
     git init -q
     git config user.email "fixture@example.com"
     git config user.name "Fixture"
-    mkdir -p scripts Notinhas/Features/Notinhas Notinhas/Features/Annotate \
-      Notinhas/Services/Capture Notinhas/Features/Recording \
-      Notinhas/Features/VideoEditor docs .agents/skills/sample
+    mkdir -p scripts Cue/Features/Notinhas Cue/Features/Annotate \
+      Cue/Services/Capture Cue/Features/Recording \
+      Cue/Features/VideoEditor docs .agents/skills/sample
     echo "base" >README.md
     git add .
     git commit -q -m "base"
@@ -192,26 +192,26 @@ main() {
 
   local notinhas_repo
   notinhas_repo="$(setup_repo)"
-  touch_and_commit "$notinhas_repo" "Notinhas/Features/Notinhas/NotinhasNoteGeometry.swift"
+  touch_and_commit "$notinhas_repo" "Cue/Features/Cue/CueNoteGeometry.swift"
   assert_output_contains "notinhas path selects geometry tests" \
-    "NotinhasTests/NotinhasNoteGeometryTests" \
+    "CueTests/CueNoteGeometryTests" \
     run_verify "$notinhas_repo" --base "$base_ref" --plan-only
   assert_exit "notinhas strict passes" 0 run_verify "$notinhas_repo" --base "$base_ref" --plan-only --strict
   rm -rf "$notinhas_repo"
 
   local annotate_repo
   annotate_repo="$(setup_repo)"
-  touch_and_commit "$annotate_repo" "Notinhas/Features/Annotate/AnnotateCore.swift"
+  touch_and_commit "$annotate_repo" "Cue/Features/Annotate/AnnotateCore.swift"
   assert_output_contains "annotate path selects annotate tests" \
-    "NotinhasTests/AnnotateCoreTests" \
+    "CueTests/AnnotateCoreTests" \
     run_verify "$annotate_repo" --base "$base_ref" --plan-only
   rm -rf "$annotate_repo"
 
   local capture_repo
   capture_repo="$(setup_repo)"
-  touch_and_commit "$capture_repo" "Notinhas/Services/Capture/AreaSelectionModels.swift"
+  touch_and_commit "$capture_repo" "Cue/Services/Capture/AreaSelectionModels.swift"
   assert_output_contains "capture path selects capture tests" \
-    "NotinhasTests/AreaSelectionModelsTests" \
+    "CueTests/AreaSelectionModelsTests" \
     run_verify "$capture_repo" --base "$base_ref" --plan-only
   assert_output_contains "capture path flags manual gate" "manual_required:" \
     run_verify "$capture_repo" --base "$base_ref" --plan-only
@@ -220,11 +220,11 @@ main() {
 
   local recording_repo
   recording_repo="$(setup_repo)"
-  touch_and_commit "$recording_repo" "Notinhas/Features/Recording/RecordingSession.swift"
+  touch_and_commit "$recording_repo" "Cue/Features/Recording/RecordingSession.swift"
   assert_output_contains "recording path selects video profile" "video-module" \
     run_verify "$recording_repo" --base "$base_ref" --plan-only
   assert_output_contains "recording path selects recording tests" \
-    "NotinhasTests/RecordingSessionTests" \
+    "CueTests/RecordingSessionTests" \
     run_verify "$recording_repo" --base "$base_ref" --plan-only
   rm -rf "$recording_repo"
 
@@ -256,7 +256,7 @@ EOF
 
   local unknown_repo
   unknown_repo="$(setup_repo)"
-  touch_and_commit "$unknown_repo" "Notinhas/Features/History/HistoryPanel.swift"
+  touch_and_commit "$unknown_repo" "Cue/Features/History/HistoryPanel.swift"
   assert_output_contains "unknown app path is manual-required" "manual-required" \
     run_verify "$unknown_repo" --base "$base_ref" --plan-only
   assert_exit "unknown app path strict fails" 1 \

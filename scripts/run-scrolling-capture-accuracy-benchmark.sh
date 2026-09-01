@@ -32,7 +32,7 @@ swiftc -parse-as-library \
   scripts/swift-tools/scrolling-capture-accuracy/scrolling-capture-accuracy-benchmark.swift \
   scripts/swift-tools/scrolling-capture-accuracy/scrolling-capture-accuracy-metrics.swift \
   scripts/swift-tools/scrolling-capture-accuracy/scrolling-capture-accuracy-support.swift \
-  Notinhas/Services/Capture/ScrollingCapture/ScrollingCaptureStitcher.swift
+  Cue/Services/Capture/ScrollingCapture/ScrollingCaptureStitcher.swift
 
 : > "$STDERR_PATH"
 set +e

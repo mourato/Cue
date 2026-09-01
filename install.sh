@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# install.sh — Install Notinhas from GitHub Releases
+# install.sh — Install Cue from GitHub Releases
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/mourato/Notinhas/main/install.sh | bash
-#   curl -fsSL https://raw.githubusercontent.com/mourato/Notinhas/v1.2.3/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/mourato/Cue/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/mourato/Cue/v1.2.3/install.sh | bash
 #   VERSION=1.2.3 bash install.sh
 #
 # The script downloads the DMG from GitHub Releases, mounts it,
-# copies Notinhas.app to /Applications, and cleans up.
+# copies Cue.app to /Applications, and cleans up.
 
 set -euo pipefail
 
@@ -39,7 +39,7 @@ fail()  { printf "${RED}✖${RESET} %s\n" "$*" >&2; exit 1; }
 # Pre-flight checks
 # ---------------------------------------------------------------------------
 
-[[ "$(uname -s)" == "Darwin" ]] || fail "Notinhas is a macOS app. This script only works on macOS."
+[[ "$(uname -s)" == "Darwin" ]] || fail "Cue is a macOS app. This script only works on macOS."
 
 for cmd in curl hdiutil; do
   command -v "$cmd" &>/dev/null || fail "Required command not found: $cmd"
@@ -49,7 +49,7 @@ done
 # Resolve version
 # ---------------------------------------------------------------------------
 
-REPO="mourato/Notinhas"
+REPO="mourato/Cue"
 
 if [[ -z "${VERSION:-}" ]]; then
   info "Fetching latest release version…"
@@ -63,10 +63,10 @@ fi
 # Strip leading "v" if present
 VERSION="${VERSION#v}"
 
-DMG_NAME="Notinhas-v${VERSION}.dmg"
+DMG_NAME="Cue-v${VERSION}.dmg"
 DOWNLOAD_URL="https://github.com/${REPO}/releases/download/v${VERSION}/${DMG_NAME}"
 
-printf "\n${BOLD}Notinhas Installer${RESET}  •  v%s\n\n" "$VERSION"
+printf "\n${BOLD}Cue Installer${RESET}  •  v%s\n\n" "$VERSION"
 
 # ---------------------------------------------------------------------------
 # Download
@@ -87,7 +87,7 @@ ok "Downloaded ${DMG_NAME}"
 # Mount, copy, unmount
 # ---------------------------------------------------------------------------
 
-MOUNT_POINT="${TMPDIR_INSTALL}/notinhas-dmg"
+MOUNT_POINT="${TMPDIR_INSTALL}/cue-dmg"
 mkdir -p "$MOUNT_POINT"
 
 info "Mounting disk image…"
@@ -96,37 +96,37 @@ hdiutil attach "$DMG_PATH" -nobrowse -quiet -mountpoint "$MOUNT_POINT" \
 
 INSTALL_DIR="/Applications"
 
-info "Copying Notinhas.app to ${INSTALL_DIR}…"
+info "Copying Cue.app to ${INSTALL_DIR}…"
 
 # Remove existing installation if present
-if [[ -d "${INSTALL_DIR}/Notinhas.app" ]]; then
-  warn "Existing Notinhas.app found — replacing."
-  rm -rf "${INSTALL_DIR}/Notinhas.app"
+if [[ -d "${INSTALL_DIR}/Cue.app" ]]; then
+  warn "Existing Cue.app found — replacing."
+  rm -rf "${INSTALL_DIR}/Cue.app"
 fi
 
-cp -R "${MOUNT_POINT}/Notinhas.app" "${INSTALL_DIR}/" \
-  || fail "Failed to copy Notinhas.app. You may need to run with sudo."
+cp -R "${MOUNT_POINT}/Cue.app" "${INSTALL_DIR}/" \
+  || fail "Failed to copy Cue.app. You may need to run with sudo."
 
 info "Unmounting disk image…"
 hdiutil detach "$MOUNT_POINT" -quiet 2>/dev/null || true
 
-ok "Installed Notinhas.app to ${INSTALL_DIR}"
+ok "Installed Cue.app to ${INSTALL_DIR}"
 
 # ---------------------------------------------------------------------------
 # Post-install
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
-# NOTE: Notinhas is now notarized by Apple (Developer ID).
+# NOTE: Cue is notarized by Apple (Developer ID).
 # macOS automatically verifies the notarization ticket and removes quarantine.
 # The xattr bypass below is intentionally kept commented — uncomment if a
 # future build is ad-hoc signed or unsigned (e.g., local CI test builds).
 # ---------------------------------------------------------------------------
 # info "Removing quarantine attribute…"
-# xattr -cr "${INSTALL_DIR}/Notinhas.app" 2>/dev/null || true
+# xattr -cr "${INSTALL_DIR}/Cue.app" 2>/dev/null || true
 # ok "Quarantine attribute removed"
 
 printf "\n${GREEN}${BOLD}Installation complete!${RESET}\n\n"
-printf "  Launch Notinhas from your Applications folder or Spotlight.\n"
-printf "  Notinhas is notarized by Apple — no quarantine bypass needed.\n"
+printf "  Launch Cue from your Applications folder or Spotlight.\n"
+printf "  Cue is notarized by Apple — no quarantine bypass needed.\n"
 printf "  On first launch, grant ${BOLD}Screen Recording${RESET} permission when prompted.\n\n"

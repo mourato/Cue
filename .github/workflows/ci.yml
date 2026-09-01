@@ -32,38 +32,39 @@ jobs:
 
       - name: Run tests
         env:
-          NOTINHAS_CI_SKIP_TESTS: |
-            NotinhasTests/GoogleDriveTests
-            NotinhasTests/DatabaseManagerTests
-            NotinhasTests/QuickAccessCoreTests/testQuickAccessCountdownTimer_pauseResumePreservesRemainingTime
-            NotinhasTests/QuickAccessCoreTests/testQuickAccessCountdownTimer_cancelPreventsExpiration
-            NotinhasTests/QuickAccessCoreTests/testQuickAccessTrackpadSwipeModeStore_persistsMode
-            NotinhasTests/QuickAccessCoreTests/testQuickAccessTrackpadSwipeModeStore_resetToDefault
-            NotinhasTests/OCRRecognitionTests
-            NotinhasTests/SmartElementCaptureControllerTests
-            NotinhasTests/SmartElementWindowOwnerResolverTests
-            NotinhasTests/SmartElementQueryServiceTests
-            NotinhasTests/SandboxOffDataMigrationServiceTests
-            NotinhasTests/AppStatusBarControllerTests
-            NotinhasTests/RecordingAudioLevelMeterTests
-            NotinhasTests/CaptureViewModelTests/testHiddenWindowSession_restore_postsSyntheticMouseMovedEvent
-            NotinhasTests/AnnotateBackgroundRedactionTests/testApplyBackgroundCutoutStartsProcessingOnSupportedOS
-            NotinhasTests/AnnotateBackgroundRedactionTests/testAutoRedactSensitiveDataStartsScan
-            NotinhasTests/AnnotateMockupTests/testMockupExporterRenderProducesImageWithSourceImage
-            NotinhasTests/AnnotateBlurCacheManagerTests/testGetCachedBlur_nonBlockingSchedulesRender
-            NotinhasTests/AreaSelectionMultiMonitorReconciliationTests/testMouseExited_hidesCoordinateIndicatorAndMagnifier
-            NotinhasTests/AreaSelectionMultiMonitorReconciliationTests/testIsMouseOver_evaluatesFrameAndVisibility
-            NotinhasTests/PersistedCombineSessionTests/testCaptureStitchSaveReopen_persistsStitchEverywhere
+          CUE_CI_SKIP_TESTS: |
+            CueTests/GoogleDriveTests
+            CueTests/DatabaseManagerTests
+            CueTests/QuickAccessCoreTests/testQuickAccessCountdownTimer_pauseResumePreservesRemainingTime
+            CueTests/QuickAccessCoreTests/testQuickAccessCountdownTimer_cancelPreventsExpiration
+            CueTests/QuickAccessCoreTests/testQuickAccessTrackpadSwipeModeStore_persistsMode
+            CueTests/QuickAccessCoreTests/testQuickAccessTrackpadSwipeModeStore_resetToDefault
+            CueTests/OCRRecognitionTests
+            CueTests/SmartElementCaptureControllerTests
+            CueTests/SmartElementWindowOwnerResolverTests
+            CueTests/SmartElementQueryServiceTests
+            CueTests/SandboxOffDataMigrationServiceTests
+            CueTests/AppStatusBarControllerTests
+            CueTests/RecordingAudioLevelMeterTests
+            CueTests/CaptureViewModelTests/testHiddenWindowSession_restore_postsSyntheticMouseMovedEvent
+            CueTests/AnnotateBackgroundRedactionTests/testApplyBackgroundCutoutStartsProcessingOnSupportedOS
+            CueTests/AnnotateBackgroundRedactionTests/testAutoRedactSensitiveDataStartsScan
+            CueTests/AnnotateMockupTests/testMockupExporterRenderProducesImageWithSourceImage
+            CueTests/AnnotateBlurCacheManagerTests/testGetCachedBlur_nonBlockingSchedulesRender
+            CueTests/AreaSelectionMultiMonitorReconciliationTests/testMouseExited_hidesCoordinateIndicatorAndMagnifier
+            CueTests/AreaSelectionMultiMonitorReconciliationTests/testIsMouseOver_evaluatesFrameAndVisibility
+            CueTests/PersistedCombineSessionTests/testCaptureStitchSaveReopen_persistsStitchEverywhere
         run: |
           set -euo pipefail
           mkdir -p build
           rm -rf build/ci-test.xcresult
           test_args=()
-          if [[ -n "${NOTINHAS_CI_SKIP_TESTS:-}" ]]; then
-            skip_tests="${NOTINHAS_CI_SKIP_TESTS//$'\n'/ }"
+          skip_tests_source="${CUE_CI_SKIP_TESTS:-${NOTINHAS_CI_SKIP_TESTS:-}}"
+          if [[ -n "$skip_tests_source" ]]; then
+            skip_tests="${skip_tests_source//$'\n'/ }"
             skip_tests="${skip_tests//,/ }"
             skip_tests="${skip_tests//;/ }"
-            echo "Skipping XCTest identifiers from NOTINHAS_CI_SKIP_TESTS:"
+            echo "Skipping XCTest identifiers from CUE_CI_SKIP_TESTS:"
             for test_id in $skip_tests; do
               [[ -z "$test_id" ]] && continue
               echo "  - $test_id"
@@ -72,8 +73,8 @@ jobs:
           fi
 
           if ! xcodebuild \
-            -project Notinhas.xcodeproj \
-            -scheme Notinhas \
+            -project Cue.xcodeproj \
+            -scheme Cue \
             -destination 'platform=macOS' \
             -derivedDataPath build/DerivedData \
             -resultBundlePath build/ci-test.xcresult \
@@ -106,8 +107,8 @@ jobs:
           mkdir -p build
 
           if ! xcodebuild \
-            -project Notinhas.xcodeproj \
-            -scheme Notinhas \
+            -project Cue.xcodeproj \
+            -scheme Cue \
             -configuration Release \
             -derivedDataPath build/DerivedData \
             CODE_SIGN_IDENTITY="" \
@@ -123,9 +124,9 @@ jobs:
 
       - name: Verify app bundle
         run: |
-          APP_PATH="build/DerivedData/Build/Products/Release/Notinhas.app"
+          APP_PATH="build/DerivedData/Build/Products/Release/Cue.app"
           if [ ! -d "$APP_PATH" ]; then
-            echo "::error::Notinhas.app not found at expected path"
+            echo "::error::Cue.app not found at expected path"
             exit 1
           fi
           echo "Build successful: $APP_PATH"

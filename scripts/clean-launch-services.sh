@@ -6,7 +6,7 @@ if [[ "${1:-}" == "--dry-run" ]]; then
 	DRY_RUN=1
 	shift
 fi
-APP_PATH="${1:-/Applications/Notinhas.app}"
+APP_PATH="${1:-/Applications/Cue.app}"
 LSREGISTER="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
 
 [[ "$(uname -s)" == "Darwin" ]] || { echo "This script only supports macOS." >&2; exit 1; }
@@ -62,7 +62,7 @@ else
 	printf 'Registered canonical app: %s\n' "$APP_PATH"
 fi
 if (( DRY_RUN )); then
-	printf 'Found %d stale Notinhas registration(s).\n' "$unregistered"
+	printf 'Found %d stale Cue registration(s).\n' "$unregistered"
 else
-	printf 'Removed %d stale Notinhas registration(s).\n' "$unregistered"
+	printf 'Removed %d stale Cue registration(s).\n' "$unregistered"
 fi

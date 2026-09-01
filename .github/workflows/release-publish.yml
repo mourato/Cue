@@ -68,10 +68,10 @@ jobs:
           mkdir -p build
 
           if ! xcodebuild archive \
-            -project Notinhas.xcodeproj \
-            -scheme Notinhas \
+            -project Cue.xcodeproj \
+            -scheme Cue \
             -configuration Release \
-            -archivePath build/Notinhas.xcarchive \
+            -archivePath build/Cue.xcarchive \
             -derivedDataPath build/DerivedData \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
@@ -84,8 +84,8 @@ jobs:
 
           tail -20 build/archive.log
 
-          if [ ! -d "build/Notinhas.xcarchive" ]; then
-            echo "::error::Archive not found at build/Notinhas.xcarchive"
+          if [ ! -d "build/Cue.xcarchive" ]; then
+            echo "::error::Archive not found at build/Cue.xcarchive"
             exit 1
           fi
 
@@ -153,7 +153,7 @@ jobs:
       - name: Export app
         run: |
           set -euo pipefail
-          ARCHIVE_PATH="build/Notinhas.xcarchive"
+          ARCHIVE_PATH="build/Cue.xcarchive"
 
           if [ ! -d "$ARCHIVE_PATH" ]; then
             echo "::error::Archive not found at $ARCHIVE_PATH. Check the Build archive step output."
@@ -162,9 +162,9 @@ jobs:
 
           # Always extract from archive manually — xcodebuild -exportArchive
           # with automatic signing doesn't work in headless CI.
-          ditto "$ARCHIVE_PATH/Products/Applications/Notinhas.app" build/Notinhas.app
+          ditto "$ARCHIVE_PATH/Products/Applications/Cue.app" build/Cue.app
 
-          APP_PATH="build/Notinhas.app"
+          APP_PATH="build/Cue.app"
 
           # Determine signing identity and timestamp flag
           if [ "${HAS_DEVELOPER_ID_CERT}" = "true" ]; then
@@ -173,7 +173,7 @@ jobs:
             TIMESTAMP_FLAG="--timestamp"
             echo "Signing with Developer ID: $SIGN_IDENTITY"
           elif [ "${HAS_SELF_SIGNED_CERT}" = "true" ]; then
-            SIGN_IDENTITY="Notinhas Self-Signed"
+            SIGN_IDENTITY="Cue Self-Signed"
             TIMESTAMP_FLAG="--timestamp=none"
             echo "Signing with self-signed certificate: $SIGN_IDENTITY"
           else
@@ -188,7 +188,7 @@ jobs:
           # Pre-process entitlements (Xcode variable substitution)
           BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP_PATH/Contents/Info.plist")
           PROCESSED_ENTITLEMENTS="$RUNNER_TEMP/processed-entitlements.plist"
-          sed "s/\$(PRODUCT_BUNDLE_IDENTIFIER)/$BUNDLE_ID/g" Notinhas/Notinhas.entitlements > "$PROCESSED_ENTITLEMENTS"
+          sed "s/\$(PRODUCT_BUNDLE_IDENTIFIER)/$BUNDLE_ID/g" Cue/Cue.entitlements > "$PROCESSED_ENTITLEMENTS"
           echo "Processed entitlements with bundle ID: $BUNDLE_ID"
 
           # Sign main app bundle (with hardened runtime!)
@@ -201,7 +201,7 @@ jobs:
       - name: Verify exported app bundle
         run: |
           set -euo pipefail
-          APP_PATH="build/Notinhas.app"
+          APP_PATH="build/Cue.app"
 
           codesign --verify --deep --strict --verbose=4 "$APP_PATH"
           codesign -dv --verbose=4 "$APP_PATH"
@@ -224,7 +224,7 @@ jobs:
       - name: Capture candidate signing metadata
         run: |
           set -euo pipefail
-          APP_PATH="build/Notinhas.app"
+          APP_PATH="build/Cue.app"
 
           codesign -dr - "$APP_PATH" 2>&1 | sed -n 's/^designated => //p' > build/candidate-designated-requirement.txt
           codesign -dvv "$APP_PATH" > build/candidate-signature.txt 2>&1 || true
@@ -251,14 +251,14 @@ jobs:
           fi
 
           echo "Comparing candidate app against release: $PREVIOUS_TAG"
-          if ! gh release download "$PREVIOUS_TAG" -p 'Notinhas-v*.dmg' -D build/previous-release; then
+          if ! gh release download "$PREVIOUS_TAG" -p 'Cue-v*.dmg' -D build/previous-release; then
             echo "::warning::Failed to download previous release asset. Skipping signing comparison."
             exit 0
           fi
 
-          PREVIOUS_DMG=$(find build/previous-release -name 'Notinhas-v*.dmg' -type f | head -1)
+          PREVIOUS_DMG=$(find build/previous-release -name 'Cue-v*.dmg' -type f | head -1)
           if [ -z "$PREVIOUS_DMG" ]; then
-            echo "::warning::Previous release has no Notinhas DMG asset. Skipping signing comparison."
+            echo "::warning::Previous release has no Cue DMG asset. Skipping signing comparison."
             exit 0
           fi
 
@@ -270,15 +270,15 @@ jobs:
           trap cleanup EXIT
 
           hdiutil attach "$PREVIOUS_DMG" -mountpoint "$MOUNT_POINT" -nobrowse -quiet
-          if [ ! -d "$MOUNT_POINT/Notinhas.app" ]; then
-            echo "::warning::Previous release DMG does not contain Notinhas.app at root. Skipping signing comparison."
+          if [ ! -d "$MOUNT_POINT/Cue.app" ]; then
+            echo "::warning::Previous release DMG does not contain Cue.app at root. Skipping signing comparison."
             exit 0
           fi
 
-          ditto "$MOUNT_POINT/Notinhas.app" build/previous-release/Notinhas.app
+          ditto "$MOUNT_POINT/Cue.app" build/previous-release/Cue.app
 
-          codesign -dr - build/previous-release/Notinhas.app 2>&1 | sed -n 's/^designated => //p' > build/previous-designated-requirement.txt
-          codesign -dvv build/previous-release/Notinhas.app > build/previous-signature.txt 2>&1 || true
+          codesign -dr - build/previous-release/Cue.app 2>&1 | sed -n 's/^designated => //p' > build/previous-designated-requirement.txt
+          codesign -dvv build/previous-release/Cue.app > build/previous-signature.txt 2>&1 || true
 
           if [ ! -s build/previous-designated-requirement.txt ]; then
             echo "::warning::Failed to extract previous release designated requirement. Skipping signing comparison."
@@ -307,21 +307,21 @@ jobs:
       - name: Create DMG
         run: |
           set -euo pipefail
-          APP_PATH="build/Notinhas.app"
+          APP_PATH="build/Cue.app"
 
           if [ ! -d "$APP_PATH" ]; then
-            echo "::error::Notinhas.app not found at expected path: $APP_PATH"
+            echo "::error::Cue.app not found at expected path: $APP_PATH"
             exit 1
           fi
 
-          DMG_NAME="Notinhas-v${{ steps.version.outputs.version }}.dmg"
+          DMG_NAME="Cue-v${{ steps.version.outputs.version }}.dmg"
 
           create-dmg \
-            --volname "Notinhas" \
+            --volname "Cue" \
             --background "assets/dmg-background.png" \
             --window-size 660 400 \
             --icon-size 120 \
-            --icon "Notinhas.app" 180 170 \
+            --icon "Cue.app" 180 170 \
             --app-drop-link 480 170 \
             --no-internet-enable \
             "build/${DMG_NAME}" \
@@ -402,7 +402,7 @@ jobs:
       - name: Upload DMG artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Notinhas-v${{ steps.version.outputs.version }}
+          name: Cue-v${{ steps.version.outputs.version }}
           path: ${{ env.dmg_path }}
 
       - name: Create GitHub Release

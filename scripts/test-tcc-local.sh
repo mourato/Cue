@@ -13,9 +13,9 @@ set -euo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 TEST_DIR="/tmp/test-tcc-notinhas"
-DEFAULT_INSTALL_PATH="$TEST_DIR/Applications/Notinhas.app"
-CERT_NAME="Notinhas Self-Signed"
-ENTITLEMENTS="$PROJECT_DIR/Notinhas/Notinhas.entitlements"
+DEFAULT_INSTALL_PATH="$TEST_DIR/Applications/Cue.app"
+CERT_NAME="Cue Self-Signed"
+ENTITLEMENTS="$PROJECT_DIR/Cue/Cue.entitlements"
 INSTALL_PATH="$DEFAULT_INSTALL_PATH"
 ALLOW_SYSTEM_INSTALL=0
 WORKSPACE_PATH="$TEST_DIR"
@@ -41,7 +41,7 @@ Options:
   --workspace PATH          Workspace for clean only (default: $TEST_DIR)
 
 Safety:
-  - Default operation never replaces /Applications/Notinhas.app.
+  - Default operation never replaces /Applications/Cue.app.
   - Paths under /Applications require --install-path and --allow-system-install.
   - In an interactive terminal, system installs also require confirmation.
   - Each stage writes a metadata report under <workspace>/reports/.
@@ -190,7 +190,7 @@ backup_install_target() {
 }
 
 terminate_installed_app() {
-  local binary_path="$INSTALL_PATH/Contents/MacOS/Notinhas"
+  local binary_path="$INSTALL_PATH/Contents/MacOS/Cue"
   local pid
 
   if [[ ! -x "$binary_path" ]]; then
@@ -258,7 +258,7 @@ EOF
 
 build_archive() {
   local version_label="$1"
-  local archive_path="$TEST_DIR/$version_label/Notinhas.xcarchive"
+  local archive_path="$TEST_DIR/$version_label/Cue.xcarchive"
 
   echo "=== Building archive ($version_label) ==="
   mkdir -p "$TEST_DIR/$version_label"
@@ -270,8 +270,8 @@ build_archive() {
 
   echo "  → Building (this may take a few minutes)..."
   xcodebuild archive \
-    -project "$PROJECT_DIR/Notinhas.xcodeproj" \
-    -scheme Notinhas \
+    -project "$PROJECT_DIR/Cue.xcodeproj" \
+    -scheme Cue \
     -configuration Release \
     -archivePath "$archive_path" \
     -derivedDataPath "$TEST_DIR/DerivedData" \
@@ -294,9 +294,9 @@ sign_and_install() {
   local stage_label="$1"
   local identity="$2"
   local archive_label="${3:-$stage_label}"
-  local archive_path="$TEST_DIR/$archive_label/Notinhas.xcarchive"
-  local source_app="$archive_path/Products/Applications/Notinhas.app"
-  local app_path="$TEST_DIR/$stage_label/Notinhas.app"
+  local archive_path="$TEST_DIR/$archive_label/Cue.xcarchive"
+  local source_app="$archive_path/Products/Applications/Cue.app"
+  local app_path="$TEST_DIR/$stage_label/Cue.app"
   local bundle_id
   local processed
   local verification_result="failed"
@@ -452,7 +452,7 @@ case "$CMD" in
     sign_and_install "build-v1" "$CERT_NAME" "v1"
     echo ""
     echo "📋 Next steps:"
-    echo "   1. Open Notinhas from $INSTALL_PATH"
+    echo "   1. Open Cue from $INSTALL_PATH"
     echo "   2. Grant Screen Recording permission in System Settings"
     echo "   3. Grant Microphone permission (if prompted)"
     echo "   4. Run: ./scripts/test-tcc-local.sh build-v2"
@@ -465,7 +465,7 @@ case "$CMD" in
     sign_and_install "build-v2" "$CERT_NAME" "v1"
     echo ""
     echo "📋 Check:"
-    echo "   1. Open Notinhas from $INSTALL_PATH"
+    echo "   1. Open Cue from $INSTALL_PATH"
     echo "   2. Verify Screen Recording + Microphone permissions are STILL granted"
     echo "   3. (Optional) Run: ./scripts/test-tcc-local.sh compare"
     ;;
@@ -477,7 +477,7 @@ case "$CMD" in
     sign_and_install "compare" "-" "v1"
     echo ""
     echo "📋 Check:"
-    echo "   1. Open Notinhas from $INSTALL_PATH"
+    echo "   1. Open Cue from $INSTALL_PATH"
     echo "   2. Observe: permissions are LOST (expected with ad-hoc)"
     ;;
 

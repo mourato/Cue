@@ -59,7 +59,7 @@ ${BOLD}Modes:${NC}
   --logs, logs        Launch then stream unified logs for process == "Cue"
   --telemetry         Launch then stream unified logs for subsystem == "$LOG_SUBSYSTEM"
   --debug, debug      Build then launch the app binary under lldb
-  --verify, verify    Launch and confirm the Notinhas process is running
+  --verify, verify    Launch and confirm the Cue process is running
 
 ${BOLD}Options:${NC}
   --configuration C   Build configuration. Local builds use LOCAL_CODE_SIGN_IDENTITY.

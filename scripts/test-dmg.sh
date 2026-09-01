@@ -12,13 +12,13 @@ fi
 echo "Creating temporary build workspace with a valid dummy App bundle..."
 TEMP_DIR="temp-dmg-test"
 rm -rf "$TEMP_DIR"
-mkdir -p "$TEMP_DIR/Notinhas.app/Contents/MacOS"
+mkdir -p "$TEMP_DIR/Cue.app/Contents/MacOS"
 
 # Create dummy executable and Info.plist so Finder parses it as a single valid App
-echo '#!/bin/bash' > "$TEMP_DIR/Notinhas.app/Contents/MacOS/Notinhas"
-chmod +x "$TEMP_DIR/Notinhas.app/Contents/MacOS/Notinhas"
+echo '#!/bin/bash' > "$TEMP_DIR/Cue.app/Contents/MacOS/Notinhas"
+chmod +x "$TEMP_DIR/Cue.app/Contents/MacOS/Notinhas"
 
-cat > "$TEMP_DIR/Notinhas.app/Contents/Info.plist" <<EOF
+cat > "$TEMP_DIR/Cue.app/Contents/Info.plist" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -26,7 +26,7 @@ cat > "$TEMP_DIR/Notinhas.app/Contents/Info.plist" <<EOF
     <key>CFBundleExecutable</key>
     <string>Notinhas</string>
     <key>CFBundleIdentifier</key>
-    <string>com.mourato.notinhas.test-layout</string>
+    <string>com.mourato.cue.test-layout</string>
     <key>CFBundleName</key>
     <string>Notinhas</string>
     <key>CFBundlePackageType</key>
@@ -39,24 +39,24 @@ EOF
 
 # Create build output directory if not exists
 mkdir -p build
-rm -f build/Notinhas-layout-test.dmg
+rm -f build/Cue-layout-test.dmg
 
 echo "Generating test DMG with create-dmg..."
 create-dmg \
-  --volname "Notinhas Test Layout" \
+  --volname "Cue Test Layout" \
   --background "assets/dmg-background.png" \
   --window-size 660 400 \
   --icon-size 120 \
-  --icon "Notinhas.app" 180 170 \
+  --icon "Cue.app" 180 170 \
   --app-drop-link 480 170 \
   --no-internet-enable \
-  "build/Notinhas-layout-test.dmg" \
-  "$TEMP_DIR/Notinhas.app"
+  "build/Cue-layout-test.dmg" \
+  "$TEMP_DIR/Cue.app"
 
 echo "Cleaning up temporary workspace..."
 rm -rf "$TEMP_DIR"
 
 echo "--------------------------------------------------------"
-echo "Success! Test DMG created at: build/Notinhas-layout-test.dmg"
+echo "Success! Test DMG created at: build/Cue-layout-test.dmg"
 echo "You can double-click this file in Finder to verify the background and icon alignment."
 echo "--------------------------------------------------------"

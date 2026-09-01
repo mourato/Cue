@@ -1,7 +1,7 @@
 .PHONY: help b build run dmg test build-video test-video format-check format-fix lint lint-changed lint-fix agent-check validate guidance-check clean-build
 
 help:
-	@echo "Notinhas commands:"
+	@echo "Cue commands:"
 	@echo "  make b      Interactive Debug/Release build + launch"
 	@echo "  make build  Same as make b"
 	@echo "  make dmg    Build Release app, ad-hoc sign, and create local DMG"

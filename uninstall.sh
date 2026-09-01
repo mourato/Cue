@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# uninstall.sh — Completely remove Notinhas and reset ALL related permissions
+# uninstall.sh — Completely remove Cue and reset ALL related permissions
 #
 # Usage:
 #   ./uninstall.sh           # Interactive mode (asks for confirmation)
@@ -8,7 +8,7 @@
 # What this script does:
 #   1. Kills the running app
 #   2. Resets ALL TCC permissions (Screen Recording, Microphone, Accessibility, etc.)
-#   3. Removes Notinhas.app from /Applications
+#   3. Removes Cue.app from /Applications (and legacy Notinhas/Snapzy bundles)
 #   4. Removes Application Support data (captures, preferences, caches)
 #   5. Removes user preferences (defaults)
 #   6. Removes saved application state
@@ -22,9 +22,26 @@
 
 set -euo pipefail
 
-APP_NAME="Notinhas"
-APP_PATH="/Applications/Notinhas.app"
-FALLBACK_BUNDLE_ID="com.trongduong.snapzy"
+APP_NAME="Cue"
+APP_PATH="/Applications/Cue.app"
+FALLBACK_BUNDLE_ID="com.mourato.cue"
+LEGACY_APP_PATHS=(
+  "/Applications/Notinhas.app"
+  "/Applications/Snapzy.app"
+)
+LEGACY_BUNDLE_IDS=(
+  "com.mourato.cue.debug"
+  "com.mourato.notinhas"
+  "com.mourato.notinhas.debug"
+  "com.trongduong.snapzy"
+)
+LEGACY_APP_SUPPORT_NAMES=(
+  "Cue"
+  "Notinhas"
+  "Snapzy"
+  "snapzy"
+  "notinhas"
+)
 
 # ─── Auto-detect bundle ID from app name ─────────────────────────
 # Must happen BEFORE the app is deleted (step 3).
@@ -65,14 +82,38 @@ success() { echo -e "${GREEN}✅${NC} $*"; }
 warn()    { echo -e "${YELLOW}⚠️${NC}  $*"; }
 error()   { echo -e "${RED}❌${NC} $*"; }
 
+reset_tcc_for_bundle() {
+  local bundle_id="$1"
+  [[ -z "$bundle_id" ]] && return 0
+
+  local service
+  for service in "${TCC_SERVICES[@]}"; do
+    info "Resetting $service for $bundle_id..."
+    if tccutil reset "$service" "$bundle_id" 2>/dev/null; then
+      success "Reset $service for $bundle_id"
+    else
+      warn "Could not reset $service for $bundle_id"
+      tcc_had_failure=true
+    fi
+  done
+
+  info "Running catch-all TCC reset for $bundle_id..."
+  if tccutil reset All "$bundle_id" 2>/dev/null; then
+    success "Reset all remaining TCC entries for $bundle_id"
+  else
+    info "No additional TCC entries to reset for $bundle_id"
+  fi
+}
+
 # ─── Confirmation ────────────────────────────────────────────────
 if [[ "${1:-}" != "--force" ]]; then
   echo ""
   echo -e "${RED}╔══════════════════════════════════════════════════════╗${NC}"
-  echo -e "${RED}║  ⚠️  COMPLETE UNINSTALL: $APP_NAME                   ║${NC}"
+  echo -e "${RED}║  ⚠️  COMPLETE UNINSTALL: $APP_NAME                    ║${NC}"
   echo -e "${RED}╠══════════════════════════════════════════════════════╣${NC}"
   echo -e "${RED}║  This will:                                         ║${NC}"
   echo -e "${RED}║  • Delete $APP_NAME.app from /Applications           ║${NC}"
+  echo -e "${RED}║  • Remove legacy Notinhas/Snapzy bundles if present ║${NC}"
   echo -e "${RED}║  • Remove all app data & preferences                ║${NC}"
   echo -e "${RED}║  • Reset ALL TCC permissions                        ║${NC}"
   echo -e "${RED}║  • Remove login items & caches                      ║${NC}"
@@ -92,27 +133,19 @@ echo ""
 # ─── 1. Kill running app ────────────────────────────────────────
 info "Stopping $APP_NAME..."
 killall "$APP_NAME" 2>/dev/null && success "App stopped" || info "App was not running"
+killall "Notinhas" 2>/dev/null && success "Legacy Notinhas process stopped" || true
+killall "Snapzy" 2>/dev/null && success "Legacy Snapzy process stopped" || true
 sleep 1
 
 # ─── 2. Reset ALL TCC permissions ───────────────────────────────
 # IMPORTANT: This MUST run BEFORE removing the app bundle (step 3).
-# tccutil validates bundle identifiers via LaunchServices at runtime.
-# Once the .app is deleted, LaunchServices can no longer resolve the
-# bundle ID → tccutil fails with "No such bundle identifier" (exit 64).
-#
-# Strategy:
-#   1. Try per-app reset (tccutil reset <service> <bundle_id>)
-#   2. If that fails (app already removed or LaunchServices stale),
-#      fall back to service-wide reset (tccutil reset <service>)
-#      which resets ALL apps for that service — a trade-off, but
-#      ensures the user gets a clean TCC slate for reinstallation.
 echo ""
 echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
 echo -e "${YELLOW}  Resetting TCC Permissions                           ${NC}"
 echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
 echo ""
 
-# TCC services used by Notinhas
+# TCC services used by Cue
 # NOTE: tccutil uses SHORT names (not kTCCService* constants)
 TCC_SERVICES=(
   "ScreenCapture"      # Screen Recording (shown as "Screen & System Audio Recording" on macOS 15+)
@@ -124,28 +157,11 @@ TCC_SERVICES=(
 
 tcc_had_failure=false
 
-for service in "${TCC_SERVICES[@]}"; do
-  info "Resetting $service..."
-  if tccutil reset "$service" "$BUNDLE_ID" 2>/dev/null; then
-    success "Reset $service for $BUNDLE_ID"
-  else
-    # Per-app reset failed — most likely the app was already removed from
-    # LaunchServices (user manually deleted the .app before running this script).
-    # We do NOT fall back to service-wide reset because resetting services like
-    # Accessibility or ScreenCapture globally can crash/freeze other running apps.
-    warn "Could not reset $service (app may already be removed or service not granted)"
-    tcc_had_failure=true
-  fi
+reset_tcc_for_bundle "$BUNDLE_ID"
+for legacy_id in "${LEGACY_BUNDLE_IDS[@]}"; do
+  [[ "$legacy_id" == "$BUNDLE_ID" ]] && continue
+  reset_tcc_for_bundle "$legacy_id"
 done
-
-# Also reset any other TCC entries tied to this bundle as a catch-all
-info "Running catch-all TCC reset for $BUNDLE_ID..."
-if tccutil reset All "$BUNDLE_ID" 2>/dev/null; then
-  success "Reset all remaining TCC entries for $BUNDLE_ID"
-else
-  # Catch-all failed too — if the app is gone, this is expected.
-  info "No additional TCC entries to reset (or app already removed)"
-fi
 
 if $tcc_had_failure; then
   echo ""
@@ -164,10 +180,19 @@ else
   info "$APP_PATH not found (already removed)"
 fi
 
+for legacy_app in "${LEGACY_APP_PATHS[@]}"; do
+  if [ -d "$legacy_app" ]; then
+    info "Removing legacy app bundle $legacy_app..."
+    rm -rf "$legacy_app"
+    success "Removed $legacy_app"
+  fi
+done
+
 # ─── 4. Remove Application Support data ─────────────────────────
 info "Checking Application Support data..."
-app_support="$HOME/Library/Application Support/$APP_NAME"
-if [ -d "$app_support" ]; then
+for support_name in "${LEGACY_APP_SUPPORT_NAMES[@]}"; do
+  app_support="$HOME/Library/Application Support/$support_name"
+  [[ -d "$app_support" ]] || continue
   echo ""
   warn "Folder contains temporary captures/recordings:"
   echo "     $app_support"
@@ -183,27 +208,33 @@ if [ -d "$app_support" ]; then
     rm -rf "$app_support"
     success "Removed $app_support"
   fi
-else
-  info "No Application Support data found"
-fi
+done
 
 # ─── 5. Remove user preferences (defaults) ──────────────────────
 info "Removing user preferences..."
-defaults delete "$BUNDLE_ID" 2>/dev/null && success "Removed defaults for $BUNDLE_ID" || info "No defaults found"
-
-# Also remove plist file directly
-plist_file="$HOME/Library/Preferences/${BUNDLE_ID}.plist"
-if [ -f "$plist_file" ]; then
-  rm -f "$plist_file"
-  success "Removed $plist_file"
-fi
+for prefs_id in "$BUNDLE_ID" "${LEGACY_BUNDLE_IDS[@]}"; do
+  defaults delete "$prefs_id" 2>/dev/null && success "Removed defaults for $prefs_id" || true
+  plist_file="$HOME/Library/Preferences/${prefs_id}.plist"
+  if [ -f "$plist_file" ]; then
+    rm -f "$plist_file"
+    success "Removed $plist_file"
+  fi
+done
 
 # ─── 6. Remove caches ───────────────────────────────────────────
 info "Removing caches..."
-for cache_dir in \
-  "$HOME/Library/Caches/$BUNDLE_ID" \
-  "$HOME/Library/Caches/$APP_NAME" \
-  "$HOME/Library/HTTPStorages/$BUNDLE_ID"; do
+for cache_id in "$BUNDLE_ID" "${LEGACY_BUNDLE_IDS[@]}"; do
+  for cache_dir in \
+    "$HOME/Library/Caches/$cache_id" \
+    "$HOME/Library/HTTPStorages/$cache_id"; do
+    if [ -d "$cache_dir" ]; then
+      rm -rf "$cache_dir"
+      success "Removed $cache_dir"
+    fi
+  done
+done
+for cache_name in "${LEGACY_APP_SUPPORT_NAMES[@]}"; do
+  cache_dir="$HOME/Library/Caches/$cache_name"
   if [ -d "$cache_dir" ]; then
     rm -rf "$cache_dir"
     success "Removed $cache_dir"
@@ -212,22 +243,38 @@ done
 
 # ─── 7. Remove saved application state ──────────────────────────
 info "Removing saved application state..."
-saved_state="$HOME/Library/Saved Application State/${BUNDLE_ID}.savedState"
-if [ -d "$saved_state" ]; then
-  rm -rf "$saved_state"
-  success "Removed $saved_state"
-fi
+for state_id in "$BUNDLE_ID" "${LEGACY_BUNDLE_IDS[@]}"; do
+  saved_state="$HOME/Library/Saved Application State/${state_id}.savedState"
+  if [ -d "$saved_state" ]; then
+    rm -rf "$saved_state"
+    success "Removed $saved_state"
+  fi
+done
 
-# ─── 8. Login items ─────────────────────────────────────────────
-# NOTE: sfltool resetbtm resets ALL apps' login items, not just Notinhas.
+# ─── 8. Remove logs ─────────────────────────────────────────────
+info "Removing diagnostic logs..."
+for logs_dir in \
+  "$HOME/Library/Logs/Cue" \
+  "$HOME/Library/Logs/Notinhas" \
+  "$HOME/Library/Logs/Snapzy"; do
+  if [ -d "$logs_dir" ]; then
+    rm -rf "$logs_dir"
+    success "Removed $logs_dir"
+  fi
+done
+
+# ─── 9. Login items ─────────────────────────────────────────────
+# NOTE: sfltool resetbtm resets ALL apps' login items, not just Cue.
 # Skipped intentionally to avoid affecting other applications.
 info "Login items: skipped (no safe per-app reset available)"
 
-# ─── 9. Clean temp files ──────────────────────────────────────
+# ─── 10. Clean temp files ──────────────────────────────────────
 info "Cleaning temp files..."
 for tmp_dir in \
   "/tmp/test-tcc-snapzy" \
   "/tmp/$APP_NAME" \
+  "/tmp/Notinhas" \
+  "/tmp/Snapzy" \
   "/tmp/${BUNDLE_ID}"; do
   if [ -d "$tmp_dir" ]; then
     rm -rf "$tmp_dir"
@@ -235,17 +282,17 @@ for tmp_dir in \
   fi
 done
 
-# ─── 10. Sandbox containers ─────────────────────────────────────
-# Notinhas does NOT use App Sandbox. If a container exists, it's from
+# ─── 11. Sandbox containers ─────────────────────────────────────
+# Cue does NOT use App Sandbox. If a container exists, it's from
 # macOS internal bookkeeping and requires sudo to remove.
-# We skip this to avoid requiring elevated privileges.
-container="$HOME/Library/Containers/$BUNDLE_ID"
-if [ -d "$container" ]; then
-  warn "Sandbox container exists at $container"
-  info "  To remove manually: sudo rm -rf '$container'"
-else
-  info "No sandbox container found"
-fi
+container_ids=("$BUNDLE_ID" "${LEGACY_BUNDLE_IDS[@]}")
+for container_id in "${container_ids[@]}"; do
+  container="$HOME/Library/Containers/$container_id"
+  if [ -d "$container" ]; then
+    warn "Sandbox container exists at $container"
+    info "  To remove manually: sudo rm -rf '$container'"
+  fi
+done
 
 # ─── Done ────────────────────────────────────────────────────────
 echo ""
@@ -254,7 +301,7 @@ echo -e "${GREEN}║  ✅ $APP_NAME has been completely uninstalled         ║$
 echo -e "${GREEN}║  ✅ All TCC permissions have been reset              ║${NC}"
 echo -e "${GREEN}╠══════════════════════════════════════════════════════╣${NC}"
 echo -e "${GREEN}║  To reinstall, download from:                       ║${NC}"
-echo -e "${GREEN}║  https://github.com/mourato/Notinhas/releases         ║${NC}"
+echo -e "${GREEN}║  https://github.com/mourato/Cue/releases              ║${NC}"
 echo -e "${GREEN}╚══════════════════════════════════════════════════════╝${NC}"
 echo ""
 echo -e "${YELLOW}💡 Tip: You may need to log out and back in (or reboot)${NC}"

@@ -73,8 +73,9 @@
 
         func testMicrophoneAudioCapturerStartStopRealMicrophoneIntegration() throws {
             try XCTSkipUnless(
-                ProcessInfo.processInfo.environment["NOTINHAS_RUN_MICROPHONE_INTEGRATION"] == "1",
-                "Real microphone integration is opt-in. Set NOTINHAS_RUN_MICROPHONE_INTEGRATION=1 to run.",
+                ProcessInfo.processInfo.environment["CUE_RUN_MICROPHONE_INTEGRATION"] == "1"
+                    || ProcessInfo.processInfo.environment["NOTINHAS_RUN_MICROPHONE_INTEGRATION"] == "1",
+                "Real microphone integration is opt-in. Set CUE_RUN_MICROPHONE_INTEGRATION=1 to run.",
             )
             try XCTSkipUnless(
                 AVCaptureDevice.authorizationStatus(for: .audio) == .authorized,

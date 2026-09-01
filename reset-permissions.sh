@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# reset-permissions.sh — Reset all TCC permissions for Notinhas
+# reset-permissions.sh — Reset all TCC permissions for Cue
 #
 # Usage:
 #   ./reset-permissions.sh           # Interactive mode (asks for confirmation)
@@ -8,9 +8,9 @@
 
 set -euo pipefail
 
-APP_NAME="Notinhas"
-APP_PATH="/Applications/Notinhas.app"
-FALLBACK_BUNDLE_ID="com.trongduong.snapzy"
+APP_NAME="Cue"
+APP_PATH="/Applications/Cue.app"
+FALLBACK_BUNDLE_ID="com.mourato.cue"
 
 # ─── Auto-detect bundle ID from app name ─────────────────────────
 resolve_bundle_id() {
@@ -135,7 +135,7 @@ echo -e "${YELLOW}  Resetting TCC Permissions                           ${NC}"
 echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
 echo ""
 
-# TCC services used by Notinhas
+# TCC services used by Cue
 TCC_SERVICES=(
   "ScreenCapture"
   "Microphone"

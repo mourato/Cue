@@ -137,7 +137,7 @@ jobs:
 
           # Create release branch and commit changes
           git checkout -B "$BRANCH"
-          git add Notinhas.xcodeproj/project.pbxproj CHANGELOG.md
+          git add Cue.xcodeproj/project.pbxproj CHANGELOG.md
           git commit -m "chore: bump version to ${VERSION}"
           git push --force origin "$BRANCH"
 

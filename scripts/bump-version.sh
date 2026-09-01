@@ -11,7 +11,7 @@
 
 set -euo pipefail
 
-PBXPROJ="Notinhas.xcodeproj/project.pbxproj"
+PBXPROJ="Cue.xcodeproj/project.pbxproj"
 BUMP_TYPE="${1:-patch}"
 CHANNEL="${2:-stable}"
 
