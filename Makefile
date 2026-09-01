@@ -34,19 +34,19 @@ test-video:
 	@./scripts/run-tests.sh --video-module
 
 format-check:
-	@swiftformat Notinhas NotinhasTests --lint
+	@swiftformat Cue CueTests --lint
 
 format-fix:
-	@swiftformat Notinhas NotinhasTests
+	@swiftformat Cue CueTests
 
 lint:
-	@swiftlint lint --config .swiftlint.yml Notinhas NotinhasTests
+	@swiftlint lint --config .swiftlint.yml Cue CueTests
 
 lint-changed:
 	@./scripts/lint-changed.sh
 
 lint-fix:
-	@swiftlint lint --fix --config .swiftlint.yml Notinhas NotinhasTests
+	@swiftlint lint --fix --config .swiftlint.yml Cue CueTests
 
 agent-check:
 	@./scripts/agent-check.sh

@@ -6,13 +6,13 @@
 #   ./scripts/run-tests.sh --video-module
 #   ./scripts/run-tests.sh --skip-visual
 #   ./scripts/run-tests.sh --with-visual
-#   ./scripts/run-tests.sh -only-testing:NotinhasTests/SomeTests
+#   ./scripts/run-tests.sh -only-testing:CueTests/SomeTests
 #   ./scripts/run-tests.sh --open-result
 
 set -euo pipefail
 
-PROJECT="${PROJECT:-Notinhas.xcodeproj}"
-SCHEME="${SCHEME:-Notinhas}"
+PROJECT="${PROJECT:-Cue.xcodeproj}"
+SCHEME="${SCHEME:-Cue}"
 CONFIGURATION="${CONFIGURATION:-Debug}"
 DESTINATION="${DESTINATION:-platform=macOS}"
 BUILD_DIR="${BUILD_DIR:-build}"
@@ -47,13 +47,13 @@ SKIP_VISUAL_TESTS="${NOTINHAS_SKIP_VISUAL_TESTS:-1}"
 # XCTest identifiers that flash fullscreen capture overlays, floating panels, or Dock policy.
 # Keep in sync with delivery-workflow / testing-xctest skills when adding new on-screen hosts.
 VISUAL_TEST_IDENTIFIERS=(
-  NotinhasTests/AreaSelectionSessionLifecycleTests
-  NotinhasTests/AreaSelectionMultiMonitorReconciliationTests
-  NotinhasTests/AreaSelectionControllerTests
-  NotinhasTests/AreaSelectionOverlayMagnifierLayoutTests
-  NotinhasTests/CaptureViewModelTests
-  NotinhasTests/QuickAccessPanelControllerTests
-  NotinhasTests/AppStatusBarControllerTests
+  CueTests/AreaSelectionSessionLifecycleTests
+  CueTests/AreaSelectionMultiMonitorReconciliationTests
+  CueTests/AreaSelectionControllerTests
+  CueTests/AreaSelectionOverlayMagnifierLayoutTests
+  CueTests/CaptureViewModelTests
+  CueTests/QuickAccessPanelControllerTests
+  CueTests/AppStatusBarControllerTests
 )
 XCODEBUILD_ARGS=()
 
@@ -84,7 +84,7 @@ die() {
 
 apply_video_module_settings() {
   if [[ "${ENABLE_VIDEO_MODULE:-0}" == "1" ]]; then
-    SCHEME="Notinhas Video"
+    SCHEME="Cue Video"
     case "$CONFIGURATION" in
       Debug)
         CONFIGURATION="Debug+Video"
@@ -94,7 +94,7 @@ apply_video_module_settings() {
         ;;
     esac
   else
-    SCHEME="Notinhas"
+    SCHEME="Cue"
   fi
 }
 
@@ -135,8 +135,8 @@ Environment:
   LOCAL_ENABLE_HARDENED_RUNTIME       Local hardened-runtime setting. Default: NO.
   NOTINHAS_QUIET_TESTS                 Keep test-side effects quiet. Default: 1.
   NOTINHAS_SKIP_VISUAL_TESTS          Set to 1 for the same effect as --skip-visual.
-  NOTINHAS_ALLOW_TEST_SOUNDS          Set to 1 only for an intentional audio integration run.
-  NOTINHAS_ALLOW_SCREEN_CAPTURE_IN_TESTS
+  CUE_ALLOW_TEST_SOUNDS          Set to 1 only for an intentional audio integration run.
+  CUE_ALLOW_SCREEN_CAPTURE_IN_TESTS
                                       Set to 1 to use live ScreenCaptureKit backdrop
                                       captures in XCTest (default: synthetic, no Screen Recording TCC).
 
@@ -147,8 +147,8 @@ Examples:
   $0 --with-visual
   ENABLE_VIDEO_MODULE=1 $0
   NOTINHAS_SKIP_VISUAL_TESTS=1 $0
-  $0 -only-testing:NotinhasTests/CaptureOutputNamingTests
-  NOTINHAS_RUN_MICROPHONE_INTEGRATION=1 $0 -only-testing:NotinhasTests/MicrophoneAudioCapturerTests/testMicrophoneAudioCapturerStartStopRealMicrophoneIntegration
+  $0 -only-testing:CueTests/CaptureOutputNamingTests
+  NOTINHAS_RUN_MICROPHONE_INTEGRATION=1 $0 -only-testing:CueTests/MicrophoneAudioCapturerTests/testMicrophoneAudioCapturerStartStopRealMicrophoneIntegration
 EOF
 }
 

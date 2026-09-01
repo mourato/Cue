@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_NAME="Notinhas"
-DEBUG_BUNDLE_NAME="Notinhas Debug"
-RELEASE_BUNDLE_IDENTIFIER="com.mourato.notinhas"
-DEBUG_BUNDLE_IDENTIFIER="com.mourato.notinhas.debug"
-SCHEME="Notinhas"
-PROJECT="Notinhas.xcodeproj"
-LOG_SUBSYSTEM="${LOG_SUBSYSTEM:-Notinhas}"
+APP_NAME="Cue"
+DEBUG_BUNDLE_NAME="Cue Debug"
+RELEASE_BUNDLE_IDENTIFIER="com.mourato.cue"
+DEBUG_BUNDLE_IDENTIFIER="com.mourato.cue.debug"
+SCHEME="Cue"
+PROJECT="Cue.xcodeproj"
+LOG_SUBSYSTEM="${LOG_SUBSYSTEM:-Cue}"
 # The existing local development identity shared with Vozinha. Override this for
 # a different local keychain identity without changing project settings.
 LOCAL_CODE_SIGN_IDENTITY="${LOCAL_CODE_SIGN_IDENTITY:-Prisma Local Code Signing}"
@@ -56,7 +56,7 @@ ${BOLD}Usage:${NC} $0 [run|--logs|--telemetry|--debug|--verify] [options]
 
 ${BOLD}Modes:${NC}
   run                 Stop, build, and launch only the new app bundle (default)
-  --logs, logs        Launch then stream unified logs for process == "Notinhas"
+  --logs, logs        Launch then stream unified logs for process == "Cue"
   --telemetry         Launch then stream unified logs for subsystem == "$LOG_SUBSYSTEM"
   --debug, debug      Build then launch the app binary under lldb
   --verify, verify    Launch and confirm the Notinhas process is running
@@ -97,7 +97,7 @@ USAGE
 
 apply_video_module_settings() {
   if [[ "${ENABLE_VIDEO_MODULE:-0}" == "1" ]]; then
-    SCHEME="Notinhas Video"
+    SCHEME="Cue Video"
     case "$CONFIGURATION" in
       Debug)
         CONFIGURATION="Debug+Video"
@@ -107,7 +107,7 @@ apply_video_module_settings() {
         ;;
     esac
   else
-    SCHEME="Notinhas"
+    SCHEME="Cue"
   fi
 }
 
@@ -122,8 +122,8 @@ require_command() {
 configure_interactive_build() {
   while true; do
     printf "\nChoose a local build:\n"
-    printf "  1) Debug — build and open Notinhas Debug.app\n"
-    printf "  2) Release — build signed Notinhas.app, then choose what to do with it\n"
+    printf "  1) Debug — build and open Cue Debug.app\n"
+    printf "  2) Release — build signed Cue.app, then choose what to do with it\n"
     printf "  3) Exit\n"
     printf "Choose [1-3]: "
 
