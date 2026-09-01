@@ -512,12 +512,16 @@
             usesSyntheticPointer && hasMouseTrackingData
         }
 
+        var shouldRenderSyntheticCursor: Bool {
+            canShowSyntheticCursor && showsSyntheticCursor
+        }
+
         var hasRecordedKeystrokes: Bool {
             !(recordingMetadata?.keystrokes.isEmpty ?? true)
         }
 
         var hasSyntheticOverlays: Bool {
-            showsSyntheticCursor || showsClickEffects || showsKeystrokes
+            shouldRenderSyntheticCursor || showsClickEffects || showsKeystrokes
         }
 
         var currentTime: CMTime {

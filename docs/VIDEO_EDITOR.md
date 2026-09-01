@@ -5,12 +5,13 @@ This doc covers the video editor in `Cue/Features/VideoEditor/`: windowing, trim
 ## Cursor
 
 Recordings with Smart Pointer metadata hide the cursor baked by ScreenCaptureKit
-and reconstruct it in the editor. The Cursor section owns visibility, size,
-and movement smoothing (`Original`, `Smooth`, or `Fast`) plus click and
-keystroke overlays. Recordings without Smart Pointer metadata keep their
-native cursor baked into the video; the editor does not offer a second cursor
-over that source. When the recorded pointer leaves the capture area, the
-reconstructed cursor fades out until it re-enters.
+and reconstruct it in the editor. The Cursor section owns the reconstructed
+cursor's visibility, size, and movement smoothing (`Original`, `Smooth`, or
+`Fast`). Click effects and keystroke captions are independent metadata
+overlays. Recordings without Smart Pointer metadata keep their native cursor
+baked into the video; the editor does not offer a second cursor over that
+source. When the recorded pointer leaves the capture area, the reconstructed
+cursor fades out until it re-enters.
 
 ## Camera overlay (Plan 107)
 

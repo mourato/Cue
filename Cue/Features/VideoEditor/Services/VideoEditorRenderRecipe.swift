@@ -70,7 +70,7 @@
                 exportCustomHeight: state.exportSettings.customHeight,
                 exportAudioMode: state.exportSettings.audioMode.rawValue,
                 backgroundPayload: backgroundPayload,
-                showsSyntheticCursor: state.showsSyntheticCursor,
+                showsSyntheticCursor: state.shouldRenderSyntheticCursor,
                 showsClickEffects: state.showsClickEffects,
                 showsKeystrokes: state.showsKeystrokes,
                 cursorScale: Double(state.cursorScale),

@@ -171,7 +171,7 @@
         }
 
         private var cursorSection: some View {
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 8) {
                 Label(L10n.VideoEditor.cursor, systemImage: "cursorarrow")
                     .font(.system(size: 12, weight: .semibold))
 

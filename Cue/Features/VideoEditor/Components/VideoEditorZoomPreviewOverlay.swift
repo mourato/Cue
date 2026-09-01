@@ -69,7 +69,7 @@
                                 at: state.sourceTime(atPlayhead: playbackState.currentTime),
                             ),
                             contentRect: displayedVideoRect,
-                            showsSyntheticCursor: state.showsSyntheticCursor,
+                            showsSyntheticCursor: state.shouldRenderSyntheticCursor,
                             showsClickEffects: state.showsClickEffects,
                             showsKeystrokes: state.showsKeystrokes,
                             keystrokePlacement: KeystrokeOverlayConfiguration().position,

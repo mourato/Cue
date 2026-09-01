@@ -472,7 +472,7 @@
                 reframeTrack: exportReframeTrack,
                 pointerTimeline: exportPointerTimeline,
                 keystrokeCaptionTimeline: exportKeystrokeTimeline,
-                showsSyntheticCursor: state.showsSyntheticCursor,
+                showsSyntheticCursor: state.shouldRenderSyntheticCursor,
                 showsClickEffects: state.showsClickEffects,
                 showsKeystrokes: state.showsKeystrokes,
                 keystrokePlacement: keystrokePlacement,
