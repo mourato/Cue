@@ -94,7 +94,7 @@ State machine (`SplashScreen`): `splash` → `language` → `sponsor` (only when
 
 ## Menu bar
 
-`AppStatusBarController` (`Cue/App/AppStatusBarController.swift`) — singleton owning the `NSStatusItem` (variable length, template `MenubarIcon` rescaled to 21 pt).
+`AppStatusBarController` (`Cue/App/AppStatusBarController.swift`) — singleton owning the `NSStatusItem` (variable length, template `MenubarIcon` rescaled to 20 pt).
 
 - Click behavior: button `sendAction(on: [.leftMouseUp, .rightMouseUp])` — both left and right click rebuild and open the same menu (`buildMenu()` runs on every open to refresh state).
 - Menu structure (verified in `buildMenu()`):
