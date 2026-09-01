@@ -33,7 +33,7 @@
             XCTAssertNil(timeline.frame(at: 3))
         }
 
-        func testMetadataV8_roundTripsPointerSynthesizedAndKeystrokes() throws {
+        func testMetadata_roundTripsPointerSynthesizedAndKeystrokes() throws {
             let metadata = RecordingMetadata(
                 coordinateSpace: .topLeftNormalized,
                 captureSize: CGSize(width: 1280, height: 720),
@@ -46,7 +46,7 @@
             )
             let data = try JSONEncoder().encode(metadata)
             let decoded = try JSONDecoder().decode(RecordingMetadata.self, from: data)
-            XCTAssertEqual(decoded.version, 8)
+            XCTAssertEqual(decoded.version, RecordingMetadata.currentVersion)
             XCTAssertEqual(decoded.pointerSynthesized, true)
             XCTAssertEqual(decoded.keystrokes, metadata.keystrokes)
         }

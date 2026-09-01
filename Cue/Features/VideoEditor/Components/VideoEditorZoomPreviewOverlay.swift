@@ -117,18 +117,35 @@
             }
         }
 
+        @ViewBuilder
         private func cameraOverlay(_ player: AVPlayer, in canvasSize: CGSize) -> some View {
-            let frame = state.cameraOverlayLayout.cameraFrame(
+            let layout = state.cameraOverlayLayout
+            let frame = layout.cameraFrame(
                 in: canvasSize,
                 cameraSize: state.cameraSize,
                 zoomLevel: currentZoomLevel,
             )
-            return VideoPlayerSection(player: player)
-                .frame(width: frame.width, height: frame.height)
-                .clipShape(RoundedRectangle(cornerRadius: min(frame.width, frame.height) * 0.08, style: .continuous))
-                .scaleEffect(x: state.cameraIsMirrored ? -1 : 1, y: 1)
-                .position(x: frame.midX, y: frame.midY)
-                .accessibilityLabel(L10n.VideoEditor.cameraOverlay)
+            let cameraView = VideoPlayerSection(
+                player: player,
+                videoGravity: layout.usesCapturedGeometry ? .resizeAspectFill : .resizeAspect,
+            )
+            .frame(width: frame.width, height: frame.height)
+
+            Group {
+                if layout.usesCapturedGeometry, layout.shape == .circle {
+                    cameraView.clipShape(Circle())
+                } else {
+                    cameraView.clipShape(
+                        RoundedRectangle(
+                            cornerRadius: min(frame.width, frame.height) * 0.08,
+                            style: .continuous,
+                        ),
+                    )
+                }
+            }
+            .scaleEffect(x: state.cameraIsMirrored ? -1 : 1, y: 1)
+            .position(x: frame.midX, y: frame.midY)
+            .accessibilityLabel(L10n.VideoEditor.cameraOverlay)
         }
 
         // MARK: - Background View

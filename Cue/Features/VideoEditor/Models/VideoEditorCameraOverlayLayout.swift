@@ -27,10 +27,33 @@
 
     struct VideoEditorCameraOverlayLayout: Codable, Equatable {
         var isVisible = true
-        var position: VideoEditorCameraOverlayPosition = .bottomTrailing
-        var size: VideoEditorCameraOverlaySize = .small
-        var margin: CGFloat = 0.04
+        var position: VideoEditorCameraOverlayPosition = .bottomTrailing {
+            didSet {
+                if position != oldValue {
+                    capturedNormalizedRect = nil
+                }
+            }
+        }
+
+        var size: VideoEditorCameraOverlaySize = .small {
+            didSet {
+                if size != oldValue {
+                    capturedNormalizedRect = nil
+                }
+            }
+        }
+
+        var margin: CGFloat = 0.04 {
+            didSet {
+                if margin != oldValue {
+                    capturedNormalizedRect = nil
+                }
+            }
+        }
+
         var reactsToZoom = true
+        var shape: RecordingCameraPreviewShape = .rectangle
+        var capturedNormalizedRect: CGRect?
 
         static let `default` = Self()
 
@@ -40,6 +63,8 @@
             case size
             case margin
             case reactsToZoom
+            case shape
+            case capturedNormalizedRect
         }
 
         init(
@@ -48,12 +73,23 @@
             size: VideoEditorCameraOverlaySize = .small,
             margin: CGFloat = 0.04,
             reactsToZoom: Bool = true,
+            shape: RecordingCameraPreviewShape = .rectangle,
+            capturedNormalizedRect: CGRect? = nil,
         ) {
             self.isVisible = isVisible
             self.position = position
             self.size = size
             self.margin = margin
             self.reactsToZoom = reactsToZoom
+            self.shape = shape
+            self.capturedNormalizedRect = capturedNormalizedRect
+        }
+
+        init(recordedLayout: RecordedCameraOverlayLayout) {
+            self.init(
+                shape: recordedLayout.shape,
+                capturedNormalizedRect: recordedLayout.normalizedRect,
+            )
         }
 
         init(from decoder: Decoder) throws {
@@ -64,6 +100,8 @@
             size = try container.decodeIfPresent(VideoEditorCameraOverlaySize.self, forKey: .size) ?? .small
             margin = try container.decodeIfPresent(CGFloat.self, forKey: .margin) ?? 0.04
             reactsToZoom = try container.decodeIfPresent(Bool.self, forKey: .reactsToZoom) ?? true
+            shape = try container.decodeIfPresent(RecordingCameraPreviewShape.self, forKey: .shape) ?? .rectangle
+            capturedNormalizedRect = try container.decodeIfPresent(CGRect.self, forKey: .capturedNormalizedRect)
         }
 
         func encode(to encoder: Encoder) throws {
@@ -73,11 +111,22 @@
             try container.encode(size, forKey: .size)
             try container.encode(margin, forKey: .margin)
             try container.encode(reactsToZoom, forKey: .reactsToZoom)
+            try container.encode(shape, forKey: .shape)
+            try container.encodeIfPresent(capturedNormalizedRect, forKey: .capturedNormalizedRect)
+        }
+
+        var usesCapturedGeometry: Bool {
+            sanitizedCapturedNormalizedRect != nil
         }
 
         func normalizedRect(canvasSize: CGSize, cameraSize: CGSize) -> CGRect {
             guard canvasSize.width > 0, canvasSize.height > 0,
                   cameraSize.width > 0, cameraSize.height > 0 else { return .zero }
+
+            if let sanitizedCapturedNormalizedRect {
+                return sanitizedCapturedNormalizedRect
+            }
+
             let width = min(size.fraction, 1)
             let aspect = cameraSize.width / cameraSize.height
             let height = min(width / max(aspect * canvasSize.width / canvasSize.height, 0.01), 1)
@@ -94,6 +143,9 @@
         func cameraFrame(in canvasSize: CGSize, cameraSize: CGSize) -> CGRect {
             let target = frame(in: canvasSize, cameraSize: cameraSize)
             let fitted = VideoEditorExportLayout.aspectFitRect(sourceSize: cameraSize, in: target.size)
+            if usesCapturedGeometry {
+                return target
+            }
             return CGRect(x: target.minX + fitted.minX, y: target.minY + fitted.minY,
                           width: fitted.width, height: fitted.height)
         }
@@ -107,19 +159,45 @@
             let baseRect = normalizedRect(canvasSize: canvasSize, cameraSize: cameraSize)
             let width = baseRect.width / sanitizedZoomLevel
             let height = baseRect.height / sanitizedZoomLevel
-            let x = position == .topTrailing || position == .bottomTrailing
-                ? baseRect.maxX - width
-                : baseRect.minX
-            let y = position == .bottomLeading || position == .bottomTrailing
-                ? baseRect.maxY - height
-                : baseRect.minY
+            let x: CGFloat
+            let y: CGFloat
+            if usesCapturedGeometry {
+                x = baseRect.midX - width / 2
+                y = baseRect.midY - height / 2
+            } else {
+                x = position == .topTrailing || position == .bottomTrailing
+                    ? baseRect.maxX - width
+                    : baseRect.minX
+                y = position == .bottomLeading || position == .bottomTrailing
+                    ? baseRect.maxY - height
+                    : baseRect.minY
+            }
             let target = CGRect(x: x, y: y, width: width, height: height)
                 .standardized
                 .clampedToUnitRect()
                 .applying(CGAffineTransform(scaleX: canvasSize.width, y: canvasSize.height))
             let fitted = VideoEditorExportLayout.aspectFitRect(sourceSize: cameraSize, in: target.size)
+            if usesCapturedGeometry {
+                return target
+            }
             return CGRect(x: target.minX + fitted.minX, y: target.minY + fitted.minY,
                           width: fitted.width, height: fitted.height)
+        }
+
+        private var sanitizedCapturedNormalizedRect: CGRect? {
+            guard let rect = capturedNormalizedRect,
+                  rect.minX.isFinite,
+                  rect.minY.isFinite,
+                  rect.maxX.isFinite,
+                  rect.maxY.isFinite,
+                  rect.width.isFinite,
+                  rect.height.isFinite,
+                  rect.width > 0,
+                  rect.height > 0
+            else { return nil }
+
+            let clamped = rect.standardized.clampedToUnitRect()
+            return clamped.width > 0 && clamped.height > 0 ? clamped : nil
         }
     }
 
