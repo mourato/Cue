@@ -209,6 +209,12 @@ private final class TrafficLightsLayoutController: NSObject {
         center.addObserver(
             self,
             selector: #selector(handleWindowEvent),
+            name: NSWindow.didEndLiveResizeNotification,
+            object: window,
+        )
+        center.addObserver(
+            self,
+            selector: #selector(handleWindowEvent),
             name: NSWindow.didBecomeKeyNotification,
             object: window,
         )
@@ -227,12 +233,16 @@ private final class TrafficLightsLayoutController: NSObject {
         scheduleApply()
     }
 
-    @objc private func handleWindowEvent(_: Notification) {
+    @objc private func handleWindowEvent(_ notification: Notification) {
+        if notification.name == NSWindow.didResizeNotification {
+            apply()
+        }
         scheduleApply()
     }
 
     @objc private func handleCloseButtonFrameChange(_: Notification) {
         guard !isApplying else { return }
+        apply()
         scheduleApply()
     }
 
