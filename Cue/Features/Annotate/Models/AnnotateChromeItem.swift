@@ -33,7 +33,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
     case highlighter
     case blur
     case spotlight
-    case notinhasNote
+    case cueNote = "notinhasNote"
     case watermark
     case pencil
 
@@ -64,7 +64,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         .highlighter,
         .blur,
         .spotlight,
-        .notinhasNote,
+        .cueNote,
         .watermark,
         .pencil,
         .backgroundCutout,
@@ -97,7 +97,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         case .crop, .addBackground, .rotateLeft, .rotateRight:
             .captureChrome
         case .rectangle, .circle, .arrow, .line, .magnify, .text, .highlighter,
-             .blur, .spotlight, .notinhasNote, .watermark, .pencil, .backgroundCutout:
+             .blur, .spotlight, .cueNote, .watermark, .pencil, .backgroundCutout:
             .drawingOrCutout
         case .saveAs:
             .trailing
@@ -119,7 +119,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         case .highlighter: .highlighter
         case .blur: .blur
         case .spotlight: .spotlight
-        case .notinhasNote: .notinhasNote
+        case .cueNote: .cueNote
         case .watermark: .watermark
         case .pencil: .pencil
         case .undo, .redo, .done, .addBackground, .rotateLeft, .rotateRight, .backgroundCutout, .saveAs,
@@ -141,7 +141,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         case .highlighter: self = .highlighter
         case .blur: self = .blur
         case .spotlight: self = .spotlight
-        case .notinhasNote: self = .notinhasNote
+        case .cueNote: self = .cueNote
         case .watermark: self = .watermark
         case .pencil: self = .pencil
         case .counter, .mockup:
@@ -182,12 +182,12 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         case .highlighter: L10n.Annotate.highlighterTool
         case .blur: L10n.Annotate.blurTool
         case .spotlight: L10n.Annotate.spotlightTool
-        case .notinhasNote: NotinhasL10n.noteTool
+        case .cueNote: CueL10n.noteTool
         case .watermark: L10n.Annotate.watermarkTool
         case .pencil: L10n.Annotate.pencilTool
         case .newWindow: L10n.AnnotateUI.newWindow
         case .share: L10n.Common.share
-        case .uploadToImgBB: NotinhasL10n.uploadToImgBB
+        case .uploadToImgBB: CueL10n.uploadToImgBB
         case .pin: L10n.AnnotateUI.pinWindow
         case .copy: L10n.AnnotateUI.copyToClipboard
         case .delete: L10n.Common.deleteAction
@@ -215,7 +215,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         case .highlighter: "highlighter"
         case .blur: "eye.slash"
         case .spotlight: "viewfinder"
-        case .notinhasNote: "pin.circle.fill"
+        case .cueNote: "pin.circle.fill"
         case .watermark: "seal"
         case .pencil: "pencil"
         case .newWindow: "plus.rectangle.on.rectangle"

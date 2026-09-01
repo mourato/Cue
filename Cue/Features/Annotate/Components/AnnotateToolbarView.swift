@@ -168,8 +168,8 @@ struct AnnotateToolbarView: View {
     }
 
     private func toolHelp(for tool: AnnotationToolType) -> String? {
-        guard tool == .notinhasNote else { return nil }
-        return NotinhasL10n.noteTool
+        guard tool == .cueNote else { return nil }
+        return CueL10n.noteTool
     }
 
     private var backgroundCutoutButton: some View {
@@ -211,7 +211,7 @@ struct AnnotateToolbarView: View {
         .overlayTooltip(
             title,
             keys: keys,
-            secondary: tool == .notinhasNote ? NotinhasL10n.noteToolGestureHint : nil,
+            secondary: tool == .cueNote ? CueL10n.noteToolGestureHint : nil,
             edge: .below,
         )
         .accessibilityLabel(accessibilityLabel)
@@ -220,11 +220,11 @@ struct AnnotateToolbarView: View {
     }
 
     private func accessibilityLabel(for tool: AnnotationToolType, title: String, keys: [String]) -> String {
-        guard tool == .notinhasNote else {
+        guard tool == .cueNote else {
             return accessibilityTitle(title, keys: keys)
         }
         let spokenTitle = keys.isEmpty ? title : L10n.Common.withShortcut(title, keys.joined())
-        return NotinhasL10n.noteToolTooltip(title: spokenTitle)
+        return CueL10n.noteToolTooltip(title: spokenTitle)
     }
 
     private var undoRedoGroup: some View {

@@ -32,14 +32,15 @@ nonisolated struct PersistedAnnotationSession: Codable {
     /// Combine/stitch session flags. Optional so pre-existing sidecars (and older app
     /// builds) decode without it — schemaVersion stays 1, no migration needed.
     var combineSession: PersistedCombineSession?
-    /// Optional Notinhas notes payload.
-    var notinhasNotesSession: PersistedNotinhasNotesSession?
+    /// Optional Cue notes payload.
+    var cueNotesSession: PersistedCueNotesSession?
 
     private enum CodingKeys: String, CodingKey {
         case schemaVersion, sourceFilePath, sourceFilePathHash, sourceSignature, originalFileName
         case cutoutFileName, embeddedAssetFileNames, annotations, canvasEffects, selectedCanvasPresetId
         case isSelectedCanvasPresetDirty, cropRect, isCutoutApplied, didCutoutAutoApplyCrop
-        case cutoutAutoAppliedCropRect, createdAt, updatedAt, combineSession, notinhasNotesSession
+        case cutoutAutoAppliedCropRect, createdAt, updatedAt, combineSession, cueNotesSession
+        case legacyNotinhasNotesSession = "notinhasNotesSession"
     }
 
     init(
@@ -61,7 +62,7 @@ nonisolated struct PersistedAnnotationSession: Codable {
         createdAt: Date,
         updatedAt: Date,
         combineSession: PersistedCombineSession?,
-        notinhasNotesSession: PersistedNotinhasNotesSession?,
+        cueNotesSession: PersistedCueNotesSession?,
     ) {
         self.schemaVersion = schemaVersion
         self.sourceFilePath = sourceFilePath
@@ -81,7 +82,7 @@ nonisolated struct PersistedAnnotationSession: Codable {
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.combineSession = combineSession
-        self.notinhasNotesSession = notinhasNotesSession
+        self.cueNotesSession = cueNotesSession
     }
 
     init(from decoder: Decoder) throws {
@@ -104,10 +105,39 @@ nonisolated struct PersistedAnnotationSession: Codable {
         createdAt = try container.decode(Date.self, forKey: .createdAt)
         updatedAt = try container.decode(Date.self, forKey: .updatedAt)
         combineSession = try container.decodeIfPresent(PersistedCombineSession.self, forKey: .combineSession)
-        notinhasNotesSession = try? container.decodeIfPresent(
-            PersistedNotinhasNotesSession.self,
-            forKey: .notinhasNotesSession,
+        cueNotesSession = try? container.decodeIfPresent(
+            PersistedCueNotesSession.self,
+            forKey: .cueNotesSession,
         )
+        if cueNotesSession == nil {
+            cueNotesSession = try? container.decodeIfPresent(
+                PersistedCueNotesSession.self,
+                forKey: .legacyNotinhasNotesSession,
+            )
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(schemaVersion, forKey: .schemaVersion)
+        try container.encode(sourceFilePath, forKey: .sourceFilePath)
+        try container.encode(sourceFilePathHash, forKey: .sourceFilePathHash)
+        try container.encode(sourceSignature, forKey: .sourceSignature)
+        try container.encode(originalFileName, forKey: .originalFileName)
+        try container.encodeIfPresent(cutoutFileName, forKey: .cutoutFileName)
+        try container.encode(embeddedAssetFileNames, forKey: .embeddedAssetFileNames)
+        try container.encode(annotations, forKey: .annotations)
+        try container.encode(canvasEffects, forKey: .canvasEffects)
+        try container.encodeIfPresent(selectedCanvasPresetId, forKey: .selectedCanvasPresetId)
+        try container.encode(isSelectedCanvasPresetDirty, forKey: .isSelectedCanvasPresetDirty)
+        try container.encodeIfPresent(cropRect, forKey: .cropRect)
+        try container.encode(isCutoutApplied, forKey: .isCutoutApplied)
+        try container.encode(didCutoutAutoApplyCrop, forKey: .didCutoutAutoApplyCrop)
+        try container.encodeIfPresent(cutoutAutoAppliedCropRect, forKey: .cutoutAutoAppliedCropRect)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(updatedAt, forKey: .updatedAt)
+        try container.encodeIfPresent(combineSession, forKey: .combineSession)
+        try container.encodeIfPresent(cueNotesSession, forKey: .cueNotesSession)
     }
 }
 

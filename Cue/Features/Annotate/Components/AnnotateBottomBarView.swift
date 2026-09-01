@@ -49,8 +49,8 @@ struct AnnotateBottomBarView: View {
     @ObservedObject private var chromeStore = AnnotateChromeConfigurationStore.shared
 
     @State private var isUploading = false
-    @ObservedObject private var uploadConfiguration = NotinhasUploadConfigurationStore.shared
-    private let uploadCoordinator = NotinhasUploadCoordinator()
+    @ObservedObject private var uploadConfiguration = CueUploadConfigurationStore.shared
+    private let uploadCoordinator = CueUploadCoordinator()
     @State private var measuredLeftWidth: CGFloat = 0
     @State private var measuredRightWidth: CGFloat = 0
 
@@ -505,7 +505,7 @@ struct AnnotateBottomBarView: View {
             return
         }
         guard let renderedImage = AnnotateExporter.renderFinalImage(state: state) else {
-            AppToastManager.shared.show(message: NotinhasL10n.imgbbInvalidImageData, style: .error)
+            AppToastManager.shared.show(message: CueL10n.imgbbInvalidImageData, style: .error)
             return
         }
 
@@ -554,15 +554,15 @@ struct AnnotateBottomBarView: View {
 
     private var missingCredentialMessage: String {
         switch uploadConfiguration.provider {
-        case .imgbb: NotinhasL10n.imgbbMissingAPIKey
-        case .imageKit: NotinhasL10n.imageKitMissingPrivateKey
+        case .imgbb: CueL10n.imgbbMissingAPIKey
+        case .imageKit: CueL10n.imageKitMissingPrivateKey
         }
     }
 
     private var uploadFailedMessage: String {
         switch uploadConfiguration.provider {
-        case .imgbb: NotinhasL10n.imgbbUploadFailed
-        case .imageKit: NotinhasL10n.imageKitUploadFailed
+        case .imgbb: CueL10n.imgbbUploadFailed
+        case .imageKit: CueL10n.imageKitUploadFailed
         }
     }
 
@@ -606,7 +606,7 @@ private struct AnnotateModeSwitcherButton: View {
         .help(title)
         .accessibilityLabel(title)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
-        .accessibilityValue(isSelected ? NotinhasL10n.selected : "")
+        .accessibilityValue(isSelected ? CueL10n.selected : "")
     }
 
     private var backgroundColor: Color {

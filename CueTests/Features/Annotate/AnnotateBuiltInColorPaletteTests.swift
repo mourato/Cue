@@ -10,8 +10,8 @@ import XCTest
 
 @MainActor
 final class AnnotateBuiltInColorPaletteTests: XCTestCase {
-    func testAnnotationPaletteIncludesEveryNotinhasPaletteColor() {
-        for paletteColor in NotinhasPaletteColor.allCases {
+    func testAnnotationPaletteIncludesEveryCuePaletteColor() {
+        for paletteColor in CuePaletteColor.allCases {
             let match = AnnotateBuiltInColorPalette.annotationEntries.contains {
                 colorsMatch($0.rgba, paletteColor.rgba)
             }
@@ -33,7 +33,7 @@ final class AnnotateBuiltInColorPaletteTests: XCTestCase {
         XCTAssertTrue(contains(id: "white"))
         XCTAssertTrue(contains(id: "pink"))
         XCTAssertTrue(contains(id: "gray"))
-        XCTAssertTrue(contains(id: NotinhasPaletteColor.magenta.rawValue))
+        XCTAssertTrue(contains(id: CuePaletteColor.magenta.rawValue))
     }
 
     func testAnnotationPaletteHasNoDuplicateRGB() {
@@ -70,7 +70,7 @@ final class AnnotateBuiltInColorPaletteTests: XCTestCase {
         AnnotateBuiltInColorPalette.annotationEntries.contains { $0.id == id }
     }
 
-    private func hex(of paletteColor: NotinhasPaletteColor) -> String {
+    private func hex(of paletteColor: CuePaletteColor) -> String {
         let entry = AnnotateBuiltInColorPalette.annotationEntries.first {
             $0.id == paletteColor.rawValue
         }

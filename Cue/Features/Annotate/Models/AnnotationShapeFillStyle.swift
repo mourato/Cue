@@ -25,4 +25,4 @@ nonisolated enum AnnotationShapeFillStyle: String, Codable, CaseIterable, Equata
 }
 
 /// Legacy name retained for Notinhas call sites; same shared style enum.
-typealias NotinhasAreaStyle = AnnotationShapeFillStyle
+typealias CueAreaStyle = AnnotationShapeFillStyle

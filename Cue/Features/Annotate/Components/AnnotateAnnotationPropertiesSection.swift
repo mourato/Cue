@@ -105,7 +105,7 @@ struct AnnotationPropertiesSection: View {
 
             HStack(spacing: 6) {
                 ForEach(AnnotationShapeFillStyle.allCases) { style in
-                    NotinhasAreaStylePreviewButton(
+                    CueAreaStylePreviewButton(
                         style: style,
                         isSelected: annotation?.properties.shapeFillStyle == style,
                         color: annotation?.properties.strokeColor ?? .red,

@@ -15,15 +15,15 @@ struct AdvancedSettingsView: View {
         .defaultRetentionDays
     @AppStorage(PreferencesKeys.urlSchemeEnabled) private var urlSchemeEnabled = true
 
-    @State private var needsConfigAccess = NotinhasConfigurationService.shared.needsUserSelectedConfigAccess
+    @State private var needsConfigAccess = CueConfigurationService.shared.needsUserSelectedConfigAccess
     @State private var isRestoreConfirmationPresented = false
     @State private var isConfigSyncConfirmationPresented = false
     @State private var pendingConfigSyncURL: URL?
     @State private var pendingConfigSyncSignature: String?
     @State private var logSizeText = L10n.PreferencesAdvanced.calculating
-    @ObservedObject private var configSyncCoordinator = NotinhasConfigurationSyncCoordinator.shared
+    @ObservedObject private var configSyncCoordinator = CueConfigurationSyncCoordinator.shared
 
-    private let service = NotinhasConfigurationService.shared
+    private let service = CueConfigurationService.shared
     private let tomlContentType = UTType(filenameExtension: "toml") ?? .plainText
 
     private var canUseBackupActions: Bool {
@@ -218,7 +218,7 @@ struct AdvancedSettingsView: View {
         return false
     }
 
-    private var effectiveConfigSyncStatus: NotinhasConfigurationSyncCoordinator.Status {
+    private var effectiveConfigSyncStatus: CueConfigurationSyncCoordinator.Status {
         needsConfigAccess ? .needsPermission : configSyncCoordinator.status
     }
 
@@ -441,7 +441,7 @@ struct AdvancedSettingsView: View {
 
     private func grantConfigAccess(openAfterGrant: Bool) {
         do {
-            guard let grantResult = try NotinhasConfigurationAccessGranting.grantSuggestedConfigAccess(service: service)
+            guard let grantResult = try CueConfigurationAccessGranting.grantSuggestedConfigAccess(service: service)
             else {
                 return
             }
@@ -461,13 +461,13 @@ struct AdvancedSettingsView: View {
         }
     }
 
-    private func issues(for autoImportResult: NotinhasConfigurationAutoImportResult) -> [NotinhasConfigurationIssue] {
+    private func issues(for autoImportResult: CueConfigurationAutoImportResult) -> [CueConfigurationIssue] {
         if let issues = autoImportResult.importResult?.issues {
             return issues
         }
 
         if autoImportResult.status == .failed, let errorMessage = autoImportResult.errorMessage {
-            return [NotinhasConfigurationIssue(severity: .error, message: errorMessage)]
+            return [CueConfigurationIssue(severity: .error, message: errorMessage)]
         }
 
         return []
@@ -539,7 +539,7 @@ struct AdvancedSettingsView: View {
         }
     }
 
-    private func showGrantNotice(for grantResult: NotinhasConfigurationAccessGrantResult) {
+    private func showGrantNotice(for grantResult: CueConfigurationAccessGrantResult) {
         let issues = issues(for: grantResult.autoImportResult)
         let style = noticeStyle(for: issues)
         let message: String = if let importResult = grantResult.autoImportResult.importResult {
@@ -553,14 +553,14 @@ struct AdvancedSettingsView: View {
         showNotice(message, style: style)
     }
 
-    private func showImportNotice(for result: NotinhasConfigurationImportResult) {
+    private func showImportNotice(for result: CueConfigurationImportResult) {
         showNotice(
             noticeSummary(for: result, successMessage: L10n.PreferencesAdvanced.importSucceeded),
             style: noticeStyle(for: result.issues),
         )
     }
 
-    private func showRestoreNotice(for result: NotinhasConfigurationImportResult) {
+    private func showRestoreNotice(for result: CueConfigurationImportResult) {
         guard !result.hasErrors else {
             showImportNotice(for: result)
             return
@@ -574,7 +574,7 @@ struct AdvancedSettingsView: View {
     }
 
     private func noticeSummary(
-        for result: NotinhasConfigurationImportResult,
+        for result: CueConfigurationImportResult,
         successMessage: String,
     ) -> String {
         if result.hasErrors {
@@ -594,7 +594,7 @@ struct AdvancedSettingsView: View {
         return successMessage
     }
 
-    private func noticeStyle(for issues: [NotinhasConfigurationIssue]) -> AppToastStyle {
+    private func noticeStyle(for issues: [CueConfigurationIssue]) -> AppToastStyle {
         if issues.contains(where: { $0.severity == .error }) {
             return .error
         }
@@ -679,7 +679,7 @@ private struct AdvancedConfigAccessWarningRow: View {
                     .font(.subheadline)
                     .fontWeight(.semibold)
                 Text(L10n.PreferencesAdvanced.configAccessWarningDescription(
-                    NotinhasConfigurationService.shared.suggestedConfigDirectoryURL.path,
+                    CueConfigurationService.shared.suggestedConfigDirectoryURL.path,
                 ))
                 .font(.caption)
                 .foregroundStyle(.secondary)

@@ -24,7 +24,7 @@ enum LoginItemManager {
                 "Launch at login preference updated",
                 context: ["enabled": enabled ? "true" : "false"],
             )
-            NotinhasConfigurationSyncCoordinator.shared.scheduleSync(reason: .explicitChange)
+            CueConfigurationSyncCoordinator.shared.scheduleSync(reason: .explicitChange)
         } catch {
             DiagnosticLogger.shared.logError(
                 .preferences,

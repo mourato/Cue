@@ -156,7 +156,7 @@ final class DrawingCanvasNSView: NSView {
     private var stateObservers = Set<AnyCancellable>()
     private var notinhasMoveStartPoint: CGPoint?
     private var notinhasIsMovingNote = false
-    private var notinhasResizeHandle: NotinhasNoteGeometry.ResizeHandle?
+    private var notinhasResizeHandle: CueNoteGeometry.ResizeHandle?
 
     init(state: AnnotateState) {
         self.state = state
@@ -210,7 +210,7 @@ final class DrawingCanvasNSView: NSView {
         state.$annotations
             .sink { [weak self] _ in self?.invalidateDrawing() }
             .store(in: &stateObservers)
-        state.$notinhasNotes
+        state.$cueNotes
             .sink { [weak self] _ in
                 guard let self else { return }
                 // Marker moves keep a gesture-local preview; notes publish only on commit.
@@ -324,7 +324,7 @@ final class DrawingCanvasNSView: NSView {
 
         switch event.keyCode {
         case 51, 117: // Delete, Forward Delete
-            if state.selectedTool == .notinhasNote,
+            if state.selectedTool == .cueNote,
                let noteID = state.notinhasSelectedNoteID,
                state.notinhasEditingNoteID == nil,
                state.editingTextAnnotationId == nil {
@@ -685,9 +685,9 @@ final class DrawingCanvasNSView: NSView {
             }
         }
 
-        if state.selectedTool == .notinhasNote,
+        if state.selectedTool == .cueNote,
            let selectedId = state.notinhasSelectedNoteID,
-           let note = state.notinhasNotes.first(where: { $0.id == selectedId }),
+           let note = state.cueNotes.first(where: { $0.id == selectedId }),
            let handle = hitTestNotinhasResizeHandle(at: displayPoint, for: note) {
             if state.notinhasEditingNoteID != nil {
                 state.notinhasCloseEditor(discardIfEmpty: false, revertLiveAppearance: true)
@@ -1432,8 +1432,8 @@ final class DrawingCanvasNSView: NSView {
 
     private func defaultNotinhasColor() -> RGBAColor {
         let selectedColor = RGBAColor(color: state.quickStrokeColorBinding.wrappedValue)
-        return NotinhasPaletteColor.matching(selectedColor ?? NotinhasPaletteColor.red.rgba)?.rgba
-            ?? NotinhasPaletteColor.red.rgba
+        return CuePaletteColor.matching(selectedColor ?? CuePaletteColor.red.rgba)?.rgba
+            ?? CuePaletteColor.red.rgba
     }
 
     private func notinhasImageBounds() -> CGRect {
@@ -1448,10 +1448,10 @@ final class DrawingCanvasNSView: NSView {
 
     private func hitTestNotinhasResizeHandle(
         at displayPoint: CGPoint,
-        for note: NotinhasVisualNote,
-    ) -> NotinhasNoteGeometry.ResizeHandle? {
+        for note: CueVisualNote,
+    ) -> CueNoteGeometry.ResizeHandle? {
         guard case .rect(let rect, _) = note.target else { return nil }
-        for (handle, center) in NotinhasNoteGeometry.resizeHandleCenters(for: rect) {
+        for (handle, center) in CueNoteGeometry.resizeHandleCenters(for: rect) {
             if handleRect(at: imageToDisplay(center)).contains(displayPoint) {
                 return handle
             }
@@ -1463,7 +1463,7 @@ final class DrawingCanvasNSView: NSView {
         context.setFillColor(NSColor.white.cgColor)
         context.setStrokeColor(NSColor.systemBlue.cgColor)
         context.setLineWidth(1)
-        for (_, center) in NotinhasNoteGeometry.resizeHandleCenters(for: rect) {
+        for (_, center) in CueNoteGeometry.resizeHandleCenters(for: rect) {
             let handle = handleRect(at: center)
             context.fill(handle)
             context.stroke(handle)
@@ -1474,7 +1474,7 @@ final class DrawingCanvasNSView: NSView {
         if state.notinhasEditingNoteID != nil {
             // Blank-canvas click-away matches Cancel; a note hit closes the panel and continues
             // into the same gesture so the note can move without a second click.
-            if state.notinhasNote(at: imagePoint) == nil {
+            if state.cueNote(at: imagePoint) == nil {
                 state.notinhasCloseEditor(discardIfEmpty: true, revertLiveAppearance: true)
                 clearNotinhasMoveGestureLocals()
                 invalidateDrawing()
@@ -1484,14 +1484,14 @@ final class DrawingCanvasNSView: NSView {
             invalidateDrawing()
         }
 
-        guard state.selectedTool == .notinhasNote else { return false }
+        guard state.selectedTool == .cueNote else { return false }
 
         // Drop stale move locals if the session was cancelled externally (e.g. tool switch).
         if state.notinhasMovingNoteID == nil {
             clearNotinhasMoveGestureLocals()
         }
 
-        if let note = state.notinhasNote(at: imagePoint) {
+        if let note = state.cueNote(at: imagePoint) {
             state.notinhasSelectNote(id: note.id, beginEditing: false)
             state.notinhasBeginMovingNote(id: note.id)
             notinhasMoveStartPoint = imagePoint
@@ -1506,11 +1506,11 @@ final class DrawingCanvasNSView: NSView {
     }
 
     private func handleNotinhasMouseDragged(to imagePoint: CGPoint) -> Bool {
-        guard state.selectedTool == .notinhasNote else { return false }
+        guard state.selectedTool == .cueNote else { return false }
 
         if let startPoint = notinhasMoveStartPoint, state.notinhasMovingNoteID != nil {
             let distance = hypot(imagePoint.x - startPoint.x, imagePoint.y - startPoint.y)
-            if !notinhasIsMovingNote, NotinhasNoteGeometry.shouldBeginMove(dragDistance: distance) {
+            if !notinhasIsMovingNote, CueNoteGeometry.shouldBeginMove(dragDistance: distance) {
                 notinhasIsMovingNote = true
             }
             if notinhasIsMovingNote {
@@ -1539,7 +1539,7 @@ final class DrawingCanvasNSView: NSView {
     }
 
     private func handleNotinhasMouseUp(at imagePoint: CGPoint) -> Bool {
-        guard state.selectedTool == .notinhasNote else {
+        guard state.selectedTool == .cueNote else {
             clearNotinhasMoveGestureLocals()
             return false
         }
@@ -1571,13 +1571,13 @@ final class DrawingCanvasNSView: NSView {
     }
 
     private func drawNotinhasNotes(dirtyRect _: NSRect) {
-        guard !state.notinhasNotes.isEmpty || state.notinhasDraftNote != nil else { return }
+        guard !state.cueNotes.isEmpty || state.cueDraftNote != nil else { return }
         guard let context = NSGraphicsContext.current?.cgContext else { return }
         context.saveGState()
         context.scaleBy(x: displayScale, y: displayScale)
         context.translateBy(x: -effectiveCanvasBounds.minX, y: -effectiveCanvasBounds.minY)
 
-        let ordered = state.notinhasNotes.sorted { lhs, rhs in
+        let ordered = state.cueNotes.sorted { lhs, rhs in
             if lhs.creationOrder == rhs.creationOrder {
                 return lhs.id.uuidString < rhs.id.uuidString
             }
@@ -1588,7 +1588,7 @@ final class DrawingCanvasNSView: NSView {
             if let preview = state.notinhasResolvedTarget(for: note.id), preview != note.target {
                 displayNote.target = preview
             }
-            NotinhasNoteRenderer.draw(
+            CueNoteRenderer.draw(
                 note: displayNote,
                 displayNumber: index + 1,
                 isSelected: note.id == state.notinhasSelectedNoteID,
@@ -1601,8 +1601,8 @@ final class DrawingCanvasNSView: NSView {
             }
         }
 
-        if let draft = state.notinhasDraftNote {
-            NotinhasNoteRenderer.draw(
+        if let draft = state.cueDraftNote {
+            CueNoteRenderer.draw(
                 note: draft,
                 displayNumber: ordered.count + 1,
                 isSelected: true,
@@ -1615,9 +1615,9 @@ final class DrawingCanvasNSView: NSView {
     }
 
     private func drawNotinhasDraftPreview(in context: CGContext) {
-        guard state.selectedTool == .notinhasNote, let draft = state.notinhasDraftNote else { return }
-        let orderedCount = state.notinhasNotes.count
-        NotinhasNoteRenderer.draw(
+        guard state.selectedTool == .cueNote, let draft = state.cueDraftNote else { return }
+        let orderedCount = state.cueNotes.count
+        CueNoteRenderer.draw(
             note: draft,
             displayNumber: orderedCount + 1,
             isSelected: true,
@@ -2062,9 +2062,9 @@ final class DrawingCanvasNSView: NSView {
         let displayPoint = convert(event.locationInWindow, from: nil)
         let imagePoint = displayToImage(displayPoint)
 
-        if state.selectedTool == .notinhasNote,
+        if state.selectedTool == .cueNote,
            let selectedId = state.notinhasSelectedNoteID,
-           let note = state.notinhasNotes.first(where: { $0.id == selectedId }),
+           let note = state.cueNotes.first(where: { $0.id == selectedId }),
            case .rect = note.target,
            let handle = hitTestNotinhasResizeHandle(at: displayPoint, for: note) {
             switch handle {

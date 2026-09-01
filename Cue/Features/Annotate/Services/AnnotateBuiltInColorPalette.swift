@@ -22,36 +22,36 @@ nonisolated enum AnnotateBuiltInColorPalette {
 
         var accessibilityName: String {
             switch id {
-            case NotinhasPaletteColor.red.rawValue:
-                NotinhasL10n.colorRed
-            case NotinhasPaletteColor.orange.rawValue:
-                NotinhasL10n.colorOrange
+            case CuePaletteColor.red.rawValue:
+                CueL10n.colorRed
+            case CuePaletteColor.orange.rawValue:
+                CueL10n.colorOrange
             case "yellow":
-                NotinhasL10n.colorYellow
-            case NotinhasPaletteColor.green.rawValue:
-                NotinhasL10n.colorGreen
-            case NotinhasPaletteColor.blue.rawValue:
-                NotinhasL10n.colorBlue
-            case NotinhasPaletteColor.purple.rawValue:
-                NotinhasL10n.colorPurple
-            case NotinhasPaletteColor.magenta.rawValue:
-                NotinhasL10n.colorMagenta
+                CueL10n.colorYellow
+            case CuePaletteColor.green.rawValue:
+                CueL10n.colorGreen
+            case CuePaletteColor.blue.rawValue:
+                CueL10n.colorBlue
+            case CuePaletteColor.purple.rawValue:
+                CueL10n.colorPurple
+            case CuePaletteColor.magenta.rawValue:
+                CueL10n.colorMagenta
             case "pink":
-                NotinhasL10n.colorPink
+                CueL10n.colorPink
             case "gray":
-                NotinhasL10n.colorGray
+                CueL10n.colorGray
             case "white":
-                NotinhasL10n.colorWhite
-            case NotinhasPaletteColor.black.rawValue:
-                NotinhasL10n.colorBlack
+                CueL10n.colorWhite
+            case CuePaletteColor.black.rawValue:
+                CueL10n.colorBlack
             case "darkGray":
-                NotinhasL10n.colorDarkGray
+                CueL10n.colorDarkGray
             case "mediumGray":
-                NotinhasL10n.colorMediumGray
+                CueL10n.colorMediumGray
             case "lightGray":
-                NotinhasL10n.colorLightGray
+                CueL10n.colorLightGray
             case "nearWhite":
-                NotinhasL10n.colorNearWhite
+                CueL10n.colorNearWhite
             default:
                 id
             }
@@ -99,7 +99,7 @@ nonisolated enum AnnotateBuiltInColorPalette {
         canvasEntries.map { ($0.color, $0.accessibilityName) }
     }
 
-    private static func entry(from palette: NotinhasPaletteColor) -> Entry {
+    private static func entry(from palette: CuePaletteColor) -> Entry {
         Entry(id: palette.rawValue, rgba: palette.rgba)
     }
 

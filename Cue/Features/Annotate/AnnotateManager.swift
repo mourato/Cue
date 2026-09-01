@@ -63,7 +63,7 @@ struct AnnotationSessionData {
     /// Active combine/stitch session flags, if the session was in combine mode.
     var combineSession: CombineSessionSnapshot?
     /// Optional Notinhas numbered notes payload.
-    var notinhasNotes: PersistedNotinhasNotesSession?
+    var cueNotes: PersistedCueNotesSession?
 }
 
 /// Manages annotation window instances
@@ -365,8 +365,8 @@ extension AnnotationSessionData {
             cutoutAutoAppliedCropRect: cutoutSnapshot.autoAppliedCropRect,
             embeddedImageAssetsData: state.embeddedImageAssetsSnapshotData(),
             combineSession: state.combineSessionSnapshot(),
-            notinhasNotes: state.notinhasNotes
-                .isEmpty ? nil : PersistedNotinhasNotesSession(notes: state.notinhasNotes),
+            cueNotes: state.cueNotes
+                .isEmpty ? nil : PersistedCueNotesSession(notes: state.cueNotes),
         )
     }
 }

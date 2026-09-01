@@ -301,7 +301,7 @@ enum ShortcutOverlayContentBuilder {
         ]
         let screenshotTools: Set<AnnotationToolType> = [
             .selection, .rectangle, .circle, .arrow, .line, .text,
-            .highlighter, .blur, .notinhasNote, .pencil,
+            .highlighter, .blur, .cueNote, .pencil,
         ]
 
         let inScreenshot = screenshotTools.contains(tool)

@@ -131,7 +131,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
             if let combineSession = sessionData.combineSession {
                 state.restoreCombineSession(combineSession)
             }
-            if let notinhas = sessionData.notinhasNotes {
+            if let notinhas = sessionData.cueNotes {
                 state.notinhasRestoreNotes(notinhas.notes)
             }
             state.migrateLegacyCountersToNotinhasIfNeeded()
@@ -265,7 +265,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
             if let combineSession = sessionData.combineSession {
                 state.restoreCombineSession(combineSession)
             }
-            if let notinhas = sessionData.notinhasNotes {
+            if let notinhas = sessionData.cueNotes {
                 state.notinhasRestoreNotes(notinhas.notes)
             }
             state.migrateLegacyCountersToNotinhasIfNeeded()

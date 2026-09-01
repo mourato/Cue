@@ -11,8 +11,8 @@ final class AnnotateExportPreviewTests: XCTestCase {
         return AnnotateState(image: image, url: url, appliesDefaultCanvasPresetOnNewImages: false)
     }
 
-    private func makeRenderableNote(text: String = "Note") -> NotinhasVisualNote {
-        NotinhasVisualNote(
+    private func makeRenderableNote(text: String = "Note") -> CueVisualNote {
+        CueVisualNote(
             text: text,
             target: .point(CGPoint(x: 50, y: 50)),
             color: RGBAColor(red: 1, green: 0, blue: 0, alpha: 1),
@@ -24,19 +24,19 @@ final class AnnotateExportPreviewTests: XCTestCase {
         let state = try makeStateWithImage()
         XCTAssertFalse(state.showsNotinhasExportPreview)
 
-        state.notinhasNotes = [makeRenderableNote()]
+        state.cueNotes = [makeRenderableNote()]
         XCTAssertFalse(state.showsNotinhasExportPreview)
 
         state.editorMode = .preview
         XCTAssertTrue(state.showsNotinhasExportPreview)
 
-        state.notinhasNotes = [makeRenderableNote(text: "   ")]
+        state.cueNotes = [makeRenderableNote(text: "   ")]
         XCTAssertFalse(state.showsNotinhasExportPreview)
     }
 
     func testRefreshNotinhasExportPreviewBuildsWiderComposition() throws {
         let state = try makeStateWithImage()
-        state.notinhasNotes = [makeRenderableNote()]
+        state.cueNotes = [makeRenderableNote()]
         state.editorMode = .preview
 
         state.refreshNotinhasExportPreview()
@@ -47,7 +47,7 @@ final class AnnotateExportPreviewTests: XCTestCase {
 
     func testRefreshNotinhasExportPreviewClearsWhenLeavingPreview() throws {
         let state = try makeStateWithImage()
-        state.notinhasNotes = [makeRenderableNote()]
+        state.cueNotes = [makeRenderableNote()]
         state.editorMode = .preview
         XCTAssertNotNil(state.notinhasExportPreviewImage)
 
@@ -57,7 +57,7 @@ final class AnnotateExportPreviewTests: XCTestCase {
 
     func testEnteringPreviewBuildsExportImageSynchronously() throws {
         let state = try makeStateWithImage()
-        state.notinhasNotes = [makeRenderableNote()]
+        state.cueNotes = [makeRenderableNote()]
 
         state.editorMode = .preview
 

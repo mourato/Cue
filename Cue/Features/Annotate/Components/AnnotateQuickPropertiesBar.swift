@@ -1653,7 +1653,7 @@ private struct QuickShapeFillStyleControl: View {
                 title: L10n.AnnotateUI.shapeStyle,
                 isPresented: $showsPopover,
             ) {
-                NotinhasAreaStylePreview(
+                CueAreaStylePreview(
                     style: selectedStyle,
                     color: color,
                     width: 16,
@@ -1669,7 +1669,7 @@ private struct QuickShapeFillStyleControl: View {
 
                     HStack(spacing: PopoverTokens.compactControlSpacing) {
                         ForEach(AnnotationShapeFillStyle.allCases) { style in
-                            NotinhasAreaStylePreviewButton(
+                            CueAreaStylePreviewButton(
                                 style: style,
                                 isSelected: selectedStyle == style,
                                 color: color,

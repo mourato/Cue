@@ -17,8 +17,8 @@ final class AnnotateLeftDockTests: XCTestCase {
     }
 
     @MainActor
-    private func makeNote(text: String = "Note") -> NotinhasVisualNote {
-        NotinhasVisualNote(
+    private func makeNote(text: String = "Note") -> CueVisualNote {
+        CueVisualNote(
             text: text,
             target: .point(.zero),
             color: RGBAColor(red: 1, green: 0, blue: 0, alpha: 1),
@@ -45,7 +45,7 @@ final class AnnotateLeftDockTests: XCTestCase {
 
         state.notinhasDeleteNote(id: note.id)
 
-        XCTAssertTrue(state.notinhasNotes.isEmpty)
+        XCTAssertTrue(state.cueNotes.isEmpty)
         XCTAssertEqual(state.leftDock, .hidden)
     }
 

@@ -119,7 +119,7 @@ enum QuickAccessActionKind: String, CaseIterable, Codable, Hashable, Identifiabl
         case .edit:
             L10n.PreferencesQuickAccess.editAction
         case .uploadToImgBB:
-            NotinhasL10n.uploadToImgBB
+            CueL10n.uploadToImgBB
         case .pinToScreen:
             L10n.PreferencesQuickAccess.pinToScreenAction
         }

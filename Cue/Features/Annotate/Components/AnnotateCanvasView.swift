@@ -364,7 +364,7 @@ struct AnnotateCanvasView: View {
             .offset(x: state.panOffset.width, y: state.panOffset.height)
 
             if state.notinhasEditingNoteID != nil {
-                NotinhasNoteEditorCanvasOverlay(
+                CueNoteEditorCanvasOverlay(
                     state: state,
                     scale: scale,
                     canvasBounds: foregroundBounds,

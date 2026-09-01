@@ -703,7 +703,7 @@ struct CompactColorSwatchGrid: View {
                     .accessibilityLabel(entry.name)
                     .accessibilityValue(
                         AnnotateColorPaletteStore.colorsMatch(selectedColor, entry.color)
-                            ? NotinhasL10n.selected
+                            ? CueL10n.selected
                             : "",
                     )
                 }

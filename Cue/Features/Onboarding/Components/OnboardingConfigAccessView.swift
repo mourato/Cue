@@ -13,11 +13,11 @@ struct ConfigAccessView: View {
     let onSkip: () -> Void
 
     @EnvironmentObject private var onboardingLocalization: OnboardingLocalizationController
-    @State private var isGranted = !NotinhasConfigurationService.shared.needsUserSelectedConfigAccess
+    @State private var isGranted = !CueConfigurationService.shared.needsUserSelectedConfigAccess
     @State private var statusMessage: String?
     @State private var errorMessage: String?
 
-    private let service = NotinhasConfigurationService.shared
+    private let service = CueConfigurationService.shared
 
     var body: some View {
         OnboardingStepContainer(onBack: onBack) {
@@ -98,7 +98,7 @@ struct ConfigAccessView: View {
         errorMessage = nil
 
         do {
-            guard let result = try NotinhasConfigurationAccessGranting.grantSuggestedConfigAccess(
+            guard let result = try CueConfigurationAccessGranting.grantSuggestedConfigAccess(
                 service: service,
                 message: L10n.PreferencesAdvanced.configDirectoryPanelOnboardingMessage(
                     service.suggestedConfigDirectoryURL.path,
@@ -119,7 +119,7 @@ struct ConfigAccessView: View {
         }
     }
 
-    private func autoImportFailureMessage(for result: NotinhasConfigurationAutoImportResult) -> String {
+    private func autoImportFailureMessage(for result: CueConfigurationAutoImportResult) -> String {
         if let errorMessage = result.errorMessage {
             return errorMessage
         }

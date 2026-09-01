@@ -92,7 +92,7 @@ final class AppCoordinator {
         #if CUE_VIDEO_MODULE
             RecordingMetadataCleanupScheduler.shared.stop()
         #endif
-        NotinhasConfigurationSyncCoordinator.shared.stop()
+        CueConfigurationSyncCoordinator.shared.stop()
 
         for observer in observers {
             NotificationCenter.default.removeObserver(observer)
@@ -148,8 +148,8 @@ final class AppCoordinator {
         #endif
     }
 
-    private func applyUserConfigurationIfNeeded() -> NotinhasConfigurationAutoImportResult {
-        let result = NotinhasConfigurationAutoImporter.applyIfNeededOnLaunch()
+    private func applyUserConfigurationIfNeeded() -> CueConfigurationAutoImportResult {
+        let result = CueConfigurationAutoImporter.applyIfNeededOnLaunch()
         let context = [
             "file": result.fileURL.path,
             "changes": "\(result.appliedChangeCount)",
@@ -202,8 +202,8 @@ final class AppCoordinator {
         return result
     }
 
-    private func startConfigurationSync(after autoImportResult: NotinhasConfigurationAutoImportResult) {
-        let coordinator = NotinhasConfigurationSyncCoordinator.shared
+    private func startConfigurationSync(after autoImportResult: CueConfigurationAutoImportResult) {
+        let coordinator = CueConfigurationSyncCoordinator.shared
         coordinator.start()
 
         guard autoImportResult.status != .applied else { return }
@@ -212,7 +212,7 @@ final class AppCoordinator {
 
     private func flushConfigurationSyncBeforeTermination() {
         do {
-            try NotinhasConfigurationSyncCoordinator.shared.flushPendingSync(reason: .appTerminate)
+            try CueConfigurationSyncCoordinator.shared.flushPendingSync(reason: .appTerminate)
         } catch {
             DiagnosticLogger.shared.logError(
                 .preferences,
@@ -223,7 +223,7 @@ final class AppCoordinator {
     }
 
     private func presentStartupExperience(
-        configurationAutoImportResult: NotinhasConfigurationAutoImportResult,
+        configurationAutoImportResult: CueConfigurationAutoImportResult,
     ) {
         if shouldPresentConfigurationAccessOnboarding(for: configurationAutoImportResult) {
             UserDefaults.standard.set(true, forKey: PreferencesKeys.configurationAccessOnboardingPrompted)
@@ -236,7 +236,7 @@ final class AppCoordinator {
     }
 
     private func shouldPresentConfigurationAccessOnboarding(
-        for result: NotinhasConfigurationAutoImportResult,
+        for result: CueConfigurationAutoImportResult,
     ) -> Bool {
         guard result.status == .skippedPermissionRequired else {
             return false

@@ -138,7 +138,7 @@ extension PersistedAnnotationSession {
             createdAt: createdAt,
             updatedAt: updatedAt,
             combineSession: persistedCombineSession,
-            notinhasNotesSession: sessionData.notinhasNotes,
+            cueNotesSession: sessionData.cueNotes,
         )
     }
 
@@ -161,7 +161,7 @@ extension PersistedAnnotationSession {
             cutoutAutoAppliedCropRect: cutoutAutoAppliedCropRect,
             embeddedImageAssetsData: embeddedImageAssetsData,
             combineSession: combineSession?.toSnapshot(),
-            notinhasNotes: notinhasNotesSession,
+            cueNotes: cueNotesSession,
         )
     }
 }

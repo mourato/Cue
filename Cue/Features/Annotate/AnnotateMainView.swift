@@ -64,8 +64,8 @@ struct AnnotateMainView: View {
                             AnnotateSidebarView(state: state)
                                 .equatable()
                         case .notes:
-                            NotinhasNotesSidePanelView(
-                                notes: state.notinhasNotes,
+                            CueNotesSidePanelView(
+                                notes: state.cueNotes,
                                 selectedNoteID: state.notinhasSelectedNoteID,
                                 onSelect: { state.notinhasSelectNote(id: $0) },
                                 onDelete: { state.notinhasDeleteNote(id: $0) },
@@ -95,7 +95,7 @@ struct AnnotateMainView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .contentShape(Rectangle()) // Constrain hit-test area to frame bounds
                     .clipped() // Prevent canvas content from overlapping toolbar/bottombar
-                    .onChange(of: state.notinhasNotes) { _ in
+                    .onChange(of: state.cueNotes) { _ in
                         if state.showsNotinhasExportPreview {
                             state.refreshNotinhasExportPreview()
                         }

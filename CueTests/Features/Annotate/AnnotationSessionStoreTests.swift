@@ -133,27 +133,27 @@ final class AnnotationSessionStoreTests: XCTestCase {
     func testPersistAndLoad_roundTripsNotinhasNotes() throws {
         let sourceURL = try writeSourceImage(named: "notinhas.png")
         var sessionData = try makeSessionData()
-        let note = NotinhasVisualNote(
+        let note = CueVisualNote(
             text: "Increase contrast",
             target: .point(CGPoint(x: 40, y: 60)),
             color: RGBAColor(red: 1, green: 0, blue: 0, alpha: 1),
             pinControlValue: 6,
             creationOrder: 1,
         )
-        sessionData.notinhasNotes = PersistedNotinhasNotesSession(notes: [note])
+        sessionData.cueNotes = PersistedCueNotesSession(notes: [note])
 
         XCTAssertTrue(store.persist(sessionData, for: sourceURL))
         let loaded = try XCTUnwrap(store.load(for: sourceURL))
-        XCTAssertEqual(loaded.notinhasNotes?.notes.count, 1)
-        XCTAssertEqual(loaded.notinhasNotes?.notes.first?.text, "Increase contrast")
-        XCTAssertEqual(loaded.notinhasNotes?.notes.first?.pinControlValue, 6)
+        XCTAssertEqual(loaded.cueNotes?.notes.count, 1)
+        XCTAssertEqual(loaded.cueNotes?.notes.first?.text, "Increase contrast")
+        XCTAssertEqual(loaded.cueNotes?.notes.first?.pinControlValue, 6)
     }
 
     func testPersistOffMainAndLoad_roundTripsAnnotationsAndNotinhasNotes() async throws {
         let sourceURL = try writeSourceImage(named: "off-main.png")
         var sessionData = try makeSessionData()
-        sessionData.notinhasNotes = PersistedNotinhasNotesSession(notes: [
-            NotinhasVisualNote(
+        sessionData.cueNotes = PersistedCueNotesSession(notes: [
+            CueVisualNote(
                 text: "Increase contrast",
                 target: .point(CGPoint(x: 40, y: 60)),
                 color: RGBAColor(red: 1, green: 0, blue: 0, alpha: 1),
@@ -167,8 +167,43 @@ final class AnnotationSessionStoreTests: XCTestCase {
 
         let loaded = try XCTUnwrap(store.load(for: sourceURL))
         XCTAssertEqual(loaded.annotations.count, sessionData.annotations.count)
-        XCTAssertEqual(loaded.notinhasNotes?.notes.count, 1)
-        XCTAssertEqual(loaded.notinhasNotes?.notes.first?.text, "Increase contrast")
+        XCTAssertEqual(loaded.cueNotes?.notes.count, 1)
+        XCTAssertEqual(loaded.cueNotes?.notes.first?.text, "Increase contrast")
+    }
+
+    func testPersistedSession_decodesLegacyNotinhasNotesSessionKey() throws {
+        let sessionData = try makeSessionData()
+        var sessionDataWithNotes = sessionData
+        sessionDataWithNotes.cueNotes = PersistedCueNotesSession(notes: [
+            CueVisualNote(
+                text: "Legacy key",
+                target: .point(CGPoint(x: 10, y: 20)),
+                color: RGBAColor(red: 0, green: 0, blue: 1, alpha: 1),
+                pinControlValue: 2,
+                creationOrder: 1,
+            ),
+        ])
+        let manifest = PersistedAnnotationSession(
+            sessionData: sessionDataWithNotes,
+            sourceFilePath: "/tmp/capture.png",
+            sourceFilePathHash: "hash",
+            sourceSignature: PersistedFileSignature(fileSize: 1, modifiedAtMilliseconds: 1, pathExtension: "png"),
+            createdAt: Date(timeIntervalSince1970: 0),
+        )
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let encoded = try encoder.encode(manifest)
+        var object = try XCTUnwrap(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
+        let legacyNotesSession = object.removeValue(forKey: "cueNotesSession")
+        object["notinhasNotesSession"] = legacyNotesSession
+        let legacyPayload = try JSONSerialization.data(withJSONObject: object)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let decoded = try decoder.decode(PersistedAnnotationSession.self, from: legacyPayload)
+
+        XCTAssertEqual(decoded.cueNotesSession?.notes.count, 1)
+        XCTAssertEqual(decoded.cueNotesSession?.notes.first?.text, "Legacy key")
     }
 
     func testPersistedSession_ignoresMalformedNotinhasPayload() throws {
@@ -184,7 +219,7 @@ final class AnnotationSessionStoreTests: XCTestCase {
         encoder.dateEncodingStrategy = .iso8601
         let encoded = try encoder.encode(manifest)
         var object = try XCTUnwrap(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
-        object["notinhasNotesSession"] = ["notes": ["invalid": true]]
+        object["cueNotesSession"] = ["notes": ["invalid": true]]
         let malformed = try JSONSerialization.data(withJSONObject: object)
 
         let decoder = JSONDecoder()
@@ -192,7 +227,7 @@ final class AnnotationSessionStoreTests: XCTestCase {
         let decoded = try decoder.decode(PersistedAnnotationSession.self, from: malformed)
 
         XCTAssertEqual(decoded.annotations.count, sessionData.annotations.count)
-        XCTAssertNil(decoded.notinhasNotesSession)
+        XCTAssertNil(decoded.cueNotesSession)
     }
 
     private func makeSessionData(assetId: UUID = UUID()) throws -> AnnotationSessionData {

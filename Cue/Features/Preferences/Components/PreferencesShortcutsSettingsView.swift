@@ -1276,7 +1276,7 @@ struct ShortcutsSettingsView: View {
     /// Screenshot annotation tools (all configurable except crop handled separately)
     private static let screenshotTools: Set<AnnotationToolType> = [
         .selection, .rectangle, .circle, .arrow, .line, .text,
-        .highlighter, .blur, .notinhasNote, .pencil,
+        .highlighter, .blur, .cueNote, .pencil,
     ]
 
     private func toolContext(for tool: AnnotationToolType) -> AnnotationToolContext {

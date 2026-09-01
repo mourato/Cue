@@ -1170,7 +1170,7 @@ final class AnnotateCoreTests: XCTestCase {
             .text,
             .highlighter,
             .counter,
-            .notinhasNote,
+            .cueNote,
             .pencil,
             .mockup,
         ] {
@@ -1844,11 +1844,11 @@ final class AnnotateCoreTests: XCTestCase {
         XCTAssertFalse(AnnotationToolType.crop.supportsQuickPropertiesBar)
         XCTAssertFalse(AnnotationToolType.mockup.supportsQuickPropertiesBar)
         XCTAssertTrue(AnnotationToolType.rectangle.supportsQuickPropertiesBar)
-        XCTAssertTrue(AnnotationToolType.notinhasNote.supportsQuickPropertiesBar)
-        XCTAssertTrue(AnnotationToolType.notinhasNote.supportsQuickStrokeWidth)
-        XCTAssertTrue(AnnotationToolType.notinhasNote.supportsQuickStrokeColor)
+        XCTAssertTrue(AnnotationToolType.cueNote.supportsQuickPropertiesBar)
+        XCTAssertTrue(AnnotationToolType.cueNote.supportsQuickStrokeWidth)
+        XCTAssertTrue(AnnotationToolType.cueNote.supportsQuickStrokeColor)
         XCTAssertFalse(AnnotationToolType.drawableTools.contains(.counter))
-        XCTAssertTrue(AnnotationToolType.drawableTools.contains(.notinhasNote))
+        XCTAssertTrue(AnnotationToolType.drawableTools.contains(.cueNote))
         XCTAssertTrue(AnnotationToolType.watermark.supportsQuickPropertiesBar)
         XCTAssertTrue(AnnotationToolType.rectangle.supportsQuickStrokeColor)
         XCTAssertFalse(AnnotationToolType.rectangle.supportsQuickFillColor)
@@ -1896,7 +1896,7 @@ final class AnnotateCoreTests: XCTestCase {
         let state = makeAnnotateState()
         state.activateTool(.rectangle)
 
-        let selectedColor = NotinhasPaletteColor.blue.rgba.color
+        let selectedColor = CuePaletteColor.blue.rgba.color
         state.quickStrokeColorBinding.wrappedValue = selectedColor
 
         assertColorsMatch(state.annotationCreationProperties(for: .rectangle).strokeColor, selectedColor)
@@ -1904,7 +1904,7 @@ final class AnnotateCoreTests: XCTestCase {
         assertColorsMatch(state.annotationCreationProperties(for: .text).strokeColor, selectedColor)
         assertColorsMatch(state.annotationCreationProperties(for: .rectangle).strokeColor, selectedColor)
         assertColorsMatch(state.annotationCreationProperties(for: .rectangle).fillColor, selectedColor)
-        assertColorsMatch(state.annotationCreationProperties(for: .notinhasNote).strokeColor, selectedColor)
+        assertColorsMatch(state.annotationCreationProperties(for: .cueNote).strokeColor, selectedColor)
 
         state.activateTool(.arrow)
         assertColorsMatch(state.quickStrokeColorBinding.wrappedValue, selectedColor)
@@ -1913,10 +1913,10 @@ final class AnnotateCoreTests: XCTestCase {
     @MainActor
     func testNotinhasToolbarColorUpdatesShapeDefaultsAndPersists() {
         let defaults = UserDefaultsFactory.make()
-        let selectedColor = NotinhasPaletteColor.magenta.rgba.color
+        let selectedColor = CuePaletteColor.magenta.rgba.color
         let state = makeAnnotateState(defaults: defaults)
 
-        state.activateTool(.notinhasNote)
+        state.activateTool(.cueNote)
         state.quickStrokeColorBinding.wrappedValue = selectedColor
         assertColorsMatch(state.quickStrokeColorBinding.wrappedValue, selectedColor)
 
@@ -1926,7 +1926,7 @@ final class AnnotateCoreTests: XCTestCase {
         assertColorsMatch(state.quickStrokeColorBinding.wrappedValue, selectedColor)
 
         let reloadedState = makeAnnotateState(defaults: defaults)
-        reloadedState.activateTool(.notinhasNote)
+        reloadedState.activateTool(.cueNote)
         assertColorsMatch(reloadedState.quickStrokeColorBinding.wrappedValue, selectedColor)
     }
 

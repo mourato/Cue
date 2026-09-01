@@ -20,8 +20,8 @@ struct AnnotateRenderSnapshot {
     var effectiveContentBounds: CGRect
     var cropRect: CGRect?
     var annotations: [AnnotationItem]
-    var notinhasNotes: [NotinhasVisualNote]
-    var notinhasPanelSide: NotinhasNotesPanelSide
+    var cueNotes: [CueVisualNote]
+    var notinhasPanelSide: CueNotesPanelSide
     var embeddedImages: [UUID: NSImage]
     var embeddedCGImages: [UUID: CGImage]
 

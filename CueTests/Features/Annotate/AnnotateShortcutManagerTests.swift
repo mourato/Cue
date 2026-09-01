@@ -137,38 +137,38 @@ final class AnnotateShortcutManagerTests: XCTestCase {
 
     func testNotinhasNoteShortcut_defaultsToN_andCounterIsNotConfigurable() {
         XCTAssertFalse(AnnotateShortcutManager.configurableTools.contains(.counter))
-        XCTAssertTrue(AnnotateShortcutManager.configurableTools.contains(.notinhasNote))
-        XCTAssertEqual(AnnotationToolType.notinhasNote.defaultShortcut, "n")
-        XCTAssertEqual(manager.shortcut(for: .notinhasNote), "n")
+        XCTAssertTrue(AnnotateShortcutManager.configurableTools.contains(.cueNote))
+        XCTAssertEqual(AnnotationToolType.cueNote.defaultShortcut, "n")
+        XCTAssertEqual(manager.shortcut(for: .cueNote), "n")
     }
 
     func testCounterAbsorptionShortcutMigration_movesNoteShortcutFromIToN() {
-        let noteKey = "annotate.shortcut.\(AnnotationToolType.notinhasNote.rawValue)"
+        let noteKey = "annotate.shortcut.\(AnnotationToolType.cueNote.rawValue)"
         let migrationKey = "annotate.shortcut.counterAbsorption.v1"
         let counterKey = "annotate.shortcut.\(AnnotationToolType.counter.rawValue)"
         defaults.set("i", forKey: noteKey)
         defaults.set("n", forKey: counterKey)
         defaults.set(false, forKey: migrationKey)
-        manager.setShortcut("i", for: .notinhasNote)
+        manager.setShortcut("i", for: .cueNote)
 
         manager.migrateCounterAbsorptionShortcutsIfNeeded()
 
-        XCTAssertEqual(manager.shortcut(for: .notinhasNote), "n")
+        XCTAssertEqual(manager.shortcut(for: .cueNote), "n")
         XCTAssertNil(defaults.string(forKey: counterKey))
         XCTAssertTrue(defaults.bool(forKey: migrationKey))
     }
 
     func testCounterAbsorptionShortcutMigration_keepsIWhenNIsTaken() {
-        let noteKey = "annotate.shortcut.\(AnnotationToolType.notinhasNote.rawValue)"
+        let noteKey = "annotate.shortcut.\(AnnotationToolType.cueNote.rawValue)"
         let migrationKey = "annotate.shortcut.counterAbsorption.v1"
         defaults.set("i", forKey: noteKey)
         defaults.set(false, forKey: migrationKey)
-        manager.setShortcut("i", for: .notinhasNote)
+        manager.setShortcut("i", for: .cueNote)
         manager.setShortcut("n", for: .pencil)
 
         manager.migrateCounterAbsorptionShortcutsIfNeeded()
 
-        XCTAssertEqual(manager.shortcut(for: .notinhasNote), "i")
+        XCTAssertEqual(manager.shortcut(for: .cueNote), "i")
         XCTAssertEqual(manager.shortcut(for: .pencil), "n")
         XCTAssertTrue(defaults.bool(forKey: migrationKey))
     }

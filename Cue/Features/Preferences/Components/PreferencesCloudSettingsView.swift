@@ -6,7 +6,7 @@
 import SwiftUI
 
 struct CloudSettingsView: View {
-    @ObservedObject private var uploadConfiguration = NotinhasUploadConfigurationStore.shared
+    @ObservedObject private var uploadConfiguration = CueUploadConfigurationStore.shared
     @State private var credential = ""
     @State private var isEditing = false
     @State private var errorMessage: String?
@@ -15,7 +15,7 @@ struct CloudSettingsView: View {
         Form {
             Section(L10n.CloudSettings.providerSection) {
                 Picker(L10n.CloudSettings.provider, selection: providerBinding) {
-                    ForEach(NotinhasUploadProvider.allCases) { provider in
+                    ForEach(CueUploadProvider.allCases) { provider in
                         Text(provider.name).tag(provider)
                     }
                 }
@@ -84,7 +84,7 @@ struct CloudSettingsView: View {
         }
     }
 
-    private var providerBinding: Binding<NotinhasUploadProvider> {
+    private var providerBinding: Binding<CueUploadProvider> {
         Binding(
             get: { uploadConfiguration.provider },
             set: {

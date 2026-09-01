@@ -126,7 +126,7 @@
 
         private var shapeFillStylePickers: some View {
             ForEach(AnnotationShapeFillStyle.allCases) { style in
-                NotinhasAreaStylePreviewButton(
+                CueAreaStylePreviewButton(
                     style: style,
                     isSelected: state.shapeFillStyle == style,
                     color: state.strokeColor,

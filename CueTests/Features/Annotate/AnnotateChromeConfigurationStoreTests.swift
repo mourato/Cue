@@ -108,10 +108,10 @@ final class AnnotateChromeConfigurationStoreTests: XCTestCase {
         let store = makeStore(defaults: defaults)
 
         store.setEnabled(.watermark, enabled: false)
-        let noteIndex = try XCTUnwrap(store.toolbarItemOrder.firstIndex(of: .notinhasNote))
+        let noteIndex = try XCTUnwrap(store.toolbarItemOrder.firstIndex(of: .cueNote))
         store.moveToolbarItem(from: IndexSet(integer: noteIndex), to: 3)
 
-        XCTAssertEqual(store.effectiveDrawableTools().first, .notinhasNote)
+        XCTAssertEqual(store.effectiveDrawableTools().first, .cueNote)
         XCTAssertFalse(store.effectiveDrawableTools().contains(.watermark))
     }
 

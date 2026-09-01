@@ -49,7 +49,7 @@ final class AnnotateShortcutManager: ObservableObject {
     /// Tools that support shortcuts (excludes mockup - internal only)
     static let configurableTools: [AnnotationToolType] = [
         .crop, .selection, .rectangle, .circle, .arrow,
-        .line, .magnify, .text, .highlighter, .blur, .spotlight, .notinhasNote, .watermark, .pencil,
+        .line, .magnify, .text, .highlighter, .blur, .spotlight, .cueNote, .watermark, .pencil,
     ]
 
     /// Default: ⌘⇧C
@@ -261,15 +261,15 @@ final class AnnotateShortcutManager: ObservableObject {
 
         guard !defaults.bool(forKey: counterAbsorptionMigrationKey) else { return }
 
-        let noteShortcutKey = keyPrefix + AnnotationToolType.notinhasNote.rawValue
+        let noteShortcutKey = keyPrefix + AnnotationToolType.cueNote.rawValue
         let storedNoteShortcut = defaults.string(forKey: noteShortcutKey)?.first
-        let currentNoteShortcut = shortcuts[.notinhasNote]
+        let currentNoteShortcut = shortcuts[.cueNote]
         let shouldMigrateNoteShortcut = storedNoteShortcut == "i" ||
             (storedNoteShortcut == nil && currentNoteShortcut == "i")
 
-        if shouldMigrateNoteShortcut, conflictingTool(for: "n", excluding: .notinhasNote) == nil {
-            shortcuts[.notinhasNote] = "n"
-            saveShortcut(for: .notinhasNote)
+        if shouldMigrateNoteShortcut, conflictingTool(for: "n", excluding: .cueNote) == nil {
+            shortcuts[.cueNote] = "n"
+            saveShortcut(for: .cueNote)
         }
 
         defaults.set(true, forKey: counterAbsorptionMigrationKey)

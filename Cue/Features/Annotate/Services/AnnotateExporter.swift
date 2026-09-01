@@ -632,7 +632,7 @@ final class AnnotateExporter {
         guard let image else { return nil }
         let renderableNotes = exportableNotinhasNotes(snapshot)
         guard !renderableNotes.isEmpty else { return image }
-        return NotinhasNotesComposer.addPanelOnly(
+        return CueNotesComposer.addPanelOnly(
             to: image,
             notes: renderableNotes,
             panelSide: snapshot.notinhasPanelSide,
@@ -640,7 +640,7 @@ final class AnnotateExporter {
     }
 
     private nonisolated static func drawNotinhasNotesForExport(
-        notes: [NotinhasVisualNote],
+        notes: [CueVisualNote],
         cropOrigin: CGPoint,
         destinationOffset: CGPoint,
         imageBounds: CGRect,
@@ -648,13 +648,13 @@ final class AnnotateExporter {
     ) {
         guard !notes.isEmpty else { return }
         let transformed = notes.map {
-            NotinhasNoteGeometry.exportTransformed(
+            CueNoteGeometry.exportTransformed(
                 $0,
                 cropOrigin: cropOrigin,
                 destinationOffset: destinationOffset,
             )
         }
-        NotinhasNoteRenderer.draw(
+        CueNoteRenderer.draw(
             notes: transformed,
             selectedNoteID: nil,
             in: context,
@@ -665,10 +665,10 @@ final class AnnotateExporter {
     /// Notes use the same crop visibility and deterministic ordering in every final renderer.
     private nonisolated static func exportableNotinhasNotes(
         _ snapshot: AnnotateRenderSnapshot,
-    ) -> [NotinhasVisualNote] {
-        let notes = NotinhasNoteGeometry.orderedRenderableNotes(snapshot.notinhasNotes)
+    ) -> [CueVisualNote] {
+        let notes = CueNoteGeometry.orderedRenderableNotes(snapshot.cueNotes)
         guard let cropRect = snapshot.cropRect?.standardized else { return notes }
-        return notes.filter { NotinhasNoteGeometry.selectionBounds(for: $0).intersects(cropRect) }
+        return notes.filter { CueNoteGeometry.selectionBounds(for: $0).intersects(cropRect) }
     }
 
     /// Draw only the source-image portion that intersects the requested canvas bounds.

@@ -16,7 +16,7 @@ final class AnnotateState: ObservableObject {
     private struct AnnotationSnapshot {
         var annotations: [AnnotationItem]
         var embeddedImageAssets: [UUID: NSImage]
-        var notinhasNotes: [NotinhasVisualNote]
+        var cueNotes: [CueVisualNote]
     }
 
     /// Snapshot of every piece of state mutated by an image rotation. Used as a dedicated
@@ -29,7 +29,7 @@ final class AnnotateState: ObservableObject {
         var embeddedImageSourceData: [UUID: Data]
         var embeddedImageSnapshotCacheData: [UUID: Data]
         var annotations: [AnnotationItem]
-        var notinhasNotes: [NotinhasVisualNote]
+        var cueNotes: [CueVisualNote]
         var cropRect: CGRect?
         var originalCropRect: CGRect?
         var cropAspectRatio: CropAspectRatio
@@ -413,7 +413,7 @@ final class AnnotateState: ObservableObject {
         withAnimation(.easeInOut(duration: 0.2)) {
             switch leftDock {
             case .background:
-                leftDock = notinhasNotes.isEmpty ? .hidden : .notes
+                leftDock = cueNotes.isEmpty ? .hidden : .notes
             case .hidden, .notes:
                 leftDock = .background
             }
@@ -422,7 +422,7 @@ final class AnnotateState: ObservableObject {
 
     func syncLeftDockForNotesChange() {
         guard editorMode != .preview else { return }
-        if notinhasNotes.isEmpty {
+        if cueNotes.isEmpty {
             if leftDock == .notes {
                 leftDock = .hidden
             }
@@ -1298,7 +1298,7 @@ final class AnnotateState: ObservableObject {
     // MARK: - Annotations
 
     @Published var annotations: [AnnotationItem] = []
-    @Published var notinhasNotes: [NotinhasVisualNote] = [] {
+    @Published var cueNotes: [CueVisualNote] = [] {
         didSet {
             syncLeftDockForNotesChange()
         }
@@ -1308,14 +1308,14 @@ final class AnnotateState: ObservableObject {
     @Published var notinhasSelectedNoteID: UUID?
     @Published var notinhasEditingNoteID: UUID?
     /// Snapshot taken when the note editor opens; used to revert live appearance on cancel/dismiss.
-    var notinhasEditorOpeningSnapshot: NotinhasVisualNote?
-    var notinhasDraftNote: NotinhasVisualNote?
+    var notinhasEditorOpeningSnapshot: CueVisualNote?
+    var cueDraftNote: CueVisualNote?
     var notinhasIsDrawingNote = false
-    var notinhasNoteDrawStart: CGPoint?
+    var cueNoteDrawStart: CGPoint?
     var notinhasMovingNoteID: UUID?
-    var notinhasMoveOriginalTarget: NotinhasNoteTarget?
+    var notinhasMoveOriginalTarget: CueNoteTarget?
     /// Gesture-local target while a marker move is active; not published until commit.
-    var notinhasMovePreviewTarget: NotinhasNoteTarget?
+    var cueMovePreviewTarget: CueNoteTarget?
     /// Imported image assets referenced by `.embeddedImage(assetId)` annotations.
     @Published private(set) var embeddedImageAssets: [UUID: NSImage] = [:]
     /// Non-blocking warning for large multi-image imports.
@@ -1651,7 +1651,7 @@ final class AnnotateState: ObservableObject {
             effectiveContentBounds: effectiveContentBounds,
             cropRect: cropRect,
             annotations: annotations,
-            notinhasNotes: notinhasNotes,
+            cueNotes: cueNotes,
             notinhasPanelSide: .left,
             embeddedImages: embeddedImageAssets,
             embeddedCGImages: embeddedImageCGImageCache,
@@ -2373,12 +2373,12 @@ final class AnnotateState: ObservableObject {
 
     /// Pushes an undo checkpoint with a custom Notinhas notes array without mutating live state.
     /// Used so move-commit can record pre-move geometry without flickering published notes.
-    func saveNotinhasNotesUndoCheckpoint(_ notes: [NotinhasVisualNote]) {
+    func saveNotinhasNotesUndoCheckpoint(_ notes: [CueVisualNote]) {
         pushUndoSnapshot(
             AnnotationSnapshot(
                 annotations: annotations,
                 embeddedImageAssets: embeddedImageAssets,
-                notinhasNotes: notes,
+                cueNotes: notes,
             ),
             annotationCount: annotations.count,
         )
@@ -2447,7 +2447,7 @@ final class AnnotateState: ObservableObject {
         AnnotationSnapshot(
             annotations: annotations,
             embeddedImageAssets: embeddedImageAssets,
-            notinhasNotes: notinhasNotes,
+            cueNotes: cueNotes,
         )
     }
 
@@ -2460,7 +2460,7 @@ final class AnnotateState: ObservableObject {
             embeddedImageSourceData: embeddedImageSourceData,
             embeddedImageSnapshotCacheData: embeddedImageSnapshotCacheData,
             annotations: annotations,
-            notinhasNotes: notinhasNotes,
+            cueNotes: cueNotes,
             cropRect: cropRect,
             originalCropRect: originalCropRect,
             cropAspectRatio: cropAspectRatio,
@@ -2517,7 +2517,7 @@ final class AnnotateState: ObservableObject {
     private func applySnapshot(_ snapshot: AnnotationSnapshot) {
         annotations = snapshot.annotations
         embeddedImageAssets = snapshot.embeddedImageAssets
-        notinhasNotes = snapshot.notinhasNotes
+        cueNotes = snapshot.cueNotes
         notinhasSelectedNoteID = nil
         notinhasEditingNoteID = nil
         notinhasClearDrawingState()
@@ -2543,7 +2543,7 @@ final class AnnotateState: ObservableObject {
         embeddedImageSnapshotCacheData = snapshot.embeddedImageSnapshotCacheData
         embeddedImageCGImageCache.removeAll()
         annotations = snapshot.annotations
-        notinhasNotes = snapshot.notinhasNotes
+        cueNotes = snapshot.cueNotes
         cropRect = snapshot.cropRect
         originalCropRect = snapshot.originalCropRect
         cropAspectRatio = snapshot.cropAspectRatio
@@ -2625,7 +2625,7 @@ final class AnnotateState: ObservableObject {
         embeddedImageCGImageCache.removeAll()
 
         annotations = annotations.map { rotateAnnotation($0, oldSize: oldSize, clockwise: clockwise) }
-        notinhasNotes = notinhasNotes.map { rotateNotinhasNote($0, oldSize: oldSize, clockwise: clockwise) }
+        cueNotes = cueNotes.map { rotateCueNote($0, oldSize: oldSize, clockwise: clockwise) }
 
         cropRect = cropRect.map { AnnotateImageRotation.rotateRect($0, oldSize: oldSize, clockwise: clockwise) }
         originalCropRect = originalCropRect.map { AnnotateImageRotation.rotateRect(
@@ -2714,11 +2714,11 @@ final class AnnotateState: ObservableObject {
         return rotated
     }
 
-    private func rotateNotinhasNote(
-        _ note: NotinhasVisualNote,
+    private func rotateCueNote(
+        _ note: CueVisualNote,
         oldSize: CGSize,
         clockwise: Bool,
-    ) -> NotinhasVisualNote {
+    ) -> CueVisualNote {
         var rotated = note
         rotated.target = note.target.rotated(oldSize: oldSize, clockwise: clockwise)
         return rotated
@@ -3873,7 +3873,7 @@ final class AnnotateState: ObservableObject {
     }
 
     func rememberNotinhasColor(_ color: RGBAColor) {
-        rememberAnnotationPrimaryColor(color.color, for: .notinhasNote)
+        rememberAnnotationPrimaryColor(color.color, for: .cueNote)
     }
 
     private func rememberAnnotationStrokeWidth(_ strokeWidth: CGFloat, for tool: AnnotationToolType?) {
@@ -3978,7 +3978,7 @@ final class AnnotateState: ObservableObject {
 
     func defaultNotinhasPinControlValue() -> CGFloat {
         AnnotationProperties.clampedControlValue(
-            defaultAnnotationProperties(for: .notinhasNote).strokeWidth,
+            defaultAnnotationProperties(for: .cueNote).strokeWidth,
         )
     }
 
@@ -3996,8 +3996,8 @@ final class AnnotateState: ObservableObject {
             return properties
         }
         if tool != .watermark {
-            let defaultStrokeColor = tool == .notinhasNote
-                ? (sharedAnnotationColor ?? NotinhasPaletteColor.red.rgba.color)
+            let defaultStrokeColor = tool == .cueNote
+                ? (sharedAnnotationColor ?? CuePaletteColor.red.rgba.color)
                 : (sharedAnnotationColor ?? .red)
             var properties = AnnotationProperties(strokeColor: defaultStrokeColor)
             if tool == .blur {
@@ -4934,7 +4934,7 @@ final class AnnotateState: ObservableObject {
         let controlValue = quickStrokeWidthValue
 
         switch quickStrokeWidthSemanticTool {
-        case .counter, .notinhasNote:
+        case .counter, .cueNote:
             return "\(Int(AnnotationProperties.counterDiameter(for: controlValue).rounded()))"
         case .blur:
             let value: CGFloat = switch activeBlurType {
@@ -4963,7 +4963,7 @@ final class AnnotateState: ObservableObject {
 
     private var quickStrokeWidthUsesSizeLabel: Bool {
         switch quickStrokeWidthSemanticTool {
-        case .blur, .counter, .notinhasNote:
+        case .blur, .counter, .cueNote:
             true
         default:
             false
@@ -4981,12 +4981,12 @@ final class AnnotateState: ObservableObject {
     }
 
     private var quickStrokeWidthValue: CGFloat {
-        if selectedTool == .notinhasNote {
+        if selectedTool == .cueNote {
             if let selectedID = notinhasSelectedNoteID,
-               let note = notinhasNotes.first(where: { $0.id == selectedID }) {
+               let note = cueNotes.first(where: { $0.id == selectedID }) {
                 return note.pinControlValue
             }
-            return defaultAnnotationProperties(for: .notinhasNote).strokeWidth
+            return defaultAnnotationProperties(for: .cueNote).strokeWidth
         }
         return quickSelectionTargets(matching: { $0.supportsQuickStrokeWidth }).first?.properties.strokeWidth
             ?? defaultAnnotationProperties(for: quickPropertiesTool).strokeWidth
@@ -5015,29 +5015,29 @@ final class AnnotateState: ObservableObject {
         Binding(
             get: { [weak self] in
                 guard let self else { return .red }
-                if selectedTool == .notinhasNote {
+                if selectedTool == .cueNote {
                     if let selectedID = notinhasSelectedNoteID,
-                       let note = notinhasNotes.first(where: { $0.id == selectedID }) {
+                       let note = cueNotes.first(where: { $0.id == selectedID }) {
                         return note.color.color
                     }
-                    return defaultAnnotationProperties(for: .notinhasNote).strokeColor
+                    return defaultAnnotationProperties(for: .cueNote).strokeColor
                 }
                 return quickSelectionTargets(matching: { $0.supportsQuickStrokeColor }).first?.properties.strokeColor
                     ?? defaultAnnotationProperties(for: quickPropertiesTool).strokeColor
             },
             set: { [weak self] newColor in
                 guard let self else { return }
-                if selectedTool == .notinhasNote {
+                if selectedTool == .cueNote {
                     guard let rgba = RGBAColor(color: newColor) else { return }
                     if let selectedID = notinhasSelectedNoteID,
-                       let index = notinhasNotes.firstIndex(where: { $0.id == selectedID }) {
-                        var note = notinhasNotes[index]
+                       let index = cueNotes.firstIndex(where: { $0.id == selectedID }) {
+                        var note = cueNotes[index]
                         guard note.color != rgba else { return }
                         note.color = rgba
                         notinhasUpdateNote(note)
                         rememberNotinhasColor(rgba)
                     } else {
-                        rememberAnnotationPrimaryColor(newColor, for: .notinhasNote)
+                        rememberAnnotationPrimaryColor(newColor, for: .cueNote)
                     }
                     return
                 }
@@ -5088,28 +5088,28 @@ final class AnnotateState: ObservableObject {
         Binding(
             get: { [weak self] in
                 guard let self else { return AnnotationStrokeWidth.default.points }
-                if selectedTool == .notinhasNote {
+                if selectedTool == .cueNote {
                     if let selectedID = notinhasSelectedNoteID,
-                       let note = notinhasNotes.first(where: { $0.id == selectedID }) {
+                       let note = cueNotes.first(where: { $0.id == selectedID }) {
                         return note.pinControlValue
                     }
-                    return defaultAnnotationProperties(for: .notinhasNote).strokeWidth
+                    return defaultAnnotationProperties(for: .cueNote).strokeWidth
                 }
                 return quickSelectionTargets(matching: { $0.supportsQuickStrokeWidth }).first?.properties.strokeWidth
                     ?? defaultAnnotationProperties(for: quickPropertiesTool).strokeWidth
             },
             set: { [weak self] newWidth in
                 guard let self else { return }
-                if selectedTool == .notinhasNote {
+                if selectedTool == .cueNote {
                     let clampedWidth = AnnotationProperties.clampedControlValue(newWidth)
                     if let selectedID = notinhasSelectedNoteID,
-                       let index = notinhasNotes.firstIndex(where: { $0.id == selectedID }) {
-                        var note = notinhasNotes[index]
+                       let index = cueNotes.firstIndex(where: { $0.id == selectedID }) {
+                        var note = cueNotes[index]
                         guard note.pinControlValue != clampedWidth else { return }
                         note.pinControlValue = clampedWidth
                         notinhasUpdateNote(note)
                     } else {
-                        rememberAnnotationStrokeWidth(clampedWidth, for: .notinhasNote)
+                        rememberAnnotationStrokeWidth(clampedWidth, for: .cueNote)
                     }
                     return
                 }
@@ -5211,7 +5211,7 @@ final class AnnotateState: ObservableObject {
         if editingTextAnnotationId != nil {
             commitTextEditing()
         }
-        if selectedTool == .notinhasNote, tool != .notinhasNote {
+        if selectedTool == .cueNote, tool != .cueNote {
             notinhasCloseEditor(discardIfEmpty: true, revertLiveAppearance: true)
         }
         if tool != .selection {

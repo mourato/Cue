@@ -21,7 +21,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
     case blur
     case spotlight
     case counter
-    case notinhasNote
+    case cueNote = "notinhasNote"
     case watermark
     case pencil
     case mockup
@@ -35,7 +35,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
     /// two surfaces stay in sync when tools are added.
     static let drawableTools: [AnnotationToolType] = [
         .rectangle, .circle, .arrow, .line, .magnify, .text, .highlighter,
-        .blur, .spotlight, .notinhasNote, .watermark, .pencil,
+        .blur, .spotlight, .cueNote, .watermark, .pencil,
     ]
 
     static let inlineAnnotateTools: [AnnotationToolType] = [.selection] + drawableTools
@@ -74,7 +74,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
         case .blur: "eye.slash"
         case .spotlight: "viewfinder"
         case .counter: "list.number"
-        case .notinhasNote: "pin.circle.fill"
+        case .cueNote: "pin.circle.fill"
         case .watermark: "seal"
         case .pencil: "pencil"
         case .mockup: "cube.transparent"
@@ -96,7 +96,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
         case .blur: "b"
         case .spotlight: "s"
         case .counter: "i"
-        case .notinhasNote: "n"
+        case .cueNote: "n"
         case .watermark: "w"
         case .pencil: "p"
         case .mockup: "m"
@@ -118,7 +118,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
         case .blur: L10n.Annotate.blurTool
         case .spotlight: L10n.Annotate.spotlightTool
         case .counter: L10n.Annotate.counterTool
-        case .notinhasNote: NotinhasL10n.noteTool
+        case .cueNote: CueL10n.noteTool
         case .watermark: L10n.Annotate.watermarkTool
         case .pencil: L10n.Annotate.pencilTool
         case .mockup: L10n.Annotate.mockupTool
@@ -129,7 +129,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
         switch self {
         case .rectangle, .circle, .arrow, .line, .magnify, .text, .highlighter,
              .blur, .spotlight, .counter,
-             .notinhasNote, .watermark, .pencil:
+             .cueNote, .watermark, .pencil:
             true
         case .selection, .crop, .mockup:
             false
@@ -143,7 +143,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
         switch self {
         case .rectangle, .circle, .arrow, .line, .blur, .spotlight, .watermark:
             true
-        case .selection, .crop, .text, .highlighter, .counter, .pencil, .mockup, .notinhasNote, .magnify:
+        case .selection, .crop, .text, .highlighter, .counter, .pencil, .mockup, .cueNote, .magnify:
             false
         }
     }
@@ -152,7 +152,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
         switch self {
         case .rectangle, .circle, .arrow, .line, .magnify, .text, .highlighter,
              .counter, .watermark, .pencil,
-             .notinhasNote:
+             .cueNote:
             true
         case .selection, .crop, .blur, .spotlight, .mockup:
             false
@@ -166,7 +166,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
     var supportsQuickStrokeWidth: Bool {
         switch self {
         case .rectangle, .circle, .arrow, .line, .magnify, .highlighter,
-             .blur, .counter, .pencil, .notinhasNote:
+             .blur, .counter, .pencil, .cueNote:
             true
         case .selection, .crop, .text, .watermark, .spotlight, .mockup:
             false
@@ -183,7 +183,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
             true
         case .selection, .crop, .circle, .arrow, .line, .magnify, .highlighter,
              .blur, .counter, .watermark, .pencil, .mockup,
-             .notinhasNote:
+             .cueNote:
             false
         }
     }

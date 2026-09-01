@@ -1526,7 +1526,7 @@ private struct InlineAreaPropertiesBar: View {
                     if state.quickPropertiesSupportsShapeFillStyle {
                         HStack(spacing: 4) {
                             ForEach(AnnotationShapeFillStyle.allCases) { style in
-                                NotinhasAreaStylePreviewButton(
+                                CueAreaStylePreviewButton(
                                     style: style,
                                     isSelected: state.quickShapeFillStyleBinding.wrappedValue == style,
                                     color: state.quickStrokeColorBinding.wrappedValue,

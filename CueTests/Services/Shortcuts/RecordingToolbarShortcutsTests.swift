@@ -147,7 +147,7 @@
             XCTAssertEqual(GlobalShortcutKind.deleteRecording.configKey, "delete_recording")
 
             // Default configuration document checks
-            let defaultDoc = NotinhasConfigurationDefaultDocument.self
+            let defaultDoc = CueConfigurationDefaultDocument.self
             let defaultTOML = defaultDoc.toml()
             let defaultParsed = try SimpleTOMLParser.parse(defaultTOML)
 
@@ -210,7 +210,7 @@
             enabled = false
             """
 
-            let result = NotinhasConfigurationImporter.importTOML(source, defaults: defaults)
+            let result = CueConfigurationImporter.importTOML(source, defaults: defaults)
             XCTAssertFalse(result.hasErrors)
 
             // Check imported values in KeyboardShortcutManager
@@ -227,7 +227,7 @@
             XCTAssertFalse(manager.isShortcutEnabled(for: .deleteRecording))
 
             // Export test
-            let exportedSource = NotinhasConfigurationExporter.exportTOML(defaults: defaults)
+            let exportedSource = CueConfigurationExporter.exportTOML(defaults: defaults)
             let document = try SimpleTOMLParser.parse(exportedSource)
 
             XCTAssertEqual(document.value(at: "shortcuts", "global", "toggle_pen_recording", "key")?.stringValue, "P")

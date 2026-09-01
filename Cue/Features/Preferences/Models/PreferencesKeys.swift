@@ -84,8 +84,8 @@ enum PreferencesKeys {
     static let annotateChromeToolbarOrder = "annotate.chrome.toolbarOrder.v1"
     static let annotateChromeBottomOrder = "annotate.chrome.bottomOrder.v1"
     static let annotateChromeEnabledItems = "annotate.chrome.enabled.v1"
-    static let notinhasNotesPanelSide = "annotate.notinhasNotes.panelSide.v1"
-    static let legacyNotinhasNotesPanelSide = "notinhas.notes.panelSide"
+    static let cueNotesPanelSide = "annotate.notinhasNotes.panelSide.v1"
+    static let legacyCueNotesPanelSide = "notinhas.notes.panelSide"
     /// Legacy ImgBB API key in UserDefaults. Retained for one-time migration only; new writes use Keychain.
     static let notinhasImgBBAPIKey = "notinhas.imgbb.apiKey"
     /// Non-secret presence cache so Annotate / Quick Access can enable upload without unlocking Keychain.

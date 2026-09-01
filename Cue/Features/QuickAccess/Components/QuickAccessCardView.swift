@@ -27,8 +27,8 @@ struct QuickAccessCardView: View {
     @State private var isUploading = false
     @State private var imgbbUploadError: String?
     @State private var cardScreenFrame: CGRect = .zero
-    @ObservedObject private var uploadConfiguration = NotinhasUploadConfigurationStore.shared
-    private let uploadCoordinator = NotinhasUploadCoordinator()
+    @ObservedObject private var uploadConfiguration = CueUploadConfigurationStore.shared
+    private let uploadCoordinator = CueUploadCoordinator()
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @FocusState private var isCardFocused: Bool
 
@@ -728,7 +728,7 @@ struct QuickAccessCardView: View {
 
     private func upload() {
         guard !isUploading, FileManager.default.fileExists(atPath: item.url.path) else {
-            imgbbUploadError = NotinhasL10n.imgbbInvalidImageData
+            imgbbUploadError = CueL10n.imgbbInvalidImageData
             return
         }
 
@@ -755,8 +755,8 @@ struct QuickAccessCardView: View {
 
     private var uploadFailedMessage: String {
         switch uploadConfiguration.provider {
-        case .imgbb: NotinhasL10n.imgbbUploadFailed
-        case .imageKit: NotinhasL10n.imageKitUploadFailed
+        case .imgbb: CueL10n.imgbbUploadFailed
+        case .imageKit: CueL10n.imageKitUploadFailed
         }
     }
 }
