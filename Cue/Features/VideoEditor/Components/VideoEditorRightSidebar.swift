@@ -339,7 +339,7 @@
                     .font(.system(size: 11, weight: .medium))
                     .foregroundColor(.secondary)
 
-                Text(L10n.VideoEditor.followMouseOnlyWorksWithNotinhas)
+                Text(L10n.VideoEditor.followMouseOnlyWorksWithCue)
                     .font(.system(size: 10))
                     .foregroundColor(.secondary.opacity(0.8))
                     .fixedSize(horizontal: false, vertical: true)
