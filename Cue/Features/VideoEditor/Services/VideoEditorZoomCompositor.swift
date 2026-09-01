@@ -576,9 +576,10 @@
                 )
                 .offsetBy(dx: instruction.backgroundPadding, dy: instruction.backgroundPadding)
                 let effectiveCanvasSize = instruction.paddedRenderSize
-                let cameraSourceRect = layout.usesCapturedGeometry
-                    ? VideoEditorExportLayout.aspectFillRect(sourceSize: cameraImage.extent.size, in: target.size)
-                    : VideoEditorExportLayout.aspectFitRect(sourceSize: cameraImage.extent.size, in: target.size)
+                let cameraSourceRect = VideoEditorExportLayout.aspectFillRect(
+                    sourceSize: cameraImage.extent.size,
+                    in: target.size,
+                )
                 let placedCameraRect = cameraSourceRect.offsetBy(dx: target.minX, dy: target.minY)
                 let scale = min(
                     placedCameraRect.width / max(cameraImage.extent.width, 1),
@@ -589,7 +590,7 @@
                         translationX: placedCameraRect.minX,
                         y: effectiveCanvasSize.height - placedCameraRect.maxY,
                     ))
-                let maskRect = layout.usesCapturedGeometry ? target : placedCameraRect
+                let maskRect = target
                 let mask = cameraMask(
                     rect: CGRect(
                         x: maskRect.minX,

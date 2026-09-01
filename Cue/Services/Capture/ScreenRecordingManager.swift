@@ -96,6 +96,19 @@
     }
 
     enum RecordingVideoEncodingSettings {
+        static func cameraDimensions(
+            cameraSize: CGSize?,
+            fallbackWidth: Int,
+            fallbackHeight: Int,
+        ) -> (width: Int, height: Int) {
+            guard let cameraSize,
+                  cameraSize.width.isFinite, cameraSize.width > 0,
+                  cameraSize.height.isFinite, cameraSize.height > 0 else {
+                return (fallbackWidth, fallbackHeight)
+            }
+            return (Int(cameraSize.width.rounded()), Int(cameraSize.height.rounded()))
+        }
+
         static func preferredCodec(format: VideoFormat, quality: VideoQuality) -> AVVideoCodecType {
             guard format == .mov else { return .h264 }
             guard quality == .high else { return .h264 }
@@ -1021,6 +1034,9 @@
                     captureSystemAudio: captureSystemAudio,
                     captureMicrophone: captureMicrophone,
                     captureCamera: self.captureCamera,
+                    cameraSize: self.captureCamera
+                        ? RecordingCameraDeviceProvider.captureSize(matching: cameraDeviceID)
+                        : nil,
                 )
 
                 try await setupStream(
@@ -1904,6 +1920,7 @@
             captureSystemAudio: Bool,
             captureMicrophone: Bool,
             captureCamera: Bool = false,
+            cameraSize: CGSize? = nil,
         ) throws {
             guard let url = outputURL else {
                 DiagnosticLogger.shared.log(.error, .recording, "Asset writer setup failed: missing output URL")
@@ -1995,7 +2012,23 @@
             session.pixelBufferAdaptor = adaptor
 
             if captureCamera {
-                let cameraIn = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
+                let cameraDimensions = RecordingVideoEncodingSettings.cameraDimensions(
+                    cameraSize: cameraSize,
+                    fallbackWidth: width,
+                    fallbackHeight: height,
+                )
+                let cameraBitrate = calculatedVideoBitrate(
+                    width: cameraDimensions.width,
+                    height: cameraDimensions.height,
+                    codec: selectedCodec,
+                )
+                let cameraSettings = makeVideoSettings(
+                    width: cameraDimensions.width,
+                    height: cameraDimensions.height,
+                    codec: selectedCodec,
+                    bitrate: cameraBitrate,
+                )
+                let cameraIn = AVAssetWriterInput(mediaType: .video, outputSettings: cameraSettings)
                 cameraIn.expectsMediaDataInRealTime = true
                 guard writer.canAdd(cameraIn)
                 else { throw RecordingError.setupFailed(L10n.Recording.cannotAddVideoWriterInput) }
@@ -2003,7 +2036,11 @@
                 session.cameraInput = cameraIn
                 session.cameraAdaptor = AVAssetWriterInputPixelBufferAdaptor(
                     assetWriterInput: cameraIn,
-                    sourcePixelBufferAttributes: sourcePixelBufferAttributes,
+                    sourcePixelBufferAttributes: [
+                        kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
+                        kCVPixelBufferWidthKey as String: cameraDimensions.width,
+                        kCVPixelBufferHeightKey as String: cameraDimensions.height,
+                    ],
                 )
             }
 

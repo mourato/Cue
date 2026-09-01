@@ -65,6 +65,28 @@
 
         // MARK: - makeVideoSettings
 
+        func testCameraDimensions_preserveCameraAspectInsteadOfScreenSize() {
+            let dimensions = RecordingVideoEncodingSettings.cameraDimensions(
+                cameraSize: CGSize(width: 1920, height: 1080),
+                fallbackWidth: 1728,
+                fallbackHeight: 1080,
+            )
+
+            XCTAssertEqual(dimensions.width, 1920)
+            XCTAssertEqual(dimensions.height, 1080)
+        }
+
+        func testCameraDimensions_invalidSizeFallsBackToScreenSize() {
+            let dimensions = RecordingVideoEncodingSettings.cameraDimensions(
+                cameraSize: CGSize(width: CGFloat.nan, height: 0),
+                fallbackWidth: 1728,
+                fallbackHeight: 1080,
+            )
+
+            XCTAssertEqual(dimensions.width, 1728)
+            XCTAssertEqual(dimensions.height, 1080)
+        }
+
         func testMakeVideoSettings_containsRequiredKeys() {
             let settings = RecordingVideoEncodingSettings.makeVideoSettings(
                 width: 1920, height: 1080, fps: 30, quality: .high, codec: .h264, bitrate: 5_000_000,
