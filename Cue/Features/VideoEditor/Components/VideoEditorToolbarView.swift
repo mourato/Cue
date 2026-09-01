@@ -144,7 +144,7 @@
 
         private var leftSidebarToggleButton: some View {
             ToolbarButton(
-                icon: "rectangle.on.rectangle",
+                icon: "sidebar.left",
                 isSelected: state.isLeftSidebarVisible,
                 highlightColor: ZoomColors.primary,
             ) {
