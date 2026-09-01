@@ -243,6 +243,7 @@ private final class TrafficLightsLayoutController: NSObject {
     @objc private func handleCloseButtonFrameChange(_: Notification) {
         guard !isApplying else { return }
         apply()
+        scheduleApply()
     }
 
     private func scheduleApply() {
