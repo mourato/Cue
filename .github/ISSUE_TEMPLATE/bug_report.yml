@@ -1,5 +1,5 @@
 name: 🐛 Bug Report
-description: Report a bug or unexpected behavior in Notinhas
+description: Report a bug or unexpected behavior in Cue
 title: "[Bug]: "
 labels: ["bug"]
 body:
@@ -23,7 +23,7 @@ body:
       label: Steps to Reproduce
       description: Steps to reproduce the behavior.
       placeholder: |
-        1. Launch Notinhas
+        1. Launch Cue
         2. Capture an area
         3. See error
     validations:
@@ -56,10 +56,10 @@ body:
       required: false
 
   - type: input
-    id: notinhas-version
+    id: cue-version
     attributes:
-      label: Notinhas Version
-      description: Which version of Notinhas are you using?
+      label: Cue Version
+      description: Which version of Cue are you using?
       placeholder: e.g. 1.0.0 or commit SHA
     validations:
       required: true
@@ -81,7 +81,7 @@ body:
     id: install-method
     attributes:
       label: Installation Method
-      description: How did you install Notinhas?
+      description: How did you install Cue?
       options:
         - GitHub Release DMG
         - Shell script
@@ -94,6 +94,6 @@ body:
     id: additional-context
     attributes:
       label: Additional Context
-      description: Add diagnostic excerpts from ~/Library/Logs/Notinhas/notinhas_*.txt if relevant (redact private paths).
+      description: Add diagnostic excerpts from ~/Library/Logs/Cue/cue_*.txt if relevant (redact private paths).
     validations:
       required: false

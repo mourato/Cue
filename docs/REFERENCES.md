@@ -10,7 +10,7 @@ deve ser validado manualmente antes de virar plano ou promessa de comportamento.
 
 ## Matriz rápida
 
-| Projeto | Classificação | O que vale estudar | Oportunidade para o Notinhas | Licença / decisão | Clone |
+| Projeto | Classificação | O que vale estudar | Oportunidade para o Cue | Licença / decisão | Clone |
 | --- | --- | --- | --- | --- | --- |
 | [macshot](https://github.com/sw33tLie/macshot) | UI/UX; mesmo domínio | Captura e anotação no mesmo fluxo; snap de janela/bordas; presets de proporção/tamanho; seleção de objeto para editar; histórico com anotações editáveis; beautify; OCR/redação automática. | Tornar seleção e edição mais precisas; presets de captura; reabrir uma captura anotada sem perder a estrutura; avaliar beautify como saída opcional para handoff. | [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.html). Apenas inspiração e reimplementação independente; não copiar código/assets sem revisar as obrigações de copyleft. | Não; consulta remota |
 | [BetterShot](https://github.com/KartikLabhshetwar/better-shot) | UI/UX; mesmo domínio | Preview flutuante com clique para editar; drag-to-app; defaults de beautify com preview; editor com atalhos de uma tecla; status de gravação compacto; histórico separado e toasts de confirmação. | Reduzir o caminho entre captura e destino; deixar ações do Quick Access mais óbvias; melhorar feedback de copiar/salvar/OCR; estudar defaults visuais persistentes. | [BSD-3-Clause](https://opensource.org/license/bsd-3-clause). Inspiração; eventual reutilização só com avisos e atribuição exigidos pela licença. | Não; consulta remota |

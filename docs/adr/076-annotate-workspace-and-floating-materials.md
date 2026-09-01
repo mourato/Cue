@@ -5,12 +5,12 @@ Date: 2026-08-23
 
 ## Context
 
-Notinhas's annotation editor prioritizes a fast visual handoff: numbered
+Cue's annotation editor prioritizes a fast visual handoff: numbered
 notes and shapes must remain prominent while canvas styling and export actions
 stay close to the image. Screendrop demonstrates a useful visual treatment: a
 neutral dotted workspace, labeled primary actions, and glass-like floating
 controls. Its current implementation targets macOS 26.4 and uses Liquid Glass,
-while Notinhas targets macOS 26.0+ and keeps a Reduce Transparency solid fallback for Liquid Glass chrome.
+while Cue targets macOS 26.0+ and keeps a Reduce Transparency solid fallback for Liquid Glass chrome.
 
 ## Decision
 
@@ -41,7 +41,7 @@ while Notinhas targets macOS 26.0+ and keeps a Reduce Transparency solid fallbac
 
 - Moving the sidebar from left to right is deferred because it changes the
   editor's information architecture rather than just its visual hierarchy.
-- Raising Notinhas's minimum macOS version solely for Liquid Glass is deferred.
+- Raising Cue's minimum macOS version solely for Liquid Glass is deferred.
 - `GlassEffectContainer` morphing is deferred until the editor has a real
   surface-morph interaction that needs it.
 
@@ -54,7 +54,7 @@ while Notinhas targets macOS 26.0+ and keeps a Reduce Transparency solid fallbac
 
 ## Affected surfaces
 
-- `Notinhas/Features/Annotate/AnnotateMainView.swift`
-- `Notinhas/Features/Annotate/Components/AnnotateSidebarView.swift`
-- `Notinhas/Features/Annotate/Components/AnnotateBottomBarView.swift`
-- `Notinhas/Services/Capture/FloatingToolbar/CaptureFloatingToolbarChrome.swift`
+- `Cue/Features/Annotate/AnnotateMainView.swift`
+- `Cue/Features/Annotate/Components/AnnotateSidebarView.swift`
+- `Cue/Features/Annotate/Components/AnnotateBottomBarView.swift`
+- `Cue/Services/Capture/FloatingToolbar/CaptureFloatingToolbarChrome.swift`

@@ -1,7 +1,8 @@
 # Implementation Plans
 
 This directory contains the improve-skill handoff plans. Plans 001–025 are
-completed historical Notinhas UX/video work. The identity-separation round is
+completed historical Notinhas UX/video work. Plan **113** renames the product
+identity to **Cue** (026–030 covered Snapzy → Notinhas). The identity-separation round is
 026–030. The OverlayTooltip rollout + slider steppers round is **031–034**,
 generated on 2026-07-21 against commit `df25f56f`. The All-In-One capture
 round is **035–037**, generated on 2026-07-22 against commit `1849b93a`.
@@ -49,22 +50,29 @@ thermo-nuclear review → fix all findings → next plan).
 | 028 | Replace `snapzy://` with `notinhas://` | P1 | M | 027 | DONE (`1507d08`; full suite has two pre-existing flaky failures) |
 | 029 | Rename the technical product identity to Notinhas | P1 | L | 026–028 | DONE (`6124d74`, review fixes `163e0f1`; focused migration tests and Debug build pass) |
 | 030 | Complete documentation and final validation | P2 | L | 029 | DONE (`39f7053`, review fixes `5bc63c6`; docs/scripts residue fixed; default/video suites retain two pre-existing UI failures and Release validation remains environment-blocked) |
+| 113 | Rename the product identity from Notinhas to Cue | P1 | L | — | IN PROGRESS (`cue/rename-product`) |
 
 Status values: `TODO` | `IN PROGRESS` | `DONE` | `BLOCKED (reason)` |
 | `REJECTED (rationale)` | `SUPERSEDED (replacement)`.
 
 ## Confirmed product decisions
 
-- Product identity becomes Notinhas, including technical identity where safe.
-- Release/debug bundle IDs become `com.mourato.notinhas` and
-  `com.mourato.notinhas.debug`.
-- Existing data/configuration migrates automatically before database setup.
-- Only `notinhas://` is registered/accepted; `snapzy://` is rejected.
+- Product identity is **Cue**, including technical identity where safe.
+- Release/debug/test bundle IDs are `com.mourato.cue`, `com.mourato.cue.debug`,
+  and `com.mourato.cue.tests`.
+- Existing Snapzy and Notinhas data/configuration migrates automatically before
+  database setup (`NotinhasIdentityMigrationService`, then
+  `CueIdentityMigrationService`).
+- Only `cue://` is registered/accepted; `notinhas://` and `snapzy://` are
+  rejected.
 - Sparkle, automatic updates, Report a Problem, and About are removed.
-- GitHub Releases/DMGs remain manual; cloud, recording, video, and local
-  diagnostics remain.
+- GitHub Releases/DMGs remain manual (`Cue-v<version>.dmg`); cloud, recording,
+  video, and local diagnostics remain.
 - Screen Recording, Accessibility, and Microphone permissions must be granted
-  again after the bundle-ID change because TCC grants cannot be copied.
+  again after each bundle-ID change because TCC grants cannot be copied.
+- Video compile flag: `CUE_VIDEO_MODULE` (renamed from `NOTINHAS_VIDEO_MODULE`).
+- GitHub repository rename to `mourato/Cue` happens after code integration
+  (Plan 113 Step 8).
 
 ## Required executor/reviewer loop
 
@@ -731,7 +739,7 @@ Execute with `.agents/skills/plan-execute-review/SKILL.md`. Prefer
 - Remove unused LocalStack/MinIO `snapzy-*` Docker harness.
 - Docs must not list removed Updates/CrashReport/About modules or `about` settings tab.
 - Standalone `MockupManager` window stack is dead; integrated Annotate mockup stays.
-- CoC + uninstall branding → Notinhas / `mourato/Notinhas`.
+- CoC + uninstall branding → Cue / `mourato/Cue`.
 - CHANGELOG re-rooted to Notinhas; full upstream history archived under `docs/`.
 - Inherited capture extras, BYO cloud, watermark/combine/integrated mockup:
   **retain** (ADR in 078); not dead-code targets.

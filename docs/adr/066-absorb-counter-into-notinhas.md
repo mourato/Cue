@@ -18,7 +18,7 @@ Legacy sessions may still contain `AnnotationType.counter` items in the sidecar.
    in its place (full editor and inline overlay).
 2. Keep `AnnotationType.counter` for decode/render until migrated; do not delete the enum case.
 3. On editor session open, run a one-shot, idempotent migration:
-   - Each counter → empty `NotinhasVisualNote` at bounds center; append after existing notes.
+   - Each counter → empty `CueVisualNote` at bounds center; append after existing notes.
    - Map `strokeWidth` → `pinControlValue`, `strokeColor` → `RGBAColor`; ignore baked counter ints.
    - Strip counter annotations from the annotation list; persist on next save.
 4. Shortcut: Notinha default **`n`**; retire **`i`** with a one-shot prefs migration; remove

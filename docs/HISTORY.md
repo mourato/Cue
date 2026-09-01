@@ -1,11 +1,11 @@
 # Capture History
 
-Persistent history of screenshots, videos, and GIFs backed by GRDB SQLite, surfaced through a floating panel (compact carousel + expanded grid) and a restore-to-Quick-Access flow that reopens captures in Annotate or Video Editor with editable sessions. Code: `Notinhas/Features/History/` + `Notinhas/Services/History/`.
+Persistent history of screenshots, videos, and GIFs backed by GRDB SQLite, surfaced through a floating panel (compact carousel + expanded grid) and a restore-to-Quick-Access flow that reopens captures in Annotate or Video Editor with editable sessions. Code: `Cue/Features/History/` + `Cue/Services/History/`.
 
 ## Entry Points
 
 - Status bar menu (Capture History).
-- Deep link `notinhas://open/history` (aliases `history`, `capture-history`).
+- Deep link `cue://open/history` (aliases `history`, `capture-history`).
 - Global shortcut `GlobalShortcutKind.history`, default ⌘⇧H (`ShortcutConfig.defaultHistory`), rebindable in Preferences → Shortcuts.
 
 ## Floating Panel
@@ -45,7 +45,7 @@ flowchart TD
 
 ## Storage
 
-- Database: GRDB SQLite at `~/Library/Application Support/Notinhas/notinhas.db` via `DatabaseManager` (`Services/Cloud/`). Migrations: `v1_createCloudUploadRecords`, `v2_createCaptureHistoryRecords`. Launch repair/reset recovery archives db files to `DatabaseRecovery-<timestamp>/`.
+- Database: GRDB SQLite at `~/Library/Application Support/Cue/cue.db` via `DatabaseManager` (`Services/Cloud/`). Migrations: `v1_createCloudUploadRecords`, `v2_createCaptureHistoryRecords`. Launch repair/reset recovery archives db files to `DatabaseRecovery-<timestamp>/`.
 - `CaptureHistoryStore` — GRDB `ValueObservation` publishes records; `add` is a no-op when `history.enabled` is off; `updateFilePath` (temp→export move), `markFileChanged`, `hasRecord(forFilePath:)`, `removeByFilePath`.
 - Media files: temp captures live in Application Support temp root; saved captures in the user export folder — history only records paths.
 - Thumbnails: `HistoryThumbnailGenerator` — JPEG, max dimension 208, stored in `HistoryThumbnails/`; `NSCache` memory cache 160 items / 48MB.

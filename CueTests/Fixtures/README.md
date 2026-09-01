@@ -32,5 +32,5 @@ Fixtures/
 Use `TestImageFactory.swift` or ImageMagick:
 
 ```bash
-magick -size 100x100 xc:red NotinhasTests/Fixtures/Images/solid_red_100x100.png
+magick -size 100x100 xc:red CueTests/Fixtures/Images/solid_red_100x100.png
 ```

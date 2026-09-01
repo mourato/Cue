@@ -7,7 +7,7 @@ description: Use when updating AGENTS.md, documenting project policy, aligning r
 
 ## Role
 
-Canonical owner of project-level guidance governance for Notinhas.
+Canonical owner of project-level guidance governance for Cue.
 
 - Own AGENTS alignment, documentation policy, skill registry, and information-routing standards.
 - Keep project guidance synchronized with current `scripts/`, skills, and fork workflow.
@@ -17,9 +17,9 @@ Canonical owner of project-level guidance governance for Notinhas.
 
 - Use this skill for AGENTS maintenance, policy updates, skill registry, and repository standards.
 - Implementation details stay in domain skills (`capture-annotate-export` and
-  the global `macos-app-engineering` skill, with its Notinhas overlay).
+  the global `macos-app-engineering` skill, with its Cue overlay).
 - Delivery commands and merge gates stay in the global `delivery-workflow` skill
-  and its Notinhas overlay.
+  and its Cue overlay.
 
 ## When to Use
 
@@ -36,13 +36,13 @@ Use when the user asks to update AGENTS, document project policy, track known li
 
 - **Living guidance**: `AGENTS.md` reflects current tools, scripts, skills, and product intent.
 - **Skill template**: Prefer section order — Role, Scope Boundary, When to Use, domain guidance, Verification (when relevant), Related Skills, References.
-- **Reuse policy**: `reuse → extend → create` for Notinhas helpers before new types.
+- **Reuse policy**: `reuse → extend → create` for Cue helpers before new types.
 - **Clean registry**: Periodically audit `.agents/skills` for stale guidance or Picker-era leakage.
 - **Command surface sync**: When `scripts/*` change, update `AGENTS.md` and the
   global `delivery-workflow` overlay in the same change.
 - **Preview standard**: Keep preview-related guidance in the global
   `macos-app-engineering` skill and its overlay.
-- **Fork awareness**: Preserve `Notinhas/Features/Notinhas/` across `upstream` merges; do not delete Notinhas modules during conflict resolution.
+- **Fork awareness**: Preserve `Cue/Features/Cue/` across `upstream` merges; do not delete Cue modules during conflict resolution.
 
 ## Information Routing
 
@@ -52,7 +52,7 @@ Route new knowledge in this order:
 2. **AGENTS.md** for durable agent policy and product intent.
 3. **Shared upstream-derived docs** (`docs/CAPTURE.md`, `docs/ANNOTATE.md`,
    etc.) for engineering narrative of shared flows — **do not** ban `docs/`;
-   **do not** duplicate the same topics in a parallel Notinhas-only tree.
+   **do not** duplicate the same topics in a parallel Cue-only tree.
 4. **GitHub issues** for backlog items, known limitations, and follow-up work.
 5. **Deletion** for stale or duplicate files with no current operational value.
 

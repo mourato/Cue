@@ -1,16 +1,16 @@
 # Diagnostics & Local Logs
 
-Notinhas keeps diagnostics on the user's Mac only. There is **no** Sparkle updater, in-app **Check for Updates**, **About** tab, or **Report a Problem** bundle flow.
+Cue keeps diagnostics on the user's Mac only. There is **no** Sparkle updater, in-app **Check for Updates**, **About** tab, or **Report a Problem** bundle flow.
 
-Verified against `Notinhas/Services/Diagnostics/` and `Notinhas/App/AppCoordinator.swift`.
+Verified against `Cue/Services/Diagnostics/` and `Cue/App/AppCoordinator.swift`.
 
 ## Updates
 
-Install new versions manually from [GitHub Releases](https://github.com/mourato/Notinhas/releases):
+Install new versions manually from [GitHub Releases](https://github.com/mourato/Cue/releases):
 
-1. Download `Notinhas-v<version>.dmg`
-2. Quit Notinhas
-3. Replace `/Applications/Notinhas.app`
+1. Download `Cue-v<version>.dmg`
+2. Quit Cue
+3. Replace `/Applications/Cue.app`
 4. Re-grant TCC permissions if macOS prompts after the signature change
 
 See [RELEASES.md](RELEASES.md) for maintainer packaging notes and [MIGRATION.md](MIGRATION.md) for data/TCC migration.
@@ -20,7 +20,7 @@ See [RELEASES.md](RELEASES.md) for maintainer packaging notes and [MIGRATION.md]
 - `DiagnosticLogger` appends to daily files:
 
   ```text
-  ~/Library/Logs/Notinhas/notinhas_yyyy-MM-dd.txt
+  ~/Library/Logs/Cue/notinhas_yyyy-MM-dd.txt
   ```
 
 - Levels: `DBG`, `INF`, `WRN`, `ERR`, `CRS`
@@ -34,8 +34,8 @@ See [RELEASES.md](RELEASES.md) for maintainer packaging notes and [MIGRATION.md]
 When filing a GitHub issue:
 
 1. Reproduce the problem with diagnostics enabled.
-2. Attach the relevant `notinhas_*.txt` files from `~/Library/Logs/Notinhas/` (redact paths or credentials if needed).
-3. Include Notinhas version, macOS version, and install method.
+2. Attach the relevant `cue_*.txt` files from `~/Library/Logs/Cue/` (redact paths or credentials if needed).
+3. Include Cue version, macOS version, and install method.
 
 There is no in-app upload or support endpoint.
 

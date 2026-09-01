@@ -1,4 +1,4 @@
-# ADR 072: Fixed Notinhas note palette and numeral ink
+# ADR 072: Fixed Cue note palette and numeral ink
 
 ## Status
 
@@ -6,14 +6,14 @@ Accepted (2026-08-14)
 
 ## Context
 
-Notinhas notes are visual handoff markers. The shared numbered-badge renderer
+Cue notes are visual handoff markers. The shared numbered-badge renderer
 had started choosing black or white numeral ink from background luminance. That
 was technically adaptive, but black numerals on the red, orange, and blue note
 colors made the markers less pleasant to read in the product's primary flow.
 
 ## Decision
 
-Use the fixed seven-color Notinhas palette owned by `NotinhasPaletteColor`:
+Use the fixed seven-color Cue palette owned by `CuePaletteColor`:
 
 - red `#D93530` — white numeral
 - orange `#ED8413` — white numeral
@@ -44,7 +44,7 @@ are merged without duplicating RGB. User customs continue to live in
 
 ## Affected surfaces
 
-- `NotinhasPaletteColor`
+- `CuePaletteColor`
 - `AnnotateBuiltInColorPalette`
-- Notinhas note editor and annotate color pickers
+- Cue note editor and annotate color pickers
 - numbered note canvas/export rendering

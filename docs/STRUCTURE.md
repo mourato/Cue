@@ -1,6 +1,6 @@
 # Project Structure & Runtime Architecture
 
-This doc mirrors the current Notinhas codebase and runtime ownership. Keep it in sync with source, not with intended architecture.
+This doc mirrors the current Cue codebase and runtime ownership. Keep it in sync with source, not with intended architecture.
 
 ## Feature Docs
 
@@ -25,7 +25,7 @@ Separated feature docs cover each runtime area in depth:
 ```mermaid
 flowchart LR
     subgraph AppShell["App shell"]
-        A["NotinhasApp"]
+        A["CueApp"]
         B["AppDelegate"]
         C["AppCoordinator"]
         D["AppStatusBarController"]
@@ -58,17 +58,17 @@ flowchart LR
     subgraph PlatformServices["Platform services"]
         KS["KeyboardShortcutManager"]
         CL["DatabaseManager / ImgBB adapter"]
-        CFG["NotinhasConfigurationService + AutoImporter + SyncCoordinator"]
+        CFG["CueConfigurationService + AutoImporter + SyncCoordinator"]
         DG["DiagnosticLogger + CrashSentinel"]
         DI["DesktopIconManager"]
     end
 
     subgraph Storage["Persistence"]
-        TOML["~/.config/notinhas/config.toml"]
-        STC["Application Support/Notinhas/Captures"]
-        AS["Application Support/Notinhas/AnnotationSessions"]
+        TOML["~/.config/cue/config.toml"]
+        STC["Application Support/Cue/Captures"]
+        AS["Application Support/Cue/AnnotationSessions"]
         RMD["RecordingMetadataStore"]
-        DB["Application Support/Notinhas/notinhas.db"]
+        DB["Application Support/Cue/cue.db"]
         KC["Keychain"]
         UD["UserDefaults"]
     end
@@ -132,9 +132,9 @@ tools/
   localization/
     CatalogTool.swift
 
-Notinhas/
+Cue/
   App/
-    NotinhasApp.swift
+    CueApp.swift
     AppCoordinator.swift
     AppStatusBarController.swift
 
@@ -197,7 +197,7 @@ Notinhas/
       manifest.json
     *.lproj/
 
-NotinhasTests/
+CueTests/
   Services/
     Capture/
       *Tests.swift
@@ -211,7 +211,7 @@ NotinhasTests/
   Helpers/
   Fixtures/
 
-NotinhasUITests/
+CueUITests/
   Features/
     Onboarding/
     Preferences/
@@ -254,7 +254,7 @@ NotinhasUITests/
 ## Persistence Map
 
 ```text
-~/Library/Application Support/Notinhas/
+~/Library/Application Support/Cue/
   Captures/
     <temp screenshot or recording files when Save is OFF>
     RecordingProcessing/
@@ -270,13 +270,13 @@ NotinhasUITests/
       cutout.png                 # optional
       assets/
         <uuid>.bin               # optional embedded image assets
-  notinhas.db
+  cue.db
   DatabaseRecovery-<yyyyMMdd-HHmmss>[-N]/   # database files archived by launch recovery
-    notinhas.db
-    notinhas.db-wal
-    notinhas.db-shm
+    cue.db
+    cue.db-wal
+    cue.db-shm
 
-~/.config/notinhas/
+~/.config/cue/
   config.toml                  # user-managed export/import + startup auto-apply + background sync path
 ```
 
@@ -284,35 +284,35 @@ NotinhasUITests/
 | --- | --- |
 | `UserDefaults` | Preferences, shortcut configs, onboarding flags, feature toggles |
 | `Keychain` | ImgBB credential and migration-only legacy readers |
-| `Application Support/Notinhas/Captures/` | Temp captures, per-session recording processing files, and recording metadata sidecars |
-| `Application Support/Notinhas/AnnotationSessions/` | Sidecar packages for committed editable screenshot annotation sessions |
-| `Application Support/Notinhas/notinhas.db` | Capture history via GRDB; old upload tables remain migration-compatible |
-| `~/.config/notinhas/config.toml` | User-managed TOML preferences file, created from the onboarding config access step or Settings -> Advanced after user-confirmed folder access, replaced by explicit Import/Restore defaults actions, auto-applied on launch when changed, and synced from current settings before Open config.toml when safe |
+| `Application Support/Cue/Captures/` | Temp captures, per-session recording processing files, and recording metadata sidecars |
+| `Application Support/Cue/AnnotationSessions/` | Sidecar packages for committed editable screenshot annotation sessions |
+| `Application Support/Cue/cue.db` | Capture history via GRDB; old upload tables remain migration-compatible |
+| `~/.config/cue/config.toml` | User-managed TOML preferences file, created from the onboarding config access step or Settings -> Advanced after user-confirmed folder access, replaced by explicit Import/Restore defaults actions, auto-applied on launch when changed, and synced from current settings before Open config.toml when safe |
 
 ## Implementation Notes That Matter
 
-- `ScreenCaptureViewModel` is the main entrypoint for capture actions fired from shortcuts, the status bar menu, or `notinhas://` automation URLs. Deep links can be toggled on/off globally in Advanced preferences (`urlSchemeEnabled`).
+- `ScreenCaptureViewModel` is the main entrypoint for capture actions fired from shortcuts, the status bar menu, or `cue://` automation URLs. Deep links can be toggled on/off globally in Advanced preferences (`urlSchemeEnabled`).
 - `AppStatusBarController` is the AppKit bridge for the menu bar item. It now keeps the menu accessible during active recording, renders the live recording timer from `ScreenRecordingManager`, and coordinates temporary Preferences-window exclusion for record-own-app sessions.
 - Area screenshot freezes every connected display first through `FrozenAreaCaptureSession` / `AllDisplayFrozenSessionPreparer`, then runs manual region selection. Application-window capture is a separate flow (menu / Active Window / All-In-One Window mode).
 - Area + inline annotate uses `InlineAreaAnnotateCoordinator` with `InlineAreaAnnotateSession` and `InlineAreaAnnotateWindow`. It starts after a frozen all-display snapshot set, creates coordinated per-display panels that share one desktop coordinate space, reuses Annotate state/canvas/export services, and routes the saved image through `PostCaptureActionHandler`.
 - `AreaSelectionController` and `AreaSelectionWindow` own the cross-display overlay session, target-display keyboard ownership for screenshot sessions, and highlight rendering for both manual and application screenshot interaction modes.
 - `WindowSelectionQueryService` resolves the hovered topmost app window from CoreGraphics window lists plus `SCShareableContent`, so app-mode hover stays accurate without doing expensive live queries on every draw pass. It also propagates the owner PID into `WindowCaptureTarget.ownerPID` for exact window capture metadata.
-- `Services/Capture/SmartElement/` owns the standalone Smart Element session. `SmartElementCaptureController` creates live per-screen overlay panels, resolves the topmost non-Notinhas owner with `SmartElementWindowOwnerResolver`, forwards that PID into `SmartElementQueryService`, and commits highlighted rects through `SmartElementCapturePerformer`.
+- `Services/Capture/SmartElement/` owns the standalone Smart Element session. `SmartElementCaptureController` creates live per-screen overlay panels, resolves the topmost non-Cue owner with `SmartElementWindowOwnerResolver`, forwards that PID into `SmartElementQueryService`, and commits highlighted rects through `SmartElementCapturePerformer`.
 - `SmartElementQueryService` and `AXElementInspector` power Smart Element hover detection. The service throttles cursor updates and dispatches AX queries to a background queue to ensure 60fps performance without blocking the main thread, gates on `AXIsProcessTrusted()`, queries the target app via `AXUIElementCreateApplication(pid)`, walks up to the nearest meaningful AX role, and flips the AX top-left rect into AppKit bottom-left global coordinates before publishing. The protocol seam (`AXSnapshotProviding` + `AXElementSnapshot`) keeps the pipeline unit-testable.
 - `PostCaptureActionHandler` executes clipboard copy before slower Quick Access and screenshot auto-open actions after files already exist, so auto-copy is not blocked by thumbnail generation or overlay work.
 - `PostCaptureActionHandler` also persists editable annotation sidecars when screenshot default presets are auto-applied before the file reaches clipboard, Quick Access, history, or Annotate auto-open. `ScreenshotPresetAutoApplier` keeps this route lightweight by rendering preset canvas effects directly, without spinning up a full Annotate state object.
-- Manual Open Annotate (`⇧⌘A`, menu bar, and `notinhas://open/annotate`) opens an empty editor through `AnnotateManager.openEmptyAnnotation()` and then applies the configured clipboard-image behavior: ask by default, load automatically, or do nothing.
+- Manual Open Annotate (`⇧⌘A`, menu bar, and `cue://open/annotate`) opens an empty editor through `AnnotateManager.openEmptyAnnotation()` and then applies the configured clipboard-image behavior: ask by default, load automatically, or do nothing.
 - Settings → Annotate owns full-editor Annotate preferences, including clipboard-image import behavior, `Close after drop`, and `Reactivate after drop`. `Close after drop` defaults on for legacy behavior; `AnnotateWindowController` reads both drag preferences when a drag-to-app session completes.
 - `AnnotateManager` restores screenshot editability from the Quick Access session cache first, then `AnnotationSessionStore`, then the flattened screenshot file. `AnnotationSessionStore` stores only committed sessions and validates the source file signature before returning editable data.
 - `TempCaptureManager` is where the `Save` after-capture toggle becomes real behavior. Recording uses an internal per-session processing directory first, then moves the final video to export or the temp capture root after AVAssetWriter finishes.
-- `DatabaseManager` is initialized before launch cleanup and schedulers run. If `notinhas.db` cannot open or migrate, `AppDelegate` presents repair/reset/quit recovery UI; reset archives existing DB files into `DatabaseRecovery-<yyyyMMdd-HHmmss>[-N]/` before creating a fresh database.
+- `DatabaseManager` is initialized before launch cleanup and schedulers run. If `cue.db` cannot open or migrate, `AppDelegate` presents repair/reset/quit recovery UI; reset archives existing DB files into `DatabaseRecovery-<yyyyMMdd-HHmmss>[-N]/` before creating a fresh database.
 - `QuickAccessActionConfigurationStore` owns user-configurable Quick Access action visibility, context-menu order, and card slot assignments. Settings → Quick Access lets users reorder the context menu from the list, then drag actions onto explicit preview slots for the live hover card layout.
 - `QuickAccessDraggableView` owns Quick Access card gestures: mouse swipe-to-dismiss, drag-to-app, and optional two-finger horizontal swipe-to-dismiss on the preview card.
 - `RecordingCoordinator` owns the toolbar/overlay UX. `ScreenRecordingManager` owns the media pipeline.
 - `ScrollingCaptureCoordinator` is its own subsystem. Treat `Services/Capture/ScrollingCapture/*` as a unit.
 - `ScrollingCaptureFrameSource` publishes timestamped region frames into `ScrollingCaptureFrameRing`, so live preview and commit/stitch decisions share one bounded frame timeline before falling back to still area capture.
 - BYO provider behavior was retired by Plan 089. `Services/Cloud/` retains only shared persistence and credential compatibility code.
-- `NotinhasConfigurationService` is the Settings-facing facade for TOML export/import. `NotinhasConfigurationAccessGranting` shares the config folder grant flow between upgrade onboarding and Settings -> Advanced, creating `~/.config/notinhas` and `config.toml` after a successful grant if either is missing. Settings import validates the selected `.toml`, replaces the managed `config.toml`, then applies it so app state and file state stay aligned. Open config.toml syncs current settings into the managed file first when the file still matches Notinhas's last applied/exported signature; if the file has unapplied external edits, Settings asks before replacing it. `NotinhasConfigurationAutoImporter` runs during startup, hashes `config.toml`, and imports only when the file changed since the last successful launch-time apply. Import paths validate the whole file before applying any mutation and intentionally exclude Keychain secrets, history rows, temp captures, and sandbox bookmarks.
+- `CueConfigurationService` is the Settings-facing facade for TOML export/import. `CueConfigurationAccessGranting` shares the config folder grant flow between upgrade onboarding and Settings -> Advanced, creating `~/.config/cue` and `config.toml` after a successful grant if either is missing. Settings import validates the selected `.toml`, replaces the managed `config.toml`, then applies it so app state and file state stay aligned. Open config.toml syncs current settings into the managed file first when the file still matches Cue's last applied/exported signature; if the file has unapplied external edits, Settings asks before replacing it. `CueConfigurationAutoImporter` runs during startup, hashes `config.toml`, and imports only when the file changed since the last successful launch-time apply. Import paths validate the whole file before applying any mutation and intentionally exclude Keychain secrets, history rows, temp captures, and sandbox bookmarks.
 - `Shared/Localization/L10n.swift` is the bridge for user-facing copy that does not live directly in SwiftUI view literals.
 - `Resources/Localization/Shared/*.xcstrings` and `Resources/Localization/Features/*.xcstrings` are the runtime localization catalogs.
 - `tools/localization/CatalogTool.swift` owns audit and verify for split localization catalogs.
@@ -321,27 +321,27 @@ NotinhasUITests/
 
 ## Test Architecture
 
-Notinhas uses peer test roots at the repository root so test code stays out of
+Cue uses peer test roots at the repository root so test code stays out of
 the app source folder and Xcode can bind each root to the correct target.
 
-- **NotinhasTests** — Unit Testing Bundle. Mirrors the `Notinhas/` source tree by
-  domain, for example `NotinhasTests/Services/Capture/*Tests.swift` tests
-  `Notinhas/Services/Capture/*`.
-- **NotinhasUITests** — planned UI Testing Bundle for end-to-end user flows.
+- **CueTests** — Unit Testing Bundle. Mirrors the `Cue/` source tree by
+  domain, for example `CueTests/Services/Capture/*Tests.swift` tests
+  `Cue/Services/Capture/*`.
+- **CueUITests** — planned UI Testing Bundle for end-to-end user flows.
 
 Current Xcode project contract:
 
-- `Notinhas.xcodeproj` has a file-system synchronized root group for
-  `NotinhasTests/`.
-- The shared `Notinhas` scheme uses `Notinhas.xctestplan`, which includes
-  `NotinhasTests` in its Test action.
-- Test helpers live in `NotinhasTests/Helpers/`.
-- Fixtures, when needed, should live in `NotinhasTests/Fixtures/`.
+- `Cue.xcodeproj` has a file-system synchronized root group for
+  `CueTests/`.
+- The shared `Notinhas` scheme uses `Cue.xctestplan`, which includes
+  `CueTests` in its Test action.
+- Test helpers live in `CueTests/Helpers/`.
+- Fixtures, when needed, should live in `CueTests/Fixtures/`.
 
-Do not place XCTest files under `Notinhas/`; that folder is synchronized into the
+Do not place XCTest files under `Cue/`; that folder is synchronized into the
 app target.
 
-Directory structure mirrors the app. Shared mocks and fixture assets live in `NotinhasTests/Helpers/` and `NotinhasTests/Fixtures/`.
+Directory structure mirrors the app. Shared mocks and fixture assets live in `CueTests/Helpers/` and `CueTests/Fixtures/`.
 
 ### Test Priority
 
@@ -357,11 +357,11 @@ Directory structure mirrors the app. Shared mocks and fixture assets live in `No
 
 ### Key Constraints
 
-- Test target needs its own entitlements (copy `Notinhas.entitlements`, drop  keys).
-- Use `UserDefaults(suiteName: "NotinhasTests")` to isolate test state.
+- Test target needs its own entitlements (copy `Cue.entitlements`, drop  keys).
+- Use `UserDefaults(suiteName: "CueTests")` to isolate test state.
 - `@MainActor` singletons (`TempCaptureManager.shared`) require `@MainActor` test methods.
 - `SCShareableContent`/`SCStream` cannot be mocked — test capture logic through `CaptureOutputNaming` and `PostCaptureActionHandler` instead.
-- OCR fixtures: bundle test images in `NotinhasTests/Fixtures/`, load via `Bundle(for: type(of: self))`.
+- OCR fixtures: bundle test images in `CueTests/Fixtures/`, load via `Bundle(for: type(of: self))`.
 - CI: GitHub Actions macOS 14+ runners have Screen Recording permission. Older runners: `try XCTSkipUnless(CGPreflightScreenCaptureAccess())`.
 
 ## Agent Edit Guide
@@ -380,9 +380,9 @@ Directory structure mirrors the app. Shared mocks and fixture assets live in `No
 | TOML config export/import + startup auto-apply | `Services/Configuration/`, `Features/Onboarding/Components/OnboardingConfigAccessView.swift`, `Features/Preferences/Components/PreferencesAdvancedSettingsView.swift`, `App/AppCoordinator.swift`, `docs/CONFIGURATION.md` |
 | Onboarding or app startup | `App/`, `Features/Splash/`, `Features/Onboarding/`, `docs/APP_LIFECYCLE.md` |
 | Shortcuts and conflicts | `Services/Shortcuts/`, `Features/Shortcuts/`, `docs/SHORTCUTS.md` |
-| Unit tests for services | `NotinhasTests/Services/`, `NotinhasTests/Helpers/` |
-| UI tests for user flows | `NotinhasUITests/Features/` |
-| Test fixtures and mocks | `NotinhasTests/Helpers/`, `NotinhasTests/Fixtures/` |
+| Unit tests for services | `CueTests/Services/`, `CueTests/Helpers/` |
+| UI tests for user flows | `CueUITests/Features/` |
+| Test fixtures and mocks | `CueTests/Helpers/`, `CueTests/Fixtures/` |
 
 ## Current Behavior Clarifications
 
@@ -399,7 +399,7 @@ Directory structure mirrors the app. Shared mocks and fixture assets live in `No
 - TOML config import is all-or-nothing for validation errors. Warnings, such as
   imported folder paths that may need macOS file-access confirmation, are shown
   after import and do not block applied changes.
-- `~/.config/notinhas/config.toml` is not live-watched for direct edits. Valid
+- `~/.config/cue/config.toml` is not live-watched for direct edits. Valid
   direct edits are applied when Notinhas launches again, after macOS folder access
   has been granted once through onboarding or Settings -> Advanced. Opening the
   file from Settings first syncs app-originated settings changes when doing so

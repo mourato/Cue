@@ -1,8 +1,8 @@
-# Contributing to Notinhas
+# Contributing to Cue
 
-Thanks for contributing to Notinhas.
+Thanks for contributing to Cue.
 
-Notinhas is a macOS visual-handoff app built on a Snapzy fork: capture an area, add numbered pins and notes, and copy a clipboard-ready brief for developers and AI agents.
+Cue is a macOS visual-handoff app built on a Snapzy fork: capture an area, add numbered pins and notes, and copy a clipboard-ready brief for developers and AI agents.
 
 ## Ways to contribute
 
@@ -27,11 +27,11 @@ For archive, export, or DMG packaging, see [docs/BUILD.md](docs/BUILD.md).
 
 ## Project conventions
 
-Notinhas uses a feature-based structure with limited nesting.
+Cue uses a feature-based structure with limited nesting.
 
 - Keep primary feature entry points at the root of each feature folder.
 - Use `Components`, `Managers`, `Services`, and `Models` only when needed.
-- Keep Notinhas-specific logic in `Notinhas/Features/Notinhas/`.
+- Keep Cue-specific logic in `Cue/Features/Cue/`.
 - Avoid unrelated renames or directory reshuffles in the same pull request.
 
 See [docs/STRUCTURE.md](docs/STRUCTURE.md) for current architecture guidance.
@@ -87,12 +87,12 @@ Examples:
 When filing a bug report, include:
 
 - macOS version
-- Notinhas version or commit SHA
+- Cue version or commit SHA
 - Steps to reproduce
 - Expected and actual behavior
 - Screenshots or recordings if relevant
-- Relevant lines from `~/Library/Logs/Notinhas/notinhas_*.txt` when diagnostics are enabled
+- Relevant lines from `~/Library/Logs/Cue/cue_*.txt` when diagnostics are enabled
 
 ## Security issues
 
-Do not report security vulnerabilities in public issues. Use [GitHub Security Advisories](https://github.com/mourato/Notinhas/security/advisories/new) on this repository.
+Do not report security vulnerabilities in public issues. Use [GitHub Security Advisories](https://github.com/mourato/Cue/security/advisories/new) on this repository.

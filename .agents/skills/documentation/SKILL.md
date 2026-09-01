@@ -1,6 +1,6 @@
 ---
 name: documentation
-description: Documentation guidance for Notinhas — README, AGENTS.md, docs/, skills routing, and MARK organization in sources.
+description: Documentation guidance for Cue — README, AGENTS.md, docs/, skills routing, and MARK organization in sources.
 ---
 
 # Documentation
@@ -9,11 +9,11 @@ Use when updating project docs, agent guidance, or in-source section markers.
 
 ## Ownership
 
-- **README.md** — Notinhas product docs (install, handoff workflow, development). Localized: `README.vi.md`, `README.zh-CN.md`.
+- **README.md** — Cue product docs (install, handoff workflow, development). Localized: `README.vi.md`, `README.zh-CN.md`.
 - **AGENTS.md** — canonical agent guide (product intent, structure, commands, fork workflow).
 - **docs/** — engineering docs; `MIGRATION.md`, `RELEASES.md`, and `UPDATES.md` describe Notinhas distribution (no Sparkle).
 - **`.agents/skills/`** — reusable operational guidance per domain.
-- Source `// MARK:` — navigate large files (`AppStatusBarController`, `AnnotateState`, `NotinhasNoteGeometry`).
+- Source `// MARK:` — navigate large files (`AppStatusBarController`, `AnnotateState`, `CueNoteGeometry`).
 
 ## Rules
 
@@ -27,7 +27,7 @@ Use when updating project docs, agent guidance, or in-source section markers.
 ## Checklist
 
 - Would a new contributor build and run from README + `AGENTS.md`?
-- Do agent docs match `./scripts/build_and_run.sh` and `./scripts/run-tests.sh` with **Notinhas** scheme paths?
+- Do agent docs match `./scripts/build_and_run.sh` and `./scripts/run-tests.sh` with **Cue** scheme paths?
 - Is `docs/MIGRATION.md` updated when legacy path or Keychain migration changes?
 
 ## Related

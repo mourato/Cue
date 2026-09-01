@@ -1,23 +1,23 @@
-# Notinhas documentation map
+# Cue documentation map
 
-Flow-first entrypoint for humans and agents working in Notinhas. Start here, then open the doc that owns your topic.
+Flow-first entrypoint for humans and agents working in Cue. Start here, then open the doc that owns your topic.
 
 ## Product focus
 
-Notinhas optimizes **capture → annotate with numbered pins/notes → clipboard export**. Inherited upstream docs describe shared capture, history, and annotate machinery — keep them accurate when touching those flows.
+Cue optimizes **capture → annotate with numbered pins/notes → clipboard export**. Inherited upstream docs describe shared capture, history, and annotate machinery — keep them accurate when touching those flows.
 
 ## Quick links
 
 | Doc | Topic |
 | --- | --- |
-| [MIGRATION.md](MIGRATION.md) | Upgrading from Snapzy, TCC re-grant, legacy paths |
+| [MIGRATION.md](MIGRATION.md) | Upgrading from Snapzy/Notinhas, TCC re-grant, legacy paths |
 | [DEVELOPMENT.md](DEVELOPMENT.md) | Clone, Xcode, `./scripts/build_and_run.sh` |
 | [BUILD.md](BUILD.md) | Archive, DMG, bundle verification |
 | [STRUCTURE.md](STRUCTURE.md) | Source tree and runtime ownership |
 | [APP_LIFECYCLE.md](APP_LIFECYCLE.md) | Launch, onboarding, menu bar, migrations |
-| [SHORTCUTS.md](SHORTCUTS.md) | Hotkeys and `notinhas://` automation |
+| [SHORTCUTS.md](SHORTCUTS.md) | Hotkeys and `cue://` automation |
 | [PREFERENCES.md](PREFERENCES.md) | Settings tabs and storage keys |
-| [CONFIGURATION.md](CONFIGURATION.md) | `~/.config/notinhas/config.toml` |
+| [CONFIGURATION.md](CONFIGURATION.md) | `~/.config/cue/config.toml` |
 | [UPDATES.md](UPDATES.md) | Local diagnostics (no Sparkle) |
 | [RELEASES.md](RELEASES.md) | GitHub Release / DMG workflow |
 | [CHANGELOG-upstream-snapzy.md](CHANGELOG-upstream-snapzy.md) | Archived upstream Snapzy changelog (pre-fork) |
@@ -51,7 +51,7 @@ Notinhas optimizes **capture → annotate with numbered pins/notes → clipboard
 
 ```mermaid
 flowchart TD
-    A["Launch Notinhas"] --> B["AppDelegate + AppCoordinator"]
+    A["Launch Cue"] --> B["AppDelegate + AppCoordinator"]
     B --> C["Identity + sandbox migrations"]
     C --> D["DatabaseManager + capture services"]
     D --> E["Menu bar / capture / annotate"]
@@ -60,7 +60,7 @@ flowchart TD
 
 ## Agent routing
 
-- Notinhas pins/export → `.agents/skills/capture-annotate-export/SKILL.md`
+- Cue pins/export → `.agents/skills/capture-annotate-export/SKILL.md`
 - Build/test gates → `delivery-workflow`
 - Repo policy → `project-standards` and root `AGENTS.md`
 
@@ -68,6 +68,6 @@ flowchart TD
 
 Source and migration code may reference **legacy Snapzy** paths (`Snapzy/`,
 `snapzy.db`, `snapzy://`) only for one-time import or rejection tests.
-User-facing docs and automation should use **Notinhas** paths and
-`notinhas://` unless explicitly documenting legacy migration inputs in
+User-facing docs and automation should use **Cue** paths and
+`cue://` unless explicitly documenting legacy migration inputs in
 [MIGRATION.md](MIGRATION.md).

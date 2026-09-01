@@ -2,13 +2,13 @@
 
 This doc covers the screenshot capture pipeline: capture modes, the area-selection overlay, OCR/QR, object cutout, and Smart Element — from trigger to saved file. Scrolling capture, screen recording, post-capture routing, and the editors have their own docs (see Related docs). Retention policy for inherited capture modes: [ADR 070 — Retain inherited Snapzy surfaces](adr/070-retain-inherited-snapzy-surfaces.md).
 
-User-facing copy in these flows is localized through `Notinhas/Shared/Localization/L10n.swift` and `Notinhas/Resources/Localization/{Shared,Features}/*.xcstrings`. Privacy permission copy lives in `InfoPlist.strings`. For localization ownership and rules, read [`LOCALIZATION.md`](LOCALIZATION.md).
+User-facing copy in these flows is localized through `Cue/Shared/Localization/L10n.swift` and `Cue/Resources/Localization/{Shared,Features}/*.xcstrings`. Privacy permission copy lives in `InfoPlist.strings`. For localization ownership and rules, read [`LOCALIZATION.md`](LOCALIZATION.md).
 
 ## Flow Index
 
 ```mermaid
 flowchart TD
-    A["Trigger from menu bar, global shortcut, or notinhas:// URL"] --> B{"Mode"}
+    A["Trigger from menu bar, global shortcut, or cue:// URL"] --> B{"Mode"}
 
     B --> C["Fullscreen / Area screenshot"]
     B --> AIO["All-In-One HUD (mode + area + dimensions)"]
@@ -37,18 +37,18 @@ flowchart TD
 
 | Mode | Default trigger | Coordinating types | Output |
 | --- | --- | --- | --- |
-| All-In-One | Menu / optional `⇧⌘0` / `notinhas://capture/all-in-one` | `AllInOneCaptureCoordinator` + Plan 035 HUD + Plan 036 refinement | Each mode button dispatches its capture action |
+| All-In-One | Menu / optional `⇧⌘0` / `cue://capture/all-in-one` | `AllInOneCaptureCoordinator` + Plan 035 HUD + Plan 036 refinement | Each mode button dispatches its capture action |
 | Fullscreen | `⇧⌘3` | `ScreenCaptureViewModel.captureFullscreen()` → `ScreenCaptureManager.captureAllDisplays(targetDisplayIDs:)` | Image file per active display |
 | Area (manual region) | `⇧⌘4` | `startAreaCapture(.manualRegion)` → `AreaSelectionController` + `FrozenAreaCaptureSession` or live path | Cropped image file |
-| Application window | Menu / shortcut / `notinhas://capture/application` | Same overlay, `.applicationWindow` mode → `ScreenCaptureManager.captureWindow(target:)` | Window image incl. shadow |
-| Active window | Menu / shortcut / `notinhas://capture/active-window` | `ActiveWindowResolver` (AX focused window) → `captureWindow` | Window image |
+| Application window | Menu / shortcut / `cue://capture/application` | Same overlay, `.applicationWindow` mode → `ScreenCaptureManager.captureWindow(target:)` | Window image incl. shadow |
+| Active window | Menu / shortcut / `cue://capture/active-window` | `ActiveWindowResolver` (AX focused window) → `captureWindow` | Window image |
 | Area + inline annotate | `⇧⌘7` | `InlineAreaAnnotateCoordinator` (see [`ANNOTATE.md`](ANNOTATE.md)) | Annotated image file |
 | Scrolling | `⇧⌘6` | `ScrollingCaptureCoordinator` (see [`SCROLLING_CAPTURE.md`](SCROLLING_CAPTURE.md)) | Stitched long image |
 | OCR text | `⇧⌘2` | `OCRService` + `QRCodeService` | Clipboard text only (no file) |
 | Object cutout | `⇧⌘1` | `ForegroundCutoutService` | Transparent PNG |
 | Smart element | `⌥⇧4` | `SmartElementCaptureController` + AX services | Cropped image file |
 
-All shortcut defaults are configurable; see [`SHORTCUTS.md`](SHORTCUTS.md). `ScreenCaptureViewModel` (`Notinhas/Features/Capture/CaptureViewModel.swift`) is the single entry point for every mode and implements `KeyboardShortcutDelegate`.
+All shortcut defaults are configurable; see [`SHORTCUTS.md`](SHORTCUTS.md). `ScreenCaptureViewModel` (`Cue/Features/Capture/CaptureViewModel.swift`) is the single entry point for every mode and implements `KeyboardShortcutDelegate`.
 
 ## Screenshot, OCR, and Cutout
 
@@ -106,20 +106,20 @@ flowchart TD
 - Manual selection and All-In-One refinement build one pixel-boundary index per backdrop and reuse it while the moving edge is within the configured snap distance. Hold `Option` to bypass snapping for the current gesture; snap guides are controlled by Preferences → Capture and default to on.
 - The live area-selection overlay has an adaptive inside-selection layer that flips between dark-on-light and light-on-dark based on the background luminance under the selection. It renders only when Preferences → Capture → "Show selection area overlay" is **off** (the standard dimming overlay path never uses it). To sample luminance, live mode captures an **invisible** backdrop (`AreaSelectionBackdrop(isVisible: false)`) via ScreenCaptureKit. That capture is gated on the overlay-off state (skipped entirely by default) and runs off the main thread, because a synchronous full-screen composite blocks the run loop and lets WindowServer reset the crosshair to the arrow during overlay present / first drag.
 - The live overlay is a `.nonactivatingPanel` and never becomes key (activating would dim live windows), so AppKit's cursor-rect machinery does not self-heal the crosshair after an external reset. The crosshair, key focus, and overlay windows ordering are kept sticky by re-asserting them via `NSWorkspace.activeSpaceDidChangeNotification` and `NSApplication.didBecomeActiveNotification` observers during a session, which reactivate the app, order the overlays to the front, and refresh the cursors.
-- For screenshot sessions, the target display overlay now owns direct keyboard handling for `Escape` and the application-mode toggle key, so cancel still works when Notinhas starts from a background custom shortcut without depending on Accessibility-backed global key monitoring.
+- For screenshot sessions, the target display overlay now owns direct keyboard handling for `Escape` and the application-mode toggle key, so cancel still works when Cue starts from a background custom shortcut without depending on Accessibility-backed global key monitoring.
 - `Cmd+Shift+4` area capture uses manual region selection. Application-window capture is available from the menu, Active Window shortcut, or All-In-One → Window (HUD child key, default `A`).
-- Application-window capture can also start directly from the menu, independent shortcut, or `notinhas://capture/application`; it uses the same area capture flow with `.applicationWindow` as the initial interaction mode.
+- Application-window capture can also start directly from the menu, independent shortcut, or `cue://capture/application`; it uses the same area capture flow with `.applicationWindow` as the initial interaction mode.
 - Active-window capture resolves the AX focused window of the frontmost app via `ActiveWindowResolver`, maps it to the nearest `WindowCaptureTarget` candidate, and captures it through the same `captureWindow` path — no selection overlay appears.
 - In application window mode, `AreaSelectionController` builds a front-to-back candidate list from `CGWindowListCopyWindowInfo` plus `SCShareableContent`, highlights the hovered window above the dimming overlay, and captures the selected app window on click without requiring a drag rectangle.
 - Exact window capture is handled by `ScreenCaptureManager.captureWindow()`. ScreenCaptureKit window metrics are used directly, then fully transparent capture fringe is trimmed so shadow framing does not leave uneven empty canvas; a safe area-capture fallback applies if exact capture fails.
 - The frozen/manual and application-window paths both preserve existing desktop icon/widget exclusion, cursor, own-app exclusion, temp-save, Quick Access, clipboard, and annotate routing behavior.
-- When own-app exclusion hides visible normal Notinhas windows for screenshot, OCR, cutout, scrolling capture, or pre-recording setup, those windows are ordered out temporarily (`HiddenWindowSession`) and restored after the capture/session finishes or is cancelled.
+- When own-app exclusion hides visible normal Cue windows for screenshot, OCR, cutout, scrolling capture, or pre-recording setup, those windows are ordered out temporarily (`HiddenWindowSession`) and restored after the capture/session finishes or is cancelled.
 - Capture toasts, alerts, open-panel prompts, and error surfaces are localized through `L10n`.
 
 ### All-In-One capture session
 
-- Entry: menu bar **All-In-One Capture**, optional global shortcut (recommended `⇧⌘0`, ships unbound), or `notinhas://capture/all-in-one`.
-- `AllInOneCaptureCoordinator` (`Notinhas/Features/Capture/AllInOne/`) owns the session: Plan 035 floating HUD toolbars (mode strip + action bar) and Plan 036 selection refinement (`AllInOneSelectionRefinementController`, `AllInOneDimensionsBarView`, `CaptureLastSelectionStore`).
+- Entry: menu bar **All-In-One Capture**, optional global shortcut (recommended `⇧⌘0`, ships unbound), or `cue://capture/all-in-one`.
+- `AllInOneCaptureCoordinator` (`Cue/Features/Capture/AllInOne/`) owns the session: Plan 035 floating HUD toolbars (mode strip + action bar) and Plan 036 selection refinement (`AllInOneSelectionRefinementController`, `AllInOneDimensionsBarView`, `CaptureLastSelectionStore`).
 - Mode buttons are direct capture actions configured in Preferences → Capture → All-In-One Modes. Enabled modes appear in the saved order; Recording appears only when the Video module is enabled and may occupy any saved position. Smart Element and Object Cutout stay as dedicated menu/shortcut entries.
 - Hidden modes do not respond to their All-In-One child keys, but their saved bindings remain and work again when the mode is re-enabled. Standalone menus, global shortcuts, and deep links are unaffected. Preference changes apply when the next All-In-One session starts.
 - Mode buttons (and matching HUD child-key shortcuts) dispatch immediately. The dimensions bar only edits the current refined rectangle. There is no extra Capture confirmation button. Window closes the All-In-One HUD first, then opens the existing application-window selection flow.
@@ -133,7 +133,7 @@ flowchart TD
 
 ### Selection overlay architecture
 
-- `AreaSelectionController` (`Notinhas/Services/Capture/AreaSelectionWindow.swift`, `@MainActor` singleton) orchestrates sessions: pooled per-display `AreaSelectionWindow` panels (`prepareWindowPool()` pre-allocates at launch for <150ms activation; pool refreshed on screen-parameter changes — mid-session, newly attached displays get configured and shown immediately so no hidden click fall-through hole appears), Escape monitors (local + global), `withDisplayOverlayHidden(Async)` for snapshot grabs while the overlay is visible, and Space/app-activation observers that trigger backdrop recapture.
+- `AreaSelectionController` (`Cue/Services/Capture/AreaSelectionWindow.swift`, `@MainActor` singleton) orchestrates sessions: pooled per-display `AreaSelectionWindow` panels (`prepareWindowPool()` pre-allocates at launch for <150ms activation; pool refreshed on screen-parameter changes — mid-session, newly attached displays get configured and shown immediately so no hidden click fall-through hole appears), Escape monitors (local + global), `withDisplayOverlayHidden(Async)` for snapshot grabs while the overlay is visible, and Space/app-activation observers that trigger backdrop recapture.
 - Session lifecycle is single-fire and re-entrancy safe. Starting a session while one is presenting tears the previous one down through the normal cancel path first — its completion is invoked once with `nil` (so each feature's own cancel cleanup runs: `ScreenCaptureViewModel.isAreaSelectionActive` resets, hidden windows restore, frozen sessions invalidate), its observers and Quick Access suspension are released, and the new session then starts clean. Completions are snapshotted and cleared before invocation, so a completion that synchronously calls back into the controller (live area mode calls `cancelSelection()` to dismiss) cannot fire twice. After `activatePooledWindows`, a one-shot next-run-loop assertion re-asserts `orderFrontRegardless()` for any panel WindowServer left invisible and logs it for field diagnosis.
 - The dismiss policy is a `dismissesAfterSelection` start parameter (default `true`), applied after session-start teardown so it cannot be wiped by a replacement-cancel or leak across sessions; live area mode passes `false` and dismisses via `cancelSelection()` inside its completion after securing mouse-up snapshots. `setDismissesAfterSelection` remains for compatibility but new callers should use the parameter.
 - `AreaSelectionWindow` is a nonactivating `NSPanel` per display with `sharingType = .none` so overlays never bake into captures; a pointer-tracking timer promotes "key-follows-pointer" keyboard ownership for non-activated live sessions.
@@ -149,7 +149,7 @@ flowchart TD
 - Narrow vertical CJK OCR uses a constrained recovery path inside `OCRService`: if normal Vision profiles and contrast recovery find no usable text, upright CJK glyph rows are normalized into a horizontal recovery image (`VerticalCJKTextNormalizer`) before retrying Vision. This keeps horizontal OCR unchanged while improving traditional vertical text layouts.
 - The OCR effect is controlled by `PreferencesKeys.ocrScanningOverlayEnabled` from Capture → Screenshot → OCR and is enabled by default.
 - QR detection (`QRCodeService`, `VNDetectBarcodesRequest`) runs as local Vision work alongside OCR where possible, with capture/processing duration logged for latency checks. `OCRQRPayloadComposer` merges deduped QR payloads into the clipboard text, skipping payloads already contained in the OCR text.
-- QR payload handling is passive by design: Notinhas does not open decoded URLs, perform network requests, load WebViews, execute processes, or write QR payloads as file URL pasteboard items.
+- QR payload handling is passive by design: Cue does not open decoded URLs, perform network requests, load WebViews, execute processes, or write QR payloads as file URL pasteboard items.
 - Detected web links (NSDataDetector, max 3, http/https only) optionally surface in a floating clickable `OCRLinkPromptManager` panel (10s auto-dismiss) — pref `ocrLinkDetectionEnabled`, default on.
 - A success toast after OCR copies text is configurable via `ocrSuccessNotificationEnabled`.
 
@@ -162,9 +162,9 @@ flowchart TD
 
 ### Smart Element notes
 
-- Smart Element Capture is standalone. It starts from the menu, an optional user-bound global shortcut (default `Option+Shift+4`), or `notinhas://capture/smart-element`; it does not run inside the `Cmd+Shift+4` area overlay and does not freeze the desktop before hover.
-- Smart Element Capture requires Accessibility permission. Startup gates through `AXIsProcessTrustedWithOptions`; without permission, Notinhas does not show the standalone overlay.
-- During a Smart Element session, `SmartElementCaptureController` owns one live overlay panel per screen. `SmartElementWindowOwnerResolver` finds the topmost non-Notinhas window under the cursor, `SmartElementQueryService` uses the window PID with `AXUIElementCopyElementAtPosition`, and `AXElementInspector` normalizes AX bounds into AppKit bottom-left coordinates for highlight rendering. To ensure 60fps overlay performance, the AX queries run on a background queue with a throttle, preventing main thread blocking.
+- Smart Element Capture is standalone. It starts from the menu, an optional user-bound global shortcut (default `Option+Shift+4`), or `cue://capture/smart-element`; it does not run inside the `Cmd+Shift+4` area overlay and does not freeze the desktop before hover.
+- Smart Element Capture requires Accessibility permission. Startup gates through `AXIsProcessTrustedWithOptions`; without permission, Cue does not show the standalone overlay.
+- During a Smart Element session, `SmartElementCaptureController` owns one live overlay panel per screen. `SmartElementWindowOwnerResolver` finds the topmost non-Cue window under the cursor, `SmartElementQueryService` uses the window PID with `AXUIElementCopyElementAtPosition`, and `AXElementInspector` normalizes AX bounds into AppKit bottom-left coordinates for highlight rendering. To ensure 60fps overlay performance, the AX queries run on a background queue with a throttle, preventing main thread blocking.
 - Clicking inside the highlighted rect commits through `ScreenCaptureViewModel.captureSmartElement(rect:)`, which reuses the screenshot save and post-capture pipeline. Clicking outside the highlight or pressing `Escape` cancels without writing a capture.
 - Known limitation: Chromium-based apps (Chrome, Slack, Claude desktop, Electron) may expose only `AXWebArea` for web content unless launched with `--force-renderer-accessibility` (Chromium) or `app.setAccessibilitySupportEnabled(true)` (Electron). Inside such apps the highlight may snap to the whole web view rather than individual DOM elements.
 
@@ -172,23 +172,23 @@ flowchart TD
 
 | File | Responsibility |
 | --- | --- |
-| `Notinhas/Features/Capture/CaptureViewModel.swift` | Entry point for screenshot, scrolling capture, OCR, cutout, smart element, and recording launch |
-| `Notinhas/Features/Capture/OCRLinkPromptManager.swift` | Floating clickable link prompt panel after OCR |
-| `Notinhas/Services/Capture/ScreenCaptureManager.swift` | Core screenshot engine, frozen snapshot capture, window capture, and file writing |
-| `Notinhas/Services/Capture/AreaSelectionWindow.swift` | `AreaSelectionController`, `AreaSelectionWindow`, `AreaSelectionOverlayView` — the selection overlay stack |
-| `Notinhas/Services/Capture/AreaSelectionBackdrop.swift` | Shared selection models: backdrops, `WindowCaptureTarget`, `AreaSelectionResult`, interaction modes |
-| `Notinhas/Services/Capture/AreaSelectionMagnifier.swift` | Scroll-zoom pixel loupe for the selection overlay |
-| `Notinhas/Services/Capture/FrozenAreaCaptureSession.swift` | Frozen display snapshots used by area screenshot selection |
-| `Notinhas/Services/Capture/WindowSelectionQueryService.swift` | App-window candidate list and exact `SCWindow` resolution |
-| `Notinhas/Services/Capture/ActiveWindowResolver.swift` | AX focused-window resolution for active-window capture |
-| `Notinhas/Services/Capture/SmartElement/` | Standalone Smart Element overlay session, query service seams, capture performer |
-| `Notinhas/Services/Capture/AXElementInspector.swift` | AX role allow/deny lists, parent-chain walk to the meaningful element, coordinate flip |
-| `Notinhas/Services/Media/OCRService.swift` | Vision OCR orchestration: normalization, multi-profile passes, recovery paths, scoring |
-| `Notinhas/Services/Media/QRCodeService.swift` | Local QR payload detection for OCR capture |
-| `Notinhas/Services/Media/ForegroundCutoutService.swift` | Vision subject-mask cutout + safe auto-crop policy |
-| `Notinhas/Services/Wallpaper/DesktopIconManager.swift` | SCK content-filter exclusion to hide desktop icons/widgets at capture |
-| `Notinhas/Services/Capture/TempCaptureManager.swift` | Save-vs-temp destination logic and temp capture lifecycle |
-| `Notinhas/Services/Capture/PostCaptureActionHandler.swift` | After-capture action executor (see [`POST_CAPTURE.md`](POST_CAPTURE.md)) |
+| `Cue/Features/Capture/CaptureViewModel.swift` | Entry point for screenshot, scrolling capture, OCR, cutout, smart element, and recording launch |
+| `Cue/Features/Capture/OCRLinkPromptManager.swift` | Floating clickable link prompt panel after OCR |
+| `Cue/Services/Capture/ScreenCaptureManager.swift` | Core screenshot engine, frozen snapshot capture, window capture, and file writing |
+| `Cue/Services/Capture/AreaSelectionWindow.swift` | `AreaSelectionController`, `AreaSelectionWindow`, `AreaSelectionOverlayView` — the selection overlay stack |
+| `Cue/Services/Capture/AreaSelectionBackdrop.swift` | Shared selection models: backdrops, `WindowCaptureTarget`, `AreaSelectionResult`, interaction modes |
+| `Cue/Services/Capture/AreaSelectionMagnifier.swift` | Scroll-zoom pixel loupe for the selection overlay |
+| `Cue/Services/Capture/FrozenAreaCaptureSession.swift` | Frozen display snapshots used by area screenshot selection |
+| `Cue/Services/Capture/WindowSelectionQueryService.swift` | App-window candidate list and exact `SCWindow` resolution |
+| `Cue/Services/Capture/ActiveWindowResolver.swift` | AX focused-window resolution for active-window capture |
+| `Cue/Services/Capture/SmartElement/` | Standalone Smart Element overlay session, query service seams, capture performer |
+| `Cue/Services/Capture/AXElementInspector.swift` | AX role allow/deny lists, parent-chain walk to the meaningful element, coordinate flip |
+| `Cue/Services/Media/OCRService.swift` | Vision OCR orchestration: normalization, multi-profile passes, recovery paths, scoring |
+| `Cue/Services/Media/QRCodeService.swift` | Local QR payload detection for OCR capture |
+| `Cue/Services/Media/ForegroundCutoutService.swift` | Vision subject-mask cutout + safe auto-crop policy |
+| `Cue/Services/Wallpaper/DesktopIconManager.swift` | SCK content-filter exclusion to hide desktop icons/widgets at capture |
+| `Cue/Services/Capture/TempCaptureManager.swift` | Save-vs-temp destination logic and temp capture lifecycle |
+| `Cue/Services/Capture/PostCaptureActionHandler.swift` | After-capture action executor (see [`POST_CAPTURE.md`](POST_CAPTURE.md)) |
 
 ## Related docs
 
@@ -198,7 +198,7 @@ flowchart TD
 - [`ANNOTATE.md`](ANNOTATE.md) — inline area annotate (Capture Markup) and the full editor
 - [`QUICK_ACCESS.md`](QUICK_ACCESS.md) — floating post-capture panel
 - [`HISTORY.md`](HISTORY.md) — capture history and retention
-- [`SHORTCUTS.md`](SHORTCUTS.md) — global shortcut defaults and `notinhas://` routes
+- [`SHORTCUTS.md`](SHORTCUTS.md) — global shortcut defaults and `cue://` routes
 - [`PREFERENCES.md`](PREFERENCES.md) — Settings → Capture reference
 - [`STRUCTURE.md`](STRUCTURE.md) — source tree and runtime architecture
 - [`LOCALIZATION.md`](LOCALIZATION.md) — localization ownership and rules

@@ -1,6 +1,6 @@
 # Video Editor
 
-This doc covers the video editor in `Notinhas/Features/VideoEditor/`: windowing, trim, zoom segments, Follow Mouse (Smart Camera), speed (timelapse) segments, background/padding, audio mixing, export, GIF resizing, and undo/redo. How recordings and their mouse/audio metadata are produced lives in [`RECORDING.md`](RECORDING.md).
+This doc covers the video editor in `Cue/Features/VideoEditor/`: windowing, trim, zoom segments, Follow Mouse (Smart Camera), speed (timelapse) segments, background/padding, audio mixing, export, GIF resizing, and undo/redo. How recordings and their mouse/audio metadata are produced lives in [`RECORDING.md`](RECORDING.md).
 
 ## Camera overlay (Plan 107)
 
@@ -51,7 +51,7 @@ flowchart TD
 
 - `VideoEditorState` (`VideoEditorState.swift`) is the central model: asset, trim range, zoom/speed segments, background, export settings, undo stacks. `VideoEditorPlaybackState` holds playhead/playing/scrubbing.
 - Playback position comes from an `AVPlayer` periodic time observer at 1/30 s; an item-end observer loops playback within the trim range.
-- When a Notinhas recording has an editor audio source sidecar, the state's asset URL is swapped to the multitrack sidecar (`editorAssetURL(for:metadata:)`) while save/replace keeps targeting the user-facing compatible file.
+- When a Cue recording has an editor audio source sidecar, the state's asset URL is swapped to the multitrack sidecar (`editorAssetURL(for:metadata:)`) while save/replace keeps targeting the user-facing compatible file.
 
 ## Trim
 
@@ -63,7 +63,7 @@ flowchart TD
 ## Zoom Segments
 
 - `ZoomSegment` (`Models/VideoEditorZoomSegment.swift`): `duration` 0.5–30 s (default 2), `zoomLevel` 1–4x (default 2), `zoomCenter` normalized 0...1, `ZoomType.auto/.manual`, `followSpeed`, `focusMargin`, `isImplicit` for auto-generated segments. `ZoomSegment.centered(at:)` places a new segment centered on the playhead; the **Z** key adds one (`VideoEditorMainView` keyboard shortcut).
-- **Automatic zoom (Plan 109):** when a Notinhas recording opens with click metadata and an empty zoom timeline, `VideoEditorZoomSegmentSynthesizer` builds implicit Follow Mouse segments (Screendrop-aligned timing: 0.3 s pre-roll, 2.5 s post-roll, 1.5× magnification, merge within 2.5 s). Preference `videoEditor.autoGenerateZoomOnOpen` defaults on. **Regenerate Automatic Zooms** in the right sidebar rebuilds implicit segments and preserves manual ones.
+- **Automatic zoom (Plan 109):** when a Cue recording opens with click metadata and an empty zoom timeline, `VideoEditorZoomSegmentSynthesizer` builds implicit Follow Mouse segments (Screendrop-aligned timing: 0.3 s pre-roll, 2.5 s post-roll, 1.5× magnification, merge within 2.5 s). Preference `videoEditor.autoGenerateZoomOnOpen` defaults on. **Regenerate Automatic Zooms** in the right sidebar rebuilds implicit segments and preserves manual ones.
 - Transitions: ease-in-out cubic (`ZoomCalculator.easeInOutCubic`), `transitionDuration` default 0.4 s clamped to 0.15–0.75 and to 45 % of the segment per edge; the editor-wide `state.zoomTransitionDuration` is user-adjustable in the right sidebar.
 - `Services/VideoEditorZoomCalculator.swift` computes per-frame zoom progress/crop rects; shared by preview and the export compositor.
 - UI: zoom timeline track (`VideoEditorZoomTimelineTrack` + `VideoEditorZoomBlockView`), center picker (`VideoEditorZoomCenterPicker`, with presets top-left/top-right/bottom-left/bottom-right/center), live preview overlay (`VideoEditorZoomPreviewOverlay`), settings popover (`VideoEditorZoomSettingsPopover`).
@@ -84,7 +84,7 @@ flowchart TD
 
 ## Background and Padding
 
-- `BackgroundStyle` (shared `Notinhas/Features/Annotate/Models/AnnotateBackgroundStyle.swift`): `none`, `gradient`, `wallpaper(URL)`, `blurred(URL)`, `solidColor`. Combined with padding, shadow, corner radius, alignment, and aspect controls in the left sidebar (`VideoEditorVideoBackgroundSidebarView`); background changes are undoable.
+- `BackgroundStyle` (shared `Cue/Features/Annotate/Models/AnnotateBackgroundStyle.swift`): `none`, `gradient`, `wallpaper(URL)`, `blurred(URL)`, `solidColor`. Combined with padding, shadow, corner radius, alignment, and aspect controls in the left sidebar (`VideoEditorVideoBackgroundSidebarView`); background changes are undoable.
 
 ## Audio in the Editor
 
@@ -144,22 +144,22 @@ discardable deliverable, and reopening a baked output never reapplies a recipe.
 
 | File | Responsibility |
 | --- | --- |
-| `Notinhas/Features/VideoEditor/VideoEditorManager.swift` | Window lifecycle, activation policy, Quick Access countdown pause |
-| `Notinhas/Features/VideoEditor/Managers/VideoEditorWindowController.swift` | Save/replace/copy/GIF flows and unsaved-changes alert |
-| `Notinhas/Features/VideoEditor/VideoEditorState.swift` | Central editor model, playback, trim/zoom/speed mutations, undo/redo |
-| `Notinhas/Features/VideoEditor/Models/VideoEditorZoomSegment.swift` | Zoom segment model and clamps |
-| `Notinhas/Features/VideoEditor/Models/VideoEditorSpeedSegment.swift` | Speed segment model and rate presets |
-| `Notinhas/Features/VideoEditor/Models/VideoEditorAutoFocusSettings.swift` | Follow Mouse tunables (followSpeed, focusMargin) |
-| `Notinhas/Features/VideoEditor/Models/VideoEditorExportSettings.swift` | Dimension presets, audio roles/mix factory, quality presets |
-| `Notinhas/Features/VideoEditor/Services/VideoEditorAutoFocusEngine.swift` | Smart Camera path reconstruction from `RecordingMetadata` |
-| `Notinhas/Features/VideoEditor/Services/VideoEditorZoomCalculator.swift` | Per-frame zoom progress/crop math, easing, transition clamps |
-| `Notinhas/Features/VideoEditor/Services/VideoEditorSpeedTimeMap.swift` | Original↔scaled time mapping for speed segments |
-| `Notinhas/Features/VideoEditor/Services/VideoEditorExporter.swift` | Export routing, composition build, replace/copy, audio normalization |
-| `Notinhas/Features/VideoEditor/Services/VideoEditorZoomCompositor.swift` | Custom `AVVideoCompositing` per-frame zoom/background renderer |
-| `Notinhas/Features/VideoEditor/Services/GIFResizer.swift` | ImageIO GIF resize preserving loop/delays |
-| `Notinhas/Features/VideoEditor/Components/VideoEditorBottomBar.swift` | Cancel / Convert-Save bar |
-| `Notinhas/Features/VideoEditor/Services/VideoEditorZoomSegmentSynthesizer.swift` | Click-driven implicit zoom segment synthesis |
-| `Notinhas/Services/Capture/RecordingMetadata.swift` | Metadata consumed by Follow Mouse, auto-zoom, and multitrack audio |
+| `Cue/Features/VideoEditor/VideoEditorManager.swift` | Window lifecycle, activation policy, Quick Access countdown pause |
+| `Cue/Features/VideoEditor/Managers/VideoEditorWindowController.swift` | Save/replace/copy/GIF flows and unsaved-changes alert |
+| `Cue/Features/VideoEditor/VideoEditorState.swift` | Central editor model, playback, trim/zoom/speed mutations, undo/redo |
+| `Cue/Features/VideoEditor/Models/VideoEditorZoomSegment.swift` | Zoom segment model and clamps |
+| `Cue/Features/VideoEditor/Models/VideoEditorSpeedSegment.swift` | Speed segment model and rate presets |
+| `Cue/Features/VideoEditor/Models/VideoEditorAutoFocusSettings.swift` | Follow Mouse tunables (followSpeed, focusMargin) |
+| `Cue/Features/VideoEditor/Models/VideoEditorExportSettings.swift` | Dimension presets, audio roles/mix factory, quality presets |
+| `Cue/Features/VideoEditor/Services/VideoEditorAutoFocusEngine.swift` | Smart Camera path reconstruction from `RecordingMetadata` |
+| `Cue/Features/VideoEditor/Services/VideoEditorZoomCalculator.swift` | Per-frame zoom progress/crop math, easing, transition clamps |
+| `Cue/Features/VideoEditor/Services/VideoEditorSpeedTimeMap.swift` | Original↔scaled time mapping for speed segments |
+| `Cue/Features/VideoEditor/Services/VideoEditorExporter.swift` | Export routing, composition build, replace/copy, audio normalization |
+| `Cue/Features/VideoEditor/Services/VideoEditorZoomCompositor.swift` | Custom `AVVideoCompositing` per-frame zoom/background renderer |
+| `Cue/Features/VideoEditor/Services/GIFResizer.swift` | ImageIO GIF resize preserving loop/delays |
+| `Cue/Features/VideoEditor/Components/VideoEditorBottomBar.swift` | Cancel / Convert-Save bar |
+| `Cue/Features/VideoEditor/Services/VideoEditorZoomSegmentSynthesizer.swift` | Click-driven implicit zoom segment synthesis |
+| `Cue/Services/Capture/RecordingMetadata.swift` | Metadata consumed by Follow Mouse, auto-zoom, and multitrack audio |
 
 ## Related docs
 

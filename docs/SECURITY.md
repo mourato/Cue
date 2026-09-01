@@ -11,15 +11,15 @@ Companion to the root [SECURITY.md](../SECURITY.md) policy. Describes runtime se
 
 ## Entitlements
 
-Review `Notinhas/Notinhas.entitlements` before adding capabilities. Document new entitlements in root SECURITY.md.
+Review `Cue/Cue.entitlements` before adding capabilities. Document new entitlements in root SECURITY.md.
 
-Notinhas does **not** ship Sparkle mach-lookup entitlements (`-spks` / `-spki`).
+Cue does **not** ship Sparkle mach-lookup entitlements (`-spks` / `-spki`).
 
 ## Permissions
 
 | TCC | Bundle IDs |
 | --- | --- |
-| Screen Recording | `com.mourato.notinhas`, `com.mourato.notinhas.debug` |
+| Screen Recording | `com.mourato.cue`, `com.mourato.cue.debug` |
 | Accessibility | same |
 | Microphone | same (Video module) |
 
@@ -33,8 +33,8 @@ TCC grants do not migrate from legacy Snapzy bundle IDs — see [MIGRATION.md](M
 
 ## Deep links
 
-Only `notinhas://` is registered. Legacy `snapzy://` requests are rejected by
-design (see `NotinhasTests` deep-link rejection tests).
+Only `cue://` is registered. Legacy `snapzy://` requests are rejected by
+design (see `CueTests` deep-link rejection tests).
 
 ## Dependency review
 
@@ -48,4 +48,4 @@ only for the removed updater must not return.
 - [ ] TOML export excludes Keychain material ([CONFIGURATION.md](CONFIGURATION.md))
 - [ ] Security-sensitive changes update root SECURITY.md
 
-No automatic upload, fallback, telemetry, crash/support upload, server, or background cloud synchronization is introduced. Provider limits and terms remain external; Notinhas does not promise privacy, durability, free usage, or performance.
+No automatic upload, fallback, telemetry, crash/support upload, server, or background cloud synchronization is introduced. Provider limits and terms remain external; Cue does not promise privacy, durability, free usage, or performance.

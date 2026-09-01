@@ -6,7 +6,7 @@
 
 Report them privately using:
 
-1. **GitHub Security Advisory** — [github.com/mourato/Notinhas/security/advisories/new](https://github.com/mourato/Notinhas/security/advisories/new)
+1. **GitHub Security Advisory** — [github.com/mourato/Cue/security/advisories/new](https://github.com/mourato/Cue/security/advisories/new)
 
 Please include:
 
@@ -22,13 +22,13 @@ You should receive an initial acknowledgment within **72 hours**. A fix or mitig
 | Version | Supported |
 | ------- | --------- |
 | Latest release | ✅ |
-| Older releases | ❌ — install the current DMG from [Releases](https://github.com/mourato/Notinhas/releases) |
+| Older releases | ❌ — install the current DMG from [Releases](https://github.com/mourato/Cue/releases) |
 
-Notinhas does not ship in-app automatic updates. Security fixes are delivered as new GitHub Release DMGs.
+Cue does not ship in-app automatic updates. Security fixes are delivered as new GitHub Release DMGs.
 
 ## App Sandbox & Permissions
 
-Notinhas runs with **hardened runtime**. Entitlements are limited to what capture, optional cloud upload, and diagnostics require.
+Cue runs with **hardened runtime**. Entitlements are limited to what capture, optional cloud upload, and diagnostics require.
 
 | Permission | Required | Why |
 | --- | --- | --- |
@@ -40,24 +40,24 @@ Permissions are requested through standard macOS prompts and can be revoked in *
 
 ## Data Handling
 
-- **Local-first** — Captures and history stay on disk under `~/Library/Application Support/Notinhas/`.
+- **Local-first** — Captures and history stay on disk under `~/Library/Application Support/Cue/`.
 - **No telemetry** — No analytics, tracking, or usage data is collected.
 - **No accounts** — No sign-in or registration.
 - **Network usage** — Limited to user-initiated cloud uploads (when configured) and local loopback OAuth for Google Drive. No automatic update checks.
-- **Diagnostics** — Optional local log files in `~/Library/Logs/Notinhas/`; never uploaded automatically.
+- **Diagnostics** — Optional local log files in `~/Library/Logs/Cue/`; never uploaded automatically.
 
 ## Cloud Credentials
 
 When cloud upload is configured:
 
-- Credentials and OAuth tokens live in the macOS Keychain (`com.mourato.notinhas.cloud`).
+- Credentials and OAuth tokens live in the macOS Keychain (`com.mourato.cue.cloud`).
 - Optional password protection uses SHA-256 hashing; plaintext passwords are not stored.
 - Encrypted export/import requires a user-supplied archive passphrase.
-- Uploads go directly to the user's storage; Notinhas does not proxy files.
+- Uploads go directly to the user's storage; Cue does not proxy files.
 
 ## Third-Party Dependencies
 
-Notinhas relies primarily on Apple frameworks (SwiftUI, AppKit, ScreenCaptureKit, Vision, AVFoundation). Optional packages are vendored through Swift Package Manager for specific features (for example image encoding). There is **no Sparkle** or other auto-update framework.
+Cue relies primarily on Apple frameworks (SwiftUI, AppKit, ScreenCaptureKit, Vision, AVFoundation). Optional packages are vendored through Swift Package Manager for specific features (for example image encoding). There is **no Sparkle** or other auto-update framework.
 
 ## Security Best Practices for Contributors
 
@@ -68,4 +68,4 @@ Notinhas relies primarily on Apple frameworks (SwiftUI, AppKit, ScreenCaptureKit
 
 ## License
 
-This security policy is part of the [Notinhas](https://github.com/mourato/Notinhas) project, licensed under the [BSD 3-Clause License](LICENSE).
+This security policy is part of the [Notinhas](https://github.com/mourato/Cue) project, licensed under the [BSD 3-Clause License](LICENSE).

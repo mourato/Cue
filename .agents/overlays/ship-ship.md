@@ -1,11 +1,11 @@
 ---
 kind: project-overlay
 extends: ship-ship
-project: Notinhas
+project: Cue
 precedence: project
 ---
 
-# Notinhas ship-ship
+# Cue ship-ship
 
 Concrete commands for the global `ship-ship` loop. Load after the global
 skill. Do not weaken its safety or integrity rules.
@@ -49,7 +49,7 @@ reviewed source tip:
   --evidence <path> --reviewed-commit <sha> [--cleanup]
 ```
 
-`--evidence` accepts a Notinhas integration manifest, a passing
+`--evidence` accepts a Cue integration manifest, a passing
 plan-preflight JSON report (plan units), or verification evidence tied to
 the source commit. After review and remediation, the script merges with
 `--no-ff`, runs `make validate`, pushes without `--force`, and only then

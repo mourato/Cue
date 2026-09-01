@@ -2,7 +2,7 @@
 
 ## Product Intent
 
-Notinhas is a tailored macOS visual-handoff tool for a product designer. It
+Cue is a tailored macOS visual-handoff tool for a product designer. It
 turns a screenshot into an unambiguous brief for developers and AI coding
 agents: capture an area, place numbered pins or rectangles, add concise notes,
 and copy the annotated result. Prioritize speed, precise visual reference, and
@@ -10,20 +10,20 @@ clipboard-ready output. Do not add broad recording, cloud, or generic markup
 features unless they directly support that workflow.
 
 Do **not** reintroduce removed upstream integrations: Sparkle auto-updates,
-About/Check for Updates UI, Report a Problem flows, `snapzy://` URL aliases, or
-a public support endpoint. Inherited Snapzy surfaces retained vs removed channels
-are recorded in `docs/adr/070-retain-inherited-snapzy-surfaces.md`.
+About/Check for Updates UI, Report a Problem flows, `snapzy://` or `notinhas://`
+URL aliases, or a public support endpoint. Inherited Snapzy surfaces retained vs
+removed channels are recorded in `docs/adr/070-retain-inherited-snapzy-surfaces.md`.
 
 ## Project Structure
 
 This repository is a fork of [Snapzy](https://github.com/duongductrong/Snapzy).
-`Notinhas/` contains the app: `App/` starts the menu-bar application,
+`Cue/` contains the app: `App/` starts the menu-bar application,
 `Features/` owns user-facing flows, `Services/` holds platform and persistence
 code, and `Resources/` contains assets and localization. Tests mirror the app
-under `NotinhasTests/`; `docs/` and `scripts/` document and automate the
+under `CueTests/`; `docs/` and `scripts/` document and automate the
 project.
 
-Keep Notinhas-specific behavior in `Notinhas/Features/Notinhas/`, with focused
+Keep Cue-specific behavior in `Cue/Features/Cue/`, with focused
 models and views colocated there. Introduce small protocols or adapters in
 `Services/` only where a feature needs to cross a platform boundary. Keep
 integration points into the existing capture and annotation flows thin; avoid
@@ -43,24 +43,24 @@ guidance governance and routing policy.
 `plan-execute-review` owns execution of plans and its review pipeline.
 Read [`docs/ui.md`](docs/ui.md) before changing user-facing UI; update it when
 the change establishes a reusable visual rule or invariant.
-Keep Notinhas behavior guidance aligned with Product Intent above; do not reintroduce
+Keep Cue behavior guidance aligned with Product Intent above; do not reintroduce
 unrelated product skills from other apps.
 
 ## Delivery lifecycle
 
 The global `core/policies/worktrees.md` owns isolation, authorization, and the
 delivery order: `create → work → commit → review → remediation → merge →
-validate → push → cleanup`. Project skills and overlays add Notinhas facts,
+validate → push → cleanup`. Project skills and overlays add Cue facts,
 commands, and review gates without redefining that lifecycle.
 
 ## Build, Test, and Run
 
-- `open Notinhas.xcodeproj` — develop and run in Xcode (`⌘R`).
+- `open Cue.xcodeproj` — develop and run in Xcode (`⌘R`).
 - `./scripts/build_and_run.sh` — canonical isolated debug build and launch.
 - `./scripts/launch.sh` — legacy wrapper; use `build_and_run.sh` for options.
 - `./scripts/run-tests.sh [--video-module]` — quiet XCTest suite by default:
   no on-screen overlay/panel suites and no app sounds. Use `--with-visual`
-  only for an intentional UI integration run; use `NOTINHAS_ALLOW_TEST_SOUNDS=1`
+  only for an intentional UI integration run; use `CUE_ALLOW_TEST_SOUNDS=1`
   only for an intentional audio integration run.
 - `./scripts/plan-preflight.sh plans/NNN-*.md --scope <path>` — read-only plan
   preflight; use `--new-file <path>` when needed.
@@ -75,10 +75,10 @@ prompts on macOS whenever they change.
 
 ### Optional Video Module
 
-Recording and Video Editor compile with `NOTINHAS_VIDEO_MODULE` using
-**Notinhas Video** / **Debug+Video**. `./scripts/build_and_run.sh` includes the
+Recording and Video Editor compile with `CUE_VIDEO_MODULE` using
+**Cue Video** / **Debug+Video**. `./scripts/build_and_run.sh` includes the
 module by default (`--no-video-module` or `ENABLE_VIDEO_MODULE=0` to opt out).
-The plain **Notinhas** Xcode scheme keeps the module off. Enable it at runtime
+The plain **Cue** Xcode scheme keeps the module off. Enable it at runtime
 under **Preferences → Advanced**; capture → annotate → export does not require
 it.
 
@@ -87,9 +87,9 @@ it.
 Agents must use the default quiet test command. The XCTest host does not start
 the interactive app, visual overlay/panel suites are opt-in, and app sound
 playback is suppressed during tests. Keep
-`NOTINHAS_ALLOW_SCREEN_CAPTURE_IN_TESTS=1`,
-`NOTINHAS_ALLOW_TEST_SOUNDS=1`, and
-`NOTINHAS_RUN_MICROPHONE_INTEGRATION=1` unset unless the task explicitly
+`CUE_ALLOW_SCREEN_CAPTURE_IN_TESTS=1`,
+`CUE_ALLOW_TEST_SOUNDS=1`, and
+`CUE_RUN_MICROPHONE_INTEGRATION=1` unset unless the task explicitly
 requires that integration surface.
 
 ## Code and Tests
@@ -99,17 +99,18 @@ descriptive file names, and `// MARK:` in large types. The project uses
 complete strict concurrency with nonisolated-by-default targets; keep SwiftUI,
 AppKit, and lifecycle entry points explicitly `@MainActor`, and move capture,
 file, and image processing off it through value snapshots or focused adapters.
-Add XCTest cases in the matching `NotinhasTests/` area, named by behavior—for
+Add XCTest cases in the matching `CueTests/` area, named by behavior—for
 example, `testPinNoteExportKeepsMarkerOrder()`.
 
-Remaining `Snapzy` / `snapzy` strings in source are **legacy compatibility**
-(readers, migration, or rejection tests) — do not expand them into active product branding.
+Remaining `Snapzy` / `snapzy` and `Notinhas` / `notinhas` strings in source are
+**legacy compatibility** (readers, migration, or rejection tests) — do not
+expand them into active product branding.
 
 ## Fork and Contribution Workflow
 
-`origin` is `mourato/Notinhas`; `upstream` is `duongductrong/Snapzy`. For
+`origin` is `mourato/Cue`; `upstream` is `duongductrong/Snapzy`. For
 upstream work, fetch it first, integrate focused changes without deleting
-Notinhas modules, and validate the affected flow afterward. UI changes include
+Cue modules, and validate the affected flow afterward. UI changes include
 screenshots or a short recording in the handoff.
 
 ## Completion
@@ -120,7 +121,7 @@ screenshots or a short recording in the handoff.
 
 ## Distribution
 
-Releases are manual GitHub Releases with `Notinhas-v<version>.dmg`. No Sparkle
+Releases are manual GitHub Releases with `Cue-v<version>.dmg`. No Sparkle
 appcast or in-app update channel; no Homebrew cask or Discord release bot (see
 ADR 070). Optional `install.sh` / `uninstall.sh` remain convenience helpers. User migration notes live
 in `docs/MIGRATION.md`.

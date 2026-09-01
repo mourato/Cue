@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted for the Notinhas app, tests, and optional Video configurations.
+Accepted for the Cue app, tests, and optional Video configurations.
 
 ## Decision
 
@@ -15,7 +15,7 @@ AppKit, and lifecycle entry points opt into `@MainActor` explicitly.
 
 SwiftFormat is pinned by repository policy to Swift 6.2 syntax and four-space
 indentation with the existing 120-column and generated/Pods/build exclusions.
-SwiftLint owns the `Notinhas` and `NotinhasTests` surfaces through
+SwiftLint owns the `Notinhas` and `CueTests` surfaces through
 `.swiftlint.yml`; checks are fail-closed and have separate full, changed, and
 autofix commands. The focused baseline opts into `empty_string` and
 `first_where`, both verified clean on the owned app and test surfaces. The
@@ -34,7 +34,7 @@ marked `@preconcurrency` remain limited to the specific legacy SDK boundary;
 new broad `@unchecked Sendable` escapes are not permitted.
 
 The optional Video module is part of the gate: use `make build-video` and
-`make test-video`, which select the real `Notinhas Video` / `Debug+Video`
+`make test-video`, which select the real `Cue Video` / `Debug+Video`
 configuration through the canonical scripts. The default app uses `make build`
 and `make test`.
 

@@ -1,6 +1,6 @@
 # Sharing and cloud boundary
 
-Notinhas keeps sharing local and explicit. Captures can be copied to the
+Cue keeps sharing local and explicit. Captures can be copied to the
 clipboard, saved/exported locally, or uploaded from Annotate and Quick Access
 to the selected image host: ImgBB or ImageKit. The upload action is explicit;
 the copied URL is public to anyone who receives it.
@@ -19,7 +19,7 @@ Legacy cloud keychain readers and persisted `cloudURL`/`cloudKey` fields remain
 for migration and decoding compatibility.
 
 Migration is non-destructive: old `[cloud]` configuration keys are ignored,
-legacy fields are not erased, and Notinhas does not delete remote objects,
+legacy fields are not erased, and Cue does not delete remote objects,
 Keychain items, or user configuration files. See [MIGRATION.md](MIGRATION.md).
 
 Related docs: [ANNOTATE.md](ANNOTATE.md), [QUICK_ACCESS.md](QUICK_ACCESS.md),

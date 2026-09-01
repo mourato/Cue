@@ -1,22 +1,22 @@
 # App Lifecycle
 
-How Notinhas launches, runs onboarding, lives in the menu bar, and shuts down. Covers `Notinhas/App/`, splash/onboarding, app identity, theme, data migrations, and the entitlements/Info.plist contract.
+How Cue launches, runs onboarding, lives in the menu bar, and shuts down. Covers `Cue/App/`, splash/onboarding, app identity, theme, data migrations, and the entitlements/Info.plist contract.
 
 Current as of HEAD (`v1.30.0-beta.4`, build 140, macOS 26.0+ deployment target).
 
 ## Platform shape
 
-- Menu-bar-only app: `INFOPLIST_KEY_LSUIElement = YES` (build setting in `Notinhas.xcodeproj/project.pbxproj`), no Dock icon by default.
-- `@main` entry: `NotinhasApp` in `Notinhas/App/NotinhasApp.swift` — declares only a `Settings` scene hosting `PreferencesView`, tinted by `ThemeManager.shared.systemAppearance`. All other windows are AppKit-driven.
-- `NotinhasApp.init()` calls `AppIdentityManager.shared.refresh()` before anything else.
-- Bundle IDs: `com.mourato.notinhas` (release), `com.mourato.notinhas.debug` (debug) — see `AppBundleIdentity` in `Notinhas/Services/AppIdentity/AppIdentityManager.swift`.
-- Not sandboxed: `ENABLE_APP_SANDBOX = NO` and `Notinhas/Notinhas.entitlements` contains no `com.apple.security.app-sandbox` key. Hardened runtime is enabled. The declared entitlements still matter for specific subsystems (see below).
+- Menu-bar-only app: `INFOPLIST_KEY_LSUIElement = YES` (build setting in `Cue.xcodeproj/project.pbxproj`), no Dock icon by default.
+- `@main` entry: `CueApp` in `Cue/App/CueApp.swift` — declares only a `Settings` scene hosting `PreferencesView`, tinted by `ThemeManager.shared.systemAppearance`. All other windows are AppKit-driven.
+- `CueApp.init()` calls `AppIdentityManager.shared.refresh()` before anything else.
+- Bundle IDs: `com.mourato.cue` (release), `com.mourato.cue.debug` (debug) — see `AppBundleIdentity` in `Cue/Services/AppIdentity/AppIdentityManager.swift`.
+- Not sandboxed: `ENABLE_APP_SANDBOX = NO` and `Cue/Cue.entitlements` contains no `com.apple.security.app-sandbox` key. Hardened runtime is enabled. The declared entitlements still matter for specific subsystems (see below).
 
 ## Launch sequence
 
 ```mermaid
 flowchart TD
-    A["NotinhasApp @main<br/>(LSUIElement, Settings scene only)"] --> B["AppDelegate.applicationWillFinishLaunching<br/>register AppleEvent kAEGetURL handler"]
+    A["CueApp @main<br/>(LSUIElement, Settings scene only)"] --> B["AppDelegate.applicationWillFinishLaunching<br/>register AppleEvent kAEGetURL handler"]
     B --> C["applicationDidFinishLaunching"]
     C --> D{"AppLaunchPolicy<br/>shouldStartInteractiveApplication?"}
     D -- "XCTest && !NOTINHAS_ALLOW_INTERACTIVE_XCTEST_HOST=1" --> X[return, no UI]
@@ -33,9 +33,9 @@ flowchart TD
     I --> J["flushPendingDeepLinks() + flushPendingOpenFileURLs()"]
 ```
 
-- `AppLaunchPolicy` (`Notinhas/App/NotinhasApp.swift`): skips interactive startup under XCTest unless `NOTINHAS_ALLOW_INTERACTIVE_XCTEST_HOST=1`, and in headless sessions (`NSScreen.screens.count == 0`). XCTest detection uses `XCTestConfigurationFilePath`, `XCInjectBundle`, `DYLD_INSERT_LIBRARIES` (XCTest inject dylibs), and linked `XCTestCase` — so splash/onboarding/menu-bar setup do not start during host-app tests even when the configuration path env var is absent early in launch.
-- Sandbox-off migration failure loops a critical modal: **Try Again** (retry), **Start Fresh…** (confirm, then `skipMigration()`; old sandbox data is left untouched), **Quit Notinhas**.
-- Database failure loops: **Try Repair** (`DatabaseManager.attemptRepair()`), **Reset Database…** (moves files into `DatabaseRecovery-<timestamp>` then `retryInitialization()`), **Quit Notinhas**.
+- `AppLaunchPolicy` (`Cue/App/CueApp.swift`): skips interactive startup under XCTest unless `NOTINHAS_ALLOW_INTERACTIVE_XCTEST_HOST=1`, and in headless sessions (`NSScreen.screens.count == 0`). XCTest detection uses `XCTestConfigurationFilePath`, `XCInjectBundle`, `DYLD_INSERT_LIBRARIES` (XCTest inject dylibs), and linked `XCTestCase` — so splash/onboarding/menu-bar setup do not start during host-app tests even when the configuration path env var is absent early in launch.
+- Sandbox-off migration failure loops a critical modal: **Try Again** (retry), **Start Fresh…** (confirm, then `skipMigration()`; old sandbox data is left untouched), **Quit Cue**.
+- Database failure loops: **Try Repair** (`DatabaseManager.attemptRepair()`), **Reset Database…** (moves files into `DatabaseRecovery-<timestamp>` then `retryInitialization()`), **Quit Cue**.
 - AppleEvents arriving before the coordinator exists are queued in `pendingDeepLinkURLs` and flushed after launch; same for cold-launch "Open With" file URLs (`pendingOpenFileURLs`).
 - `applicationShouldHandleReopen`: when the menu bar icon is hidden (`showMenuBarIcon == false`) and no windows are visible, opens Preferences (General tab) and suppresses default reopen.
 - `application(_:open:)`: file URLs routed to `AnnotateManager.shared.openAnnotation(url:)` (Finder "Open With" / Dock drop); non-file URLs ignored here (deep links flow through the AppleEvent handler).
@@ -43,7 +43,7 @@ flowchart TD
 
 ## AppCoordinator duties
 
-`Notinhas/App/AppCoordinator.swift` — `applicationDidFinishLaunching()` performs, in order:
+`Cue/App/AppCoordinator.swift` — `applicationDidFinishLaunching()` performs, in order:
 
 1. `AppIdentityManager.shared.refresh()`.
 2. `CrashSentinel.shared.checkAndReset()` → `didCrash` flag.
@@ -63,38 +63,38 @@ flowchart TD
    | `history.floating.position` | `"topCenter"` |
    | `history.floating.maxDisplayedItems` | 10 |
 
-6. TOML configuration: `NotinhasConfigurationAutoImporter.applyIfNeededOnLaunch()` → `NotinhasConfigurationSyncCoordinator.start()`; when the auto-import did not apply, `scheduleSync(reason: .appLaunch)`.
+6. TOML configuration: `CueConfigurationAutoImporter.applyIfNeededOnLaunch()` → `CueConfigurationSyncCoordinator.start()`; when the auto-import did not apply, `scheduleSync(reason: .appLaunch)`.
 7. Schedulers: `LogCleanupScheduler`, `RecordingMetadataCleanupScheduler`, `CaptureHistoryRetentionService` — all `.start()`.
 8. `AppStatusBarController.shared.setup(viewModel:updater:didCrash:)` — `didCrash` prompt only when crash detected **and** `DiagnosticLogger.isEnabled`; also pre-allocates the area-selection window pool via `AreaSelectionController.shared.prepareWindowPool()` (targets <150 ms activation).
 9. After 0.3 s: `presentStartupExperience(...)` (see Onboarding).
 10. `.showOnboarding` notification observer → `SplashWindowController.shared.show(forceOnboarding: true)` ("Restart Onboarding" path).
 
-Termination (`applicationWillTerminate`): `NotinhasConfigurationSyncCoordinator.flushPendingSync(reason: .appTerminate)`, `CrashSentinel.markTerminated()`, stop `LogCleanupScheduler` / `RecordingMetadataCleanupScheduler` / sync coordinator, remove observers.
+Termination (`applicationWillTerminate`): `CueConfigurationSyncCoordinator.flushPendingSync(reason: .appTerminate)`, `CrashSentinel.markTerminated()`, stop `LogCleanupScheduler` / `RecordingMetadataCleanupScheduler` / sync coordinator, remove observers.
 
-Deep links: `handleDeepLink(_:)` constructs `NotinhasDeepLinkHandler` and dispatches — see [SHORTCUTS.md](SHORTCUTS.md) for the route table.
+Deep links: `handleDeepLink(_:)` constructs `CueDeepLinkHandler` and dispatches — see [SHORTCUTS.md](SHORTCUTS.md) for the route table.
 
 ## Onboarding & splash
 
-Unified flow: `SplashWindowController` (`Notinhas/Features/Splash/SplashWindow.swift`) hosts `SplashOnboardingRootView` (`Notinhas/Features/Splash/SplashOnboardingRootView.swift`) in a `SplashWindow` (~85% of visible screen, max 1200×800, min 700×500, transparent titlebar, fades in/out).
+Unified flow: `SplashWindowController` (`Cue/Features/Splash/SplashWindow.swift`) hosts `SplashOnboardingRootView` (`Cue/Features/Splash/SplashOnboardingRootView.swift`) in a `SplashWindow` (~85% of visible screen, max 1200×800, min 700×500, transparent titlebar, fades in/out).
 
 State machine (`SplashScreen`): `splash` → `language` → `sponsor` (only when `sponsorPromptSeen` is false) → `permissions` → `configAccess` → `shortcuts` → `diagnostics` → `completion`. Default onboarding steps: `[language, permissions, configAccess, shortcuts, diagnostics, completion]`.
 
-- `hasCompletedOnboarding` = UserDefaults `onboardingCompleted` (`OnboardingFlowView` in `Notinhas/Features/Onboarding/OnboardingFlowView.swift`).
-- Permissions step (`Notinhas/Features/Onboarding/Components/OnboardingPermissionsView.swift`): screen recording / microphone / accessibility rows.
-- `configAccess` step: grant folder access for `~/.config/notinhas` (holds `config.toml`; see `NotinhasConfigurationPaths` in `Notinhas/Services/Configuration/`).
+- `hasCompletedOnboarding` = UserDefaults `onboardingCompleted` (`OnboardingFlowView` in `Cue/Features/Onboarding/OnboardingFlowView.swift`).
+- Permissions step (`Cue/Features/Onboarding/Components/OnboardingPermissionsView.swift`): screen recording / microphone / accessibility rows.
+- `configAccess` step: grant folder access for `~/.config/cue` (holds `config.toml`; see `CueConfigurationPaths` in `Cue/Services/Configuration/`).
 - Shortcuts step: Accept calls `KeyboardShortcutManager.shared.enable()`; Decline just advances.
 - Diagnostics step: toggle for `diagnostics.enabled` (default on).
 - Completion sets `onboardingCompleted` + `sponsorPromptSeen`.
 - Skip logic in `SplashWindowController.showWindow`:
   - `splashSkipped` → skip splash entirely when onboarding done and sponsor seen.
   - `splash.skipOnceAfterOnboardingRelaunch` → one-time skip after a language-change relaunch, then the key is removed.
-- Language preview: `OnboardingLocalizationController` (`Notinhas/Features/Onboarding/Managers/`) re-renders onboarding strings in the selected language without relaunch; on completion `commitLanguageSelection()` persists via `AppLanguageManager` and, when `requiresRelaunchOnCompletion`, calls `relaunchApplication()` after setting the skip-once key.
+- Language preview: `OnboardingLocalizationController` (`Cue/Features/Onboarding/Managers/`) re-renders onboarding strings in the selected language without relaunch; on completion `commitLanguageSelection()` persists via `AppLanguageManager` and, when `requiresRelaunchOnCompletion`, calls `relaunchApplication()` after setting the skip-once key.
 - Startup gating (`AppCoordinator.presentStartupExperience`): for existing users (`hasCompletedOnboarding`), when TOML auto-import returns `.skippedPermissionRequired` and `configuration.accessOnboardingPrompted` is false, show a one-time configAccess-only step (`showConfigurationAccess()`, steps `[.configAccess]`) instead of the splash. Otherwise `SplashWindowController.show()` presents the normal startup path. Release notes are maintained externally and are not part of startup runtime.
 - "Restart Onboarding" (Preferences → General → Help): `OnboardingFlowView.resetOnboarding()` clears `onboardingCompleted` / `splashSkipped` / skip-once key, posts `.showOnboarding`.
 
 ## Menu bar
 
-`AppStatusBarController` (`Notinhas/App/AppStatusBarController.swift`) — singleton owning the `NSStatusItem` (variable length, template `MenubarIcon` rescaled to 21 pt).
+`AppStatusBarController` (`Cue/App/AppStatusBarController.swift`) — singleton owning the `NSStatusItem` (variable length, template `MenubarIcon` rescaled to 21 pt).
 
 - Click behavior: button `sendAction(on: [.leftMouseUp, .rightMouseUp])` — both left and right click rebuild and open the same menu (`buildMenu()` runs on every open to refresh state).
 - Menu structure (verified in `buildMenu()`):
@@ -104,20 +104,20 @@ State machine (`SplashScreen`): `splash` → `language` → `sponsor` (only when
   - Editors: Annotate and, when enabled, Video Editor.
   - Library: History.
   - Conditional: **Grant Permission** (when screen permission is missing, shown before capture actions).
-  - Preferences `⌘,`, Quit `⌘Q` (menu title shows **Notinhas**).
+  - Preferences `⌘,`, Quit `⌘Q` (menu title shows **Cue**).
   - Configured shortcut key equivalents are attached to menu items via `applyConfiguredShortcut(_:for:using:)`; the Recording → Application Recording overlay shortcut can render as a child-key suffix (see [SHORTCUTS.md](SHORTCUTS.md)).
   - Keyboard Shortcuts and Combine Images remain available through their existing non-menu routes; they are no longer top-level status-menu items.
 - Recording state rendering: while recording, the title shows a monospaced-digit timer (`recorder.formattedDuration`); when paused it is prefixed with `|| `; tooltip mirrors state. `setProcessing(_:)` swaps the icon for an `NSProgressIndicator` spinner (used e.g. during OCR) on Core Animation so it keeps animating.
 - Visibility: `showMenuBarIcon` pref toggles the status item (`syncStatusItemVisibility`).
-- Preferences activation-policy dance (`presentPreferencesWindow`): elevates `.accessory` → `.regular` so Notinhas appears in the app menu/Cmd+Tab, triggers the Settings scene (synthesized `⌘,` key equivalent), tracks the window (12 retry passes), and reverts to `.accessory` in `windowDidClose` when no other normal windows remain. While recording, the tracked Preferences window is added to the recorder's runtime exclusion list so Notinhas's own window isn't captured.
+- Preferences activation-policy dance (`presentPreferencesWindow`): elevates `.accessory` → `.regular` so Cue appears in the app menu/Cmd+Tab, triggers the Settings scene (synthesized `⌘,` key equivalent), tracks the window (12 retry passes), and reverts to `.accessory` in `windowDidClose` when no other normal windows remain. While recording, the tracked Preferences window is added to the recorder's runtime exclusion list so Cue's own window isn't captured.
 
-Notinhas does not ship Check for Updates, About, or Report a Problem UI. Diagnostics are local only — see [UPDATES.md](UPDATES.md).
+Cue does not ship Check for Updates, About, or Report a Problem UI. Diagnostics are local only — see [UPDATES.md](UPDATES.md).
 
 ## App identity
 
-`AppIdentityManager` (`Notinhas/Services/AppIdentity/AppIdentityManager.swift`) evaluates `AppIdentityHealth` at launch and on refresh:
+`AppIdentityManager` (`Cue/Services/AppIdentity/AppIdentityManager.swift`) evaluates `AppIdentityHealth` at launch and on refresh:
 
-- `unexpectedBundleIdentifier` — bundle ID ≠ expected (`com.mourato.notinhas` / `.debug`).
+- `unexpectedBundleIdentifier` — bundle ID ≠ expected (`com.mourato.cue` / `.debug`).
 - `invalidBundleSignature` — strict `SecStaticCode` validation (release builds only; debug skips since Xcode ad-hoc signing fails `kSecCSStrictValidate`).
 - `outsideApplications` + `quarantined` — only flagged together when the app has the quarantine xattr **and** runs outside `/Applications` and `~/Applications`. Quarantine inside Applications folders is intentionally ignored (some install paths preserve the xattr; Gatekeeper clears it on first launch — issue #337).
 
@@ -125,20 +125,20 @@ The Permissions tab reflects unhealthy identity as `grantedButUnavailableDueToAp
 
 ## Theme
 
-- `ThemeManager` (`Notinhas/Services/Appearance/ThemeManager.swift`): `@AppStorage(PreferencesKeys.appearanceMode)` → `AppearanceMode` `.system` / `.light` / `.dark`.
+- `ThemeManager` (`Cue/Services/Appearance/ThemeManager.swift`): `@AppStorage(PreferencesKeys.appearanceMode)` → `AppearanceMode` `.system` / `.light` / `.dark`.
 - `nsAppearance`: `nil` (system) / `.aqua` / `.darkAqua` for AppKit windows; `systemAppearance: ColorScheme` published for SwiftUI `.preferredColorScheme`, tracking `AppleInterfaceThemeChangedNotification`.
 - `WindowSurfacePalette`: shared opaque window backgrounds (`lightBase` white 0.95, `darkBase` white 0.12).
 
 ## Migrations & recovery
 
-- Sandbox-off data migration: `SandboxOffDataMigrationService` (`Notinhas/Services/Migration/`) — one-time move of App Support items, preferences, and logs out of the old sandbox container for upgrades to unsandboxed builds. Skips when running sandboxed (`APP_SANDBOX_CONTAINER_ID` present) or already done. Completion tracked by marker file `.sandbox-off-migration-completed` and UserDefaults `migration.sandboxOff.completed`. Launch-blocking modal on failure (see flowchart).
-- Legacy license cleanup: `LegacyLicenseCleanupService` (`Notinhas/Services/LegacyLicenseCleanupService.swift`), completion key `legacyLicenseCleanupCompleted`.
-- Database recovery: `DatabaseManager` (`Notinhas/Services/Cloud/DatabaseManager.swift`) prepares `notinhas.db`; reset archives old files to `DatabaseRecovery-<timestamp>` (capture files on disk and cloud objects are never deleted).
+- Sandbox-off data migration: `SandboxOffDataMigrationService` (`Cue/Services/Migration/`) — one-time move of App Support items, preferences, and logs out of the old sandbox container for upgrades to unsandboxed builds. Skips when running sandboxed (`APP_SANDBOX_CONTAINER_ID` present) or already done. Completion tracked by marker file `.sandbox-off-migration-completed` and UserDefaults `migration.sandboxOff.completed`. Launch-blocking modal on failure (see flowchart).
+- Legacy license cleanup: `LegacyLicenseCleanupService` (`Cue/Services/LegacyLicenseCleanupService.swift`), completion key `legacyLicenseCleanupCompleted`.
+- Database recovery: `DatabaseManager` (`Cue/Services/Cloud/DatabaseManager.swift`) prepares `cue.db`; reset archives old files to `DatabaseRecovery-<timestamp>` (capture files on disk and cloud objects are never deleted).
 - Release notes are external to the startup runtime; no campaign state or lookup is persisted at launch.
 
 ## Entitlements & Info.plist
 
-`Notinhas/Notinhas.entitlements` (no app-sandbox key — builds are **not** sandboxed):
+`Cue/Cue.entitlements` (no app-sandbox key — builds are **not** sandboxed):
 
 - `com.apple.security.network.client` — outbound network for explicit user-configured image sharing through ImgBB or ImageKit. No `network.server` entitlement is declared; uploads are foreground actions, not background synchronization.
 - `com.apple.security.files.user-selected.read-write` — user-picked files/folders.
@@ -146,9 +146,9 @@ The Permissions tab reflects unhealthy identity as `grantedButUnavailableDueToAp
 - `com.apple.security.temporary-exception.shared-preference.read-only` → `com.apple.symbolichotkeys` — system screenshot shortcut conflict detection (see [SHORTCUTS.md](SHORTCUTS.md)).
 - `com.apple.security.temporary-exception.mach-lookup.global-name` → `$(PRODUCT_BUNDLE_IDENTIFIER)-spks` / `-spki` —  installer launcher service (paired with `SUEnableInstallerLauncherService`).
 
-`Notinhas/Resources/Info.plist`:
+`Cue/Resources/Info.plist`:
 
-- `CFBundleURLTypes`: `notinhas://` scheme (deep links — see [SHORTCUTS.md](SHORTCUTS.md)).
+- `CFBundleURLTypes`: `cue://` scheme (deep links — see [SHORTCUTS.md](SHORTCUTS.md)).
 - `CFBundleDocumentTypes`: Editor role (rank `Alternate`) for `public.png`, `public.jpeg`, `public.heic`, `public.heif`, `public.tiff`, `com.compuserve.gif`, `org.webmproject.webp`, `public.bmp` — routes "Open With" into the Annotate editor.
 - `NSMicrophoneUsageDescription`, `NSScreenCaptureUsageDescription`.
 -  keys: `SUFeedURL`, `SUPublicEDKey`, `SUEnableInstallerLauncherService` — see [UPDATES.md](UPDATES.md).
@@ -157,7 +157,7 @@ Security-scoped bookmarks persisted in UserDefaults: `exportLocation.bookmark` (
 
 ## Deep link dispatch
 
-AppleEvent `kAEGetURL` → `AppDelegate.handleGetURLEvent` → queued until coordinator ready → `AppCoordinator.handleDeepLink` → `NotinhasDeepLinkHandler.handle(url)`. Gated by `urlSchemeEnabled` (default `true`); unknown routes are logged and ignored. Full route table: [SHORTCUTS.md](SHORTCUTS.md#url-scheme-automation).
+AppleEvent `kAEGetURL` → `AppDelegate.handleGetURLEvent` → queued until coordinator ready → `AppCoordinator.handleDeepLink` → `CueDeepLinkHandler.handle(url)`. Gated by `urlSchemeEnabled` (default `true`); unknown routes are logged and ignored. Full route table: [SHORTCUTS.md](SHORTCUTS.md#url-scheme-automation).
 
 ## Unresolved questions
 
@@ -165,9 +165,9 @@ AppleEvent `kAEGetURL` → `AppDelegate.handleGetURLEvent` → queued until coor
 
 ## Related docs
 
-- [SHORTCUTS.md](SHORTCUTS.md) — hotkeys + `notinhas://` route table
+- [SHORTCUTS.md](SHORTCUTS.md) — hotkeys + `cue://` route table
 - [PREFERENCES.md](PREFERENCES.md) — Settings window reference
 - [UPDATES.md](UPDATES.md) —  diagnostics, crash/problem reporting
-- [CONFIGURATION.md](CONFIGURATION.md) — TOML config file, `~/.config/notinhas` grant
+- [CONFIGURATION.md](CONFIGURATION.md) — TOML config file, `~/.config/cue` grant
 - [STRUCTURE.md](STRUCTURE.md) — project layout
 - [DEVELOPMENT.md](DEVELOPMENT.md) — local development setup

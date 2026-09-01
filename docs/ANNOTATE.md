@@ -1,13 +1,13 @@
 # Annotate Editor & Capture Markup
 
-Notinhas's annotation subsystem: the full Annotate editor window (hybrid AppKit shell + SwiftUI chrome + AppKit drawing canvas) and the inline area-annotate overlay (Capture Markup) that reuses the same engine before save. Both render final output through one exporter path.
+Cue's annotation subsystem: the full Annotate editor window (hybrid AppKit shell + SwiftUI chrome + AppKit drawing canvas) and the inline area-annotate overlay (Capture Markup) that reuses the same engine before save. Both render final output through one exporter path.
 
 ## Architecture
 
-- `Notinhas/Features/Annotate/AnnotateManager.swift` — singleton window registry; session cache keyed by `QuickAccessItem.id`; activation policy bump to `.regular` on open; `openAnnotation(for:)` (QA item) / `openAnnotation(url:sessionData:)` / `openEmptyAnnotation()`.
-- `Notinhas/Features/Annotate/Managers/AnnotateWindowController.swift` — per-window controller, owns save/copy/close notifications.
-- `Notinhas/Features/Annotate/Managers/AnnotateWindow.swift` — `NSWindow` subclass; intercepts ⌘+scroll zoom, trackpad magnify, Space key (pan mode via `annotateSpaceDown/Up` notifications), drag events; level floats while key (`activeEditorLevel`) and restores `restingLevel` on resign; pin sets resting level `.floating`.
-- `Notinhas/Features/Annotate/AnnotateState.swift` — central `ObservableObject` (~4.8k lines): annotations, tools, undo/redo, zoom/pan, canvas effects, crop, cutout, mockup, combine, and local sharing state.
+- `Cue/Features/Annotate/AnnotateManager.swift` — singleton window registry; session cache keyed by `QuickAccessItem.id`; activation policy bump to `.regular` on open; `openAnnotation(for:)` (QA item) / `openAnnotation(url:sessionData:)` / `openEmptyAnnotation()`.
+- `Cue/Features/Annotate/Managers/AnnotateWindowController.swift` — per-window controller, owns save/copy/close notifications.
+- `Cue/Features/Annotate/Managers/AnnotateWindow.swift` — `NSWindow` subclass; intercepts ⌘+scroll zoom, trackpad magnify, Space key (pan mode via `annotateSpaceDown/Up` notifications), drag events; level floats while key (`activeEditorLevel`) and restores `restingLevel` on resign; pin sets resting level `.floating`.
+- `Cue/Features/Annotate/AnnotateState.swift` — central `ObservableObject` (~4.8k lines): annotations, tools, undo/redo, zoom/pan, canvas effects, crop, cutout, mockup, combine, and local sharing state.
 - Layout (`AnnotateMainView`): `AnnotateToolbarView` → central `HStack(AnnotateEditorSideDock 240pt — Background **or** Notes, exclusive | canvas host)`. `AnnotateQuickPropertiesBar` and `AnnotateBottomBarView` float over the central canvas host at the top and bottom, respectively; the dock remains in flow and reduces the overlay host instead of overlapping it. Notes auto-open in the left dock when ≥1 note exists unless Background is open; **Add background** (⌘B, `toggleSidebar` action kind) toggles Background content. Preview mode hides the dock.
 - Rendering: `DrawingCanvasNSView` (AppKit event container) + 5 stacked `CanvasLayerView`s composited by CoreAnimation — spotlight overlay → static-below → dragged → static-above → gesture preview. Static layers redraw only when invalidated (CA reuses their backing store), so per-frame cost is flat in annotation count and colors always render through the standard pipeline (no offscreen bitmap color management). Deterministic export via `AnnotateExporter.renderFinalImage` (mockup: `renderMockupFlatImage` off-main + `compositeMockupImage` on main — `ImageRenderer` is main-only).
 - Gesture handling: drag/resize/draw gestures mutate gesture-local `AnnotationItem` copies (no `@Published` churn) and commit once on `mouseUp` via the regular `AnnotateState` update methods + one undo checkpoint; the manipulated item draws in the dragged layer between the static layers (exact z-order). Invalidation: content publishers (`$annotations`, selection, `$sourceImage`, …) redraw all layers; other state only the cheap live layers. Full redraw path culls items outside the dirty rect.
@@ -77,7 +77,7 @@ The `.accessory` activation-policy revert is deferred to a later runloop turn (s
 
 ## Counter, Highlighter, Watermark, Crop
 
-- Legacy Counter annotations migrate to empty Notinhas notes on session open (see `docs/adr/066-absorb-counter-into-notinhas.md`). The Note tool (`notinhasNote`) is the sole numbered marker; text is optional; numbering uses Notinha `creationOrder`.
+- Legacy Counter annotations migrate to empty Cue notes on session open (see `docs/adr/066-absorb-counter-into-notinhas.md`). The Note tool (`notinhasNote`) is the sole numbered marker; text is optional; numbering uses Notinha `creationOrder`.
 - Highlighter: freehand with auto-straighten for near-straight strokes.
 - Watermark: `WatermarkStyle` single / diagonal / tiled; editable text, opacity, size, rotation, color.
 - Crop: shrink AND expand canvas (drag handles outside source creates annotatable empty canvas, included in export). `CropAspectRatio` presets Free/1:1/4:3/3:2/16:9/21:9 + portrait toggle. Esc cancels, Return/⌘S commits; while cropping, `CropToolbarView` replaces the bottom-bar right side.
@@ -119,12 +119,12 @@ The `.accessory` activation-policy revert is deferred to a later runloop turn (s
 
 ## Combine Images
 
-- `CombineImagesCoordinator` (`Features/Annotate/CombineImagesCoordinator.swift`) — picker entry from `notinhas://open/combine?file=...`; requires ≥2 images.
+- `CombineImagesCoordinator` (`Features/Annotate/CombineImagesCoordinator.swift`) — picker entry from `cue://open/combine?file=...`; requires ≥2 images.
 - Modes: autoStitch / freeCanvas; direction smart / horizontal / vertical; edge snapping; session persisted as `PersistedCombineSession` inside the sidecar manifest.
 
 ## Session Sidecars
 
-- `AnnotationSessionStore` root: `~/Library/Application Support/Notinhas/AnnotationSessions/<SHA256(normalizedPath)>/`.
+- `AnnotationSessionStore` root: `~/Library/Application Support/Cue/AnnotationSessions/<SHA256(normalizedPath)>/`.
 - Package: `manifest.json` (`PersistedAnnotationSession`, schemaVersion 1, `PersistedFileSignature` = size + modifiedAt + extension) + `original.bin` + optional `cutout.png` + `assets/` (embedded images). Signature mismatch (replaced file at same path) → sidecar ignored, never restores annotations onto wrong pixels.
 - Commit-based writes only: save, save-and-close, copy&close, successful drag-to-app, explicit selected-provider sharing, inline annotate finish, default-preset auto-apply. NO draft autosave; unsaved windows keep the normal unsaved-change prompt.
 - Restore order: QuickAccess in-memory session cache → sidecar → flattened file.
@@ -155,7 +155,7 @@ Select region and annotate before saving, inside per-display overlays sharing on
 
 ```mermaid
 flowchart TD
-    A["⇧⌘7 / menu / notinhas://capture/area-annotate"] --> B["FrozenAreaCaptureSession.prepare(all displays)"]
+    A["⇧⌘7 / menu / cue://capture/area-annotate"] --> B["FrozenAreaCaptureSession.prepare(all displays)"]
     B --> C["InlineAreaAnnotateCoordinator.start -> InlineAreaAnnotatePanel per display (.screenSaver)"]
     C --> D["Phase selecting: drag rect"]
     D --> E["Phase annotating: canvas + toolbar + quick properties + action rail"]

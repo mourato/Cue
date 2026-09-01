@@ -1,12 +1,12 @@
 name: ✨ Feature Request
-description: Suggest a new feature or improvement for Notinhas
+description: Suggest a new feature or improvement for Cue
 title: "[Feature]: "
 labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for suggesting a feature! Notinhas prioritizes the visual-handoff loop (capture → numbered pins/notes → clipboard export). Please describe how your idea supports that workflow.
+        Thanks for suggesting a feature! Cue prioritizes the visual-handoff loop (capture → numbered pins/notes → clipboard export). Please describe how your idea supports that workflow.
 
   - type: textarea
     id: problem
@@ -22,7 +22,7 @@ body:
     attributes:
       label: Proposed Solution
       description: Describe the solution or feature you'd like to see.
-      placeholder: It would be great if Notinhas could...
+      placeholder: It would be great if Cue could...
     validations:
       required: true
 
@@ -38,10 +38,10 @@ body:
     id: feature-area
     attributes:
       label: Feature Area
-      description: Which part of Notinhas does this relate to?
+      description: Which part of Cue does this relate to?
       options:
         - Capture / Screenshots
-        - Notinhas pins & notes
+        - Cue pins & notes
         - Annotate / Export / Clipboard
         - Quick Access
         - Capture History

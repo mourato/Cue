@@ -1,6 +1,6 @@
 # UI
 
-Current UI contract for Notinhas. Read this before changing capture HUDs,
+Current UI contract for Cue. Read this before changing capture HUDs,
 annotation editors, pinned notes, toolbar controls, preferences surfaces, or
 post-capture routing. Feature mechanics remain in the flow documents linked
 from [`docs/README.md`](README.md); durable rationale belongs in
@@ -8,7 +8,7 @@ from [`docs/README.md`](README.md); durable rationale belongs in
 
 ## Product intent
 
-Notinhas is a visual-handoff tool: capture a screenshot, add numbered pins,
+Cue is a visual-handoff tool: capture a screenshot, add numbered pins,
 rectangles, or notes, then copy the precise annotated result. Optimize for
 speed, visual reference, and clipboard-ready output. Do not add unrelated
 product chrome or broaden the inherited capture machinery merely to make it
@@ -21,11 +21,11 @@ look different.
 
 ## Sources of truth
 
-- Shared tokens and controls: [`Notinhas/Shared/Styles/DesignTokens.swift`](../Notinhas/Shared/Styles/DesignTokens.swift)
+- Shared tokens and controls: [`Cue/Shared/Styles/DesignTokens.swift`](../Cue/Shared/Styles/DesignTokens.swift)
 - Capture flow: [`docs/CAPTURE.md`](CAPTURE.md)
 - Annotation flow: [`docs/ANNOTATE.md`](ANNOTATE.md)
 - Post-capture routing: [`docs/POST_CAPTURE.md`](POST_CAPTURE.md)
-- Theme and appearance: [`Notinhas/Services/Appearance/ThemeManager.swift`](../Notinhas/Services/Appearance/ThemeManager.swift)
+- Theme and appearance: [`Cue/Services/Appearance/ThemeManager.swift`](../Cue/Services/Appearance/ThemeManager.swift)
 - Related decisions: [`docs/adr/066-absorb-counter-from-upstream.md`](adr/066-absorb-counter-from-upstream.md), [`docs/adr/070-retain-snapzy-surfaces.md`](adr/070-retain-snapzy-surfaces.md)
 
 The implementation and this file must describe the same current behavior.
@@ -83,15 +83,15 @@ second canonical design-system document.
   annotate quick-properties stroke popover, sidebar, inline area controls, and
   recording annotation toolbar. Continuous stroke sliders are not used for drawn
   elements.
-- Rectangular Notinhas note editors keep compact Stroke, Style, and Color
+- Rectangular Cue note editors keep compact Stroke, Style, and Color
   triggers together in the header; point notes expose Color only. The note
   Style picker keeps the shared shape previews while omitting `solid`.
 - In `AnnotateQuickPropertiesBar`, Color, Stroke/Size, and shape Style open as
   popovers that stay open until dismissed by clicking outside or pressing Esc.
   Stroke and Style triggers show a live preview of the current value. The bar
   sizes to its content on a single centered row (no wrap) over the canvas.
-- Notinhas notes share the built-in annotate color dictionary in
-  `AnnotateBuiltInColorPalette`, which keeps `NotinhasPaletteColor` hex values
+- Cue notes share the built-in annotate color dictionary in
+  `AnnotateBuiltInColorPalette`, which keeps `CuePaletteColor` hex values
   for named overlaps and still owns numeral ink via palette matching. Do not
   derive note numeral color from luminance or replace Notes hex slots with
   system colors. User-added customs remain in `AnnotateColorPaletteStore`.
@@ -115,7 +115,7 @@ second canonical design-system document.
 - Floating control islands reuse `captureFloatingToolbarMaterial()`: use
   Liquid Glass by default, with the existing solid fallback for Reduce
   Transparency. Do not apply glass to the full editor, canvas, or sidebar.
-- Popovers use `PopoverTokens` in [`DesignTokens.swift`](../Notinhas/Shared/Styles/DesignTokens.swift): compact menus use an 8-point content inset, 4-point item spacing, and 28-point minimum rows; property and settings panels use a 12-point content inset; transient feedback uses the compact 10×6-point inset. `PopoverMenuItemStyle` owns menu-row hover, selection, full-width content shape, and selected-state border.
+- Popovers use `PopoverTokens` in [`DesignTokens.swift`](../Cue/Shared/Styles/DesignTokens.swift): compact menus use an 8-point content inset, 4-point item spacing, and 28-point minimum rows; property and settings panels use a 12-point content inset; transient feedback uses the compact 10×6-point inset. `PopoverMenuItemStyle` owns menu-row hover, selection, full-width content shape, and selected-state border.
 - Native SwiftUI `.popover` content does not add a second material, border, clip, or shadow. Custom overlay cards and AppKit popover windows may own their surface chrome, but their padding, radii, and anchor gap come from `PopoverTokens`.
 - The clipboard handoff action is the primary labeled action in the bottom
   action island; secondary actions may remain icon-only with explicit tooltips

@@ -6,7 +6,7 @@
 ## Context
 
 Plan 098 evaluated whether the personal local macOS app could upload one
-encoded image directly to UploadThing, without a Notinhas server, file router,
+encoded image directly to UploadThing, without a Cue server, file router,
 callback, webhook, browser session, or new dependency. The provider was not
 implemented because the official contract did not pass that feasibility gate.
 
@@ -49,7 +49,7 @@ Sources:
 
 ## Decision
 
-Do not add UploadThing to Notinhas. The current official client-side flow
+Do not add UploadThing to Cue. The current official client-side flow
 requests presigned URLs from an application backend/file router. The official
 server-side flow assumes the file has already reached a server and uses
 `UTApi.uploadFiles`; it is not a desktop-client upload contract. The

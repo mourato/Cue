@@ -1,6 +1,6 @@
 # Quick Access
 
-Floating post-capture card stack: appears after every screenshot/video/GIF when the `showQuickAccess` after-capture action is on, offering local sharing, selected-provider image sharing, gestures, countdown auto-dismiss, pin windows, and entry points into Annotate / Video Editor. Code lives in `Notinhas/Features/QuickAccess/`.
+Floating post-capture card stack: appears after every screenshot/video/GIF when the `showQuickAccess` after-capture action is on, offering local sharing, selected-provider image sharing, gestures, countdown auto-dismiss, pin windows, and entry points into Annotate / Video Editor. Code lives in `Cue/Features/QuickAccess/`.
 
 ## Panel
 

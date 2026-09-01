@@ -1,11 +1,11 @@
 ---
 kind: project-overlay
 extends: reference-apps
-project: Notinhas
+project: Cue
 precedence: project
 ---
 
-# Notinhas reference catalog
+# Cue reference catalog
 
 This is the operational catalog for the references summarized in
 `docs/REFERENCES.md`. The canonical source is each project's repository URL;
@@ -25,12 +25,12 @@ Classification does not change the license decision.
 Use these existing Notinhas surfaces when turning a reference observation into
 a bounded proposal:
 
-- `Notinhas/Features/Capture/` — capture entry points and selection.
-- `Notinhas/Features/Annotate/` — pins, notes, composition, and clipboard-ready output.
-- `Notinhas/Features/QuickAccess/` — post-capture preview and actions.
-- `Notinhas/Features/History/` — persistence and reopen behavior.
-- `Notinhas/Features/Recording/` — optional screen-recording capture flow.
-- `Notinhas/Features/VideoEditor/` — optional recording playback and export.
+- `Cue/Features/Capture/` — capture entry points and selection.
+- `Cue/Features/Annotate/` — pins, notes, composition, and clipboard-ready output.
+- `Cue/Features/QuickAccess/` — post-capture preview and actions.
+- `Cue/Features/History/` — persistence and reopen behavior.
+- `Cue/Features/Recording/` — optional screen-recording capture flow.
+- `Cue/Features/VideoEditor/` — optional recording playback and export.
 
 ## Catalog
 
@@ -76,7 +76,7 @@ a bounded proposal:
 - **Remote:** https://github.com/fayazara/Screendrop
 - **Description:** Native screen/camera/audio recording, non-destructive masters and metadata, pointer/event editing, fragmented writer/backpressure, and Studio export patterns.
 - **License:** CC0 1.0 — https://creativecommons.org/publicdomain/zero/1.0/
-- **Reuse decision:** Reuse is legally permitted by CC0, but Notinhas will independently reimplement the bounded ideas and will not copy code/assets. Preserve the Notinhas capture → annotate → clipboard product boundary.
+- **Reuse decision:** Reuse is legally permitted by CC0, but Notinhas will independently reimplement the bounded ideas and will not copy code/assets. Preserve the Cue capture → annotate → clipboard product boundary.
 - **Cloned:** yes.
 - **Local path:** `~/Documents/Projects/References/Screendrop/`
 - **Consultation:** Local clone at commit `f4883be` (`origin/main`), README, recording sources, and root `LICENSE` verified 2026-08-23.
@@ -92,7 +92,7 @@ a bounded proposal:
 - Record `Cloned: yes` and the canonical local path only when a deep local
   study is explicitly needed. Clones belong under
   `~/Documents/Projects/References/<CanonicalName>/`; never clone into the
-  Notinhas repository or directly under `~/Documents/Projects/`.
+  Cue repository or directly under `~/Documents/Projects/`.
 - Every derived plan must name both the reference URL and the affected
-  Notinhas touchpoint. Behavioral inspiration is not evidence that the feature
+  Cue touchpoint. Behavioral inspiration is not evidence that the feature
   belongs in the product.

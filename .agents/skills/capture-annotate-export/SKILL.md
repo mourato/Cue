@@ -1,58 +1,58 @@
 ---
 name: capture-annotate-export
-description: Visual handoff loop for Notinhas — area capture, numbered pins/rects + notes, export composition, and clipboard-ready output. Use for Notinhas geometry, annotate integration, export panel, ImgBB upload UX, and scope questions about recording/cloud/markup.
+description: Visual handoff loop for Cue — area capture, numbered pins/rects + notes, export composition, and clipboard-ready output. Use for Cue geometry, annotate integration, export panel, ImgBB upload UX, and scope questions about recording/cloud/markup.
 ---
 
 # Capture → Annotate → Export
 
 ## Role
 
-Canonical owner for Notinhas visual-handoff behavior: capture an area, place numbered pins or rectangles with concise notes, and produce clipboard-ready annotated output.
+Canonical owner for Cue visual-handoff behavior: capture an area, place numbered pins or rectangles with concise notes, and produce clipboard-ready annotated output.
 
 ## Scope Boundary
 
-- Own the Notinhas module (`Notinhas/Features/Notinhas/`) and its thin hooks into Capture/Annotate export/clipboard.
+- Own the Cue module (`Cue/Features/Cue/`) and its thin hooks into Capture/Annotate export/clipboard.
 - Delegate menu-bar shell details to the global `macos-app-engineering` skill
-  with the Notinhas overlay.
+  with the Cue overlay.
 - Delegate generic Swift style, concurrency, tests, and delivery commands to their skills.
 - Do **not** use this skill to grow broad screen recording, generic markup toolbelts, or unrelated cloud features unless the change directly serves the handoff loop.
 - Screen recording and Video Editor are **optional** inherited features, gated
-  at compile time (`NOTINHAS_VIDEO_MODULE`) and runtime
-  (`VideoModuleAvailability` / `videoModule.enabled`, default off). Notinhas
+  at compile time (`CUE_VIDEO_MODULE`) and runtime
+  (`VideoModuleAvailability` / `videoModule.enabled`, default off). Cue
   handoff work does not require them; see the global `delivery-workflow` skill
-  and its Notinhas overlay for build/test
+  and its Cue overlay for build/test
   with the Video module on.
 
 ## When to Use
 
-Use when the user asks to change Notinhas notes/pins/rects, note editor UX, notes side panel, export composition, clipboard output of annotated briefs, Notinhas geometry/hit-testing, ImgBB upload from annotate, or to decide whether a request is in/out of Notinhas product scope.
+Use when the user asks to change Cue notes/pins/rects, note editor UX, notes side panel, export composition, clipboard output of annotated briefs, Cue geometry/hit-testing, ImgBB upload from annotate, or to decide whether a request is in/out of Cue product scope.
 
 ## Product Loop
 
 1. **Capture** — prefer area capture that lands in Annotate (inline area annotate / post-capture open annotate). Entry: `CaptureViewModel.captureAreaAnnotate()` → `startInlineAreaAnnotateCapture()`; also post-capture annotate via preferences.
-2. **Annotate** — tool `AnnotationToolType.notinhasNote`; state in `AnnotateState` via `NotinhasAnnotateState` helpers; models `NotinhasVisualNote` + `NotinhasNoteTarget` (`.point` / `.rect`).
-3. **Export** — `NotinhasNoteRenderer` draws markers; `NotinhasNotesComposer` / `NotinhasNoteCompositor` add the notes panel; `AnnotateExporter.composeNotinhasIfNeeded` integrates into final image; clipboard via `AnnotateExporter.copyToClipboard`.
+2. **Annotate** — tool `AnnotationToolType.notinhasNote`; state in `AnnotateState` via `CueAnnotateState` helpers; models `CueVisualNote` + `CueNoteTarget` (`.point` / `.rect`).
+3. **Export** — `CueNoteRenderer` draws markers; `CueNotesComposer` / `CueNoteCompositor` add the notes panel; `AnnotateExporter.composeNotinhasIfNeeded` integrates into final image; clipboard via `AnnotateExporter.copyToClipboard`.
 
 ## Canonical Paths
 
 | Concern | Path / symbol |
 |---------|----------------|
-| Geometry (pure) | `Notinhas/Features/Notinhas/Services/NotinhasNoteGeometry.swift` |
-| Note model | `Notinhas/Features/Notinhas/Models/NotinhasVisualNote.swift` |
-| State mutations | `Notinhas/Features/Notinhas/Annotate/NotinhasAnnotateState.swift` |
-| Editor UI | `NotinhasNoteEditorView` / `NotinhasNoteEditorCanvasOverlay` |
-| Side panel | `NotinhasNotesSidePanelView` |
-| Composition | `NotinhasNotesComposer`, `NotinhasNoteRenderer` |
+| Geometry (pure) | `Cue/Features/Cue/Services/CueNoteGeometry.swift` |
+| Note model | `Cue/Features/Cue/Models/CueVisualNote.swift` |
+| State mutations | `Cue/Features/Cue/Annotate/CueAnnotateState.swift` |
+| Editor UI | `CueNoteEditorView` / `CueNoteEditorCanvasOverlay` |
+| Side panel | `CueNotesSidePanelView` |
+| Composition | `CueNotesComposer`, `CueNoteRenderer` |
 | Export hook | `AnnotateExporter.composeNotinhasIfNeeded` |
-| Session persist | `PersistedNotinhasNotesSession` on `PersistedAnnotationSession` |
-| ImgBB | `NotinhasImgBBConfiguration`, `NotinhasImgBBUploadService`, `NotinhasUploadCoordinator` |
+| Session persist | `PersistedCueNotesSession` on `PersistedAnnotationSession` |
+| ImgBB | `CueImgBBConfiguration`, `CueImgBBUploadService`, `CueUploadCoordinator` |
 | Screen Recording permission | `ScreenCaptureManager` (upstream) |
-| Accessibility permission | `SmartElementQueryService.ensureAccessibilityPermission()` (upstream; not Notinhas-core) |
+| Accessibility permission | `SmartElementQueryService.ensureAccessibilityPermission()` (upstream; not Cue-core) |
 
 ## Invariants
 
-- Keep Notinhas-specific logic inside `Notinhas/Features/Notinhas/` when possible; Annotate/Capture edits stay thin.
-- Pin/rect display order and export transforms go through `NotinhasNoteGeometry` — do not fork ad-hoc numbering in views.
+- Keep Cue-specific logic inside `Cue/Features/Cue/` when possible; Annotate/Capture edits stay thin.
+- Pin/rect display order and export transforms go through `CueNoteGeometry` — do not fork ad-hoc numbering in views.
 - Export preview and clipboard must include the notes panel when renderable notes exist.
 - UI on MainActor; pure geometry/`CGContext` work may be `nonisolated` as in existing code.
 - Never log API keys or full screenshot bitmaps in diagnostics.
@@ -79,7 +79,7 @@ Reject or narrow requests that primarily add: full recording suites, generic sha
 
 ## Verification
 
-- Pure logic: `./scripts/run-tests.sh -only-testing:NotinhasTests/NotinhasNoteGeometryTests` (and other `NotinhasTests/Features/Notinhas/*` as touched).
+- Pure logic: `./scripts/run-tests.sh -only-testing:CueTests/CueNoteGeometryTests` (and other `CueTests/Features/Cue/*` as touched).
 - Manual: Screen Recording granted → area capture → add pin + rect notes → Preview/export → copy → paste shows markers + notes panel.
 - Permission regressions: confirm capture still disabled/prompting correctly when Screen Recording is off.
 

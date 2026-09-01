@@ -1,6 +1,6 @@
 # Development
 
-Set up Notinhas for local development and run it from source.
+Set up Cue for local development and run it from source.
 
 ## Prerequisites
 
@@ -11,17 +11,17 @@ Set up Notinhas for local development and run it from source.
 ## Clone the repository
 
 ```bash
-git clone https://github.com/mourato/Notinhas.git
-cd Notinhas
+git clone https://github.com/mourato/Cue.git
+cd Cue
 ```
 
 ## Open in Xcode
 
 ```bash
-open Notinhas.xcodeproj
+open Cue.xcodeproj
 ```
 
-Build and run with `Cmd+R` using the **Notinhas** scheme (Video module off by default).
+Build and run with `Cmd+R` using the **Cue** scheme (Video module off by default).
 
 ## Daily local version
 
@@ -40,10 +40,10 @@ configurations only; test bundle versions are independent.
 ## Build from the terminal
 
 ```bash
-xcodebuild -project Notinhas.xcodeproj -scheme Notinhas -configuration Debug build CODE_SIGNING_ALLOWED=NO
+xcodebuild -project Cue.xcodeproj -scheme Cue -configuration Debug build CODE_SIGNING_ALLOWED=NO
 ```
 
-Output: `~/Library/Developer/Xcode/DerivedData/Notinhas-*/Build/Products/Debug/Notinhas.app`
+Output: `~/Library/Developer/Xcode/DerivedData/Cue-*/Build/Products/Debug/Cue.app`
 
 ## Run the local debug app
 
@@ -53,37 +53,37 @@ legacy compatibility wrapper that forwards to `./scripts/build_and_run.sh --logs
 
 ```bash
 ./scripts/build_and_run.sh
-./scripts/build_and_run.sh --no-video-module   # plain Notinhas scheme
+./scripts/build_and_run.sh --no-video-module   # plain Cue scheme
 ```
 
-With the default Video module, the script builds **Notinhas Debug.app** at:
+With the default Video module, the script builds **Cue Debug.app** at:
 
 ```text
-.build/xcode-derived-data/Build/Products/Debug+Video/Notinhas Debug.app
+.build/xcode-derived-data/Build/Products/Debug+Video/Cue Debug.app
 ```
 
-Debug uses bundle ID `com.mourato.notinhas.debug` so TCC grants stay separate from release `com.mourato.notinhas`.
-Debug builds deliberately do not declare image document types, so they do not appear in Finder's **Open With** menu. Open an image explicitly during development with `open -a "Notinhas Debug" path/to/image.png` when needed.
+Debug uses bundle ID `com.mourato.cue.debug` so TCC grants stay separate from release `com.mourato.cue`.
+Debug builds deliberately do not declare image document types, so they do not appear in Finder's **Open With** menu. Open an image explicitly during development with `open -a "Cue Debug" path/to/image.png` when needed.
 
-If old duplicate Notinhas entries remain after upgrading, keep the installed app at `/Applications/Notinhas.app` and run:
+If old duplicate Notinhas entries remain after upgrading, keep the installed app at `/Applications/Cue.app` and run:
 
 ```bash
 ./scripts/clean-launch-services.sh
 ```
 
-The script unregisters stale Notinhas and Notinhas Debug paths, then registers only the canonical installed app. It does not delete app bundles or affect other applications.
+The script unregisters stale Cue and Cue Debug paths, then registers only the canonical installed app. It does not delete app bundles or affect other applications.
 
 Reset local Debug permissions:
 
 ```bash
-tccutil reset ScreenCapture com.mourato.notinhas.debug
-tccutil reset Microphone com.mourato.notinhas.debug
-tccutil reset Accessibility com.mourato.notinhas.debug
+tccutil reset ScreenCapture com.mourato.cue.debug
+tccutil reset Microphone com.mourato.cue.debug
+tccutil reset Accessibility com.mourato.cue.debug
 ```
 
 ## Run tests
 
-Unit tests live in `NotinhasTests/`, a peer folder of `Notinhas/`.
+Unit tests live in `CueTests/`, a peer folder of `Cue/`.
 
 ```bash
 ./scripts/run-tests.sh
@@ -94,13 +94,13 @@ Unit tests live in `NotinhasTests/`, a peer folder of `Notinhas/`.
 The default test command is quiet: the app's interactive host stays inactive,
 visual overlay/panel suites are skipped, and app sounds are muted. Use
 `--with-visual` only for an intentional UI integration run. Keep
-`NOTINHAS_ALLOW_TEST_SOUNDS=1` unset except for an intentional audio
+`CUE_ALLOW_TEST_SOUNDS=1` unset except for an intentional audio
 integration run.
 
 Or directly:
 
 ```bash
-xcodebuild test -project Notinhas.xcodeproj -scheme Notinhas -configuration Debug
+xcodebuild test -project Cue.xcodeproj -scheme Cue -configuration Debug
 ```
 
 Use `./scripts/run-tests.sh` for the quiet default; direct `xcodebuild test`
@@ -175,7 +175,7 @@ Fixture coverage: `scripts/tests/integrate-plan.sh`.
 
 `./scripts/build_and_run.sh` includes the Video module by default. Opt out with
 `--no-video-module` or `ENABLE_VIDEO_MODULE=0`. In Xcode, select the
-**Notinhas Video** scheme (or keep **Notinhas** for a build without the module).
+**Cue Video** scheme (or keep **Cue** for a build without the module).
 
 Enable at runtime under **Preferences → Advanced** when compiled in.
 
@@ -183,4 +183,4 @@ Enable at runtime under **Preferences → Advanced** when compiled in.
 
 - [BUILD.md](BUILD.md) — archive, export, DMG packaging
 - [RELEASES.md](RELEASES.md) — GitHub Release workflow
-- [MIGRATION.md](MIGRATION.md) — Notinhas upgrade path
+- [MIGRATION.md](MIGRATION.md) — Cue upgrade path

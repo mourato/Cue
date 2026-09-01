@@ -7,7 +7,7 @@ context; [`docs/CLOUD.md`](../CLOUD.md) defines the current boundary.
 
 ## Context
 
-Notinhas is a fork of [Snapzy](https://github.com/duongductrong/Snapzy) focused on
+Cue is a fork of [Snapzy](https://github.com/duongductrong/Snapzy) focused on
 visual handoff: area capture → numbered pins/rects with notes → clipboard-ready
 export. The fork inherits a broad surface area from upstream — capture modes,
 annotate tools, BYO cloud providers, and distribution helpers — while explicitly
@@ -32,7 +32,7 @@ return.
 3. **Annotate toolbelt — RETAIN** watermark, combine (image stitch/canvas),
    and integrated mockup tooling in Annotate. Standalone `MockupManager` was
    already removed (plan 075); do not reintroduce a separate mockup app surface.
-4. **Distribution —** manual GitHub Releases with `Notinhas-v<version>.dmg`
+4. **Distribution —** manual GitHub Releases with `Cue-v<version>.dmg`
    only. **NO** Homebrew cask formula and **NO** Discord release bot or
    automated community release notifications. Optional `install.sh` /
    `uninstall.sh` remain convenience helpers for local install/wipe — not

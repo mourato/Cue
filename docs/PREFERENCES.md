@@ -1,16 +1,16 @@
 # Preferences
 
-Reference for the Settings window: tab structure, every section, and how preferences are stored. Verified against `Notinhas/Features/Preferences/` at HEAD (`v1.30.0-beta.4`).
+Reference for the Settings window: tab structure, every section, and how preferences are stored. Verified against `Cue/Features/Preferences/` at HEAD (`v1.30.0-beta.4`).
 
 ## Root
 
-- `PreferencesView` (`Notinhas/Features/Preferences/PreferencesView.swift`) — SwiftUI `TabView`, fixed 760×550, nine tabs (no About/update/report tab).
-- Selection driven by `PreferencesNavigationState.shared.selectedTab` (`Models/PreferencesNavigationState.swift`, `PreferencesTab` enum) — set programmatically from menu bar, deep links (`notinhas://settings?tab=`, see [SHORTCUTS.md](SHORTCUTS.md)), and the shortcut overlay.
-- Presented through the `Settings` scene in `NotinhasApp`; activation-policy dance handled by `AppStatusBarController` (see [APP_LIFECYCLE.md](APP_LIFECYCLE.md)).
+- `PreferencesView` (`Cue/Features/Preferences/PreferencesView.swift`) — SwiftUI `TabView`, fixed 760×550, nine tabs (no About/update/report tab).
+- Selection driven by `PreferencesNavigationState.shared.selectedTab` (`Models/PreferencesNavigationState.swift`, `PreferencesTab` enum) — set programmatically from menu bar, deep links (`cue://settings?tab=`, see [SHORTCUTS.md](SHORTCUTS.md)), and the shortcut overlay.
+- Presented through the `Settings` scene in `CueApp`; activation-policy dance handled by `AppStatusBarController` (see [APP_LIFECYCLE.md](APP_LIFECYCLE.md)).
 
 ## Storage pattern
 
-- Simple prefs: `@AppStorage(PreferencesKeys.*)` directly in views; keys centralized in `Notinhas/Features/Preferences/Models/PreferencesKeys.swift`.
+- Simple prefs: `@AppStorage(PreferencesKeys.*)` directly in views; keys centralized in `Cue/Features/Preferences/Models/PreferencesKeys.swift`.
 - Complex structured prefs: `PreferencesManager.shared` (`PreferencesManager.swift`) behind the `PreferencesProviding` protocol (`PreferencesProviding.swift`) for DI.
 - TOML export/import covers most prefs — see [CONFIGURATION.md](CONFIGURATION.md).
 
@@ -31,7 +31,7 @@ shows **Capture** and **Recording**; with Video off, the unified Capture form
 renders directly without an inner picker.
 
 - **Capture Environment**:
-  - Include Notinhas windows in screenshots (`screenshot.includeOwnApp`) / in
+  - Include Cue windows in screenshots (`screenshot.includeOwnApp`) / in
     recordings (`recording.includeOwnApp`, Video module on).
   - Hide Desktop Icons (`hideDesktopIcons`), Hide Desktop Widgets
     (`hideDesktopWidgets`).
@@ -121,10 +121,10 @@ The **Uploads** section owns provider selection (ImgBB or ImageKit), image optim
 
 ### Advanced (`PreferencesAdvancedSettingsView.swift`)
 
-- **Backup**: TOML Import / Export / Restore Defaults (`NotinhasConfiguration*` services).
-- **Configuration File**: grant access to `~/.config/notinhas`, Sync Now, Open Config, status/issues — see [CONFIGURATION.md](CONFIGURATION.md).
+- **Backup**: TOML Import / Export / Restore Defaults (`CueConfiguration*` services).
+- **Configuration File**: grant access to `~/.config/cue`, Sync Now, Open Config, status/issues — see [CONFIGURATION.md](CONFIGURATION.md).
 - **Integration**: URL Scheme toggle (`urlSchemeEnabled`).
-- **Diagnostics**: enable toggle (`diagnostics.enabled`), retention days (`diagnostics.retentionDays`, default 3, range 1–30 via `LogCleanupScheduler`), Open Folder (`~/Library/Logs/Notinhas`) — see [UPDATES.md](UPDATES.md).
+- **Diagnostics**: enable toggle (`diagnostics.enabled`), retention days (`diagnostics.retentionDays`, default 3, range 1–30 via `LogCleanupScheduler`), Open Folder (`~/Library/Logs/Cue`) — see [UPDATES.md](UPDATES.md).
 
 ## After-capture matrix
 

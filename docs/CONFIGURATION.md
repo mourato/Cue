@@ -1,13 +1,13 @@
 # TOML Configuration
 
-Notinhas can export and import user-editable TOML configuration for backup,
-dotfiles, and machine-to-machine setup. If the file changes while Notinhas is
+Cue can export and import user-editable TOML configuration for backup,
+dotfiles, and machine-to-machine setup. If the file changes while Cue is
 closed, Notinhas automatically applies the valid TOML on the next launch.
 
 Default path:
 
 ```text
-~/.config/notinhas/config.toml
+~/.config/cue/config.toml
 ```
 
 Settings -> Advanced -> Backup requires config folder access before Import,
@@ -17,23 +17,23 @@ After launch, Notinhas observes app preference changes and debounces background
 syncs into the managed file. The sync compares current settings with
 `config.toml`; if the file is simply stale from older in-app changes, Notinhas
 updates it. If the file appears to have external edits that Notinhas has not
-applied yet, Notinhas stops and asks before replacing it. Settings -> Advanced
+applied yet, Cue stops and asks before replacing it. Settings -> Advanced
 shows the current sync state and a manual Sync Now action. Open config.toml uses
 the same safe sync path before opening the file.
 
-When Settings asks for confirmation, Notinhas remembers the exact file signature
+When Settings asks for confirmation, Cue remembers the exact file signature
 that caused the conflict. If `config.toml` changes again before the user
-confirms replacing it, Notinhas cancels the write and asks the user to review the
+confirms replacing it, Cue cancels the write and asks the user to review the
 file again.
 
-Notinhas does not live-watch direct edits to `config.toml`; those edits are picked
+Cue does not live-watch direct edits to `config.toml`; those edits are picked
 up on the next app launch, or through explicit Import. Explicit import validates
 a selected `.toml` backup, replaces the managed
-`~/.config/notinhas/config.toml`, then applies it immediately.
+`~/.config/cue/config.toml`, then applies it immediately.
 
-If `~/.config` or `~/.config/notinhas` does not exist yet, the grant flow starts
+If `~/.config` or `~/.config/cue` does not exist yet, the grant flow starts
 from the nearest existing parent and creates the missing folder after the user
-confirms access. Notinhas stores the bookmark for `~/.config/notinhas`.
+confirms access. Cue stores the bookmark for `~/.config/cue`.
 
 For existing users upgrading from a version without TOML config support, Notinhas
 opens the normal onboarding window directly on the config access step once
@@ -75,7 +75,7 @@ notinhas_min_version = "1.20.0"
 ```
 
 Unknown keys are ignored. Known keys are validated by type and allowed value.
-If import finds any error, Notinhas applies none of the changes. Warnings do not
+If import finds any error, Cue applies none of the changes. Warnings do not
 block import.
 
 Capture naming templates support `{datetime}`, `{date}`, `{year}`,
@@ -122,7 +122,7 @@ hide_desktop_widgets = false
 
 [capture.naming]
 screenshot_template = "Screenshots/{appName}/{yearShort}/{monthName}/{day}/Notinhas_{time}_{ms}"
-recording_template = "Recordings/{appName}/{year}/{monthShort}/Notinhas_Recording_{day}_{time}"
+recording_template = "Recordings/{appName}/{year}/{monthShort}/Cue_Recording_{day}_{time}"
 
 [capture.screenshot]
 format = "png"
@@ -205,9 +205,9 @@ app in an existing-user state. This simulates an upgrade from a version that did
 not have `config.toml` support yet.
 
 ```bash
-osascript -e 'quit app "Notinhas"' 2>/dev/null || true
+osascript -e 'quit app "Cue"' 2>/dev/null || true
 
-PLIST="$HOME/Library/Containers/com.mourato.notinhas/Data/Library/Preferences/com.mourato.notinhas"
+PLIST="$HOME/Library/Containers/com.mourato.cue/Data/Library/Preferences/com.mourato.cue"
 
 defaults write "$PLIST" onboardingCompleted -bool true
 defaults write "$PLIST" sponsorPromptSeen -bool true
@@ -223,26 +223,26 @@ To test the missing-folder path, remove the user-managed config folder before
 launching Notinhas:
 
 ```bash
-rm -rf "$HOME/~/.config/notinhas"
-open -a Notinhas
+rm -rf "$HOME/~/.config/cue"
+open -a Cue
 ```
 
-Expected result: Notinhas opens the onboarding window directly on the config
+Expected result: Cue opens the onboarding window directly on the config
 access step. After granting access, the user remains on the step until clicking
-Continue. Notinhas creates
-`~/.config/notinhas/config.toml` automatically and no manual export/import step is
+Continue. Cue creates
+`~/.config/cue/config.toml` automatically and no manual export/import step is
 required.
 
 To test applying an existing direct edit after grant, prepare a config file
 first:
 
 ```bash
-mkdir -p "$HOME/~/.config/notinhas"
-cp "$HOME/Desktop/config.toml" "$HOME/~/.config/notinhas/config.toml"
-open -a Notinhas
+mkdir -p "$HOME/~/.config/cue"
+cp "$HOME/Desktop/config.toml" "$HOME/~/.config/cue/config.toml"
+open -a Cue
 ```
 
-Expected result: after the user grants access, Notinhas stores the folder
+Expected result: after the user grants access, Cue stores the folder
 bookmark and applies the existing valid `config.toml` immediately.
 
 To test the Settings -> Advanced warning without showing the launch step, mark
@@ -250,9 +250,9 @@ the config access onboarding step as already shown, then remove the stored
 folder/file bookmarks:
 
 ```bash
-osascript -e 'quit app "Notinhas"' 2>/dev/null || true
+osascript -e 'quit app "Cue"' 2>/dev/null || true
 
-PLIST="$HOME/Library/Containers/com.mourato.notinhas/Data/Library/Preferences/com.mourato.notinhas"
+PLIST="$HOME/Library/Containers/com.mourato.cue/Data/Library/Preferences/com.mourato.cue"
 
 defaults write "$PLIST" onboardingCompleted -bool true
 defaults write "$PLIST" sponsorPromptSeen -bool true
@@ -261,7 +261,7 @@ defaults delete "$PLIST" configuration.directoryBookmark 2>/dev/null || true
 defaults delete "$PLIST" configuration.fileBookmark 2>/dev/null || true
 
 killall cfprefsd 2>/dev/null || true
-open -a Notinhas
+open -a Cue
 ```
 
 Expected result: Settings -> Advanced -> Backup shows a config access warning.
@@ -273,17 +273,17 @@ log section.
 
 ## Implementation Notes
 
-- `NotinhasConfigurationService` is the facade used by Settings.
-- `NotinhasConfigurationSyncCoordinator` observes preference changes, debounces
+- `CueConfigurationService` is the facade used by Settings.
+- `CueConfigurationSyncCoordinator` observes preference changes, debounces
   background app-to-file syncs, flushes pending sync before Open config.toml and
   app termination, and exposes status for Settings -> Advanced.
-- `NotinhasConfigurationAccessGranting` owns the shared macOS folder picker flow
+- `CueConfigurationAccessGranting` owns the shared macOS folder picker flow
   used by onboarding and Settings -> Advanced. A successful grant prepares the
   default folder and file so the user does not need to export/import manually.
 - Settings import replaces the managed `config.toml` after validation succeeds,
   then applies the same contents so the backup file and app state stay aligned.
 - Background sync and Open config.toml sync current settings into the managed
-  file only when the file still matches Notinhas's last applied/exported
+  file only when the file still matches Cue's last applied/exported
   signature. If the file has unapplied external edits, Settings asks before
   replacing it.
 - Debounced background sync exports settings on the main actor, then performs
@@ -291,19 +291,19 @@ log section.
   responsive. All managed `config.toml` reads/writes use a shared serial queue
   so manual actions, Open config.toml, Import/Restore, and background sync do
   not write the file concurrently.
-- Only the latest managed config operation may update Notinhas's
+- Only the latest managed config operation may update Cue's
   `configuration.lastAppliedSignature`, which prevents an older background sync
   from marking stale contents after a newer Import/Restore/manual sync.
 - Restore defaults replaces the managed `config.toml` with a generated default
   TOML document and applies it after confirmation.
-- `NotinhasConfigurationAutoImporter` runs during app launch, hashes the current
+- `CueConfigurationAutoImporter` runs during app launch, hashes the current
   file contents, and imports only when `config.toml` changed since the last
   successful launch-time apply.
-- `NotinhasConfigurationExporter` and its shortcut extension build deterministic
+- `CueConfigurationExporter` and its shortcut extension build deterministic
   TOML so exported files are diff-friendly.
-- `NotinhasConfigurationImporter` parses, validates, then applies mutations only
+- `CueConfigurationImporter` parses, validates, then applies mutations only
   after validation succeeds.
-- `SimpleTOMLParser` is intentionally focused on Notinhas's schema surface:
+- `SimpleTOMLParser` is intentionally focused on Cue's schema surface:
   strings, booleans, integers, doubles, arrays, dotted keys, and nested tables.
 
 ## Related docs

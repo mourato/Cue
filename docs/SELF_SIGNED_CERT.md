@@ -1,6 +1,6 @@
 # Self-Signed Certificate Setup
 
-Notinhas can use a stable self-signed certificate for local release testing.
+Cue can use a stable self-signed certificate for local release testing.
 This preserves macOS TCC permissions when replacing builds signed with the same
 identity; it does not provide an in-app update channel or bypass the required
 permission re-grant after the bundle identifier changes.
@@ -37,8 +37,8 @@ Push a release and check the "Import self-signed certificate" step in the workfl
 
 Use `scripts/test-tcc-local.sh` to verify TCC permissions persist across
 same-identity replacements locally. The helper defaults to an isolated install
-under `/tmp/test-tcc-notinhas/Applications/Notinhas.app` so it does not replace
-your `/Applications/Notinhas.app` unless you explicitly opt in.
+under `/tmp/test-tcc-notinhas/Applications/Cue.app` so it does not replace
+your `/Applications/Cue.app` unless you explicitly opt in.
 
 ```bash
 # Step 1: Generate cert and import into login keychain
@@ -69,7 +69,7 @@ System installation is opt-in only:
 
 ```bash
 ./scripts/test-tcc-local.sh \
-  --install-path /Applications/Notinhas.app \
+  --install-path /Applications/Cue.app \
   --allow-system-install \
   build-v1
 ```
@@ -106,7 +106,7 @@ When you enroll in Apple Developer Program:
 The default certificate is valid for 10 years. To regenerate:
 
 ```bash
-./scripts/create-signing-cert.sh "Notinhas Self-Signed" 3650
+./scripts/create-signing-cert.sh "Cue Self-Signed" 3650
 ```
 
 Then update the GitHub Secrets with the new values.

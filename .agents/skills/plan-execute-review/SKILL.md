@@ -12,7 +12,7 @@ description: >-
 
 ## Role
 
-Canonical owner of the **orchestrator / executor / reviewer** loop for Notinhas
+Canonical owner of the **orchestrator / executor / reviewer** loop for Cue
 handoff plans under `plans/`. Complements `/improve` (plan authoring) and
 `/thermo-nuclear-code-quality-review` (pre-merge maintainability review).
 
@@ -160,7 +160,7 @@ Only then start the next selected plan with a **fresh** executor dispatch.
 ## Relationship to `/improve` execute
 
 `/improve`’s default `execute` variant keeps the advisor read-only and leaves
-merge/push to the human. This skill adds the Notinhas review/remediation loop;
+merge/push to the human. This skill adds the Cue review/remediation loop;
 it does not override global integration authority or reorder the global
 lifecycle when the user invokes the plan-execute-review pipeline.
 

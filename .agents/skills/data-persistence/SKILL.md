@@ -1,23 +1,23 @@
 ---
 name: data-persistence
-description: Notinhas and annotation session persistence — PersistedNotinhasNotesSession, UserDefaults keys, and session restore.
+description: Cue and annotation session persistence — PersistedCueNotesSession, UserDefaults keys, and session restore.
 ---
 
 # Data Persistence
 
-Use when changing saved Notinhas notes, annotation session restore, UserDefaults keys, or ImgBB configuration storage.
+Use when changing saved Cue notes, annotation session restore, UserDefaults keys, or ImgBB configuration storage.
 
 ## Invariants
 
-- Notinhas notes persist inside annotation sessions via `PersistedNotinhasNotesSession` on `PersistedAnnotationSession`.
-- ImgBB API key UserDefaults key: `notinhas.imgbb.apiKey` (`NotinhasImgBBConfiguration.apiKeyUserDefaultsKey`) — store key name only in docs/logs; never commit or log secret values.
-- Notes panel side: `PreferencesKeys.notinhasNotesPanelSide` / `NotinhasImgBBConfiguration.panelSideUserDefaultsKey`.
+- Cue notes persist inside annotation sessions via `PersistedCueNotesSession` on `PersistedAnnotationSession`.
+- ImgBB API key UserDefaults key: `notinhas.imgbb.apiKey` (`CueImgBBConfiguration.apiKeyUserDefaultsKey`) — store key name only in docs/logs; never commit or log secret values.
+- Notes panel side: `PreferencesKeys.notinhasNotesPanelSide` / `CueImgBBConfiguration.panelSideUserDefaultsKey`.
 - Prefer additive Codable evolution (new fields with defaults) over silent key renames.
 - Decoding should fail soft on corrupt JSON — do not crash Annotate on bad session data.
 
 ## Checklist
 
-- Does a normal annotate session with Notinhas notes round-trip across save/reopen?
+- Does a normal annotate session with Cue notes round-trip across save/reopen?
 - Does panel side preference survive relaunch?
 - Are migrations additive and backward-compatible with older sessions?
 
