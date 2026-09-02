@@ -4116,8 +4116,8 @@ nonisolated enum L10n {
         )
         static let imageKitDescription = string(
             "cloud-settings.imagekit-description",
-            defaultValue: "Direct ImageKit image sharing for manual uploads from Annotate and Quick Access. The private key stays in Keychain.",
-            comment: "Description for ImageKit image sharing preferences",
+            defaultValue: "Direct ImageKit image and video sharing for manual uploads from Annotate and Quick Access. The private key stays in Keychain.",
+            comment: "Description for ImageKit image and video sharing preferences",
         )
         static let imageKitPrivateKeyTitle = string(
             "cloud-settings.imagekit-private-key-title",
@@ -4133,6 +4133,46 @@ nonisolated enum L10n {
             "cloud-settings.provider",
             defaultValue: "Provider",
             comment: "Image upload provider picker label",
+        )
+        static let imageKitVideoUploadSection = string(
+            "cloud-settings.imagekit-video-upload-section",
+            defaultValue: "ImageKit video uploads",
+            comment: "Section title for ImageKit video upload limit preferences",
+        )
+        static let imageKitVideoUploadPlan = string(
+            "cloud-settings.imagekit-video-upload-plan",
+            defaultValue: "ImageKit plan",
+            comment: "Picker label for the ImageKit plan used to determine the video upload limit",
+        )
+        static let imageKitPlanFree = string(
+            "cloud-settings.imagekit-plan-free",
+            defaultValue: "Free (100 MB)",
+            comment: "ImageKit Free plan video upload limit",
+        )
+        static let imageKitPlanLite = string(
+            "cloud-settings.imagekit-plan-lite",
+            defaultValue: "Lite (300 MB)",
+            comment: "ImageKit Lite plan video upload limit",
+        )
+        static let imageKitPlanPro = string(
+            "cloud-settings.imagekit-plan-pro",
+            defaultValue: "Pro (2 GB)",
+            comment: "ImageKit Pro plan video upload limit",
+        )
+        static let imageKitPlanCustom = string(
+            "cloud-settings.imagekit-plan-custom",
+            defaultValue: "Custom",
+            comment: "Custom ImageKit plan option",
+        )
+        static let imageKitCustomVideoUploadLimit = string(
+            "cloud-settings.imagekit-custom-video-upload-limit",
+            defaultValue: "Maximum video size (MB)",
+            comment: "Custom ImageKit video upload limit field label",
+        )
+        static let imageKitVideoUploadLimitDescription = string(
+            "cloud-settings.imagekit-video-upload-limit-description",
+            defaultValue: "Used to decide when Quick Access should optimize a video before uploading. ImageKit plan limits are not exposed by its API.",
+            comment: "Description for the ImageKit video upload limit setting",
         )
     }
 
@@ -6861,8 +6901,78 @@ nonisolated enum L10n {
         )
         static let uploadFileTooLarge = string(
             "quick-access.upload-file-too-large",
-            defaultValue: "This video is too large to upload. Choose a video under 100 MB.",
-            comment: "Error shown when a video exceeds Cue's local upload limit",
+            defaultValue: "This video is larger than the configured ImageKit upload limit. Optimize it before uploading.",
+            comment: "Error shown when a video exceeds the configured ImageKit upload target",
+        )
+        static let videoUploadTooLargeTitle = string(
+            "quick-access.video-upload-too-large-title",
+            defaultValue: "Optimize video for upload",
+            comment: "Quick Access title shown when a video reaches the ImageKit upload target",
+        )
+        static func videoUploadTooLargeMessage(sourceSize: String, uploadLimit: String) -> String {
+            format(
+                "quick-access.video-upload-too-large-message",
+                defaultValue: "This video is %@. The safe ImageKit upload target is %@.",
+                comment: "Quick Access message for an oversized video. The placeholders are source size and safe upload target.",
+                sourceSize,
+                uploadLimit,
+            )
+        }
+
+        static let videoUploadFormat = string(
+            "quick-access.video-upload-format",
+            defaultValue: "Format",
+            comment: "Video upload optimization format label",
+        )
+        static let videoUploadDimensions = string(
+            "quick-access.video-upload-dimensions",
+            defaultValue: "Maximum dimensions",
+            comment: "Video upload optimization dimensions picker label",
+        )
+        static let videoUploadQuality = string(
+            "quick-access.video-upload-quality",
+            defaultValue: "Quality",
+            comment: "Video upload optimization quality picker label",
+        )
+        static let videoUploadFrameRate = string(
+            "quick-access.video-upload-frame-rate",
+            defaultValue: "Frame rate",
+            comment: "Video upload optimization frame rate picker label",
+        )
+        static let videoUploadAudio = string(
+            "quick-access.video-upload-audio",
+            defaultValue: "Include audio",
+            comment: "Video upload optimization audio toggle label",
+        )
+        static let videoUploadMP4H264 = string(
+            "quick-access.video-upload-mp4-h264",
+            defaultValue: "MP4 / H.264",
+            comment: "Video upload optimization output format value",
+        )
+        static let videoUploadQualityHigh = string(
+            "quick-access.video-upload-quality-high",
+            defaultValue: "High",
+            comment: "High video upload quality option",
+        )
+        static let videoUploadQualityBalanced = string(
+            "quick-access.video-upload-quality-balanced",
+            defaultValue: "Balanced",
+            comment: "Balanced video upload quality option",
+        )
+        static let videoUploadQualityCompact = string(
+            "quick-access.video-upload-quality-compact",
+            defaultValue: "Compact",
+            comment: "Compact video upload quality option",
+        )
+        static let videoUploadOptimize = string(
+            "quick-access.video-upload-optimize",
+            defaultValue: "Optimize and upload",
+            comment: "Quick Access action for optimizing an oversized video and uploading it",
+        )
+        static let videoUploadOptimizationFailed = string(
+            "quick-access.video-upload-optimization-failed",
+            defaultValue: "Couldn’t optimize this video enough to fit the ImageKit upload target.",
+            comment: "Error shown when all native video optimization attempts remain over the upload target",
         )
         static let lockPinnedWindow = string(
             "quick-access.pin-window.lock",

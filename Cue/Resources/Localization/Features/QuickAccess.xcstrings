@@ -3811,7 +3811,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This video is too large to upload. Choose a video under 100 MB."
+            "value" : "This video is larger than the configured ImageKit upload limit. Optimize it before uploading."
           }
         }
       }
@@ -4083,6 +4083,136 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "縮放固定視窗"
+          }
+        }
+      }
+    },
+    "quick-access.video-upload-audio" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Include audio"
+          }
+        }
+      }
+    },
+    "quick-access.video-upload-dimensions" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maximum dimensions"
+          }
+        }
+      }
+    },
+    "quick-access.video-upload-format" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Format"
+          }
+        }
+      }
+    },
+    "quick-access.video-upload-frame-rate" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frame rate"
+          }
+        }
+      }
+    },
+    "quick-access.video-upload-mp4-h264" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MP4 / H.264"
+          }
+        }
+      }
+    },
+    "quick-access.video-upload-optimize" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optimize and upload"
+          }
+        }
+      }
+    },
+    "quick-access.video-upload-optimization-failed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t optimize this video enough to fit the ImageKit upload target."
+          }
+        }
+      }
+    },
+    "quick-access.video-upload-quality" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quality"
+          }
+        }
+      }
+    },
+    "quick-access.video-upload-quality-balanced" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Balanced"
+          }
+        }
+      }
+    },
+    "quick-access.video-upload-quality-compact" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compact"
+          }
+        }
+      }
+    },
+    "quick-access.video-upload-quality-high" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "High"
+          }
+        }
+      }
+    },
+    "quick-access.video-upload-too-large-message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This video is %@. The safe ImageKit upload target is %@."
+          }
+        }
+      }
+    },
+    "quick-access.video-upload-too-large-title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optimize video for upload"
           }
         }
       }

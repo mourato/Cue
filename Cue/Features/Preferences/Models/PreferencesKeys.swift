@@ -180,4 +180,6 @@ enum PreferencesKeys {
     static let uploadMaximumDimension = "uploads.maximumDimension"
     static let uploadJPEGQuality = "uploads.jpegQuality"
     static let uploadProvider = "uploads.provider"
+    static let uploadImageKitPlan = "uploads.imageKitPlan"
+    static let uploadImageKitCustomVideoLimitMB = "uploads.imageKitCustomVideoLimitMB"
 }

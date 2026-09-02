@@ -49,6 +49,82 @@ enum CueUploadImageFormat: String, CaseIterable, Identifiable, Sendable {
     }
 }
 
+enum CueImageKitUploadPlan: String, CaseIterable, Identifiable, Sendable {
+    case free
+    case lite
+    case pro
+    case custom
+
+    static let minimumCustomLimitMB = 1
+    static let maximumCustomLimitMB = 100_000
+
+    var id: String {
+        rawValue
+    }
+
+    func videoLimitBytes(customLimitMB: Int) -> Int64 {
+        let megabytes: Int = switch self {
+        case .free: 100
+        case .lite: 300
+        case .pro: 2_000
+        case .custom: min(max(customLimitMB, Self.minimumCustomLimitMB), Self.maximumCustomLimitMB)
+        }
+        return Int64(megabytes) * 1_048_576
+    }
+}
+
+enum CueVideoUploadQuality: String, CaseIterable, Identifiable, Sendable {
+    case high
+    case balanced
+    case compact
+
+    var id: String {
+        rawValue
+    }
+}
+
+struct CueVideoUploadSettings: Equatable, Sendable {
+    var maximumDimension: Int
+    var quality: CueVideoUploadQuality
+    var frameRate: Int
+    var includesAudio: Bool
+
+    static let balanced = Self(
+        maximumDimension: 1_920,
+        quality: .balanced,
+        frameRate: 30,
+        includesAudio: true,
+    )
+
+    func reducedForRetry(_ attempt: Int) -> Self? {
+        switch attempt {
+        case 1:
+            Self(
+                maximumDimension: min(maximumDimension, 1_280),
+                quality: .compact,
+                frameRate: min(frameRate, 30),
+                includesAudio: includesAudio,
+            )
+        case 2:
+            Self(
+                maximumDimension: min(maximumDimension, 960),
+                quality: .compact,
+                frameRate: min(frameRate, 24),
+                includesAudio: includesAudio,
+            )
+        case 3:
+            Self(
+                maximumDimension: min(maximumDimension, 960),
+                quality: .compact,
+                frameRate: min(frameRate, 24),
+                includesAudio: false,
+            )
+        default:
+            nil
+        }
+    }
+}
+
 struct CueUploadEncodingSettings: Equatable, Sendable {
     static let defaultMaximumDimension = 2048
     static let defaultJPEGQuality = 0.9
@@ -111,23 +187,16 @@ enum CueUploadEncodingError: Error {
     case failedToCreateBitmap
     case failedToEncode
     case fileTooLarge
+    case videoTranscodingFailed
+    case videoCouldNotFitLimit
 }
 
 nonisolated enum CueUploadImageEncoder {
-    static let maximumVideoUploadBytes = 100 * 1024 * 1024
-
     private static let optimizableExtensions: Set<String> = [
         "bmp", "heic", "heif", "jpeg", "jpg", "png", "tif", "tiff", "webp",
     ]
 
     static func encode(fileURL: URL, settings: CueUploadEncodingSettings) throws -> CueEncodedImage {
-        if CueUploadMediaKind(fileExtension: fileURL.pathExtension) == .video {
-            let fileSize = try fileURL.resourceValues(forKeys: [.fileSizeKey]).fileSize
-            if let fileSize, fileSize > maximumVideoUploadBytes {
-                throw CueUploadEncodingError.fileTooLarge
-            }
-        }
-
         let originalData = try Data(contentsOf: fileURL, options: [.mappedIfSafe])
         let originalExtension = fileURL.pathExtension.lowercased()
 

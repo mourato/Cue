@@ -564,6 +564,86 @@
           }
         }
       }
+    },
+    "cloud-settings.imagekit-custom-video-upload-limit" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maximum video size (MB)"
+          }
+        }
+      }
+    },
+    "cloud-settings.imagekit-plan-custom" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Custom"
+          }
+        }
+      }
+    },
+    "cloud-settings.imagekit-plan-free" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Free (100 MB)"
+          }
+        }
+      }
+    },
+    "cloud-settings.imagekit-plan-lite" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lite (300 MB)"
+          }
+        }
+      }
+    },
+    "cloud-settings.imagekit-plan-pro" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro (2 GB)"
+          }
+        }
+      }
+    },
+    "cloud-settings.imagekit-video-upload-limit-description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Used to decide when Quick Access should optimize a video before uploading. ImageKit plan limits are not exposed by its API."
+          }
+        }
+      }
+    },
+    "cloud-settings.imagekit-video-upload-plan" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ImageKit plan"
+          }
+        }
+      }
+    },
+    "cloud-settings.imagekit-video-upload-section" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ImageKit video uploads"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

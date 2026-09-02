@@ -71,6 +71,11 @@ second canonical design-system document.
   image upload encoding controls. Upload optimization creates a temporary
   derivative for the provider; it never changes the local capture or the
   annotation source.
+- ImageKit video upload uses the configured plan limit with a 5% safety margin.
+  Quick Access presents one compact popover at or above that target with MP4 /
+  H.264 output, dimensions, quality, frame rate, and audio controls. The source
+  remains the card's file; temporary derivatives and multipart bodies are
+  removed after upload or failure.
 - The provider picker controls the shared upload action label and configured
   state across Preferences, Annotate, and Quick Access. Quick Access also
   disables media types unsupported by the selected provider; Annotate always

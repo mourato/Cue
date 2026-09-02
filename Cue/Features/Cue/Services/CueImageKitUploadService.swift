@@ -64,6 +64,62 @@ actor CueImageKitUploadService {
             throw CueImageKitUploadError.transport
         }
 
+        return try decodeResult(data: data, response: response)
+    }
+
+    func upload(fileURL: URL, privateKey: String) async throws -> CueImageKitUploadResult {
+        let key = privateKey.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !key.isEmpty else { throw CueImageKitUploadError.missingPrivateKey }
+        guard FileManager.default.fileExists(atPath: fileURL.path),
+              let fileSize = try fileURL.resourceValues(forKeys: [.fileSizeKey]).fileSize,
+              fileSize > 0 else {
+            throw CueImageKitUploadError.invalidImageData
+        }
+
+        let boundary = "Boundary-\(UUID().uuidString)"
+        let fileName = "\(UUID().uuidString.lowercased()).\(fileURL.pathExtension.lowercased())"
+        let bodyURL: URL
+        do {
+            bodyURL = try makeMultipartBodyFile(
+                boundary: boundary,
+                sourceURL: fileURL,
+                fileName: fileName,
+            )
+        } catch let error as CueImageKitUploadError {
+            throw error
+        } catch {
+            throw CueImageKitUploadError.transport
+        }
+        defer { try? FileManager.default.removeItem(at: bodyURL.deletingLastPathComponent()) }
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "POST"
+        request.timeoutInterval = 300
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.setValue(
+            "Basic \(Data("\(key):".utf8).base64EncodedString())",
+            forHTTPHeaderField: "Authorization",
+        )
+
+        let data: Data
+        let response: URLResponse
+        do {
+            (data, response) = try await session.upload(for: request, fromFile: bodyURL)
+        } catch is CancellationError {
+            throw CancellationError()
+        } catch {
+            throw CueImageKitUploadError.transport
+        }
+
+        return try decodeResult(data: data, response: response)
+    }
+
+    private struct Response: Decodable {
+        let url: String
+    }
+
+    private func decodeResult(data: Data, response: URLResponse) throws -> CueImageKitUploadResult {
         guard let http = response as? HTTPURLResponse else {
             throw CueImageKitUploadError.malformedResponse
         }
@@ -83,8 +139,54 @@ actor CueImageKitUploadService {
         return CueImageKitUploadResult(url: result.url)
     }
 
-    private struct Response: Decodable {
-        let url: String
+    private func makeMultipartBodyFile(
+        boundary: String,
+        sourceURL: URL,
+        fileName: String,
+    ) throws -> URL {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("CueImageKitUpload-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let bodyURL = directory.appendingPathComponent("body.multipart")
+        guard FileManager.default.createFile(atPath: bodyURL.path, contents: nil) else {
+            try? FileManager.default.removeItem(at: directory)
+            throw CueImageKitUploadError.transport
+        }
+
+        do {
+            let output = try FileHandle(forWritingTo: bodyURL)
+            let input = try FileHandle(forReadingFrom: sourceURL)
+            defer {
+                try? input.close()
+                try? output.close()
+            }
+
+            try output.write(contentsOf: Data(
+                "--\(boundary)\r\nContent-Disposition: form-data; name=\"file\"; filename=\"\(fileName)\"\r\nContent-Type: \(contentType(for: sourceURL.pathExtension))\r\n\r\n"
+                    .utf8,
+            ))
+            while let chunk = try input.read(upToCount: 1_048_576), !chunk.isEmpty {
+                try output.write(contentsOf: chunk)
+            }
+            try output.write(contentsOf: Data(
+                "\r\n--\(boundary)\r\nContent-Disposition: form-data; name=\"fileName\"\r\n\r\n\(fileName)\r\n--\(boundary)--\r\n"
+                    .utf8,
+            ))
+        } catch {
+            try? FileManager.default.removeItem(at: directory)
+            throw error
+        }
+
+        return bodyURL
+    }
+
+    private func contentType(for fileExtension: String) -> String {
+        switch fileExtension.lowercased() {
+        case "mov": "video/quicktime"
+        case "mp4": "video/mp4"
+        case "m4v": "video/x-m4v"
+        default: "application/octet-stream"
+        }
     }
 
     private func makeMultipartBody(boundary: String, image: CueEncodedImage, fileName: String) -> Data {

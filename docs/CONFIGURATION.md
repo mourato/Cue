@@ -52,7 +52,7 @@ The TOML file covers portable app preferences:
 - Recording settings: format, quality, FPS, audio, microphone device id, cursor, click highlights, keystroke overlay, live annotation shortcuts, video editor zoom transition duration.
 - Quick Access: visibility, position, countdown behavior, gesture toggles, trackpad swipe mode, swipe left/right actions, hide card when window open, animation style, action order, enabled actions, card slots.
 - History: retention, maximum count, floating panel layout and filter.
-- Image upload settings: optimization toggle, derivative format, maximum physical pixel dimension, and JPEG/WebP quality under `[uploads]`.
+- Image upload settings: optimization toggle, derivative format, maximum physical pixel dimension, and JPEG/WebP quality under `[uploads]`. ImageKit's selected plan and custom video limit are local UserDefaults settings; they are intentionally not exported because the provider does not expose plan limits through its API.
 - Annotate preferences.
 - Global, overlay, Annotate tool, and Annotate action shortcuts.
 

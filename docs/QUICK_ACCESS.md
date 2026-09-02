@@ -34,7 +34,7 @@ Default slots (`QuickAccessActionSlot.defaultAssignments`): centerTop copy, cent
 | `dismiss` | Card removed; temp file deleted unless a history record exists |
 | `delete` | Removes history record + annotation sidecar, deletes temp or trashes saved file, deletes recording metadata for videos |
 | `edit` | Opens Annotate (screenshots) or Video Editor (video/GIF); pauses countdown |
-| `uploadToImgBB` | Manual upload of an encoded image, GIF, or supported video through the selected provider and public-link copy; ImgBB accepts images/GIFs, while ImageKit also accepts MOV/MP4/M4V; requires that provider's Keychain credential |
+| `uploadToImgBB` | Manual upload of an encoded image, GIF, or supported video through the selected provider and public-link copy; ImgBB accepts images/GIFs, while ImageKit also accepts MOV/MP4/M4V. An ImageKit video at or above the configured safe target opens an "Optimize video for upload" popover; the selected MP4/H.264 derivative is verified against the target before upload and the source is preserved. Requires that provider's Keychain credential |
 | `pinToScreen` | Opens always-on-top pin window (screenshots only) |
 
 Customization: `QuickAccessActionConfigurationStore` — context-menu order (`quickAccess.actions.order.v1`), enabled set (`...enabled.v1`), slot assignments (`...slots.v1`). Settings → Quick Access preview card supports drag-to-slot + swipe zones + reset. Old cloud action identifiers are ignored when loading configuration.

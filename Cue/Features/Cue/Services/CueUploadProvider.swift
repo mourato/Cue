@@ -31,6 +31,8 @@ final class CueUploadConfigurationStore: ObservableObject {
     static let shared = CueUploadConfigurationStore()
 
     @Published private(set) var provider: CueUploadProvider
+    @Published private(set) var imageKitPlan: CueImageKitUploadPlan
+    @Published private(set) var imageKitCustomVideoLimitMB: Int
     @Published private(set) var revision = UUID()
 
     private let defaults: UserDefaults
@@ -48,6 +50,18 @@ final class CueUploadConfigurationStore: ObservableObject {
         self.imageKit = imageKit
         provider = defaults.string(forKey: PreferencesKeys.uploadProvider)
             .flatMap(CueUploadProvider.init(rawValue:)) ?? .imgbb
+        imageKitPlan = defaults.string(forKey: PreferencesKeys.uploadImageKitPlan)
+            .flatMap(CueImageKitUploadPlan.init(rawValue:)) ?? .free
+        imageKitCustomVideoLimitMB = min(
+            max(
+                defaults.integer(forKey: PreferencesKeys.uploadImageKitCustomVideoLimitMB),
+                CueImageKitUploadPlan.minimumCustomLimitMB,
+            ),
+            CueImageKitUploadPlan.maximumCustomLimitMB,
+        )
+        if defaults.object(forKey: PreferencesKeys.uploadImageKitCustomVideoLimitMB) == nil {
+            imageKitCustomVideoLimitMB = 100
+        }
         imgbb.$isConfigured
             .combineLatest(imageKit.$isConfigured)
             .sink { [weak self] _, _ in self?.revision = UUID() }
@@ -75,10 +89,37 @@ final class CueUploadConfigurationStore: ObservableObject {
         }
     }
 
+    var imageKitVideoUploadLimitBytes: Int64 {
+        imageKitPlan.videoLimitBytes(customLimitMB: imageKitCustomVideoLimitMB)
+    }
+
+    /// Leaves room for multipart overhead and provider-side boundary differences.
+    var imageKitVideoUploadTargetBytes: Int64 {
+        max(1, imageKitVideoUploadLimitBytes * 95 / 100)
+    }
+
     func select(_ provider: CueUploadProvider) {
         guard self.provider != provider else { return }
         self.provider = provider
         defaults.set(provider.rawValue, forKey: PreferencesKeys.uploadProvider)
+        revision = UUID()
+    }
+
+    func selectImageKitPlan(_ plan: CueImageKitUploadPlan) {
+        guard imageKitPlan != plan else { return }
+        imageKitPlan = plan
+        defaults.set(plan.rawValue, forKey: PreferencesKeys.uploadImageKitPlan)
+        revision = UUID()
+    }
+
+    func setImageKitCustomVideoLimitMB(_ megabytes: Int) {
+        let value = min(
+            max(megabytes, CueImageKitUploadPlan.minimumCustomLimitMB),
+            CueImageKitUploadPlan.maximumCustomLimitMB,
+        )
+        guard imageKitCustomVideoLimitMB != value else { return }
+        imageKitCustomVideoLimitMB = value
+        defaults.set(value, forKey: PreferencesKeys.uploadImageKitCustomVideoLimitMB)
         revision = UUID()
     }
 

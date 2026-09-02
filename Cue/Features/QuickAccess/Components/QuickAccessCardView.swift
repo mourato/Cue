@@ -25,6 +25,7 @@ struct QuickAccessCardView: View {
     @State private var isDismissing = false
     @State private var swipeOffset: CGFloat = 0
     @State private var isUploading = false
+    @State private var isVideoUploadOptionsPresented = false
     @State private var imgbbUploadError: String?
     @State private var cardScreenFrame: CGRect = .zero
     @ObservedObject private var uploadConfiguration = CueUploadConfigurationStore.shared
@@ -72,6 +73,22 @@ struct QuickAccessCardView: View {
             } message: {
                 Text(imgbbUploadError ?? "")
             }
+            .popover(
+                isPresented: $isVideoUploadOptionsPresented,
+                arrowEdge: .bottom,
+            ) {
+                CueVideoUploadOptionsView(
+                    sourceSize: fileSize(for: item.url) ?? 0,
+                    uploadLimit: uploadConfiguration.imageKitVideoUploadTargetBytes,
+                ) { settings in
+                    startUpload(videoSettings: settings)
+                }
+            }
+            .onChange(of: isVideoUploadOptionsPresented) { _, isPresented in
+                if !isPresented, !isUploading {
+                    manager.resumeCountdownForActivity(item.id)
+                }
+            }
             .animation(reduceMotion ? nil : QuickAccessAnimations.hoverOverlay, value: isHovering)
     }
 
@@ -96,7 +113,7 @@ struct QuickAccessCardView: View {
             }
 
             if isUploading {
-                QuickAccessProgressView(state: .processing(progress: 0.8))
+                QuickAccessProgressView(state: .processing(progress: nil))
                     .transition(.opacity)
             }
 
@@ -259,7 +276,7 @@ struct QuickAccessCardView: View {
     }
 
     private var canPerformCardActions: Bool {
-        item.processingState == .idle && !isUploading
+        item.processingState == .idle && !isUploading && !isVideoUploadOptionsPresented
     }
 
     private var showsCardActions: Bool {
@@ -743,6 +760,19 @@ struct QuickAccessCardView: View {
             return
         }
 
+        if item.isVideo,
+           let fileSize = fileSize(for: item.url),
+           fileSize >= uploadConfiguration.imageKitVideoUploadTargetBytes {
+            manager.pauseCountdownForActivity(item.id)
+            isVideoUploadOptionsPresented = true
+            return
+        }
+
+        startUpload()
+    }
+
+    private func startUpload(videoSettings: CueVideoUploadSettings? = nil) {
+        guard !isUploading else { return }
         isUploading = true
         manager.pauseCountdownForActivity(item.id)
         Task { @MainActor in
@@ -751,7 +781,7 @@ struct QuickAccessCardView: View {
                 manager.resumeCountdownForActivity(item.id)
             }
 
-            let link = await uploadCoordinator.upload(fileURL: item.url)
+            let link = await uploadCoordinator.upload(fileURL: item.url, videoSettings: videoSettings)
             guard let link else {
                 imgbbUploadError = uploadCoordinator.lastErrorMessage ?? uploadFailedMessage
                 return
@@ -762,6 +792,15 @@ struct QuickAccessCardView: View {
             pasteboard.setString(link, forType: .string)
             SoundManager.play("Pop")
             AppToastManager.shared.showCopiedToClipboard()
+        }
+    }
+
+    private func fileSize(for url: URL) -> Int64? {
+        do {
+            guard let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize else { return nil }
+            return Int64(size)
+        } catch {
+            return nil
         }
     }
 

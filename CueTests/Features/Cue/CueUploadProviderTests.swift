@@ -70,6 +70,51 @@ final class CueUploadProviderTests: XCTestCase {
         XCTAssertTrue(CueUploadProvider.imageKit.supports(.gif))
         XCTAssertTrue(CueUploadProvider.imageKit.supports(.video))
     }
+
+    func testImageKitPlanControlsSafeVideoUploadTarget() throws {
+        let suite = "notinhas.upload-plan.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        let store = CueUploadConfigurationStore(
+            defaults: defaults,
+            imgbb: CueImgBBCredentialStore(defaults: defaults, keychain: MockProviderKeychain()),
+            imageKit: CueImageKitCredentialStore(defaults: defaults, keychain: MockProviderKeychain()),
+        )
+
+        XCTAssertEqual(store.imageKitPlan, .free)
+        XCTAssertEqual(store.imageKitVideoUploadLimitBytes, 100 * 1_048_576)
+        XCTAssertEqual(store.imageKitVideoUploadTargetBytes, 95 * 1_048_576)
+
+        store.selectImageKitPlan(.custom)
+        store.setImageKitCustomVideoLimitMB(42)
+
+        XCTAssertEqual(defaults.string(forKey: PreferencesKeys.uploadImageKitPlan), "custom")
+        XCTAssertEqual(defaults.integer(forKey: PreferencesKeys.uploadImageKitCustomVideoLimitMB), 42)
+        XCTAssertEqual(store.imageKitVideoUploadLimitBytes, 42 * 1_048_576)
+        defaults.removePersistentDomain(forName: suite)
+    }
+
+    func testVideoUploadSettingsReduceQualityAcrossRetries() {
+        let settings = CueVideoUploadSettings(
+            maximumDimension: 1_920,
+            quality: .high,
+            frameRate: 60,
+            includesAudio: true,
+        )
+
+        XCTAssertEqual(
+            settings.reducedForRetry(1),
+            CueVideoUploadSettings(maximumDimension: 1_280, quality: .compact, frameRate: 30, includesAudio: true),
+        )
+        XCTAssertEqual(
+            settings.reducedForRetry(2),
+            CueVideoUploadSettings(maximumDimension: 960, quality: .compact, frameRate: 24, includesAudio: true),
+        )
+        XCTAssertEqual(
+            settings.reducedForRetry(3),
+            CueVideoUploadSettings(maximumDimension: 960, quality: .compact, frameRate: 24, includesAudio: false),
+        )
+        XCTAssertNil(settings.reducedForRetry(4))
+    }
 }
 
 private final class MockProviderKeychain: ImgBBKeychainBacking, ImageKitKeychainBacking {

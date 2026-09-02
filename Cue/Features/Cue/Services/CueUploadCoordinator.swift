@@ -36,12 +36,70 @@ final class CueUploadCoordinator: ObservableObject {
         }
     }
 
-    func upload(fileURL: URL) async -> String? {
+    func upload(fileURL: URL, videoSettings: CueVideoUploadSettings? = nil) async -> String? {
+        let mediaKind = CueUploadMediaKind(fileExtension: fileURL.pathExtension)
+        if mediaKind == .video {
+            return await performVideoUpload(fileURL: fileURL, settings: videoSettings)
+        }
+
         let settings = CueUploadEncodingSettings.current()
-        return await performUpload(mediaKind: CueUploadMediaKind(fileExtension: fileURL.pathExtension)) {
+        return await performUpload(mediaKind: mediaKind) {
             try await Task.detached(priority: .userInitiated) {
                 try CueUploadImageEncoder.encode(fileURL: fileURL, settings: settings)
             }.value
+        }
+    }
+
+    private func performVideoUpload(fileURL: URL, settings: CueVideoUploadSettings?) async -> String? {
+        let provider = configuration.provider
+        guard provider.supports(.video) else {
+            lastErrorMessage = L10n.QuickAccess.videoUploadRequiresImageKit
+            return nil
+        }
+        guard let credential = configuration.credential else {
+            lastErrorMessage = missingCredentialMessage(for: provider)
+            return nil
+        }
+
+        isUploading = true
+        lastErrorMessage = nil
+        defer { isUploading = false }
+
+        do {
+            let prepared: CuePreparedUpload
+            if let settings {
+                prepared = try await CueVideoUploadTranscoder.prepare(
+                    sourceURL: fileURL,
+                    maximumBytes: configuration.imageKitVideoUploadTargetBytes,
+                    settings: settings,
+                )
+            } else {
+                let fileSize = try fileURL.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
+                guard Int64(fileSize) <= configuration.imageKitVideoUploadTargetBytes else {
+                    throw CueUploadEncodingError.fileTooLarge
+                }
+                prepared = .original(fileURL)
+            }
+            defer { prepared.cleanup() }
+
+            let link = try await imageKitService.upload(fileURL: prepared.url, privateKey: credential).url
+            lastUploadedURL = link
+            return link
+        } catch is CancellationError {
+            return nil
+        } catch let error as CueUploadEncodingError {
+            switch error {
+            case .fileTooLarge:
+                lastErrorMessage = L10n.QuickAccess.uploadFileTooLarge
+            case .videoTranscodingFailed, .videoCouldNotFitLimit:
+                lastErrorMessage = L10n.QuickAccess.videoUploadOptimizationFailed
+            default:
+                lastErrorMessage = error.localizedDescription
+            }
+            return nil
+        } catch {
+            lastErrorMessage = error.localizedDescription
+            return nil
         }
     }
 
@@ -80,6 +138,8 @@ final class CueUploadCoordinator: ObservableObject {
             } else {
                 lastErrorMessage = error.localizedDescription
             }
+            return nil
+        } catch is CancellationError {
             return nil
         } catch {
             lastErrorMessage = error.localizedDescription

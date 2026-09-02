@@ -49,6 +49,29 @@ struct CloudSettingsView: View {
                     }
                 }
             }
+
+            if uploadConfiguration.provider == .imageKit {
+                Section(L10n.CloudSettings.imageKitVideoUploadSection) {
+                    Picker(L10n.CloudSettings.imageKitVideoUploadPlan, selection: imageKitPlanBinding) {
+                        ForEach(CueImageKitUploadPlan.allCases) { plan in
+                            Text(imageKitPlanName(plan)).tag(plan)
+                        }
+                    }
+
+                    if uploadConfiguration.imageKitPlan == .custom {
+                        TextField(
+                            L10n.CloudSettings.imageKitCustomVideoUploadLimit,
+                            value: customVideoLimitBinding,
+                            format: .number,
+                        )
+                        .textFieldStyle(.roundedBorder)
+                    }
+
+                    Text(L10n.CloudSettings.imageKitVideoUploadLimitDescription)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
         }
         .formStyle(.grouped)
         .alert(L10n.CloudSettings.transferAlertTitle, isPresented: errorBinding) {
@@ -93,6 +116,29 @@ struct CloudSettingsView: View {
                 isEditing = false
             },
         )
+    }
+
+    private var imageKitPlanBinding: Binding<CueImageKitUploadPlan> {
+        Binding(
+            get: { uploadConfiguration.imageKitPlan },
+            set: { uploadConfiguration.selectImageKitPlan($0) },
+        )
+    }
+
+    private var customVideoLimitBinding: Binding<Int> {
+        Binding(
+            get: { uploadConfiguration.imageKitCustomVideoLimitMB },
+            set: { uploadConfiguration.setImageKitCustomVideoLimitMB($0) },
+        )
+    }
+
+    private func imageKitPlanName(_ plan: CueImageKitUploadPlan) -> String {
+        switch plan {
+        case .free: L10n.CloudSettings.imageKitPlanFree
+        case .lite: L10n.CloudSettings.imageKitPlanLite
+        case .pro: L10n.CloudSettings.imageKitPlanPro
+        case .custom: L10n.CloudSettings.imageKitPlanCustom
+        }
     }
 
     private var description: String {

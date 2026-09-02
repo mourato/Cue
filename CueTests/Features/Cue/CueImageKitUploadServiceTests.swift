@@ -50,6 +50,24 @@ final class CueImageKitUploadServiceTests: XCTestCase {
         XCTAssertEqual(result.url, "https://ik.imagekit.io/demo/video.mp4")
     }
 
+    func testFileUploadStreamsMultipartPayloadFromDisk() async throws {
+        MockImageKitURLProtocol.requestHandler = { request in
+            let body = String(data: Self.requestBodyData(request), encoding: .utf8) ?? ""
+            XCTAssertTrue(body.contains("Content-Type: video/mp4"))
+            XCTAssertTrue(body.contains("streamed-video-payload"))
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, Data(#"{"url":"https://ik.imagekit.io/demo/streamed.mp4"}"#.utf8))
+        }
+
+        let sourceURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("CueImageKitStream-\(UUID().uuidString).mp4")
+        try Data("streamed-video-payload".utf8).write(to: sourceURL, options: .atomic)
+        defer { try? FileManager.default.removeItem(at: sourceURL) }
+
+        let result = try await makeService().upload(fileURL: sourceURL, privateKey: "fixture-private-key")
+        XCTAssertEqual(result.url, "https://ik.imagekit.io/demo/streamed.mp4")
+    }
+
     func testUnauthorizedResponseDoesNotExposeCredential() async {
         MockImageKitURLProtocol.requestHandler = { request in
             let response = HTTPURLResponse(url: request.url!, statusCode: 401, httpVersion: nil, headerFields: nil)!
