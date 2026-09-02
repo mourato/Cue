@@ -245,8 +245,12 @@ struct ShortcutsView: View {
             Task { @MainActor in
                 let newConflict = SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts()
                 if newConflict != hasConflict {
-                    withAnimation(.easeInOut(duration: 0.3)) {
+                    if reduceMotion {
                         hasConflict = newConflict
+                    } else {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            hasConflict = newConflict
+                        }
                     }
                 }
             }
@@ -420,6 +424,15 @@ struct ShortcutsView: View {
 
     /// Shake the button and pulse the conflict card to hint resolution is needed
     private func triggerConflictHint() {
+        guard !reduceMotion else {
+            conflictCardHighlight = true
+            shakeOffset = 0
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                conflictCardHighlight = false
+            }
+            return
+        }
+
         // Pulse the conflict card highlight
         withAnimation {
             conflictCardHighlight = true
