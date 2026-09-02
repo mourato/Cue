@@ -1,5 +1,5 @@
 //
-//  CueConfigurationExporter.swift
+//  CueExporter.swift
 //  Notinhas
 //
 //  Builds deterministic TOML from current app configuration.
@@ -107,7 +107,7 @@ enum CueConfigurationExporter {
         writer.section("capture.ocr")
         writer.value(
             "success_notification",
-            defaults.boolValue(PreferencesKeys.ocrSuccessNotificationEnabled, default: false),
+            defaults.boolValue(PreferencesKeys.ocrSuccessNotificationEnabled, default: true),
         )
 
         writer.section("capture.object_cutout")

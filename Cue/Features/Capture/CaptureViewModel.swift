@@ -132,6 +132,29 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         }
     }
 
+    func recordCaptureResult(_ result: CaptureResult) {
+        lastCaptureResult = result
+        guard case .failure(let error) = result else { return }
+        recordCaptureFailureFeedback(for: error)
+    }
+
+    func recordCaptureFailure(_ error: CaptureError) {
+        lastCaptureResult = .failure(error)
+        recordCaptureFailureFeedback(for: error)
+    }
+
+    private func recordCaptureFailureFeedback(for error: CaptureError) {
+        if case .cancelled = error {
+            return
+        }
+        AppToastManager.shared.show(
+            message: error.localizedDescription,
+            style: .error,
+            position: .bottomCenter,
+        )
+        QuickAccessSound.failed.play()
+    }
+
     private var includesOwnAppInScreenshots: Bool {
         UserDefaults.standard.bool(forKey: PreferencesKeys.screenshotIncludeOwnApp)
     }
@@ -427,7 +450,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                     promptMessage: L10n.Recording.chooseSaveLocationMessage,
                 )
             else {
-                lastCaptureResult = .failure(.saveFailed(L10n.ScreenCapture.saveLocationPermissionRequired))
+                recordCaptureFailure(.saveFailed(L10n.ScreenCapture.saveLocationPermissionRequired))
                 DiagnosticLogger.shared.log(.error, .capture, "Fullscreen capture aborted: no save location")
                 return
             }
@@ -476,7 +499,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
             )
 
             isCapturing = false
-            lastCaptureResult = result.primaryCaptureResult
+            recordCaptureResult(result.primaryCaptureResult)
             hiddenWindowSession.restore()
 
             if !result.savedURLs.isEmpty {
@@ -493,7 +516,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                     promptMessage: L10n.Recording.chooseSaveLocationMessage,
                 )
             else {
-                lastCaptureResult = .failure(.saveFailed(L10n.ScreenCapture.saveLocationPermissionRequired))
+                recordCaptureFailure(.saveFailed(L10n.ScreenCapture.saveLocationPermissionRequired))
                 DiagnosticLogger.shared.log(.error, .capture, "Active window capture aborted: no save location")
                 return
             }
@@ -509,7 +532,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 prefetchedContentTask: prefetchedContentTask,
             ) else {
                 isCapturing = false
-                lastCaptureResult = .failure(.captureFailed(L10n.ScreenCapture.failedToCropCapturedImage))
+                recordCaptureFailure(.captureFailed(L10n.ScreenCapture.failedToCropCapturedImage))
                 DiagnosticLogger.shared.log(.error, .capture, "Active window capture failed: no resolvable window")
                 return
             }
@@ -533,7 +556,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
             )
 
             isCapturing = false
-            lastCaptureResult = result
+            recordCaptureResult(result)
 
             if case .success = result {
                 SoundManager.playScreenshotCapture()
@@ -684,7 +707,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 promptMessage: L10n.Recording.chooseSaveLocationMessage,
             )
         else {
-            lastCaptureResult = .failure(.saveFailed(L10n.ScreenCapture.saveLocationPermissionRequired))
+            recordCaptureFailure(.saveFailed(L10n.ScreenCapture.saveLocationPermissionRequired))
             return
         }
         saveDirectory = resolvedSaveDirectory
@@ -747,7 +770,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 promptMessage: L10n.Recording.chooseSaveLocationMessage,
             )
         else {
-            lastCaptureResult = .failure(.saveFailed(L10n.ScreenCapture.saveLocationPermissionRequired))
+            recordCaptureFailure(.saveFailed(L10n.ScreenCapture.saveLocationPermissionRequired))
             return
         }
         saveDirectory = resolvedSaveDirectory
@@ -879,7 +902,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
             } catch let error as CaptureError {
                 guard activeAreaSelectionSessionID == sessionID else { return }
                 isAreaSelectionActive = false
-                lastCaptureResult = .failure(error)
+                recordCaptureFailure(error)
                 hiddenWindowSession.restore()
                 AreaSelectionController.shared.cancelSelection()
                 cancelParallelFrozenPrepare()
@@ -891,7 +914,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
             } catch {
                 guard activeAreaSelectionSessionID == sessionID else { return }
                 isAreaSelectionActive = false
-                lastCaptureResult = .failure(.captureFailed(error.localizedDescription))
+                recordCaptureFailure(.captureFailed(error.localizedDescription))
                 hiddenWindowSession.restore()
                 AreaSelectionController.shared.cancelSelection()
                 cancelParallelFrozenPrepare()
@@ -920,7 +943,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 promptMessage: L10n.Recording.chooseSaveLocationMessage,
             )
         else {
-            lastCaptureResult = .failure(.saveFailed(L10n.ScreenCapture.saveLocationPermissionRequired))
+            recordCaptureFailure(.saveFailed(L10n.ScreenCapture.saveLocationPermissionRequired))
             return
         }
         saveDirectory = resolvedSaveDirectory
@@ -991,7 +1014,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                     } catch let error as CaptureError {
                         self.isCapturing = false
                         self.isAreaSelectionActive = false
-                        self.lastCaptureResult = .failure(error)
+                        self.recordCaptureFailure(error)
                         hiddenWindowSession.restore()
                         DiagnosticLogger.shared.log(
                             .error,
@@ -1002,7 +1025,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                     } catch {
                         self.isCapturing = false
                         self.isAreaSelectionActive = false
-                        self.lastCaptureResult = .failure(.captureFailed(error.localizedDescription))
+                        self.recordCaptureFailure(.captureFailed(error.localizedDescription))
                         hiddenWindowSession.restore()
                         DiagnosticLogger.shared.log(
                             .error,
@@ -1055,7 +1078,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 : resolvedScreens.compactMap(\.displayID).first ?? targetDisplayID)
         guard !resolvedScreens.isEmpty else {
             isAreaSelectionActive = false
-            lastCaptureResult = .failure(.noDisplayFound)
+            recordCaptureFailure(.noDisplayFound)
             hiddenWindowSession.restore()
             frozenSession.invalidate()
             return
@@ -1080,7 +1103,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 return
             }
             isAreaSelectionActive = false
-            lastCaptureResult = result
+            recordCaptureResult(result)
             hiddenWindowSession.restore()
             if case .failure(let error) = result {
                 DiagnosticLogger.shared.log(.info, .capture, "Inline area annotate ended", context: [
@@ -1168,7 +1191,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
             let frozenSession = resolvedSession()
             guard !frozenSession.displayIDs.isEmpty else {
                 hiddenWindowSession.restore()
-                lastCaptureResult = .failure(.captureFailed("Frozen snapshot unavailable"))
+                recordCaptureFailure(.captureFailed("Frozen snapshot unavailable"))
                 DiagnosticLogger.shared.log(
                     .error,
                     .capture,
@@ -1244,7 +1267,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
 
                             frozenSession.invalidate()
                             self.isCapturing = false
-                            self.lastCaptureResult = result
+                            self.recordCaptureResult(result)
 
                             if case .success = result {
                                 SoundManager.playScreenshotCapture()
@@ -1252,7 +1275,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                         } catch let error as CaptureError {
                             frozenSession.invalidate()
                             self.isCapturing = false
-                            self.lastCaptureResult = .failure(error)
+                            self.recordCaptureFailure(error)
                             DiagnosticLogger.shared.log(
                                 .error,
                                 .capture,
@@ -1261,7 +1284,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                         } catch {
                             frozenSession.invalidate()
                             self.isCapturing = false
-                            self.lastCaptureResult = .failure(.captureFailed(error.localizedDescription))
+                            self.recordCaptureFailure(.captureFailed(error.localizedDescription))
                             DiagnosticLogger.shared.log(
                                 .error,
                                 .capture,
@@ -1277,15 +1300,11 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                         )
                         frozenSession.invalidate()
                         self.isCapturing = false
-                        self
-                            .lastCaptureResult =
-                            .failure(.captureFailed(L10n.ScreenCapture.selectionOutsideDisplayBounds))
+                        self.recordCaptureFailure(.captureFailed(L10n.ScreenCapture.selectionOutsideDisplayBounds))
                     } else {
                         frozenSession.invalidate()
                         self.isCapturing = false
-                        self
-                            .lastCaptureResult =
-                            .failure(.captureFailed(L10n.ScreenCapture.selectionOutsideDisplayBounds))
+                        self.recordCaptureFailure(.captureFailed(L10n.ScreenCapture.selectionOutsideDisplayBounds))
                         DiagnosticLogger.shared.log(
                             .error,
                             .capture,
@@ -1317,7 +1336,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
 
                     frozenSession.invalidate()
                     self.isCapturing = false
-                    self.lastCaptureResult = result
+                    self.recordCaptureResult(result)
 
                     if case .success = result {
                         SoundManager.playScreenshotCapture()
@@ -1422,7 +1441,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 }
 
                 self.isCapturing = false
-                self.lastCaptureResult = result
+                self.recordCaptureResult(result)
                 if case .success = result {
                     SoundManager.playScreenshotCapture()
                 }
@@ -1776,7 +1795,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 promptMessage: L10n.Recording.chooseSaveLocationMessage,
             )
         else {
-            lastCaptureResult = .failure(.saveFailed(L10n.ScreenCapture.saveLocationPermissionRequired))
+            recordCaptureFailure(.saveFailed(L10n.ScreenCapture.saveLocationPermissionRequired))
             return
         }
         saveDirectory = resolvedSaveDirectory
@@ -2101,7 +2120,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 promptMessage: L10n.Recording.chooseSaveLocationMessage,
             )
         else {
-            lastCaptureResult = .failure(.saveFailed(L10n.ScreenCapture.saveLocationPermissionRequired))
+            recordCaptureFailure(.saveFailed(L10n.ScreenCapture.saveLocationPermissionRequired))
             return
         }
 
@@ -2138,13 +2157,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 excludeOwnApplication: !includesOwnAppInScreenshots,
                 prefetchedContentTask: prefetchedContentTask,
             ) else {
-                lastCaptureResult = .failure(.captureFailed(L10n.ScreenCapture.unableToCaptureSelectedArea))
-                AppToastManager.shared.show(
-                    message: L10n.ScreenCapture.unableToCaptureSelectedArea,
-                    style: .error,
-                    position: .bottomCenter,
-                )
-                QuickAccessSound.failed.play()
+                recordCaptureFailure(.captureFailed(L10n.ScreenCapture.unableToCaptureSelectedArea))
                 return
             }
 
@@ -2160,28 +2173,14 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 scaleFactor: scaleFactor,
                 context: captureContext,
             )
-            lastCaptureResult = result
+            recordCaptureResult(result)
 
-            switch result {
-            case .success:
+            if case .success = result {
                 SoundManager.playScreenshotCapture()
-            case .failure(let error):
-                AppToastManager.shared.show(
-                    message: error.localizedDescription,
-                    style: .error,
-                    position: .bottomCenter,
-                )
-                QuickAccessSound.failed.play()
             }
         } catch {
-            lastCaptureResult = .failure(.captureFailed(error.localizedDescription))
+            recordCaptureFailure(.captureFailed(error.localizedDescription))
             DiagnosticLogger.shared.logError(.capture, error, "Smart element capture failed")
-            AppToastManager.shared.show(
-                message: error.localizedDescription,
-                style: .error,
-                position: .bottomCenter,
-            )
-            QuickAccessSound.failed.play()
         }
     }
 
@@ -2253,7 +2252,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
             )
         else {
             frozenSession.invalidate()
-            lastCaptureResult = .failure(.saveFailed(L10n.ScreenCapture.saveLocationPermissionRequired))
+            recordCaptureFailure(.saveFailed(L10n.ScreenCapture.saveLocationPermissionRequired))
             return
         }
         saveDirectory = resolvedSaveDirectory
@@ -2297,19 +2296,19 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 scaleFactor: cropResult.scaleFactor,
                 context: captureContext,
             )
-            lastCaptureResult = result
+            recordCaptureResult(result)
             if case .success = result {
                 SoundManager.playScreenshotCapture()
             }
         } catch let error as CaptureError {
-            lastCaptureResult = .failure(error)
+            recordCaptureFailure(error)
             DiagnosticLogger.shared.log(
                 .error,
                 .capture,
                 "Frozen All-In-One area crop failed: \(error.localizedDescription)",
             )
         } catch {
-            lastCaptureResult = .failure(.captureFailed(error.localizedDescription))
+            recordCaptureFailure(.captureFailed(error.localizedDescription))
             DiagnosticLogger.shared.log(
                 .error,
                 .capture,
@@ -2328,7 +2327,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         case .success(let session):
             await performFrozenAreaCapture(at: rect, from: session)
         case .failure(let error):
-            lastCaptureResult = .failure(error)
+            recordCaptureFailure(error)
         }
     }
 
@@ -2348,6 +2347,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
 
         defer { frozenSession.invalidate() }
 
+        let processingToast = startOCRProcessingFeedback()
         do {
             let operationStartTime = CFAbsoluteTimeGetCurrent()
             AppStatusBarController.shared.setProcessing(true)
@@ -2367,14 +2367,15 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 image: cropResult.image,
                 captureDurationMs: captureDurationMs,
                 operationStartTime: operationStartTime,
+                processingToast: processingToast,
             )
         } catch {
             AppStatusBarController.shared.setProcessing(false)
             DiagnosticLogger.shared.logError(.ocr, error, "Frozen OCR capture failed")
-            AppToastManager.shared.show(
+            finishOCRProcessingFeedback(
+                processingToast,
                 message: error.localizedDescription,
                 style: .error,
-                position: .bottomCenter,
             )
             QuickAccessSound.failed.play()
         }
@@ -2384,8 +2385,9 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         image: CGImage,
         captureDurationMs: String,
         operationStartTime: CFAbsoluteTime,
+        processingToast: AppToastHandle?,
     ) async {
-        // OCR feedback: status-bar processing during capture/recognize; terminal toasts only (no progress handle).
+        // OCR feedback uses the menu-bar spinner when available and a toast fallback otherwise.
         let processingStartTime = CFAbsoluteTimeGetCurrent()
         async let qrResultTask = detectQRCodes(in: image)
         async let recognizedTextTask = recognizeOCRText(in: image)
@@ -2408,16 +2410,16 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
 
         guard let clipboardText else {
             if qrResult.unsupportedPayloadCount > 0 {
-                AppToastManager.shared.show(
+                finishOCRProcessingFeedback(
+                    processingToast,
                     message: L10n.OCR.qrTextOnlyUnsupported,
                     style: .warning,
-                    position: .bottomCenter,
                 )
             } else {
-                AppToastManager.shared.show(
+                finishOCRProcessingFeedback(
+                    processingToast,
                     message: L10n.OCR.noTextFound,
                     style: .warning,
-                    position: .bottomCenter,
                 )
             }
             QuickAccessSound.failed.play()
@@ -2434,14 +2436,21 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         DiagnosticLogger.shared.log(.info, .ocr, "OCR text copied to clipboard", context: successContext)
 
         let showOCRNotification = UserDefaults.standard
-            .object(forKey: PreferencesKeys.ocrSuccessNotificationEnabled) as? Bool ?? false
+            .object(forKey: PreferencesKeys.ocrSuccessNotificationEnabled) as? Bool ?? true
         if showOCRNotification {
-            AppToastManager.shared.show(
-                message: L10n.Common.copiedToClipboard,
-                style: .success,
-                position: .bottomCenter,
-            )
+            if let processingToast {
+                finishOCRProcessingFeedback(
+                    processingToast,
+                    message: L10n.Common.copiedToClipboard,
+                    style: .success,
+                    variant: .compact,
+                )
+            } else {
+                AppToastManager.shared.showCopiedToClipboard()
+            }
             QuickAccessSound.complete.play()
+        } else if let processingToast {
+            AppToastManager.shared.dismiss(processingToast)
         }
 
         let linkDetectionEnabled = UserDefaults.standard
@@ -2460,7 +2469,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 promptMessage: L10n.Recording.chooseSaveLocationMessage,
             )
         else {
-            lastCaptureResult = .failure(.saveFailed(L10n.ScreenCapture.saveLocationPermissionRequired))
+            recordCaptureFailure(.saveFailed(L10n.ScreenCapture.saveLocationPermissionRequired))
             return
         }
         saveDirectory = resolvedSaveDirectory
@@ -2502,7 +2511,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         )
 
         isCapturing = false
-        lastCaptureResult = result
+        recordCaptureResult(result)
 
         if case .success = result {
             SoundManager.playScreenshotCapture()
@@ -2522,6 +2531,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         }
 
         defer { hiddenWindowSession.restore() }
+        let processingToast = startOCRProcessingFeedback()
 
         DiagnosticLogger.shared.log(
             .info,
@@ -2543,10 +2553,10 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 prefetchedContentTask: prefetchedContentTask,
             ) else {
                 AppStatusBarController.shared.setProcessing(false)
-                AppToastManager.shared.show(
+                finishOCRProcessingFeedback(
+                    processingToast,
                     message: L10n.ScreenCapture.unableToCaptureSelectedArea,
                     style: .error,
-                    position: .bottomCenter,
                 )
                 QuickAccessSound.failed.play()
                 return
@@ -2556,20 +2566,56 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 image: image,
                 captureDurationMs: captureDurationMs,
                 operationStartTime: operationStartTime,
+                processingToast: processingToast,
             )
         } catch {
             AppStatusBarController.shared.setProcessing(false)
             DiagnosticLogger.shared.logError(.ocr, error, "OCR capture failed")
-            AppToastManager.shared.show(
+            finishOCRProcessingFeedback(
+                processingToast,
                 message: error.localizedDescription,
                 style: .error,
-                position: .bottomCenter,
             )
             QuickAccessSound.failed.play()
         }
     }
 
     // MARK: - OCR Capture
+
+    private func startOCRProcessingFeedback() -> AppToastHandle? {
+        guard !AppStatusBarController.shared.isMenuBarIconVisible else { return nil }
+        return AppToastManager.shared.show(
+            message: L10n.OCR.extractingContent,
+            style: .info,
+            position: .bottomCenter,
+            duration: nil,
+            iconMode: .spinner,
+        )
+    }
+
+    private func finishOCRProcessingFeedback(
+        _ handle: AppToastHandle?,
+        message: String,
+        style: AppToastStyle,
+        variant: AppToastVariant = .regular,
+    ) {
+        if let handle {
+            AppToastManager.shared.update(
+                handle,
+                message: message,
+                style: style,
+                position: .bottomCenter,
+                variant: variant,
+            )
+        } else {
+            AppToastManager.shared.show(
+                message: message,
+                style: style,
+                position: .bottomCenter,
+                variant: variant,
+            )
+        }
+    }
 
     func captureOCR() {
         cancelAllInOneSessionIfNeeded()
@@ -2630,6 +2676,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                             }
                             await Task.yield()
 
+                            let processingToast = self.startOCRProcessingFeedback()
                             do {
                                 let operationStartTime = CFAbsoluteTimeGetCurrent()
 
@@ -2646,10 +2693,10 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                                     prefetchedContentTask: prefetchedContentTask,
                                 ) else {
                                     AppStatusBarController.shared.setProcessing(false)
-                                    AppToastManager.shared.show(
+                                    self.finishOCRProcessingFeedback(
+                                        processingToast,
                                         message: L10n.ScreenCapture.unableToCaptureSelectedArea,
                                         style: .error,
-                                        position: .bottomCenter,
                                     )
                                     QuickAccessSound.failed.play()
                                     return
@@ -2686,10 +2733,10 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                                             "OCR QR capture found unsupported QR payloads",
                                             context: context,
                                         )
-                                        AppToastManager.shared.show(
+                                        self.finishOCRProcessingFeedback(
+                                            processingToast,
                                             message: L10n.OCR.qrTextOnlyUnsupported,
                                             style: .warning,
-                                            position: .bottomCenter,
                                         )
                                     } else {
                                         DiagnosticLogger.shared.log(
@@ -2698,10 +2745,10 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                                             "OCR capture failed: no text or QR payload found",
                                             context: performanceContext,
                                         )
-                                        AppToastManager.shared.show(
+                                        self.finishOCRProcessingFeedback(
+                                            processingToast,
                                             message: L10n.OCR.noTextFound,
                                             style: .warning,
-                                            position: .bottomCenter,
                                         )
                                     }
                                     QuickAccessSound.failed.play()
@@ -2723,14 +2770,21 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                                     context: successContext,
                                 )
                                 let showOCRNotification = UserDefaults.standard
-                                    .object(forKey: PreferencesKeys.ocrSuccessNotificationEnabled) as? Bool ?? false
+                                    .object(forKey: PreferencesKeys.ocrSuccessNotificationEnabled) as? Bool ?? true
                                 if showOCRNotification {
-                                    AppToastManager.shared.show(
-                                        message: L10n.Common.copiedToClipboard,
-                                        style: .success,
-                                        position: .bottomCenter,
-                                    )
+                                    if let processingToast {
+                                        self.finishOCRProcessingFeedback(
+                                            processingToast,
+                                            message: L10n.Common.copiedToClipboard,
+                                            style: .success,
+                                            variant: .compact,
+                                        )
+                                    } else {
+                                        AppToastManager.shared.showCopiedToClipboard()
+                                    }
                                     QuickAccessSound.complete.play()
+                                } else if let processingToast {
+                                    AppToastManager.shared.dismiss(processingToast)
                                 }
 
                                 let linkDetectionEnabled = UserDefaults.standard
@@ -2746,10 +2800,10 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                                 // Error feedback
                                 AppStatusBarController.shared.setProcessing(false)
                                 DiagnosticLogger.shared.logError(.ocr, error, "OCR capture failed")
-                                AppToastManager.shared.show(
+                                self.finishOCRProcessingFeedback(
+                                    processingToast,
                                     message: error.localizedDescription,
                                     style: .error,
-                                    position: .bottomCenter,
                                 )
                                 QuickAccessSound.failed.play()
                             }
@@ -2853,7 +2907,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 promptMessage: L10n.Recording.chooseSaveLocationMessage,
             )
         else {
-            lastCaptureResult = .failure(.saveFailed(L10n.ScreenCapture.saveLocationPermissionRequired))
+            recordCaptureFailure(.saveFailed(L10n.ScreenCapture.saveLocationPermissionRequired))
             return
         }
         saveDirectory = resolvedSaveDirectory

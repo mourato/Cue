@@ -453,7 +453,7 @@ final class ScrollingCaptureCoordinator {
                 SoundManager.playScreenshotCapture()
                 AppToastManager.shared.show(
                     message: L10n.ScrollingCapture.toastSavedStitchedImage,
-                    style: .info,
+                    style: .success,
                 )
                 cancel()
             case .failure(let error):

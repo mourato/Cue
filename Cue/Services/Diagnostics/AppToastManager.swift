@@ -143,6 +143,7 @@ private final class AppToastViewModel: ObservableObject {
 @MainActor
 final class AppToastManager {
     static let shared = AppToastManager()
+    static let defaultDuration: TimeInterval = 5.0
 
     private var panel: NSPanel?
     private var viewModel: AppToastViewModel?
@@ -157,7 +158,7 @@ final class AppToastManager {
         message: String,
         style: AppToastStyle = .error,
         position: AppToastPosition = .bottomCenter,
-        duration: TimeInterval? = 2.5,
+        duration: TimeInterval? = AppToastManager.defaultDuration,
         variant: AppToastVariant = .regular,
         iconMode: AppToastIconMode = .symbol,
     ) -> AppToastHandle? {
@@ -181,7 +182,7 @@ final class AppToastManager {
         message: String,
         style: AppToastStyle,
         position: AppToastPosition? = nil,
-        duration: TimeInterval? = 2.5,
+        duration: TimeInterval? = AppToastManager.defaultDuration,
         variant: AppToastVariant? = nil,
         iconMode: AppToastIconMode = .symbol,
     ) {
@@ -196,6 +197,16 @@ final class AppToastManager {
             variant: resolvedVariant,
             iconMode: iconMode,
             presentationID: handle.id,
+        )
+    }
+
+    @discardableResult
+    func showCopiedToClipboard(position: AppToastPosition = .bottomCenter) -> AppToastHandle? {
+        show(
+            message: L10n.Common.copiedToClipboard,
+            style: .success,
+            position: position,
+            variant: .compact,
         )
     }
 

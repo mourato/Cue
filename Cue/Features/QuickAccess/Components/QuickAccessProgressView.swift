@@ -114,7 +114,7 @@ struct QuickAccessProgressView: View {
                     .frame(width: 20, height: 20)
             }
         }
-        .transition(.scale.combined(with: .opacity))
+        .transition(reduceMotion ? .opacity : .scale.combined(with: .opacity))
     }
 
     // MARK: - Failure State
@@ -129,7 +129,7 @@ struct QuickAccessProgressView: View {
                 .font(.system(size: 18, weight: .bold))
                 .foregroundColor(.white)
         }
-        .transition(.scale.combined(with: .opacity))
+        .transition(reduceMotion ? .opacity : .scale.combined(with: .opacity))
     }
 }
 

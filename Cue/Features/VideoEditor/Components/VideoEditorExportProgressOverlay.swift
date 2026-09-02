@@ -11,6 +11,7 @@
     /// Modal overlay displayed during video export
     struct ExportProgressOverlay: View {
         @ObservedObject var state: VideoEditorState
+        @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
         var body: some View {
             ZStack {
@@ -21,10 +22,16 @@
                 // Progress card
                 VStack(spacing: 16) {
                     // Icon
-                    Image(systemName: "film")
-                        .font(.system(size: 32))
-                        .foregroundColor(ZoomColors.primary)
-                        .symbolEffect(.pulse, options: .repeating)
+                    if reduceMotion {
+                        Image(systemName: "film")
+                            .font(.system(size: 32))
+                            .foregroundColor(ZoomColors.primary)
+                    } else {
+                        Image(systemName: "film")
+                            .font(.system(size: 32))
+                            .foregroundColor(ZoomColors.primary)
+                            .symbolEffect(.pulse, options: .repeating)
+                    }
 
                     // Title
                     Text(L10n.VideoEditor.exportingVideo)
@@ -53,7 +60,10 @@
                                         width: max(0, geometry.size.width * CGFloat(state.exportProgress)),
                                         height: 8,
                                     )
-                                    .animation(.easeInOut(duration: 0.2), value: state.exportProgress)
+                                    .animation(
+                                        reduceMotion ? nil : .easeInOut(duration: 0.2),
+                                        value: state.exportProgress,
+                                    )
                             }
                         }
                         .frame(height: 8)
@@ -77,7 +87,7 @@
                         .shadow(color: .black.opacity(0.3), radius: 20, y: 10),
                 )
             }
-            .transition(.opacity)
+            .transition(reduceMotion ? .identity : .opacity)
         }
     }
 

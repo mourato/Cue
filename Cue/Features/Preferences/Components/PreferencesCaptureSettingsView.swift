@@ -59,7 +59,7 @@ struct CaptureSettingsView: View {
     @AppStorage(PreferencesKeys.screenshotFormat) private var screenshotFormat = "png"
     @AppStorage(PreferencesKeys.scrollingCaptureShowHints) private var scrollingCaptureShowHints = true
     @AppStorage(PreferencesKeys.backgroundCutoutAutoCropEnabled) private var backgroundCutoutAutoCropEnabled = true
-    @AppStorage(PreferencesKeys.ocrSuccessNotificationEnabled) private var ocrSuccessNotification = false
+    @AppStorage(PreferencesKeys.ocrSuccessNotificationEnabled) private var ocrSuccessNotification = true
     @AppStorage(PreferencesKeys.ocrLinkDetectionEnabled) private var ocrLinkDetection = true
     @AppStorage(PreferencesKeys.screenshotFileNameTemplate)
     private var screenshotFileNameTemplate = CaptureOutputKind.screenshot.defaultTemplate

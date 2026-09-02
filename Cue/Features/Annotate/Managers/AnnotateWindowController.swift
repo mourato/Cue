@@ -1196,6 +1196,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                 if let rendered = AnnotateExporter.renderFinalImage(state: state) {
                     ClipboardHelper.copyImage(rendered)
                     SoundManager.play("Pop")
+                    AppToastManager.shared.showCopiedToClipboard()
                 }
                 forceClose()
             default:
@@ -1232,6 +1233,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
             if let renderedImage {
                 ClipboardHelper.copyImage(renderedImage)
                 SoundManager.play("Pop")
+                AppToastManager.shared.showCopiedToClipboard()
             }
             forceClose()
             return
@@ -1241,6 +1243,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         if let renderedImage {
             ClipboardHelper.copyImage(renderedImage)
             SoundManager.play("Pop")
+            AppToastManager.shared.showCopiedToClipboard()
         }
 
         // Update QA thumbnail instantly + cache

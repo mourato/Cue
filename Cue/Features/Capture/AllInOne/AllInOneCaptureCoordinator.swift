@@ -126,7 +126,7 @@ final class AllInOneCaptureCoordinator {
             continueStartup(generation: generation)
         case .failure(let error):
             guard isActive, sessionGeneration == generation else { return }
-            viewModel.lastCaptureResult = .failure(error)
+            viewModel.recordCaptureFailure(error)
             tearDownSession(invalidateFrozenSession: true)
         }
     }
@@ -391,8 +391,7 @@ final class AllInOneCaptureCoordinator {
             if freezeEnabled {
                 guard let transferredSession, let rect else {
                     transferredSession?.invalidate()
-                    viewModel
-                        .lastCaptureResult = .failure(.captureFailed(L10n.ScreenCapture.unableToCaptureSelectedArea))
+                    viewModel.recordCaptureFailure(.captureFailed(L10n.ScreenCapture.unableToCaptureSelectedArea))
                     return
                 }
                 viewModel.captureArea(at: rect, from: transferredSession)
@@ -411,8 +410,7 @@ final class AllInOneCaptureCoordinator {
             if freezeEnabled {
                 guard let transferredSession, let rect else {
                     transferredSession?.invalidate()
-                    viewModel
-                        .lastCaptureResult = .failure(.captureFailed(L10n.ScreenCapture.unableToCaptureSelectedArea))
+                    viewModel.recordCaptureFailure(.captureFailed(L10n.ScreenCapture.unableToCaptureSelectedArea))
                     return
                 }
                 viewModel.captureAreaAnnotate(at: rect, from: transferredSession)
@@ -432,8 +430,7 @@ final class AllInOneCaptureCoordinator {
             if freezeEnabled {
                 guard let transferredSession, let rect else {
                     transferredSession?.invalidate()
-                    viewModel
-                        .lastCaptureResult = .failure(.captureFailed(L10n.ScreenCapture.unableToCaptureSelectedArea))
+                    viewModel.recordCaptureFailure(.captureFailed(L10n.ScreenCapture.unableToCaptureSelectedArea))
                     return
                 }
                 viewModel.captureOCR(at: rect, from: transferredSession)

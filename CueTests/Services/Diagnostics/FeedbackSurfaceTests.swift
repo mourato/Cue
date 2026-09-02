@@ -10,6 +10,11 @@ import AppKit
 import XCTest
 
 final class FeedbackSurfaceTests: XCTestCase {
+    @MainActor
+    func testDefaultToastDurationIsFiveSeconds() {
+        XCTAssertEqual(AppToastManager.defaultDuration, 5.0)
+    }
+
     func testEveryFeedbackToneHasNonEmptyIconName() {
         for tone in FeedbackTone.allCases {
             let style = FeedbackStyle(tone: tone)
