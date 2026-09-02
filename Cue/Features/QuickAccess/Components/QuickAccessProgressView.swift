@@ -99,9 +99,11 @@ struct QuickAccessProgressView: View {
     // MARK: - Success State
 
     private var successCheckmark: some View {
-        ZStack {
+        let feedbackStyle = FeedbackStyle(tone: .success)
+
+        return ZStack {
             Circle()
-                .fill(Color.green)
+                .fill(feedbackStyle.iconColor)
                 .frame(width: ringSize, height: ringSize)
 
             if reduceMotion {
@@ -120,9 +122,11 @@ struct QuickAccessProgressView: View {
     // MARK: - Failure State
 
     private var failureIcon: some View {
-        ZStack {
+        let feedbackStyle = FeedbackStyle(tone: .error)
+
+        return ZStack {
             Circle()
-                .fill(Color.red)
+                .fill(feedbackStyle.iconColor)
                 .frame(width: ringSize, height: ringSize)
 
             Image(systemName: "xmark")
