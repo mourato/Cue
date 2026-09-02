@@ -1906,7 +1906,7 @@ final class AnnotateState: ObservableObject {
                 toast,
                 message: message,
                 style: style,
-                duration: 2.5,
+                duration: style == .error ? AppToastManager.defaultDuration : 2.5,
                 variant: .compact,
             )
             sensitiveRedactionToast = nil

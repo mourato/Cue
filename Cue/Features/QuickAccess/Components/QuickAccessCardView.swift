@@ -750,6 +750,7 @@ struct QuickAccessCardView: View {
             pasteboard.clearContents()
             pasteboard.setString(link, forType: .string)
             SoundManager.play("Pop")
+            AppToastManager.shared.showCopiedToClipboard()
         }
     }
 

@@ -1086,6 +1086,7 @@ final class QuickAccessManager: ObservableObject {
         // can read it at paste time. Orphaned temp files are cleaned on next launch.
 
         SoundManager.play("Pop")
+        AppToastManager.shared.showCopiedToClipboard()
     }
 
     /// Delete item from disk and remove from stack

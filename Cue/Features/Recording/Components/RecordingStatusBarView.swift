@@ -22,6 +22,7 @@
 
     struct RecordingStatusBarView: View {
         @ObservedObject var recorder: ScreenRecordingManager
+        @Environment(\.accessibilityReduceMotion) private var reduceMotion
         @ObservedObject var audioLevelMeter: RecordingAudioLevelMeter
         @ObservedObject var annotationState: RecordingAnnotationState
         @ObservedObject var state: RecordingToolbarState
@@ -55,12 +56,12 @@
                     Circle()
                         .fill(.red)
                         .frame(width: 8, height: 8)
-                        .opacity(recorder.isPaused ? 0.4 : indicatorOpacity)
+                        .opacity(recorder.isPaused ? 0.4 : (reduceMotion ? 1 : indicatorOpacity))
                         .animation(
-                            .easeInOut(duration: 0.8).repeatForever(autoreverses: true),
+                            reduceMotion ? nil : .easeInOut(duration: 0.8).repeatForever(autoreverses: true),
                             value: indicatorOpacity,
                         )
-                        .onAppear { indicatorOpacity = 0.3 }
+                        .onAppear { indicatorOpacity = reduceMotion ? 1 : 0.3 }
                         .accessibilityLabel(
                             recorder.isPaused
                                 ? L10n.RecordingToolbar.recordingPaused

@@ -114,12 +114,7 @@ final class HistoryWindowController {
             ClipboardHelper.copyFileURLs(existingRecords.map(\.fileURL))
         }
 
-        AppToastManager.shared.show(
-            message: L10n.Common.copiedToClipboard,
-            style: .success,
-            duration: 1.6,
-            variant: .compact,
-        )
+        AppToastManager.shared.showCopiedToClipboard()
         DiagnosticLogger.shared.log(
             .info,
             .clipboard,

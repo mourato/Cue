@@ -296,6 +296,7 @@ final class InlineAreaAnnotateSession: ObservableObject {
         guard let image = AnnotateExporter.renderFinalImage(state: state) else { return }
         ClipboardHelper.copyImage(image)
         SoundManager.play("Pop")
+        AppToastManager.shared.showCopiedToClipboard()
     }
 
     private func cropImage(for localRect: CGRect) -> InlineAreaCrop? {
