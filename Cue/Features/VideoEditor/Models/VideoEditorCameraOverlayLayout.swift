@@ -11,16 +11,17 @@
     }
 
     enum VideoEditorCameraOverlaySize: String, Codable, CaseIterable, Identifiable {
-        case small, medium, large
+        case small, medium, large, huge
         var id: String {
             rawValue
         }
 
         var fraction: CGFloat {
             switch self {
-            case .small: 0.22
-            case .medium: 0.30
-            case .large: 0.38
+            case .small: 0.28
+            case .medium: 0.34
+            case .large: 0.42
+            case .huge: 0.50
             }
         }
     }
@@ -29,30 +30,52 @@
         var isVisible = true
         var position: VideoEditorCameraOverlayPosition = .bottomTrailing {
             didSet {
-                if position != oldValue {
-                    capturedNormalizedRect = nil
+                if position != oldValue, let capturedNormalizedRect {
+                    self.capturedNormalizedRect = Self.anchoredRect(
+                        capturedNormalizedRect,
+                        position: position,
+                        margin: margin,
+                    )
                 }
             }
         }
 
         var size: VideoEditorCameraOverlaySize = .small {
             didSet {
-                if size != oldValue {
-                    capturedNormalizedRect = nil
+                if size != oldValue, let capturedNormalizedRect {
+                    self.capturedNormalizedRect = Self.resizedRect(
+                        capturedNormalizedRect,
+                        size: size,
+                    )
                 }
             }
         }
 
         var margin: CGFloat = 0.04 {
             didSet {
-                if margin != oldValue {
-                    capturedNormalizedRect = nil
+                if margin != oldValue, let capturedNormalizedRect {
+                    self.capturedNormalizedRect = Self.anchoredRect(
+                        capturedNormalizedRect,
+                        position: position,
+                        margin: margin,
+                    )
                 }
             }
         }
 
         var reactsToZoom = true
-        var shape: RecordingCameraPreviewShape = .rectangle
+        var shape: RecordingCameraPreviewShape = .rectangle {
+            didSet {
+                if shape != oldValue, let capturedNormalizedRect {
+                    self.capturedNormalizedRect = Self.reshapedRect(
+                        capturedNormalizedRect,
+                        from: oldValue,
+                        to: shape,
+                    )
+                }
+            }
+        }
+
         var capturedNormalizedRect: CGRect?
 
         static let `default` = Self()
@@ -87,6 +110,8 @@
 
         init(recordedLayout: RecordedCameraOverlayLayout) {
             self.init(
+                size: recordedLayout.size
+                    .map { VideoEditorCameraOverlaySize(rawValue: $0.rawValue) ?? .small } ?? .small,
                 shape: recordedLayout.shape,
                 capturedNormalizedRect: recordedLayout.normalizedRect,
             )
@@ -198,6 +223,47 @@
 
             let clamped = rect.standardized.clampedToUnitRect()
             return clamped.width > 0 && clamped.height > 0 ? clamped : nil
+        }
+
+        private static func anchoredRect(
+            _ rect: CGRect,
+            position: VideoEditorCameraOverlayPosition,
+            margin: CGFloat,
+        ) -> CGRect {
+            let safeMargin = min(max(margin, 0), 1)
+            let x = position == .topTrailing || position == .bottomTrailing
+                ? 1 - safeMargin - rect.width
+                : safeMargin
+            let y = position == .bottomLeading || position == .bottomTrailing
+                ? 1 - safeMargin - rect.height
+                : safeMargin
+            return CGRect(x: x, y: y, width: rect.width, height: rect.height)
+                .standardized
+                .clampedToUnitRect()
+        }
+
+        private static func resizedRect(
+            _ rect: CGRect,
+            size: VideoEditorCameraOverlaySize,
+        ) -> CGRect {
+            let width = min(size.fraction, 1)
+            let height = width * rect.height / max(rect.width, 0.0001)
+            return centeredRect(width: width, height: height, at: rect.midX, y: rect.midY)
+        }
+
+        private static func reshapedRect(
+            _ rect: CGRect,
+            from oldShape: RecordingCameraPreviewShape,
+            to newShape: RecordingCameraPreviewShape,
+        ) -> CGRect {
+            let height = rect.height * oldShape.aspectRatio / max(newShape.aspectRatio, 0.0001)
+            return centeredRect(width: rect.width, height: height, at: rect.midX, y: rect.midY)
+        }
+
+        private static func centeredRect(width: CGFloat, height: CGFloat, at x: CGFloat, y: CGFloat) -> CGRect {
+            CGRect(x: x - width / 2, y: y - height / 2, width: width, height: height)
+                .standardized
+                .clampedToUnitRect()
         }
     }
 

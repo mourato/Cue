@@ -38,17 +38,72 @@
             XCTAssertEqual(layout.shape, .circle)
         }
 
-        func testChangingEditorPresetInvalidatesRecordedGeometry() {
+        func testChangingEditorPositionPreservesCapturedGeometry() {
             let recorded = RecordedCameraOverlayLayout(
                 normalizedRect: CGRect(x: 0.1, y: 0.2, width: 0.3, height: 0.4),
-                shape: .rectangle,
+                shape: .circle,
             )
             var layout = VideoEditorCameraOverlayLayout(recordedLayout: recorded)
 
             layout.position = .topLeading
+            guard let capturedRect = layout.capturedNormalizedRect else {
+                XCTFail("Expected captured camera geometry")
+                return
+            }
 
-            XCTAssertFalse(layout.usesCapturedGeometry)
-            XCTAssertNil(layout.capturedNormalizedRect)
+            XCTAssertTrue(layout.usesCapturedGeometry)
+            XCTAssertEqual(layout.shape, .circle)
+            XCTAssertEqual(capturedRect.width, 0.3, accuracy: 0.001)
+            XCTAssertEqual(capturedRect.height, 0.4, accuracy: 0.001)
+            XCTAssertEqual(capturedRect.minX, 0.04, accuracy: 0.001)
+            XCTAssertEqual(capturedRect.minY, 0.04, accuracy: 0.001)
+        }
+
+        func testChangingEditorSizePreservesCapturedPositionAndShape() {
+            let recorded = RecordedCameraOverlayLayout(
+                normalizedRect: CGRect(x: 0.1, y: 0.2, width: 0.3, height: 0.2),
+                shape: .circle,
+                size: .small,
+            )
+            var layout = VideoEditorCameraOverlayLayout(recordedLayout: recorded)
+            guard let initialRect = layout.capturedNormalizedRect else {
+                XCTFail("Expected captured camera geometry")
+                return
+            }
+            let center = CGPoint(x: initialRect.midX, y: initialRect.midY)
+
+            layout.size = .huge
+            guard let capturedRect = layout.capturedNormalizedRect else {
+                XCTFail("Expected resized camera geometry")
+                return
+            }
+
+            XCTAssertTrue(layout.usesCapturedGeometry)
+            XCTAssertEqual(layout.shape, .circle)
+            XCTAssertEqual(layout.size, .huge)
+            XCTAssertEqual(CGPoint(x: capturedRect.midX, y: capturedRect.midY), center)
+            XCTAssertEqual(capturedRect.width, 0.5, accuracy: 0.001)
+            XCTAssertEqual(capturedRect.height, 0.5 / 0.3 * 0.2, accuracy: 0.001)
+        }
+
+        func testChangingEditorShapePreservesCapturedPositionAndSize() {
+            let recorded = RecordedCameraOverlayLayout(
+                normalizedRect: CGRect(x: 0.2, y: 0.25, width: 0.3, height: 0.3),
+                shape: .circle,
+            )
+            var layout = VideoEditorCameraOverlayLayout(recordedLayout: recorded)
+
+            layout.shape = .vertical
+            guard let capturedRect = layout.capturedNormalizedRect else {
+                XCTFail("Expected reshaped camera geometry")
+                return
+            }
+
+            XCTAssertTrue(layout.usesCapturedGeometry)
+            XCTAssertEqual(capturedRect.midX, 0.35, accuracy: 0.001)
+            XCTAssertEqual(capturedRect.midY, 0.4, accuracy: 0.001)
+            XCTAssertEqual(capturedRect.width, 0.3, accuracy: 0.001)
+            XCTAssertEqual(capturedRect.height, 0.5333, accuracy: 0.001)
         }
 
         func testInvalidRecordedGeometryFallsBackToLegacyLayout() {

@@ -633,6 +633,8 @@
                 ? recordedCameraOverlayLayout(in: rect, configuration: savedCameraPreviewConfiguration)
                 : nil
             let savedShowCursor = window.state.showCursor
+            let savedHighlightClicks = window.state.highlightClicks
+            let savedShowKeystrokes = window.state.showKeystrokes
             DiagnosticLogger.shared.log(.info, .recording, "Recording restart requested", context: [
                 "format": savedFormat.rawValue,
                 "quality": savedQuality.rawValue,
@@ -687,6 +689,8 @@
                         cameraOverlayLayout: savedCameraOverlayLayout,
                         showCursor: savedShowCursor,
                         smartPointerEnabled: self.recordingSmartPointerEnabled,
+                        clickHighlightsEnabled: savedHighlightClicks,
+                        keystrokesEnabled: savedShowKeystrokes,
                         saveDirectory: savePlan.finalDirectory,
                         processingDirectory: savePlan.processingDirectory,
                         excludeDesktopIcons: DesktopIconManager.shared.isIconHidingEnabled,
@@ -797,6 +801,7 @@
             return RecordedCameraOverlayLayout(
                 normalizedRect: normalizedRect,
                 shape: configuration.shape,
+                size: configuration.size,
             )
         }
 
@@ -832,6 +837,8 @@
 
             let captureSystemAudio = window.captureAudio
             let showCursor = window.state.showCursor
+            let highlightClicks = window.state.highlightClicks
+            let showKeystrokes = window.state.showKeystrokes
 
             // Get microphone setting from toolbar
             let captureMicrophone = window.captureMicrophone
@@ -886,6 +893,8 @@
                         cameraOverlayLayout: cameraOverlayLayout,
                         showCursor: showCursor,
                         smartPointerEnabled: self.recordingSmartPointerEnabled,
+                        clickHighlightsEnabled: highlightClicks,
+                        keystrokesEnabled: showKeystrokes,
                         saveDirectory: savePlan.finalDirectory,
                         processingDirectory: savePlan.processingDirectory,
                         excludeDesktopIcons: DesktopIconManager.shared.isIconHidingEnabled,
@@ -1024,6 +1033,8 @@
             let quality = VideoQuality(rawValue: qualityString) ?? .high
             let captureSystemAudio = window.captureAudio
             let showCursor = window.state.showCursor
+            let highlightClicks = window.state.highlightClicks
+            let showKeystrokes = window.state.showKeystrokes
             let captureCamera = window.captureCamera && window.outputMode != .gif
             let cameraOverlayLayout = captureCamera
                 ? recordedCameraOverlayLayout(in: rect, configuration: window.cameraPreviewConfiguration)
@@ -1057,6 +1068,8 @@
                         cameraOverlayLayout: cameraOverlayLayout,
                         showCursor: showCursor,
                         smartPointerEnabled: self.recordingSmartPointerEnabled,
+                        clickHighlightsEnabled: highlightClicks,
+                        keystrokesEnabled: showKeystrokes,
                         saveDirectory: savePlan.finalDirectory,
                         processingDirectory: savePlan.processingDirectory,
                         excludeDesktopIcons: DesktopIconManager.shared.isIconHidingEnabled,

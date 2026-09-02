@@ -76,6 +76,24 @@
             XCTAssertEqual(decoded.videoSourceTracks, metadata.videoSourceTracks)
         }
 
+        func testRecordingMetadata_preservesCameraAndBakedOverlaySettings() throws {
+            var metadata = makeCurrentMetadata()
+            metadata.cameraOverlayLayout = RecordedCameraOverlayLayout(
+                normalizedRect: CGRect(x: 0.1, y: 0.2, width: 0.3, height: 0.2),
+                shape: .circle,
+                size: .huge,
+            )
+            metadata.clickHighlightsWereBaked = true
+            metadata.keystrokesWereBaked = false
+
+            let data = try JSONEncoder().encode(metadata)
+            let decoded = try JSONDecoder().decode(RecordingMetadata.self, from: data)
+
+            XCTAssertEqual(decoded.cameraOverlayLayout, metadata.cameraOverlayLayout)
+            XCTAssertEqual(decoded.clickHighlightsWereBaked, true)
+            XCTAssertEqual(decoded.keystrokesWereBaked, false)
+        }
+
         func testVideoTrackRoles_doNotInferCameraWithoutAppendedFrames() {
             XCTAssertEqual(
                 ScreenRecordingManager.videoTrackRoles(trackCount: 2, cameraFramesAppended: 0),

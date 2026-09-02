@@ -2,7 +2,7 @@
     import AppKit
     import AVFoundation
 
-    enum RecordingCameraPreviewSize: String, CaseIterable, Identifiable {
+    enum RecordingCameraPreviewSize: String, Codable, CaseIterable, Identifiable, Sendable {
         case small, medium, large, huge
 
         var id: String {
@@ -53,7 +53,7 @@
             }
         }
 
-        fileprivate var aspectRatio: CGFloat {
+        var aspectRatio: CGFloat {
             switch self {
             case .circle, .square: 1
             case .rectangle: 16 / 9

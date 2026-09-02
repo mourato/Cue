@@ -690,6 +690,8 @@
         private var captureCamera = false
         private var cameraDeviceID: String?
         private var recordedCameraOverlayLayout: RecordedCameraOverlayLayout?
+        private var clickHighlightsWereBaked: Bool?
+        private var keystrokesWereBaked: Bool?
         private var showCursorInRecording: Bool = true
         private var excludeOwnApplicationFromCapture: Bool = true
         private var excludeDesktopIconsFromCapture: Bool = false
@@ -764,6 +766,8 @@
             cameraOverlayLayout: RecordedCameraOverlayLayout? = nil,
             showCursor: Bool = true,
             smartPointerEnabled: Bool = false,
+            clickHighlightsEnabled: Bool? = nil,
+            keystrokesEnabled: Bool? = nil,
             saveDirectory: URL,
             processingDirectory: URL? = nil,
             fileName: String? = nil,
@@ -814,6 +818,8 @@
             self.captureCamera = captureCamera
             self.cameraDeviceID = cameraDeviceID
             recordedCameraOverlayLayout = cameraOverlayLayout
+            clickHighlightsWereBaked = clickHighlightsEnabled
+            keystrokesWereBaked = keystrokesEnabled
             pointerSynthesizedInRecording = smartPointerEnabled
             showCursorInRecording = smartPointerEnabled ? false : showCursor
             excludeOwnApplicationFromCapture = excludeOwnApplication
@@ -1471,6 +1477,8 @@
                             audioSourceTracks: audioSourceTracks,
                             videoSourceTracks: recordingVideoSourceTracks(for: url, stats: videoWriteStats),
                             cameraOverlayLayout: recordedCameraOverlayLayout,
+                            clickHighlightsWereBaked: clickHighlightsWereBaked,
+                            keystrokesWereBaked: keystrokesWereBaked,
                         )
                         try RecordingMetadataStore.save(metadata, for: url)
                         DiagnosticLogger.shared.log(.info, .recording, "Recording metadata saved", context: [
@@ -2516,6 +2524,8 @@
             microphoneDeviceID = nil
             cameraDeviceID = nil
             recordedCameraOverlayLayout = nil
+            clickHighlightsWereBaked = nil
+            keystrokesWereBaked = nil
             cameraCapturer = nil
             showCursorInRecording = true
             pointerSynthesizedInRecording = false

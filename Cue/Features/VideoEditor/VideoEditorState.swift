@@ -2178,9 +2178,12 @@
         private func applyOverlayToggleDefaults(from metadata: RecordingMetadata?) {
             let synthesized = metadata?.pointerSynthesized == true
             let hasMouseData = !(metadata?.mouseSamples.isEmpty ?? true)
+            let hasLegacyClickDefaults = metadata?.clickHighlightsWereBaked == nil
+            let hasLegacyKeystrokeDefaults = metadata?.keystrokesWereBaked == nil
             showsSyntheticCursor = synthesized && hasMouseData
-            showsClickEffects = synthesized && hasMouseData
+            showsClickEffects = synthesized && hasMouseData && hasLegacyClickDefaults
             showsKeystrokes = synthesized && hasMouseData && !(metadata?.keystrokes.isEmpty ?? true)
+                && hasLegacyKeystrokeDefaults
         }
 
         private func rebuildAutoFocusPaths(for segments: [ZoomSegment]) {

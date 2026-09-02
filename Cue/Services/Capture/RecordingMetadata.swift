@@ -113,10 +113,21 @@
     struct RecordedCameraOverlayLayout: Codable, Equatable, Sendable {
         var normalizedRect: CGRect
         var shape: RecordingCameraPreviewShape
+        var size: RecordingCameraPreviewSize?
+
+        init(
+            normalizedRect: CGRect,
+            shape: RecordingCameraPreviewShape,
+            size: RecordingCameraPreviewSize? = nil,
+        ) {
+            self.normalizedRect = normalizedRect
+            self.shape = shape
+            self.size = size
+        }
     }
 
     struct RecordingMetadata: Codable, Equatable {
-        static let currentVersion = 10
+        static let currentVersion = 11
 
         var version: Int
         var coordinateSpace: RecordingCoordinateSpace
@@ -132,6 +143,8 @@
         var audioSourceTracks: [RecordingAudioSourceTrack]
         var videoSourceTracks: [RecordingVideoSourceTrack]
         var cameraOverlayLayout: RecordedCameraOverlayLayout?
+        var clickHighlightsWereBaked: Bool?
+        var keystrokesWereBaked: Bool?
 
         init(
             version: Int = RecordingMetadata.currentVersion,
@@ -148,6 +161,8 @@
             audioSourceTracks: [RecordingAudioSourceTrack] = [],
             videoSourceTracks: [RecordingVideoSourceTrack] = [],
             cameraOverlayLayout: RecordedCameraOverlayLayout? = nil,
+            clickHighlightsWereBaked: Bool? = nil,
+            keystrokesWereBaked: Bool? = nil,
         ) {
             self.version = version
             self.coordinateSpace = coordinateSpace
@@ -163,6 +178,8 @@
             self.audioSourceTracks = audioSourceTracks
             self.videoSourceTracks = videoSourceTracks
             self.cameraOverlayLayout = cameraOverlayLayout
+            self.clickHighlightsWereBaked = clickHighlightsWereBaked
+            self.keystrokesWereBaked = keystrokesWereBaked
         }
 
         private enum CodingKeys: String, CodingKey {
@@ -180,6 +197,8 @@
             case audioSourceTracks
             case videoSourceTracks
             case cameraOverlayLayout
+            case clickHighlightsWereBaked
+            case keystrokesWereBaked
         }
 
         init(from decoder: Decoder) throws {
@@ -220,6 +239,8 @@
                 RecordedCameraOverlayLayout.self,
                 forKey: .cameraOverlayLayout,
             )
+            clickHighlightsWereBaked = try container.decodeIfPresent(Bool.self, forKey: .clickHighlightsWereBaked)
+            keystrokesWereBaked = try container.decodeIfPresent(Bool.self, forKey: .keystrokesWereBaked)
         }
 
         func encode(to encoder: Encoder) throws {
@@ -250,6 +271,8 @@
                 try container.encode(videoSourceTracks, forKey: .videoSourceTracks)
             }
             try container.encodeIfPresent(cameraOverlayLayout, forKey: .cameraOverlayLayout)
+            try container.encodeIfPresent(clickHighlightsWereBaked, forKey: .clickHighlightsWereBaked)
+            try container.encodeIfPresent(keystrokesWereBaked, forKey: .keystrokesWereBaked)
         }
     }
 
@@ -848,6 +871,8 @@
                 audioSourceTracks: audioSourceTracks,
                 videoSourceTracks: videoSourceTracks,
                 cameraOverlayLayout: cameraOverlayLayout,
+                clickHighlightsWereBaked: clickHighlightsWereBaked,
+                keystrokesWereBaked: keystrokesWereBaked,
             )
         }
     }

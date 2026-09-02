@@ -234,7 +234,14 @@
                         Text(L10n.VideoEditor.small).tag(VideoEditorCameraOverlaySize.small)
                         Text(L10n.VideoEditor.medium).tag(VideoEditorCameraOverlaySize.medium)
                         Text(L10n.VideoEditor.large).tag(VideoEditorCameraOverlaySize.large)
+                        Text(L10n.Camera.huge).tag(VideoEditorCameraOverlaySize.huge)
                     }
+                    Picker(L10n.Camera.previewShape, selection: $state.cameraOverlayLayout.shape) {
+                        ForEach(RecordingCameraPreviewShape.allCases) { shape in
+                            Text(shape.displayName).tag(shape)
+                        }
+                    }
+                    .disabled(!state.cameraOverlayLayout.usesCapturedGeometry)
                 }
             }
             .accessibilityElement(children: .contain)

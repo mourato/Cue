@@ -107,8 +107,9 @@ second canonical design-system document.
 - Video Editor keeps the camera bubble as an independent overlay outside the
   screen zoom layer. `VideoEditorCameraOverlayLayout` owns the shared geometry
   used by preview and export: new recordings use their captured normalized
-  frame and shape, while older recordings retain corner-anchored aspect-fit
-  defaults and optional inverse zoom scaling.
+  frame, size, and shape, and changing one camera field preserves the others.
+  Older recordings retain corner-anchored aspect-fit defaults and optional
+  inverse zoom scaling.
 - Video Editor's selected-zoom sidebar exposes one Camera Behavior control:
   Follow pointer, Follow activity, or Fixed position. The center picker is
   available only for Fixed position; output aspect ratio and dimensions belong

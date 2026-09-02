@@ -599,7 +599,7 @@
                         height: maskRect.height,
                     ),
                     canvasSize: effectiveCanvasSize,
-                    shape: layout.usesCapturedGeometry ? layout.shape : nil,
+                    shape: layout.shape,
                 )
                 processedImage = cameraImage.applyingFilter(
                     "CIBlendWithAlphaMask",

@@ -18,14 +18,16 @@ cursor fades out until it re-enters.
 Recordings with role-tagged screen and camera tracks resolve those tracks by the
 metadata track IDs; external multi-track videos are never inferred by array
 position. The editor keeps camera video separate from the existing audio mix
-and previews it muted, synchronized to the screen playhead. The MVP offers a
-visible toggle, four corner presets, three sizes, normalized aspect-fit layout,
-and a rounded mask. New recordings also carry the camera preview's normalized
-frame and shape from recording start, so the initial editor preview and export
-preserve the configured position, size, aspect ratio, and mask. The optional
+and previews it muted, synchronized to the screen playhead. The camera section
+offers a visible toggle, four corner presets, four sizes, and the four capture
+shapes. New recordings carry the camera preview's normalized frame, size, and
+shape from recording start. Editing one camera field updates only that field,
+so the other captured geometry and format remain intact in preview and export.
+The optional
 “Webcam reacts to zoom” toggle is on by
 default: it geometrically scales the bubble inversely with screen zoom and
 recalculates its corner-anchored placement without following the zoom center.
+This toggle is editor-only and is never copied into the recording snapshot.
 This is geometric compensation, not face tracking or auto-framing; disabling
 it keeps the configured bubble size. Preview and export use the same layout and
 export bakes the overlay when it is visible. Hiding it exports screen-only. GIF

@@ -132,7 +132,7 @@
             .frame(width: frame.width, height: frame.height)
 
             Group {
-                if layout.usesCapturedGeometry, layout.shape == .circle {
+                if layout.shape == .circle {
                     cameraView.clipShape(Circle())
                 } else {
                     cameraView.clipShape(
