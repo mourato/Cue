@@ -86,6 +86,46 @@ final class CueUploadImageEncoderTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: prepared.url.path))
     }
 
+    func testGIFPassesThroughWithoutRasterizingAnimation() throws {
+        let originalData = Data("GIF89a-animation-fixture".utf8)
+        let sourceURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("CueUploadTest-\(UUID().uuidString).gif")
+        try originalData.write(to: sourceURL, options: .atomic)
+        defer { try? FileManager.default.removeItem(at: sourceURL) }
+
+        let settings = CueUploadEncodingSettings(
+            optimizeImages: true,
+            imageFormat: .webp,
+            maximumDimension: 2048,
+            jpegQuality: 0.9,
+        )
+        let encoded = try CueUploadImageEncoder.encode(fileURL: sourceURL, settings: settings)
+
+        XCTAssertEqual(encoded.data, originalData)
+        XCTAssertEqual(encoded.fileExtension, "gif")
+        XCTAssertEqual(encoded.contentType, "image/gif")
+    }
+
+    func testVideoPassesThroughWithVideoContentType() throws {
+        let originalData = Data("video-fixture".utf8)
+        let sourceURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("CueUploadTest-\(UUID().uuidString).mp4")
+        try originalData.write(to: sourceURL, options: .atomic)
+        defer { try? FileManager.default.removeItem(at: sourceURL) }
+
+        let settings = CueUploadEncodingSettings(
+            optimizeImages: true,
+            imageFormat: .webp,
+            maximumDimension: 2048,
+            jpegQuality: 0.9,
+        )
+        let encoded = try CueUploadImageEncoder.encode(fileURL: sourceURL, settings: settings)
+
+        XCTAssertEqual(encoded.data, originalData)
+        XCTAssertEqual(encoded.fileExtension, "mp4")
+        XCTAssertEqual(encoded.contentType, "video/mp4")
+    }
+
     private func makeTestImage(hasAlpha: Bool) throws -> NSImage {
         let image = NSImage(size: NSSize(width: 2000, height: 1000))
         let representation = try XCTUnwrap(

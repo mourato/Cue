@@ -6854,6 +6854,16 @@ nonisolated enum L10n {
             defaultValue: "Edit Video",
             comment: "Quick Access tooltip for opening the video editor",
         )
+        static let videoUploadRequiresImageKit = string(
+            "quick-access.video-upload-requires-imagekit",
+            defaultValue: "Video uploads require ImageKit. Choose it in Preferences → Uploads.",
+            comment: "Quick Access hint shown when the selected provider cannot upload a video",
+        )
+        static let uploadFileTooLarge = string(
+            "quick-access.upload-file-too-large",
+            defaultValue: "This video is too large to upload. Choose a video under 100 MB.",
+            comment: "Error shown when a video exceeds Cue's local upload limit",
+        )
         static let lockPinnedWindow = string(
             "quick-access.pin-window.lock",
             defaultValue: "Lock and hide on mouse over",

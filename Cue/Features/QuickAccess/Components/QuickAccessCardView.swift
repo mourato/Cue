@@ -452,7 +452,8 @@ struct QuickAccessCardView: View {
         case .pinToScreen:
             !item.isVideo
         case .uploadToImgBB:
-            uploadConfiguration.isConfigured && !item.isVideo && !isUploading
+            uploadConfiguration.isConfigured && uploadConfiguration.provider.supports(item.uploadMediaKind) &&
+                !isUploading
         case .copy, .saveOrOpen, .dismiss, .delete, .edit:
             true
         }
@@ -618,6 +619,7 @@ struct QuickAccessCardView: View {
         QuickAccessTextButton(label: actionTitle(for: action)) {
             performAction(action)
         }
+        .help(helpText(for: action))
         .disabled(!isActionEnabled(action))
         .opacity(isActionEnabled(action) ? 1 : 0.6)
         .transition(buttonTransition(delay: delay))
@@ -664,13 +666,22 @@ struct QuickAccessCardView: View {
         return QuickAccessIconButton(
             icon: actionIcon(for: action),
             action: { performAction(action) },
-            helpText: actionTitle(for: action),
+            helpText: helpText(for: action),
             sizeScale: metrics.scale,
         )
         .transition(cornerButtonTransition(delay: delay))
         .padding(metrics.padding)
         .disabled(!isActionEnabled(action))
         .opacity(isActionEnabled(action) ? 1 : 0.6)
+    }
+
+    private func helpText(for action: QuickAccessActionKind) -> String {
+        guard action == .uploadToImgBB,
+              item.uploadMediaKind == .video,
+              !uploadConfiguration.provider.supports(.video) else {
+            return actionTitle(for: action)
+        }
+        return L10n.QuickAccess.videoUploadRequiresImageKit
     }
 
     private func cornerButtonTransition(delay: Int) -> AnyTransition {

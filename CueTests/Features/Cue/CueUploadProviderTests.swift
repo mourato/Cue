@@ -61,6 +61,15 @@ final class CueUploadProviderTests: XCTestCase {
         XCTAssertEqual(defaults.string(forKey: PreferencesKeys.uploadProvider), "imageKit")
         defaults.removePersistentDomain(forName: suite)
     }
+
+    func testProviderMediaCapabilitiesKeepVideoOnImageKit() {
+        XCTAssertTrue(CueUploadProvider.imgbb.supports(.image))
+        XCTAssertTrue(CueUploadProvider.imgbb.supports(.gif))
+        XCTAssertFalse(CueUploadProvider.imgbb.supports(.video))
+        XCTAssertTrue(CueUploadProvider.imageKit.supports(.image))
+        XCTAssertTrue(CueUploadProvider.imageKit.supports(.gif))
+        XCTAssertTrue(CueUploadProvider.imageKit.supports(.video))
+    }
 }
 
 private final class MockProviderKeychain: ImgBBKeychainBacking, ImageKitKeychainBacking {

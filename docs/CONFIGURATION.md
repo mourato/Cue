@@ -48,7 +48,7 @@ The TOML file covers portable app preferences:
 - General settings: language, appearance, sounds, URL scheme integration, show menu bar icon, login item, export folder path.
 - Updates: automatic check/download and the  update channel (`stable` or `beta`).
 - Capture settings: naming templates, screenshot format, cursor/app inclusion, freeze area, show selection area overlay, reverse magnifier zoom direction, scrolling hints, OCR notification, object cutout auto-crop.
-- After-capture actions for screenshot and recording: `save`, `quick_access`, `copy_file`, and `open_annotate` under `[capture.after.screenshot]` / `[capture.after.recording]`. BYO cloud upload is retired; the existing explicit `uploadToImgBB` action is dynamically labeled for the selected ImgBB or ImageKit image host.
+- After-capture actions for screenshot and recording: `save`, `quick_access`, `copy_file`, and `open_annotate` under `[capture.after.screenshot]` / `[capture.after.recording]`. BYO cloud upload is retired; the existing explicit `uploadToImgBB` action is dynamically labeled for the selected ImgBB or ImageKit host, with video uploads available only through ImageKit.
 - Recording settings: format, quality, FPS, audio, microphone device id, cursor, click highlights, keystroke overlay, live annotation shortcuts, video editor zoom transition duration.
 - Quick Access: visibility, position, countdown behavior, gesture toggles, trackpad swipe mode, swipe left/right actions, hide card when window open, animation style, action order, enabled actions, card slots.
 - History: retention, maximum count, floating panel layout and filter.

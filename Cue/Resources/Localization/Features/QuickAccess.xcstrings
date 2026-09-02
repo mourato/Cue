@@ -3805,6 +3805,28 @@
         }
       }
     },
+    "quick-access.upload-file-too-large" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This video is too large to upload. Choose a video under 100 MB."
+          }
+        }
+      }
+    },
+    "quick-access.video-upload-requires-imagekit" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Video uploads require ImageKit. Choose it in Preferences → Uploads."
+          }
+        }
+      }
+    },
     "quick-access.pin-window.fit" : {
       "extractionState" : "stale",
       "localizations" : {

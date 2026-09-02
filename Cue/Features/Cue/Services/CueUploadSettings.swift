@@ -2,6 +2,23 @@ import CoreGraphics
 import Foundation
 import ImageIO
 
+enum CueUploadMediaKind: Equatable, Sendable {
+    case image
+    case gif
+    case video
+
+    init(fileExtension: String) {
+        switch fileExtension.lowercased() {
+        case "gif":
+            self = .gif
+        case "mov", "mp4", "m4v":
+            self = .video
+        default:
+            self = .image
+        }
+    }
+}
+
 enum CueUploadImageFormat: String, CaseIterable, Identifiable, Sendable {
     case webp
     case jpeg
@@ -93,14 +110,24 @@ enum CueUploadEncodingError: Error {
     case invalidImageData
     case failedToCreateBitmap
     case failedToEncode
+    case fileTooLarge
 }
 
 nonisolated enum CueUploadImageEncoder {
+    static let maximumVideoUploadBytes = 100 * 1024 * 1024
+
     private static let optimizableExtensions: Set<String> = [
         "bmp", "heic", "heif", "jpeg", "jpg", "png", "tif", "tiff", "webp",
     ]
 
     static func encode(fileURL: URL, settings: CueUploadEncodingSettings) throws -> CueEncodedImage {
+        if CueUploadMediaKind(fileExtension: fileURL.pathExtension) == .video {
+            let fileSize = try fileURL.resourceValues(forKeys: [.fileSizeKey]).fileSize
+            if let fileSize, fileSize > maximumVideoUploadBytes {
+                throw CueUploadEncodingError.fileTooLarge
+            }
+        }
+
         let originalData = try Data(contentsOf: fileURL, options: [.mappedIfSafe])
         let originalExtension = fileURL.pathExtension.lowercased()
 
@@ -270,6 +297,9 @@ nonisolated enum CueUploadImageEncoder {
         case "heif": "image/heif"
         case "bmp": "image/bmp"
         case "tif", "tiff": "image/tiff"
+        case "mov": "video/quicktime"
+        case "mp4": "video/mp4"
+        case "m4v": "video/x-m4v"
         default: "application/octet-stream"
         }
     }

@@ -117,7 +117,7 @@ renders directly without an inner picker.
 
 ### Uploads (`PreferencesCloudSettingsView.swift`)
 
-The **Uploads** section owns provider selection (ImgBB or ImageKit), image optimization/derivative settings, and the selected provider credential. Secrets are stored only in provider-scoped Keychain items and are not exported. Existing users retain ImgBB unless they explicitly select ImageKit; invalid or missing selection safely uses ImgBB. UploadThing is unavailable. BYO provider settings, usage, password, transfer, and upload-history controls remain retired. See [CLOUD.md](CLOUD.md).
+The **Uploads** section owns provider selection (ImgBB or ImageKit), image optimization/derivative settings, and the selected provider credential. Secrets are stored only in provider-scoped Keychain items and are not exported. Existing users retain ImgBB unless they explicitly select ImageKit; invalid or missing selection safely uses ImgBB. GIFs can be uploaded through either provider; MOV/MP4/M4V uploads require ImageKit. UploadThing is unavailable. BYO provider settings, usage, password, transfer, and upload-history controls remain retired. See [CLOUD.md](CLOUD.md).
 
 ### Advanced (`PreferencesAdvancedSettingsView.swift`)
 
