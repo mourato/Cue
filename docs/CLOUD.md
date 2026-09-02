@@ -2,13 +2,15 @@
 
 Cue keeps sharing local and explicit. Captures can be copied to the
 clipboard, saved/exported locally, or uploaded from Annotate and Quick Access
-to the selected image host: ImgBB or ImageKit. The upload action is explicit;
-the copied URL is public to anyone who receives it.
+to the selected host: ImgBB or ImageKit. Quick Access can upload the original
+GIF/video when the selected provider supports that media; Annotate uploads its
+final composed image. The upload action is explicit; the copied URL is public
+to anyone who receives it.
 
 The AWS S3, Cloudflare R2, and Google Drive BYO upload stack is retired. There
 is no OAuth flow, upload-history window, usage statistics, cloud password,
-credential-transfer, or generic cloud-upload action. The Video module
-remains available; only its cloud affordances were removed.
+credential-transfer, or generic cloud-upload action. The Video module remains
+available, and ImageKit is the provider for explicit video uploads.
 
 Provider credentials remain in `CloudKeychainStore` and are cleared only by the
 explicit action for the selected provider. Capture history and

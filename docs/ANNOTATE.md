@@ -141,7 +141,7 @@ The `.accessory` activation-policy revert is deferred to a later runloop turn (s
 - Left: zoom picker + mode segmented toggle (annotate/mockup/preview).
 - Center: drag handle (compacts when tight).
 - Right: new window, share (`NSSharingServicePicker`), selected-provider sharing, pin (⌃⌘P), copy&close (⌘⇧C), delete (confirm; clears history record + sidecar + QA card, trashes file).
-- Sharing remains an explicit action; Annotate uploads the final composed image through the provider selected in Preferences → Uploads, then copies the returned public URL. Missing credentials fail locally and do not fall back to another provider. Videos/GIFs remain out of scope; BYO cloud controls were removed. Legacy `cloudURL`/`cloudKey` values remain Codable-compatible only.
+- Sharing remains an explicit action; Annotate uploads the final composed image through the provider selected in Preferences → Uploads, then copies the returned public URL. Missing credentials fail locally and do not fall back to another provider. Original GIF/video uploads are available from Quick Access; Annotate remains image-only. BYO cloud controls were removed. Legacy `cloudURL`/`cloudKey` values remain Codable-compatible only.
 
 ## Rotation & Canvas Presets
 

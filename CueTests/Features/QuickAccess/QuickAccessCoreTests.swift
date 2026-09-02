@@ -93,10 +93,26 @@ final class QuickAccessCoreTests: XCTestCase {
         )
 
         XCTAssertTrue(video.isVideo)
+        XCTAssertEqual(video.uploadMediaKind, .video)
         XCTAssertEqual(video.formattedDuration, "01:30s")
         XCTAssertNil(invalidVideo.formattedDuration)
         XCTAssertFalse(screenshot.isVideo)
+        XCTAssertEqual(screenshot.uploadMediaKind, .image)
         XCTAssertNil(screenshot.formattedDuration)
+    }
+
+    func testQuickAccessGIFUsesGIFUploadMediaKindEvenWhenStoredAsVideo() {
+        let gif = QuickAccessItem(
+            id: UUID(),
+            url: URL(fileURLWithPath: "/tmp/demo.gif"),
+            thumbnail: NSImage(size: CGSize(width: 16, height: 16)),
+            capturedAt: Date(),
+            itemType: .video,
+            duration: 1,
+        )
+
+        XCTAssertTrue(gif.isVideo)
+        XCTAssertEqual(gif.uploadMediaKind, .gif)
     }
 
     func testQuickAccessProcessingState_identifiesProcessingOnly() {

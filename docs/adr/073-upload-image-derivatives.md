@@ -19,16 +19,18 @@ The Uploads preferences tab controls one shared image-upload policy:
 - expose exact JPEG/WebP quality from 50% to 100% in 1% steps;
 - use WebP when JPEG is selected for an image with transparency.
 
-ImgBB and ImageKit receive a temporary derivative. The original file remains
-the authoritative local source, and the derivative is removed after the
-request finishes. Videos and unsupported formats pass through unchanged.
+Static image uploads to ImgBB and ImageKit receive a temporary derivative. GIFs
+and supported videos pass through unchanged so animation and playback are
+preserved. The original file remains the authoritative local source, and any
+temporary derivative is removed after the request finishes.
 
 ## Consequences
 
 Direct image uploads are materially smaller while annotations and local files
 retain their source dimensions. Local history retains the original filename,
-but the uploaded content type and size describe the derivative. Users can
-disable optimization when exact source bytes are required.
+but the uploaded content type and size describe the derivative. GIFs and
+videos retain their original content type and bytes. Users can disable
+optimization when exact source bytes are required.
 
 Server-side resizing and a hard byte-budget loop were not added: the local
 physical-pixel limit plus user-selected format/quality is deterministic and

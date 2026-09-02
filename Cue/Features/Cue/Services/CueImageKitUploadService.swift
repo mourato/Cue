@@ -51,7 +51,8 @@ actor CueImageKitUploadService {
             "Basic \(Data("\(key):".utf8).base64EncodedString())",
             forHTTPHeaderField: "Authorization",
         )
-        request.httpBody = makeMultipartBody(boundary: boundary, image: image)
+        let fileName = "\(UUID().uuidString.lowercased()).\(image.fileExtension)"
+        request.httpBody = makeMultipartBody(boundary: boundary, image: image, fileName: fileName)
 
         let data: Data
         let response: URLResponse
@@ -86,20 +87,20 @@ actor CueImageKitUploadService {
         let url: String
     }
 
-    private func makeMultipartBody(boundary: String, image: CueEncodedImage) -> Data {
+    private func makeMultipartBody(boundary: String, image: CueEncodedImage, fileName: String) -> Data {
         var body = Data()
         let lineBreak = "\r\n"
         body.append("--\(boundary)\(lineBreak)")
         body
             .append(
-                "Content-Disposition: form-data; name=\"file\"; filename=\"notinhas.\(image.fileExtension)\"\(lineBreak)",
+                "Content-Disposition: form-data; name=\"file\"; filename=\"\(fileName)\"\(lineBreak)",
             )
         body.append("Content-Type: \(image.contentType)\(lineBreak)\(lineBreak)")
         body.append(image.data)
         body.append(lineBreak)
         body.append("--\(boundary)\(lineBreak)")
         body.append("Content-Disposition: form-data; name=\"fileName\"\(lineBreak)\(lineBreak)")
-        body.append("notinhas.\(image.fileExtension)\(lineBreak)")
+        body.append("\(fileName)\(lineBreak)")
         body.append("--\(boundary)--\(lineBreak)")
         return body
     }

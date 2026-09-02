@@ -56,6 +56,29 @@ final class CueImgBBUploadServiceTests: XCTestCase {
         XCTAssertEqual(result.deleteURL, "https://ibb.co/delete/example")
     }
 
+    func testUploadPreservesGIFContentTypeAndPayload() async throws {
+        let gifData = Data("GIF89a-animation-fixture".utf8)
+        MockImgBBURLProtocol.requestHandler = { request in
+            let body = Self.requestBodyData(request)
+            XCTAssertTrue(String(data: body, encoding: .utf8)?.contains("Content-Type: image/gif") == true)
+            XCTAssertTrue(body.range(of: gifData) != nil)
+            let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: nil,
+            )!
+            return (response, Data(#"{"data":{"url":"https://i.ibb.co/example/animation.gif"}}"#.utf8))
+        }
+
+        let result = try await makeService().upload(
+            image: CueEncodedImage(data: gifData, fileExtension: "gif", contentType: "image/gif"),
+            apiKey: "test-api-key",
+        )
+
+        XCTAssertEqual(result.link, "https://i.ibb.co/example/animation.gif")
+    }
+
     func testUploadMapsAPIError() async {
         let responseJSON = """
         {
@@ -99,6 +122,25 @@ final class CueImgBBUploadServiceTests: XCTestCase {
 
     private func makeTestImage() -> CueEncodedImage {
         CueEncodedImage(data: Data("image-payload".utf8), fileExtension: "webp", contentType: "image/webp")
+    }
+
+    private static func requestBodyData(_ request: URLRequest) -> Data {
+        if let httpBody = request.httpBody {
+            return httpBody
+        }
+
+        guard let stream = request.httpBodyStream else { return Data() }
+        stream.open()
+        defer { stream.close() }
+
+        var data = Data()
+        var buffer = [UInt8](repeating: 0, count: 4096)
+        while stream.hasBytesAvailable {
+            let count = stream.read(&buffer, maxLength: buffer.count)
+            guard count > 0 else { break }
+            data.append(buffer, count: count)
+        }
+        return data
     }
 }
 

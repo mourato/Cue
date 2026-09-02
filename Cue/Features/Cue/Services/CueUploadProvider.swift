@@ -15,6 +15,15 @@ enum CueUploadProvider: String, CaseIterable, Identifiable, Sendable {
         case .imageKit: "ImageKit"
         }
     }
+
+    func supports(_ mediaKind: CueUploadMediaKind) -> Bool {
+        switch self {
+        case .imgbb:
+            mediaKind != .video
+        case .imageKit:
+            true
+        }
+    }
 }
 
 @MainActor

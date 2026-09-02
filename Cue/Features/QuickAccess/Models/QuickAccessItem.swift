@@ -120,6 +120,13 @@ struct QuickAccessItem: Identifiable, Equatable {
         itemType == .video
     }
 
+    var uploadMediaKind: CueUploadMediaKind {
+        if url.pathExtension.caseInsensitiveCompare("gif") == .orderedSame {
+            return .gif
+        }
+        return isVideo ? .video : .image
+    }
+
     /// Formatted duration string for display (e.g., "01:30s")
     var formattedDuration: String? {
         guard let duration, duration.isFinite, duration >= 0 else {

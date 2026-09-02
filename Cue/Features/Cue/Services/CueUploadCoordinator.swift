@@ -29,7 +29,7 @@ final class CueUploadCoordinator: ObservableObject {
         }
 
         let settings = CueUploadEncodingSettings.current()
-        return await performUpload {
+        return await performUpload(mediaKind: .image) {
             try await Task.detached(priority: .userInitiated) {
                 try CueUploadImageEncoder.encode(image: imageSnapshot, settings: settings)
             }.value
@@ -38,7 +38,7 @@ final class CueUploadCoordinator: ObservableObject {
 
     func upload(fileURL: URL) async -> String? {
         let settings = CueUploadEncodingSettings.current()
-        return await performUpload {
+        return await performUpload(mediaKind: CueUploadMediaKind(fileExtension: fileURL.pathExtension)) {
             try await Task.detached(priority: .userInitiated) {
                 try CueUploadImageEncoder.encode(fileURL: fileURL, settings: settings)
             }.value
@@ -46,9 +46,14 @@ final class CueUploadCoordinator: ObservableObject {
     }
 
     private func performUpload(
+        mediaKind: CueUploadMediaKind,
         encoding: @escaping @Sendable () async throws -> CueEncodedImage,
     ) async -> String? {
         let provider = configuration.provider
+        guard provider.supports(mediaKind) else {
+            lastErrorMessage = L10n.QuickAccess.videoUploadRequiresImageKit
+            return nil
+        }
         guard let credential = configuration.credential else {
             lastErrorMessage = missingCredentialMessage(for: provider)
             return nil
@@ -70,6 +75,8 @@ final class CueUploadCoordinator: ObservableObject {
         } catch let error as CueUploadEncodingError {
             if case .invalidImageData = error {
                 lastErrorMessage = invalidImageMessage
+            } else if case .fileTooLarge = error {
+                lastErrorMessage = L10n.QuickAccess.uploadFileTooLarge
             } else {
                 lastErrorMessage = error.localizedDescription
             }

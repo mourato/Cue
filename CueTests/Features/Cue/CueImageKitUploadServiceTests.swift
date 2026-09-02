@@ -17,12 +17,37 @@ final class CueImageKitUploadServiceTests: XCTestCase {
             let body = String(data: Self.requestBodyData(request), encoding: .utf8) ?? ""
             XCTAssertTrue(body.contains("name=\"file\""))
             XCTAssertTrue(body.contains("name=\"fileName\""))
+            XCTAssertNotNil(body.range(of: #"filename="[0-9a-f-]{36}\.webp""#, options: .regularExpression))
+            XCTAssertNotNil(
+                body.range(
+                    of: #"name="fileName"\r\n\r\n[0-9a-f-]{36}\.webp\r\n"#,
+                    options: .regularExpression,
+                ),
+            )
+            XCTAssertFalse(body.contains("notinhas"))
             let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
-            return (response, Data(#"{"url":"https://ik.imagekit.io/demo/notinhas.webp"}"#.utf8))
+            return (response, Data(#"{"url":"https://ik.imagekit.io/demo/random.webp"}"#.utf8))
         }
 
         let result = try await makeService().upload(image: makeImage(), privateKey: "fixture-private-key")
-        XCTAssertEqual(result.url, "https://ik.imagekit.io/demo/notinhas.webp")
+        XCTAssertEqual(result.url, "https://ik.imagekit.io/demo/random.webp")
+    }
+
+    func testUploadSendsVideoContentTypeAndExtension() async throws {
+        MockImageKitURLProtocol.requestHandler = { request in
+            let body = String(data: Self.requestBodyData(request), encoding: .utf8) ?? ""
+            XCTAssertTrue(body.contains("Content-Type: video/mp4"))
+            XCTAssertNotNil(body.range(of: #"filename="[0-9a-f-]{36}\.mp4""#, options: .regularExpression))
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, Data(#"{"url":"https://ik.imagekit.io/demo/video.mp4"}"#.utf8))
+        }
+
+        let result = try await makeService().upload(
+            image: CueEncodedImage(data: Data("video-payload".utf8), fileExtension: "mp4", contentType: "video/mp4"),
+            privateKey: "fixture-private-key",
+        )
+
+        XCTAssertEqual(result.url, "https://ik.imagekit.io/demo/video.mp4")
     }
 
     func testUnauthorizedResponseDoesNotExposeCredential() async {
