@@ -24,6 +24,10 @@ precedence: project
   checks when the changed surface requires them.
 - `make validate` is the canonical changed-surface entry and delegates to
   `make agent-check`.
+- `make validate-lane` is the delivery wrapper around `make validate`; it
+  records the explicit `origin/main` merge-base and watches the ignored
+  `build/verification/` artifact output, cleaning only its `build/` parent
+  when created by that run.
 - Screen Recording and Accessibility permissions are required for affected capture and accessibility checks.
 - Use `./scripts/build_and_run.sh`, `./scripts/run-tests.sh`, and `./scripts/verify-local.sh` for project validation. The default `run-tests.sh` mode is quiet; pass `--with-visual` only for an intentional on-screen UI integration run.
 - The optional Video module is compile-time gated by `CUE_VIDEO_MODULE` and runtime-gated by `VideoModuleAvailability` / `videoModule.enabled` (default off). Manual validation of capture → annotate → export requires the relevant permissions.

@@ -1,4 +1,4 @@
-.PHONY: help b build run dmg test build-video test-video format-check format-fix lint lint-changed lint-fix agent-check validate guidance-check clean-build
+.PHONY: help b build run dmg test build-video test-video format-check format-fix lint lint-changed lint-fix agent-check validate validate-lane validate-lane-command guidance-check clean-build
 
 help:
 	@echo "Cue commands:"
@@ -15,6 +15,7 @@ help:
 	@echo "  make lint-fix     Apply SwiftLint autocorrections"
 	@echo "  make agent-check  Run format, lint, and strict planner"
 	@echo "  make validate     Canonical changed-surface validation"
+	@echo "  make validate-lane Run validate through the global baseline/artifact gate"
 	@echo "  make guidance-check Validate guidance files"
 	@echo "  make clean-build"
 
@@ -48,10 +49,29 @@ lint-changed:
 lint-fix:
 	@swiftlint lint --fix --config .swiftlint.yml Cue CueTests
 
+AGENT_CONFIG_HOME ?= $(HOME)/.agents
+VALIDATE_LANE ?= $(AGENT_CONFIG_HOME)/scripts/validate-lane
+VALIDATE_BASE ?= $(shell git merge-base origin/main HEAD 2>/dev/null || git rev-parse HEAD^)
+VALIDATE_ARTIFACT_ROOTS := build/verification
+VALIDATE_ARTIFACT_ARGS := $(foreach root,$(VALIDATE_ARTIFACT_ROOTS),--artifacts "$(CURDIR)/$(root)")
+
 agent-check:
 	@./scripts/agent-check.sh
 
 validate: agent-check
+
+validate-lane:
+	@$(VALIDATE_LANE) --repo "$(CURDIR)" --base "$(VALIDATE_BASE)" $(VALIDATE_ARTIFACT_ARGS) -- $(MAKE) validate-lane-command
+
+validate-lane-command:
+	@set -eu; \
+		build_existed=0; \
+		if [ -e "$(CURDIR)/build" ] || [ -L "$(CURDIR)/build" ]; then build_existed=1; fi; \
+		cleanup() { \
+			if [ "$$build_existed" -eq 0 ]; then rm -rf "$(CURDIR)/build"; fi; \
+		}; \
+		trap cleanup EXIT; \
+		$(MAKE) validate
 
 guidance-check:
 	@./scripts/guidance-check.sh

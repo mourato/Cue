@@ -68,6 +68,11 @@ commands, and review gates without redefining that lifecycle.
   — changed-surface verification through `scripts/verification-map.tsv`.
 - `make validate` is the canonical focused local gate and delegates to
   `make agent-check`; use the full variants before merge.
+- `make validate-lane` wraps `make validate` with the global
+  `validate-lane` baseline and artifact gate. It defaults to
+  `git merge-base origin/main HEAD`, accepts `VALIDATE_BASE=...`, watches the
+  ignored `build/verification/` output, and removes its `build/` parent after
+  the run only when it was created by that run.
 
 Screen Recording and Accessibility permissions are required for affected
 manual checks. Test capture, annotation, clipboard output, and permission
