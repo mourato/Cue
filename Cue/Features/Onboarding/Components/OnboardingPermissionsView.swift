@@ -32,6 +32,10 @@ struct PermissionsView: View {
         screenCaptureManager.hasPermission && exportFolderGranted
     }
 
+    private var identityWarningColor: Color {
+        FeedbackStyle(tone: .warning).iconColor
+    }
+
     var body: some View {
         OnboardingStepContainer(onBack: onBack) {
             // Header
@@ -114,7 +118,7 @@ struct PermissionsView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(buildIdentityNeedsAttentionTitle)
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundColor(.orange)
+                        .foregroundStyle(identityWarningColor)
 
                     ForEach(identityManager.health.issues, id: \.self) { issue in
                         Text("• \(localizedIdentityIssue(issue))")
@@ -126,11 +130,11 @@ struct PermissionsView: View {
                 .padding(14)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.orange.opacity(0.12)),
+                        .fill(identityWarningColor.opacity(0.12)),
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.orange.opacity(0.35), lineWidth: 1),
+                        .stroke(identityWarningColor.opacity(0.35), lineWidth: 1),
                 )
                 .padding(.top, 16)
             }

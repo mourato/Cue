@@ -47,8 +47,8 @@ struct PermissionRow: View {
                             .font(.caption2)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
-                            .background(Color.orange.opacity(0.3))
-                            .foregroundColor(.orange)
+                            .background(warningColor.opacity(0.3))
+                            .foregroundStyle(warningColor)
                             .cornerRadius(4)
                     } else {
                         Text(optionalLabel)
@@ -70,18 +70,11 @@ struct PermissionRow: View {
 
             VStack(alignment: .trailing, spacing: 8) {
                 if let badge {
-                    HStack(spacing: 4) {
-                        Image(systemName: badge.icon)
-                            .font(.system(size: 16))
-                            .foregroundColor(badge.color)
-                        Text(badge.label)
-                            .font(.caption)
-                            .foregroundColor(badge.color)
-                    }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(badge.color.opacity(0.15))
-                    .cornerRadius(6)
+                    StatusBadge(
+                        label: badge.label,
+                        systemImage: badge.icon,
+                        tint: badge.color,
+                    )
                 }
 
                 if let buttonTitle = actionTitle {
@@ -107,12 +100,16 @@ struct PermissionRow: View {
     private var badge: (label: String, color: Color, icon: String)? {
         switch status {
         case .granted:
-            (grantedLabel, .green, "checkmark.circle.fill")
+            (grantedLabel, FeedbackStyle(tone: .success).iconColor, "checkmark.circle.fill")
         case .needsAction:
             nil
         case .blocked(let label, _):
-            (label, .orange, "exclamationmark.triangle.fill")
+            (label, FeedbackStyle(tone: .warning).iconColor, "exclamationmark.triangle.fill")
         }
+    }
+
+    private var warningColor: Color {
+        FeedbackStyle(tone: .warning).iconColor
     }
 
     private var actionTitle: String? {

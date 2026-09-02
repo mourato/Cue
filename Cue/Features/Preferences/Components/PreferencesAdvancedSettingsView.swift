@@ -251,37 +251,37 @@ struct AdvancedSettingsView: View {
             StatusBadge.Configuration(
                 label: L10n.PreferencesAdvanced.configSyncBadgeSynced,
                 systemImage: "checkmark.circle.fill",
-                tint: .green,
+                tint: FeedbackStyle(tone: .success).iconColor,
             )
         case .scheduled:
             StatusBadge.Configuration(
                 label: L10n.PreferencesAdvanced.configSyncBadgeQueued,
                 systemImage: "clock.fill",
-                tint: .blue,
+                tint: FeedbackStyle(tone: .info).iconColor,
             )
         case .syncing:
             StatusBadge.Configuration(
                 label: L10n.PreferencesAdvanced.configSyncBadgeSyncing,
-                tint: .blue,
+                tint: FeedbackStyle(tone: .info).iconColor,
                 showsProgress: true,
             )
         case .needsPermission:
             StatusBadge.Configuration(
                 label: L10n.PreferencesAdvanced.configSyncBadgeAccessNeeded,
                 systemImage: "lock.fill",
-                tint: .orange,
+                tint: FeedbackStyle(tone: .warning).iconColor,
             )
         case .conflict:
             StatusBadge.Configuration(
                 label: L10n.PreferencesAdvanced.configSyncBadgeReviewNeeded,
                 systemImage: "exclamationmark.triangle.fill",
-                tint: .orange,
+                tint: FeedbackStyle(tone: .warning).iconColor,
             )
         case .failed:
             StatusBadge.Configuration(
                 label: L10n.PreferencesAdvanced.configSyncBadgeFailed,
                 systemImage: "xmark.octagon.fill",
-                tint: .red,
+                tint: FeedbackStyle(tone: .error).iconColor,
             )
         }
     }
@@ -671,7 +671,7 @@ private struct AdvancedConfigAccessWarningRow: View {
         HStack(alignment: .center, spacing: 12) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 18, weight: .medium))
-                .foregroundStyle(.orange)
+                .foregroundStyle(FeedbackStyle(tone: .warning).iconColor)
                 .frame(width: 24)
 
             VStack(alignment: .leading, spacing: 3) {

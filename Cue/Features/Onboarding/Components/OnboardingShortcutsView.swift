@@ -19,6 +19,15 @@ struct ShortcutsView: View {
     @State private var shakeOffset: CGFloat = 0
     @State private var conflictCardHighlight: Bool = false
     @State private var videoModuleEnabled = VideoModuleAvailability.isEnabled
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private var conflictColor: Color {
+        FeedbackStyle(tone: .warning).iconColor
+    }
+
+    private var successColor: Color {
+        FeedbackStyle(tone: .success).iconColor
+    }
 
     var body: some View {
         OnboardingStepContainer(onBack: onBack) {
@@ -68,7 +77,7 @@ struct ShortcutsView: View {
                         HStack(spacing: 8) {
                             Image(systemName: "exclamationmark.triangle.fill")
                                 .font(.system(size: 14))
-                                .foregroundColor(.orange)
+                                .foregroundStyle(conflictColor)
 
                             Text(resolveShortcutOverlapTitle)
                                 .font(.system(size: 12, weight: .semibold))
@@ -86,9 +95,9 @@ struct ShortcutsView: View {
                                     .foregroundColor(VSDesignSystem.Colors.quaternary)
                                     .rotationEffect(.degrees(isCheckingConflict ? 360 : 0))
                                     .animation(
-                                        isCheckingConflict
+                                        isCheckingConflict && !reduceMotion
                                             ? .linear(duration: 0.8).repeatForever(autoreverses: false)
-                                            : .default,
+                                            : nil,
                                         value: isCheckingConflict,
                                     )
                             }
@@ -96,7 +105,7 @@ struct ShortcutsView: View {
 
                             Text(openSettingsTitle)
                                 .font(.system(size: 11, weight: .medium))
-                                .foregroundColor(.orange)
+                                .foregroundStyle(conflictColor)
                         }
 
                         // Step-by-step guidance
@@ -110,17 +119,20 @@ struct ShortcutsView: View {
                     .padding(.vertical, 10)
                     .background(
                         RoundedRectangle(cornerRadius: 10)
-                            .fill(Color.orange.opacity(conflictCardHighlight ? 0.18 : 0.08)),
+                            .fill(conflictColor.opacity(conflictCardHighlight ? 0.18 : 0.08)),
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
                             .stroke(
-                                Color.orange.opacity(conflictCardHighlight ? 0.6 : 0.25),
+                                conflictColor.opacity(conflictCardHighlight ? 0.6 : 0.25),
                                 lineWidth: conflictCardHighlight ? 1.5 : 1,
                             ),
                     )
-                    .scaleEffect(conflictCardHighlight ? 1.02 : 1.0)
-                    .animation(.easeInOut(duration: 0.25), value: conflictCardHighlight)
+                    .scaleEffect(reduceMotion || !conflictCardHighlight ? 1 : 1.02)
+                    .animation(
+                        reduceMotion ? nil : .easeInOut(duration: 0.25),
+                        value: conflictCardHighlight,
+                    )
                 }
                 .buttonStyle(.plain)
                 .frame(maxWidth: 380)
@@ -130,7 +142,7 @@ struct ShortcutsView: View {
                 HStack(spacing: 10) {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 16))
-                        .foregroundColor(.green)
+                        .foregroundStyle(successColor)
 
                     Text(noConflictDetectedTitle)
                         .font(.system(size: 12, weight: .medium))
@@ -142,11 +154,11 @@ struct ShortcutsView: View {
                 .padding(.vertical, 10)
                 .background(
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.green.opacity(0.08)),
+                        .fill(successColor.opacity(0.08)),
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color.green.opacity(0.25), lineWidth: 1),
+                        .stroke(successColor.opacity(0.25), lineWidth: 1),
                 )
                 .frame(maxWidth: 380)
                 .padding(.top, 12)
@@ -233,8 +245,12 @@ struct ShortcutsView: View {
             Task { @MainActor in
                 let newConflict = SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts()
                 if newConflict != hasConflict {
-                    withAnimation(.easeInOut(duration: 0.3)) {
+                    if reduceMotion {
                         hasConflict = newConflict
+                    } else {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            hasConflict = newConflict
+                        }
                     }
                 }
             }
@@ -408,6 +424,15 @@ struct ShortcutsView: View {
 
     /// Shake the button and pulse the conflict card to hint resolution is needed
     private func triggerConflictHint() {
+        guard !reduceMotion else {
+            conflictCardHighlight = true
+            shakeOffset = 0
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                conflictCardHighlight = false
+            }
+            return
+        }
+
         // Pulse the conflict card highlight
         withAnimation {
             conflictCardHighlight = true
@@ -524,11 +549,11 @@ private struct GuideStepRow: View {
         HStack(spacing: 8) {
             Text(step)
                 .font(.system(size: 10, weight: .bold, design: .monospaced))
-                .foregroundColor(.orange)
+                .foregroundStyle(FeedbackStyle(tone: .warning).iconColor)
                 .frame(width: 16, height: 16)
                 .background(
                     Circle()
-                        .fill(Color.orange.opacity(0.15)),
+                        .fill(FeedbackStyle(tone: .warning).iconColor.opacity(0.15)),
                 )
 
             Text(text)

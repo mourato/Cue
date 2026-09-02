@@ -19,11 +19,19 @@ struct ConfigAccessView: View {
 
     private let service = CueConfigurationService.shared
 
+    private var successColor: Color {
+        FeedbackStyle(tone: .success).iconColor
+    }
+
+    private var warningColor: Color {
+        FeedbackStyle(tone: .warning).iconColor
+    }
+
     var body: some View {
         OnboardingStepContainer(onBack: onBack) {
             Image(systemName: isGranted ? "checkmark.seal" : "gearshape.2")
                 .font(.system(size: 44, weight: .light))
-                .foregroundColor(isGranted ? .green.opacity(0.85) : VSDesignSystem.Colors.secondary)
+                .foregroundStyle(isGranted ? successColor.opacity(0.85) : VSDesignSystem.Colors.secondary)
 
             Text(configAccessTitle)
                 .vsHeading()
@@ -57,13 +65,13 @@ struct ConfigAccessView: View {
                 if let statusMessage {
                     Label(statusMessage, systemImage: "checkmark.circle.fill")
                         .font(.caption)
-                        .foregroundStyle(.green)
+                        .foregroundStyle(successColor)
                 }
 
                 if let errorMessage {
                     Label(errorMessage, systemImage: "exclamationmark.triangle.fill")
                         .font(.caption)
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(warningColor)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: 380)
                 }
