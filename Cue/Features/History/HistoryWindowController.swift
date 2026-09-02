@@ -248,7 +248,7 @@ final class HistoryWindowController {
         AppToastManager.shared.show(
             message: L10n.PreferencesHistory.deletedCaptures(recordsToDelete.count),
             style: .success,
-            duration: 1.7,
+            duration: AppToastManager.defaultDuration,
             variant: .compact,
         )
 

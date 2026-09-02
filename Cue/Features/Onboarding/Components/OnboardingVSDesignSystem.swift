@@ -21,6 +21,9 @@ enum VSDesignSystem {
             dynamicProvider: { $0.bestMatch(from: [.darkAqua]) == .darkAqua ? .white : .black },
         ))
 
+        /// Success feedback tint
+        static let success = FeedbackStyle(tone: .success).iconColor
+
         /// Body copy, subtitles
         static let secondary = Color(nsColor: NSColor(
             name: nil,
@@ -179,9 +182,9 @@ enum VSDesignSystem {
                 .padding(.horizontal, 20)
                 .background(
                     Capsule()
-                        .fill(Color.green.opacity(0.3)),
+                        .fill(Colors.success.opacity(0.3)),
                 )
-                .overlay(Capsule().stroke(.green.opacity(0.5), lineWidth: 1))
+                .overlay(Capsule().stroke(Colors.success.opacity(0.5), lineWidth: 1))
                 .opacity(configuration.isPressed ? 0.8 : 1.0)
         }
     }

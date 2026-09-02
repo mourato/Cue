@@ -51,11 +51,27 @@ struct ShortcutsSettingsView: View {
     @State private var isRefreshingConflict: Bool = false
     @State private var accessibilityGranted: Bool = AXIsProcessTrusted()
     @State private var videoModuleEnabled = VideoModuleAvailability.isEnabled
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private let manager = KeyboardShortcutManager.shared
     private let validator = ShortcutValidationService.shared
     @ObservedObject private var annotateManager = AnnotateShortcutManager.shared
     @ObservedObject private var historyFloatingManager = HistoryFloatingManager.shared
+
+    private var warningFeedbackStyle: FeedbackStyle {
+        FeedbackStyle(tone: .warning)
+    }
+
+    private var successFeedbackStyle: FeedbackStyle {
+        FeedbackStyle(tone: .success)
+    }
+
+    private var refreshAnimation: Animation? {
+        guard isRefreshingConflict, FeedbackMotionPolicy.allowsMotion(reduceMotion: reduceMotion) else {
+            return nil
+        }
+        return .linear(duration: 0.8).repeatForever(autoreverses: false)
+    }
 
     init() {
         _fullscreenShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .fullscreen))
@@ -133,7 +149,7 @@ struct ShortcutsSettingsView: View {
                             HStack(spacing: 10) {
                                 Image(systemName: "exclamationmark.triangle.fill")
                                     .font(.system(size: 18))
-                                    .foregroundColor(.orange)
+                                    .foregroundStyle(warningFeedbackStyle.iconColor)
 
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(L10n.PreferencesShortcuts.systemConflictTitle)
@@ -167,7 +183,7 @@ struct ShortcutsSettingsView: View {
                             .padding(10)
                             .background(
                                 RoundedRectangle(cornerRadius: 8)
-                                    .fill(Color.orange.opacity(0.06)),
+                                    .fill(warningFeedbackStyle.iconColor.opacity(0.06)),
                             )
 
                             // Action buttons
@@ -195,12 +211,7 @@ struct ShortcutsSettingsView: View {
                                         )
                                         .font(.system(size: 12))
                                         .rotationEffect(.degrees(isRefreshingConflict ? 360 : 0))
-                                        .animation(
-                                            isRefreshingConflict
-                                                ? .linear(duration: 0.8).repeatForever(autoreverses: false)
-                                                : .default,
-                                            value: isRefreshingConflict,
-                                        )
+                                        .animation(refreshAnimation, value: isRefreshingConflict)
                                         Text(L10n.Common.refresh)
                                             .font(.system(size: 12, weight: .medium))
                                     }
@@ -212,7 +223,7 @@ struct ShortcutsSettingsView: View {
                         .padding(.vertical, 4)
                     } header: {
                         Label(L10n.PreferencesShortcuts.actionRequired, systemImage: "exclamationmark.circle.fill")
-                            .foregroundColor(.orange)
+                            .foregroundStyle(warningFeedbackStyle.iconColor)
                     }
                 } else {
                     // Success badge — no conflicts
@@ -220,7 +231,7 @@ struct ShortcutsSettingsView: View {
                         HStack(spacing: 10) {
                             Image(systemName: "checkmark.circle.fill")
                                 .font(.system(size: 18))
-                                .foregroundColor(.green)
+                                .foregroundStyle(successFeedbackStyle.iconColor)
 
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(L10n.PreferencesShortcuts.noConflictsDetected)
@@ -241,19 +252,14 @@ struct ShortcutsSettingsView: View {
                                 )
                                 .font(.system(size: 12))
                                 .rotationEffect(.degrees(isRefreshingConflict ? 360 : 0))
-                                .animation(
-                                    isRefreshingConflict
-                                        ? .linear(duration: 0.8).repeatForever(autoreverses: false)
-                                        : .default,
-                                    value: isRefreshingConflict,
-                                )
+                                .animation(refreshAnimation, value: isRefreshingConflict)
                             }
                             .buttonStyle(.borderless)
                         }
                         .padding(.vertical, 4)
                     } header: {
                         Label(L10n.PreferencesShortcuts.systemShortcuts, systemImage: "checkmark.seal.fill")
-                            .foregroundColor(.green)
+                            .foregroundStyle(successFeedbackStyle.iconColor)
                     }
                 }
             }
@@ -303,7 +309,7 @@ struct ShortcutsSettingsView: View {
                     HStack(spacing: 10) {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .font(.system(size: 14))
-                            .foregroundColor(.orange)
+                            .foregroundStyle(warningFeedbackStyle.iconColor)
 
                         Text(L10n.PreferencesShortcuts.fnAccessibilityHint)
                             .font(.system(size: 11))
@@ -1007,8 +1013,13 @@ struct ShortcutsSettingsView: View {
     private func refreshSystemConflict() {
         isRefreshingConflict = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                hasSystemConflict = SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts()
+            let newConflict = SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts()
+            if FeedbackMotionPolicy.allowsMotion(reduceMotion: reduceMotion) {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    hasSystemConflict = newConflict
+                }
+            } else {
+                hasSystemConflict = newConflict
             }
             isRefreshingConflict = false
         }
@@ -1468,11 +1479,11 @@ private struct PreferencesGuideStep: View {
         HStack(spacing: 8) {
             Text(step)
                 .font(.system(size: 10, weight: .bold, design: .monospaced))
-                .foregroundColor(.orange)
+                .foregroundStyle(FeedbackStyle(tone: .warning).iconColor)
                 .frame(width: 18, height: 18)
                 .background(
                     Circle()
-                        .fill(Color.orange.opacity(0.15)),
+                        .fill(FeedbackStyle(tone: .warning).iconColor.opacity(0.15)),
                 )
 
             Text(.init(text)) // Supports **bold** markdown
