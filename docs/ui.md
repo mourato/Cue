@@ -129,6 +129,7 @@ second canonical design-system document.
 - Popovers use `PopoverTokens` in [`DesignTokens.swift`](../Cue/Shared/Styles/DesignTokens.swift): compact menus use an 8-point content inset, 4-point item spacing, and 28-point minimum rows; property and settings panels use a 12-point content inset; transient feedback uses the compact 10×6-point inset. `PopoverMenuItemStyle` owns menu-row hover, selection, full-width content shape, and selected-state border.
 - Native SwiftUI `.popover` content does not add a second material, border, clip, or shadow. Custom overlay cards and AppKit popover windows may own their surface chrome, but their padding, radii, and anchor gap come from `PopoverTokens`.
 - Transient progress feedback keeps its category-specific geometry, but uses `FeedbackStyle` for semantic success, warning, error, and info tones. Floating progress cards reuse `FeedbackSurface` so material, border, fallback, and shadow behavior stay consistent with toasts and prompts.
+- Persistent and inline status feedback for permissions, setup, conflicts, and sync uses `StatusBadge` for compact state labels and `FeedbackStyle` for semantic tones; keep context-specific card geometry and recovery actions local to the owning flow.
 - The clipboard handoff action is the primary labeled action in the bottom
   action island; secondary actions may remain icon-only with explicit tooltips
   and accessibility labels.

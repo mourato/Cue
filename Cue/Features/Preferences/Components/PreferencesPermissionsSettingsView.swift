@@ -55,7 +55,7 @@ struct PermissionsSettingsView: View {
                     description: L10n.Onboarding.requiredForCaptures,
                     statusLabel: saveFolderGranted ? L10n.PermissionRow.granted : L10n.Common.notGranted,
                     statusIcon: saveFolderGranted ? "checkmark.circle.fill" : "xmark.circle.fill",
-                    statusColor: saveFolderGranted ? .green : .orange,
+                    statusColor: permissionStatusColor(isGranted: saveFolderGranted),
                     isRequired: true,
                     settingsURL: filesAndFoldersURL,
                 )
@@ -67,7 +67,7 @@ struct PermissionsSettingsView: View {
                         description: L10n.Onboarding.optionalForVoiceRecording,
                         statusLabel: microphoneGranted ? L10n.PermissionRow.granted : L10n.Common.notGranted,
                         statusIcon: microphoneGranted ? "checkmark.circle.fill" : "xmark.circle.fill",
-                        statusColor: microphoneGranted ? .green : .orange,
+                        statusColor: permissionStatusColor(isGranted: microphoneGranted),
                         isRequired: false,
                         settingsURL: microphoneURL,
                     )
@@ -79,7 +79,7 @@ struct PermissionsSettingsView: View {
                     description: L10n.Onboarding.optionalForGlobalShortcuts,
                     statusLabel: accessibilityGranted ? L10n.PermissionRow.granted : L10n.Common.notGranted,
                     statusIcon: accessibilityGranted ? "checkmark.circle.fill" : "xmark.circle.fill",
-                    statusColor: accessibilityGranted ? .green : .orange,
+                    statusColor: permissionStatusColor(isGranted: accessibilityGranted),
                     isRequired: false,
                     settingsURL: accessibilityURL,
                 )
@@ -163,7 +163,7 @@ struct PermissionsSettingsView: View {
                         StatusBadge(
                             label: L10n.PermissionRow.required,
                             systemImage: "exclamationmark.circle.fill",
-                            tint: .orange,
+                            tint: FeedbackStyle(tone: .warning).iconColor,
                         )
                         .help(L10n.PermissionRow.required)
                     }
@@ -262,10 +262,14 @@ struct PermissionsSettingsView: View {
     private var screenRecordingStatusColor: Color {
         switch screenCaptureManager.permissionStatus {
         case .granted:
-            .green
+            FeedbackStyle(tone: .success).iconColor
         case .notGranted, .grantedButUnavailableDueToAppIdentity:
-            .orange
+            FeedbackStyle(tone: .warning).iconColor
         }
+    }
+
+    private func permissionStatusColor(isGranted: Bool) -> Color {
+        FeedbackStyle(tone: isGranted ? .success : .warning).iconColor
     }
 
     // MARK: - System Settings Navigation
