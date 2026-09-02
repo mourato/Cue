@@ -284,7 +284,7 @@ private struct ShortcutValidationPopoverContent: View {
         HStack(spacing: 6) {
             Image(systemName: iconName)
                 .font(.system(size: 11, weight: .semibold))
-                .foregroundColor(accentColor)
+                .foregroundStyle(feedbackStyle.iconColor)
 
             Text(issue.message)
                 .font(.system(size: 12, weight: .medium))
@@ -297,12 +297,12 @@ private struct ShortcutValidationPopoverContent: View {
         .frame(minWidth: 160, maxWidth: PopoverTokens.transientMaxWidth)
     }
 
-    private var accentColor: Color {
-        issue.severity == .error ? .red : .orange
+    private var feedbackStyle: FeedbackStyle {
+        FeedbackStyle(tone: issue.severity == .error ? .error : .warning)
     }
 
     private var iconName: String {
-        issue.severity == .error ? "xmark.octagon.fill" : "exclamationmark.triangle.fill"
+        feedbackStyle.iconName
     }
 }
 
@@ -313,18 +313,29 @@ struct ShortcutValidationHighlightModifier: ViewModifier {
     @State private var showPopover = false
     @State private var dismissTask: DispatchWorkItem?
     @State private var instanceID = UUID().uuidString
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     func body(content: Content) -> some View {
         content
             .background(
                 RoundedRectangle(cornerRadius: 7, style: .continuous)
                     .fill(pillFill)
-                    .animation(.easeOut(duration: 0.2), value: issue),
+                    .animation(
+                        FeedbackMotionPolicy.allowsMotion(reduceMotion: reduceMotion)
+                            ? .easeOut(duration: 0.2)
+                            : nil,
+                        value: issue,
+                    ),
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 7, style: .continuous)
                     .strokeBorder(pillBorder, lineWidth: 1)
-                    .animation(.easeOut(duration: 0.2), value: issue),
+                    .animation(
+                        FeedbackMotionPolicy.allowsMotion(reduceMotion: reduceMotion)
+                            ? .easeOut(duration: 0.2)
+                            : nil,
+                        value: issue,
+                    ),
             )
             .popover(
                 isPresented: $showPopover,
@@ -343,7 +354,11 @@ struct ShortcutValidationHighlightModifier: ViewModifier {
                         dismissTask?.cancel()
                         showPopover = false
                     }
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                    if FeedbackMotionPolicy.usesSpringAnimation(reduceMotion: reduceMotion) {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            showPopover = true
+                        }
+                    } else {
                         showPopover = true
                     }
                     let task = DispatchWorkItem { [self] in
@@ -366,16 +381,16 @@ struct ShortcutValidationHighlightModifier: ViewModifier {
 
     private var pillFill: Color {
         guard let issue else { return .clear }
-        return issue.severity == .error
-            ? Color.red.opacity(0.12)
-            : Color.orange.opacity(0.12)
+        return feedbackStyle(for: issue).iconColor.opacity(0.12)
     }
 
     private var pillBorder: Color {
         guard let issue else { return .clear }
-        return issue.severity == .error
-            ? Color.red.opacity(0.35)
-            : Color.orange.opacity(0.35)
+        return feedbackStyle(for: issue).iconColor.opacity(0.35)
+    }
+
+    private func feedbackStyle(for issue: ShortcutValidationIssue) -> FeedbackStyle {
+        FeedbackStyle(tone: issue.severity == .error ? .error : .warning)
     }
 }
 

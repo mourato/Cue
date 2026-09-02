@@ -11,12 +11,14 @@ import XCTest
 
 final class FeedbackAccessibilityTests: XCTestCase {
     func testReducedMotionDisablesScaleAnimation() {
+        XCTAssertFalse(FeedbackMotionPolicy.allowsMotion(reduceMotion: true))
         XCTAssertFalse(FeedbackMotionPolicy.usesScaleAnimation(reduceMotion: true))
         XCTAssertEqual(FeedbackMotionPolicy.toastEntranceScale(reduceMotion: true, appeared: false), 1.0)
         XCTAssertEqual(FeedbackMotionPolicy.quickAccessPressScale(reduceMotion: true, isPressed: true), 1.0)
     }
 
     func testNormalMotionAllowsShortScaleAnimation() {
+        XCTAssertTrue(FeedbackMotionPolicy.allowsMotion(reduceMotion: false))
         XCTAssertTrue(FeedbackMotionPolicy.usesScaleAnimation(reduceMotion: false))
         XCTAssertEqual(
             FeedbackMotionPolicy.toastEntranceScale(reduceMotion: false, appeared: false),

@@ -618,7 +618,7 @@ struct AdvancedSettingsView: View {
         AppToastManager.shared.show(
             message: resolvedMessage,
             style: style,
-            duration: style == .error ? AppToastManager.defaultDuration : style == .success ? 2.4 : 4.0,
+            duration: AppToastManager.defaultDuration,
         )
     }
 }

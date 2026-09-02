@@ -22,6 +22,7 @@ struct StatusBadge: View {
     }
 
     let configuration: Configuration
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(configuration: Configuration) {
         self.configuration = configuration
@@ -92,11 +93,17 @@ struct StatusBadge: View {
     @ViewBuilder
     private var badgeSymbol: some View {
         if configuration.showsProgress {
-            ProgressView()
-                .controlSize(.mini)
-                .scaleEffect(0.72)
-                .tint(configuration.tint)
-                .frame(width: 12, height: 12)
+            if reduceMotion {
+                Image(systemName: "ellipsis.circle")
+                    .font(.caption2.weight(.semibold))
+                    .frame(width: 12, height: 12)
+            } else {
+                ProgressView()
+                    .controlSize(.mini)
+                    .scaleEffect(0.72)
+                    .tint(configuration.tint)
+                    .frame(width: 12, height: 12)
+            }
         } else if let systemImage = configuration.systemImage {
             Image(systemName: systemImage)
                 .font(.caption2.weight(.semibold))

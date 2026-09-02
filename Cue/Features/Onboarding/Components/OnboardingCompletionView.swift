@@ -18,7 +18,7 @@ struct CompletionView: View {
             // Success Icon
             Image(systemName: "checkmark.circle")
                 .font(.system(size: 48, weight: .light))
-                .foregroundColor(.green.opacity(0.85))
+                .foregroundStyle(VSDesignSystem.Colors.success.opacity(0.85))
 
             // Title
             Text(completionTitle)
