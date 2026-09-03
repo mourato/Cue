@@ -549,7 +549,7 @@ struct AnnotateBottomBarView: View {
     }
 
     private var uploadActionTitle: String {
-        "Upload to \(uploadConfiguration.provider.name)"
+        L10n.Cue.uploadTo(provider: uploadConfiguration.provider.name)
     }
 
     private var missingCredentialMessage: String {

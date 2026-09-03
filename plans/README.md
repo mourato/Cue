@@ -13,8 +13,6 @@ thermo-nuclear review → fix all findings → next plan).
 
 ## Historical plan status
 
-| 114 | BYO Cloudflare Worker sharing | P1 | M | 089, 110 | IN PROGRESS (Cue-side only; companion Worker intentionally out of scope) |
-
 | Plan | Title | Status |
 |---|---|---|
 | 001 | Add the Notes editor extension | DONE |
@@ -52,10 +50,10 @@ thermo-nuclear review → fix all findings → next plan).
 | 028 | Replace `snapzy://` with `notinhas://` | P1 | M | 027 | DONE (`1507d08`; full suite has two pre-existing flaky failures) |
 | 029 | Rename the technical product identity to Notinhas | P1 | L | 026–028 | DONE (`6124d74`, review fixes `163e0f1`; focused migration tests and Debug build pass) |
 | 030 | Complete documentation and final validation | P2 | L | 029 | DONE (`39f7053`, review fixes `5bc63c6`; docs/scripts residue fixed; default/video suites retain two pre-existing UI failures and Release validation remains environment-blocked) |
-| 113 | Rename the product identity from Notinhas to Cue | P1 | L | — | IN PROGRESS (`cue/rename-product`) |
+| 113 | Rename the product identity from Notinhas to Cue | P1 | L | — | DONE (`1e005402f`; integrated in main) |
+| 114 | BYO Cloudflare Worker sharing | P1 | L | 113 | IN PROGRESS (local Cue integration + companion Worker; external deploy manual) |
 
-Status values: `TODO` | `IN PROGRESS` | `DONE` | `BLOCKED (reason)` |
-| `REJECTED (rationale)` | `SUPERSEDED (replacement)`.
+Status values: `TODO` | `IN PROGRESS` | `DONE` | `BLOCKED (reason)` | `REJECTED (rationale)` | `SUPERSEDED (replacement)`.
 
 ## Confirmed product decisions
 

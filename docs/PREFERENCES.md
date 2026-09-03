@@ -13,6 +13,13 @@ Reference for the Settings window: tab structure, every section, and how prefere
 - Simple prefs: `@AppStorage(PreferencesKeys.*)` directly in views; keys centralized in `Cue/Features/Preferences/Models/PreferencesKeys.swift`.
 - Complex structured prefs: `PreferencesManager.shared` (`PreferencesManager.swift`) behind the `PreferencesProviding` protocol (`PreferencesProviding.swift`) for DI.
 - TOML export/import covers most prefs — see [CONFIGURATION.md](CONFIGURATION.md).
+- Upload provider credentials stay in Keychain. Cloudflare additionally stores its HTTPS Worker URL in UserDefaults; its UPLOAD_TOKEN is never exported.
+
+### Uploads
+
+Select ImgBB (default), ImageKit, or Cloudflare Worker. Cloudflare setup offers
+token generation, explicit reveal/copy/regenerate actions, a Deploy Button link,
+and Verify Connection. Uploads remain manual; no provider fallback is automatic.
 
 ## Tabs
 

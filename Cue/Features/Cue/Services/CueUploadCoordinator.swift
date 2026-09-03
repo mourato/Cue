@@ -5,6 +5,7 @@ import Foundation
 @MainActor
 final class CueUploadCoordinator: ObservableObject {
     @Published private(set) var isUploading = false
+    @Published private(set) var uploadProgress: Double?
     @Published private(set) var lastUploadedURL: String?
     @Published private(set) var lastErrorMessage: String?
 
@@ -56,7 +57,7 @@ final class CueUploadCoordinator: ObservableObject {
     private func performVideoUpload(fileURL: URL, settings: CueVideoUploadSettings?) async -> String? {
         let provider = configuration.provider
         guard provider.supports(.video) else {
-            lastErrorMessage = L10n.QuickAccess.videoUploadRequiresImageKit
+            lastErrorMessage = L10n.QuickAccess.videoUploadRequiresProvider
             return nil
         }
         guard let credential = configuration.credential else {
@@ -65,8 +66,12 @@ final class CueUploadCoordinator: ObservableObject {
         }
 
         isUploading = true
+        uploadProgress = provider == .cloudflare ? 0 : nil
         lastErrorMessage = nil
-        defer { isUploading = false }
+        defer {
+            isUploading = false
+            uploadProgress = nil
+        }
 
         do {
             let prepared: CuePreparedUpload
@@ -96,6 +101,9 @@ final class CueUploadCoordinator: ObservableObject {
                     fileURL: prepared.url,
                     workerURL: configuration.cloudflareWorkerURL,
                     token: credential,
+                    progress: { [weak self] value in
+                        Task { @MainActor in self?.uploadProgress = value }
+                    },
                 ).url
             case .imgbb:
                 throw CueCloudflareUploadError.rejected
@@ -126,7 +134,7 @@ final class CueUploadCoordinator: ObservableObject {
     ) async -> String? {
         let provider = configuration.provider
         guard provider.supports(mediaKind) else {
-            lastErrorMessage = L10n.QuickAccess.videoUploadRequiresImageKit
+            lastErrorMessage = L10n.QuickAccess.videoUploadRequiresProvider
             return nil
         }
         guard let credential = configuration.credential else {
@@ -134,8 +142,12 @@ final class CueUploadCoordinator: ObservableObject {
             return nil
         }
         isUploading = true
+        uploadProgress = provider == .cloudflare ? 0 : nil
         lastErrorMessage = nil
-        defer { isUploading = false }
+        defer {
+            isUploading = false
+            uploadProgress = nil
+        }
 
         do {
             let encodedImage = try await encoding()
@@ -145,7 +157,9 @@ final class CueUploadCoordinator: ObservableObject {
             case .imageKit:
                 try await imageKitService.upload(image: encodedImage, privateKey: credential).url
             case .cloudflare:
-                try await uploadCloudflareImage(encodedImage, token: credential).url
+                try await uploadCloudflareImage(encodedImage, token: credential) { [weak self] value in
+                    Task { @MainActor in self?.uploadProgress = value }
+                }.url
             }
             lastUploadedURL = link
             return link
@@ -167,7 +181,9 @@ final class CueUploadCoordinator: ObservableObject {
     }
 
     private func uploadCloudflareImage(_ image: CueEncodedImage,
-                                       token: String) async throws -> CueCloudflareUploadResult {
+                                       token: String,
+                                       progress: (@Sendable (Double) -> Void)? = nil) async throws
+        -> CueCloudflareUploadResult {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(
             "CueCloudflareUpload-\(UUID().uuidString)",
             isDirectory: true,
@@ -180,6 +196,7 @@ final class CueUploadCoordinator: ObservableObject {
             fileURL: fileURL,
             workerURL: configuration.cloudflareWorkerURL,
             token: token,
+            progress: progress,
         )
     }
 

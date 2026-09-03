@@ -14,7 +14,7 @@ Separated feature docs cover each runtime area in depth:
 - [`HISTORY.md`](HISTORY.md) — Capture history, retention, restore, storage cleanup
 - [`ANNOTATE.md`](ANNOTATE.md) — Image annotation editor, sessions, presets, export
 - [`VIDEO_EDITOR.md`](VIDEO_EDITOR.md) — Video trim/zoom/speed editing and export
-- [`CLOUD.md`](CLOUD.md) — Local sharing, direct image hosts, and retired BYO-cloud boundary
+- [`CLOUD.md`](CLOUD.md) — Local sharing, direct providers, and limited BYO Cloudflare boundary
 - [`SHORTCUTS.md`](SHORTCUTS.md) — Global/overlay shortcut registration and conflicts
 - [`PREFERENCES.md`](PREFERENCES.md) — Settings tabs, preference storage, defaults
 - [`APP_LIFECYCLE.md`](APP_LIFECYCLE.md) — Launch sequence, onboarding, menu bar bootstrap
@@ -376,7 +376,7 @@ Directory structure mirrors the app. Shared mocks and fixture assets live in `Cu
 | Annotate editor (full + inline) | `Features/Annotate/`, `docs/ANNOTATE.md` |
 | Editable screenshot annotation history | `Features/Annotate/Services/AnnotationSessionStore.swift`, `Features/Annotate/Models/PersistedAnnotationSession.swift`, `Features/History/`, `Services/History/CaptureHistoryRetentionService.swift`, `docs/ANNOTATE.md`, `docs/HISTORY.md` |
 | Video editor or Smart Camera | `Features/VideoEditor/`, `Services/Capture/RecordingMetadata.swift`, `docs/VIDEO_EDITOR.md` |
-| Direct image sharing and retired cloud boundary | `Services/Cloud/`, `Features/Preferences/Components/PreferencesCloudSettingsView.swift`, `Features/QuickAccess/Components/QuickAccessCardView.swift`, `Features/Annotate/Components/AnnotateBottomBarView.swift`, `docs/CLOUD.md` |
+| Direct provider sharing and BYO Cloudflare boundary | `Services/Cloud/`, `Features/Cue/Services/`, `Features/Preferences/Components/PreferencesCloudSettingsView.swift`, `Features/QuickAccess/Components/QuickAccessCardView.swift`, `Features/Annotate/Components/AnnotateBottomBarView.swift`, `docs/CLOUD.md` |
 | TOML config export/import + startup auto-apply | `Services/Configuration/`, `Features/Onboarding/Components/OnboardingConfigAccessView.swift`, `Features/Preferences/Components/PreferencesAdvancedSettingsView.swift`, `App/AppCoordinator.swift`, `docs/CONFIGURATION.md` |
 | Onboarding or app startup | `App/`, `Features/Splash/`, `Features/Onboarding/`, `docs/APP_LIFECYCLE.md` |
 | Shortcuts and conflicts | `Services/Shortcuts/`, `Features/Shortcuts/`, `docs/SHORTCUTS.md` |

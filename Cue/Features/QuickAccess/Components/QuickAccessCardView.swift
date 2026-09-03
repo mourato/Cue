@@ -29,7 +29,7 @@ struct QuickAccessCardView: View {
     @State private var imgbbUploadError: String?
     @State private var cardScreenFrame: CGRect = .zero
     @ObservedObject private var uploadConfiguration = CueUploadConfigurationStore.shared
-    private let uploadCoordinator = CueUploadCoordinator()
+    @StateObject private var uploadCoordinator = CueUploadCoordinator()
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @FocusState private var isCardFocused: Bool
 
@@ -79,7 +79,7 @@ struct QuickAccessCardView: View {
             ) {
                 CueVideoUploadOptionsView(
                     sourceSize: fileSize(for: item.url) ?? 0,
-                    uploadLimit: uploadConfiguration.imageKitVideoUploadTargetBytes,
+                    uploadLimit: videoUploadLimit,
                 ) { settings in
                     startUpload(videoSettings: settings)
                 }
@@ -113,7 +113,7 @@ struct QuickAccessCardView: View {
             }
 
             if isUploading {
-                QuickAccessProgressView(state: .processing(progress: nil))
+                QuickAccessProgressView(state: .processing(progress: uploadCoordinator.uploadProgress))
                     .transition(.opacity)
             }
 
@@ -698,7 +698,7 @@ struct QuickAccessCardView: View {
               !uploadConfiguration.provider.supports(.video) else {
             return actionTitle(for: action)
         }
-        return L10n.QuickAccess.videoUploadRequiresImageKit
+        return L10n.QuickAccess.videoUploadRequiresProvider
     }
 
     private func cornerButtonTransition(delay: Int) -> AnyTransition {
@@ -762,7 +762,7 @@ struct QuickAccessCardView: View {
 
         if item.isVideo,
            let fileSize = fileSize(for: item.url),
-           fileSize >= uploadConfiguration.imageKitVideoUploadTargetBytes {
+           fileSize >= videoUploadLimit {
             manager.pauseCountdownForActivity(item.id)
             isVideoUploadOptionsPresented = true
             return
@@ -802,6 +802,12 @@ struct QuickAccessCardView: View {
         } catch {
             return nil
         }
+    }
+
+    private var videoUploadLimit: Int64 {
+        uploadConfiguration.provider == .cloudflare
+            ? CueCloudflareConfiguration.maximumUploadBytes
+            : uploadConfiguration.imageKitVideoUploadTargetBytes
     }
 
     private var uploadFailedMessage: String {
