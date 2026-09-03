@@ -4,6 +4,11 @@ Cue's annotation subsystem: the full Annotate editor window (hybrid AppKit shell
 
 ## Architecture
 
+The upload action uses the persisted `uploadToImgBB` identifier but displays
+the selected provider name. Cloudflare uploads are explicit, use the user's
+HTTPS Worker, copy the returned public link on success, and keep the existing
+spinner toast/error behavior.
+
 - `Cue/Features/Annotate/AnnotateManager.swift` — singleton window registry; session cache keyed by `QuickAccessItem.id`; activation policy bump to `.regular` on open; `openAnnotation(for:)` (QA item) / `openAnnotation(url:sessionData:)` / `openEmptyAnnotation()`.
 - `Cue/Features/Annotate/Managers/AnnotateWindowController.swift` — per-window controller, owns save/copy/close notifications.
 - `Cue/Features/Annotate/Managers/AnnotateWindow.swift` — `NSWindow` subclass; intercepts ⌘+scroll zoom, trackpad magnify, Space key (pan mode via `annotateSpaceDown/Up` notifications), drag events; level floats while key (`activeEditorLevel`) and restores `restingLevel` on resign; pin sets resting level `.floating`.

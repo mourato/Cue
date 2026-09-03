@@ -3441,6 +3441,31 @@ nonisolated enum L10n {
             defaultValue: "ImageKit returned an unexpected response.",
             comment: "ImageKit response error",
         )
+        static let cloudflareMissingWorkerURL = string(
+            "annotate.notinhas.cloudflare-missing-worker-url",
+            defaultValue: "Add a Cloudflare Worker URL in Preferences → Uploads before uploading.",
+            comment: "Cloudflare Worker missing URL error",
+        )
+        static let cloudflareMissingToken = string(
+            "annotate.notinhas.cloudflare-missing-token",
+            defaultValue: "Generate or add an UPLOAD_TOKEN in Preferences → Uploads before uploading.",
+            comment: "Cloudflare Worker missing token error",
+        )
+        static let cloudflareInvalidResponse = string(
+            "annotate.notinhas.cloudflare-invalid-response",
+            defaultValue: "Cloudflare Worker returned an unexpected response.",
+            comment: "Cloudflare Worker response error",
+        )
+        static let cloudflareUploadFailed = string(
+            "annotate.notinhas.cloudflare-upload-failed",
+            defaultValue: "Cloudflare Worker upload failed.",
+            comment: "Cloudflare Worker upload failure",
+        )
+        static let cloudflareOffline = string(
+            "annotate.notinhas.cloudflare-offline",
+            defaultValue: "Cloudflare Worker could not be reached. Check your connection.",
+            comment: "Cloudflare Worker transport error",
+        )
         static func uploadTo(provider: String) -> String {
             format(
                 "annotate.notinhas.upload-to-provider",
@@ -4118,6 +4143,76 @@ nonisolated enum L10n {
             "cloud-settings.imagekit-description",
             defaultValue: "Direct ImageKit image and video sharing for manual uploads from Annotate and Quick Access. The private key stays in Keychain.",
             comment: "Description for ImageKit image and video sharing preferences",
+        )
+        static let cloudflareDescription = string(
+            "cloud-settings.cloudflare-description",
+            defaultValue: "Direct sharing through your Cloudflare Worker. The UPLOAD_TOKEN stays in Keychain.",
+            comment: "Description for Cloudflare Worker sharing preferences",
+        )
+        static let cloudflareWorkerURL = string(
+            "cloud-settings.cloudflare-worker-url",
+            defaultValue: "Worker URL",
+            comment: "Cloudflare Worker URL setting label",
+        )
+        static let cloudflareToken = string(
+            "cloud-settings.cloudflare-token",
+            defaultValue: "UPLOAD_TOKEN",
+            comment: "Cloudflare Worker upload token setting label",
+        )
+        static let cloudflareSection = string(
+            "cloud-settings.cloudflare-section",
+            defaultValue: "Cloudflare Worker",
+            comment: "Cloudflare Worker settings section",
+        )
+        static let cloudflareGenerateToken = string(
+            "cloud-settings.cloudflare-generate-token",
+            defaultValue: "Generate token",
+            comment: "Generate Cloudflare upload token",
+        )
+        static let cloudflareRevealToken = string(
+            "cloud-settings.cloudflare-reveal-token",
+            defaultValue: "Reveal token",
+            comment: "Reveal Cloudflare upload token",
+        )
+        static let cloudflareHideToken = string(
+            "cloud-settings.cloudflare-hide-token",
+            defaultValue: "Hide token",
+            comment: "Hide Cloudflare upload token",
+        )
+        static let cloudflareCopyToken = string(
+            "cloud-settings.cloudflare-copy-token",
+            defaultValue: "Copy token",
+            comment: "Copy Cloudflare upload token",
+        )
+        static let cloudflareDeploy = string(
+            "cloud-settings.cloudflare-deploy",
+            defaultValue: "Deploy Worker",
+            comment: "Open the Cloudflare Worker Deploy Button",
+        )
+        static let cloudflareVerify = string(
+            "cloud-settings.cloudflare-verify",
+            defaultValue: "Verify connection",
+            comment: "Verify the Cloudflare Worker connection",
+        )
+        static let cloudflareNotConfigured = string(
+            "cloud-settings.cloudflare-not-configured",
+            defaultValue: "Not configured",
+            comment: "Cloudflare connection status",
+        )
+        static let cloudflareVerifying = string(
+            "cloud-settings.cloudflare-verifying",
+            defaultValue: "Verifying…",
+            comment: "Cloudflare connection status",
+        )
+        static let cloudflareConnected = string(
+            "cloud-settings.cloudflare-connected",
+            defaultValue: "Connected",
+            comment: "Cloudflare connection status",
+        )
+        static let cloudflareConnectionError = string(
+            "cloud-settings.cloudflare-connection-error",
+            defaultValue: "Connection failed",
+            comment: "Cloudflare connection status",
         )
         static let imageKitPrivateKeyTitle = string(
             "cloud-settings.imagekit-private-key-title",
@@ -6894,15 +6989,15 @@ nonisolated enum L10n {
             defaultValue: "Edit Video",
             comment: "Quick Access tooltip for opening the video editor",
         )
-        static let videoUploadRequiresImageKit = string(
-            "quick-access.video-upload-requires-imagekit",
-            defaultValue: "Video uploads require ImageKit. Choose it in Preferences → Uploads.",
+        static let videoUploadRequiresProvider = string(
+            "quick-access.video-upload-requires-provider",
+            defaultValue: "Video uploads require a provider that supports video. Choose one in Preferences → Uploads.",
             comment: "Quick Access hint shown when the selected provider cannot upload a video",
         )
         static let uploadFileTooLarge = string(
             "quick-access.upload-file-too-large",
-            defaultValue: "This video is larger than the configured ImageKit upload limit. Optimize it before uploading.",
-            comment: "Error shown when a video exceeds the configured ImageKit upload target",
+            defaultValue: "This video is larger than the selected provider’s upload limit. Optimize it before uploading.",
+            comment: "Error shown when a video exceeds the selected provider's upload target",
         )
         static let videoUploadTooLargeTitle = string(
             "quick-access.video-upload-too-large-title",
@@ -6912,7 +7007,7 @@ nonisolated enum L10n {
         static func videoUploadTooLargeMessage(sourceSize: String, uploadLimit: String) -> String {
             format(
                 "quick-access.video-upload-too-large-message",
-                defaultValue: "This video is %@. The safe ImageKit upload target is %@.",
+                defaultValue: "This video is %@. The safe upload target is %@.",
                 comment: "Quick Access message for an oversized video. The placeholders are source size and safe upload target.",
                 sourceSize,
                 uploadLimit,

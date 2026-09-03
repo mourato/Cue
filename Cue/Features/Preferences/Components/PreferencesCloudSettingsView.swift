@@ -3,6 +3,7 @@
 //  Notinhas
 //
 
+import AppKit
 import SwiftUI
 
 struct CloudSettingsView: View {
@@ -10,6 +11,7 @@ struct CloudSettingsView: View {
     @State private var credential = ""
     @State private var isEditing = false
     @State private var errorMessage: String?
+    @State private var revealToken = false
 
     var body: some View {
         Form {
@@ -36,8 +38,13 @@ struct CloudSettingsView: View {
                         }
                     }
                 } else {
-                    SecureField(credentialTitle, text: $credential)
-                        .textFieldStyle(.roundedBorder)
+                    if uploadConfiguration.provider == .cloudflare, revealToken {
+                        TextField(credentialTitle, text: $credential)
+                            .textFieldStyle(.roundedBorder)
+                    } else {
+                        SecureField(credentialTitle, text: $credential)
+                            .textFieldStyle(.roundedBorder)
+                    }
                     HStack {
                         Button(L10n.Common.save) { save() }
                         if isEditing {
@@ -72,6 +79,48 @@ struct CloudSettingsView: View {
                         .foregroundStyle(.secondary)
                 }
             }
+
+            if uploadConfiguration.provider == .cloudflare {
+                Section(L10n.CloudSettings.cloudflareSection) {
+                    TextField(L10n.CloudSettings.cloudflareWorkerURL, text: Binding(
+                        get: { uploadConfiguration.cloudflareWorkerURL },
+                        set: { uploadConfiguration.setCloudflareWorkerURL($0) },
+                    ))
+                    .textFieldStyle(.roundedBorder)
+                    HStack {
+                        Button(L10n.CloudSettings.cloudflareGenerateToken) {
+                            credential = CueCloudflareCredentialStore.generatedToken()
+                            revealToken = true
+                            isEditing = true
+                        }
+                        Button(revealToken ? L10n.CloudSettings.cloudflareHideToken : L10n.CloudSettings
+                            .cloudflareRevealToken) {
+                                revealToken.toggle()
+                            }
+                        Button(L10n.CloudSettings.cloudflareCopyToken) {
+                            NSPasteboard.general.clearContents()
+                            NSPasteboard.general.setString(
+                                credential.isEmpty ? (uploadConfiguration.cloudflare.token ?? "") : credential,
+                                forType: .string,
+                            )
+                        }
+                    }
+                    HStack {
+                        Link(
+                            L10n.CloudSettings.cloudflareDeploy,
+                            destination: URL(
+                                string: "https://deploy.workers.cloudflare.com/?url=https://github.com/mourato/cue-worker",
+                            )!,
+                        )
+                        Button(L10n.CloudSettings.cloudflareVerify) {
+                            Task { await uploadConfiguration.verifyCloudflareConnection() }
+                        }
+                    }
+                    Text(connectionStatus)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
         }
         .formStyle(.grouped)
         .alert(L10n.CloudSettings.transferAlertTitle, isPresented: errorBinding) {
@@ -99,9 +148,12 @@ struct CloudSettingsView: View {
                 try uploadConfiguration.imgbb.save(apiKey: credential)
             case .imageKit:
                 try uploadConfiguration.imageKit.save(privateKey: credential)
+            case .cloudflare:
+                try uploadConfiguration.cloudflare.save(token: credential)
             }
             credential = ""
             isEditing = false
+            revealToken = false
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -114,6 +166,7 @@ struct CloudSettingsView: View {
                 uploadConfiguration.select($0)
                 credential = ""
                 isEditing = false
+                revealToken = false
             },
         )
     }
@@ -145,6 +198,7 @@ struct CloudSettingsView: View {
         switch uploadConfiguration.provider {
         case .imgbb: L10n.CloudSettings.imgbbDescription
         case .imageKit: L10n.CloudSettings.imageKitDescription
+        case .cloudflare: L10n.CloudSettings.cloudflareDescription
         }
     }
 
@@ -152,6 +206,7 @@ struct CloudSettingsView: View {
         switch uploadConfiguration.provider {
         case .imgbb: L10n.CloudSettings.imgbbAPIKeyTitle
         case .imageKit: L10n.CloudSettings.imageKitPrivateKeyTitle
+        case .cloudflare: L10n.CloudSettings.cloudflareToken
         }
     }
 
@@ -159,8 +214,19 @@ struct CloudSettingsView: View {
         switch uploadConfiguration.provider {
         case .imgbb: uploadConfiguration.imgbb.clear()
         case .imageKit: uploadConfiguration.imageKit.clear()
+        case .cloudflare: uploadConfiguration.cloudflare.clear()
         }
         credential = ""
+        revealToken = false
+    }
+
+    private var connectionStatus: String {
+        switch uploadConfiguration.cloudflareConnectionState {
+        case .unconfigured: L10n.CloudSettings.cloudflareNotConfigured
+        case .verifying: L10n.CloudSettings.cloudflareVerifying
+        case .connected: L10n.CloudSettings.cloudflareConnected
+        case .error: L10n.CloudSettings.cloudflareConnectionError
+        }
     }
 }
 

@@ -5545,6 +5545,31 @@
         }
       }
     },
+    "annotate.notinhas.cloudflare-invalid-response": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Cloudflare Worker returned an unexpected response." } }
+      }
+    },
+    "annotate.notinhas.cloudflare-missing-token": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Generate or add an UPLOAD_TOKEN in Preferences → Uploads before uploading." } }
+      }
+    },
+    "annotate.notinhas.cloudflare-missing-worker-url": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Add a Cloudflare Worker URL in Preferences → Uploads before uploading." } }
+      }
+    },
+    "annotate.notinhas.cloudflare-offline": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Cloudflare Worker could not be reached. Check your connection." } }
+      }
+    },
+    "annotate.notinhas.cloudflare-upload-failed": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Cloudflare Worker upload failed." } }
+      }
+    },
     "annotate.notinhas.imgbb-invalid-image-data": {
       "extractionState": "stale",
       "localizations": {

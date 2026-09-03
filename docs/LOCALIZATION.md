@@ -9,6 +9,7 @@ This doc describes how Cue localizes user-facing text today. Keep it synced with
 - Language selection: Cue supports app language selection in Preferences and a first-run onboarding language step. Preferences still relies on the macOS app-language override plus relaunch behavior, while onboarding previews the selected locale immediately inside the onboarding flow and only commits the override when onboarding finishes.
 - Source-of-truth and runtime catalogs: centralized under `Cue/Resources/Localization/`, split into `Shared/*.xcstrings` and `Features/*.xcstrings`
 - Coverage: menu bar, onboarding, preferences, capture flows, recording flows, Quick Access, Annotate, Video Editor, selected-provider image sharing settings, alerts, toasts, and scrolling capture HUD/status text
+- Cloudflare Worker setup/status copy lives in `Features/Cloud.xcstrings` and the `L10n.CloudSettings` bridge; selected-provider upload errors live in the Annotate catalog and `L10n.Cue`. Provider names and technical tokens remain verbatim.
 
 ## Runtime Model
 

@@ -4,6 +4,7 @@ import Foundation
 enum CueUploadProvider: String, CaseIterable, Identifiable, Sendable {
     case imgbb
     case imageKit
+    case cloudflare
 
     var id: String {
         rawValue
@@ -13,6 +14,7 @@ enum CueUploadProvider: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .imgbb: "ImgBB"
         case .imageKit: "ImageKit"
+        case .cloudflare: CueCloudflareConfiguration.displayName
         }
     }
 
@@ -20,7 +22,7 @@ enum CueUploadProvider: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .imgbb:
             mediaKind != .video
-        case .imageKit:
+        case .imageKit, .cloudflare:
             true
         }
     }
@@ -33,21 +35,26 @@ final class CueUploadConfigurationStore: ObservableObject {
     @Published private(set) var provider: CueUploadProvider
     @Published private(set) var imageKitPlan: CueImageKitUploadPlan
     @Published private(set) var imageKitCustomVideoLimitMB: Int
+    @Published private(set) var cloudflareWorkerURL: String
+    @Published private(set) var cloudflareConnectionState: CueCloudflareConnectionState
     @Published private(set) var revision = UUID()
 
     private let defaults: UserDefaults
     private var cancellables = Set<AnyCancellable>()
     let imgbb: CueImgBBCredentialStore
     let imageKit: CueImageKitCredentialStore
+    let cloudflare: CueCloudflareCredentialStore
 
     init(
         defaults: UserDefaults = .standard,
         imgbb: CueImgBBCredentialStore = .shared,
         imageKit: CueImageKitCredentialStore = .shared,
+        cloudflare: CueCloudflareCredentialStore = .shared,
     ) {
         self.defaults = defaults
         self.imgbb = imgbb
         self.imageKit = imageKit
+        self.cloudflare = cloudflare
         provider = defaults.string(forKey: PreferencesKeys.uploadProvider)
             .flatMap(CueUploadProvider.init(rawValue:)) ?? .imgbb
         imageKitPlan = defaults.string(forKey: PreferencesKeys.uploadImageKitPlan)
@@ -62,16 +69,22 @@ final class CueUploadConfigurationStore: ObservableObject {
         if defaults.object(forKey: PreferencesKeys.uploadImageKitCustomVideoLimitMB) == nil {
             imageKitCustomVideoLimitMB = 100
         }
-        imgbb.$isConfigured
-            .combineLatest(imageKit.$isConfigured)
-            .sink { [weak self] _, _ in self?.revision = UUID() }
-            .store(in: &cancellables)
+        cloudflareWorkerURL = defaults.string(forKey: CueCloudflareConfiguration.workerURLKey) ?? ""
+        cloudflareConnectionState = .unconfigured
+        imgbb.$isConfigured.sink { [weak self] _ in self?.revision = UUID() }.store(in: &cancellables)
+        imageKit.$isConfigured.sink { [weak self] _ in self?.revision = UUID() }.store(in: &cancellables)
+        cloudflare.$isConfigured.sink { [weak self] _ in
+            self?.cloudflareConnectionState = .unconfigured
+            self?.revision = UUID()
+        }.store(in: &cancellables)
     }
 
     var isConfigured: Bool {
         switch provider {
         case .imgbb: imgbb.isConfigured
         case .imageKit: imageKit.isConfigured
+        case .cloudflare: cloudflare.isConfigured && CueCloudflareConfiguration
+            .validWorkerURL(cloudflareWorkerURL) != nil
         }
     }
 
@@ -79,6 +92,7 @@ final class CueUploadConfigurationStore: ObservableObject {
         switch provider {
         case .imgbb: imgbb.maskedAPIKey
         case .imageKit: imageKit.maskedPrivateKey
+        case .cloudflare: cloudflare.maskedToken
         }
     }
 
@@ -86,6 +100,7 @@ final class CueUploadConfigurationStore: ObservableObject {
         switch provider {
         case .imgbb: imgbb.apiKey
         case .imageKit: imageKit.privateKey
+        case .cloudflare: cloudflare.token
         }
     }
 
@@ -102,6 +117,29 @@ final class CueUploadConfigurationStore: ObservableObject {
         guard self.provider != provider else { return }
         self.provider = provider
         defaults.set(provider.rawValue, forKey: PreferencesKeys.uploadProvider)
+        revision = UUID()
+    }
+
+    func setCloudflareWorkerURL(_ value: String) {
+        cloudflareWorkerURL = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        defaults.set(cloudflareWorkerURL, forKey: CueCloudflareConfiguration.workerURLKey)
+        cloudflareConnectionState = .unconfigured
+        revision = UUID()
+    }
+
+    func verifyCloudflareConnection() async {
+        guard let token = cloudflare.token,
+              CueCloudflareConfiguration.validWorkerURL(cloudflareWorkerURL) != nil else {
+            cloudflareConnectionState = .unconfigured
+            return
+        }
+        cloudflareConnectionState = .verifying
+        do {
+            try await CueCloudflareUploadService.shared.verify(workerURL: cloudflareWorkerURL, token: token)
+            cloudflareConnectionState = .connected
+        } catch {
+            cloudflareConnectionState = .error
+        }
         revision = UUID()
     }
 
@@ -126,6 +164,9 @@ final class CueUploadConfigurationStore: ObservableObject {
     func reload() {
         imgbb.reload()
         imageKit.reload()
+        cloudflare.reload()
+        cloudflareWorkerURL = defaults.string(forKey: CueCloudflareConfiguration.workerURLKey) ?? ""
+        cloudflareConnectionState = .unconfigured
         revision = UUID()
     }
 }

@@ -71,6 +71,44 @@ final class CueUploadProviderTests: XCTestCase {
         XCTAssertTrue(CueUploadProvider.imageKit.supports(.video))
     }
 
+    func testCloudflareCredentialIsTrimmedStoredAndRestored() throws {
+        let suite = "notinhas.cloudflare.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        let keychain = MockProviderKeychain()
+        let store = CueCloudflareCredentialStore(defaults: defaults, keychain: keychain)
+
+        try store.save(token: "  fixture-token  ")
+
+        XCTAssertEqual(store.token, "fixture-token")
+        XCTAssertEqual(keychain.storedValue, "fixture-token")
+        XCTAssertTrue(store.isConfigured)
+        XCTAssertEqual(store.maskedToken, String(repeating: "•", count: 9) + "oken")
+
+        let relaunched = CueCloudflareCredentialStore(defaults: defaults, keychain: keychain)
+        XCTAssertTrue(relaunched.isConfigured)
+        XCTAssertEqual(relaunched.token, "fixture-token")
+
+        store.clear()
+        XCTAssertFalse(store.isConfigured)
+        XCTAssertNil(keychain.storedValue)
+        XCTAssertFalse(defaults.bool(forKey: CueCloudflareConfiguration.workerURLKey + ".configured"))
+        defaults.removePersistentDomain(forName: suite)
+    }
+
+    func testCloudflareGeneratedTokenIs32RandomBytes() {
+        let token = CueCloudflareCredentialStore.generatedToken()
+
+        XCTAssertEqual(token.count, 64)
+        XCTAssertTrue(token.allSatisfy(\.isHexDigit))
+    }
+
+    func testCloudflareSupportsImagesGIFsVideosAndUses95MiBLimit() {
+        XCTAssertTrue(CueUploadProvider.cloudflare.supports(.image))
+        XCTAssertTrue(CueUploadProvider.cloudflare.supports(.gif))
+        XCTAssertTrue(CueUploadProvider.cloudflare.supports(.video))
+        XCTAssertEqual(CueCloudflareConfiguration.maximumUploadBytes, 95 * 1_048_576)
+    }
+
     func testImageKitPlanControlsSafeVideoUploadTarget() throws {
         let suite = "notinhas.upload-plan.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
@@ -117,7 +155,7 @@ final class CueUploadProviderTests: XCTestCase {
     }
 }
 
-private final class MockProviderKeychain: ImgBBKeychainBacking, ImageKitKeychainBacking {
+private final class MockProviderKeychain: ImgBBKeychainBacking, ImageKitKeychainBacking, CloudflareKeychainBacking {
     var storedValue: String?
     private(set) var readCount = 0
     private(set) var probeCount = 0

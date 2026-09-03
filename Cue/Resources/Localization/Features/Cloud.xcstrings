@@ -1,6 +1,71 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "cloud-settings.cloudflare-connected" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Connected" } }
+      }
+    },
+    "cloud-settings.cloudflare-connection-error" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Connection failed" } }
+      }
+    },
+    "cloud-settings.cloudflare-copy-token" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Copy token" } }
+      }
+    },
+    "cloud-settings.cloudflare-deploy" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Deploy Worker" } }
+      }
+    },
+    "cloud-settings.cloudflare-generate-token" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Generate token" } }
+      }
+    },
+    "cloud-settings.cloudflare-hide-token" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Hide token" } }
+      }
+    },
+    "cloud-settings.cloudflare-not-configured" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not configured" } }
+      }
+    },
+    "cloud-settings.cloudflare-reveal-token" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reveal token" } }
+      }
+    },
+    "cloud-settings.cloudflare-section" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cloudflare Worker" } }
+      }
+    },
+    "cloud-settings.cloudflare-verify" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Verify connection" } }
+      }
+    },
+    "cloud-settings.cloudflare-verifying" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Verifying…" } }
+      }
+    },
+    "cloud-settings.cloudflare-token" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "UPLOAD_TOKEN" } }
+      }
+    },
+    "cloud-settings.cloudflare-worker-url" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Worker URL" } }
+      }
+    },
     "cloud-operation.failed-to-encode-keychain-value" : {
       "extractionState" : "stale",
       "localizations" : {

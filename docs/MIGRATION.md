@@ -25,6 +25,11 @@ On a fresh Cue install over an existing Notinhas tree, both chains may run in or
 | TOML config | `~/.config/cue/config.toml` |
 | Cloud Keychain service | `com.mourato.cue.cloud` |
 
+Cloudflare Worker URL configuration is a new non-secret preference. Its
+`UPLOAD_TOKEN` is never imported from legacy cloud fields or written to TOML;
+configure it explicitly in Preferences → Uploads after migration. No retired
+S3/R2/Google Drive credentials or remote history are restored.
+
 ## Legacy sources still read on upgrade
 
 | Item | Legacy (Notinhas) | Legacy (Snapzy) |

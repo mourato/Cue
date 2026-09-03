@@ -549,13 +549,14 @@ struct AnnotateBottomBarView: View {
     }
 
     private var uploadActionTitle: String {
-        "Upload to \(uploadConfiguration.provider.name)"
+        L10n.Cue.uploadTo(provider: uploadConfiguration.provider.name)
     }
 
     private var missingCredentialMessage: String {
         switch uploadConfiguration.provider {
         case .imgbb: CueL10n.imgbbMissingAPIKey
         case .imageKit: CueL10n.imageKitMissingPrivateKey
+        case .cloudflare: CueL10n.cloudflareMissingToken
         }
     }
 
@@ -563,6 +564,7 @@ struct AnnotateBottomBarView: View {
         switch uploadConfiguration.provider {
         case .imgbb: CueL10n.imgbbUploadFailed
         case .imageKit: CueL10n.imageKitUploadFailed
+        case .cloudflare: CueL10n.cloudflareUploadFailed
         }
     }
 
