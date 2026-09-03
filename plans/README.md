@@ -51,7 +51,7 @@ thermo-nuclear review → fix all findings → next plan).
 | 029 | Rename the technical product identity to Notinhas | P1 | L | 026–028 | DONE (`6124d74`, review fixes `163e0f1`; focused migration tests and Debug build pass) |
 | 030 | Complete documentation and final validation | P2 | L | 029 | DONE (`39f7053`, review fixes `5bc63c6`; docs/scripts residue fixed; default/video suites retain two pre-existing UI failures and Release validation remains environment-blocked) |
 | 113 | Rename the product identity from Notinhas to Cue | P1 | L | — | DONE (`1e005402f`; integrated in main) |
-| 114 | BYO Cloudflare Worker sharing | P1 | L | 113 | IN PROGRESS (local Cue integration + companion Worker; external deploy manual) |
+| 114 | BYO Cloudflare Worker sharing | P1 | L | 113 | DONE (local Cue integration + companion Worker; external deploy manual) |
 
 Status values: `TODO` | `IN PROGRESS` | `DONE` | `BLOCKED (reason)` | `REJECTED (rationale)` | `SUPERSEDED (replacement)`.
 
