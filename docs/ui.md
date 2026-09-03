@@ -18,6 +18,9 @@ look different.
   initial drag and All-In-One refinement. Hold `Option` to bypass snapping for
   the current gesture. Snap guide lines are configurable in Capture settings
   and are enabled by default.
+- During screenshot and recording area selection, `Space` switches from manual
+  region selection to application-window selection; it never moves an active
+  selection rectangle.
 
 ## Sources of truth
 

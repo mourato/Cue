@@ -332,61 +332,61 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Einzeltaste (A) koppelt mit „Bildschirm aufzeichnen“; Modifikator-Kombination (⇧⌘A)\nfunktioniert unabhängig."
+            "value": "Einzeltaste (Space) koppelt mit „Bildschirm aufzeichnen“; Modifikator-Kombination (⇧⌘Space)\nfunktioniert unabhängig."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Single key (A) pairs with Record Screen; modifier combo (⇧⌘A)\nworks independently."
+            "value": "Single key (Space) pairs with Record Screen; modifier combo (⇧⌘Space)\nworks independently."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "La tecla única (A) se empareja con Grabar pantalla; la combinación de modificadores (⇧⌘A)\nfunciona de forma independiente."
+            "value": "La tecla única (Space) se empareja con Grabar pantalla; la combinación de modificadores (⇧⌘Space)\nfunciona de forma independiente."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "La touche unique (A) est associée à Enregistrer l’écran ; la combinaison de modificateurs (⇧⌘A)\nfonctionne indépendamment."
+            "value": "La touche unique (Space) est associée à Enregistrer l’écran ; la combinaison de modificateurs (⇧⌘Space)\nfonctionne indépendamment."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "単一キー（A）は画面録画と連動します。修飾キーの組み合わせ（⇧⌘A）は\n独立して動作します。"
+            "value": "単一キー（Space）は画面録画と連動します。修飾キーの組み合わせ（⇧⌘Space）は\n独立して動作します。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "단일 키(A)는 화면 녹화와 짝을 이룹니다. 조합 키(⇧⌘A)는\n독립적으로 동작합니다."
+            "value": "단일 키(Space)는 화면 녹화와 짝을 이룹니다. 조합 키(⇧⌘Space)는\n독립적으로 동작합니다."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Одиночная клавиша (A) сочетается с записью экрана; комбинация модификаторов (⇧⌘A)\nработает независимо."
+            "value": "Одиночная клавиша (Space) сочетается с записью экрана; комбинация модификаторов (⇧⌘Space)\nработает независимо."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Phím đơn (A) đi cùng Ghi màn hình; combo modifier (⇧⌘A)\nchạy độc lập."
+            "value": "Phím đơn (Space) đi cùng Ghi màn hình; combo modifier (⇧⌘Space)\nchạy độc lập."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "单键 (A) 与「录制屏幕」联动；修饰键组合 (⇧⌘A)\n可独立使用。"
+            "value": "单键 (Space) 与「录制屏幕」联动；修饰键组合 (⇧⌘Space)\n可独立使用。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "單鍵 (A) 與「錄製螢幕」連動；修飾鍵組合 (⇧⌘A)\n可獨立使用。"
+            "value": "單鍵 (Space) 與「錄製螢幕」連動；修飾鍵組合 (⇧⌘Space)\n可獨立使用。"
           }
         }
       }

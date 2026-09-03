@@ -5,12 +5,85 @@
 //  Unit tests for AreaSelectionTarget, AreaSelectionResult, and WindowCaptureTarget.
 //
 
+import Carbon.HIToolbox
 import CoreGraphics
 @testable import Cue
 import XCTest
 
 @MainActor
 final class AreaSelectionModelsTests: XCTestCase {
+    func testSpaceWindowSelectionKey_matchesScreenshotAndRecordingOnly() throws {
+        let event = try XCTUnwrap(makeSpaceKeyEvent())
+
+        XCTAssertTrue(
+            AreaSelectionController.isSpaceWindowSelectionKey(
+                event,
+                selectionMode: .screenshot,
+                allowsApplicationWindowSelection: true,
+            ),
+        )
+        XCTAssertTrue(
+            AreaSelectionController.isSpaceWindowSelectionKey(
+                event,
+                selectionMode: .recording,
+                allowsApplicationWindowSelection: true,
+            ),
+        )
+        XCTAssertFalse(
+            AreaSelectionController.isSpaceWindowSelectionKey(
+                event,
+                selectionMode: .scrollingCapture,
+                allowsApplicationWindowSelection: true,
+            ),
+        )
+    }
+
+    func testSpaceWindowSelectionKey_requiresPlainNonRepeatingSpace() throws {
+        let modifierEvent = try XCTUnwrap(makeSpaceKeyEvent(modifierFlags: [.command]))
+        let repeatEvent = try XCTUnwrap(makeSpaceKeyEvent(isARepeat: true))
+        let disabledEvent = try XCTUnwrap(makeSpaceKeyEvent())
+
+        XCTAssertFalse(
+            AreaSelectionController.isSpaceWindowSelectionKey(
+                modifierEvent,
+                selectionMode: .screenshot,
+                allowsApplicationWindowSelection: true,
+            ),
+        )
+        XCTAssertFalse(
+            AreaSelectionController.isSpaceWindowSelectionKey(
+                repeatEvent,
+                selectionMode: .recording,
+                allowsApplicationWindowSelection: true,
+            ),
+        )
+        XCTAssertFalse(
+            AreaSelectionController.isSpaceWindowSelectionKey(
+                disabledEvent,
+                selectionMode: .screenshot,
+                allowsApplicationWindowSelection: false,
+            ),
+        )
+    }
+
+    private func makeSpaceKeyEvent(
+        modifierFlags: NSEvent.ModifierFlags = [],
+        isARepeat: Bool = false,
+    ) -> NSEvent? {
+        NSEvent.keyEvent(
+            with: .keyDown,
+            location: .zero,
+            modifierFlags: modifierFlags,
+            timestamp: 0,
+            windowNumber: 0,
+            context: nil,
+            characters: " ",
+            charactersIgnoringModifiers: " ",
+            isARepeat: isARepeat,
+            keyCode: UInt16(kVK_Space),
+        )
+    }
+
     func testAreaSelectionTarget_rect_returnsRect() {
         let rect = CGRect(x: 10, y: 20, width: 100, height: 50)
         let target = AreaSelectionTarget.rect(rect)

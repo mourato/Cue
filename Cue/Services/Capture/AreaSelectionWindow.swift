@@ -122,17 +122,13 @@ final class AreaSelectionController: NSObject {
     /// host-app tests do not trigger Screen Recording TCC (see `AreaSelectionBackdropCapturerPolicy`).
     private var backdropCapturer: any AreaSelectionBackdropCapturing =
         AreaSelectionBackdropCapturerPolicy.makeDefault()
-    private var manualSelectionKeyLocalMonitor: Any?
-    private var manualSelectionKeyGlobalMonitor: Any?
     /// Re-asserts the crosshair if the app regains focus mid-drag (e.g. after a background capture
-    /// tool bounces focus). Installed with the per-drag keyboard monitors, torn down with them.
+    /// tool bounces focus). Installed for the drag and torn down with it.
     private var appActivationObserver: Any?
     private var sessionSpaceChangeObserver: Any?
     private var sessionAppActivationObserver: Any?
     private var sessionAppSwitchObserver: Any?
     private var lumaRecapturingTask: Task<Void, Never>?
-    private var isMovingManualSelection = false
-    private var manualSelectionLastPointerLocation: CGPoint?
     private var manualSelectionModifierFlags: NSEvent.ModifierFlags = []
     private var lastDisplayActivationRequestTime: TimeInterval = 0
     private let displayActivationRequestInterval: TimeInterval = 0.12
@@ -639,7 +635,13 @@ final class AreaSelectionController: NSObject {
     }
 
     private func isSessionKeyEvent(_ event: NSEvent) -> Bool {
-        event.keyCode == 53 || isApplicationToggleEvent(event)
+        event.keyCode == 53
+            || Self.isSpaceWindowSelectionKey(
+                event,
+                selectionMode: selectionMode,
+                allowsApplicationWindowSelection: allowsApplicationWindowSelection,
+            )
+            || isApplicationToggleEvent(event)
     }
 
     private func handleSessionKeyEvent(_ event: NSEvent) -> Bool {
@@ -648,13 +650,43 @@ final class AreaSelectionController: NSObject {
             return true
         }
 
+        if Self.isSpaceWindowSelectionKey(
+            event,
+            selectionMode: selectionMode,
+            allowsApplicationWindowSelection: allowsApplicationWindowSelection,
+        ) {
+            switchToApplicationWindow()
+            return true
+        }
+
         guard isApplicationToggleEvent(event) else { return false }
         toggleInteractionMode()
         return true
     }
 
+    static func isSpaceWindowSelectionKey(
+        _ event: NSEvent,
+        selectionMode: SelectionMode,
+        allowsApplicationWindowSelection: Bool,
+    ) -> Bool {
+        guard allowsApplicationWindowSelection,
+              event.type == .keyDown,
+              event.keyCode == 49, // Space
+              !event.isARepeat,
+              event.modifierFlags.intersection([.command, .control, .option, .shift]).isEmpty else {
+            return false
+        }
+
+        switch selectionMode {
+        case .screenshot, .recording:
+            return true
+        case .scrollingCapture:
+            return false
+        }
+    }
+
     private func isApplicationToggleEvent(_ event: NSEvent) -> Bool {
-        guard allowsApplicationWindowSelection else { return false }
+        guard allowsApplicationWindowSelection, !event.isARepeat else { return false }
         switch selectionMode {
         case .screenshot, .scrollingCapture:
             // Application Capture second-layer moved under All-In-One (Window mode).
@@ -662,6 +694,11 @@ final class AreaSelectionController: NSObject {
         case .recording:
             return CaptureOverlayShortcutSettings.matchesRecordingApplicationCaptureShortcut(event)
         }
+    }
+
+    private func switchToApplicationWindow() {
+        guard interactionMode == .manualRegion else { return }
+        toggleInteractionMode()
     }
 
     private func toggleInteractionMode() {
@@ -1213,8 +1250,6 @@ final class AreaSelectionController: NSObject {
         manualSelectionCurrentPoint = screenPoint
         manualSelectionSourceWindow = window
         activeWindow = window
-        isMovingManualSelection = false
-        manualSelectionLastPointerLocation = screenPoint
         manualSelectionModifierFlags = modifiers
         installManualSelectionMonitorIfNeeded()
         requestDisplayActivationForManualSelection()
@@ -1224,21 +1259,8 @@ final class AreaSelectionController: NSObject {
     private func updateManualSelection(to screenPoint: CGPoint, modifiers: NSEvent.ModifierFlags = []) {
         guard manualSelectionStartPoint != nil else { return }
         manualSelectionModifierFlags = modifiers
-        defer { manualSelectionLastPointerLocation = screenPoint }
-
-        if isMovingManualSelection {
-            guard let last = manualSelectionLastPointerLocation else { return }
-            let dx = screenPoint.x - last.x
-            let dy = screenPoint.y - last.y
-            guard dx != 0 || dy != 0 else { return }
-            manualSelectionStartPoint?.x += dx
-            manualSelectionStartPoint?.y += dy
-            manualSelectionCurrentPoint?.x += dx
-            manualSelectionCurrentPoint?.y += dy
-        } else {
-            guard screenPoint != manualSelectionCurrentPoint else { return }
-            manualSelectionCurrentPoint = screenPoint
-        }
+        guard screenPoint != manualSelectionCurrentPoint else { return }
+        manualSelectionCurrentPoint = screenPoint
 
         requestDisplayActivationForManualSelection()
         renderManualSelectionIfNeeded()
@@ -1259,23 +1281,6 @@ final class AreaSelectionController: NSObject {
             return
         }
         (manualSelectionSourceWindow ?? activeWindow)?.overlayView.reassertCursorDuringDrag()
-    }
-
-    private func handleManualSelectionSpaceEvent(_ event: NSEvent) -> Bool {
-        guard event.keyCode == 49 else { return false }
-        guard manualSelectionStartPoint != nil else { return false }
-        switch event.type {
-        case .keyDown:
-            if !isMovingManualSelection {
-                manualSelectionLastPointerLocation = NSEvent.mouseLocation
-                isMovingManualSelection = true
-            }
-        case .keyUp:
-            isMovingManualSelection = false
-        default:
-            return false
-        }
-        return true
     }
 
     private func endManualSelection(at screenPoint: CGPoint, modifiers: NSEvent.ModifierFlags = []) {
@@ -1318,8 +1323,7 @@ final class AreaSelectionController: NSObject {
     }
 
     private var manualSelectionSnapResult: CaptureSelectionSnappingResult? {
-        guard !isMovingManualSelection,
-              !manualSelectionModifierFlags.contains(.option),
+        guard !manualSelectionModifierFlags.contains(.option),
               let start = manualSelectionStartPoint,
               let current = manualSelectionCurrentPoint,
               let screen = NSScreen.screens.first(where: { $0.frame.contains(current) })
@@ -1352,27 +1356,6 @@ final class AreaSelectionController: NSObject {
             ) { [weak self] _ in
                 Task { @MainActor in
                     self?.reassertManualSelectionCursor()
-                }
-            }
-        }
-
-        if manualSelectionKeyLocalMonitor == nil {
-            manualSelectionKeyLocalMonitor = NSEvent.addLocalMonitorForEvents(
-                matching: [.keyDown, .keyUp],
-            ) { [weak self] event in
-                guard event.keyCode == 49 else { return event }
-                Task { @MainActor in
-                    _ = self?.handleManualSelectionSpaceEvent(event)
-                }
-                return nil
-            }
-        }
-        if manualSelectionKeyGlobalMonitor == nil {
-            manualSelectionKeyGlobalMonitor = NSEvent.addGlobalMonitorForEvents(
-                matching: [.keyDown, .keyUp],
-            ) { [weak self] event in
-                Task { @MainActor in
-                    _ = self?.handleManualSelectionSpaceEvent(event)
                 }
             }
         }
@@ -1416,20 +1399,10 @@ final class AreaSelectionController: NSObject {
     }
 
     private func removeManualSelectionMonitor() {
-        if let monitor = manualSelectionKeyLocalMonitor {
-            NSEvent.removeMonitor(monitor)
-            manualSelectionKeyLocalMonitor = nil
-        }
-        if let monitor = manualSelectionKeyGlobalMonitor {
-            NSEvent.removeMonitor(monitor)
-            manualSelectionKeyGlobalMonitor = nil
-        }
         if let observer = appActivationObserver {
             NotificationCenter.default.removeObserver(observer)
             appActivationObserver = nil
         }
-        isMovingManualSelection = false
-        manualSelectionLastPointerLocation = nil
     }
 
     private func removeManualSelectionGlobalMonitor() {
@@ -2979,7 +2952,9 @@ final class AreaSelectionOverlayView: NSView {
         }
 
         let shortcut: CaptureOverlayShortcut? = switch selectionMode {
-        case .screenshot, .scrollingCapture:
+        case .screenshot:
+            CaptureOverlayShortcut(keyCode: 49, modifiers: 0) // Space
+        case .scrollingCapture:
             nil
         case .recording:
             CaptureOverlayShortcutSettings.recordingApplicationCaptureShortcut

@@ -3692,7 +3692,7 @@ nonisolated enum L10n {
         )
         static let applicationRecordingDescription = string(
             "preferences-shortcuts.application-recording-description",
-            defaultValue: "Single key (A) pairs with Record Screen; modifier combo (⇧⌘A)\nworks independently.",
+            defaultValue: "Single key (Space) pairs with Record Screen; modifier combo (⇧⌘Space)\nworks independently.",
             comment: "Description for the shortcut that toggles or starts application recording",
         )
         static let captureTextDescription = string(

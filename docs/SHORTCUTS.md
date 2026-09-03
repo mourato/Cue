@@ -64,10 +64,15 @@ All 19 `GlobalShortcutKind`s with shipping defaults (verified in `KeyboardShortc
 
 `CaptureOverlayShortcutSettings` (`Cue/Services/Capture/CaptureOverlayShortcutSettings.swift`):
 
-- Kind: `applicationRecording`; default single key **A** with no modifiers (child mode).
+- Kind: `applicationRecording`; default single key **Space** with no modifiers (child mode).
 - Child mode (modifiers == 0): pressed *inside* the recording overlay to switch to application-window mode. Menu bar items show it as a suffix of the parent shortcut.
 - Independent mode (modifiers ≠ 0): registered as its own global hotkey (`applicationRecordingHotkeyRef`) firing `.recordApplication`.
 - Key: `shortcuts.recording.applicationCapture`.
+
+### Screenshot area window switch
+
+- Plain `Space` switches an active screenshot area selection from manual region selection to application-window selection.
+- `Space` is reserved for this switch during screenshot and recording area selection; it does not move the active selection rectangle.
 
 ### All-In-One HUD mode shortcuts (child layer)
 

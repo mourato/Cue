@@ -123,7 +123,7 @@ enum CaptureOverlayShortcutSettings {
     private static let explicitEmptyShortcutData = Data("null".utf8)
 
     static let defaultRecordingApplicationCaptureShortcut = CaptureOverlayShortcut(
-        keyCode: UInt32(kVK_ANSI_A),
+        keyCode: UInt32(kVK_Space),
         modifiers: 0,
     )
 

@@ -27,9 +27,9 @@ final class CaptureOverlayShortcutSettingsTests: XCTestCase {
 
     // MARK: - Default Values
 
-    func testDefaultRecordingApplicationCaptureShortcut_isKeyA() {
+    func testDefaultRecordingApplicationCaptureShortcut_isSpace() {
         let shortcut = CaptureOverlayShortcutSettings.defaultRecordingApplicationCaptureShortcut
-        XCTAssertEqual(shortcut.keyCode, UInt32(kVK_ANSI_A))
+        XCTAssertEqual(shortcut.keyCode, UInt32(kVK_Space))
         XCTAssertEqual(shortcut.modifiers, 0)
     }
 
@@ -127,7 +127,7 @@ final class CaptureOverlayShortcutSettingsTests: XCTestCase {
         CaptureOverlayShortcutSettings.resetRecordingApplicationCaptureShortcut()
 
         let loaded = try XCTUnwrap(CaptureOverlayShortcutSettings.recordingApplicationCaptureShortcut)
-        XCTAssertEqual(loaded.keyCode, UInt32(kVK_ANSI_A))
+        XCTAssertEqual(loaded.keyCode, UInt32(kVK_Space))
         XCTAssertEqual(loaded.modifiers, 0)
     }
 
@@ -163,7 +163,7 @@ final class CaptureOverlayShortcutSettingsTests: XCTestCase {
         defaults.set("123", forKey: PreferencesKeys.recordingApplicationCaptureShortcut)
 
         let shortcut = try XCTUnwrap(CaptureOverlayShortcutSettings.recordingApplicationCaptureShortcut)
-        XCTAssertEqual(shortcut.keyCode, UInt32(kVK_ANSI_A))
+        XCTAssertEqual(shortcut.keyCode, UInt32(kVK_Space))
         XCTAssertEqual(shortcut.modifiers, 0)
     }
 
@@ -171,7 +171,7 @@ final class CaptureOverlayShortcutSettingsTests: XCTestCase {
         defaults.set("  ", forKey: PreferencesKeys.recordingApplicationCaptureShortcut)
 
         let shortcut = try XCTUnwrap(CaptureOverlayShortcutSettings.recordingApplicationCaptureShortcut)
-        XCTAssertEqual(shortcut.keyCode, UInt32(kVK_ANSI_A))
+        XCTAssertEqual(shortcut.keyCode, UInt32(kVK_Space))
     }
 
     // MARK: - CaptureOverlayShortcut Codable
