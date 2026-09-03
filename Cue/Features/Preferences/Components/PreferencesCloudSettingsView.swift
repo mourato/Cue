@@ -3,6 +3,7 @@
 //  Notinhas
 //
 
+import AppKit
 import SwiftUI
 
 struct CloudSettingsView: View {
@@ -10,6 +11,7 @@ struct CloudSettingsView: View {
     @State private var credential = ""
     @State private var isEditing = false
     @State private var errorMessage: String?
+    @State private var revealToken = false
 
     var body: some View {
         Form {
@@ -72,6 +74,37 @@ struct CloudSettingsView: View {
                         .foregroundStyle(.secondary)
                 }
             }
+
+            if uploadConfiguration.provider == .cloudflare {
+                Section("Cloudflare Worker") {
+                    TextField(L10n.CloudSettings.cloudflareWorkerURL, text: Binding(
+                        get: { uploadConfiguration.cloudflareWorkerURL },
+                        set: { uploadConfiguration.setCloudflareWorkerURL($0) },
+                    ))
+                    .textFieldStyle(.roundedBorder)
+                    HStack {
+                        Button("Generate token") { credential = UUID().uuidString.replacingOccurrences(
+                            of: "-",
+                            with: "",
+                        )
+                        isEditing = true
+                        }
+                        Button(revealToken ? "Hide token" : "Reveal token") { revealToken.toggle() }
+                        Button("Copy token") {
+                            NSPasteboard.general.clearContents()
+                            NSPasteboard.general.setString(uploadConfiguration.cloudflare.token ?? "", forType: .string)
+                        }
+                    }
+                    HStack {
+                        Link("Deploy Worker", destination: URL(string: "https://dash.cloudflare.com")!)
+                        Button("Verify connection") {
+                            errorMessage = CueCloudflareConfiguration
+                                .validWorkerURL(uploadConfiguration.cloudflareWorkerURL) == nil ?
+                                "Enter a valid HTTP or HTTPS Worker URL." : nil
+                        }
+                    }
+                }
+            }
         }
         .formStyle(.grouped)
         .alert(L10n.CloudSettings.transferAlertTitle, isPresented: errorBinding) {
@@ -99,6 +132,8 @@ struct CloudSettingsView: View {
                 try uploadConfiguration.imgbb.save(apiKey: credential)
             case .imageKit:
                 try uploadConfiguration.imageKit.save(privateKey: credential)
+            case .cloudflare:
+                try uploadConfiguration.cloudflare.save(token: credential)
             }
             credential = ""
             isEditing = false
@@ -145,6 +180,7 @@ struct CloudSettingsView: View {
         switch uploadConfiguration.provider {
         case .imgbb: L10n.CloudSettings.imgbbDescription
         case .imageKit: L10n.CloudSettings.imageKitDescription
+        case .cloudflare: L10n.CloudSettings.cloudflareDescription
         }
     }
 
@@ -152,6 +188,7 @@ struct CloudSettingsView: View {
         switch uploadConfiguration.provider {
         case .imgbb: L10n.CloudSettings.imgbbAPIKeyTitle
         case .imageKit: L10n.CloudSettings.imageKitPrivateKeyTitle
+        case .cloudflare: L10n.CloudSettings.cloudflareToken
         }
     }
 
@@ -159,6 +196,7 @@ struct CloudSettingsView: View {
         switch uploadConfiguration.provider {
         case .imgbb: uploadConfiguration.imgbb.clear()
         case .imageKit: uploadConfiguration.imageKit.clear()
+        case .cloudflare: uploadConfiguration.cloudflare.clear()
         }
         credential = ""
     }

@@ -13,6 +13,8 @@ thermo-nuclear review → fix all findings → next plan).
 
 ## Historical plan status
 
+| 114 | BYO Cloudflare Worker sharing | P1 | M | 089, 110 | IN PROGRESS (Cue-side only; companion Worker intentionally out of scope) |
+
 | Plan | Title | Status |
 |---|---|---|
 | 001 | Add the Notes editor extension | DONE |

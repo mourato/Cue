@@ -1,6 +1,11 @@
 import Foundation
 
 enum CueL10n {
+    static let cloudflareMissingWorkerURL = "Add a Cloudflare Worker URL in Preferences → Uploads before uploading."
+    static let cloudflareMissingToken = "Generate or add an UPLOAD_TOKEN in Preferences → Uploads before uploading."
+    static let cloudflareInvalidResponse = "Cloudflare Worker returned an unexpected response."
+    static let cloudflareUploadFailed = "Cloudflare Worker upload failed."
+    static let cloudflareOffline = "Cloudflare Worker could not be reached. Check your connection."
     static let noteTool = L10n.Cue.noteTool
     static let noteToolGestureHint = L10n.Cue.noteToolGestureHint
     static func noteToolTooltip(title: String, gestureHint: String = noteToolGestureHint) -> String {

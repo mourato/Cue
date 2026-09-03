@@ -4119,6 +4119,21 @@ nonisolated enum L10n {
             defaultValue: "Direct ImageKit image and video sharing for manual uploads from Annotate and Quick Access. The private key stays in Keychain.",
             comment: "Description for ImageKit image and video sharing preferences",
         )
+        static let cloudflareDescription = string(
+            "cloud-settings.cloudflare-description",
+            defaultValue: "Direct sharing through your Cloudflare Worker. The UPLOAD_TOKEN stays in Keychain.",
+            comment: "Description for Cloudflare Worker sharing preferences",
+        )
+        static let cloudflareWorkerURL = string(
+            "cloud-settings.cloudflare-worker-url",
+            defaultValue: "Worker URL",
+            comment: "Cloudflare Worker URL setting label",
+        )
+        static let cloudflareToken = string(
+            "cloud-settings.cloudflare-token",
+            defaultValue: "UPLOAD_TOKEN",
+            comment: "Cloudflare Worker upload token setting label",
+        )
         static let imageKitPrivateKeyTitle = string(
             "cloud-settings.imagekit-private-key-title",
             defaultValue: "ImageKit Private Key",

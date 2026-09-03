@@ -808,6 +808,7 @@ struct QuickAccessCardView: View {
         switch uploadConfiguration.provider {
         case .imgbb: CueL10n.imgbbUploadFailed
         case .imageKit: CueL10n.imageKitUploadFailed
+        case .cloudflare: CueL10n.cloudflareUploadFailed
         }
     }
 }

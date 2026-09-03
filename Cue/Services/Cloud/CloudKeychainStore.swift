@@ -102,6 +102,39 @@ struct CloudKeychainDeleteIssue {
 }
 
 enum CloudKeychainStore {
+    private static let cloudflareTokenAccount = "com.mourato.cue.cloud.cloudflareUploadToken"
+
+    static func readCloudflareToken(context _: String) -> CloudKeychainReadOutcome {
+        readValue(at: Location(service: currentService, account: cloudflareTokenAccount, usesDataProtection: true))
+    }
+
+    static func probeCloudflareToken(context _: String) -> CloudKeychainPresence {
+        switch probeValue(at: Location(
+            service: currentService,
+            account: cloudflareTokenAccount,
+            usesDataProtection: true,
+        )) {
+        case .present, .error: .present
+        case .absent: .absent
+        }
+    }
+
+    static func upsertCloudflareToken(_ value: String) throws {
+        guard let data = value.data(using: .utf8)
+        else { throw CloudError.keychainError(L10n.CloudOperation.failedToEncodeKeychainValue) }
+        let result = upsertValue(
+            data,
+            at: Location(service: currentService, account: cloudflareTokenAccount, usesDataProtection: true),
+        )
+        guard case .success = result
+        else { throw CloudError.keychainError(L10n.CloudOperation.secItemAddFailed(Int(errSecInternalError))) }
+    }
+
+    static func deleteCloudflareToken() {
+        deleteValue(at: Location(service: currentService, account: cloudflareTokenAccount, usesDataProtection: true))
+        deleteValue(at: Location(service: currentService, account: cloudflareTokenAccount, usesDataProtection: false))
+    }
+
     private struct Location: Equatable {
         let service: String
         let account: String
