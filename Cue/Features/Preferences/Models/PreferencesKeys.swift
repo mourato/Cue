@@ -182,4 +182,6 @@ enum PreferencesKeys {
     static let uploadProvider = "uploads.provider"
     static let uploadImageKitPlan = "uploads.imageKitPlan"
     static let uploadImageKitCustomVideoLimitMB = "uploads.imageKitCustomVideoLimitMB"
+    static let cloudflareWorkerURL = "uploads.cloudflare.workerURL"
+    static let cloudflareCredentialConfigured = "uploads.cloudflare.workerURL.configured"
 }

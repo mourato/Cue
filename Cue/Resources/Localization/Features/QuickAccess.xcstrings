@@ -3806,25 +3806,31 @@
       }
     },
     "quick-access.upload-file-too-large" : {
-      "extractionState" : "stale",
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "This video is larger than the configured ImageKit upload limit. Optimize it before uploading."
-          }
-        }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Dieses Video ist größer als das Upload-Limit des ausgewählten Anbieters. Optimiere es vor dem Upload." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This video is larger than the selected provider’s upload limit. Optimize it before uploading." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Este vídeo supera el límite de subida del proveedor seleccionado. Optimízalo antes de subirlo." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Cette vidéo dépasse la limite d’envoi du fournisseur sélectionné. Optimisez-la avant de l’envoyer." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "このビデオは選択したプロバイダのアップロード上限を超えています。アップロード前に最適化してください。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "이 비디오는 선택한 제공업체의 업로드 한도를 초과합니다. 업로드하기 전에 최적화하세요." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Это видео превышает лимит загрузки выбранного провайдера. Оптимизируйте его перед загрузкой." } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Video này vượt quá giới hạn tải lên của nhà cung cấp đã chọn. Hãy tối ưu hóa trước khi tải lên." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "此视频超过了所选提供商的上传限制。请在上传前进行优化。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "此影片超過所選供應商的上傳限制。請在上傳前進行最佳化。" } }
       }
     },
-    "quick-access.video-upload-requires-imagekit" : {
-      "extractionState" : "stale",
+    "quick-access.video-upload-requires-provider" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Video uploads require ImageKit. Choose it in Preferences → Uploads."
-          }
-        }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Für Video-Uploads ist ein Anbieter erforderlich, der Videos unterstützt. Wähle einen unter Einstellungen → Uploads." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Video uploads require a provider that supports video. Choose one in Preferences → Uploads." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Para subir vídeos necesitas un proveedor compatible con vídeo. Elige uno en Preferencias → Subidas." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Les vidéos nécessitent un fournisseur compatible. Choisissez-en un dans Préférences → Envois." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ビデオをアップロードするには、ビデオに対応したプロバイダが必要です。設定 → アップロードで選択してください。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "비디오를 업로드하려면 비디오를 지원하는 제공업체가 필요합니다. 환경설정 → 업로드에서 선택하세요." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Для загрузки видео нужен провайдер с поддержкой видео. Выберите его в настройках → Загрузки." } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Để tải video lên, cần chọn nhà cung cấp hỗ trợ video. Hãy chọn trong Tùy chọn → Tải lên." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "上传视频需要支持视频的提供商。请在偏好设置 → 上传中选择一个。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "上傳影片需要支援影片的供應商。請在偏好設定 → 上傳中選擇一個。" } }
       }
     },
     "quick-access.pin-window.fit" : {
@@ -4152,7 +4158,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn’t optimize this video enough to fit the ImageKit upload target."
+            "value" : "Couldn’t optimize this video enough to fit the selected provider’s upload target."
           }
         }
       }
@@ -4202,7 +4208,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This video is %@. The safe ImageKit upload target is %@."
+            "value" : "This video is %@. The safe upload target is %@."
           }
         }
       }

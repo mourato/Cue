@@ -35,7 +35,7 @@ final class CueCloudflareUploadServiceTests: XCTestCase {
         XCTAssertEqual(result.url, "https://worker.example/abc123")
     }
 
-    func testUploadRejectsHTTPWorkerAndHTTPResponseURL() async {
+    func testUploadRejectsHTTPWorkerURL() async {
         do {
             _ = try await makeService().upload(
                 fileURL: temporaryFile(),
@@ -48,6 +48,60 @@ final class CueCloudflareUploadServiceTests: XCTestCase {
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
+    }
+
+    func testUploadRejectsNonHTTPSResponseURL() async {
+        MockCloudflareURLProtocol.requestHandler = { _ in
+            Self.response(
+                status: 201,
+                body: #"{"id":"abc123","url":"http://worker.example/abc123","filename":"fixture.mp4","size":7}"#,
+            )
+        }
+
+        do {
+            _ = try await makeService().upload(
+                fileURL: temporaryFile(),
+                workerURL: "https://worker.example",
+                token: "fixture-token",
+            )
+            XCTFail("Expected public HTTPS URL validation")
+        } catch let error as CueCloudflareUploadError {
+            XCTAssertEqual(error, .invalidResponse)
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
+    func testUploadRejectsFileOver95MiBBeforeNetwork() async throws {
+        let fileURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("cloudflare-over-limit-\(UUID().uuidString).mp4")
+        try Data().write(to: fileURL)
+        let fileHandle = try FileHandle(forWritingTo: fileURL)
+        try fileHandle.truncate(atOffset: UInt64(CueCloudflareConfiguration.maximumUploadBytes + 1))
+        try fileHandle.close()
+        defer { try? FileManager.default.removeItem(at: fileURL) }
+
+        do {
+            _ = try await makeService().upload(
+                fileURL: fileURL,
+                workerURL: "https://worker.example",
+                token: "fixture-token",
+            )
+            XCTFail("Expected the client size limit")
+        } catch let error as CueCloudflareUploadError {
+            XCTAssertEqual(error, .fileTooLarge)
+        }
+    }
+
+    func testVerifyUsesWorkerPingContract() async throws {
+        MockCloudflareURLProtocol.requestHandler = { request in
+            XCTAssertEqual(request.url?.absoluteString, "https://worker.example/api/ping")
+            XCTAssertEqual(request.httpMethod, "GET")
+            XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Bearer fixture-token")
+            return Self.response(status: 200, body: #"{"ok":true}"#)
+        }
+
+        try await makeService().verify(workerURL: "https://worker.example", token: "fixture-token")
     }
 
     func testUnauthorizedResponseDoesNotExposeToken() async {
@@ -141,6 +195,8 @@ private final class MockCloudflareURLProtocol: URLProtocol {
     override func stopLoading() {}
 }
 
+/// URLProtocol callbacks and test setup can run concurrently; the lock protects
+/// the handler while the callback invokes a snapshot after unlocking.
 private final class HandlerState: @unchecked Sendable {
     private let lock = NSLock()
     private var storedHandler: MockCloudflareURLProtocol.Handler?

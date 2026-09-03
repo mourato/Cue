@@ -5547,27 +5547,72 @@
     },
     "annotate.notinhas.cloudflare-invalid-response": {
       "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Cloudflare Worker returned an unexpected response." } }
+        "de": { "stringUnit": { "state": "translated", "value": "Der Cloudflare Worker hat eine unerwartete Antwort zurückgegeben." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Cloudflare Worker returned an unexpected response." } },
+        "es": { "stringUnit": { "state": "translated", "value": "El Worker de Cloudflare devolvió una respuesta inesperada." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Le Worker Cloudflare a renvoyé une réponse inattendue." } },
+        "ja": { "stringUnit": { "state": "translated", "value": "Cloudflare Worker から予期しない応答が返されました。" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "Cloudflare Worker에서 예상치 못한 응답을 반환했습니다." } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Cloudflare Worker вернул неожиданный ответ." } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Cloudflare Worker trả về phản hồi không mong đợi." } },
+        "zh-Hans": { "stringUnit" : { "state" : "translated", "value" : "Cloudflare Worker 返回了意外响应。" } },
+        "zh-Hant": { "stringUnit" : { "state" : "translated", "value" : "Cloudflare Worker 傳回了非預期的回應。" } }
       }
     },
     "annotate.notinhas.cloudflare-missing-token": {
       "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Generate or add an UPLOAD_TOKEN in Preferences → Uploads before uploading." } }
+        "de": { "stringUnit": { "state": "translated", "value": "Generiere oder füge unter Einstellungen → Uploads ein UPLOAD_TOKEN hinzu, bevor du hochlädst." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Generate or add an UPLOAD_TOKEN in Preferences → Uploads before uploading." } },
+        "es": { "stringUnit": { "state": "translated", "value": "Genera o añade un UPLOAD_TOKEN en Preferencias → Subidas antes de subir." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Générez ou ajoutez un UPLOAD_TOKEN dans Préférences → Envois avant de téléverser." } },
+        "ja": { "stringUnit": { "state": "translated", "value": "アップロードする前に、設定 → アップロードで UPLOAD_TOKEN を生成または追加してください。" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "업로드하기 전에 환경설정 → 업로드에서 UPLOAD_TOKEN을 생성하거나 추가하세요." } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Перед загрузкой создайте или добавьте UPLOAD_TOKEN в настройках → Загрузки." } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Hãy tạo hoặc thêm UPLOAD_TOKEN trong Tùy chọn → Tải lên trước khi tải." } },
+        "zh-Hans": { "stringUnit" : { "state" : "translated", "value" : "上传前请在偏好设置 → 上传中生成或添加 UPLOAD_TOKEN。" } },
+        "zh-Hant": { "stringUnit" : { "state" : "translated", "value" : "上傳前請在偏好設定 → 上傳中產生或新增 UPLOAD_TOKEN。" } }
       }
     },
     "annotate.notinhas.cloudflare-missing-worker-url": {
       "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Add a Cloudflare Worker URL in Preferences → Uploads before uploading." } }
+        "de": { "stringUnit": { "state": "translated", "value": "Füge unter Einstellungen → Uploads eine Cloudflare-Worker-URL hinzu, bevor du hochlädst." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Add a Cloudflare Worker URL in Preferences → Uploads before uploading." } },
+        "es": { "stringUnit": { "state": "translated", "value": "Añade una URL de Worker de Cloudflare en Preferencias → Subidas antes de subir." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Ajoutez une URL de Worker Cloudflare dans Préférences → Envois avant de téléverser." } },
+        "ja": { "stringUnit": { "state": "translated", "value": "アップロードする前に、設定 → アップロードで Cloudflare Worker URL を追加してください。" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "업로드하기 전에 환경설정 → 업로드에서 Cloudflare Worker URL을 추가하세요." } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Перед загрузкой добавьте URL Cloudflare Worker в настройках → Загрузки." } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Hãy thêm URL Cloudflare Worker trong Tùy chọn → Tải lên trước khi tải." } },
+        "zh-Hans": { "stringUnit" : { "state" : "translated", "value" : "上传前请在偏好设置 → 上传中添加 Cloudflare Worker URL。" } },
+        "zh-Hant": { "stringUnit" : { "state" : "translated", "value" : "上傳前請在偏好設定 → 上傳中新增 Cloudflare Worker URL。" } }
       }
     },
     "annotate.notinhas.cloudflare-offline": {
       "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Cloudflare Worker could not be reached. Check your connection." } }
+        "de": { "stringUnit": { "state": "translated", "value": "Der Cloudflare Worker ist nicht erreichbar. Überprüfe deine Verbindung." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Cloudflare Worker could not be reached. Check your connection." } },
+        "es": { "stringUnit": { "state": "translated", "value": "No se pudo conectar con el Worker de Cloudflare. Comprueba tu conexión." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Le Worker Cloudflare est inaccessible. Vérifiez votre connexion." } },
+        "ja": { "stringUnit": { "state": "translated", "value": "Cloudflare Worker に接続できませんでした。接続を確認してください。" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "Cloudflare Worker에 연결할 수 없습니다. 연결을 확인하세요." } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Не удалось подключиться к Cloudflare Worker. Проверьте соединение." } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Không thể kết nối với Cloudflare Worker. Hãy kiểm tra kết nối." } },
+        "zh-Hans": { "stringUnit" : { "state" : "translated", "value" : "无法连接到 Cloudflare Worker。请检查网络连接。" } },
+        "zh-Hant": { "stringUnit" : { "state" : "translated", "value" : "無法連線至 Cloudflare Worker。請檢查網路連線。" } }
       }
     },
     "annotate.notinhas.cloudflare-upload-failed": {
       "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Cloudflare Worker upload failed." } }
+        "de": { "stringUnit": { "state": "translated", "value": "Der Upload zum Cloudflare Worker ist fehlgeschlagen." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Cloudflare Worker upload failed." } },
+        "es": { "stringUnit": { "state": "translated", "value": "La subida al Worker de Cloudflare ha fallado." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "L’envoi vers le Worker Cloudflare a échoué." } },
+        "ja": { "stringUnit": { "state": "translated", "value": "Cloudflare Worker へのアップロードに失敗しました。" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "Cloudflare Worker 업로드에 실패했습니다." } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Не удалось загрузить файл в Cloudflare Worker." } },
+        "vi": { "stringUnit": { "state": "translated", "value": "Tải lên Cloudflare Worker thất bại." } },
+        "zh-Hans": { "stringUnit" : { "state" : "translated", "value" : "上传到 Cloudflare Worker 失败。" } },
+        "zh-Hant": { "stringUnit" : { "state" : "translated", "value" : "上傳至 Cloudflare Worker 失敗。" } }
       }
     },
     "annotate.notinhas.imgbb-invalid-image-data": {

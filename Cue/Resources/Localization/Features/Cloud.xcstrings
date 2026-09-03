@@ -3,67 +3,198 @@
   "strings" : {
     "cloud-settings.cloudflare-connected" : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Connected" } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Verbunden" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Connected" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Conectado" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Connecté" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "接続済み" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "연결됨" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Подключено" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Đã kết nối" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已连接" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已連線" } }
       }
     },
     "cloud-settings.cloudflare-connection-error" : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Connection failed" } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Verbindung fehlgeschlagen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Connection failed" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Error de conexión" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Échec de la connexion" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "接続に失敗しました" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "연결 실패" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ошибка подключения" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Kết nối thất bại" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "连接失败" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "連線失敗" } }
       }
     },
     "cloud-settings.cloudflare-copy-token" : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Copy token" } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Token kopieren" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Copy token" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Copiar token" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Copier le token" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "トークンをコピー" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "토큰 복사" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Скопировать токен" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Sao chép token" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "复制令牌" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "複製權杖" } }
       }
     },
-    "cloud-settings.cloudflare-deploy" : {
+    "cloud-settings.cloudflare-description" : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Deploy Worker" } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Direktes Teilen über deinen Cloudflare Worker. Das UPLOAD_TOKEN bleibt im Schlüsselbund." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Direct sharing through your Cloudflare Worker. The UPLOAD_TOKEN stays in Keychain." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Compartir directamente mediante tu Worker de Cloudflare. El UPLOAD_TOKEN permanece en el llavero." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Partage direct via votre Worker Cloudflare. L’UPLOAD_TOKEN reste dans le trousseau." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Cloudflare Worker 経由で直接共有します。UPLOAD_TOKEN はキーチェーンに保存されます。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Cloudflare Worker를 통해 직접 공유합니다. UPLOAD_TOKEN은 키체인에 보관됩니다." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Прямая публикация через ваш Cloudflare Worker. UPLOAD_TOKEN хранится в связке ключей." } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Chia sẻ trực tiếp qua Cloudflare Worker của bạn. UPLOAD_TOKEN được lưu trong Keychain." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "通过你的 Cloudflare Worker 直接分享。UPLOAD_TOKEN 保存在钥匙串中。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "透過你的 Cloudflare Worker 直接分享。UPLOAD_TOKEN 會儲存在鑰匙串中。" } }
+      }
+    },
+    "cloud-settings.cloudflare-docs" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Worker-Doku öffnen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Worker docs" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Abrir documentación de Workers" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ouvrir la documentation Worker" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Worker ドキュメントを開く" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Worker 문서 열기" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открыть документацию Worker" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Mở tài liệu Worker" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "打开 Worker 文档" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "開啟 Worker 文件" } }
       }
     },
     "cloud-settings.cloudflare-generate-token" : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Generate token" } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Token generieren" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Generate token" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Generar token" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Générer un token" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "トークンを生成" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "토큰 생성" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Создать токен" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Tạo token" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "生成令牌" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "產生權杖" } }
       }
     },
     "cloud-settings.cloudflare-hide-token" : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Hide token" } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Token ausblenden" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Hide token" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Ocultar token" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Masquer le token" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "トークンを隠す" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "토큰 숨기기" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Скрыть токен" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ẩn token" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "隐藏令牌" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "隱藏權杖" } }
       }
     },
     "cloud-settings.cloudflare-not-configured" : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not configured" } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nicht konfiguriert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not configured" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "No configurado" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Non configuré" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "未設定" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "구성되지 않음" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не настроено" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Chưa cấu hình" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "未配置" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "未設定" } }
       }
     },
     "cloud-settings.cloudflare-reveal-token" : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reveal token" } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Token anzeigen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reveal token" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar token" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Afficher le token" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "トークンを表示" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "토큰 표시" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Показать токен" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Hiện token" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "显示令牌" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "顯示權杖" } }
       }
     },
     "cloud-settings.cloudflare-section" : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cloudflare Worker" } }
-      }
-    },
-    "cloud-settings.cloudflare-verify" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Verify connection" } }
-      }
-    },
-    "cloud-settings.cloudflare-verifying" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Verifying…" } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Cloudflare Worker" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cloudflare Worker" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Worker de Cloudflare" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Worker Cloudflare" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Cloudflare Worker" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Cloudflare Worker" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Cloudflare Worker" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Cloudflare Worker" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Cloudflare Worker" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Cloudflare Worker" } }
       }
     },
     "cloud-settings.cloudflare-token" : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "UPLOAD_TOKEN" } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "UPLOAD_TOKEN" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "UPLOAD_TOKEN" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "UPLOAD_TOKEN" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "UPLOAD_TOKEN" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "UPLOAD_TOKEN" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "UPLOAD_TOKEN" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "UPLOAD_TOKEN" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "UPLOAD_TOKEN" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "UPLOAD_TOKEN" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "UPLOAD_TOKEN" } }
+      }
+    },
+    "cloud-settings.cloudflare-verify" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Verbindung überprüfen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Verify connection" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Verificar conexión" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Vérifier la connexion" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "接続を確認" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "연결 확인" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверить подключение" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Xác minh kết nối" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "验证连接" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "驗證連線" } }
+      }
+    },
+    "cloud-settings.cloudflare-verifying" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wird überprüft…" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Verifying…" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Verificando…" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Vérification…" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "確認中…" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "확인 중…" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверка…" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Đang xác minh…" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "正在验证…" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "正在驗證…" } }
       }
     },
     "cloud-settings.cloudflare-worker-url" : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Worker URL" } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Worker-URL" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Worker URL" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "URL del Worker" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "URL du Worker" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Worker URL" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Worker URL" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "URL Worker" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "URL Worker" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Worker URL" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Worker URL" } }
       }
     },
     "cloud-operation.failed-to-encode-keychain-value" : {

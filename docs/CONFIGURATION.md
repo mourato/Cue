@@ -48,17 +48,17 @@ The TOML file covers portable app preferences:
 - General settings: language, appearance, sounds, URL scheme integration, show menu bar icon, login item, export folder path.
 - Updates: automatic check/download and the  update channel (`stable` or `beta`).
 - Capture settings: naming templates, screenshot format, cursor/app inclusion, freeze area, show selection area overlay, reverse magnifier zoom direction, scrolling hints, OCR notification, object cutout auto-crop.
-- After-capture actions for screenshot and recording: `save`, `quick_access`, `copy_file`, and `open_annotate` under `[capture.after.screenshot]` / `[capture.after.recording]`. BYO cloud upload is retired; the existing explicit `uploadToImgBB` action is dynamically labeled for the selected ImgBB or ImageKit host, with video uploads available only through ImageKit.
+- After-capture actions for screenshot and recording: `save`, `quick_access`, `copy_file`, and `open_annotate` under `[capture.after.screenshot]` / `[capture.after.recording]`. Generic BYO cloud upload is retired; the existing explicit `uploadToImgBB` action is dynamically labeled for the selected ImgBB, ImageKit, or Cloudflare host, with video uploads available through ImageKit or Cloudflare.
 - Recording settings: format, quality, FPS, audio, microphone device id, cursor, click highlights, keystroke overlay, live annotation shortcuts, video editor zoom transition duration.
 - Quick Access: visibility, position, countdown behavior, gesture toggles, trackpad swipe mode, swipe left/right actions, hide card when window open, animation style, action order, enabled actions, card slots.
 - History: retention, maximum count, floating panel layout and filter.
-- Image upload settings: optimization toggle, derivative format, maximum physical pixel dimension, and JPEG/WebP quality under `[uploads]`. ImageKit's selected plan and custom video limit are local UserDefaults settings; they are intentionally not exported because the provider does not expose plan limits through its API.
+- Image upload settings: optimization toggle, derivative format, maximum physical pixel dimension, and JPEG/WebP quality under `[uploads]`. ImageKit's selected plan and custom video limit are local UserDefaults settings; they are intentionally not exported because the provider does not expose plan limits through its API. Cloudflare's Worker URL is also local UserDefaults state and is not exported.
 - Annotate preferences.
 - Global, overlay, Annotate tool, and Annotate action shortcuts.
 
 The export intentionally excludes secrets and machine-private state:
 
-- The selected provider (`imgbb` or `imageKit`) is persisted locally under the `uploads.provider` UserDefaults key; absent/invalid values safely use ImgBB. It is not included in TOML export/import. ImgBB API keys and ImageKit private keys are never exported or imported: they remain in provider-scoped Keychain items configured separately in Preferences → Uploads.
+- The selected provider (`imgbb`, `imageKit`, or `cloudflare`) is persisted locally under the `uploads.provider` UserDefaults key; absent/invalid values safely use ImgBB. It is not included in TOML export/import. ImgBB API keys, ImageKit private keys, and Cloudflare UPLOAD_TOKEN values are never exported or imported: they remain in provider-scoped Keychain items configured separately in Preferences → Uploads.
 - Legacy cloud configuration keys are ignored on import and are never rewritten or deleted.
 - Capture history, temp files, annotation sidecars, caches, and
   app diagnostics are not part of `config.toml`.

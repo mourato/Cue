@@ -561,7 +561,7 @@ struct QuickAccessCardView: View {
         // testing, so the thumbnail stays decorative and the card owns interaction.
         Image(nsImage: item.thumbnail)
             .resizable()
-            .aspectRatio(contentMode: .fill)
+            .scaledToFill()
             .frame(width: scaledWidth, height: scaledHeight)
             .clipped()
             .blur(radius: isHovering ? 2 : 0)
@@ -715,7 +715,7 @@ struct QuickAccessCardView: View {
     private var dragPreview: some View {
         Image(nsImage: item.thumbnail)
             .resizable()
-            .aspectRatio(contentMode: .fill)
+            .scaledToFill()
             .frame(width: scaledWidth * 0.8, height: scaledHeight * 0.8)
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
             .shadow(color: Color.black.opacity(0.3), radius: 4, x: 0, y: 2)

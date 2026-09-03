@@ -40,6 +40,7 @@ final class CueUploadConfigurationStore: ObservableObject {
     @Published private(set) var revision = UUID()
 
     private let defaults: UserDefaults
+    private let cloudflareService: CueCloudflareUploadService
     private var cancellables = Set<AnyCancellable>()
     let imgbb: CueImgBBCredentialStore
     let imageKit: CueImageKitCredentialStore
@@ -50,11 +51,13 @@ final class CueUploadConfigurationStore: ObservableObject {
         imgbb: CueImgBBCredentialStore = .shared,
         imageKit: CueImageKitCredentialStore = .shared,
         cloudflare: CueCloudflareCredentialStore = .shared,
+        cloudflareService: CueCloudflareUploadService = .shared,
     ) {
         self.defaults = defaults
         self.imgbb = imgbb
         self.imageKit = imageKit
         self.cloudflare = cloudflare
+        self.cloudflareService = cloudflareService
         provider = defaults.string(forKey: PreferencesKeys.uploadProvider)
             .flatMap(CueUploadProvider.init(rawValue:)) ?? .imgbb
         imageKitPlan = defaults.string(forKey: PreferencesKeys.uploadImageKitPlan)
@@ -69,11 +72,12 @@ final class CueUploadConfigurationStore: ObservableObject {
         if defaults.object(forKey: PreferencesKeys.uploadImageKitCustomVideoLimitMB) == nil {
             imageKitCustomVideoLimitMB = 100
         }
-        cloudflareWorkerURL = defaults.string(forKey: CueCloudflareConfiguration.workerURLKey) ?? ""
+        cloudflareWorkerURL = defaults.string(forKey: PreferencesKeys.cloudflareWorkerURL) ?? ""
         cloudflareConnectionState = .unconfigured
         imgbb.$isConfigured.sink { [weak self] _ in self?.revision = UUID() }.store(in: &cancellables)
         imageKit.$isConfigured.sink { [weak self] _ in self?.revision = UUID() }.store(in: &cancellables)
-        cloudflare.$isConfigured.sink { [weak self] _ in
+        cloudflare.$revision.sink { [weak self] _ in
+            self?.cloudflareVerificationID = nil
             self?.cloudflareConnectionState = .unconfigured
             self?.revision = UUID()
         }.store(in: &cancellables)
@@ -115,6 +119,8 @@ final class CueUploadConfigurationStore: ObservableObject {
 
     func select(_ provider: CueUploadProvider) {
         guard self.provider != provider else { return }
+        cloudflareVerificationID = nil
+        cloudflareConnectionState = .unconfigured
         self.provider = provider
         defaults.set(provider.rawValue, forKey: PreferencesKeys.uploadProvider)
         revision = UUID()
@@ -122,24 +128,32 @@ final class CueUploadConfigurationStore: ObservableObject {
 
     func setCloudflareWorkerURL(_ value: String) {
         cloudflareWorkerURL = value.trimmingCharacters(in: .whitespacesAndNewlines)
-        defaults.set(cloudflareWorkerURL, forKey: CueCloudflareConfiguration.workerURLKey)
+        defaults.set(cloudflareWorkerURL, forKey: PreferencesKeys.cloudflareWorkerURL)
+        cloudflareVerificationID = nil
         cloudflareConnectionState = .unconfigured
         revision = UUID()
     }
 
     func verifyCloudflareConnection() async {
+        guard cloudflareConnectionState != .verifying else { return }
         guard let token = cloudflare.token,
               CueCloudflareConfiguration.validWorkerURL(cloudflareWorkerURL) != nil else {
+            cloudflareVerificationID = nil
             cloudflareConnectionState = .unconfigured
             return
         }
+        let verificationID = UUID()
+        cloudflareVerificationID = verificationID
         cloudflareConnectionState = .verifying
         do {
-            try await CueCloudflareUploadService.shared.verify(workerURL: cloudflareWorkerURL, token: token)
+            try await cloudflareService.verify(workerURL: cloudflareWorkerURL, token: token)
+            guard cloudflareVerificationID == verificationID else { return }
             cloudflareConnectionState = .connected
         } catch {
+            guard cloudflareVerificationID == verificationID else { return }
             cloudflareConnectionState = .error
         }
+        cloudflareVerificationID = nil
         revision = UUID()
     }
 
@@ -162,11 +176,14 @@ final class CueUploadConfigurationStore: ObservableObject {
     }
 
     func reload() {
+        cloudflareVerificationID = nil
         imgbb.reload()
         imageKit.reload()
         cloudflare.reload()
-        cloudflareWorkerURL = defaults.string(forKey: CueCloudflareConfiguration.workerURLKey) ?? ""
+        cloudflareWorkerURL = defaults.string(forKey: PreferencesKeys.cloudflareWorkerURL) ?? ""
         cloudflareConnectionState = .unconfigured
         revision = UUID()
     }
+
+    private var cloudflareVerificationID: UUID?
 }

@@ -91,7 +91,7 @@ final class CueUploadProviderTests: XCTestCase {
         store.clear()
         XCTAssertFalse(store.isConfigured)
         XCTAssertNil(keychain.storedValue)
-        XCTAssertFalse(defaults.bool(forKey: CueCloudflareConfiguration.workerURLKey + ".configured"))
+        XCTAssertFalse(defaults.bool(forKey: PreferencesKeys.cloudflareCredentialConfigured))
         defaults.removePersistentDomain(forName: suite)
     }
 
@@ -100,6 +100,58 @@ final class CueUploadProviderTests: XCTestCase {
 
         XCTAssertEqual(token.count, 64)
         XCTAssertTrue(token.allSatisfy(\.isHexDigit))
+    }
+
+    func testCloudflareVerificationIgnoresResultAfterWorkerURLChanges() async throws {
+        let suite = "notinhas.cloudflare.verify.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        let keychain = MockProviderKeychain()
+        let credentials = CueCloudflareCredentialStore(defaults: defaults, keychain: keychain)
+        try credentials.save(token: "fixture-token")
+        defaults.set("https://old.worker.example", forKey: PreferencesKeys.cloudflareWorkerURL)
+
+        let started = expectation(description: "Cloudflare verification started")
+        let release = DispatchSemaphore(value: 0)
+        ProviderCloudflareURLProtocol.requestHandler = { request in
+            XCTAssertEqual(request.url?.absoluteString, "https://old.worker.example/api/ping")
+            started.fulfill()
+            release.wait()
+            return (
+                HTTPURLResponse(
+                    url: request.url!,
+                    statusCode: 200,
+                    httpVersion: nil,
+                    headerFields: nil,
+                )!,
+                Data(#"{"ok":true}"#.utf8),
+            )
+        }
+        defer {
+            release.signal()
+            ProviderCloudflareURLProtocol.requestHandler = nil
+            defaults.removePersistentDomain(forName: suite)
+        }
+
+        let sessionConfiguration = URLSessionConfiguration.ephemeral
+        sessionConfiguration.protocolClasses = [ProviderCloudflareURLProtocol.self]
+        let store = CueUploadConfigurationStore(
+            defaults: defaults,
+            imgbb: CueImgBBCredentialStore(defaults: defaults, keychain: MockProviderKeychain()),
+            imageKit: CueImageKitCredentialStore(defaults: defaults, keychain: MockProviderKeychain()),
+            cloudflare: credentials,
+            cloudflareService: CueCloudflareUploadService(
+                session: URLSession(configuration: sessionConfiguration),
+            ),
+        )
+
+        let verification = Task { await store.verifyCloudflareConnection() }
+        await fulfillment(of: [started], timeout: 1)
+        store.setCloudflareWorkerURL("https://new.worker.example")
+        release.signal()
+        await verification.value
+
+        XCTAssertEqual(store.cloudflareConnectionState, .unconfigured)
+        XCTAssertNotEqual(store.cloudflareConnectionState, .connected)
     }
 
     func testCloudflareSupportsImagesGIFsVideosAndUses95MiBLimit() {
@@ -181,5 +233,60 @@ private final class MockProviderKeychain: ImgBBKeychainBacking, ImageKitKeychain
     func delete() -> [CloudKeychainDeleteIssue] {
         storedValue = nil
         return []
+    }
+}
+
+private final class ProviderCloudflareURLProtocol: URLProtocol {
+    typealias Handler = (URLRequest) throws -> (HTTPURLResponse, Data)
+    private static let state = ProviderCloudflareHandlerState()
+
+    static var requestHandler: Handler? {
+        get { state.handler }
+        set { state.handler = newValue }
+    }
+
+    override class func canInit(with _: URLRequest) -> Bool {
+        true
+    }
+
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+        request
+    }
+
+    override func startLoading() {
+        guard let handler = Self.requestHandler else {
+            client?.urlProtocol(self, didFailWithError: URLError(.badURL))
+            return
+        }
+        do {
+            let (response, data) = try handler(request)
+            client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+            client?.urlProtocol(self, didLoad: data)
+            client?.urlProtocolDidFinishLoading(self)
+        } catch {
+            client?.urlProtocol(self, didFailWithError: error)
+        }
+    }
+
+    override func stopLoading() {}
+}
+
+/// URLProtocol callbacks and test setup can run concurrently; the lock protects
+/// the handler while the callback invokes a snapshot after unlocking.
+private final class ProviderCloudflareHandlerState: @unchecked Sendable {
+    private let lock = NSLock()
+    private var storedHandler: ProviderCloudflareURLProtocol.Handler?
+
+    var handler: ProviderCloudflareURLProtocol.Handler? {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return storedHandler
+        }
+        set {
+            lock.lock()
+            storedHandler = newValue
+            lock.unlock()
+        }
     }
 }

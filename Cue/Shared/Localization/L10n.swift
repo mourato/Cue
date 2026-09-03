@@ -4184,10 +4184,10 @@ nonisolated enum L10n {
             defaultValue: "Copy token",
             comment: "Copy Cloudflare upload token",
         )
-        static let cloudflareDeploy = string(
-            "cloud-settings.cloudflare-deploy",
-            defaultValue: "Deploy Worker",
-            comment: "Open the Cloudflare Worker Deploy Button",
+        static let cloudflareDocs = string(
+            "cloud-settings.cloudflare-docs",
+            defaultValue: "Open Worker docs",
+            comment: "Open the official Cloudflare Worker documentation",
         )
         static let cloudflareVerify = string(
             "cloud-settings.cloudflare-verify",
@@ -7002,7 +7002,7 @@ nonisolated enum L10n {
         static let videoUploadTooLargeTitle = string(
             "quick-access.video-upload-too-large-title",
             defaultValue: "Optimize video for upload",
-            comment: "Quick Access title shown when a video reaches the ImageKit upload target",
+            comment: "Quick Access title shown when a video reaches the selected provider's upload target",
         )
         static func videoUploadTooLargeMessage(sourceSize: String, uploadLimit: String) -> String {
             format(
@@ -7066,7 +7066,7 @@ nonisolated enum L10n {
         )
         static let videoUploadOptimizationFailed = string(
             "quick-access.video-upload-optimization-failed",
-            defaultValue: "Couldn’t optimize this video enough to fit the ImageKit upload target.",
+            defaultValue: "Couldn’t optimize this video enough to fit the selected provider’s upload target.",
             comment: "Error shown when all native video optimization attempts remain over the upload target",
         )
         static let lockPinnedWindow = string(

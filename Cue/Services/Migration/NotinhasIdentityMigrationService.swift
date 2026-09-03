@@ -759,6 +759,7 @@ private extension CloudKeychainItem {
         case .googleClientSecret: "googleClientSecret"
         case .imgbbAPIKey: "imgbbAPIKey"
         case .imageKitPrivateKey: "imageKitPrivateKey"
+        case .cloudflareUploadToken: "cloudflareUploadToken"
         }
     }
 
@@ -816,6 +817,8 @@ private extension CloudKeychainItem {
         case .imgbbAPIKey:
             return []
         case .imageKitPrivateKey:
+            return []
+        case .cloudflareUploadToken:
             return []
         }
     }

@@ -2,7 +2,6 @@ import Foundation
 
 enum CueCloudflareConfiguration {
     static let displayName = "Cloudflare"
-    static let workerURLKey = "uploads.cloudflare.workerURL"
     static let maximumUploadBytes: Int64 = 95 * 1_048_576
 
     static func validWorkerURL(_ value: String) -> URL? {
@@ -74,9 +73,13 @@ actor CueCloudflareUploadService {
         let response: URLResponse
         do {
             (data, response) = try await session.upload(for: request, fromFile: fileURL)
-        } catch is CancellationError { throw CancellationError() }
-        catch let error as URLError where error.code == .cancelled { throw CancellationError() }
-        catch { throw CueCloudflareUploadError.transport }
+        } catch is CancellationError {
+            throw CancellationError()
+        } catch let error as URLError where error.code == .cancelled {
+            throw CancellationError()
+        } catch {
+            throw CueCloudflareUploadError.transport
+        }
         progress?(1)
 
         guard let http = response as? HTTPURLResponse,
@@ -149,6 +152,8 @@ actor CueCloudflareUploadService {
     }
 }
 
+/// URLSession invokes this delegate off-actor; NSLock serializes handler access,
+/// and callbacks only capture @Sendable closures.
 private final class UploadProgressDelegate: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
     private let lock = NSLock()
     private var handler: (@Sendable (Double) -> Void)?

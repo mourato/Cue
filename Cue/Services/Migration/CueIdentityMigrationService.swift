@@ -766,6 +766,7 @@ private extension CloudKeychainItem {
         case .googleClientSecret: "googleClientSecret"
         case .imgbbAPIKey: "imgbbAPIKey"
         case .imageKitPrivateKey: "imageKitPrivateKey"
+        case .cloudflareUploadToken: "cloudflareUploadToken"
         }
     }
 
@@ -788,6 +789,7 @@ private extension CloudKeychainItem {
         case .googleClientSecret: "com.mourato.notinhas.cloud.google.clientSecret"
         case .imgbbAPIKey: "com.mourato.notinhas.cloud.imgbbAPIKey"
         case .imageKitPrivateKey: "com.mourato.notinhas.cloud.imagekitPrivateKey"
+        case .cloudflareUploadToken: "com.mourato.notinhas.cloud.cloudflareUploadToken"
         }
     }
 }

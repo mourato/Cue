@@ -11,20 +11,19 @@ protocol CloudflareKeychainBacking {
 
 struct CloudKeychainCloudflareBacking: CloudflareKeychainBacking {
     func read(context: String) -> CloudKeychainReadOutcome {
-        CloudKeychainStore.readCloudflareToken(context: context)
+        CloudKeychainStore.read(item: .cloudflareUploadToken, context: context)
     }
 
     func probePresence(context: String) -> CloudKeychainPresence {
-        CloudKeychainStore.probeCloudflareToken(context: context)
+        CloudKeychainStore.probePresence(item: .cloudflareUploadToken, context: context)
     }
 
     func upsert(value: String) throws {
-        try CloudKeychainStore.upsertCloudflareToken(value)
+        try CloudKeychainStore.upsert(item: .cloudflareUploadToken, value: value)
     }
 
     func delete() -> [CloudKeychainDeleteIssue] {
-        CloudKeychainStore.deleteCloudflareToken()
-        return []
+        CloudKeychainStore.delete(item: .cloudflareUploadToken)
     }
 }
 
@@ -32,6 +31,7 @@ struct CloudKeychainCloudflareBacking: CloudflareKeychainBacking {
 final class CueCloudflareCredentialStore: ObservableObject {
     static let shared = CueCloudflareCredentialStore()
     @Published private(set) var isConfigured = false
+    @Published private(set) var revision = UUID()
     private let defaults: UserDefaults
     private let keychain: CloudflareKeychainBacking
 
@@ -55,22 +55,23 @@ final class CueCloudflareCredentialStore: ObservableObject {
     }
 
     func reload() {
-        let key = CueCloudflareConfiguration.workerURLKey + ".configured"
-        if let cached = defaults.object(forKey: key) as? Bool {
+        if let cached = defaults.object(forKey: PreferencesKeys.cloudflareCredentialConfigured) as? Bool {
             isConfigured = cached
         } else {
             let present = keychain.probePresence(context: "cloudflare-token-presence") == .present
-            defaults.set(present, forKey: key)
+            defaults.set(present, forKey: PreferencesKeys.cloudflareCredentialConfigured)
             isConfigured = present
         }
+        revision = UUID()
     }
 
     func save(token: String) throws {
         let value = token.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !value.isEmpty else { throw CueCloudflareUploadError.missingToken }
         try keychain.upsert(value: value)
-        defaults.set(true, forKey: CueCloudflareConfiguration.workerURLKey + ".configured")
+        defaults.set(true, forKey: PreferencesKeys.cloudflareCredentialConfigured)
         isConfigured = true
+        revision = UUID()
     }
 
     static func generatedToken() -> String {
@@ -83,7 +84,8 @@ final class CueCloudflareCredentialStore: ObservableObject {
 
     func clear() {
         _ = keychain.delete()
-        defaults.set(false, forKey: CueCloudflareConfiguration.workerURLKey + ".configured")
+        defaults.set(false, forKey: PreferencesKeys.cloudflareCredentialConfigured)
         isConfigured = false
+        revision = UUID()
     }
 }

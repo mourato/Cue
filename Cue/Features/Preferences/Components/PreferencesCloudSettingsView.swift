@@ -26,8 +26,15 @@ struct CloudSettingsView: View {
                     .foregroundStyle(.secondary)
 
                 if uploadConfiguration.isConfigured, !isEditing {
-                    Text(uploadConfiguration.maskedCredential)
-                        .textSelection(.enabled)
+                    if uploadConfiguration.provider == .cloudflare, revealToken {
+                        Text(verbatim: uploadConfiguration.credential ?? "")
+                            .font(.system(.body, design: .monospaced))
+                            .textSelection(.enabled)
+                            .accessibilityLabel(credentialTitle)
+                    } else {
+                        Text(verbatim: uploadConfiguration.maskedCredential)
+                            .textSelection(.enabled)
+                    }
                     HStack {
                         Button(L10n.CloudSettings.edit) {
                             credential = uploadConfiguration.credential ?? ""
@@ -107,14 +114,15 @@ struct CloudSettingsView: View {
                     }
                     HStack {
                         Link(
-                            L10n.CloudSettings.cloudflareDeploy,
+                            L10n.CloudSettings.cloudflareDocs,
                             destination: URL(
-                                string: "https://deploy.workers.cloudflare.com/?url=https://github.com/mourato/cue-worker",
+                                string: "https://developers.cloudflare.com/workers/get-started/guide/",
                             )!,
                         )
                         Button(L10n.CloudSettings.cloudflareVerify) {
                             Task { await uploadConfiguration.verifyCloudflareConnection() }
                         }
+                        .disabled(uploadConfiguration.cloudflareConnectionState == .verifying)
                     }
                     Text(connectionStatus)
                         .font(.caption)
