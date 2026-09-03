@@ -31,7 +31,6 @@ final class ScrollingCaptureCoordinator {
     private let duringScrollCommitInterval: TimeInterval = 0.15
     private let previewTruthLagToleranceMs = 90
     private let liveFrameDebugSampleInterval = 30
-    private let scrollHitSlop: CGFloat = 32
     private let autoScrollIntervalNanoseconds: UInt64 = 40_000_000
     private let autoScrollPausedIntervalNanoseconds: UInt64 = 150_000_000
     private let autoScrollDeltaY: Int32 = -15
@@ -58,6 +57,7 @@ final class ScrollingCaptureCoordinator {
     private var format: ImageFormat = .png
     private var prefetchedContentTask: ShareableContentPrefetchTask?
     private var scrollMonitor: Any?
+    private var localScrollMonitor: Any?
     private var localSessionKeyMonitor: Any?
     private var globalSessionKeyMonitor: Any?
     private let mouseMoveSuppressor = ScrollingCaptureMouseMoveSuppressor()
@@ -184,6 +184,11 @@ final class ScrollingCaptureCoordinator {
         if let scrollMonitor {
             NSEvent.removeMonitor(scrollMonitor)
             self.scrollMonitor = nil
+        }
+
+        if let localScrollMonitor {
+            NSEvent.removeMonitor(localScrollMonitor)
+            self.localScrollMonitor = nil
         }
 
         for overlay in regionOverlayWindows {
@@ -471,26 +476,39 @@ final class ScrollingCaptureCoordinator {
     }
 
     private func installScrollMonitorIfNeeded() {
-        guard scrollMonitor == nil else { return }
+        guard scrollMonitor == nil, localScrollMonitor == nil else { return }
 
+        // Global monitor sees scrolls in other apps; the local monitor covers
+        // scrolls delivered to our own windows (e.g. cursor over the HUD).
+        // Either one feeds the same handler, mirroring macshot's dual monitors.
         scrollMonitor = NSEvent.addGlobalMonitorForEvents(matching: .scrollWheel) { [weak self] event in
             DispatchQueue.main.async {
                 self?.handleScrollEvent(event)
             }
         }
+        localScrollMonitor = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { [weak self] event in
+            DispatchQueue.main.async {
+                self?.handleScrollEvent(event)
+            }
+            return event
+        }
     }
 
     private func handleScrollEvent(_ event: NSEvent) {
-        guard let selectedRect, let sessionModel else { return }
+        guard let sessionModel else { return }
         guard sessionModel.phase == .capturing else { return }
-        guard abs(event.scrollingDeltaY) >= abs(event.scrollingDeltaX) else { return }
-        guard selectedRect.insetBy(dx: -scrollHitSlop, dy: -scrollHitSlop).contains(NSEvent.mouseLocation) else {
+        // Like macshot, any vertical scroll counts — no cursor hit-test, so
+        // trackpad scrolls with the pointer parked outside the region still
+        // stitch. The stitcher rejects unrelated frames via alignment.
+        guard let scaledDeltaY = ScrollingCaptureSessionPolicy.scaledScrollDeltaY(
+            deltaX: Double(event.scrollingDeltaX),
+            deltaY: Double(event.scrollingDeltaY),
+            hasPreciseDeltas: event.hasPreciseScrollingDeltas,
+        ) else {
+            logScrollingCaptureDebug("scroll-event-dropped", context: [:])
             return
         }
-
-        let multiplier: CGFloat = event.hasPreciseScrollingDeltas ? 1 : 18
-        let deltaY = CGFloat(event.scrollingDeltaY) * multiplier
-        guard abs(deltaY) > 0.5 else { return }
+        let deltaY = CGFloat(scaledDeltaY)
         sessionMetrics.recordScrollEvent(deltaY: deltaY)
 
         let direction = deltaY > 0 ? 1 : -1

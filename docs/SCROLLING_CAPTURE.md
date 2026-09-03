@@ -60,8 +60,8 @@ flowchart TD
 
 ## Scroll Detection
 
-- A global `NSEvent` monitor watches `.scrollWheel` while `phase == .capturing`.
-- Events count only when the pointer is inside the region expanded by 32pt hit slop, and only when vertical dominates (`|deltaY| >= |deltaX|`). Non-precise deltas are multiplied by 18; sub-0.5pt deltas are dropped.
+- Global + local `NSEvent` monitors watch `.scrollWheel` while `phase == .capturing` (either feed reaches the same handler, mirroring macshot's dual monitors).
+- Any vertical-dominant scroll counts, regardless of pointer position (`|deltaY| >= |deltaX|`); there is no cursor hit-test, so trackpad scrolls with the pointer parked outside the region still stitch. Non-precise deltas are multiplied by 18; sub-0.5pt deltas are dropped with a `scroll-event-dropped` debug line.
 - Deltas accumulate into `pendingScrollDistancePoints` with direction tracking. A direction reversal against the locked direction discards pending work and warns ("keep one direction"); mixed directions within a batch pause the commit and warn.
 - The 50ms live-refresh loop schedules commits when thresholds pass, with two gears — default (before the first accepted delta) and fast (after):
 

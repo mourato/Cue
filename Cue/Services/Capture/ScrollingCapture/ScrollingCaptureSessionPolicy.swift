@@ -59,6 +59,20 @@ enum ScrollingCaptureSessionPolicy {
         return timeSinceLastRefresh >= minimumStreamingInterval
     }
 
+    /// Accepts a scroll-wheel event for stitching, mirroring macshot: any
+    /// vertical-dominant scroll counts regardless of pointer position.
+    /// Returns the scaled vertical delta in points, or nil when dropped.
+    static func scaledScrollDeltaY(
+        deltaX: Double,
+        deltaY: Double,
+        hasPreciseDeltas: Bool,
+    ) -> Double? {
+        guard abs(deltaY) >= abs(deltaX) else { return nil }
+        let scaled = deltaY * (hasPreciseDeltas ? 1 : 18)
+        guard abs(scaled) > 0.5 else { return nil }
+        return scaled
+    }
+
     static func preferredCommitFrameSource(
         hasOnDemandFrame: Bool,
         hasStreamFrame: Bool,
