@@ -13,55 +13,13 @@ struct ScrollingCaptureHUDView: View {
     let onCancel: () -> Void
     let onToggleAutoScroll: () -> Void
 
-    private var capturedSummary: String {
-        let count = model.acceptedFrameCount
-        return L10n.ScrollingCapture.sectionsCaptured(count)
-    }
-
-    private var headerSummary: String {
-        guard model.acceptedFrameCount > 0 else { return model.selectionSummary }
-        return "\(model.selectionSummary) • \(capturedSummary)"
-    }
-
+    /// Buttons-only island: no title, summary, or divider — larger
+    /// regular-size actions for cancel, auto scroll, and done.
     var body: some View {
-        HStack(spacing: 10) {
-            // MARK: - Left: Title + summary
-
-            VStack(alignment: .leading, spacing: 1) {
-                Text(L10n.Actions.scrollingCapture)
-                    .font(.system(size: 12, weight: .semibold))
-                Text(headerSummary)
-                    .font(.system(size: 10))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-            }
-            .frame(minWidth: 120, maxWidth: 220, alignment: .leading)
-
-            Spacer(minLength: 4)
-
-            // MARK: - Divider
-
-            Divider()
-                .frame(height: 18)
-                .opacity(0.3)
-
-            actionButtons
-                .fixedSize(horizontal: true, vertical: false)
-                .layoutPriority(1)
-        }
-        .padding(12)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .strokeBorder(Color.white.opacity(0.12)),
-        )
-    }
-
-    private var actionButtons: some View {
         HStack(spacing: 8) {
             Button(L10n.Common.cancel, action: onCancel)
                 .buttonStyle(.bordered)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .disabled(!model.canCancelSession)
 
             Button(action: onToggleAutoScroll) {
@@ -73,13 +31,19 @@ struct ScrollingCaptureHUDView: View {
                 .fixedSize(horizontal: true, vertical: false)
             }
             .buttonStyle(.bordered)
-            .controlSize(.small)
+            .controlSize(.regular)
             .disabled(!model.canToggleAutoScroll)
 
             Button(L10n.Common.done, action: onDone)
                 .buttonStyle(.borderedProminent)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .disabled(!model.canFinishCapture)
         }
+        .padding(12)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(Color.white.opacity(0.12)),
+        )
     }
 }

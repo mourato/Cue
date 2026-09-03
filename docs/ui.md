@@ -146,6 +146,11 @@ second canonical design-system document.
 - The clipboard handoff action is the primary labeled action in the bottom
   action island; secondary actions may remain icon-only with explicit tooltips
   and accessibility labels.
+- Scrolling-capture floats are content-only: the preview card shows the
+  stitched image with no header, badge, caption, padding, or border (the
+  image fills 100% of the card), and the control island shows only the
+  Cancel / Auto Scroll / Done buttons at regular size. Session status stays
+  in the region overlay guidance, toasts, and logs — never as preview chrome.
 
 ## States and accessibility
 

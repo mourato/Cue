@@ -46,8 +46,8 @@ flowchart TD
 
 - `ScrollingCaptureSessionModel` (in `ScrollingCaptureTypes.swift`) is the single observable state object. Phases: `ready` → `capturing` → `finalizing` → `saving`. Runtime states: `ready`, `streaming`, `previewing`, `committing`, `paused`, `finalizing`, `saving`.
 - The region overlay reuses `RecordingRegionOverlayWindow` (one per screen, same class as pre-recording setup) with guidance text bound from the session model. Move/resize/reselect is allowed only in `.ready`; starting capture locks interaction.
-- `ScrollingCaptureHUDWindow` is a borderless non-activating `NSPanel` at `.popUpMenu` level anchored above the region; `ScrollingCaptureHUDView` renders Start (ready phase), then Cancel / Auto Scroll / Done (capturing phase).
-- `ScrollingCapturePreviewWindow` is a non-interactive (`ignoresMouseEvents`) panel one level above the region overlay, positioned beside the region (right side preferred, left fallback) with its **bottom edge aligned to the capture region** so the rail grows upward as content is stitched. `ScrollingCapturePreviewView` + `ScrollingCapturePreviewRenderer` draw the rail (layer-backed, top-aligned `.fit` scaling for stitched output, 244pt panel, 220pt preview width, dynamic height up to available screen space).
+- `ScrollingCaptureHUDWindow` is a borderless non-activating `NSPanel` at `.popUpMenu` level anchored above the region; `ScrollingCaptureHUDView` renders only the Cancel / Auto Scroll / Done buttons at regular size, with no title, summary, or divider.
+- `ScrollingCapturePreviewWindow` is a non-interactive (`ignoresMouseEvents`) panel one level above the region overlay, positioned beside the region (right side preferred, left fallback) with its **bottom edge aligned to the capture region** so the rail grows upward as content is stitched. `ScrollingCapturePreviewView` + `ScrollingCapturePreviewRenderer` draw the image only — no header, badge, caption, padding, or border, so the stitched image fills 100% of the card (layer-backed, top-aligned `.fit` scaling for stitched output, 220pt preview width, dynamic height up to available screen space).
 - `Esc` cancels a `ready` session via local + global key monitors; during `capturing` it is ignored, and during `finalizing`/`saving` it is recorded as blocked input.
 
 ## Frame Pipeline
@@ -101,7 +101,7 @@ flowchart TD
 
 ## Preview Truth Badge
 
-`ScrollingCapturePreviewTruthState` tells the user whether the rail shows committed truth:
+`ScrollingCapturePreviewTruthState` tells whether the rail shows committed truth. It is tracked in the session model, metrics, and debug logs, but no longer renders as on-card chrome (the preview card is image-only):
 
 | State | Badge | Meaning |
 | --- | --- | --- |

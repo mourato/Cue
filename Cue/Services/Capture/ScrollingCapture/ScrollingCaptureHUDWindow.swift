@@ -69,8 +69,8 @@ final class ScrollingCaptureHUDWindow: NSPanel {
 
     nonisolated static func resolvedContentSize(for fittingSize: CGSize) -> CGSize {
         CGSize(
-            width: max(380, fittingSize.width.rounded(.up)),
-            height: max(44, fittingSize.height.rounded(.up)),
+            width: max(300, fittingSize.width.rounded(.up)),
+            height: max(48, fittingSize.height.rounded(.up)),
         )
     }
 

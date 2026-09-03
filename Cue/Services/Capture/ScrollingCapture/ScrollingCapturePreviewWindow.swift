@@ -78,7 +78,7 @@ final class ScrollingCapturePreviewWindow: NSPanel {
         let size =
             contentView?.fittingSize
                 ?? CGSize(
-                    width: ScrollingCapturePreviewLayout.panelWidth,
+                    width: ScrollingCapturePreviewLayout.previewWidth,
                     height: 236,
                 )
         let targetFrame = Self.panelFrame(
