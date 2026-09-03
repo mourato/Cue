@@ -63,8 +63,11 @@ actor CueCloudflareUploadService {
         var request = URLRequest(url: endpoint.appendingPathComponent("api/upload"))
         request.httpMethod = "PUT"
         request.timeoutInterval = 300
+        let contentType = contentType(for: fileURL.pathExtension)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        request.setValue(contentType(for: fileURL.pathExtension), forHTTPHeaderField: "Content-Type")
+        request.setValue(contentType, forHTTPHeaderField: "Content-Type")
+        // ponytail: X-Media-Type only; width/height/duration/title/social skipped — no source in Cue flow.
+        request.setValue(contentType.hasPrefix("video/") ? "video" : "image", forHTTPHeaderField: "X-Media-Type")
         request.setValue(safeFileName(for: fileURL), forHTTPHeaderField: "X-Filename")
         progress?(0)
         progressDelegate?.setHandler(progress)
@@ -101,6 +104,7 @@ actor CueCloudflareUploadService {
         guard !token.isEmpty else {
             throw CueCloudflareUploadError.missingToken
         }
+        try await provisionSetupIfAvailable(endpoint: endpoint, token: token)
         var request = URLRequest(url: endpoint.appendingPathComponent("api/ping"))
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         do {
@@ -125,6 +129,27 @@ actor CueCloudflareUploadService {
         let url: String
         let filename: String
         let size: Int64
+    }
+
+    /// POST /api/setup provisions the worker schema (idempotent). Workers
+    /// without the endpoint answer 404, which is tolerated.
+    /// ponytail: no version.json check — avoids coupling verify to a third-party manifest.
+    private func provisionSetupIfAvailable(endpoint: URL, token: String) async throws {
+        var request = URLRequest(url: endpoint.appendingPathComponent("api/setup"))
+        request.httpMethod = "POST"
+        request.timeoutInterval = 15
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        let (_, response): (Data, URLResponse)
+        do {
+            (_, response) = try await session.data(for: request)
+        } catch is CancellationError {
+            throw CancellationError()
+        } catch {
+            throw CueCloudflareUploadError.transport
+        }
+        guard let http = response as? HTTPURLResponse,
+              http.statusCode == 404 || (200 ... 299).contains(http.statusCode)
+        else { throw CueCloudflareUploadError.rejected }
     }
 
     private struct PingResponse: Decodable { let ok: Bool }

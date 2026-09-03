@@ -14,6 +14,7 @@ final class CueCloudflareUploadServiceTests: XCTestCase {
             XCTAssertEqual(request.httpMethod, "PUT")
             XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Bearer fixture-token")
             XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "video/mp4")
+            XCTAssertEqual(request.value(forHTTPHeaderField: "X-Media-Type"), "video")
             XCTAssertEqual(request.value(forHTTPHeaderField: "X-Filename"), "capture.mp4")
             XCTAssertEqual(Self.body(for: request), Data("payload".utf8))
             return Self.response(
@@ -33,6 +34,27 @@ final class CueCloudflareUploadServiceTests: XCTestCase {
         )
 
         XCTAssertEqual(result.url, "https://worker.example/abc123")
+    }
+
+    func testUploadSendsImageMediaTypeHeader() async throws {
+        MockCloudflareURLProtocol.requestHandler = { request in
+            XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "image/png")
+            XCTAssertEqual(request.value(forHTTPHeaderField: "X-Media-Type"), "image")
+            return Self.response(
+                status: 201,
+                body: #"{"id":"abc123","url":"https://worker.example/abc123","filename":"capture.png","size":7}"#,
+            )
+        }
+
+        let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent("capture.png")
+        try Data("payload".utf8).write(to: fileURL)
+        defer { try? FileManager.default.removeItem(at: fileURL) }
+
+        _ = try await makeService().upload(
+            fileURL: fileURL,
+            workerURL: "https://worker.example",
+            token: "fixture-token",
+        )
     }
 
     func testUploadRejectsHTTPWorkerURL() async {
@@ -95,6 +117,9 @@ final class CueCloudflareUploadServiceTests: XCTestCase {
 
     func testVerifyUsesWorkerPingContract() async throws {
         MockCloudflareURLProtocol.requestHandler = { request in
+            if request.url?.absoluteString == "https://worker.example/api/setup" {
+                return Self.response(status: 200, body: "{}")
+            }
             XCTAssertEqual(request.url?.absoluteString, "https://worker.example/api/ping")
             XCTAssertEqual(request.httpMethod, "GET")
             XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Bearer fixture-token")
@@ -102,6 +127,56 @@ final class CueCloudflareUploadServiceTests: XCTestCase {
         }
 
         try await makeService().verify(workerURL: "https://worker.example", token: "fixture-token")
+    }
+
+    func testVerifyProvisionsSetupBeforePing() async throws {
+        var calls: [String] = []
+        MockCloudflareURLProtocol.requestHandler = { request in
+            calls.append("\(request.httpMethod ?? "GET") \(request.url?.absoluteString ?? "")")
+            if request.url?.absoluteString == "https://worker.example/api/setup" {
+                XCTAssertEqual(request.httpMethod, "POST")
+                XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Bearer fixture-token")
+                return Self.response(status: 200, body: "{}")
+            }
+            XCTAssertEqual(request.url?.absoluteString, "https://worker.example/api/ping")
+            return Self.response(status: 200, body: #"{"ok":true}"#)
+        }
+
+        try await makeService().verify(workerURL: "https://worker.example", token: "fixture-token")
+        XCTAssertEqual(calls, [
+            "POST https://worker.example/api/setup",
+            "GET https://worker.example/api/ping",
+        ])
+    }
+
+    func testVerifyToleratesMissingSetupEndpoint() async throws {
+        MockCloudflareURLProtocol.requestHandler = { request in
+            if request.url?.absoluteString == "https://worker.example/api/setup" {
+                return Self.response(status: 404, body: "not found")
+            }
+            return Self.response(status: 200, body: #"{"ok":true}"#)
+        }
+
+        try await makeService().verify(workerURL: "https://worker.example", token: "fixture-token")
+    }
+
+    func testVerifyRejectsInvalidTokenDuringSetup() async {
+        MockCloudflareURLProtocol.requestHandler = { request in
+            if request.url?.absoluteString == "https://worker.example/api/setup" {
+                return Self.response(status: 401, body: "unauthorized")
+            }
+            XCTFail("ping must not run after setup rejection")
+            return Self.response(status: 200, body: #"{"ok":true}"#)
+        }
+
+        do {
+            try await makeService().verify(workerURL: "https://worker.example", token: "fixture-token")
+            XCTFail("Expected rejection")
+        } catch let error as CueCloudflareUploadError {
+            XCTAssertEqual(error, .rejected)
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
     }
 
     func testUnauthorizedResponseDoesNotExposeToken() async {

@@ -113,6 +113,17 @@ final class CueUploadProviderTests: XCTestCase {
         let started = expectation(description: "Cloudflare verification started")
         let release = DispatchSemaphore(value: 0)
         ProviderCloudflareURLProtocol.requestHandler = { request in
+            if request.url?.absoluteString == "https://old.worker.example/api/setup" {
+                return (
+                    HTTPURLResponse(
+                        url: request.url!,
+                        statusCode: 200,
+                        httpVersion: nil,
+                        headerFields: nil,
+                    )!,
+                    Data("{}".utf8),
+                )
+            }
             XCTAssertEqual(request.url?.absoluteString, "https://old.worker.example/api/ping")
             started.fulfill()
             release.wait()
