@@ -115,6 +115,23 @@ final class CueCloudflareUploadServiceTests: XCTestCase {
         }
     }
 
+    func testUploadMapsNetworkCancellationToCancellationError() async {
+        MockCloudflareURLProtocol.requestHandler = { _ in throw URLError(.cancelled) }
+
+        do {
+            _ = try await makeService().upload(
+                fileURL: temporaryFile(),
+                workerURL: "https://worker.example",
+                token: "fixture-token",
+            )
+            XCTFail("Expected cancellation")
+        } catch is CancellationError {
+            // Expected: Task.cancel during upload stays silent upstream.
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
     func testVerifyUsesWorkerPingContract() async throws {
         MockCloudflareURLProtocol.requestHandler = { request in
             if request.url?.absoluteString == "https://worker.example/api/setup" {

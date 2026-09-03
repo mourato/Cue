@@ -4146,7 +4146,7 @@ nonisolated enum L10n {
         )
         static let cloudflareDescription = string(
             "cloud-settings.cloudflare-description",
-            defaultValue: "Direct sharing through your Cloudflare Worker. The UPLOAD_TOKEN stays in Keychain.",
+            defaultValue: "Direct sharing through your Cloudflare Worker. Generate a token, paste it as UPLOAD_TOKEN when deploying the Worker, enter the Worker URL above, then Verify. The token stays in Keychain.",
             comment: "Description for Cloudflare Worker sharing preferences",
         )
         static let cloudflareWorkerURL = string(

@@ -49,6 +49,7 @@ struct AnnotateBottomBarView: View {
     @ObservedObject private var chromeStore = AnnotateChromeConfigurationStore.shared
 
     @State private var isUploading = false
+    @State private var uploadTask: Task<Void, Never>?
     @ObservedObject private var uploadConfiguration = CueUploadConfigurationStore.shared
     private let uploadCoordinator = CueUploadCoordinator()
     @State private var measuredLeftWidth: CGFloat = 0
@@ -388,12 +389,18 @@ struct AnnotateBottomBarView: View {
 
         case .uploadToImgBB:
             BottomBarButton(
-                icon: isUploading ? "hourglass" : "icloud.and.arrow.up",
-                tooltipTitle: isUploadConfigured ? uploadActionTitle : missingCredentialMessage,
+                icon: isUploading ? "xmark" : "icloud.and.arrow.up",
+                title: isUploading ? L10n.Common.cancel : nil,
+                tooltipTitle: isUploading ? L10n.Common.cancel : uploadTooltipTitle,
             ) {
-                handleUpload()
+                if isUploading {
+                    uploadTask?.cancel()
+                    uploadTask = nil
+                } else {
+                    handleUpload()
+                }
             }
-            .disabled(isUploading || !isUploadConfigured)
+            .disabled(!isUploadConfigured)
             .opacity(isUploadConfigured ? 1 : 0.5)
 
         case .pin:
@@ -518,11 +525,18 @@ struct AnnotateBottomBarView: View {
             iconMode: .spinner,
         )
 
-        Task { @MainActor in
+        uploadTask = Task { @MainActor in
             defer { isUploading = false }
             let link = await uploadCoordinator.upload(
                 finalImage: renderedImage,
             )
+            // Cancellation is silent: dismiss the spinner, no error toast.
+            if Task.isCancelled {
+                if let progressToast {
+                    AppToastManager.shared.dismiss(progressToast)
+                }
+                return
+            }
             if let link {
                 let pasteboard = NSPasteboard.general
                 pasteboard.clearContents()
@@ -550,6 +564,10 @@ struct AnnotateBottomBarView: View {
 
     private var uploadActionTitle: String {
         L10n.Cue.uploadTo(provider: uploadConfiguration.provider.name)
+    }
+
+    private var uploadTooltipTitle: String {
+        isUploadConfigured ? uploadActionTitle : missingCredentialMessage
     }
 
     private var missingCredentialMessage: String {

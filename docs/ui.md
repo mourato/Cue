@@ -82,9 +82,11 @@ second canonical design-system document.
 - The provider picker controls the shared upload action label and configured
   state across Preferences, Annotate, and Quick Access. Quick Access also
   disables media types unsupported by the selected provider; Annotate always
-  uploads its final composed image. Credential fields show masked Keychain
-  state; a missing selected-provider credential is explained locally. No new
-  layout, material, or animation rule is introduced.
+   uploads its final composed image. Credential fields show masked Keychain
+   state; a missing selected-provider credential is explained locally. No new
+   layout, material, or animation rule is introduced. In-flight uploads expose
+   Cancel; cancelling is silent (no error toast) and leaves the local file
+   untouched.
 - Rectangle and Circle tools share `AnnotationShapeFillStyle`
   (outline / solid / tinted / hatched) with a single stroke color. Notes areas
   use the same enum but omit solid in the picker.

@@ -25,6 +25,7 @@ struct QuickAccessCardView: View {
     @State private var isDismissing = false
     @State private var swipeOffset: CGFloat = 0
     @State private var isUploading = false
+    @State private var uploadTask: Task<Void, Never>?
     @State private var isVideoUploadOptionsPresented = false
     @State private var imgbbUploadError: String?
     @State private var cardScreenFrame: CGRect = .zero
@@ -115,6 +116,13 @@ struct QuickAccessCardView: View {
             if isUploading {
                 QuickAccessProgressView(state: .processing(progress: uploadCoordinator.uploadProgress))
                     .transition(.opacity)
+                Button(L10n.Common.cancel) {
+                    uploadTask?.cancel()
+                    uploadTask = nil
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .help(L10n.Common.cancel)
             }
 
             // Hover/focus overlay with staggered buttons (hidden while swiping so it does not
@@ -775,13 +783,17 @@ struct QuickAccessCardView: View {
         guard !isUploading else { return }
         isUploading = true
         manager.pauseCountdownForActivity(item.id)
-        Task { @MainActor in
+        uploadTask = Task { @MainActor in
             defer {
                 isUploading = false
                 manager.resumeCountdownForActivity(item.id)
             }
 
             let link = await uploadCoordinator.upload(fileURL: item.url, videoSettings: videoSettings)
+            // Cancellation is silent: no error toast, local file untouched.
+            if Task.isCancelled {
+                return
+            }
             guard let link else {
                 imgbbUploadError = uploadCoordinator.lastErrorMessage ?? uploadFailedMessage
                 return

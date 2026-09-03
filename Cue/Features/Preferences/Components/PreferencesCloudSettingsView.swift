@@ -12,6 +12,7 @@ struct CloudSettingsView: View {
     @State private var isEditing = false
     @State private var errorMessage: String?
     @State private var revealToken = false
+    @State private var didPrefillCloudflareToken = false
 
     var body: some View {
         Form {
@@ -128,6 +129,7 @@ struct CloudSettingsView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
+                .onAppear(perform: prefillCloudflareTokenIfNeeded)
             }
         }
         .formStyle(.grouped)
@@ -175,6 +177,7 @@ struct CloudSettingsView: View {
                 credential = ""
                 isEditing = false
                 revealToken = false
+                didPrefillCloudflareToken = false
             },
         )
     }
@@ -235,6 +238,35 @@ struct CloudSettingsView: View {
         case .connected: L10n.CloudSettings.cloudflareConnected
         case .error: L10n.CloudSettings.cloudflareConnectionError
         }
+    }
+
+    /// Prefills a fresh token into the editing field so it can be copied into
+    /// the Worker deploy flow. Nothing is persisted until Save.
+    private func prefillCloudflareTokenIfNeeded() {
+        guard CloudflareTokenPrefill.shouldPrefill(
+            provider: uploadConfiguration.provider,
+            token: uploadConfiguration.cloudflare.token,
+            credential: credential,
+            isEditing: isEditing,
+            didPrefill: didPrefillCloudflareToken,
+        ) else { return }
+        didPrefillCloudflareToken = true
+        credential = CueCloudflareCredentialStore.generatedToken()
+        revealToken = true
+    }
+}
+
+/// Pure prefill policy for the Cloudflare token field, kept outside the view
+/// so the quiet test suite can prove it without rendering preferences.
+enum CloudflareTokenPrefill {
+    static func shouldPrefill(
+        provider: CueUploadProvider,
+        token: String?,
+        credential: String,
+        isEditing: Bool,
+        didPrefill: Bool,
+    ) -> Bool {
+        provider == .cloudflare && token == nil && credential.isEmpty && !isEditing && !didPrefill
     }
 }
 

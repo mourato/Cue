@@ -110,10 +110,12 @@ final class CueUploadProviderTests: XCTestCase {
         try credentials.save(token: "fixture-token")
         defaults.set("https://old.worker.example", forKey: PreferencesKeys.cloudflareWorkerURL)
 
-        let started = expectation(description: "Cloudflare verification started")
-        let release = DispatchSemaphore(value: 0)
+        let blocked = expectation(description: "Cloudflare setup started")
+        let releaseSetup = DispatchSemaphore(value: 0)
         ProviderCloudflareURLProtocol.requestHandler = { request in
             if request.url?.absoluteString == "https://old.worker.example/api/setup" {
+                blocked.fulfill()
+                releaseSetup.wait()
                 return (
                     HTTPURLResponse(
                         url: request.url!,
@@ -125,8 +127,6 @@ final class CueUploadProviderTests: XCTestCase {
                 )
             }
             XCTAssertEqual(request.url?.absoluteString, "https://old.worker.example/api/ping")
-            started.fulfill()
-            release.wait()
             return (
                 HTTPURLResponse(
                     url: request.url!,
@@ -138,7 +138,7 @@ final class CueUploadProviderTests: XCTestCase {
             )
         }
         defer {
-            release.signal()
+            releaseSetup.signal()
             ProviderCloudflareURLProtocol.requestHandler = nil
             defaults.removePersistentDomain(forName: suite)
         }
@@ -156,13 +156,95 @@ final class CueUploadProviderTests: XCTestCase {
         )
 
         let verification = Task { await store.verifyCloudflareConnection() }
-        await fulfillment(of: [started], timeout: 1)
+        // Hold the in-flight setup (not the ping): no timing race, the stale
+        // guard is proven by changing the URL while the first call is blocked.
+        await fulfillment(of: [blocked], timeout: 10)
         store.setCloudflareWorkerURL("https://new.worker.example")
-        release.signal()
+        releaseSetup.signal()
         await verification.value
 
         XCTAssertEqual(store.cloudflareConnectionState, .unconfigured)
         XCTAssertNotEqual(store.cloudflareConnectionState, .connected)
+    }
+
+    func testCloudflareTokenPrefillFillsEmptyFieldWithoutSaving() {
+        XCTAssertTrue(CloudflareTokenPrefill.shouldPrefill(
+            provider: .cloudflare,
+            token: nil,
+            credential: "",
+            isEditing: false,
+            didPrefill: false,
+        ))
+        XCTAssertFalse(CloudflareTokenPrefill.shouldPrefill(
+            provider: .cloudflare,
+            token: "existing-token",
+            credential: "",
+            isEditing: false,
+            didPrefill: false,
+        ))
+        XCTAssertFalse(CloudflareTokenPrefill.shouldPrefill(
+            provider: .cloudflare,
+            token: nil,
+            credential: "draft",
+            isEditing: true,
+            didPrefill: false,
+        ))
+        XCTAssertFalse(CloudflareTokenPrefill.shouldPrefill(
+            provider: .cloudflare,
+            token: nil,
+            credential: "",
+            isEditing: false,
+            didPrefill: true,
+        ))
+        XCTAssertFalse(CloudflareTokenPrefill.shouldPrefill(
+            provider: .imgbb,
+            token: nil,
+            credential: "",
+            isEditing: false,
+            didPrefill: false,
+        ))
+    }
+
+    func testCloudflareUploadCancellationIsSilent() async throws {
+        let suite = "notinhas.cloudflare.cancel.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        let credentials = CueCloudflareCredentialStore(defaults: defaults, keychain: MockProviderKeychain())
+        try credentials.save(token: "fixture-token")
+        defaults.set("https://worker.example", forKey: PreferencesKeys.cloudflareWorkerURL)
+        defer {
+            ProviderCloudflareURLProtocol.requestHandler = nil
+            defaults.removePersistentDomain(forName: suite)
+        }
+
+        // Never blocks: the worker fails the body with cancellation, proving
+        // the service mapping and the coordinator's silent nil end to end.
+        // (Blocking inside startLoading and cancelling over it wedges later
+        // session dispatch in-process; Task.cancel propagation itself is
+        // covered by the manual Cancel gate.)
+        ProviderCloudflareURLProtocol.requestHandler = { _ in throw URLError(.cancelled) }
+        let sessionConfiguration = URLSessionConfiguration.ephemeral
+        sessionConfiguration.protocolClasses = [ProviderCloudflareURLProtocol.self]
+        let service = CueCloudflareUploadService(session: URLSession(configuration: sessionConfiguration))
+        let store = CueUploadConfigurationStore(
+            defaults: defaults,
+            imgbb: CueImgBBCredentialStore(defaults: defaults, keychain: MockProviderKeychain()),
+            imageKit: CueImageKitCredentialStore(defaults: defaults, keychain: MockProviderKeychain()),
+            cloudflare: credentials,
+            cloudflareService: service,
+        )
+        store.select(.cloudflare)
+        let coordinator = CueUploadCoordinator(configuration: store, cloudflareService: service)
+
+        // Small .mp4 without transcode settings reaches the network as-is,
+        // so no image encoding is needed to prove the cancel path.
+        let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent("cancel.mp4")
+        try Data("payload".utf8).write(to: fileURL)
+        defer { try? FileManager.default.removeItem(at: fileURL) }
+
+        let link = await coordinator.upload(fileURL: fileURL)
+
+        XCTAssertNil(link)
+        XCTAssertNil(coordinator.lastErrorMessage)
     }
 
     func testCloudflareSupportsImagesGIFsVideosAndUses95MiBLimit() {
