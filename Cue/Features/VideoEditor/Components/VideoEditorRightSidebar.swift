@@ -271,7 +271,10 @@
 
                             VideoSliderRow(
                                 label: L10n.PreferencesCapture.fontSizeTitle,
-                                value: $keystrokeFontSize,
+                                value: Binding(
+                                    get: { CGFloat(keystrokeFontSize) },
+                                    set: { keystrokeFontSize = Double($0) },
+                                ),
                                 range: 12 ... 32,
                             )
                         }

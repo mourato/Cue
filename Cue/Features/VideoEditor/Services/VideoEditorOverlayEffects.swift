@@ -6,6 +6,7 @@
     //  Post-process click pulses and keystroke captions (Plan 110 / Screendrop parity).
 //
 
+    import AppKit
     import CoreGraphics
     import Foundation
 
