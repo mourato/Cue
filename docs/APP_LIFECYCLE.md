@@ -61,7 +61,6 @@ flowchart TD
    | `history.openOnLaunch` | `false` |
    | `history.floating.enabled` | `true` |
    | `history.floating.position` | `"topCenter"` |
-   | `history.floating.maxDisplayedItems` | 10 |
 
 6. TOML configuration: `CueConfigurationAutoImporter.applyIfNeededOnLaunch()` → `CueConfigurationSyncCoordinator.start()`; when the auto-import did not apply, `scheduleSync(reason: .appLaunch)`.
 7. Schedulers: `LogCleanupScheduler`, `RecordingMetadataCleanupScheduler`, `CaptureHistoryRetentionService` — all `.start()`.

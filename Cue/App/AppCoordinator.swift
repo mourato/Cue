@@ -59,9 +59,6 @@ final class AppCoordinator {
         if defaults.object(forKey: "history.floating.position") == nil {
             defaults.set("topCenter", forKey: "history.floating.position")
         }
-        if defaults.object(forKey: "history.floating.maxDisplayedItems") == nil {
-            defaults.set(10, forKey: "history.floating.maxDisplayedItems")
-        }
 
         let configurationAutoImportResult = applyUserConfigurationIfNeeded()
         startConfigurationSync(after: configurationAutoImportResult)

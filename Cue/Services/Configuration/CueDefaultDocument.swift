@@ -1,5 +1,5 @@
 //
-//  CueConfigurationDefaultDocument.swift
+//  CueDefaultDocument.swift
 //  Notinhas
 //
 //  Builds a complete default TOML configuration for restore-defaults flows.
@@ -161,8 +161,6 @@ enum CueConfigurationDefaultDocument {
         writer.value("enabled", true)
         writer.value("position", HistoryPanelPosition.topCenter.rawValue)
         writer.value("default_filter", "all")
-        writer.value("max_displayed_items", 10)
-        writer.value("scale", HistoryFloatingLayout.defaultScale)
         writer.value("auto_clear_days", 0)
     }
 

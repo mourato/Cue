@@ -1,6 +1,6 @@
 # Capture History
 
-Persistent history of screenshots, videos, and GIFs backed by GRDB SQLite, surfaced through a floating panel (compact carousel + expanded grid) and a restore-to-Quick-Access flow that reopens captures in Annotate or Video Editor with editable sessions. Code: `Cue/Features/History/` + `Cue/Services/History/`.
+Persistent history of screenshots, videos, and GIFs backed by GRDB SQLite, surfaced through a single floating panel (horizontal card row) and a restore-to-Quick-Access flow that reopens captures in Annotate or Video Editor with editable sessions. Code: `Cue/Features/History/` + `Cue/Services/History/`.
 
 ## Entry Points
 
@@ -10,10 +10,9 @@ Persistent history of screenshots, videos, and GIFs backed by GRDB SQLite, surfa
 
 ## Floating Panel
 
-- `HistoryFloatingManager` — panel state. Modes `compact` / `expanded`; position `topCenter` / `bottomCenter` (`HistoryPanelPosition.center` exists for config import, not in UI); panel scale 0.8–1.4 (`history.floating.scale`); `maxDisplayedItems` default 10; background `HistoryBackgroundStyle` hud / solid; toggle-mode shortcut default ⌘E (`defaultToggleModeShortcut`).
+- `HistoryFloatingManager` — panel state. Position `topCenter` / `bottomCenter` (`HistoryPanelPosition.center` exists for config import, not in UI); fixed panel size 1280×360 (`HistoryFloatingLayout.basePanelSize`); background `HistoryBackgroundStyle` hud / solid.
 - `HistoryFloatingPanel` keyboard: ⌘C copy selection, ⌘A select all, ⌫ delete, Return open (all suppressed while text input active).
-- Compact: type filter pills + horizontal `HistoryCompactCarouselView` cards.
-- Expanded: type pills + filename search (150ms debounce, `HistorySearchViewModel`) + time filters all / 24H / 7D / 30D (`HistoryFloatingTimeFilter`) + 4-column grid + multi-select + selection bar + custom `HistoryFloatingScrollbar`.
+- Single view: type pills + filename search (150ms debounce, `HistorySearchViewModel`) + time filters all / 24H / 7D / 30D (`HistoryFloatingTimeFilter`) + one horizontal card row (drag + trackpad scroll, fits at least 5 full cards) + multi-select + selection bar.
 
 ## Card Actions
 
@@ -65,11 +64,11 @@ flowchart TD
 
 ## Preferences Surface
 
-Settings → History: enable toggle, floating panel (position, scale, max items, background, toggle-mode shortcut), display, retention days / max count, storage info. See [PREFERENCES.md](PREFERENCES.md).
+Settings → History: enable toggle, floating panel position, display (default filter, background), retention days / max count, storage info. See [PREFERENCES.md](PREFERENCES.md).
 
 ## Dead / Legacy Code
 
-Unused (kept in tree): `HistoryMainView` (except `HistoryBackdropView`, still used by the floating panel and preferences), `HistoryItemView`, `HistoryToolbar`, `HistoryFilterBar`, `HistoryGridView`. Live card views are `HistoryCardView` / `HistoryExpandedCaptureCardView` / `HistoryCompactCarouselView`.
+Unused (kept in tree): `HistoryMainView` (except `HistoryBackdropView`, still used by the floating panel and preferences), `HistoryItemView`, `HistoryToolbar`, `HistoryFilterBar`, `HistoryGridView`. The live card view is `HistoryExpandedCaptureCardView`.
 
 ## Related docs
 

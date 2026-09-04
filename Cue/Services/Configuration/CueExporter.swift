@@ -232,8 +232,6 @@ enum CueConfigurationExporter {
         writer.value("enabled", manager.isEnabled)
         writer.value("position", manager.position.rawValue)
         writer.value("default_filter", manager.defaultFilter?.rawValue ?? "all")
-        writer.value("max_displayed_items", manager.maxDisplayedItems)
-        writer.value("scale", manager.panelScale)
         writer.value("auto_clear_days", manager.autoClearDays)
     }
 

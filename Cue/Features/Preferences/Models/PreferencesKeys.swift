@@ -174,7 +174,6 @@ enum PreferencesKeys {
     static let historyRetentionDays = "history.retentionDays"
     static let historyMaxCount = "history.maxCount"
     static let historyBackgroundStyle = "history.backgroundStyle"
-    static let historyFloatingScale = "history.floating.scale"
     static let historyOpenOnLaunch = "history.openOnLaunch"
 
     // Uploads

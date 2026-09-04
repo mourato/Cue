@@ -1,5 +1,5 @@
 //
-//  CueConfigurationImporter.swift
+//  CueImporter.swift
 //  Notinhas
 //
 //  Applies validated TOML config to Notinhas stores.
@@ -528,19 +528,6 @@ enum CueConfigurationImporter {
             } else {
                 mutations.append { manager.defaultFilter = value }
             }
-        }
-        collectInt(&reader, "history", "floating", "max_displayed_items", range: 3 ... 20, mutations: &mutations) {
-            manager.maxDisplayedItems = $0
-        }
-        collectDouble(
-            &reader,
-            "history",
-            "floating",
-            "scale",
-            range: HistoryFloatingLayout.scaleRange,
-            mutations: &mutations,
-        ) {
-            manager.panelScale = $0
         }
         collectInt(&reader, "history", "floating", "auto_clear_days", range: 0 ... 365, mutations: &mutations) {
             manager.autoClearDays = $0

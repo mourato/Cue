@@ -6,7 +6,6 @@
 //
 
 import AppKit
-import Carbon.HIToolbox
 
 extension Notification.Name {
     static let historyCopySelection = Notification.Name("historyCopySelection")
@@ -41,18 +40,6 @@ final class HistoryWindow: NSWindow {
             return true
         }
 
-        if HistoryFloatingManager.shared.isToggleModeShortcutEnabled,
-           let toggleShortcut = HistoryFloatingManager.shared.toggleModeShortcut,
-           let eventShortcut = ShortcutConfig(from: event) {
-            if eventShortcut.keyCode == toggleShortcut.keyCode, eventShortcut.modifiers == toggleShortcut.modifiers {
-                if isTextInputActive {
-                    return super.performKeyEquivalent(with: event)
-                }
-                HistoryFloatingManager.shared.togglePresentationMode()
-                return true
-            }
-        }
-
         return super.performKeyEquivalent(with: event)
     }
 
@@ -79,17 +66,6 @@ final class HistoryWindowController {
     static let shared = HistoryWindowController()
 
     private init() {}
-
-    func showWindow() {
-        DiagnosticLogger.shared.log(.info, .history, "History window requested")
-        HistoryFloatingManager.shared.showExpanded()
-        NSApp.activate(ignoringOtherApps: true)
-    }
-
-    func hideWindow() {
-        DiagnosticLogger.shared.log(.debug, .history, "History window hide requested")
-        HistoryFloatingManager.shared.hide()
-    }
 
     func copyToClipboard(_ records: [CaptureHistoryRecord]) {
         let existingRecords = records.filter(\.fileExists)
