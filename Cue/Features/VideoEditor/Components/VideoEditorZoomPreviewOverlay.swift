@@ -16,6 +16,8 @@
 
         @State private var currentZoomLevel: CGFloat = 1.0
         @State private var currentZoomCenter: CGPoint = .init(x: 0.5, y: 0.5)
+        @AppStorage(PreferencesKeys.keystrokePosition)
+        private var keystrokePosition: String = KeystrokeOverlayPosition.bottomCenter.rawValue
 
         init(state: VideoEditorState) {
             _state = ObservedObject(wrappedValue: state)
@@ -72,7 +74,7 @@
                             showsSyntheticCursor: state.shouldRenderSyntheticCursor,
                             showsClickEffects: state.showsClickEffects,
                             showsKeystrokes: state.showsKeystrokes,
-                            keystrokePlacement: KeystrokeOverlayConfiguration().position,
+                            keystrokePlacement: KeystrokeOverlayPosition(rawValue: keystrokePosition) ?? .bottomCenter,
                             cursorScale: state.cursorScale,
                             zoomLevel: currentZoomLevel,
                             zoomCenter: currentZoomCenter,

@@ -21,6 +21,22 @@
         let zoomLevel: CGFloat
         let zoomCenter: CGPoint
 
+        @AppStorage(PreferencesKeys.mouseHighlightColor)
+        private var mouseHighlightColorData: Data?
+        @AppStorage(PreferencesKeys.keystrokeFontSize)
+        private var keystrokeFontSize: Double = 16
+
+        private var pulseColor: Color {
+            if let mouseHighlightColorData,
+               let nsColor = try? NSKeyedUnarchiver.unarchivedObject(
+                   ofClass: NSColor.self,
+                   from: mouseHighlightColorData,
+               ) {
+                return Color(nsColor: nsColor)
+            }
+            return Color(nsColor: MouseHighlightConfiguration.defaultHighlightColor)
+        }
+
         var body: some View {
             ZStack(alignment: .topLeading) {
                 Color.clear
@@ -90,14 +106,16 @@
             ZStack {
                 if geometry.impactOpacity > 0.001 {
                     Circle()
-                        .fill(Color(red: 0, green: 122 / 255, blue: 1).opacity(geometry.impactOpacity))
+                        .fill(pulseColor.opacity(geometry.impactOpacity))
                         .frame(width: geometry.impactRadius * 2, height: geometry.impactRadius * 2)
                         .position(center)
                 }
                 if geometry.rippleOpacity > 0.001 {
                     Circle()
-                        .stroke(Color(red: 0, green: 122 / 255, blue: 1).opacity(geometry.rippleOpacity),
-                                lineWidth: geometry.rippleLineWidth)
+                        .stroke(
+                            pulseColor.opacity(geometry.rippleOpacity),
+                            lineWidth: geometry.rippleLineWidth,
+                        )
                         .frame(width: geometry.rippleRadius * 2, height: geometry.rippleRadius * 2)
                         .position(center)
                 }
@@ -110,7 +128,11 @@
             let parts = VideoEditorKeystrokeCaptionMetrics.text(for: frame)
             let label = (Text(parts.modifiers).foregroundColor(.white.opacity(frame.opacity * 0.7))
                 + Text(parts.key).foregroundColor(.white.opacity(frame.opacity)))
-                .font(.system(size: metrics.fontSize * frame.scale, weight: .medium, design: .monospaced))
+                .font(.system(
+                    size: metrics.fontSize * frame.scale * CGFloat(max(8, keystrokeFontSize) / 16.0),
+                    weight: .medium,
+                    design: .monospaced,
+                ))
                 .padding(.horizontal, metrics.paddingHorizontal)
                 .padding(.vertical, metrics.paddingVertical)
                 .background(Color.black.opacity(frame.opacity * VideoEditorKeystrokeCaptionMetrics.backgroundAlpha))

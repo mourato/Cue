@@ -240,8 +240,18 @@
         }
 
         private var leftActions: some View {
-            Color.clear
-                .frame(width: 0, height: 1)
+            Button(action: { state.toggleMute() }) {
+                Image(systemName: state.isMuted ? "speaker.slash.fill" : "speaker.wave.2.fill")
+                    .font(.system(size: controlsLayout.transportIconSize, weight: .semibold))
+                    .foregroundColor(state.isMuted ? .red : .secondary)
+                    .frame(
+                        width: controlsLayout.transportButtonSize,
+                        height: controlsLayout.transportButtonSize,
+                    )
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help(state.isMuted ? L10n.Microphone.unmute : L10n.VideoEditor.mute)
         }
 
         private var centerTransport: some View {

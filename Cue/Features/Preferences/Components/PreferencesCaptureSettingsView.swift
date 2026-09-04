@@ -71,8 +71,6 @@ struct CaptureSettingsView: View {
         private var recordingFileNameTemplate = CaptureOutputKind.recording.defaultTemplate
         @AppStorage(PreferencesKeys.recordingFPS) private var fps = 30
         @AppStorage(PreferencesKeys.recordingQuality) private var quality = "high"
-        @AppStorage(PreferencesKeys.recordingCaptureAudio) private var captureAudio = true
-        @AppStorage(PreferencesKeys.recordingCaptureMicrophone) private var captureMicrophone = false
         @AppStorage(PreferencesKeys.recordingMicrophoneDeviceID)
         private var microphoneDeviceID = RecordingMicrophoneDevice.systemDefaultID
         @AppStorage(PreferencesKeys.recordingRememberLastArea) private var rememberLastArea = true
@@ -84,45 +82,8 @@ struct CaptureSettingsView: View {
         @AppStorage(PreferencesKeys.recordingHoverBarVisible) private var recordingHoverBarVisible = true
         @AppStorage(PreferencesKeys.recordingShowTimeOnMenuBar) private var recordingShowTimeOnMenuBar = true
 
-        // Mouse Highlight settings
-        @AppStorage(PreferencesKeys.mouseHighlightSize) private var mouseHighlightSize: Double = 50
-        @AppStorage(PreferencesKeys.mouseHighlightAnimationDuration) private var mouseHighlightAnimDuration: Double =
-            0.7
-        @AppStorage(PreferencesKeys.mouseHighlightRippleCount) private var mouseHighlightRippleCount: Int = 3
-        @AppStorage(PreferencesKeys.mouseHighlightOpacity) private var mouseHighlightOpacity: Double = 0.5
-
-        // Keystroke Overlay settings
-        @AppStorage(PreferencesKeys.keystrokeFontSize) private var keystrokeFontSize: Double = 16
-        @AppStorage(PreferencesKeys.keystrokePosition) private var keystrokePosition: String = KeystrokeOverlayPosition
-            .bottomCenter.rawValue
-        @AppStorage(PreferencesKeys.keystrokeDisplayDuration) private var keystrokeDisplayDuration: Double = 1.5
-
         @State private var microphoneDevices: [RecordingMicrophoneDevice] = []
-
-        /// SwiftUI Color binding backed by archived NSColor in UserDefaults
-        private var mouseHighlightSwiftColor: Binding<Color> {
-            Binding<Color>(
-                get: {
-                    if let data = UserDefaults.standard.data(forKey: PreferencesKeys.mouseHighlightColor),
-                       let nsColor = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: data) {
-                        return Color(nsColor: nsColor)
-                    }
-                    return Color(nsColor: MouseHighlightConfiguration.defaultHighlightColor)
-                },
-                set: { newColor in
-                    let nsColor = NSColor(newColor)
-                    if let data = try? NSKeyedArchiver.archivedData(
-                        withRootObject: nsColor,
-                        requiringSecureCoding: true,
-                    ) {
-                        UserDefaults.standard.set(data, forKey: PreferencesKeys.mouseHighlightColor)
-                    }
-                },
-            )
-        }
     #endif
-
-    @State private var showPermissionDeniedAlert = false
     @State private var selectedPane: CaptureSettingsPane = .capture
     @State private var videoModuleEnabled = VideoModuleAvailability.isEnabled
 
@@ -564,190 +525,10 @@ struct CaptureSettingsView: View {
                         }
                     }
 
-                    // MARK: - Recording Overlays
-
-                    if selectedPane == .recording {
-                        Section(L10n.PreferencesCapture.mouseHighlightSection) {
-                            SettingRow(
-                                icon: "cursorarrow.click.2",
-                                title: L10n.PreferencesCapture.highlightSizeTitle,
-                                description: L10n.PreferencesCapture.highlightSizeDescription(Int(mouseHighlightSize)),
-                            ) {
-                                PreferencesNumericPicker(
-                                    value: $mouseHighlightSize,
-                                    range: 30 ... 100,
-                                    presets: [40, 50, 75, 100],
-                                    step: 2,
-                                    accessibilityTitle: L10n.PreferencesCapture.highlightSizeTitle,
-                                    unit: "px",
-                                    valueLabel: { "\(Int($0)) px" },
-                                )
-                            }
-
-                            SettingRow(
-                                icon: "timer",
-                                title: L10n.PreferencesCapture.animationDurationTitle,
-                                description: L10n.PreferencesCapture.animationDurationDescription(
-                                    String(format: "%.1f", mouseHighlightAnimDuration),
-                                ),
-                            ) {
-                                PreferencesNumericPicker(
-                                    value: $mouseHighlightAnimDuration,
-                                    range: 0.3 ... 2.0,
-                                    presets: [0.3, 0.7, 1.0, 1.5, 2.0],
-                                    step: 0.1,
-                                    accessibilityTitle: L10n.PreferencesCapture.animationDurationTitle,
-                                    unit: "s",
-                                    valueLabel: { String(format: "%.1f s", $0) },
-                                )
-                            }
-
-                            SettingRow(
-                                icon: "circle.grid.3x3",
-                                title: L10n.PreferencesCapture.rippleCountTitle,
-                                description: L10n.PreferencesCapture.rippleCountDescription,
-                            ) {
-                                Picker("", selection: $mouseHighlightRippleCount) {
-                                    ForEach(1 ... 5, id: \.self) { count in
-                                        Text("\(count)").tag(count)
-                                    }
-                                }
-                                .labelsHidden()
-                                .pickerStyle(.menu)
-                                .frame(width: 80)
-                            }
-
-                            SettingRow(
-                                icon: "paintpalette",
-                                title: L10n.PreferencesCapture.highlightColorTitle,
-                                description: L10n.PreferencesCapture.highlightColorDescription,
-                            ) {
-                                ColorPicker("", selection: mouseHighlightSwiftColor, supportsOpacity: false)
-                                    .labelsHidden()
-                            }
-
-                            SettingRow(
-                                icon: "circle.lefthalf.filled",
-                                title: L10n.PreferencesCapture.opacityTitle,
-                                description: L10n.PreferencesCapture
-                                    .opacityDescription(Int(mouseHighlightOpacity * 100)),
-                            ) {
-                                PreferencesNumericPicker(
-                                    value: $mouseHighlightOpacity,
-                                    range: 0.2 ... 1.0,
-                                    presets: [0.25, 0.5, 0.75, 1.0],
-                                    step: 0.05,
-                                    accessibilityTitle: L10n.PreferencesCapture.opacityTitle,
-                                    unit: "%",
-                                    customInputScale: 100,
-                                    valueLabel: { "\(Int($0 * 100))%" },
-                                )
-                            }
-
-                            HStack {
-                                Spacer()
-                                Button(L10n.Common.resetToDefault) {
-                                    resetMouseHighlightDefaults()
-                                }
-                                .font(.system(size: 11))
-                                .foregroundColor(.secondary)
-                                .buttonStyle(.plain)
-                            }
-                        }
-                    }
-
-                    if selectedPane == .recording {
-                        Section(L10n.PreferencesCapture.keystrokeOverlaySection) {
-                            SettingRow(
-                                icon: "textformat.size",
-                                title: L10n.PreferencesCapture.fontSizeTitle,
-                                description: L10n.PreferencesCapture.fontSizeDescription(Int(keystrokeFontSize)),
-                            ) {
-                                PreferencesNumericPicker(
-                                    value: $keystrokeFontSize,
-                                    range: 12 ... 32,
-                                    presets: [12, 16, 20, 24, 32],
-                                    step: 1,
-                                    accessibilityTitle: L10n.PreferencesCapture.fontSizeTitle,
-                                    unit: "pt",
-                                    valueLabel: { "\(Int($0)) pt" },
-                                )
-                            }
-
-                            SettingRow(
-                                icon: "square.and.arrow.down.on.square",
-                                title: L10n.PreferencesCapture.positionTitle,
-                                description: L10n.PreferencesCapture.positionDescription,
-                            ) {
-                                Picker("", selection: $keystrokePosition) {
-                                    ForEach(KeystrokeOverlayPosition.allCases) { pos in
-                                        Text(pos.displayName).tag(pos.rawValue)
-                                    }
-                                }
-                                .labelsHidden()
-                                .pickerStyle(.menu)
-                                .frame(width: 140)
-                            }
-
-                            SettingRow(
-                                icon: "clock",
-                                title: L10n.PreferencesCapture.displayDurationTitle,
-                                description: L10n.PreferencesCapture.displayDurationDescription(
-                                    String(format: "%.1f", keystrokeDisplayDuration),
-                                ),
-                            ) {
-                                PreferencesNumericPicker(
-                                    value: $keystrokeDisplayDuration,
-                                    range: 0.5 ... 5.0,
-                                    presets: [0.5, 1.0, 1.5, 2.5, 5.0],
-                                    step: 0.5,
-                                    accessibilityTitle: L10n.PreferencesCapture.displayDurationTitle,
-                                    unit: "s",
-                                    valueLabel: { String(format: "%.1f s", $0) },
-                                )
-                            }
-
-                            HStack {
-                                Spacer()
-                                Button(L10n.Common.resetToDefault) {
-                                    resetKeystrokeDefaults()
-                                }
-                                .font(.system(size: 11))
-                                .foregroundColor(.secondary)
-                                .buttonStyle(.plain)
-                            }
-                        }
-                    }
+                    // MARK: - Recording Audio Defaults
 
                     if selectedPane == .recording {
                         Section(L10n.PreferencesCapture.audioSection) {
-                            SettingRow(
-                                icon: "speaker.wave.3.fill",
-                                title: L10n.PreferencesCapture.systemAudioTitle,
-                                description: L10n.PreferencesCapture.systemAudioDescription,
-                            ) {
-                                Toggle("", isOn: $captureAudio)
-                                    .labelsHidden()
-                            }
-
-                            SettingRow(
-                                icon: "mic.fill",
-                                title: L10n.Onboarding.microphone,
-                                description: L10n.PreferencesCapture.microphoneDescription,
-                            ) {
-                                Toggle("", isOn: Binding(
-                                    get: { captureMicrophone },
-                                    set: { newValue in
-                                        if newValue {
-                                            handleMicrophoneEnable()
-                                        } else {
-                                            captureMicrophone = false
-                                        }
-                                    },
-                                ))
-                                .labelsHidden()
-                            }
-
                             SettingRow(
                                 icon: "mic.badge.plus",
                                 title: L10n.PreferencesCapture.microphoneInputTitle,
@@ -759,16 +540,9 @@ struct CaptureSettingsView: View {
                                     }
                                 }
                                 .labelsHidden()
+                                .pickerStyle(.menu)
                                 .frame(width: 220)
                             }
-                        }
-                        .alert(L10n.Microphone.accessRequiredTitle, isPresented: $showPermissionDeniedAlert) {
-                            Button(L10n.Common.openSystemSettings) {
-                                openMicrophoneSettings()
-                            }
-                            Button(L10n.Common.cancel, role: .cancel) {}
-                        } message: {
-                            Text(L10n.Microphone.preferencesMessage)
                         }
                     }
                 #endif
@@ -839,36 +613,6 @@ struct CaptureSettingsView: View {
     }
 
     #if CUE_VIDEO_MODULE
-        private func handleMicrophoneEnable() {
-            let status = AVCaptureDevice.authorizationStatus(for: .audio)
-
-            switch status {
-            case .notDetermined:
-                Task {
-                    let granted = await AVCaptureDevice.requestAccess(for: .audio)
-                    await MainActor.run {
-                        if granted {
-                            captureMicrophone = true
-                        } else {
-                            showPermissionDeniedAlert = true
-                        }
-                    }
-                }
-            case .authorized:
-                captureMicrophone = true
-            case .denied, .restricted:
-                showPermissionDeniedAlert = true
-            @unknown default:
-                captureMicrophone = true
-            }
-        }
-
-        private func openMicrophoneSettings() {
-            if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone") {
-                NSWorkspace.shared.open(url)
-            }
-        }
-
         private func refreshMicrophoneDevices() {
             microphoneDevices = RecordingMicrophoneDeviceProvider.availableDevices(
                 selectedDeviceID: microphoneDeviceID,
@@ -884,22 +628,6 @@ struct CaptureSettingsView: View {
             recordingFileNameTemplate = CaptureOutputKind.recording.defaultTemplate
         #endif
     }
-
-    #if CUE_VIDEO_MODULE
-        private func resetMouseHighlightDefaults() {
-            mouseHighlightSize = MouseHighlightConfiguration.defaultHighlightSize
-            mouseHighlightAnimDuration = MouseHighlightConfiguration.defaultAnimationDuration
-            mouseHighlightRippleCount = MouseHighlightConfiguration.defaultRippleCount
-            mouseHighlightOpacity = MouseHighlightConfiguration.defaultHighlightOpacity
-            UserDefaults.standard.removeObject(forKey: PreferencesKeys.mouseHighlightColor)
-        }
-
-        private func resetKeystrokeDefaults() {
-            keystrokeFontSize = KeystrokeOverlayConfiguration.defaultFontSize
-            keystrokePosition = KeystrokeOverlayConfiguration.defaultPosition.rawValue
-            keystrokeDisplayDuration = KeystrokeOverlayConfiguration.defaultDisplayDuration
-        }
-    #endif
 }
 
 #Preview {

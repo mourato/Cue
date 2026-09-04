@@ -18,7 +18,14 @@
     }
 
     enum VideoEditorPointerPressEffectStyle {
-        static let color = (red: 0.0, green: 122.0 / 255.0, blue: 1.0)
+        static var color: (red: Double, green: Double, blue: Double) {
+            let nsColor = MouseHighlightConfiguration().highlightColor
+            guard let rgb = nsColor.usingColorSpace(.sRGB) else {
+                return (red: 0.0, green: 122.0 / 255.0, blue: 1.0)
+            }
+            return (red: Double(rgb.redComponent), green: Double(rgb.greenComponent), blue: Double(rgb.blueComponent))
+        }
+
         static let duration: TimeInterval = 0.4
         private static let impactDuration: TimeInterval = 0.12
         private static let rippleDelay: TimeInterval = 0.06

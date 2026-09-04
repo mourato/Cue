@@ -40,6 +40,31 @@
         @State private var localAnchorMode: ZoomAnchorMode = .pointer
         @AppStorage(PreferencesKeys.videoEditorAutoGenerateZoomOnOpen)
         private var autoGenerateZoomOnOpen = true
+        @AppStorage(PreferencesKeys.keystrokePosition)
+        private var keystrokePosition: String = KeystrokeOverlayPosition.bottomCenter.rawValue
+        @AppStorage(PreferencesKeys.keystrokeFontSize)
+        private var keystrokeFontSize: Double = 16
+
+        private var mouseHighlightSwiftColor: Binding<Color> {
+            Binding<Color>(
+                get: {
+                    if let data = UserDefaults.standard.data(forKey: PreferencesKeys.mouseHighlightColor),
+                       let nsColor = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: data) {
+                        return Color(nsColor: nsColor)
+                    }
+                    return Color(nsColor: MouseHighlightConfiguration.defaultHighlightColor)
+                },
+                set: { newColor in
+                    let nsColor = NSColor(newColor)
+                    if let data = try? NSKeyedArchiver.archivedData(
+                        withRootObject: nsColor,
+                        requiringSecureCoding: true,
+                    ) {
+                        UserDefaults.standard.set(data, forKey: PreferencesKeys.mouseHighlightColor)
+                    }
+                },
+            )
+        }
 
         private struct LocalStateSnapshot: Equatable {
             let id: UUID
@@ -82,6 +107,10 @@
                     }
                     if state.hasCameraTrack {
                         cameraOverlaySection
+                        Divider()
+                    }
+                    if !state.audioTrackRoles.isEmpty || state.recordingMetadata != nil {
+                        audioSection
                         Divider()
                     }
                     if let segment = selectedSegment {
@@ -205,12 +234,64 @@
                             .font(.system(size: 11))
                     }
 
+                    if state.showsClickEffects {
+                        HStack {
+                            Text(L10n.PreferencesCapture.highlightColorTitle)
+                                .font(.system(size: 11))
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            ColorPicker("", selection: mouseHighlightSwiftColor, supportsOpacity: false)
+                                .labelsHidden()
+                        }
+                        .padding(.leading, 8)
+                    }
+
                     Toggle(isOn: $state.showsKeystrokes) {
                         Text(L10n.VideoEditor.showsKeystrokes)
                             .font(.system(size: 11))
                     }
                     .disabled(!state.hasRecordedKeystrokes)
+
+                    if state.showsKeystrokes {
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack {
+                                Text(L10n.PreferencesCapture.positionTitle)
+                                    .font(.system(size: 11))
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                                Picker("", selection: $keystrokePosition) {
+                                    ForEach(KeystrokeOverlayPosition.allCases) { pos in
+                                        Text(pos.displayName).tag(pos.rawValue)
+                                    }
+                                }
+                                .labelsHidden()
+                                .pickerStyle(.menu)
+                                .frame(width: 130)
+                            }
+
+                            VideoSliderRow(
+                                label: L10n.PreferencesCapture.fontSizeTitle,
+                                value: $keystrokeFontSize,
+                                range: 12 ... 32,
+                            )
+                        }
+                        .padding(.leading, 8)
+                    }
                 }
+            }
+            .accessibilityElement(children: .contain)
+        }
+
+        private var audioSection: some View {
+            VStack(alignment: .leading, spacing: 8) {
+                Label(L10n.PreferencesCapture.audioSection, systemImage: "speaker.wave.2.fill")
+                    .font(.system(size: 12, weight: .semibold))
+
+                Toggle(L10n.VideoEditor.mute, isOn: Binding(
+                    get: { state.isMuted },
+                    set: { _ in state.toggleMute() },
+                ))
+                .font(.system(size: 11))
             }
             .accessibilityElement(children: .contain)
         }
