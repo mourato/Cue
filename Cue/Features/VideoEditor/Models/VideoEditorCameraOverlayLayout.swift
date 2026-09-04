@@ -155,9 +155,11 @@
             let width = min(size.fraction, 1)
             let aspect = cameraSize.width / cameraSize.height
             let height = min(width / max(aspect * canvasSize.width / canvasSize.height, 0.01), 1)
-            let x = position == .topTrailing || position == .bottomTrailing ? 1 - margin - width : margin
-            let y = position == .bottomLeading || position == .bottomTrailing ? 1 - margin - height : margin
-            return CGRect(x: x, y: y, width: width, height: height).standardized.clampedToUnitRect()
+            return Self.anchoredRect(
+                CGRect(x: 0, y: 0, width: width, height: height),
+                position: position,
+                margin: margin,
+            )
         }
 
         func frame(in canvasSize: CGSize, cameraSize: CGSize) -> CGRect {
@@ -231,12 +233,15 @@
             margin: CGFloat,
         ) -> CGRect {
             let safeMargin = min(max(margin, 0), 1)
+            // An oversized margin falls back to edge placement to preserve the selected corner.
+            let horizontalMargin = safeMargin <= 1 - rect.width ? safeMargin : 0
+            let verticalMargin = safeMargin <= 1 - rect.height ? safeMargin : 0
             let x = position == .topTrailing || position == .bottomTrailing
-                ? 1 - safeMargin - rect.width
-                : safeMargin
+                ? 1 - horizontalMargin - rect.width
+                : horizontalMargin
             let y = position == .bottomLeading || position == .bottomTrailing
-                ? 1 - safeMargin - rect.height
-                : safeMargin
+                ? 1 - verticalMargin - rect.height
+                : verticalMargin
             return CGRect(x: x, y: y, width: rect.width, height: rect.height)
                 .standardized
                 .clampedToUnitRect()
