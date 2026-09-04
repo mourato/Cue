@@ -14,6 +14,9 @@ enum ScrollingCapturePreviewLayout {
     static let panelHorizontalMargin: CGFloat = 20
     static let panelScreenEdgeInset: CGFloat = 12
     static let panelTopInset: CGFloat = 20
+    /// Card corner radius: largest shared radius (Size.radiusLg), continuous
+    /// style per Apple design guidance.
+    static let cardCornerRadius: CGFloat = 12
     /// Matches the region overlay stroke inset so the preview aligns with the visible border bottom.
     static let selectionBorderOutset: CGFloat = 1.25
 
@@ -48,7 +51,8 @@ struct ScrollingCapturePreviewView: View {
     }
 
     /// Image-only card: no header, badge, caption, padding, or border — the
-    /// stitched image fills 100% of the floating card.
+    /// stitched image fills 100% of the floating card, clipped to a
+    /// continuous rounded rectangle per Apple design guidance.
     var body: some View {
         let previewHeight = ScrollingCapturePreviewLayout.previewHeight(
             for: displayedPreviewImage,
@@ -67,7 +71,14 @@ struct ScrollingCapturePreviewView: View {
                         height: geometry.size.height,
                         alignment: .top,
                     )
-                    .clipped()
+                    .clipShape(
+                        RoundedRectangle(
+                            cornerRadius: ScrollingCapturePreviewLayout.cardCornerRadius,
+                            style: .continuous,
+                        ),
+                    )
+                    .shadow(color: Color.black.opacity(0.22), radius: 12, x: 0, y: 4)
+                    .shadow(color: Color.black.opacity(0.10), radius: 2, x: 0, y: 1)
                 }
             } else {
                 Color.clear

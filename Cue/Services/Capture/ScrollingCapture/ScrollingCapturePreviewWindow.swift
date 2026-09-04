@@ -44,7 +44,9 @@ final class ScrollingCapturePreviewWindow: NSPanel {
         isOpaque = false
         backgroundColor = .clear
         sharingType = .none
-        hasShadow = true
+        // The SwiftUI card owns its rounded shadow; a window shadow would
+        // stay rectangular behind the rounded transparent corners.
+        hasShadow = false
         hidesOnDeactivate = false
         ignoresMouseEvents = true
         collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]

@@ -40,10 +40,14 @@ final class ScrollingCapturePreviewImageView: NSView {
         wantsLayer = true
         layer = CALayer()
         layer?.masksToBounds = true
+        layer?.cornerRadius = ScrollingCapturePreviewLayout.cardCornerRadius
+        layer?.cornerCurve = .continuous
         layer?.backgroundColor = NSColor.clear.cgColor
 
         contentLayer.contentsGravity = .resize
         contentLayer.masksToBounds = true
+        contentLayer.cornerRadius = ScrollingCapturePreviewLayout.cardCornerRadius
+        contentLayer.cornerCurve = .continuous
         contentLayer.minificationFilter = .trilinear
         contentLayer.magnificationFilter = .trilinear
         layer?.addSublayer(contentLayer)
