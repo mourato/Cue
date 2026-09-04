@@ -75,42 +75,6 @@ struct HistorySettingsView: View {
                     HistoryBackgroundStylePicker(selection: $historyBackgroundStyle)
                         .frame(width: 190, alignment: .trailing)
                 }
-
-                SettingRow(
-                    icon: "arrow.up.left.and.arrow.down.right",
-                    title: L10n.PreferencesHistory.panelSizeTitle,
-                    description: L10n.PreferencesHistory.panelSizeDescription,
-                ) {
-                    PreferencesNumericPicker(
-                        value: $manager.panelScale,
-                        range: HistoryFloatingLayout.scaleRange,
-                        presets: [0.8, 1.0, 1.2, 1.4],
-                        step: 0.05,
-                        accessibilityTitle: L10n.PreferencesHistory.panelSizeTitle,
-                        unit: "%",
-                        customInputScale: 100,
-                        valueLabel: { "\(Int($0 * 100))%" },
-                    )
-                }
-
-                SettingRow(
-                    icon: "number",
-                    title: L10n.PreferencesHistory.maxItemsTitle,
-                    description: L10n.PreferencesHistory.maxItemsDescription,
-                ) {
-                    PreferencesNumericPicker(
-                        value: Binding(
-                            get: { Double(manager.maxDisplayedItems) },
-                            set: { manager.maxDisplayedItems = Int($0.rounded()) },
-                        ),
-                        range: 3 ... 20,
-                        presets: [5, 10, 15, 20],
-                        step: 1,
-                        accessibilityTitle: L10n.PreferencesHistory.maxItemsTitle,
-                        unit: "items",
-                        valueLabel: { "\(Int($0))" },
-                    )
-                }
             }
 
             Section(L10n.PreferencesHistory.retentionSection) {

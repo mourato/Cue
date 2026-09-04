@@ -5,27 +5,26 @@
 //  SwiftUI content for the floating history panel
 //
 
+import AppKit
 import Combine
 import SwiftUI
 
 struct HistoryFloatingContentView: View {
     @ObservedObject var manager: HistoryFloatingManager
     @ObservedObject private var themeManager = ThemeManager.shared
-    @ObservedObject private var store = CaptureHistoryStore.shared
     @AppStorage(PreferencesKeys.historyBackgroundStyle) private var backgroundStyle: HistoryBackgroundStyle =
         .defaultStyle
     @Environment(\.colorScheme) private var colorScheme
 
-    @State private var selectedCompactFilter: CaptureHistoryType? = nil
-    @State private var usesExplicitCompactFilterSelection = false
-    @State private var selectedId: UUID? = nil
     @State private var expandedSelectedIds: Set<UUID> = []
     @State private var expandedLastSelectedId: UUID?
-    @State private var compactScrollOffset: CGFloat = 0
-    @State private var compactSelectionRevealTrigger = 0
-    @State private var isExpandedGridReady = false
-    @State private var expandedGridWarmupTask: Task<Void, Never>?
-    @StateObject private var scrollController = HistoryScrollController()
+    @State private var rowScrollOffset: CGFloat = 0
+    @State private var selectionRevealTrigger = 0
+    @State private var dragTranslation: CGFloat = 0
+    @State private var isHoveringRow = false
+    @State private var isDraggingRow = false
+    @State private var isRowReady = false
+    @State private var rowWarmupTask: Task<Void, Never>?
     @StateObject private var searchViewModel: HistorySearchViewModel
 
     init(manager: HistoryFloatingManager) {
@@ -37,30 +36,8 @@ struct HistoryFloatingContentView: View {
         ))
     }
 
-    private var sortedRecords: [CaptureHistoryRecord] {
-        // CaptureHistoryStore already publishes rows ordered by capturedAt desc.
-        store.records
-    }
-
-    private var compactRecords: [CaptureHistoryRecord] {
-        filteredRecords(
-            typeFilter: effectiveCompactFilter,
-            searchText: "",
-            timeFilter: .all,
-            limit: manager.maxDisplayedItems,
-        )
-    }
-
     private var expandedRecords: [CaptureHistoryRecord] {
         searchViewModel.filteredRecords
-    }
-
-    private var activeRecords: [CaptureHistoryRecord] {
-        manager.presentationMode == .compact ? compactRecords : expandedRecords
-    }
-
-    private var activeRecordIDs: [UUID] {
-        activeRecords.map(\.id)
     }
 
     private var expandedRecordIDs: [UUID] {
@@ -71,54 +48,25 @@ struct HistoryFloatingContentView: View {
         expandedRecords.filter { expandedSelectedIds.contains($0.id) }
     }
 
-    private var basePanelSize: CGSize {
-        HistoryFloatingLayout.basePanelSize(for: manager.presentationMode)
-    }
-
-    private var resolvedPanelScale: CGFloat {
-        HistoryFloatingLayout.effectiveScale(
-            for: manager.panelScale,
-            mode: manager.presentationMode,
-            on: ScreenUtility.activeScreen(),
-        )
-    }
-
-    private var scaledPanelSize: CGSize {
-        HistoryFloatingLayout.panelSize(
-            for: manager.panelScale,
-            mode: manager.presentationMode,
-            on: ScreenUtility.activeScreen(),
-        )
+    private var panelSize: CGSize {
+        HistoryFloatingLayout.panelSize(on: ScreenUtility.activeScreen())
     }
 
     var body: some View {
-        content
-            .frame(width: basePanelSize.width, height: basePanelSize.height)
+        expandedContent
+            .frame(width: panelSize.width, height: panelSize.height)
             .background(HistoryBackdropView(style: backgroundStyle))
             .overlay(panelBorder)
-            .scaleEffect(resolvedPanelScale)
-            .frame(width: scaledPanelSize.width, height: scaledPanelSize.height)
             .preferredColorScheme(themeManager.systemAppearance)
             .onAppear {
-                syncSelectionIfNeeded()
-                syncExpandedGridPresentation(for: manager.presentationMode)
+                syncRowPresentation()
             }
             .onDisappear {
-                expandedGridWarmupTask?.cancel()
-            }
-            .onChange(of: activeRecordIDs) { _ in
-                syncSelectionIfNeeded()
+                rowWarmupTask?.cancel()
             }
             .onChange(of: expandedRecordIDs) { _ in
                 pruneExpandedSelection()
-                prefetchExpandedThumbnailsIfNeeded()
-            }
-            .onChange(of: manager.presentationMode) { _ in
-                if manager.presentationMode != .expanded {
-                    clearExpandedSelection()
-                }
-                syncSelectionIfNeeded()
-                syncExpandedGridPresentation(for: manager.presentationMode)
+                prefetchThumbnailsIfNeeded()
             }
             .onReceive(NotificationCenter.default.publisher(for: .historyCopySelection)) { notification in
                 guard notification.object is HistoryFloatingPanel else { return }
@@ -134,24 +82,13 @@ struct HistoryFloatingContentView: View {
             }
             .onReceive(NotificationCenter.default.publisher(for: .historySelectAll)) { notification in
                 guard notification.object is HistoryFloatingPanel else { return }
-                guard manager.presentationMode == .expanded else { return }
                 selectAllExpandedRecords()
             }
     }
 
-    @ViewBuilder
-    private var content: some View {
-        switch manager.presentationMode {
-        case .compact:
-            compactContent
-        case .expanded:
-            expandedContent
-        }
-    }
-
     private var panelShape: RoundedRectangle {
         RoundedRectangle(
-            cornerRadius: HistoryFloatingLayout.baseCornerRadius(for: manager.presentationMode),
+            cornerRadius: HistoryFloatingLayout.baseCornerRadius,
             style: .continuous,
         )
     }
@@ -166,84 +103,6 @@ struct HistoryFloatingContentView: View {
             )
     }
 
-    // MARK: - Compact
-
-    private var compactContent: some View {
-        VStack(spacing: 18) {
-            compactHeader
-
-            if compactRecords.isEmpty {
-                compactEmptyState
-            } else {
-                compactScrollContent
-            }
-        }
-        .padding(.horizontal, 22)
-        .padding(.top, 18)
-        .padding(.bottom, 18)
-    }
-
-    private var compactHeader: some View {
-        ZStack {
-            compactFilterBar
-                .frame(maxWidth: .infinity)
-
-            HStack(spacing: 8) {
-                Spacer()
-
-                controlButton(
-                    systemName: "arrow.up.forward.app",
-                    help: L10n.Actions.openHistory,
-                    action: openFullHistory,
-                )
-
-                controlButton(
-                    systemName: "xmark",
-                    help: L10n.Common.close,
-                    action: manager.hide,
-                )
-            }
-        }
-    }
-
-    private var compactFilterBar: some View {
-        HStack(spacing: 10) {
-            ForEach(Array(captureTypeFilters.enumerated()), id: \.offset) { _, filter in
-                selectionPill(
-                    title: filter.title,
-                    isSelected: filter.type == effectiveCompactFilter,
-                    count: nil,
-                    action: { selectCompactFilter(filter.type) },
-                )
-            }
-        }
-    }
-
-    private var compactScrollContent: some View {
-        HistoryCompactCarouselView(
-            records: compactRecords,
-            selectedId: selectedId,
-            selectionRevealTrigger: compactSelectionRevealTrigger,
-            scrollOffset: $compactScrollOffset,
-            onSelect: { record in
-                selectRecord(record)
-            },
-        )
-    }
-
-    private var compactEmptyState: some View {
-        VStack(spacing: 10) {
-            Image(systemName: compactEmptyIconName)
-                .font(.system(size: 28, weight: .medium))
-                .foregroundColor(.secondary.opacity(0.68))
-
-            Text(compactEmptyTitle)
-                .font(.system(size: 15, weight: .semibold))
-                .foregroundColor(.secondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
     // MARK: - Expanded
 
     private var expandedContent: some View {
@@ -253,18 +112,20 @@ struct HistoryFloatingContentView: View {
 
                 if expandedRecords.isEmpty {
                     expandedEmptyState
-                } else if isExpandedGridReady {
-                    expandedGrid
+                } else if isRowReady {
+                    historyRow
                 } else {
-                    expandedGridPlaceholder
+                    historyRowPlaceholder
                 }
+
+                Spacer(minLength: 0)
             }
 
             if !expandedSelectedRecords.isEmpty {
                 expandedSelectionBar
             }
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal, HistoryFloatingLayout.contentHorizontalPadding)
         .padding(.top, 18)
         .padding(.bottom, 20)
     }
@@ -288,7 +149,6 @@ struct HistoryFloatingContentView: View {
                 selectionPill(
                     title: filter.title,
                     isSelected: manager.expandedFilter == filter.type,
-                    count: nil,
                     horizontalPadding: 12,
                     verticalPadding: 8,
                     fontSize: 11,
@@ -339,7 +199,6 @@ struct HistoryFloatingContentView: View {
                 selectionPill(
                     title: filter.title,
                     isSelected: manager.expandedTimeFilter == filter,
-                    count: nil,
                     horizontalPadding: 12,
                     verticalPadding: 8,
                     fontSize: 11,
@@ -357,20 +216,6 @@ struct HistoryFloatingContentView: View {
     private var expandedTrailingControls: some View {
         HStack(spacing: 8) {
             expandedTimeFilters
-            expandedControls
-        }
-    }
-
-    private var expandedControls: some View {
-        HStack(spacing: 6) {
-            if manager.isEnabled {
-                controlButton(
-                    systemName: "arrow.down.right.and.arrow.up.left",
-                    help: "Collapse",
-                    size: 34,
-                    action: manager.collapse,
-                )
-            }
 
             controlButton(
                 systemName: "xmark",
@@ -426,9 +271,18 @@ struct HistoryFloatingContentView: View {
         .transition(.opacity.combined(with: .scale(scale: 0.96, anchor: .bottom)))
     }
 
-    private var expandedGrid: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            LazyVGrid(columns: expandedColumns, spacing: 12) {
+    // MARK: - Single horizontal row
+
+    private var historyRow: some View {
+        GeometryReader { geometry in
+            let metrics = RowMetrics(
+                viewportWidth: geometry.size.width,
+                contentWidth: rowContentWidth,
+            )
+            let visibleOffset = clampedRowOffset(rowScrollOffset - dragTranslation, metrics: metrics)
+            let centeredOffset = max((metrics.viewportWidth - metrics.contentWidth) / 2, 0)
+
+            LazyHStack(spacing: HistoryFloatingLayout.cardSpacing) {
                 ForEach(expandedRecords) { record in
                     HistoryExpandedCaptureCardView(
                         record: record,
@@ -439,66 +293,87 @@ struct HistoryFloatingContentView: View {
                         },
                     )
                     .equatable()
+                    .frame(width: HistoryFloatingLayout.cardWidth)
                     .contextMenu {
                         HistoryContextMenu(record: record)
                     }
                 }
             }
-            .padding(.horizontal, 6)
-            .padding(.top, 4)
-            .padding(.bottom, 88)
-
-            HistoryScrollViewReader(controller: scrollController)
-                .frame(height: 0)
+            .padding(.horizontal, HistoryFloatingLayout.rowHorizontalPadding)
+            .padding(.vertical, 6)
+            .offset(x: metrics.isScrollable ? -visibleOffset : centeredOffset)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .contentShape(Rectangle())
+            .simultaneousGesture(rowDragGesture(metrics: metrics))
+            .background(
+                HistoryRowTrackpadScrollObserver(isEnabled: metrics.isScrollable) { delta in
+                    rowScrollOffset = clampedRowOffset(rowScrollOffset - delta, metrics: metrics)
+                },
+            )
+            .clipped()
+            .onAppear {
+                clampRowScrollOffsetIfNeeded(metrics: metrics)
+                updateRowCursor(for: metrics)
+            }
+            .onDisappear {
+                isDraggingRow = false
+                isHoveringRow = false
+                dragTranslation = 0
+                NSCursor.arrow.set()
+            }
+            .onHover { hovering in
+                isHoveringRow = hovering
+                updateRowCursor(for: metrics)
+            }
+            .onChange(of: metrics.viewportWidth) { _ in
+                clampRowScrollOffsetIfNeeded(metrics: metrics)
+                updateRowCursor(for: metrics)
+            }
+            .onChange(of: metrics.contentWidth) { _ in
+                clampRowScrollOffsetIfNeeded(metrics: metrics)
+                updateRowCursor(for: metrics)
+            }
+            .onChange(of: expandedRecordIDs) { _ in
+                clampRowScrollOffsetIfNeeded(metrics: metrics)
+            }
+            .onChange(of: selectionRevealTrigger) { _ in
+                revealSelectedRecordIfNeeded(metrics: metrics)
+            }
         }
-        .overlay(
-            HistoryFloatingScrollbar(controller: scrollController, scale: resolvedPanelScale)
-                .padding(.trailing, 2),
-            alignment: .trailing,
-        )
     }
 
-    private var expandedGridPlaceholder: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            LazyVGrid(columns: expandedColumns, spacing: 12) {
-                ForEach(0 ..< 8, id: \.self) { _ in
-                    VStack(spacing: 8) {
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+    private var historyRowPlaceholder: some View {
+        HStack(spacing: HistoryFloatingLayout.cardSpacing) {
+            ForEach(0 ..< 6, id: \.self) { _ in
+                VStack(spacing: 8) {
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(placeholderFill)
+                        .aspectRatio(16 / 10, contentMode: .fit)
+
+                    VStack(alignment: .leading, spacing: 7) {
+                        RoundedRectangle(cornerRadius: 5, style: .continuous)
                             .fill(placeholderFill)
-                            .aspectRatio(16 / 10, contentMode: .fit)
+                            .frame(height: 12)
 
-                        VStack(alignment: .leading, spacing: 7) {
-                            RoundedRectangle(cornerRadius: 5, style: .continuous)
+                        HStack(spacing: 8) {
+                            RoundedRectangle(cornerRadius: 4, style: .continuous)
                                 .fill(placeholderFill)
-                                .frame(height: 12)
-
-                            HStack(spacing: 8) {
-                                RoundedRectangle(cornerRadius: 4, style: .continuous)
-                                    .fill(placeholderFill)
-                                    .frame(width: 96, height: 10)
-                            }
+                                .frame(width: 96, height: 10)
                         }
                     }
-                    .padding(10)
-                    .background(placeholderCardFill, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .stroke(placeholderStroke, lineWidth: 1),
-                    )
-                    .redacted(reason: .placeholder)
                 }
+                .padding(10)
+                .background(placeholderCardFill, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .stroke(placeholderStroke, lineWidth: 1),
+                )
+                .frame(width: HistoryFloatingLayout.cardWidth)
+                .redacted(reason: .placeholder)
             }
-            .padding(.horizontal, 6)
-            .padding(.top, 4)
-            .padding(.bottom, 14)
         }
-    }
-
-    private var expandedColumns: [GridItem] {
-        Array(
-            repeating: GridItem(.flexible(minimum: 0, maximum: .infinity), spacing: 12, alignment: .top),
-            count: 4,
-        )
+        .padding(.horizontal, HistoryFloatingLayout.rowHorizontalPadding)
+        .padding(.vertical, 6)
     }
 
     private var expandedEmptyState: some View {
@@ -510,6 +385,96 @@ struct HistoryFloatingContentView: View {
         .padding(.bottom, 6)
     }
 
+    // MARK: - Row scrolling
+
+    private var rowContentWidth: CGFloat {
+        guard !expandedRecords.isEmpty else { return 0 }
+        let cardCount = CGFloat(expandedRecords.count)
+        let spacingCount = CGFloat(max(expandedRecords.count - 1, 0))
+        return (cardCount * HistoryFloatingLayout.cardWidth)
+            + (spacingCount * HistoryFloatingLayout.cardSpacing)
+            + (HistoryFloatingLayout.rowHorizontalPadding * 2)
+    }
+
+    private func rowDragGesture(metrics: RowMetrics) -> some Gesture {
+        DragGesture(minimumDistance: 6)
+            .onChanged { value in
+                guard metrics.isScrollable else { return }
+                dragTranslation = value.translation.width
+                isDraggingRow = true
+                updateRowCursor(for: metrics)
+            }
+            .onEnded { value in
+                guard metrics.isScrollable else {
+                    dragTranslation = 0
+                    isDraggingRow = false
+                    updateRowCursor(for: metrics)
+                    return
+                }
+
+                rowScrollOffset = clampedRowOffset(rowScrollOffset - value.translation.width, metrics: metrics)
+                dragTranslation = 0
+                isDraggingRow = false
+                updateRowCursor(for: metrics)
+            }
+    }
+
+    private func revealSelectedRecordIfNeeded(metrics: RowMetrics) {
+        guard metrics.isScrollable else {
+            rowScrollOffset = 0
+            return
+        }
+
+        guard let selectedId = expandedLastSelectedId,
+              let selectedIndex = expandedRecords.firstIndex(where: { $0.id == selectedId })
+        else {
+            rowScrollOffset = clampedRowOffset(rowScrollOffset, metrics: metrics)
+            return
+        }
+
+        let selectedLeading = HistoryFloatingLayout.rowHorizontalPadding
+            + (CGFloat(selectedIndex) * (HistoryFloatingLayout.cardWidth + HistoryFloatingLayout.cardSpacing))
+        let selectedTrailing = selectedLeading + HistoryFloatingLayout.cardWidth
+        let visibleLeading = rowScrollOffset
+        let visibleTrailing = rowScrollOffset + metrics.viewportWidth
+
+        if selectedLeading < visibleLeading {
+            rowScrollOffset = clampedRowOffset(selectedLeading, metrics: metrics)
+        } else if selectedTrailing > visibleTrailing {
+            rowScrollOffset = clampedRowOffset(selectedTrailing - metrics.viewportWidth, metrics: metrics)
+        } else {
+            rowScrollOffset = clampedRowOffset(rowScrollOffset, metrics: metrics)
+        }
+    }
+
+    private func clampRowScrollOffsetIfNeeded(metrics: RowMetrics) {
+        guard metrics.isScrollable else {
+            rowScrollOffset = 0
+            return
+        }
+
+        rowScrollOffset = clampedRowOffset(rowScrollOffset, metrics: metrics)
+    }
+
+    private func clampedRowOffset(_ offset: CGFloat, metrics: RowMetrics) -> CGFloat {
+        min(max(offset, 0), metrics.maxScrollOffset)
+    }
+
+    private func updateRowCursor(for metrics: RowMetrics) {
+        guard metrics.isScrollable else {
+            NSCursor.arrow.set()
+            return
+        }
+
+        if isDraggingRow {
+            NSCursor.closedHand.set()
+        } else if isHoveringRow {
+            NSCursor.openHand.set()
+        } else {
+            NSCursor.arrow.set()
+        }
+    }
+
     // MARK: - Styling
 
     private var captureTypeFilters: [(title: String, type: CaptureHistoryType?)] {
@@ -519,10 +484,6 @@ struct HistoryFloatingContentView: View {
             ("Videos", .video),
             ("GIFs", .gif),
         ]
-    }
-
-    private var effectiveCompactFilter: CaptureHistoryType? {
-        usesExplicitCompactFilterSelection ? selectedCompactFilter : manager.defaultFilter
     }
 
     private var selectedFilterBackground: AnyShapeStyle {
@@ -572,10 +533,6 @@ struct HistoryFloatingContentView: View {
             : AnyShapeStyle(Color.black.opacity(0.05))
     }
 
-    private var pillCountBackground: Color {
-        colorScheme == .dark ? Color.white.opacity(0.12) : Color.white.opacity(0.84)
-    }
-
     private var controlButtonBackground: AnyShapeStyle {
         colorScheme == .dark
             ? AnyShapeStyle(Color.white.opacity(0.08))
@@ -594,30 +551,11 @@ struct HistoryFloatingContentView: View {
         colorScheme == .dark ? Color.white.opacity(0.06) : Color.black.opacity(0.05)
     }
 
-    private var compactEmptyIconName: String {
-        switch effectiveCompactFilter {
-        case .screenshot: CaptureHistoryType.screenshot.systemIconName
-        case .video: CaptureHistoryType.video.systemIconName
-        case .gif: CaptureHistoryType.gif.systemIconName
-        case nil: "clock.arrow.circlepath"
-        }
-    }
-
-    private var compactEmptyTitle: String {
-        switch effectiveCompactFilter {
-        case .screenshot: "No screenshots yet"
-        case .video: "No videos yet"
-        case .gif: "No GIFs yet"
-        case nil: "No captures yet"
-        }
-    }
-
     // MARK: - Helpers
 
     private func selectionPill(
         title: String,
         isSelected: Bool,
-        count: Int?,
         horizontalPadding: CGFloat = 12,
         verticalPadding: CGFloat = 7,
         fontSize: CGFloat = 12,
@@ -625,35 +563,25 @@ struct HistoryFloatingContentView: View {
         action: @escaping () -> Void,
     ) -> some View {
         Button(action: action) {
-            HStack(spacing: 8) {
-                Text(title)
-                    .font(.system(size: fontSize, weight: .semibold))
-                    .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
-
-                if let count {
-                    Text("\(count)")
-                        .font(.system(size: max(fontSize - 2, 9), weight: .bold))
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 2)
-                        .background(pillCountBackground.opacity(isSelected ? 0.18 : 1), in: Capsule())
-                }
-            }
-            .foregroundColor(isSelected ? .white : .primary.opacity(0.82))
-            .padding(.horizontal, horizontalPadding)
-            .padding(.vertical, verticalPadding)
-            .frame(minWidth: minWidth)
-            .background(isSelected ? selectedFilterBackground : unselectedPillBackground)
-            .overlay(
-                Capsule()
-                    .stroke(
-                        isSelected
-                            ? Color.white.opacity(0.08)
-                            : chromeSurfaceBorder.opacity(colorScheme == .dark ? 0.45 : 0.7),
-                        lineWidth: 1,
-                    ),
-            )
-            .clipShape(Capsule())
+            Text(title)
+                .font(.system(size: fontSize, weight: .semibold))
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
+                .foregroundColor(isSelected ? .white : .primary.opacity(0.82))
+                .padding(.horizontal, horizontalPadding)
+                .padding(.vertical, verticalPadding)
+                .frame(minWidth: minWidth)
+                .background(isSelected ? selectedFilterBackground : unselectedPillBackground)
+                .overlay(
+                    Capsule()
+                        .stroke(
+                            isSelected
+                                ? Color.white.opacity(0.08)
+                                : chromeSurfaceBorder.opacity(colorScheme == .dark ? 0.45 : 0.7),
+                            lineWidth: 1,
+                        ),
+                )
+                .clipShape(Capsule())
         }
         .buttonStyle(.plain)
     }
@@ -692,80 +620,19 @@ struct HistoryFloatingContentView: View {
         .foregroundColor(isDestructive ? .red : .primary.opacity(0.82))
     }
 
-    private func filteredRecords(
-        typeFilter: CaptureHistoryType?,
-        searchText: String,
-        timeFilter: HistoryFloatingTimeFilter,
-        limit: Int? = nil,
-    ) -> [CaptureHistoryRecord] {
-        let now = Date()
-        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        var result = sortedRecords
-
-        if let typeFilter {
-            result = result.filter { $0.captureType == typeFilter }
-        }
-
-        if timeFilter != .all {
-            result = result.filter { timeFilter.includes($0.capturedAt, relativeTo: now) }
-        }
-
-        if !query.isEmpty {
-            result = result.filter { $0.fileName.localizedCaseInsensitiveContains(query) }
-        }
-
-        if let limit {
-            return Array(result.prefix(limit))
-        }
-
-        return result
-    }
-
-    private func selectCompactFilter(_ filter: CaptureHistoryType?) {
-        let nextSelectionId = filteredRecords(
-            typeFilter: filter,
-            searchText: "",
-            timeFilter: .all,
-            limit: manager.maxDisplayedItems,
-        ).first?.id
-
-        withAnimation(.spring(response: 0.22, dampingFraction: 0.9)) {
-            usesExplicitCompactFilterSelection = true
-            selectedCompactFilter = filter
-            selectedId = nextSelectionId
-            compactScrollOffset = 0
-        }
-    }
-
-    private func syncSelectionIfNeeded() {
-        guard !activeRecords.isEmpty else {
-            selectedId = nil
-            return
-        }
-
-        guard let selectedId, activeRecords.contains(where: { $0.id == selectedId }) else {
-            selectedId = activeRecords.first?.id
-            if manager.presentationMode == .compact, selectedId != nil {
-                compactSelectionRevealTrigger += 1
-            }
-            return
-        }
-    }
-
-    private func selectRecord(_ record: CaptureHistoryRecord) {
-        selectedId = record.id
-        manager.focusPanel()
-    }
-
     private func selectExpandedRecord(_ record: CaptureHistoryRecord) {
         let flags = NSEvent.modifierFlags.intersection(.deviceIndependentFlagsMask)
 
-        if flags.contains(.shift), let expandedLastSelectedId,
-           let startIndex = expandedRecords.firstIndex(where: { $0.id == expandedLastSelectedId }),
-           let endIndex = expandedRecords.firstIndex(where: { $0.id == record.id }) {
-            let range = min(startIndex, endIndex) ... max(startIndex, endIndex)
-            expandedSelectedIds.formUnion(expandedRecords[range].map(\.id))
+        if flags.contains(.shift) {
+            if let expandedLastSelectedId,
+               let startIndex = expandedRecords.firstIndex(where: { $0.id == expandedLastSelectedId }),
+               let endIndex = expandedRecords.firstIndex(where: { $0.id == record.id }) {
+                let range = min(startIndex, endIndex) ... max(startIndex, endIndex)
+                expandedSelectedIds.formUnion(expandedRecords[range].map(\.id))
+            } else {
+                expandedSelectedIds.insert(record.id)
+                expandedLastSelectedId = record.id
+            }
         } else if flags.contains(.command) {
             if expandedSelectedIds.contains(record.id) {
                 expandedSelectedIds.remove(record.id)
@@ -773,15 +640,12 @@ struct HistoryFloatingContentView: View {
                 expandedSelectedIds.insert(record.id)
             }
             expandedLastSelectedId = record.id
-        } else if flags.contains(.shift) {
-            expandedSelectedIds.insert(record.id)
-            expandedLastSelectedId = record.id
         } else {
             expandedSelectedIds = [record.id]
             expandedLastSelectedId = record.id
         }
 
-        selectedId = record.id
+        selectionRevealTrigger += 1
         manager.focusPanel()
     }
 
@@ -804,45 +668,19 @@ struct HistoryFloatingContentView: View {
         }
     }
 
-    private func openFullHistory() {
-        manager.showExpanded(initialFilter: effectiveCompactFilter)
-    }
-
     private func copySelectedRecord() {
-        if manager.presentationMode == .expanded, !expandedSelectedRecords.isEmpty {
-            HistoryWindowController.shared.copyToClipboard(expandedSelectedRecords)
-            return
-        }
-
-        guard let selectedId,
-              let record = activeRecords.first(where: { $0.id == selectedId })
-        else { return }
-
-        HistoryWindowController.shared.copyToClipboard([record])
+        let records = expandedSelectedRecords
+        guard !records.isEmpty else { return }
+        HistoryWindowController.shared.copyToClipboard(records)
     }
 
     private func openSelectedRecord() {
-        if manager.presentationMode == .expanded {
-            if expandedSelectedRecords.count == 1, let record = expandedSelectedRecords.first {
-                HistoryWindowController.shared.openItem(record)
-                return
-            }
-
-            if expandedSelectedRecords.count > 1 {
-                return
-            }
+        if expandedSelectedRecords.count == 1, let record = expandedSelectedRecords.first {
+            HistoryWindowController.shared.openItem(record)
         }
-
-        guard let selectedId,
-              let record = activeRecords.first(where: { $0.id == selectedId })
-        else { return }
-
-        HistoryWindowController.shared.openItem(record)
     }
 
     private func deleteSelectedRecords() {
-        guard manager.presentationMode == .expanded else { return }
-
         let deletedCount = HistoryWindowController.shared.deleteRecords(
             expandedSelectedRecords,
             asksConfirmation: true,
@@ -876,33 +714,113 @@ struct HistoryFloatingContentView: View {
         }
     }
 
-    private func prefetchExpandedThumbnailsIfNeeded() {
-        guard manager.presentationMode == .expanded, !expandedRecords.isEmpty else { return }
+    private func prefetchThumbnailsIfNeeded() {
+        guard !expandedRecords.isEmpty else { return }
         HistoryThumbnailGenerator.shared.preloadThumbnails(for: Array(expandedRecords.prefix(10)))
     }
 
-    private func syncExpandedGridPresentation(for mode: HistoryFloatingPresentationMode) {
-        expandedGridWarmupTask?.cancel()
+    private func syncRowPresentation() {
+        rowWarmupTask?.cancel()
 
-        guard mode == .expanded else {
-            isExpandedGridReady = false
-            return
-        }
-
-        prefetchExpandedThumbnailsIfNeeded()
+        prefetchThumbnailsIfNeeded()
 
         guard !expandedRecords.isEmpty else {
-            isExpandedGridReady = true
+            isRowReady = true
             return
         }
 
-        isExpandedGridReady = false
-        expandedGridWarmupTask = Task {
+        isRowReady = false
+        rowWarmupTask = Task {
             try? await Task.sleep(nanoseconds: 140_000_000)
             guard !Task.isCancelled else { return }
             await MainActor.run {
-                isExpandedGridReady = true
+                isRowReady = true
             }
         }
+    }
+}
+
+private struct RowMetrics: Equatable {
+    let viewportWidth: CGFloat
+    let contentWidth: CGFloat
+
+    var maxScrollOffset: CGFloat {
+        max(contentWidth - viewportWidth, 0)
+    }
+
+    var isScrollable: Bool {
+        maxScrollOffset > 1
+    }
+}
+
+private struct HistoryRowTrackpadScrollObserver: NSViewRepresentable {
+    let isEnabled: Bool
+    let onScroll: (CGFloat) -> Void
+
+    func makeNSView(context _: Context) -> HistoryRowTrackpadScrollView {
+        let view = HistoryRowTrackpadScrollView()
+        view.isEnabled = isEnabled
+        view.onScroll = onScroll
+        return view
+    }
+
+    func updateNSView(_ nsView: HistoryRowTrackpadScrollView, context _: Context) {
+        nsView.isEnabled = isEnabled
+        nsView.onScroll = onScroll
+    }
+
+    static func dismantleNSView(_ nsView: HistoryRowTrackpadScrollView, coordinator _: ()) {
+        nsView.cleanup()
+    }
+}
+
+private final class HistoryRowTrackpadScrollView: NSView {
+    var isEnabled = false
+    var onScroll: ((CGFloat) -> Void)?
+
+    private var monitor: Any?
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        installMonitorIfNeeded()
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func cleanup() {
+        if let monitor {
+            NSEvent.removeMonitor(monitor)
+            self.monitor = nil
+        }
+    }
+
+    private func installMonitorIfNeeded() {
+        guard monitor == nil else { return }
+
+        monitor = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { [weak self] event in
+            guard let self else { return event }
+            return handleScrollEvent(event) ? nil : event
+        }
+    }
+
+    private func handleScrollEvent(_ event: NSEvent) -> Bool {
+        guard isEnabled, let window, event.window === window else { return false }
+        guard !event.modifierFlags.contains(.command) else { return false }
+
+        let location = convert(event.locationInWindow, from: nil)
+        guard bounds.contains(location) else { return false }
+
+        let multiplier: CGFloat = event.hasPreciseScrollingDeltas ? 1 : 18
+        let dominantDelta = abs(event.scrollingDeltaX) > 0.5
+            ? CGFloat(event.scrollingDeltaX)
+            : CGFloat(event.scrollingDeltaY)
+        let delta = dominantDelta * multiplier
+
+        guard abs(delta) > 0.5 else { return false }
+        onScroll?(delta)
+        return true
     }
 }

@@ -7734,16 +7734,6 @@ nonisolated enum L10n {
             defaultValue: "Show a floating panel for quick access to recent captures",
             comment: "History settings description for floating panel",
         )
-        static let toggleModeShortcutTitle = string(
-            "preferences-history.toggle-mode-shortcut-title",
-            defaultValue: "Toggle Mode Shortcut",
-            comment: "History settings title for toggle mode shortcut",
-        )
-        static let toggleModeShortcutDescription = string(
-            "preferences-history.toggle-mode-shortcut-description",
-            defaultValue: "Toggle between floating and expanded history mode when the panel is active",
-            comment: "History settings description for toggle mode shortcut",
-        )
         static let panelPositionTitle = string(
             "preferences-history.panel-position-title",
             defaultValue: "Panel Position",
@@ -7798,36 +7788,6 @@ nonisolated enum L10n {
             "preferences-history.default-filter-gifs",
             defaultValue: "GIFs",
             comment: "History settings default filter option for GIFs",
-        )
-        static let maxItemsTitle = string(
-            "preferences-history.max-items-title",
-            defaultValue: "Max Displayed Items",
-            comment: "History settings title for max displayed items",
-        )
-        static let panelSizeTitle = string(
-            "preferences-history.panel-size-title",
-            defaultValue: "Panel Size",
-            comment: "History settings title for floating panel size",
-        )
-        static let panelSizeDescription = string(
-            "preferences-history.panel-size-description",
-            defaultValue: "Resize the floating panel and its preview cards",
-            comment: "History settings description for floating panel size",
-        )
-        static let panelSizeSmall = string(
-            "preferences-history.panel-size-small",
-            defaultValue: "S",
-            comment: "History settings short label for the small end of the panel size slider",
-        )
-        static let panelSizeLarge = string(
-            "preferences-history.panel-size-large",
-            defaultValue: "L",
-            comment: "History settings short label for the large end of the panel size slider",
-        )
-        static let maxItemsDescription = string(
-            "preferences-history.max-items-description",
-            defaultValue: "Maximum number of items shown in the floating panel",
-            comment: "History settings description for max displayed items",
         )
         static let retentionSection = string(
             "preferences-history.retention-section",

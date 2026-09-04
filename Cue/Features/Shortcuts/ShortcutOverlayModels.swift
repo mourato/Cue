@@ -56,7 +56,9 @@ enum ShortcutOverlayContentBuilder {
             ShortcutOverlaySection(
                 id: "history",
                 title: L10n.PreferencesShortcuts.historySection,
-                items: historyItems(manager: keyboard),
+                items: [
+                    globalItem(kind: .history, icon: "clock.arrow.circlepath", manager: keyboard),
+                ],
             ),
             ShortcutOverlaySection(
                 id: "quick-access",
@@ -246,23 +248,6 @@ enum ShortcutOverlayContentBuilder {
             globalItem(kind: .togglePenRecording, icon: "pencil.tip.crop.circle", manager: manager),
             globalItem(kind: .restartRecording, icon: "arrow.counterclockwise.circle", manager: manager),
             globalItem(kind: .deleteRecording, icon: "trash.circle", manager: manager),
-        ]
-    }
-
-    private static func historyItems(manager: KeyboardShortcutManager) -> [ShortcutOverlayItem] {
-        let historyFloating = HistoryFloatingManager.shared
-        let toggleShortcut = historyFloating.toggleModeShortcut
-
-        return [
-            globalItem(kind: .history, icon: "clock.arrow.circlepath", manager: manager),
-            ShortcutOverlayItem(
-                id: "history-toggle-mode",
-                icon: "arrow.left.and.right",
-                title: L10n.PreferencesHistory.toggleModeShortcutTitle,
-                subtitle: nil,
-                isEnabled: historyFloating.isEnabled && historyFloating.isToggleModeShortcutEnabled,
-                display: toggleShortcut.map { .keycaps($0.displayParts) } ?? .text(L10n.Common.none),
-            ),
         ]
     }
 

@@ -6,7 +6,6 @@
 //
 
 import AppKit
-import Carbon.HIToolbox
 import Foundation
 
 /// Non-activating floating panel for capture history
@@ -79,18 +78,6 @@ final class HistoryFloatingPanel: NSPanel {
 
             NotificationCenter.default.post(name: .historySelectAll, object: self)
             return true
-        }
-
-        if HistoryFloatingManager.shared.isToggleModeShortcutEnabled,
-           let toggleShortcut = HistoryFloatingManager.shared.toggleModeShortcut,
-           let eventShortcut = ShortcutConfig(from: event) {
-            if eventShortcut.keyCode == toggleShortcut.keyCode, eventShortcut.modifiers == toggleShortcut.modifiers {
-                if isTextInputActive {
-                    return super.performKeyEquivalent(with: event)
-                }
-                HistoryFloatingManager.shared.togglePresentationMode()
-                return true
-            }
         }
 
         return super.performKeyEquivalent(with: event)
