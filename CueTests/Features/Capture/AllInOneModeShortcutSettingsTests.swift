@@ -39,6 +39,21 @@ final class AllInOneModeShortcutSettingsTests: XCTestCase {
         XCTAssertEqual(shortcut.keyCode, UInt32(kVK_ANSI_A))
     }
 
+    func testDefaultNewModeShortcuts_useExpectedKeys() {
+        XCTAssertEqual(
+            AllInOneModeShortcutSettings.defaultShortcut(for: .activeWindow).keyCode,
+            UInt32(kVK_ANSI_W),
+        )
+        XCTAssertEqual(
+            AllInOneModeShortcutSettings.defaultShortcut(for: .objectCutout).keyCode,
+            UInt32(kVK_ANSI_C),
+        )
+        XCTAssertEqual(
+            AllInOneModeShortcutSettings.defaultShortcut(for: .smartElement).keyCode,
+            UInt32(kVK_ANSI_E),
+        )
+    }
+
     func testSetAndRead_roundtrips() throws {
         let shortcut = CaptureOverlayShortcut(keyCode: UInt32(kVK_ANSI_Z), modifiers: 0)
         AllInOneModeShortcutSettings.setShortcut(shortcut, for: .area)

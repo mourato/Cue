@@ -1341,6 +1341,11 @@ nonisolated enum L10n {
             defaultValue: "Window",
             comment: "All-In-One mode label for application window capture",
         )
+        static let modeActiveWindow = string(
+            "all-in-one.mode.active-window",
+            defaultValue: "Active",
+            comment: "Compact All-In-One toolbar label for active window capture",
+        )
         static let modeArea = string(
             "all-in-one.mode.area",
             defaultValue: "Area",
@@ -1371,10 +1376,20 @@ nonisolated enum L10n {
             defaultValue: "OCR",
             comment: "Compact All-In-One toolbar label for OCR capture",
         )
+        static let modeObjectCutout = string(
+            "all-in-one.mode.object-cutout",
+            defaultValue: "Cutout",
+            comment: "Compact All-In-One toolbar label for object cutout capture",
+        )
         static let modeRecording = string(
             "all-in-one.mode.recording",
             defaultValue: "Record",
             comment: "Compact All-In-One toolbar label for screen recording",
+        )
+        static let modeSmartElement = string(
+            "all-in-one.mode.smart-element",
+            defaultValue: "Element",
+            comment: "Compact All-In-One toolbar label for smart element capture",
         )
         static let modeSelectedAccessibilityValue = string(
             "all-in-one.mode.selected.accessibility",
@@ -1396,6 +1411,11 @@ nonisolated enum L10n {
             defaultValue: "Select a window to capture",
             comment: "Accessibility label for the All-In-One window capture action",
         )
+        static let modeActiveWindowAccessibility = string(
+            "all-in-one.mode.active-window.accessibility",
+            defaultValue: "Capture active window",
+            comment: "Accessibility label for the All-In-One active window capture action",
+        )
         static let modeAnnotateAccessibility = string(
             "all-in-one.mode.annotate.accessibility",
             defaultValue: "Capture area and annotate",
@@ -1411,10 +1431,20 @@ nonisolated enum L10n {
             defaultValue: "Capture text from area",
             comment: "Accessibility label for the All-In-One OCR capture action",
         )
+        static let modeObjectCutoutAccessibility = string(
+            "all-in-one.mode.object-cutout.accessibility",
+            defaultValue: "Capture object cutout",
+            comment: "Accessibility label for the All-In-One object cutout capture action",
+        )
         static let modeRecordingAccessibility = string(
             "all-in-one.mode.recording.accessibility",
             defaultValue: "Start screen recording",
             comment: "Accessibility label for the All-In-One recording action",
+        )
+        static let modeSmartElementAccessibility = string(
+            "all-in-one.mode.smart-element.accessibility",
+            defaultValue: "Capture smart element",
+            comment: "Accessibility label for the All-In-One smart element capture action",
         )
         static let modeTimerAccessibility = string(
             "all-in-one.mode.timer.accessibility",

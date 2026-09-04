@@ -117,10 +117,13 @@ enum AllInOneModeShortcutSettings {
         case .area: UInt32(kVK_ANSI_R)
         case .fullscreen: UInt32(kVK_ANSI_F)
         case .window: UInt32(kVK_ANSI_A)
+        case .activeWindow: UInt32(kVK_ANSI_W)
         case .annotate: UInt32(kVK_ANSI_M)
         case .scrolling: UInt32(kVK_ANSI_S)
         case .timer: UInt32(kVK_ANSI_T)
         case .ocr: UInt32(kVK_ANSI_O)
+        case .objectCutout: UInt32(kVK_ANSI_C)
+        case .smartElement: UInt32(kVK_ANSI_E)
         case .recording: UInt32(kVK_ANSI_V)
         }
     }
