@@ -18,9 +18,13 @@ enum ImageFormatOption: String, CaseIterable {
 
     var format: ImageFormat {
         switch self {
-        case .png: .png
-        case .jpeg: .jpeg(quality: 0.9)
-        case .webp: .webp
+        case .png:
+            return .png
+        case .jpeg:
+            let quality = UserDefaults.standard.object(forKey: PreferencesKeys.screenshotJpegQuality) as? Double ?? 0.85
+            return .jpeg(quality: CGFloat(quality))
+        case .webp:
+            return .webp
         }
     }
 

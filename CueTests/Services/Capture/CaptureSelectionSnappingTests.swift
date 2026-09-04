@@ -353,6 +353,42 @@ final class CaptureSelectionSnappingTests: XCTestCase {
         XCTAssertEqual(config.colorSensitivity, 5)
     }
 
+    func testConfiguration_snappingDisabled_returnsZeroDistanceAndNoGuides() throws {
+        let suiteName = "CaptureSelectionSnappingTests.disabled"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+
+        defaults.set(false, forKey: PreferencesKeys.captureSelectionSnappingEnabled)
+        defaults.set(15, forKey: PreferencesKeys.captureSelectionSnapDistance)
+        defaults.set(true, forKey: PreferencesKeys.captureSelectionShowSnapGuides)
+
+        let config = CaptureSelectionSnappingConfiguration.fromPreferences(defaults)
+        XCTAssertFalse(config.isEnabled)
+        XCTAssertEqual(config.snapDistance, 0)
+        XCTAssertFalse(config.showSnapGuides)
+
+        defaults.removePersistentDomain(forName: suiteName)
+    }
+
+    func testResolve_whenDisabled_doesNotSnap() {
+        let proposed = CGRect(x: 100, y: 100, width: 200, height: 120)
+        let candidates = [
+            CaptureSelectionSnappingCandidate(edge: .minX, coordinate: 102, source: .semantic),
+        ]
+        let disabledConfig = CaptureSelectionSnappingConfiguration(isEnabled: false, snapDistance: 10)
+
+        let result = CaptureSelectionSnapping.resolve(
+            proposedRect: proposed,
+            handle: .left,
+            candidates: candidates,
+            configuration: disabledConfig,
+        )
+
+        XCTAssertEqual(result.rect, proposed)
+        XCTAssertTrue(result.appliedSources.isEmpty)
+        XCTAssertTrue(result.appliedCoordinates.isEmpty)
+    }
+
     func testConfiguration_snapGuidesDefaultToEnabledAndRespectPreference() throws {
         let suiteName = "CaptureSelectionSnappingTests.guides"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))

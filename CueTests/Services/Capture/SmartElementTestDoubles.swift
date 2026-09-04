@@ -8,8 +8,8 @@
 
 import AppKit
 import Combine
-import Foundation
 @testable import Cue
+import Foundation
 
 final class FakeAXSnapshotProvider: AXSnapshotProviding {
     private var queue: [AXElementSnapshot?]

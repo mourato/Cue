@@ -2756,6 +2756,46 @@ nonisolated enum L10n {
             defaultValue: "Show guide lines when a selection edge snaps to a detected boundary",
             comment: "Capture preferences setting description",
         )
+        static let windowShadowTitle = string(
+            "preferences-capture.window-shadow-title",
+            defaultValue: "Capture window shadow",
+            comment: "Capture preferences setting title",
+        )
+        static let windowShadowDescription = string(
+            "preferences-capture.window-shadow-description",
+            defaultValue: "Include the window's drop shadow when capturing a window",
+            comment: "Capture preferences setting description",
+        )
+        static let snappingTitle = string(
+            "preferences-capture.snapping-title",
+            defaultValue: "Magnetic edge snapping",
+            comment: "Capture preferences setting title",
+        )
+        static let snappingDescription = string(
+            "preferences-capture.snapping-description",
+            defaultValue: "Automatically align selection edges to windows, elements, and visual boundaries",
+            comment: "Capture preferences setting description",
+        )
+        static let snappingAdvancedSettings = string(
+            "preferences-capture.snapping-advanced-settings",
+            defaultValue: "Advanced snapping options",
+            comment: "Capture preferences section label",
+        )
+        static let jpegQualityTitle = string(
+            "preferences-capture.jpeg-quality-title",
+            defaultValue: "Compression quality",
+            comment: "Capture preferences setting title",
+        )
+        static let jpegQualityDescription = string(
+            "preferences-capture.jpeg-quality-description",
+            defaultValue: "Adjust image quality and file size for JPEG captures",
+            comment: "Capture preferences setting description",
+        )
+        static let afterCaptureShowQuickAccessTitle = string(
+            "preferences-capture.after-capture-show-quick-access-title",
+            defaultValue: "Show floating preview",
+            comment: "After capture action title",
+        )
 
         static func selectionColorSensitivityLabel(_ value: Int) -> String {
             switch CaptureSelectionSnappingConfiguration.clampedColorSensitivity(value) {

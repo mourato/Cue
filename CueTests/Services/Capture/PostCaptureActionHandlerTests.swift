@@ -6,8 +6,8 @@
 //
 
 import AppKit
-import ImageIO
 @testable import Cue
+import ImageIO
 import SwiftUI
 import XCTest
 

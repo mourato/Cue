@@ -12,17 +12,21 @@ import Foundation
 // MARK: - Configuration
 
 struct CaptureSelectionSnappingConfiguration: Equatable, Sendable {
+    static let defaultEnabled = true
     static let defaultSnapDistance: CGFloat = 5
     static let snapDistanceRange: ClosedRange<Int> = 1 ... 20
     static let defaultColorSensitivity = 3
     static let colorSensitivityRange: ClosedRange<Int> = 1 ... 5
     static let defaultShowSnapGuides = true
 
+    let isEnabled: Bool
     let snapDistance: CGFloat
     let colorSensitivity: Int
     let showSnapGuides: Bool
 
     static func fromPreferences(_ defaults: UserDefaults = .standard) -> CaptureSelectionSnappingConfiguration {
+        let isEnabled = defaults.object(forKey: PreferencesKeys.captureSelectionSnappingEnabled) as? Bool
+            ?? defaultEnabled
         let snapDistance = defaults.object(forKey: PreferencesKeys.captureSelectionSnapDistance) as? Int
             ?? Int(defaultSnapDistance)
         let colorSensitivity = defaults.object(forKey: PreferencesKeys.captureSelectionColorSensitivity) as? Int
@@ -30,20 +34,23 @@ struct CaptureSelectionSnappingConfiguration: Equatable, Sendable {
         let showSnapGuides = defaults.object(forKey: PreferencesKeys.captureSelectionShowSnapGuides) as? Bool
             ?? defaultShowSnapGuides
         return CaptureSelectionSnappingConfiguration(
-            snapDistance: CGFloat(snapDistance),
+            isEnabled: isEnabled,
+            snapDistance: isEnabled ? CGFloat(snapDistance) : 0,
             colorSensitivity: colorSensitivity,
-            showSnapGuides: showSnapGuides,
+            showSnapGuides: isEnabled && showSnapGuides,
         )
     }
 
     init(
+        isEnabled: Bool = Self.defaultEnabled,
         snapDistance: CGFloat = Self.defaultSnapDistance,
         colorSensitivity: Int = Self.defaultColorSensitivity,
         showSnapGuides: Bool = Self.defaultShowSnapGuides,
     ) {
-        self.snapDistance = Self.clampedSnapDistance(snapDistance)
+        self.isEnabled = isEnabled
+        self.snapDistance = isEnabled ? Self.clampedSnapDistance(snapDistance) : 0
         self.colorSensitivity = Self.clampedColorSensitivity(colorSensitivity)
-        self.showSnapGuides = showSnapGuides
+        self.showSnapGuides = isEnabled && showSnapGuides
     }
 
     static func clampedSnapDistance(_ value: CGFloat) -> CGFloat {
@@ -396,6 +403,20 @@ enum CaptureSelectionSnapping {
         boundaryIndex: CaptureSelectionBoundaryIndex,
         configuration: CaptureSelectionSnappingConfiguration,
     ) -> CaptureSelectionSnappingResult {
+        guard configuration.isEnabled, configuration.snapDistance > 0 else {
+            let rect = CGRect(
+                x: min(anchor.x, point.x),
+                y: min(anchor.y, point.y),
+                width: abs(point.x - anchor.x),
+                height: abs(point.y - anchor.y),
+            )
+            return CaptureSelectionSnappingResult(
+                rect: rect,
+                appliedSources: [:],
+                appliedCoordinates: [:],
+            )
+        }
+
         let spanRect = CGRect(
             x: min(anchor.x, point.x),
             y: min(anchor.y, point.y),
@@ -459,6 +480,14 @@ enum CaptureSelectionSnapping {
         desktopBounds: CGRect? = nil,
         minSize: CGFloat = refinementMinimumSize,
     ) -> CaptureSelectionSnappingResult {
+        guard configuration.isEnabled, configuration.snapDistance > 0 else {
+            return CaptureSelectionSnappingResult(
+                rect: CaptureSelectionGeometry.normalized(proposedRect, minSize: minSize),
+                appliedSources: [:],
+                appliedCoordinates: [:],
+            )
+        }
+
         let normalizedProposed = CaptureSelectionGeometry.normalized(proposedRect, minSize: minSize)
         var rect = normalizedProposed
         var appliedSources: [CaptureSelectionSnappingEdge: CaptureSelectionSnappingSource] = [:]

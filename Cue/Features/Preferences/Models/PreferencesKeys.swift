@@ -55,10 +55,12 @@ enum PreferencesKeys {
 
     // Screenshot
     static let screenshotFormat = "screenshot.format"
+    static let screenshotJpegQuality = "screenshot.jpegQuality"
     static let screenshotFileNameTemplate = "screenshot.fileNameTemplate"
     static let screenshotIncludeOwnApp = "screenshot.includeOwnApp"
     static let screenshotShowCursor = "screenshot.showCursor"
     static let screenshotFreezeArea = "screenshot.freezeArea"
+    static let captureWindowShadow = "capture.windowShadow"
     static let screenshotShowSelectionAreaOverlay = "screenshot.showSelectionAreaOverlay"
     static let screenshotReverseMagnifierZoomDirection = "screenshot.reverseMagnifierZoomDirection"
     static let scrollingCaptureShowHints = "scrollingCapture.showHints"
@@ -66,6 +68,7 @@ enum PreferencesKeys {
     static let captureAllInOneAspectRatioLocked = "capture.allInOne.aspectRatioLocked"
     static let captureAllInOneModeOrder = "capture.allInOne.modeOrder.v1"
     static let captureAllInOneEnabledModes = "capture.allInOne.enabledModes.v1"
+    static let captureSelectionSnappingEnabled = "capture.selection.snappingEnabled"
     static let captureSelectionSnapDistance = "capture.selection.snapDistance"
     static let captureSelectionColorSensitivity = "capture.selection.colorSensitivity"
     static let captureSelectionShowSnapGuides = "capture.selection.showSnapGuides"

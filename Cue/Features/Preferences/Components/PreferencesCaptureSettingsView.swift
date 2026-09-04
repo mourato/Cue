@@ -39,15 +39,19 @@ private enum CaptureSettingsPane: CaseIterable, Hashable, Identifiable {
 }
 
 struct CaptureSettingsView: View {
-    // Screenshot behavior
+    // Screenshot behavior & environment
     @AppStorage(PreferencesKeys.hideDesktopIcons) private var hideDesktopIcons = false
     @AppStorage(PreferencesKeys.hideDesktopWidgets) private var hideDesktopWidgets = false
     @AppStorage(PreferencesKeys.screenshotIncludeOwnApp) private var includeOwnAppInScreenshots = false
     @AppStorage(PreferencesKeys.screenshotShowCursor) private var screenshotShowCursor = false
     @AppStorage(PreferencesKeys.screenshotFreezeArea) private var freezeAreaCapture = false
+    @AppStorage(PreferencesKeys.captureWindowShadow) private var captureWindowShadow = true
     @AppStorage(PreferencesKeys.screenshotShowSelectionAreaOverlay) private var showSelectionAreaOverlay = true
     @AppStorage(PreferencesKeys.screenshotReverseMagnifierZoomDirection) private var reverseMagnifierZoomDirection =
         false
+
+    // Snapping
+    @AppStorage(PreferencesKeys.captureSelectionSnappingEnabled) private var captureSelectionSnappingEnabled = true
     @AppStorage(PreferencesKeys.captureSelectionSnapDistance) private var captureSelectionSnapDistance = Int(
         CaptureSelectionSnappingConfiguration.defaultSnapDistance,
     )
@@ -55,14 +59,20 @@ struct CaptureSettingsView: View {
         CaptureSelectionSnappingConfiguration.defaultColorSensitivity
     @AppStorage(PreferencesKeys.captureSelectionShowSnapGuides) private var captureSelectionShowSnapGuides =
         CaptureSelectionSnappingConfiguration.defaultShowSnapGuides
+    @State private var showSnappingAdvancedSettings = false
 
+    // Output & Format
+    @AppStorage(PreferencesKeys.exportLocation) private var exportLocation = ""
     @AppStorage(PreferencesKeys.screenshotFormat) private var screenshotFormat = "png"
+    @AppStorage(PreferencesKeys.screenshotJpegQuality) private var screenshotJpegQuality = 0.85
+    @AppStorage(PreferencesKeys.screenshotFileNameTemplate)
+    private var screenshotFileNameTemplate = CaptureOutputKind.screenshot.defaultTemplate
+
+    // Specialized capture
     @AppStorage(PreferencesKeys.scrollingCaptureShowHints) private var scrollingCaptureShowHints = true
     @AppStorage(PreferencesKeys.backgroundCutoutAutoCropEnabled) private var backgroundCutoutAutoCropEnabled = true
     @AppStorage(PreferencesKeys.ocrSuccessNotificationEnabled) private var ocrSuccessNotification = true
     @AppStorage(PreferencesKeys.ocrLinkDetectionEnabled) private var ocrLinkDetection = true
-    @AppStorage(PreferencesKeys.screenshotFileNameTemplate)
-    private var screenshotFileNameTemplate = CaptureOutputKind.screenshot.defaultTemplate
 
     #if CUE_VIDEO_MODULE
         /// Recording settings
@@ -84,8 +94,11 @@ struct CaptureSettingsView: View {
 
         @State private var microphoneDevices: [RecordingMicrophoneDevice] = []
     #endif
+
+    @ObservedObject private var preferencesManager = PreferencesManager.shared
     @State private var selectedPane: CaptureSettingsPane = .capture
     @State private var videoModuleEnabled = VideoModuleAvailability.isEnabled
+    private let fileAccessManager = SandboxFileAccessManager.shared
 
     private var availablePanes: [CaptureSettingsPane] {
         CaptureSettingsPane.availablePanes(videoModuleEnabled: videoModuleEnabled)
@@ -115,6 +128,8 @@ struct CaptureSettingsView: View {
 
             Form {
                 if selectedPane == .capture {
+                    // MARK: - Capture Environment & Behavior
+
                     Section(L10n.PreferencesCapture.captureEnvironmentSection) {
                         SettingRow(
                             icon: "photo.on.rectangle",
@@ -124,19 +139,6 @@ struct CaptureSettingsView: View {
                             Toggle("", isOn: $includeOwnAppInScreenshots)
                                 .labelsHidden()
                         }
-
-                        #if CUE_VIDEO_MODULE
-                            if videoModuleEnabled {
-                                SettingRow(
-                                    icon: "video",
-                                    title: L10n.PreferencesCapture.includeInRecordingsTitle,
-                                    description: L10n.PreferencesCapture.includeInRecordingsDescription,
-                                ) {
-                                    Toggle("", isOn: $includeOwnAppInRecordings)
-                                        .labelsHidden()
-                                }
-                            }
-                        #endif
 
                         SettingRow(
                             icon: "eye.slash",
@@ -155,7 +157,36 @@ struct CaptureSettingsView: View {
                             Toggle("", isOn: $hideDesktopWidgets)
                                 .labelsHidden()
                         }
+
+                        SettingRow(
+                            icon: "cursorarrow",
+                            title: L10n.PreferencesCapture.showCursorTitle,
+                            description: L10n.PreferencesCapture.showCursorDescription,
+                        ) {
+                            Toggle("", isOn: $screenshotShowCursor)
+                                .labelsHidden()
+                        }
+
+                        SettingRow(
+                            icon: "shadow",
+                            title: L10n.PreferencesCapture.windowShadowTitle,
+                            description: L10n.PreferencesCapture.windowShadowDescription,
+                        ) {
+                            Toggle("", isOn: $captureWindowShadow)
+                                .labelsHidden()
+                        }
+
+                        SettingRow(
+                            icon: "snowflake",
+                            title: L10n.PreferencesCapture.freezeAreaTitle,
+                            description: L10n.PreferencesCapture.freezeAreaDescription,
+                        ) {
+                            Toggle("", isOn: $freezeAreaCapture)
+                                .labelsHidden()
+                        }
                     }
+
+                    // MARK: - Selection & Snapping
 
                     Section(L10n.PreferencesCapture.selectionSection) {
                         SettingRow(
@@ -177,115 +208,133 @@ struct CaptureSettingsView: View {
                         }
 
                         SettingRow(
-                            icon: "arrow.left.and.right.square",
-                            title: L10n.PreferencesCapture.selectionSnapDistanceTitle,
-                            description: L10n.PreferencesCapture.selectionSnapDistanceDescription,
+                            icon: "magnet",
+                            title: L10n.PreferencesCapture.snappingTitle,
+                            description: L10n.PreferencesCapture.snappingDescription,
                         ) {
-                            PreferencesNumericPicker(
-                                value: Binding(
-                                    get: { Double(captureSelectionSnapDistance) },
-                                    set: { captureSelectionSnapDistance = Int($0.rounded()) },
-                                ),
-                                range: Double(CaptureSelectionSnappingConfiguration.snapDistanceRange.lowerBound)
-                                    ... Double(CaptureSelectionSnappingConfiguration.snapDistanceRange.upperBound),
-                                presets: [2, 5, 10, 15],
-                                step: 1,
-                                accessibilityTitle: L10n.PreferencesCapture.selectionSnapDistanceTitle,
-                                unit: "px",
-                                valueLabel: { "\(Int($0)) px" },
+                            Toggle("", isOn: $captureSelectionSnappingEnabled)
+                                .labelsHidden()
+                        }
+
+                        if captureSelectionSnappingEnabled {
+                            DisclosureGroup(
+                                isExpanded: $showSnappingAdvancedSettings,
+                                content: {
+                                    VStack(spacing: 8) {
+                                        SettingRow(
+                                            icon: "ruler",
+                                            title: L10n.PreferencesCapture.selectionSnapGuidesTitle,
+                                            description: L10n.PreferencesCapture.selectionSnapGuidesDescription,
+                                        ) {
+                                            Toggle("", isOn: $captureSelectionShowSnapGuides)
+                                                .labelsHidden()
+                                        }
+
+                                        SettingRow(
+                                            icon: "arrow.left.and.right.square",
+                                            title: L10n.PreferencesCapture.selectionSnapDistanceTitle,
+                                            description: L10n.PreferencesCapture.selectionSnapDistanceDescription,
+                                        ) {
+                                            PreferencesNumericPicker(
+                                                value: Binding(
+                                                    get: { Double(captureSelectionSnapDistance) },
+                                                    set: { captureSelectionSnapDistance = Int($0.rounded()) },
+                                                ),
+                                                range: Double(CaptureSelectionSnappingConfiguration.snapDistanceRange
+                                                    .lowerBound)
+                                                    ... Double(CaptureSelectionSnappingConfiguration.snapDistanceRange
+                                                        .upperBound),
+                                                presets: [2, 5, 10, 15],
+                                                step: 1,
+                                                accessibilityTitle: L10n.PreferencesCapture.selectionSnapDistanceTitle,
+                                                unit: "px",
+                                                valueLabel: { "\(Int($0)) px" },
+                                            )
+                                        }
+
+                                        SettingRow(
+                                            icon: "eyedropper.halffull",
+                                            title: L10n.PreferencesCapture.selectionColorSensitivityTitle,
+                                            description: L10n.PreferencesCapture.selectionColorSensitivityDescription,
+                                        ) {
+                                            Picker("", selection: $captureSelectionColorSensitivity) {
+                                                ForEach(Array(CaptureSelectionSnappingConfiguration
+                                                            .colorSensitivityRange),
+                                                id: \.self) { value in
+                                                    Text(L10n.PreferencesCapture.selectionColorSensitivityLabel(value))
+                                                        .tag(value)
+                                                }
+                                            }
+                                            .labelsHidden()
+                                            .pickerStyle(.menu)
+                                        }
+                                    }
+                                    .padding(.top, 4)
+                                },
+                                label: {
+                                    Text(L10n.PreferencesCapture.snappingAdvancedSettings)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                },
                             )
                         }
+                    }
 
+                    // MARK: - After Capture
+
+                    Section(L10n.PreferencesCapture.afterCaptureSection) {
                         SettingRow(
-                            icon: "eyedropper.halffull",
-                            title: L10n.PreferencesCapture.selectionColorSensitivityTitle,
-                            description: L10n.PreferencesCapture.selectionColorSensitivityDescription,
+                            icon: "doc.on.clipboard",
+                            title: L10n.AfterCapture.copyFileAction,
+                            description: L10n.AfterCapture.copyFileDescription,
                         ) {
-                            Picker("", selection: $captureSelectionColorSensitivity) {
-                                ForEach(Array(CaptureSelectionSnappingConfiguration.colorSensitivityRange),
-                                        id: \.self) { value in
-                                    Text(L10n.PreferencesCapture.selectionColorSensitivityLabel(value))
-                                        .tag(value)
-                                }
-                            }
-                            .labelsHidden()
-                            .pickerStyle(.menu)
+                            Toggle("", isOn: afterCaptureBinding(for: .copyFile))
+                                .labelsHidden()
                         }
 
                         SettingRow(
-                            icon: "ruler",
-                            title: L10n.PreferencesCapture.selectionSnapGuidesTitle,
-                            description: L10n.PreferencesCapture.selectionSnapGuidesDescription,
+                            icon: "macwindow.badge.plus",
+                            title: L10n.PreferencesCapture.afterCaptureShowQuickAccessTitle,
+                            description: L10n.AfterCapture.showQuickAccessDescription,
                         ) {
-                            Toggle("", isOn: $captureSelectionShowSnapGuides)
+                            Toggle("", isOn: afterCaptureBinding(for: .showQuickAccess))
+                                .labelsHidden()
+                        }
+
+                        SettingRow(
+                            icon: "square.and.arrow.down",
+                            title: L10n.AfterCapture.saveAction,
+                            description: L10n.AfterCapture.saveDescription,
+                        ) {
+                            Toggle("", isOn: afterCaptureBinding(for: .save))
+                                .labelsHidden()
+                        }
+
+                        SettingRow(
+                            icon: "pencil.and.outline",
+                            title: L10n.AfterCapture.openAnnotateAction,
+                            description: L10n.AfterCapture.openAnnotateDescription,
+                        ) {
+                            Toggle("", isOn: afterCaptureBinding(for: .openAnnotate))
                                 .labelsHidden()
                         }
                     }
 
-                    PreferencesAllInOneModeCustomizationView(videoModuleEnabled: videoModuleEnabled)
-
-                    Section(L10n.PreferencesCapture.screenshotBehaviorSection) {
-                        SettingRow(
-                            icon: "snowflake",
-                            title: L10n.PreferencesCapture.freezeAreaTitle,
-                            description: L10n.PreferencesCapture.freezeAreaDescription,
-                        ) {
-                            Toggle("", isOn: $freezeAreaCapture)
-                                .labelsHidden()
-                        }
-
-                        SettingRow(
-                            icon: "cursorarrow",
-                            title: L10n.PreferencesCapture.showCursorTitle,
-                            description: L10n.PreferencesCapture.showCursorDescription,
-                        ) {
-                            Toggle("", isOn: $screenshotShowCursor)
-                                .labelsHidden()
-                        }
-                    }
-
-                    Section(L10n.PreferencesCapture.specializedCaptureSection) {
-                        SettingRow(
-                            icon: "lightbulb",
-                            title: L10n.PreferencesCapture.showSessionHintsTitle,
-                            description: L10n.PreferencesCapture.showSessionHintsDescription,
-                        ) {
-                            Toggle("", isOn: $scrollingCaptureShowHints)
-                                .labelsHidden()
-                        }
-
-                        HStack(alignment: .top, spacing: 6) {
-                            Image(systemName: "info.circle.fill")
-                                .foregroundColor(.blue)
-                                .font(.system(size: 12))
-                                .padding(.top, 1)
-                            Text(L10n.PreferencesCapture.scrollingCaptureInfo)
-                                .font(.system(size: 11))
-                                .foregroundColor(.secondary)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                        .padding(.vertical, 4)
-
-                        SettingRow(
-                            icon: "bell.badge",
-                            title: L10n.PreferencesCapture.ocrSuccessNotificationTitle,
-                            description: L10n.PreferencesCapture.ocrSuccessNotificationDescription,
-                        ) {
-                            Toggle("", isOn: $ocrSuccessNotification)
-                                .labelsHidden()
-                        }
-
-                        SettingRow(
-                            icon: "link",
-                            title: L10n.PreferencesCapture.ocrLinkDetectionTitle,
-                            description: L10n.PreferencesCapture.ocrLinkDetectionDescription,
-                        ) {
-                            Toggle("", isOn: $ocrLinkDetection)
-                                .labelsHidden()
-                        }
-                    }
+                    // MARK: - Output & Storage
 
                     Section(L10n.PreferencesCapture.outputSection) {
+                        SettingRow(
+                            icon: "folder",
+                            title: L10n.PreferencesGeneral.saveLocationTitle,
+                            description: exportLocationDisplay,
+                        ) {
+                            Button(L10n.PreferencesGeneral.chooseButton) {
+                                chooseExportLocation()
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+                        }
+
                         SettingRow(
                             icon: "photo",
                             title: L10n.PreferencesCapture.imageFormatTitle,
@@ -300,6 +349,40 @@ struct CaptureSettingsView: View {
                             .pickerStyle(.menu)
                         }
 
+                        if screenshotFormat == ImageFormatOption.jpeg.rawValue {
+                            SettingRow(
+                                icon: "slider.horizontal.3",
+                                title: L10n.PreferencesCapture.jpegQualityTitle,
+                                description: L10n.PreferencesCapture.jpegQualityDescription,
+                            ) {
+                                HStack(spacing: 8) {
+                                    Slider(
+                                        value: $screenshotJpegQuality,
+                                        in: 0.1 ... 1.0,
+                                        step: 0.05,
+                                    )
+                                    .frame(width: 120)
+
+                                    Text("\(Int((screenshotJpegQuality * 100).rounded()))%")
+                                        .font(.caption.monospacedDigit())
+                                        .foregroundColor(.secondary)
+                                        .frame(width: 36, alignment: .trailing)
+                                }
+                            }
+
+                            HStack(alignment: .top, spacing: 6) {
+                                Image(systemName: "info.circle.fill")
+                                    .foregroundColor(.blue)
+                                    .font(.system(size: 12))
+                                    .padding(.top, 1)
+                                Text(L10n.PreferencesCapture.jpegCutoutNote)
+                                    .font(.system(size: 11))
+                                    .foregroundColor(.secondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                            .padding(.vertical, 4)
+                        }
+
                         if screenshotFormat == ImageFormatOption.webp.rawValue {
                             HStack(alignment: .top, spacing: 6) {
                                 Image(systemName: "exclamationmark.triangle.fill")
@@ -309,20 +392,6 @@ struct CaptureSettingsView: View {
                                 Text(L10n.PreferencesCapture.webpWarning)
                                     .font(.system(size: 11))
                                     .foregroundColor(.orange)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                            .padding(.vertical, 4)
-                        }
-
-                        if screenshotFormat == ImageFormatOption.jpeg.rawValue {
-                            HStack(alignment: .top, spacing: 6) {
-                                Image(systemName: "info.circle.fill")
-                                    .foregroundColor(.blue)
-                                    .font(.system(size: 12))
-                                    .padding(.top, 1)
-                                Text(L10n.PreferencesCapture.jpegCutoutNote)
-                                    .font(.system(size: 11))
-                                    .foregroundColor(.secondary)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
                             .padding(.vertical, 4)
@@ -387,6 +456,12 @@ struct CaptureSettingsView: View {
                         }
                     }
 
+                    // MARK: - All-In-One Customization
+
+                    PreferencesAllInOneModeCustomizationView(videoModuleEnabled: videoModuleEnabled)
+
+                    // MARK: - Post Processing
+
                     Section(L10n.PreferencesCapture.postProcessingSection) {
                         PreferencesScreenshotDefaultPresetPicker()
 
@@ -404,8 +479,47 @@ struct CaptureSettingsView: View {
                         }
                     }
 
-                    Section(L10n.PreferencesCapture.afterCaptureSection) {
-                        AfterCaptureMatrixView()
+                    // MARK: - Specialized Capture
+
+                    Section(L10n.PreferencesCapture.specializedCaptureSection) {
+                        SettingRow(
+                            icon: "lightbulb",
+                            title: L10n.PreferencesCapture.showSessionHintsTitle,
+                            description: L10n.PreferencesCapture.showSessionHintsDescription,
+                        ) {
+                            Toggle("", isOn: $scrollingCaptureShowHints)
+                                .labelsHidden()
+                        }
+
+                        HStack(alignment: .top, spacing: 6) {
+                            Image(systemName: "info.circle.fill")
+                                .foregroundColor(.blue)
+                                .font(.system(size: 12))
+                                .padding(.top, 1)
+                            Text(L10n.PreferencesCapture.scrollingCaptureInfo)
+                                .font(.system(size: 11))
+                                .foregroundColor(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .padding(.vertical, 4)
+
+                        SettingRow(
+                            icon: "bell.badge",
+                            title: L10n.PreferencesCapture.ocrSuccessNotificationTitle,
+                            description: L10n.PreferencesCapture.ocrSuccessNotificationDescription,
+                        ) {
+                            Toggle("", isOn: $ocrSuccessNotification)
+                                .labelsHidden()
+                        }
+
+                        SettingRow(
+                            icon: "link",
+                            title: L10n.PreferencesCapture.ocrLinkDetectionTitle,
+                            description: L10n.PreferencesCapture.ocrLinkDetectionDescription,
+                        ) {
+                            Toggle("", isOn: $ocrLinkDetection)
+                                .labelsHidden()
+                        }
                     }
                 }
 
@@ -545,6 +659,39 @@ struct CaptureSettingsView: View {
                             }
                         }
                     }
+
+                    // MARK: - Recording After Capture
+
+                    if selectedPane == .recording {
+                        Section(L10n.PreferencesCapture.afterCaptureSection) {
+                            SettingRow(
+                                icon: "doc.on.clipboard",
+                                title: L10n.AfterCapture.copyFileAction,
+                                description: L10n.AfterCapture.copyFileDescription,
+                            ) {
+                                Toggle("", isOn: afterCaptureBinding(for: .copyFile, type: .recording))
+                                    .labelsHidden()
+                            }
+
+                            SettingRow(
+                                icon: "macwindow.badge.plus",
+                                title: L10n.PreferencesCapture.afterCaptureShowQuickAccessTitle,
+                                description: L10n.AfterCapture.showQuickAccessDescription,
+                            ) {
+                                Toggle("", isOn: afterCaptureBinding(for: .showQuickAccess, type: .recording))
+                                    .labelsHidden()
+                            }
+
+                            SettingRow(
+                                icon: "square.and.arrow.down",
+                                title: L10n.AfterCapture.saveAction,
+                                description: L10n.AfterCapture.saveDescription,
+                            ) {
+                                Toggle("", isOn: afterCaptureBinding(for: .save, type: .recording))
+                                    .labelsHidden()
+                            }
+                        }
+                    }
                 #endif
             }
             .formStyle(.grouped)
@@ -554,6 +701,7 @@ struct CaptureSettingsView: View {
                 refreshMicrophoneDevices()
             #endif
             reconcileSelectedPane()
+            initializeExportLocation()
         }
         .onReceive(NotificationCenter.default.publisher(for: .videoModuleAvailabilityDidChange)) { _ in
             videoModuleEnabled = VideoModuleAvailability.isEnabled
@@ -569,6 +717,46 @@ struct CaptureSettingsView: View {
     }
 
     // MARK: - Helpers
+
+    private var exportLocationDisplay: String {
+        if exportLocation.isEmpty {
+            return L10n.PreferencesGeneral.defaultSaveLocation
+        }
+
+        let folderName = URL(fileURLWithPath: exportLocation).lastPathComponent
+        if fileAccessManager.hasPersistedExportPermission {
+            return folderName
+        }
+
+        return L10n.PreferencesGeneral.accessNotGranted(folderName)
+    }
+
+    private func initializeExportLocation() {
+        fileAccessManager.ensureExportLocationInitialized()
+        exportLocation = fileAccessManager.exportLocationPath
+    }
+
+    private func chooseExportLocation() {
+        if let url = fileAccessManager.chooseExportDirectory(
+            message: L10n.PreferencesGeneral.chooseSaveLocationMessage,
+            prompt: L10n.PreferencesGeneral.saveHereButton,
+            directoryURL: fileAccessManager.resolvedExportDirectoryURL(),
+        ) {
+            exportLocation = url.path
+        }
+    }
+
+    private func afterCaptureBinding(for action: AfterCaptureAction, type: CaptureType = .screenshot) -> Binding<Bool> {
+        Binding(
+            get: { preferencesManager.isActionEnabled(action, for: type) },
+            set: { newValue in
+                preferencesManager.setAction(action, for: type, enabled: newValue)
+                if action == .showQuickAccess, type == .screenshot {
+                    QuickAccessManager.shared.isEnabled = newValue
+                }
+            },
+        )
+    }
 
     private var screenshotFilenamePreview: String {
         let sampleContext = CaptureContext(appName: "Safari", windowTitle: "GitHub")
@@ -628,9 +816,4 @@ struct CaptureSettingsView: View {
             recordingFileNameTemplate = CaptureOutputKind.recording.defaultTemplate
         #endif
     }
-}
-
-#Preview {
-    CaptureSettingsView()
-        .frame(width: 600, height: 550)
 }

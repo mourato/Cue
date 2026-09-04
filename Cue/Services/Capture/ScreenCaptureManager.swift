@@ -448,7 +448,7 @@ final class ScreenCaptureManager: ObservableObject {
             let outputScaleFactor = max(nativeScaleFactor, preferredScreenshotOutputScaleFactor)
 
             let config = SCStreamConfiguration()
-            config.ignoreShadowsSingleWindow = false
+            config.ignoreShadowsSingleWindow = ignoreShadowsSingleWindowSetting
             config.captureResolution = .best
             let captureFrame = matchedScreen?.frame ?? display.frame
             config.width = max(1, Int((captureFrame.width * nativeScaleFactor).rounded()))
@@ -1499,7 +1499,7 @@ final class ScreenCaptureManager: ObservableObject {
             value: 1,
             timescale: CMTimeScale(max(1, maximumFrameRate)),
         )
-        configuration.ignoreShadowsSingleWindow = false
+        configuration.ignoreShadowsSingleWindow = ignoreShadowsSingleWindowSetting
         configuration.captureResolution = .best
         configuration.colorSpaceName = context.configuration.colorSpaceName
         return configuration
@@ -1603,7 +1603,7 @@ final class ScreenCaptureManager: ObservableObject {
         let fullCaptureHeight = max(1, Int((screenFrame.height * captureScale).rounded()))
 
         let config = SCStreamConfiguration()
-        config.ignoreShadowsSingleWindow = false
+        config.ignoreShadowsSingleWindow = ignoreShadowsSingleWindowSetting
         config.captureResolution = .best
         config.width = fullCaptureWidth
         config.height = fullCaptureHeight
@@ -1668,7 +1668,7 @@ final class ScreenCaptureManager: ObservableObject {
         let contentRect: CGRect = contentFilter.contentRect.isEmpty ? window.frame : contentFilter.contentRect
 
         let configuration = SCStreamConfiguration()
-        configuration.ignoreShadowsSingleWindow = false
+        configuration.ignoreShadowsSingleWindow = ignoreShadowsSingleWindowSetting
         configuration.captureResolution = .best
         configuration.width = max(1, Int((contentRect.width * scaleFactor).rounded()))
         configuration.height = max(1, Int((contentRect.height * scaleFactor).rounded()))
@@ -2029,13 +2029,18 @@ final class ScreenCaptureManager: ObservableObject {
         return alignedRect.intersection(bounds)
     }
 
+    private var ignoreShadowsSingleWindowSetting: Bool {
+        let captureShadow = UserDefaults.standard.object(forKey: PreferencesKeys.captureWindowShadow) as? Bool ?? true
+        return !captureShadow
+    }
+
     private func makeDisplaySnapshotConfiguration(
         for screen: NSScreen,
         scaleFactor: CGFloat,
         showsCursor: Bool,
     ) -> SCStreamConfiguration {
         let configuration = SCStreamConfiguration()
-        configuration.ignoreShadowsSingleWindow = false
+        configuration.ignoreShadowsSingleWindow = ignoreShadowsSingleWindowSetting
         configuration.captureResolution = .best
         configuration.width = max(1, Int((screen.frame.width * scaleFactor).rounded()))
         configuration.height = max(1, Int((screen.frame.height * scaleFactor).rounded()))
