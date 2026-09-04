@@ -9,7 +9,7 @@ import AppKit
 import Carbon.HIToolbox
 import SwiftUI
 
-private enum SystemConflictStatus {
+private enum SystemConflictStatus: Equatable {
     case checking
     case conflict
     case clear

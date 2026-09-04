@@ -17,6 +17,13 @@ struct WallpaperImageSnapshot: Sendable {
 class SystemWallpaperManager: ObservableObject {
     static let shared = SystemWallpaperManager()
 
+    enum SettingsPreviewImageLoadTestEvent: Sendable {
+        case requestAdmitted
+        case snapshotCreationStarted
+    }
+
+    static var settingsPreviewImageLoadTestHook: (@Sendable (SettingsPreviewImageLoadTestEvent) async -> Void)?
+
     private struct PreviewImageRequestKey: Hashable {
         let url: URL
         let maxPixelSize: CGFloat
@@ -394,18 +401,25 @@ class SystemWallpaperManager: ObservableObject {
             return cached
         }
 
+        let testHook = settingsPreviewImageLoadTestHook
         let request: PendingPreviewImageRequest
         if let pending = pendingSettingsPreviewImageRequests[key] {
             request = pending
         } else {
             let id = UUID()
-            let task = Task.detached(priority: .userInitiated) {
-                createDownsampledImageSnapshot(from: key.url, maxSize: key.maxPixelSize)
+            let task = Task.detached(priority: .userInitiated) { [
+                url = key.url,
+                maxPixelSize = key.maxPixelSize,
+                testHook,
+            ] in
+                await testHook?(.snapshotCreationStarted)
+                return createDownsampledImageSnapshot(from: url, maxSize: maxPixelSize)
             }
             request = PendingPreviewImageRequest(id: id, task: task)
             pendingSettingsPreviewImageRequests[key] = request
         }
 
+        await testHook?(.requestAdmitted)
         let snapshot = await request.task.value
         if pendingSettingsPreviewImageRequests[key]?.id == request.id {
             pendingSettingsPreviewImageRequests.removeValue(forKey: key)

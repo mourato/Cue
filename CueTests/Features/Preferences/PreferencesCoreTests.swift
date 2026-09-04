@@ -12,6 +12,61 @@ import ImageIO
 import XCTest
 
 final class PreferencesCoreTests: XCTestCase {
+    private actor PreviewImageLoadProbe {
+        private var admittedRequestCount = 0
+        private var snapshotCreationCount = 0
+        private var firstSnapshotStartedContinuation: CheckedContinuation<Void, Never>?
+        private var secondRequestAdmittedContinuation: CheckedContinuation<Void, Never>?
+        private var snapshotReleaseContinuations: [CheckedContinuation<Void, Never>] = []
+        private var snapshotsReleased = false
+
+        func handle(_ event: SystemWallpaperManager.SettingsPreviewImageLoadTestEvent) async {
+            switch event {
+            case .requestAdmitted:
+                admittedRequestCount += 1
+                if admittedRequestCount == 2 {
+                    secondRequestAdmittedContinuation?.resume()
+                    secondRequestAdmittedContinuation = nil
+                }
+            case .snapshotCreationStarted:
+                snapshotCreationCount += 1
+                if snapshotCreationCount == 1 {
+                    firstSnapshotStartedContinuation?.resume()
+                    firstSnapshotStartedContinuation = nil
+                }
+                guard !snapshotsReleased else { return }
+                await withCheckedContinuation { continuation in
+                    snapshotReleaseContinuations.append(continuation)
+                }
+            }
+        }
+
+        func waitUntilFirstSnapshotStarts() async {
+            guard snapshotCreationCount == 0 else { return }
+            await withCheckedContinuation { continuation in
+                firstSnapshotStartedContinuation = continuation
+            }
+        }
+
+        func waitUntilSecondRequestIsAdmitted() async {
+            guard admittedRequestCount < 2 else { return }
+            await withCheckedContinuation { continuation in
+                secondRequestAdmittedContinuation = continuation
+            }
+        }
+
+        func startedSnapshotCount() -> Int {
+            snapshotCreationCount
+        }
+
+        func releaseSnapshots() {
+            snapshotsReleased = true
+            let continuations = snapshotReleaseContinuations
+            snapshotReleaseContinuations.removeAll()
+            continuations.forEach { $0.resume() }
+        }
+    }
+
     func testHistoryBackgroundStyleStored_readsValidValueAndFallsBackToDefault() throws {
         let defaults = try makeDefaults()
         XCTAssertEqual(HistoryBackgroundStyle.currentStoredStyle(userDefaults: defaults), .hud)
@@ -166,14 +221,26 @@ final class PreferencesCoreTests: XCTestCase {
         let sourceURL = try makeLargeJPEG()
         let retryURL = FileManager.default.temporaryDirectory
             .appendingPathComponent("PreferencesCoreTests.\(UUID().uuidString).jpg")
+        let probe = PreviewImageLoadProbe()
+        SystemWallpaperManager.settingsPreviewImageLoadTestHook = { event in
+            await probe.handle(event)
+        }
         defer {
+            SystemWallpaperManager.settingsPreviewImageLoadTestHook = nil
             try? FileManager.default.removeItem(at: sourceURL)
             try? FileManager.default.removeItem(at: retryURL)
         }
 
         async let firstRequest = SystemWallpaperManager.downsampledPreviewImage(at: sourceURL, maxPixelSize: 256)
+        await probe.waitUntilFirstSnapshotStarts()
         async let secondRequest = SystemWallpaperManager.downsampledPreviewImage(at: sourceURL, maxPixelSize: 256)
+        await probe.waitUntilSecondRequestIsAdmitted()
+        let startedSnapshotCount = await probe.startedSnapshotCount()
+        XCTAssertEqual(startedSnapshotCount, 1)
+        await probe.releaseSnapshots()
+
         let (firstResult, secondResult) = await (firstRequest, secondRequest)
+        SystemWallpaperManager.settingsPreviewImageLoadTestHook = nil
         let firstImage = try XCTUnwrap(firstResult)
         let secondImage = try XCTUnwrap(secondResult)
         XCTAssertTrue(firstImage === secondImage)
