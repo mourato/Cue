@@ -33,8 +33,6 @@ private struct AllInOneCaptureToolbarModeButton: View {
 
     @State private var isHovered = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         Button(action: action) {
@@ -58,14 +56,10 @@ private struct AllInOneCaptureToolbarModeButton: View {
         .accessibilityValue(isSelected ? selectedAccessibilityValue : "")
         .accessibilityAddTraits(isSelected ? .isSelected : [])
         .animation(reduceMotion ? nil : ToolbarConstants.hoverAnimation, value: isHovered)
-        .animation(reduceMotion ? nil : ToolbarConstants.hoverAnimation, value: isSelected)
     }
 
     private var foregroundStyle: Color {
-        if isSelected {
-            return colorScheme == .dark ? .white : .primary
-        }
-        return .primary.opacity(isHovered ? 1.0 : 0.85)
+        .primary.opacity(isHovered ? 1.0 : 0.85)
     }
 
     private var background: some View {
@@ -74,22 +68,7 @@ private struct AllInOneCaptureToolbarModeButton: View {
     }
 
     private var backgroundFill: Color {
-        if isSelected {
-            if reduceTransparency {
-                let opacity = isHovered ? 0.3 : 0.22
-                return colorScheme == .dark ? Color.white.opacity(opacity) : Color.primary.opacity(opacity * 0.65)
-            }
-            let opacity = colorScheme == .dark
-                ? (isHovered ? 0.52 : 0.42)
-                : (isHovered ? 0.28 : 0.18)
-            return Color.accentColor.opacity(opacity)
-        }
-
-        if isHovered {
-            return Color.primary.opacity(0.1)
-        }
-
-        return .clear
+        isHovered ? Color.primary.opacity(0.1) : .clear
     }
 
     private var selectedAccessibilityValue: String {
