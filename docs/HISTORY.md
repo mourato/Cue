@@ -10,9 +10,9 @@ Persistent history of screenshots, videos, and GIFs backed by GRDB SQLite, surfa
 
 ## Floating Panel
 
-- `HistoryFloatingManager` — panel state. Position `topCenter` / `bottomCenter` (`HistoryPanelPosition.center` exists for config import, not in UI); fixed panel size 1280×360 (`HistoryFloatingLayout.basePanelSize`); background `HistoryBackgroundStyle` hud / solid.
+- `HistoryFloatingManager` — panel state. Position `topCenter` / `bottomCenter` (`HistoryPanelPosition.center` exists for config import, not in UI); panel width is 90% of the active display's visible area, height is 360pt when it fits, and the top position uses an 8pt top margin; background `HistoryBackgroundStyle` hud / solid.
 - `HistoryFloatingPanel` keyboard: ⌘C copy selection, ⌘A select all, ⌫ delete, Return open (all suppressed while text input active).
-- Single view: type pills + filename search (150ms debounce, `HistorySearchViewModel`) + time filters all / 24H / 7D / 30D (`HistoryFloatingTimeFilter`) + one horizontal card row (drag + trackpad scroll, fits at least 5 full cards) + multi-select + selection bar.
+- Single view: type pills + filename search (150ms debounce, `HistorySearchViewModel`) + time filters all / 24H / 7D / 30D (`HistoryFloatingTimeFilter`) + one horizontal card row (drag + trackpad scroll) + multi-select + selection bar.
 
 ## Card Actions
 

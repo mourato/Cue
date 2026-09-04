@@ -31,7 +31,6 @@ final class HistoryFloatingPanelController {
     private var panel: HistoryFloatingPanel?
     private weak var containerView: HistoryFloatingContainerView?
     private var position: HistoryPanelPosition = .topCenter
-    private let padding: CGFloat = 20
     private var state: VisibilityState = .hidden
     private var pendingPresentation: Presentation?
     private var pendingHide = false
@@ -264,8 +263,23 @@ final class HistoryFloatingPanelController {
 
     private func frame(for size: CGSize, position: HistoryPanelPosition) -> NSRect {
         let screen = ScreenUtility.activeScreen()
-        let origin = position.calculateOrigin(for: size, on: screen, padding: padding)
+        let origin = position.calculateOrigin(
+            for: size,
+            on: screen,
+            padding: panelPadding(for: position),
+        )
         return NSRect(origin: origin, size: size)
+    }
+
+    private func panelPadding(for position: HistoryPanelPosition) -> CGFloat {
+        switch position {
+        case .topCenter:
+            HistoryFloatingLayout.topPanelPadding
+        case .bottomCenter:
+            HistoryFloatingLayout.bottomPanelPadding
+        case .center:
+            0
+        }
     }
 
     private func transitionFrame(for targetFrame: NSRect, isShowing: Bool) -> NSRect {
@@ -292,7 +306,11 @@ final class HistoryFloatingPanelController {
         guard let panel, state != .hiding else { return }
         let size = panel.frame.size
         let screen = ScreenUtility.activeScreen()
-        let origin = position.calculateOrigin(for: size, on: screen, padding: padding)
+        let origin = position.calculateOrigin(
+            for: size,
+            on: screen,
+            padding: panelPadding(for: position),
+        )
 
         if reduceMotion {
             panel.setFrameOrigin(origin)

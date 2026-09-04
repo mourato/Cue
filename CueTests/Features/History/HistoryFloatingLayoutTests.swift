@@ -11,28 +11,37 @@ import XCTest
 
 @MainActor
 final class HistoryFloatingLayoutTests: XCTestCase {
-    // MARK: - basePanelSize
+    // MARK: - panel size
 
-    func testBasePanelSize() {
-        let size = HistoryFloatingLayout.basePanelSize
-        XCTAssertEqual(size, CGSize(width: 1280, height: 360))
-    }
+    func testPanelSizeUsesNinetyPercentOfVisibleWidth() {
+        guard let screen = NSScreen.main ?? NSScreen.screens.first else {
+            XCTSkip("No NSScreen available in test environment")
+            return
+        }
 
-    func testBasePanelSize_fitsAtLeastFiveFullCardsInFirstRow() {
-        // Row geometry shares the view's layout constants: content padding per
-        // side plus the row inset per side.
-        let availableWidth = HistoryFloatingLayout.basePanelSize.width
-            - (HistoryFloatingLayout.contentHorizontalPadding * 2)
-            - (HistoryFloatingLayout.rowHorizontalPadding * 2)
-        let fiveCardsWidth = (HistoryFloatingLayout.cardWidth * 5)
-            + (HistoryFloatingLayout.cardSpacing * 4)
-        XCTAssertGreaterThanOrEqual(availableWidth, fiveCardsWidth)
+        let size = HistoryFloatingLayout.panelSize(on: screen)
+
+        XCTAssertEqual(
+            size.width,
+            screen.visibleFrame.width * HistoryFloatingLayout.panelWidthRatio,
+            accuracy: 0.0001,
+        )
+        let safeFrame = screen.visibleFrame.insetBy(dx: 20, dy: 20)
+        XCTAssertEqual(
+            size.height,
+            min(HistoryFloatingLayout.panelHeight, safeFrame.height),
+            accuracy: 0.0001,
+        )
     }
 
     // MARK: - baseCornerRadius
 
     func testBaseCornerRadius() {
         XCTAssertEqual(HistoryFloatingLayout.baseCornerRadius, 32)
+    }
+
+    func testTopPanelPaddingIsEightPoints() {
+        XCTAssertEqual(HistoryFloatingLayout.topPanelPadding, 8)
     }
 
     // MARK: - HistoryFloatingTimeFilter

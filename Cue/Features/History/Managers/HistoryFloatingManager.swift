@@ -268,19 +268,22 @@ final class HistoryFloatingManager: ObservableObject {
 }
 
 enum HistoryFloatingLayout {
-    static let basePanelSize = CGSize(width: 1280, height: 360)
+    static let panelWidthRatio: CGFloat = 0.9
+    static let panelHeight: CGFloat = 360
+    static let topPanelPadding: CGFloat = 8
+    static let bottomPanelPadding: CGFloat = 20
     static let baseCornerRadius: CGFloat = 32
     static let cardWidth: CGFloat = 232
     static let cardSpacing: CGFloat = 12
     static let contentHorizontalPadding: CGFloat = 20
     static let rowHorizontalPadding: CGFloat = 6
 
-    /// Fixed panel size, clamped to fit small displays.
+    /// Responsive panel width with a fixed height, clamped to fit small displays.
     static func panelSize(on screen: NSScreen = ScreenUtility.activeScreen()) -> CGSize {
         let safeFrame = screen.visibleFrame.insetBy(dx: 20, dy: 20)
         return CGSize(
-            width: min(basePanelSize.width, safeFrame.width),
-            height: min(basePanelSize.height, safeFrame.height),
+            width: screen.visibleFrame.width * panelWidthRatio,
+            height: min(panelHeight, safeFrame.height),
         )
     }
 }
