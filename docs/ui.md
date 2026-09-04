@@ -44,6 +44,9 @@ second canonical design-system document.
   4, 6, 8, and 12; default and selected strokes are 1 and 2 points.
 - Toolbar controls are real `Button`s with a 28×28 visual frame, clear hover
   and selected states, and explicit accessibility selection/value.
+- The All-In-One mode strip is visually neutral: `selectedMode` remains the
+  functional and accessibility state for `Return` and the dimensions bar, but
+  it does not tint one mode button differently from the others.
 - Recording toolbar microphone and camera device popovers, plus system audio,
   share the same icon label, frame, hover treatment, inactive opacity, and
   accessibility state value; opening a device popover must not change the
