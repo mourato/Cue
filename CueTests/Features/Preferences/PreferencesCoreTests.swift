@@ -151,6 +151,7 @@ final class PreferencesCoreTests: XCTestCase {
         )
     }
 
+    @MainActor
     func testDownsampledPreviewImage_boundsLongestEdge() async throws {
         let sourceURL = try makeLargeJPEG()
         defer { try? FileManager.default.removeItem(at: sourceURL) }
@@ -158,6 +159,38 @@ final class PreferencesCoreTests: XCTestCase {
         let image = await SystemWallpaperManager.downsampledPreviewImage(at: sourceURL, maxPixelSize: 256)
         let size = try XCTUnwrap(image?.size)
         XCTAssertLessThanOrEqual(max(size.width, size.height), 256)
+    }
+
+    @MainActor
+    func testDownsampledPreviewImage_coalescesCachesAndRetriesFailures() async throws {
+        let sourceURL = try makeLargeJPEG()
+        let retryURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("PreferencesCoreTests.\(UUID().uuidString).jpg")
+        defer {
+            try? FileManager.default.removeItem(at: sourceURL)
+            try? FileManager.default.removeItem(at: retryURL)
+        }
+
+        async let firstRequest = SystemWallpaperManager.downsampledPreviewImage(at: sourceURL, maxPixelSize: 256)
+        async let secondRequest = SystemWallpaperManager.downsampledPreviewImage(at: sourceURL, maxPixelSize: 256)
+        let (firstResult, secondResult) = await (firstRequest, secondRequest)
+        let firstImage = try XCTUnwrap(firstResult)
+        let secondImage = try XCTUnwrap(secondResult)
+        XCTAssertTrue(firstImage === secondImage)
+
+        let cachedResult = await SystemWallpaperManager.downsampledPreviewImage(at: sourceURL, maxPixelSize: 256)
+        let cachedImage = try XCTUnwrap(cachedResult)
+        XCTAssertTrue(firstImage === cachedImage)
+
+        let differentSizeResult = await SystemWallpaperManager.downsampledPreviewImage(at: sourceURL, maxPixelSize: 128)
+        let differentSizeImage = try XCTUnwrap(differentSizeResult)
+        XCTAssertFalse(firstImage === differentSizeImage)
+
+        let failedImage = await SystemWallpaperManager.downsampledPreviewImage(at: retryURL, maxPixelSize: 192)
+        XCTAssertNil(failedImage)
+        try FileManager.default.copyItem(at: sourceURL, to: retryURL)
+        let retriedImage = await SystemWallpaperManager.downsampledPreviewImage(at: retryURL, maxPixelSize: 192)
+        XCTAssertNotNil(retriedImage)
     }
 
     private func makeLargeJPEG() throws -> URL {

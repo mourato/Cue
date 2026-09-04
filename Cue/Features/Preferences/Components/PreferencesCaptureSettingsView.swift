@@ -116,7 +116,8 @@ struct CaptureSettingsView: View {
                         }
                     }
                     .labelsHidden()
-                    .accessibilityLabel(selectedPane.title)
+                    .accessibilityLabel(L10n.Preferences.captureTab)
+                    .accessibilityValue(selectedPane.title)
                     .pickerStyle(.segmented)
                     .frame(maxWidth: 560)
 
