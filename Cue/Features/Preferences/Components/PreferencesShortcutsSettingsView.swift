@@ -9,6 +9,16 @@ import AppKit
 import Carbon.HIToolbox
 import SwiftUI
 
+private enum SystemConflictStatus: Equatable {
+    case checking
+    case conflict
+    case clear
+
+    init(hasConflict: Bool) {
+        self = hasConflict ? .conflict : .clear
+    }
+}
+
 struct ShortcutsSettingsView: View {
     @State private var fullscreenShortcut: ShortcutConfig?
     @State private var allInOneShortcut: ShortcutConfig?
@@ -47,8 +57,7 @@ struct ShortcutsSettingsView: View {
     @State private var shortcutsEnabled: Bool
     @State private var showDisableConfirmation: Bool = false
     @State private var isConfirmedDisable: Bool = false
-    @State private var hasSystemConflict: Bool = false
-    @State private var isRefreshingConflict: Bool = false
+    @State private var systemConflictStatus: SystemConflictStatus
     @State private var accessibilityGranted: Bool = AXIsProcessTrusted()
     @State private var videoModuleEnabled = VideoModuleAvailability.isEnabled
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -63,6 +72,14 @@ struct ShortcutsSettingsView: View {
 
     private var successFeedbackStyle: FeedbackStyle {
         FeedbackStyle(tone: .success)
+    }
+
+    private var hasSystemConflict: Bool {
+        systemConflictStatus == .conflict
+    }
+
+    private var isRefreshingConflict: Bool {
+        systemConflictStatus == .checking
     }
 
     private var refreshAnimation: Animation? {
@@ -134,15 +151,28 @@ struct ShortcutsSettingsView: View {
         _shortcutsEnabled = State(initialValue: KeyboardShortcutManager.shared.isEnabled)
         // System conflict detection reads com.apple.symbolichotkeys; defer it to
         // .task so opening any Preferences tab never pays for this panel's check.
-        _hasSystemConflict = State(initialValue: false)
-        _isRefreshingConflict = State(initialValue: true)
+        _systemConflictStatus = State(initialValue: .checking)
     }
 
     var body: some View {
         Form {
             // System shortcut conflict status
             if shortcutsEnabled {
-                if hasSystemConflict {
+                if isRefreshingConflict {
+                    Section {
+                        HStack(spacing: 10) {
+                            ProgressView()
+                                .controlSize(.small)
+                            Text(L10n.PreferencesGeneral.calculating)
+                                .font(.system(size: 13, weight: .medium))
+                            Spacer()
+                        }
+                        .padding(.vertical, 4)
+                        .accessibilityElement(children: .combine)
+                    } header: {
+                        Label(L10n.PreferencesShortcuts.systemShortcuts, systemImage: "keyboard")
+                    }
+                } else if hasSystemConflict {
                     Section {
                         VStack(alignment: .leading, spacing: 12) {
                             // Header
@@ -281,8 +311,7 @@ struct ShortcutsSettingsView: View {
                             if newValue {
                                 manager.enable()
                                 // Re-check system conflicts when enabling
-                                hasSystemConflict =
-                                    SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts()
+                                updateSystemConflictStatus()
                             } else {
                                 if isConfirmedDisable {
                                     // User confirmed disable, proceed
@@ -872,7 +901,7 @@ struct ShortcutsSettingsView: View {
 
         if refresh {
             manager.refreshShortcutRegistration()
-            hasSystemConflict = SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts()
+            updateSystemConflictStatus()
         }
     }
 
@@ -912,7 +941,7 @@ struct ShortcutsSettingsView: View {
 
         if refresh {
             manager.refreshShortcutRegistration()
-            hasSystemConflict = SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts()
+            updateSystemConflictStatus()
         }
     }
 
@@ -934,7 +963,7 @@ struct ShortcutsSettingsView: View {
 
         if refresh {
             manager.refreshShortcutRegistration()
-            hasSystemConflict = SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts()
+            updateSystemConflictStatus()
         }
     }
 
@@ -947,7 +976,7 @@ struct ShortcutsSettingsView: View {
 
         if refresh {
             manager.refreshShortcutRegistration()
-            hasSystemConflict = SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts()
+            updateSystemConflictStatus()
         }
     }
 
@@ -993,23 +1022,30 @@ struct ShortcutsSettingsView: View {
         resetAnnotateToolKeysSection()
 
         manager.refreshShortcutRegistration()
-        hasSystemConflict = SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts()
+        updateSystemConflictStatus()
     }
 
     /// Re-check system shortcut conflict status with spinner animation
     private func refreshSystemConflict() {
-        isRefreshingConflict = true
+        systemConflictStatus = .checking
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            let newConflict = SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts()
+            let newStatus = SystemConflictStatus(
+                hasConflict: SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts(),
+            )
             if FeedbackMotionPolicy.allowsMotion(reduceMotion: reduceMotion) {
                 withAnimation(.easeInOut(duration: 0.3)) {
-                    hasSystemConflict = newConflict
+                    systemConflictStatus = newStatus
                 }
             } else {
-                hasSystemConflict = newConflict
+                systemConflictStatus = newStatus
             }
-            isRefreshingConflict = false
         }
+    }
+
+    private func updateSystemConflictStatus() {
+        systemConflictStatus = SystemConflictStatus(
+            hasConflict: SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts(),
+        )
     }
 
     // MARK: - Annotation Tool Helpers
@@ -1063,7 +1099,7 @@ struct ShortcutsSettingsView: View {
                     globalValidationIssues.removeValue(forKey: kind)
                 }
                 if kind.isSystemConflictRelevant {
-                    hasSystemConflict = SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts()
+                    updateSystemConflictStatus()
                 }
             },
         )
@@ -1160,7 +1196,7 @@ struct ShortcutsSettingsView: View {
             }
 
             if kind.isSystemConflictRelevant {
-                hasSystemConflict = SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts()
+                updateSystemConflictStatus()
             }
             return true
         case .reject(let issue):
@@ -1210,7 +1246,7 @@ struct ShortcutsSettingsView: View {
                 CaptureOverlayShortcutSettings.setRecordingApplicationCaptureShortcut(shortcut)
             }
             manager.refreshShortcutRegistration()
-            hasSystemConflict = SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts()
+            updateSystemConflictStatus()
             return true
         case .reject(let issue):
             captureOverlayValidationIssues[kind] = issue

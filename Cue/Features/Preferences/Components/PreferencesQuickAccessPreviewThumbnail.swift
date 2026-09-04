@@ -40,6 +40,7 @@ struct QuickAccessSettingsPreviewThumbnail: View {
         async let light = Self.downsampledWallpaper(named: "default-tahoe-light")
         async let dark = Self.downsampledWallpaper(named: "default-tahoe-dark")
         let (loadedLight, loadedDark) = await (light, dark)
+        guard !Task.isCancelled else { return }
         lightWallpaperImage = loadedLight
         darkWallpaperImage = loadedDark
     }

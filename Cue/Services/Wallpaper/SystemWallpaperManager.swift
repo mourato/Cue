@@ -17,6 +17,32 @@ struct WallpaperImageSnapshot: Sendable {
 class SystemWallpaperManager: ObservableObject {
     static let shared = SystemWallpaperManager()
 
+    enum SettingsPreviewImageLoadTestEvent: Sendable {
+        case requestAdmitted
+        case snapshotCreationStarted
+    }
+
+    static var settingsPreviewImageLoadTestHook: (@Sendable (SettingsPreviewImageLoadTestEvent) async -> Void)?
+
+    private struct PreviewImageRequestKey: Hashable {
+        let url: URL
+        let maxPixelSize: CGFloat
+
+        init(url: URL, maxPixelSize: CGFloat) {
+            self.url = url.standardizedFileURL
+            self.maxPixelSize = maxPixelSize
+        }
+    }
+
+    private struct PendingPreviewImageRequest {
+        let id: UUID
+        let task: Task<WallpaperImageSnapshot?, Never>
+    }
+
+    private static var settingsPreviewImageCache: [PreviewImageRequestKey: NSImage] = [:]
+    private static var pendingSettingsPreviewImageRequests: [PreviewImageRequestKey: PendingPreviewImageRequest] = [:]
+    private static let settingsPreviewImageCacheLimit = 20
+
     @Published var defaultWallpapers: [WallpaperItem] = []
     @Published var customWallpapers: [WallpaperItem] = []
     @Published var isLoading = false
@@ -368,12 +394,48 @@ class SystemWallpaperManager: ObservableObject {
     /// - Parameters:
     ///   - url: Source image URL
     ///   - maxPixelSize: Maximum pixel dimension for the output
-    nonisolated static func downsampledPreviewImage(at url: URL, maxPixelSize: CGFloat) async -> NSImage? {
-        let snapshot = await Task.detached(priority: .userInitiated) {
-            createDownsampledImageSnapshot(from: url, maxSize: maxPixelSize)
-        }.value
+    @MainActor
+    static func downsampledPreviewImage(at url: URL, maxPixelSize: CGFloat) async -> NSImage? {
+        let key = PreviewImageRequestKey(url: url, maxPixelSize: maxPixelSize)
+        if let cached = settingsPreviewImageCache[key] {
+            return cached
+        }
+
+        let testHook = settingsPreviewImageLoadTestHook
+        let request: PendingPreviewImageRequest
+        if let pending = pendingSettingsPreviewImageRequests[key] {
+            request = pending
+        } else {
+            let id = UUID()
+            let task = Task.detached(priority: .userInitiated) { [
+                url = key.url,
+                maxPixelSize = key.maxPixelSize,
+                testHook,
+            ] in
+                await testHook?(.snapshotCreationStarted)
+                return createDownsampledImageSnapshot(from: url, maxSize: maxPixelSize)
+            }
+            request = PendingPreviewImageRequest(id: id, task: task)
+            pendingSettingsPreviewImageRequests[key] = request
+        }
+
+        await testHook?(.requestAdmitted)
+        let snapshot = await request.task.value
+        if pendingSettingsPreviewImageRequests[key]?.id == request.id {
+            pendingSettingsPreviewImageRequests.removeValue(forKey: key)
+        }
+
+        if let cached = settingsPreviewImageCache[key] {
+            return cached
+        }
         guard let snapshot else { return nil }
-        return await MainActor.run { makeImage(from: snapshot) }
+
+        let image = makeImage(from: snapshot)
+        if settingsPreviewImageCache.count >= settingsPreviewImageCacheLimit {
+            settingsPreviewImageCache.removeAll(keepingCapacity: true)
+        }
+        settingsPreviewImageCache[key] = image
+        return image
     }
 
     // MARK: - Preview Image Loading (Canvas Display)
