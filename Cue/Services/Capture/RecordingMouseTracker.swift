@@ -211,8 +211,14 @@
                 return
             }
 
-            let cursorLocation = event.cgEvent?.location ?? mouseLocationProvider()
-            guard recordingRect.contains(cursorLocation) else { return }
+            let cursorLocation: CGPoint
+            if let cgLocation = event.cgEvent?.location, recordingRect.contains(cgLocation) {
+                cursorLocation = cgLocation
+            } else if recordingRect.contains(event.locationInWindow) {
+                cursorLocation = event.locationInWindow
+            } else {
+                return
+            }
 
             let normalized = normalizedPoint(for: cursorLocation)
             let phase: RecordedMousePress.PressPhase
