@@ -1,12 +1,12 @@
 //
-//  CueConfigurationPathsTests.swift
+//  CuePathsTests.swift
 //  NotinhasTests
 //
 //  Tests for user-managed TOML configuration paths.
 //
 
-import Darwin
 @testable import Cue
+import Darwin
 import XCTest
 
 @MainActor

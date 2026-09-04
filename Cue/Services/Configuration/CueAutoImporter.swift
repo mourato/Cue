@@ -1,5 +1,5 @@
 //
-//  CueConfigurationAutoImporter.swift
+//  CueAutoImporter.swift
 //  Notinhas
 //
 //  Applies user-edited TOML configuration on app launch when the file changes.

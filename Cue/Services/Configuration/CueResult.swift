@@ -1,5 +1,5 @@
 //
-//  CueConfigurationResult.swift
+//  CueResult.swift
 //  Notinhas
 //
 //  Import/export result models for TOML configuration.

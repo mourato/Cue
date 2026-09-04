@@ -1,8 +1,8 @@
 #if CUE_VIDEO_MODULE
     import AVFoundation
     import CoreVideo
-    import ImageIO
     @testable import Cue
+    import ImageIO
     import XCTest
 
     final class VideoFrameExtractorTests: XCTestCase {

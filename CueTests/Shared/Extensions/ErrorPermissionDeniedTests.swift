@@ -1,5 +1,5 @@
-import Foundation
 @testable import Cue
+import Foundation
 import XCTest
 
 final class ErrorPermissionDeniedTests: XCTestCase {

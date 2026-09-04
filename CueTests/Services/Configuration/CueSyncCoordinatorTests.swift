@@ -1,5 +1,5 @@
 //
-//  CueConfigurationSyncCoordinatorTests.swift
+//  CueSyncCoordinatorTests.swift
 //  NotinhasTests
 //
 //  Tests for debounced config.toml background sync orchestration.

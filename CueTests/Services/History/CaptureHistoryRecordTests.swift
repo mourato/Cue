@@ -5,8 +5,8 @@
 //  Unit tests for capture history record presentation helpers.
 //
 
-import Foundation
 @testable import Cue
+import Foundation
 import XCTest
 
 final class CaptureHistoryRecordTests: XCTestCase {

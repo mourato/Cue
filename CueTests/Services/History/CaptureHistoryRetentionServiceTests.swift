@@ -6,8 +6,8 @@
 //  Verifies via synchronous DB reads to avoid observation timing issues.
 //
 
-import Foundation
 @testable import Cue
+import Foundation
 import XCTest
 
 @MainActor

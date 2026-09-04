@@ -1,5 +1,5 @@
 //
-//  CueConfigurationPaths.swift
+//  CuePaths.swift
 //  Notinhas
 //
 //  Path helpers for user-managed configuration files.

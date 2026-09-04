@@ -1,5 +1,5 @@
 //
-//  CueConfigurationShortcutsImporter.swift
+//  CueShortcutsImporter.swift
 //  Notinhas
 //
 //  Shortcut import helpers for TOML configuration.
