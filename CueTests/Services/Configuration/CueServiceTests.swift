@@ -1,5 +1,5 @@
 //
-//  CueConfigurationServiceTests.swift
+//  CueServiceTests.swift
 //  NotinhasTests
 //
 //  Tests for configuration file materialization.

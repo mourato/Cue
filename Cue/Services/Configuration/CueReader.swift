@@ -1,5 +1,5 @@
 //
-//  CueConfigurationReader.swift
+//  CueReader.swift
 //  Notinhas
 //
 //  Typed reads with validation issue collection for imported TOML.

@@ -1,5 +1,5 @@
-import Foundation
 @testable import Cue
+import Foundation
 import SwiftUI
 import XCTest
 

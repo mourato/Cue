@@ -1,5 +1,5 @@
 //
-//  CueConfigurationSyncCoordinator.swift
+//  CueSyncCoordinator.swift
 //  Notinhas
 //
 //  Debounced background sync from live app settings into config.toml.

@@ -1170,7 +1170,7 @@ struct MockupExportViewForAnnotate: View {
 
             Image(nsImage: flatImage)
                 .resizable()
-                .aspectRatio(contentMode: .fit)
+                .scaledToFit()
                 .frame(maxWidth: imageSize.width, maxHeight: imageSize.height)
                 .clipShape(RoundedRectangle(cornerRadius: snapshot.cornerRadius, style: .continuous))
                 .rotation3DEffect(
@@ -1245,7 +1245,7 @@ struct MockupExportViewForAnnotate: View {
             } else if let image = snapshot.resolvedBackgroundImage {
                 Image(nsImage: image)
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
+                    .scaledToFill()
                     .overlay(
                         snapshot.isBlurredBackgroundEffectActive
                             ? snapshot.blurredBackgroundEffect.tintColor
@@ -1259,7 +1259,7 @@ struct MockupExportViewForAnnotate: View {
             if let image = snapshot.resolvedBackgroundImage {
                 Image(nsImage: image)
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
+                    .scaledToFill()
                     .overlay(snapshot.blurredBackgroundEffect.tintColor
                         .opacity(snapshot.blurredBackgroundEffect.tintOpacity))
             } else {

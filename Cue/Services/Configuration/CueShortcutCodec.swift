@@ -1,5 +1,5 @@
 //
-//  CueConfigurationShortcutCodec.swift
+//  CueShortcutCodec.swift
 //  Notinhas
 //
 //  Friendly TOML shortcut key/modifier conversion.

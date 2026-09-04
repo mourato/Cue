@@ -5,8 +5,8 @@
 //  In-memory PreferencesProviding fake for unit tests.
 //
 
-import Foundation
 @testable import Cue
+import Foundation
 
 @MainActor
 final class FakePreferencesProvider: PreferencesProviding {

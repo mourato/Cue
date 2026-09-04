@@ -514,7 +514,7 @@ struct AnnotateCanvasView: View {
         } else if let nsImage = state.cachedBackgroundImage(for: url) {
             Image(nsImage: nsImage)
                 .resizable()
-                .aspectRatio(contentMode: .fill)
+                .scaledToFill()
                 .frame(width: width, height: height)
                 .clipped()
         }
@@ -545,7 +545,7 @@ struct AnnotateCanvasView: View {
         if appliesLiveEffect {
             Image(nsImage: nsImage)
                 .resizable()
-                .aspectRatio(contentMode: .fill)
+                .scaledToFill()
                 .frame(width: width, height: height)
                 .blur(radius: effect.blurRadius)
                 .saturation(effect.saturation)
@@ -555,7 +555,7 @@ struct AnnotateCanvasView: View {
         } else {
             Image(nsImage: nsImage)
                 .resizable()
-                .aspectRatio(contentMode: .fill)
+                .scaledToFill()
                 .frame(width: width, height: height)
                 .overlay(effect.tintColor.opacity(effect.tintOpacity))
                 .clipped()
@@ -575,7 +575,7 @@ struct AnnotateCanvasView: View {
             Image(nsImage: sourceImage)
                 .resizable()
                 .interpolation(.high)
-                .aspectRatio(contentMode: .fit)
+                .scaledToFit()
                 .frame(width: imageBounds.width * scale, height: imageBounds.height * scale)
                 .offset(x: imageOffset.x, y: imageOffset.y)
                 .frame(width: visibleBounds.width * scale, height: visibleBounds.height * scale)

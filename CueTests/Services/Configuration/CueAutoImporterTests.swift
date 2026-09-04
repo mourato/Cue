@@ -1,5 +1,5 @@
 //
-//  CueConfigurationAutoImporterTests.swift
+//  CueAutoImporterTests.swift
 //  NotinhasTests
 //
 //  Unit tests for applying user-edited TOML configuration at startup.

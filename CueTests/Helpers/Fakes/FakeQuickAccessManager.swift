@@ -6,8 +6,8 @@
 //
 
 import AppKit
-import Foundation
 @testable import Cue
+import Foundation
 
 @MainActor
 final class FakeQuickAccessManager: QuickAccessManaging {

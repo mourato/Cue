@@ -5,8 +5,8 @@
 //  Tests for one-time Notinhas-to-Notinhas identity data migration.
 //
 
-import Foundation
 @testable import Cue
+import Foundation
 import XCTest
 
 @MainActor

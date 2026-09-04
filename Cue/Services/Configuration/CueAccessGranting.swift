@@ -1,5 +1,5 @@
 //
-//  CueConfigurationAccessGranting.swift
+//  CueAccessGranting.swift
 //  Notinhas
 //
 //  Shared macOS folder-grant flow for the user-managed TOML configuration file.

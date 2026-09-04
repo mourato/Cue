@@ -1,5 +1,5 @@
 //
-//  CueConfigurationColor.swift
+//  CueColor.swift
 //  Notinhas
 //
 //  Hex color conversion for TOML config.

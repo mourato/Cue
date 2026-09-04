@@ -174,7 +174,7 @@
                     if let nsImage = state.cachedBackgroundImage {
                         Image(nsImage: nsImage)
                             .resizable()
-                            .aspectRatio(contentMode: .fill)
+                            .scaledToFill()
                     } else {
                         Color.gray // Placeholder while loading
                     }
@@ -183,12 +183,12 @@
                     if let nsImage = state.cachedBlurredImage {
                         Image(nsImage: nsImage)
                             .resizable()
-                            .aspectRatio(contentMode: .fill)
+                            .scaledToFill()
                     } else if let nsImage = state.cachedBackgroundImage {
                         // Fallback to non-blurred while computing blur
                         Image(nsImage: nsImage)
                             .resizable()
-                            .aspectRatio(contentMode: .fill)
+                            .scaledToFill()
                     } else {
                         Color.gray
                     }

@@ -1,5 +1,5 @@
 //
-//  CueConfigurationService.swift
+//  CueService.swift
 //  Notinhas
 //
 //  Facade for exporting and importing Notinhas TOML configuration files.

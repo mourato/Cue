@@ -5,8 +5,8 @@
 //  Tests for one-time App Sandbox data migration.
 //
 
-import Foundation
 @testable import Cue
+import Foundation
 import XCTest
 
 @MainActor

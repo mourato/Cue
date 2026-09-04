@@ -5,8 +5,8 @@
 //  Tests for launch-safe database initialization and recovery helpers.
 //
 
-import Foundation
 @testable import Cue
+import Foundation
 import XCTest
 
 final class DatabaseManagerTests: XCTestCase {

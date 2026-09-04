@@ -1,5 +1,5 @@
 //
-//  CueConfigurationImporterTests.swift
+//  CueImporterTests.swift
 //  NotinhasTests
 //
 //  Unit tests for TOML configuration import validation and application.

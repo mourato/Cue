@@ -1,5 +1,5 @@
 //
-//  CueConfigurationShortcutsExporter.swift
+//  CueShortcutsExporter.swift
 //  Notinhas
 //
 //  Shortcut TOML export helpers.

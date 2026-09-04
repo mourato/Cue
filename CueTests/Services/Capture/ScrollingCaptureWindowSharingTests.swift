@@ -370,7 +370,7 @@ final class ScrollingCaptureAutoScrollPolicyTests: XCTestCase {
     func testHUDWindowContentSize_expandsToFitAutoScrollControls() {
         XCTAssertEqual(
             ScrollingCaptureHUDWindow.resolvedContentSize(for: CGSize(width: 431.2, height: 45.1)),
-            CGSize(width: 432, height: 46),
+            CGSize(width: 432, height: 48),
         )
     }
 

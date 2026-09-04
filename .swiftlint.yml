@@ -1,6 +1,6 @@
 included:
-  - Notinhas
-  - NotinhasTests
+  - Cue
+  - CueTests
 excluded:
   - Pods
   - .build

@@ -5,8 +5,8 @@
 //  Programmable URLSession fake for network tests.
 //
 
-import Foundation
 @testable import Cue
+import Foundation
 
 final class MockURLSession: URLSessionProtocol, @unchecked Sendable {
     private let lock = NSLock()
