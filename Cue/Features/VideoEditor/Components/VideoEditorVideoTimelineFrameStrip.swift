@@ -34,7 +34,7 @@
                         ForEach(0 ..< thumbnails.count, id: \.self) { index in
                             Image(nsImage: thumbnails[index])
                                 .resizable()
-                                .aspectRatio(contentMode: .fill)
+                                .scaledToFill()
                                 .frame(width: geometry.size.width / CGFloat(thumbnails.count))
                                 .clipped()
                         }

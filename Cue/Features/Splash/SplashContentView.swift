@@ -96,7 +96,7 @@ private extension SplashContentView {
     var appLogo: some View {
         Image(nsImage: NSApp.applicationIconImage)
             .resizable()
-            .aspectRatio(contentMode: .fit)
+            .scaledToFit()
             .frame(width: 100, height: 100)
             .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
             .shadow(color: .black.opacity(0.25), radius: 16, x: 0, y: 4)

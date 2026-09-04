@@ -24,7 +24,7 @@
                 if let image = previewImage {
                     Image(nsImage: image)
                         .resizable()
-                        .aspectRatio(contentMode: .fill)
+                        .scaledToFill()
                         .frame(width: pickerSize, height: pickerSize * 9 / 16)
                         .clipped()
                 } else {

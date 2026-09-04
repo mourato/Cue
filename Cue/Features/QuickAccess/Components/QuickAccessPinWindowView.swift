@@ -42,7 +42,7 @@ struct QuickAccessPinWindowView: View {
     private var screenshotImage: some View {
         Image(nsImage: state.image)
             .resizable()
-            .aspectRatio(contentMode: .fit)
+            .scaledToFit()
             .frame(width: state.displaySize.width, height: state.displaySize.height)
             .background(Color.black.opacity(0.03))
             .clipped()
