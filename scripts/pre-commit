@@ -20,8 +20,11 @@ if [ "${#staged_swift_files[@]}" -eq 0 ]; then
 fi
 
 if which swiftformat >/dev/null; then
-  echo "Validating staged Swift files..."
-  (cd "${PROJECT_ROOT}" && swiftformat "${staged_swift_files[@]}" --lint)
+  echo "Formatting staged Swift files..."
+  (cd "${PROJECT_ROOT}" && swiftformat "${staged_swift_files[@]}")
+  
+  # Re-stage formatted files to ensure fixes are included in the commit
+  git -C "${PROJECT_ROOT}" add "${staged_swift_files[@]}"
 else
   echo "error: SwiftFormat is required for Swift commits." >&2
   exit 1
