@@ -26,49 +26,51 @@ struct AllInOneCaptureToolbarView: View {
     }
 }
 
+private struct AllInOneCaptureToolbarModeButtonLabel: View {
+    let mode: AllInOneCaptureMode
+    let isHovered: Bool
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        VStack(spacing: 3) {
+            Image(systemName: mode.systemImage)
+                .font(.system(size: ToolbarConstants.iconSize, weight: .medium))
+
+            Text(mode.compactTitle)
+                .font(.system(size: 10, weight: .medium))
+                .lineLimit(2)
+                .multilineTextAlignment(.center)
+        }
+        .foregroundStyle(.primary.opacity(isHovered ? 1.0 : 0.85))
+        .frame(minWidth: 54, minHeight: 46)
+        .background(
+            RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
+                .fill(Color.primary.opacity(isHovered ? 0.1 : 0)),
+        )
+        .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
+        .animation(reduceMotion ? nil : ToolbarConstants.hoverAnimation, value: isHovered)
+    }
+}
+
 private struct AllInOneCaptureToolbarModeButton: View {
     let mode: AllInOneCaptureMode
     let isSelected: Bool
     let action: () -> Void
 
     @State private var isHovered = false
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 3) {
-                Image(systemName: mode.systemImage)
-                    .font(.system(size: ToolbarConstants.iconSize, weight: .medium))
-
-                Text(mode.compactTitle)
-                    .font(.system(size: 10, weight: .medium))
-                    .lineLimit(2)
-                    .multilineTextAlignment(.center)
-            }
-            .foregroundStyle(foregroundStyle)
-            .frame(minWidth: 54, minHeight: 46)
-            .background(background)
-            .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
+            AllInOneCaptureToolbarModeButtonLabel(
+                mode: mode,
+                isHovered: isHovered,
+            )
         }
         .buttonStyle(.plain)
         .onHover { isHovered = $0 }
         .accessibilityLabel(mode.accessibilityLabel)
         .accessibilityValue(isSelected ? selectedAccessibilityValue : "")
         .accessibilityAddTraits(isSelected ? .isSelected : [])
-        .animation(reduceMotion ? nil : ToolbarConstants.hoverAnimation, value: isHovered)
-    }
-
-    private var foregroundStyle: Color {
-        .primary.opacity(isHovered ? 1.0 : 0.85)
-    }
-
-    private var background: some View {
-        RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
-            .fill(backgroundFill)
-    }
-
-    private var backgroundFill: Color {
-        isHovered ? Color.primary.opacity(0.1) : .clear
     }
 
     private var selectedAccessibilityValue: String {
