@@ -16,13 +16,21 @@ final class AllInOneCaptureModeConfigurationStore: ObservableObject {
     @Published private(set) var enabledModes: Set<AllInOneCaptureMode>
 
     private let defaults: UserDefaults
+    private static let modesAddedInThisVersion: Set<AllInOneCaptureMode> = [
+        .activeWindow, .objectCutout, .smartElement,
+    ]
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
-        modeOrder = Self.normalizedOrder(from: defaults.stringArray(forKey: PreferencesKeys.captureAllInOneModeOrder))
+        let storedOrder = defaults.stringArray(forKey: PreferencesKeys.captureAllInOneModeOrder)
+        let storedEnabledModes = defaults.stringArray(forKey: PreferencesKeys.captureAllInOneEnabledModes)
+        modeOrder = Self.normalizedOrder(from: storedOrder)
         enabledModes = Self.normalizedEnabledModes(
-            from: defaults.stringArray(forKey: PreferencesKeys.captureAllInOneEnabledModes),
+            from: storedEnabledModes,
         )
+        if Self.shouldEnableNewModes(orderIDs: storedOrder, enabledIDs: storedEnabledModes) {
+            enabledModes.formUnion(Self.modesAddedInThisVersion)
+        }
         save()
     }
 
@@ -107,5 +115,11 @@ final class AllInOneCaptureModeConfigurationStore: ObservableObject {
             enabled.insert(AllInOneCaptureMode.defaultOrder.first { $0 != .recording }!)
         }
         return enabled
+    }
+
+    private static func shouldEnableNewModes(orderIDs: [String]?, enabledIDs: [String]?) -> Bool {
+        guard orderIDs != nil || enabledIDs != nil else { return false }
+        let storedIDs = Set((orderIDs ?? []) + (enabledIDs ?? []))
+        return modesAddedInThisVersion.contains { !storedIDs.contains($0.rawValue) }
     }
 }

@@ -65,7 +65,7 @@ private struct AllInOneCaptureToolbarModeButton: View {
         if isSelected {
             return colorScheme == .dark ? .white : .primary
         }
-        return .primary.opacity(isHovered ? 0.95 : 0.72)
+        return .primary.opacity(isHovered ? 1.0 : 0.85)
     }
 
     private var background: some View {
@@ -86,7 +86,7 @@ private struct AllInOneCaptureToolbarModeButton: View {
         }
 
         if isHovered {
-            return Color.primary.opacity(reduceTransparency ? 0.12 : 0.08)
+            return Color.primary.opacity(0.1)
         }
 
         return .clear

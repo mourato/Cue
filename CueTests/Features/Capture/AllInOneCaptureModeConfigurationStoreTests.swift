@@ -26,13 +26,37 @@ final class AllInOneCaptureModeConfigurationStoreTests: XCTestCase {
         defaults.set(["unknown"], forKey: PreferencesKeys.captureAllInOneEnabledModes)
         let store = AllInOneCaptureModeConfigurationStore(defaults: defaults)
 
-        XCTAssertEqual(store.modeOrder, [.ocr, .area, .fullscreen, .window, .annotate, .scrolling, .timer, .recording])
-        XCTAssertEqual(store.enabledModes, [.area])
+        XCTAssertEqual(
+            store.modeOrder,
+            [
+                .ocr, .area, .fullscreen, .window, .activeWindow, .annotate, .scrolling, .timer,
+                .objectCutout, .smartElement, .recording,
+            ],
+        )
+        XCTAssertEqual(store.enabledModes, [.area, .activeWindow, .objectCutout, .smartElement])
     }
 
-    func testCustomOrderAndVisibility_persistAcrossStores() {
+    func testLegacyVisibility_enablesNewModesOnce() {
+        defaults.set(
+            ["area", "fullscreen", "window", "annotate", "scrolling", "timer", "ocr", "recording"],
+            forKey: PreferencesKeys.captureAllInOneModeOrder,
+        )
+        defaults.set(["area"], forKey: PreferencesKeys.captureAllInOneEnabledModes)
+
         let store = AllInOneCaptureModeConfigurationStore(defaults: defaults)
-        store.moveMode(from: IndexSet(integer: 7), to: 0, videoEnabled: true)
+        XCTAssertTrue(store.isEnabled(.activeWindow))
+        XCTAssertTrue(store.isEnabled(.objectCutout))
+        XCTAssertTrue(store.isEnabled(.smartElement))
+
+        store.setEnabled(.smartElement, enabled: false)
+        let reloaded = AllInOneCaptureModeConfigurationStore(defaults: defaults)
+        XCTAssertFalse(reloaded.isEnabled(.smartElement))
+    }
+
+    func testCustomOrderAndVisibility_persistAcrossStores() throws {
+        let store = AllInOneCaptureModeConfigurationStore(defaults: defaults)
+        let recordingIndex = try XCTUnwrap(store.modeOrder.firstIndex(of: .recording))
+        store.moveMode(from: IndexSet(integer: recordingIndex), to: 0, videoEnabled: true)
         store.setEnabled(.timer, enabled: false)
         let reloaded = AllInOneCaptureModeConfigurationStore(defaults: defaults)
 
@@ -59,9 +83,10 @@ final class AllInOneCaptureModeConfigurationStoreTests: XCTestCase {
         XCTAssertTrue(store.isEnabled(.area))
     }
 
-    func testVideoFiltering_preservesRecordingPositionAndState() {
+    func testVideoFiltering_preservesRecordingPositionAndState() throws {
         let store = AllInOneCaptureModeConfigurationStore(defaults: defaults)
-        store.moveMode(from: IndexSet(integer: 7), to: 2, videoEnabled: true)
+        let recordingIndex = try XCTUnwrap(store.modeOrder.firstIndex(of: .recording))
+        store.moveMode(from: IndexSet(integer: recordingIndex), to: 2, videoEnabled: true)
         store.setEnabled(.recording, enabled: false)
         XCTAssertFalse(store.orderedModes(videoEnabled: false, includeDisabled: true).contains(.recording))
         XCTAssertEqual(store.modeOrder[2], .recording)
@@ -69,10 +94,14 @@ final class AllInOneCaptureModeConfigurationStoreTests: XCTestCase {
         XCTAssertEqual(store.orderedModes(videoEnabled: true, includeDisabled: true)[2], .recording)
     }
 
-    func testMoveWhileVideoOff_preservesHiddenRecordingSlot() {
+    func testMoveWhileVideoOff_preservesHiddenRecordingSlot() throws {
         let store = AllInOneCaptureModeConfigurationStore(defaults: defaults)
-        store.moveMode(from: IndexSet(integer: 7), to: 2, videoEnabled: true)
-        store.moveMode(from: IndexSet(integer: 3), to: 0, videoEnabled: false)
+        let recordingIndex = try XCTUnwrap(store.modeOrder.firstIndex(of: .recording))
+        store.moveMode(from: IndexSet(integer: recordingIndex), to: 2, videoEnabled: true)
+        let annotateIndex = try XCTUnwrap(
+            store.orderedModes(videoEnabled: false, includeDisabled: true).firstIndex(of: .annotate),
+        )
+        store.moveMode(from: IndexSet(integer: annotateIndex), to: 0, videoEnabled: false)
         XCTAssertEqual(store.modeOrder[2], .recording)
         XCTAssertEqual(store.orderedModes(videoEnabled: false, includeDisabled: true).first, .annotate)
     }

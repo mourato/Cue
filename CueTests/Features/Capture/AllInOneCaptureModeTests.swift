@@ -14,7 +14,10 @@ final class AllInOneCaptureModeTests: XCTestCase {
 
         XCTAssertEqual(
             modes,
-            [.area, .fullscreen, .window, .annotate, .scrolling, .timer, .ocr],
+            [
+                .area, .fullscreen, .window, .activeWindow, .annotate, .scrolling, .timer, .ocr,
+                .objectCutout, .smartElement,
+            ],
         )
         XCTAssertFalse(modes.contains(.recording))
     }
@@ -24,17 +27,20 @@ final class AllInOneCaptureModeTests: XCTestCase {
 
         XCTAssertEqual(modes.last, .recording)
         XCTAssertTrue(modes.contains(.recording))
-        XCTAssertEqual(modes.count, 8)
+        XCTAssertEqual(modes.count, 11)
     }
 
     func testRawValues_areStable() {
         XCTAssertEqual(AllInOneCaptureMode.area.rawValue, "area")
         XCTAssertEqual(AllInOneCaptureMode.fullscreen.rawValue, "fullscreen")
         XCTAssertEqual(AllInOneCaptureMode.window.rawValue, "window")
+        XCTAssertEqual(AllInOneCaptureMode.activeWindow.rawValue, "activeWindow")
         XCTAssertEqual(AllInOneCaptureMode.annotate.rawValue, "annotate")
         XCTAssertEqual(AllInOneCaptureMode.scrolling.rawValue, "scrolling")
         XCTAssertEqual(AllInOneCaptureMode.timer.rawValue, "timer")
         XCTAssertEqual(AllInOneCaptureMode.ocr.rawValue, "ocr")
+        XCTAssertEqual(AllInOneCaptureMode.objectCutout.rawValue, "objectCutout")
+        XCTAssertEqual(AllInOneCaptureMode.smartElement.rawValue, "smartElement")
         XCTAssertEqual(AllInOneCaptureMode.recording.rawValue, "recording")
     }
 
@@ -47,6 +53,9 @@ final class AllInOneCaptureModeTests: XCTestCase {
         XCTAssertTrue(AllInOneCaptureMode.recording.preservesSelectionRect)
         XCTAssertFalse(AllInOneCaptureMode.fullscreen.preservesSelectionRect)
         XCTAssertFalse(AllInOneCaptureMode.window.preservesSelectionRect)
+        XCTAssertFalse(AllInOneCaptureMode.activeWindow.preservesSelectionRect)
+        XCTAssertFalse(AllInOneCaptureMode.objectCutout.preservesSelectionRect)
+        XCTAssertFalse(AllInOneCaptureMode.smartElement.preservesSelectionRect)
     }
 
     func testTitlesAndAccessibilityLabels_areNonEmpty() {
@@ -66,19 +75,25 @@ final class AllInOneCaptureModeTests: XCTestCase {
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .area, rect: rect), .area(rect))
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .fullscreen, rect: rect), .fullscreen)
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .window, rect: rect), .window)
+        XCTAssertEqual(AllInOneCaptureCommand.make(for: .activeWindow, rect: rect), .activeWindow)
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .annotate, rect: rect), .annotate(rect))
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .scrolling, rect: rect), .scrolling(rect))
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .timer, rect: rect), .timer(rect))
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .ocr, rect: rect), .ocr(rect))
+        XCTAssertEqual(AllInOneCaptureCommand.make(for: .objectCutout, rect: rect), .objectCutout)
+        XCTAssertEqual(AllInOneCaptureCommand.make(for: .smartElement, rect: rect), .smartElement)
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .recording, rect: rect), .recording(rect))
     }
 
     func testCommandMatrix_preservesNoRectFallback() {
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .area, rect: nil), .area(nil))
+        XCTAssertEqual(AllInOneCaptureCommand.make(for: .activeWindow, rect: nil), .activeWindow)
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .annotate, rect: nil), .annotate(nil))
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .scrolling, rect: nil), .scrolling(nil))
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .timer, rect: nil), .timer(nil))
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .ocr, rect: nil), .ocr(nil))
+        XCTAssertEqual(AllInOneCaptureCommand.make(for: .objectCutout, rect: nil), .objectCutout)
+        XCTAssertEqual(AllInOneCaptureCommand.make(for: .smartElement, rect: nil), .smartElement)
         XCTAssertEqual(AllInOneCaptureCommand.make(for: .recording, rect: nil), .recording(nil))
     }
 }

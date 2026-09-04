@@ -598,6 +598,28 @@
         }
       }
     },
+    "all-in-one.mode.active-window": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Active"
+          }
+        }
+      }
+    },
+    "all-in-one.mode.active-window.accessibility": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capture active window"
+          }
+        }
+      }
+    },
     "all-in-one.mode.area.accessibility": {
       "extractionState": "stale",
       "localizations": {
@@ -653,6 +675,28 @@
         }
       }
     },
+    "all-in-one.mode.object-cutout": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cutout"
+          }
+        }
+      }
+    },
+    "all-in-one.mode.object-cutout.accessibility": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capture object cutout"
+          }
+        }
+      }
+    },
     "all-in-one.mode.recording": {
       "extractionState": "stale",
       "localizations": {
@@ -693,6 +737,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Capture scrolling area"
+          }
+        }
+      }
+    },
+    "all-in-one.mode.smart-element": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Element"
+          }
+        }
+      }
+    },
+    "all-in-one.mode.smart-element.accessibility": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capture smart element"
           }
         }
       }

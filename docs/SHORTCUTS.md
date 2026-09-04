@@ -79,8 +79,8 @@ All 19 `GlobalShortcutKind`s with shipping defaults (verified in `KeyboardShortc
 `AllInOneModeShortcutSettings` (`Cue/Features/Capture/AllInOne/AllInOneModeShortcutSettings.swift`):
 
 - Child-only single keys (no modifiers) active while the All-In-One session HUD is open.
-- One binding per `AllInOneCaptureMode` (`area`, `fullscreen`, `window`, `annotate`, `scrolling`, `timer`, `ocr`, `recording`).
-- Defaults: **R** / **F** / **A** / **M** / **S** / **T** / **O** / **V**.
+- One binding per `AllInOneCaptureMode` (`area`, `fullscreen`, `window`, `activeWindow`, `annotate`, `scrolling`, `timer`, `ocr`, `objectCutout`, `smartElement`, `recording`).
+- Defaults: **R** / **F** / **A** / **W** / **M** / **S** / **T** / **O** / **C** / **E** / **V**.
 - Enable follows the parent All-In-One global shortcut toggle.
 - Keys: `shortcuts.allInOne.mode.<mode>`.
 - Legacy `shortcuts.area.applicationCapture` migrates once into the `.window` binding (child keys only).

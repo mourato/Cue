@@ -406,6 +406,9 @@ final class AllInOneCaptureCoordinator {
         case .window:
             transferredSession?.invalidate()
             viewModel.captureApplication()
+        case .activeWindow:
+            transferredSession?.invalidate()
+            viewModel.captureActiveWindow()
         case let .annotate(rect):
             if freezeEnabled {
                 guard let transferredSession, let rect else {
@@ -441,6 +444,12 @@ final class AllInOneCaptureCoordinator {
             }
         case .timer:
             transferredSession?.invalidate()
+        case .objectCutout:
+            transferredSession?.invalidate()
+            viewModel.captureObjectCutout()
+        case .smartElement:
+            transferredSession?.invalidate()
+            SmartElementCaptureController.shared.startCapture()
         case let .recording(rect):
             transferredSession?.invalidate()
             #if CUE_VIDEO_MODULE
