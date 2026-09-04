@@ -5,7 +5,10 @@
 //  Unit tests for persisted preferences value models.
 //
 
+import AppKit
+import CoreGraphics
 @testable import Cue
+import ImageIO
 import XCTest
 
 final class PreferencesCoreTests: XCTestCase {
@@ -105,6 +108,88 @@ final class PreferencesCoreTests: XCTestCase {
             ),
             0.5,
         )
+    }
+
+    @MainActor
+    func testSelectedPreferencesTab_persistsAcrossLaunches() throws {
+        let defaults = try makeDefaults()
+        let state = PreferencesNavigationState(userDefaults: defaults)
+        XCTAssertEqual(state.selectedTab, .general)
+
+        state.selectedTab = .shortcuts
+        XCTAssertEqual(
+            defaults.string(forKey: PreferencesKeys.selectedPreferencesTab),
+            PreferencesTab.shortcuts.rawValue,
+        )
+
+        let relaunched = PreferencesNavigationState(userDefaults: defaults)
+        XCTAssertEqual(relaunched.selectedTab, .shortcuts)
+    }
+
+    @MainActor
+    func testSelectedPreferencesTab_fallsBackToGeneralForMissingOrInvalidValue() throws {
+        let defaults = try makeDefaults()
+        XCTAssertEqual(PreferencesNavigationState(userDefaults: defaults).selectedTab, .general)
+
+        defaults.set("not-a-tab", forKey: PreferencesKeys.selectedPreferencesTab)
+        XCTAssertEqual(PreferencesNavigationState(userDefaults: defaults).selectedTab, .general)
+    }
+
+    func testTotalLogFileSize_sumsFilesAndIgnoresMissingDirectory() throws {
+        let tempDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("PreferencesCoreTests.\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: tempDir) }
+
+        try Data(repeating: 0x41, count: 1024).write(to: tempDir.appendingPathComponent("a.log"))
+        try Data(repeating: 0x42, count: 2048).write(to: tempDir.appendingPathComponent("b.log"))
+
+        XCTAssertEqual(DiagnosticLogger.totalLogFileSize(at: tempDir), 3072)
+        XCTAssertEqual(
+            DiagnosticLogger.totalLogFileSize(at: tempDir.appendingPathComponent("missing")),
+            0,
+        )
+    }
+
+    func testDownsampledPreviewImage_boundsLongestEdge() async throws {
+        let sourceURL = try makeLargeJPEG()
+        defer { try? FileManager.default.removeItem(at: sourceURL) }
+
+        let image = await SystemWallpaperManager.downsampledPreviewImage(at: sourceURL, maxPixelSize: 256)
+        let size = try XCTUnwrap(image?.size)
+        XCTAssertLessThanOrEqual(max(size.width, size.height), 256)
+    }
+
+    private func makeLargeJPEG() throws -> URL {
+        let width = 1200
+        let height = 800
+        guard let context = CGContext(
+            data: nil,
+            width: width,
+            height: height,
+            bitsPerComponent: 8,
+            bytesPerRow: 0,
+            space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+        ) else {
+            throw XCTSkip("Unable to create test bitmap context")
+        }
+        context.setFillColor(CGColor(red: 0.2, green: 0.4, blue: 0.8, alpha: 1))
+        context.fill(CGRect(x: 0, y: 0, width: width, height: height))
+        guard let cgImage = context.makeImage() else {
+            throw XCTSkip("Unable to render test image")
+        }
+
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent("PreferencesCoreTests.\(UUID().uuidString).jpg")
+        guard let destination = CGImageDestinationCreateWithURL(url as CFURL, "public.jpeg" as CFString, 1, nil) else {
+            throw XCTSkip("Unable to create test JPEG destination")
+        }
+        CGImageDestinationAddImage(destination, cgImage, nil)
+        guard CGImageDestinationFinalize(destination) else {
+            throw XCTSkip("Unable to finalize test JPEG")
+        }
+        return url
     }
 
     private func makeDefaults(

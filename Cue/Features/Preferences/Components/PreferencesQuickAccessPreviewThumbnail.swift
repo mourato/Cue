@@ -12,29 +12,46 @@ struct QuickAccessSettingsPreviewThumbnail: View {
     let height: CGFloat
 
     @Environment(\.colorScheme) private var colorScheme
+    @State private var lightWallpaperImage: NSImage?
+    @State private var darkWallpaperImage: NSImage?
 
-    private static let lightWallpaperImage = loadBundledWallpaper(named: "default-tahoe-light")
-    private static let darkWallpaperImage = loadBundledWallpaper(named: "default-tahoe-dark")
+    /// Preview cards render near 200pt; 512px covers @2x with headroom while
+    /// keeping the 6016px bundled wallpapers off the main thread and out of RSS.
+    private static let thumbnailMaxPixelSize: CGFloat = 512
 
-    private static func loadBundledWallpaper(named resourceName: String) -> NSImage? {
+    private static func bundledWallpaperURL(named resourceName: String) -> URL? {
         [
             Bundle.main.url(forResource: resourceName, withExtension: "jpg", subdirectory: "Wallpapers"),
             Bundle.main.url(forResource: resourceName, withExtension: "jpg", subdirectory: "Resources/Wallpapers"),
             Bundle.main.url(forResource: resourceName, withExtension: "jpg"),
         ]
         .compactMap(\.self)
-        .compactMap { NSImage(contentsOf: $0) }
         .first
+    }
+
+    private static func downsampledWallpaper(named resourceName: String) async -> NSImage? {
+        guard let url = bundledWallpaperURL(named: resourceName) else { return nil }
+        return await SystemWallpaperManager.downsampledPreviewImage(at: url, maxPixelSize: thumbnailMaxPixelSize)
+    }
+
+    @MainActor
+    private func loadWallpapers() async {
+        guard lightWallpaperImage == nil, darkWallpaperImage == nil else { return }
+        async let light = Self.downsampledWallpaper(named: "default-tahoe-light")
+        async let dark = Self.downsampledWallpaper(named: "default-tahoe-dark")
+        let (loadedLight, loadedDark) = await (light, dark)
+        lightWallpaperImage = loadedLight
+        darkWallpaperImage = loadedDark
     }
 
     private var previewWallpaperImage: NSImage? {
         switch colorScheme {
         case .dark:
-            return Self.darkWallpaperImage ?? Self.lightWallpaperImage
+            return darkWallpaperImage ?? lightWallpaperImage
         case .light:
-            return Self.lightWallpaperImage ?? Self.darkWallpaperImage
+            return lightWallpaperImage ?? darkWallpaperImage
         @unknown default:
-            return Self.lightWallpaperImage ?? Self.darkWallpaperImage
+            return lightWallpaperImage ?? darkWallpaperImage
         }
     }
 
@@ -53,6 +70,9 @@ struct QuickAccessSettingsPreviewThumbnail: View {
         }
         .frame(width: width, height: height)
         .clipped()
+        .task {
+            await loadWallpapers()
+        }
     }
 
     @ViewBuilder

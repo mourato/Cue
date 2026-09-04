@@ -30,6 +30,7 @@ struct QuickAccessSettingsView: View {
                         Text(L10n.PreferencesQuickAccess.right).tag(false)
                     }
                     .labelsHidden()
+                    .accessibilityLabel(L10n.PreferencesQuickAccess.screenEdgeTitle)
                     .pickerStyle(.menu)
                     .onChange(of: positionIsLeft) { newValue in
                         manager.setPosition(newValue ? .bottomLeft : .bottomRight)
@@ -43,7 +44,11 @@ struct QuickAccessSettingsView: View {
                     title: L10n.PreferencesQuickAccess.overlaySizeTitle,
                     description: L10n.PreferencesQuickAccess.overlaySizeDescription,
                 ) {
-                    scalePicker(selection: $manager.overlayScale, range: Self.overlayScaleRange)
+                    scalePicker(
+                        selection: $manager.overlayScale,
+                        range: Self.overlayScaleRange,
+                        accessibilityLabel: L10n.PreferencesQuickAccess.overlaySizeTitle,
+                    )
                 }
 
                 SettingRow(
@@ -51,7 +56,11 @@ struct QuickAccessSettingsView: View {
                     title: L10n.PreferencesQuickAccess.cornerButtonSizeTitle,
                     description: L10n.PreferencesQuickAccess.cornerButtonSizeDescription,
                 ) {
-                    scalePicker(selection: $manager.cornerButtonScale, range: QuickAccessCornerButtonMetrics.scaleRange)
+                    scalePicker(
+                        selection: $manager.cornerButtonScale,
+                        range: QuickAccessCornerButtonMetrics.scaleRange,
+                        accessibilityLabel: L10n.PreferencesQuickAccess.cornerButtonSizeTitle,
+                    )
                 }
             }
 
@@ -63,12 +72,14 @@ struct QuickAccessSettingsView: View {
                 ) {
                     Toggle("", isOn: $manager.isEnabled)
                         .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesQuickAccess.floatingOverlayTitle)
                 }
 
                 SettingRow(icon: "timer", title: L10n.PreferencesQuickAccess.autoCloseTitle,
                            description: autoCloseDescription) {
                     Toggle("", isOn: $manager.autoDismissEnabled)
                         .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesQuickAccess.autoCloseTitle)
                 }
 
                 SettingRow(
@@ -78,6 +89,7 @@ struct QuickAccessSettingsView: View {
                 ) {
                     Toggle("", isOn: $manager.hideCardWhenWindowOpen)
                         .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesQuickAccess.hideCardWhenWindowOpenTitle)
                 }
 
                 SettingRow(
@@ -91,6 +103,7 @@ struct QuickAccessSettingsView: View {
                         }
                     }
                     .labelsHidden()
+                    .accessibilityLabel(L10n.PreferencesQuickAccess.animationStyleTitle)
                     .pickerStyle(.menu)
                     .fixedSize()
                     .frame(width: 150, alignment: .trailing)
@@ -129,6 +142,7 @@ struct QuickAccessSettingsView: View {
                     ) {
                         Toggle("", isOn: $manager.pauseCountdownOnHover)
                             .labelsHidden()
+                            .accessibilityLabel(L10n.PreferencesQuickAccess.pauseOnHoverTitle)
                     }
                 }
 
@@ -139,6 +153,7 @@ struct QuickAccessSettingsView: View {
                 ) {
                     Toggle("", isOn: $manager.dragDropEnabled)
                         .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesQuickAccess.dragAndDropTitle)
                 }
 
                 SettingRow(
@@ -148,6 +163,7 @@ struct QuickAccessSettingsView: View {
                 ) {
                     Toggle("", isOn: $manager.twoFingerSwipeToDismissEnabled)
                         .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesQuickAccess.twoFingerSwipeTitle)
                 }
 
                 if manager.twoFingerSwipeToDismissEnabled {
@@ -186,6 +202,7 @@ struct QuickAccessSettingsView: View {
                             }
                         }
                         .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesQuickAccess.trackpadSwipeModeTitle)
                         .pickerStyle(.menu)
                         .fixedSize()
                         .frame(width: 200, alignment: .trailing)
@@ -210,6 +227,7 @@ struct QuickAccessSettingsView: View {
         selection: Binding<Double>,
         range: ClosedRange<Double>,
         step: Double = 0.25,
+        accessibilityLabel: String,
     ) -> some View {
         let normalizedSelection = Binding(
             get: { SteppedValue.snapped(selection.wrappedValue, by: step, in: range) },
@@ -223,6 +241,7 @@ struct QuickAccessSettingsView: View {
             }
         }
         .labelsHidden()
+        .accessibilityLabel(accessibilityLabel)
         .pickerStyle(.menu)
         .fixedSize()
         .frame(width: 100, alignment: .trailing)

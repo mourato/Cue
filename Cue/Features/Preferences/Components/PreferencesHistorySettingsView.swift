@@ -27,6 +27,7 @@ struct HistorySettingsView: View {
                 ) {
                     Toggle("", isOn: $manager.isEnabled)
                         .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesHistory.floatingPanelTitle)
                 }
 
                 SettingRow(
@@ -40,6 +41,7 @@ struct HistorySettingsView: View {
                         }
                     }
                     .labelsHidden()
+                    .accessibilityLabel(L10n.PreferencesHistory.panelPositionTitle)
                     .pickerStyle(.menu)
                     .fixedSize()
                     .frame(width: 140, alignment: .trailing)
@@ -62,6 +64,7 @@ struct HistorySettingsView: View {
                         }
                     }
                     .labelsHidden()
+                    .accessibilityLabel(L10n.PreferencesHistory.defaultFilterTitle)
                     .pickerStyle(.menu)
                     .fixedSize()
                     .frame(width: 140, alignment: .trailing)

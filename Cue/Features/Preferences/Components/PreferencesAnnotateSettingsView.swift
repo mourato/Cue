@@ -30,6 +30,7 @@ struct AnnotateSettingsView: View {
                 ) {
                     Toggle("", isOn: $annotateQuickPropertiesSyncEnabled)
                         .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesAnnotate.quickPropertiesSyncTitle)
                 }
 
                 SettingRow(
@@ -39,6 +40,7 @@ struct AnnotateSettingsView: View {
                 ) {
                     Toggle("", isOn: $annotateCombineSaveAsEdit)
                         .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesAnnotate.combineSaveAsEditTitle)
                 }
 
                 SettingRow(
@@ -52,6 +54,7 @@ struct AnnotateSettingsView: View {
                         }
                     }
                     .labelsHidden()
+                    .accessibilityLabel(L10n.PreferencesAnnotate.clipboardTitle)
                     .pickerStyle(.menu)
                     .fixedSize()
                     .frame(width: 180, alignment: .trailing)
@@ -64,6 +67,7 @@ struct AnnotateSettingsView: View {
                 ) {
                     Toggle("", isOn: $annotateCloseAfterDrag)
                         .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesAnnotate.closeAfterDragTitle)
                 }
 
                 SettingRow(
@@ -73,6 +77,7 @@ struct AnnotateSettingsView: View {
                 ) {
                     Toggle("", isOn: $annotateBringForwardAfterDrag)
                         .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesAnnotate.bringForwardAfterDragTitle)
                 }
                 .disabled(annotateCloseAfterDrag)
             }

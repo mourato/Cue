@@ -27,6 +27,7 @@ struct GeneralSettingsView: View {
                 ) {
                     Toggle("", isOn: $startAtLogin)
                         .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesGeneral.startAtLoginTitle)
                         .onChange(of: startAtLogin) { newValue in
                             LoginItemManager.setEnabled(newValue)
                         }
@@ -39,6 +40,7 @@ struct GeneralSettingsView: View {
                 ) {
                     Toggle("", isOn: $playSounds)
                         .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesGeneral.playSoundsTitle)
                 }
 
                 SettingRow(
@@ -48,6 +50,7 @@ struct GeneralSettingsView: View {
                 ) {
                     Toggle("", isOn: $showMenuBarIcon)
                         .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesGeneral.menuBarIconTitle)
                         .onChange(of: showMenuBarIcon) { newValue in
                             AppStatusBarController.shared.setMenuBarIconVisible(newValue)
                         }

@@ -116,6 +116,7 @@ struct CaptureSettingsView: View {
                         }
                     }
                     .labelsHidden()
+                    .accessibilityLabel(selectedPane.title)
                     .pickerStyle(.segmented)
                     .frame(maxWidth: 560)
 
@@ -138,6 +139,7 @@ struct CaptureSettingsView: View {
                         ) {
                             Toggle("", isOn: $includeOwnAppInScreenshots)
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.PreferencesCapture.includeInScreenshotsTitle)
                         }
 
                         SettingRow(
@@ -147,6 +149,7 @@ struct CaptureSettingsView: View {
                         ) {
                             Toggle("", isOn: $hideDesktopIcons)
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.PreferencesCapture.hideDesktopIconsTitle)
                         }
 
                         SettingRow(
@@ -156,6 +159,7 @@ struct CaptureSettingsView: View {
                         ) {
                             Toggle("", isOn: $hideDesktopWidgets)
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.PreferencesCapture.hideDesktopWidgetsTitle)
                         }
 
                         SettingRow(
@@ -165,6 +169,7 @@ struct CaptureSettingsView: View {
                         ) {
                             Toggle("", isOn: $screenshotShowCursor)
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.PreferencesCapture.showCursorTitle)
                         }
 
                         SettingRow(
@@ -174,6 +179,7 @@ struct CaptureSettingsView: View {
                         ) {
                             Toggle("", isOn: $captureWindowShadow)
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.PreferencesCapture.windowShadowTitle)
                         }
 
                         SettingRow(
@@ -183,6 +189,7 @@ struct CaptureSettingsView: View {
                         ) {
                             Toggle("", isOn: $freezeAreaCapture)
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.PreferencesCapture.freezeAreaTitle)
                         }
                     }
 
@@ -196,6 +203,7 @@ struct CaptureSettingsView: View {
                         ) {
                             Toggle("", isOn: $showSelectionAreaOverlay)
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.PreferencesCapture.showSelectionAreaOverlayTitle)
                         }
 
                         SettingRow(
@@ -205,6 +213,7 @@ struct CaptureSettingsView: View {
                         ) {
                             Toggle("", isOn: $reverseMagnifierZoomDirection)
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.PreferencesCapture.reverseMagnifierZoomDirectionTitle)
                         }
 
                         SettingRow(
@@ -214,6 +223,7 @@ struct CaptureSettingsView: View {
                         ) {
                             Toggle("", isOn: $captureSelectionSnappingEnabled)
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.PreferencesCapture.snappingTitle)
                         }
 
                         if captureSelectionSnappingEnabled {
@@ -228,6 +238,7 @@ struct CaptureSettingsView: View {
                                         ) {
                                             Toggle("", isOn: $captureSelectionShowSnapGuides)
                                                 .labelsHidden()
+                                                .accessibilityLabel(L10n.PreferencesCapture.selectionSnapGuidesTitle)
                                         }
 
                                         SettingRow(
@@ -266,6 +277,7 @@ struct CaptureSettingsView: View {
                                                 }
                                             }
                                             .labelsHidden()
+                                            .accessibilityLabel(L10n.PreferencesCapture.selectionColorSensitivityTitle)
                                             .pickerStyle(.menu)
                                         }
                                     }
@@ -290,6 +302,7 @@ struct CaptureSettingsView: View {
                         ) {
                             Toggle("", isOn: afterCaptureBinding(for: .copyFile))
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.AfterCapture.copyFileAction)
                         }
 
                         SettingRow(
@@ -299,6 +312,7 @@ struct CaptureSettingsView: View {
                         ) {
                             Toggle("", isOn: afterCaptureBinding(for: .showQuickAccess))
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.PreferencesCapture.afterCaptureShowQuickAccessTitle)
                         }
 
                         SettingRow(
@@ -308,6 +322,7 @@ struct CaptureSettingsView: View {
                         ) {
                             Toggle("", isOn: afterCaptureBinding(for: .save))
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.AfterCapture.saveAction)
                         }
 
                         SettingRow(
@@ -317,6 +332,7 @@ struct CaptureSettingsView: View {
                         ) {
                             Toggle("", isOn: afterCaptureBinding(for: .openAnnotate))
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.AfterCapture.openAnnotateAction)
                         }
                     }
 
@@ -346,6 +362,7 @@ struct CaptureSettingsView: View {
                                 }
                             }
                             .labelsHidden()
+                            .accessibilityLabel(L10n.PreferencesCapture.imageFormatTitle)
                             .pickerStyle(.menu)
                         }
 
@@ -362,6 +379,8 @@ struct CaptureSettingsView: View {
                                         step: 0.05,
                                     )
                                     .frame(width: 120)
+                                    .accessibilityLabel(L10n.PreferencesCapture.jpegQualityTitle)
+                                    .accessibilityValue(Text("\(Int((screenshotJpegQuality * 100).rounded()))%"))
 
                                     Text("\(Int((screenshotJpegQuality * 100).rounded()))%")
                                         .font(.caption.monospacedDigit())
@@ -405,6 +424,7 @@ struct CaptureSettingsView: View {
                             TextField("", text: $screenshotFileNameTemplate)
                                 .textFieldStyle(.roundedBorder)
                                 .frame(width: 260)
+                                .accessibilityLabel(L10n.PreferencesCapture.screenshotTemplateTitle)
                         }
 
                         #if CUE_VIDEO_MODULE
@@ -417,6 +437,7 @@ struct CaptureSettingsView: View {
                                     TextField("", text: $recordingFileNameTemplate)
                                         .textFieldStyle(.roundedBorder)
                                         .frame(width: 260)
+                                        .accessibilityLabel(L10n.PreferencesCapture.recordingTemplateTitle)
                                 }
                             }
                         #endif
@@ -476,6 +497,7 @@ struct CaptureSettingsView: View {
                         ) {
                             Toggle("", isOn: $backgroundCutoutAutoCropEnabled)
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.PreferencesCapture.autoCropSubjectTitle)
                         }
                     }
 
@@ -489,6 +511,7 @@ struct CaptureSettingsView: View {
                         ) {
                             Toggle("", isOn: $scrollingCaptureShowHints)
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.PreferencesCapture.showSessionHintsTitle)
                         }
 
                         HStack(alignment: .top, spacing: 6) {
@@ -510,6 +533,7 @@ struct CaptureSettingsView: View {
                         ) {
                             Toggle("", isOn: $ocrSuccessNotification)
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.PreferencesCapture.ocrSuccessNotificationTitle)
                         }
 
                         SettingRow(
@@ -519,6 +543,7 @@ struct CaptureSettingsView: View {
                         ) {
                             Toggle("", isOn: $ocrLinkDetection)
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.PreferencesCapture.ocrLinkDetectionTitle)
                         }
                     }
                 }
@@ -538,6 +563,7 @@ struct CaptureSettingsView: View {
                                     Text(verbatim: "MP4").tag("mp4")
                                 }
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.PreferencesCapture.videoFormatTitle)
                                 .pickerStyle(.menu)
                             }
                         }
@@ -555,6 +581,7 @@ struct CaptureSettingsView: View {
                                     Text("60 FPS").tag(60)
                                 }
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.PreferencesCapture.frameRateTitle)
                                 .pickerStyle(.menu)
                             }
 
@@ -569,6 +596,7 @@ struct CaptureSettingsView: View {
                                     }
                                 }
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.PreferencesCapture.qualityTitle)
                                 .pickerStyle(.menu)
                             }
                         }
@@ -583,6 +611,7 @@ struct CaptureSettingsView: View {
                             ) {
                                 Toggle("", isOn: $recordingShowCursor)
                                     .labelsHidden()
+                                    .accessibilityLabel(L10n.PreferencesCapture.showCursorTitle)
                                     .disabled(recordingSmartPointer)
                             }
 
@@ -593,6 +622,7 @@ struct CaptureSettingsView: View {
                             ) {
                                 Toggle("", isOn: $recordingSmartPointer)
                                     .labelsHidden()
+                                    .accessibilityLabel(L10n.PreferencesCapture.recordingSmartPointerTitle)
                             }
 
                             SettingRow(
@@ -602,6 +632,7 @@ struct CaptureSettingsView: View {
                             ) {
                                 Toggle("", isOn: $recordingShowCameraPreviewDuringRecording)
                                     .labelsHidden()
+                                    .accessibilityLabel(L10n.Camera.showDuringRecording)
                             }
 
                             SettingRow(
@@ -611,6 +642,7 @@ struct CaptureSettingsView: View {
                             ) {
                                 Toggle("", isOn: $rememberLastArea)
                                     .labelsHidden()
+                                    .accessibilityLabel(L10n.PreferencesCapture.rememberLastAreaTitle)
                             }
                         }
                     }
@@ -626,6 +658,7 @@ struct CaptureSettingsView: View {
                             ) {
                                 Toggle("", isOn: $recordingHoverBarVisible)
                                     .labelsHidden()
+                                    .accessibilityLabel(L10n.PreferencesCapture.hoverBarVisibleTitle)
                             }
 
                             SettingRow(
@@ -635,6 +668,7 @@ struct CaptureSettingsView: View {
                             ) {
                                 Toggle("", isOn: $recordingShowTimeOnMenuBar)
                                     .labelsHidden()
+                                    .accessibilityLabel(L10n.PreferencesCapture.menuBarTimeTitle)
                             }
                         }
                     }
@@ -654,6 +688,7 @@ struct CaptureSettingsView: View {
                                     }
                                 }
                                 .labelsHidden()
+                                .accessibilityLabel(L10n.PreferencesCapture.microphoneInputTitle)
                                 .pickerStyle(.menu)
                                 .frame(width: 220)
                             }
@@ -671,6 +706,7 @@ struct CaptureSettingsView: View {
                             ) {
                                 Toggle("", isOn: afterCaptureBinding(for: .copyFile, type: .recording))
                                     .labelsHidden()
+                                    .accessibilityLabel(L10n.AfterCapture.copyFileAction)
                             }
 
                             SettingRow(
@@ -680,6 +716,7 @@ struct CaptureSettingsView: View {
                             ) {
                                 Toggle("", isOn: afterCaptureBinding(for: .showQuickAccess, type: .recording))
                                     .labelsHidden()
+                                    .accessibilityLabel(L10n.PreferencesCapture.afterCaptureShowQuickAccessTitle)
                             }
 
                             SettingRow(
@@ -689,6 +726,7 @@ struct CaptureSettingsView: View {
                             ) {
                                 Toggle("", isOn: afterCaptureBinding(for: .save, type: .recording))
                                     .labelsHidden()
+                                    .accessibilityLabel(L10n.AfterCapture.saveAction)
                             }
                         }
                     }

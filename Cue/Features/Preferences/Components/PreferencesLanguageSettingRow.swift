@@ -31,6 +31,7 @@ struct PreferencesLanguageSettingRow: View {
                 }
             }
             .labelsHidden()
+            .accessibilityLabel(L10n.PreferencesGeneral.languageTitle)
             .pickerStyle(.menu)
             .controlSize(.small)
             .disabled(isRelaunching)

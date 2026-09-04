@@ -9,7 +9,7 @@ import AppKit
 import Combine
 import Foundation
 
-private struct WallpaperImageSnapshot: Sendable {
+struct WallpaperImageSnapshot: Sendable {
     let cgImage: CGImage
 }
 
@@ -316,7 +316,7 @@ class SystemWallpaperManager: ObservableObject {
     /// - Parameters:
     ///   - url: Source image URL
     ///   - maxSize: Maximum pixel dimension for the output
-    private nonisolated static func createDownsampledImageSnapshot(
+    nonisolated static func createDownsampledImageSnapshot(
         from url: URL,
         maxSize: CGFloat,
     ) -> WallpaperImageSnapshot? {
@@ -356,11 +356,24 @@ class SystemWallpaperManager: ObservableObject {
     }
 
     @MainActor
-    private static func makeImage(from snapshot: WallpaperImageSnapshot) -> NSImage {
+    static func makeImage(from snapshot: WallpaperImageSnapshot) -> NSImage {
         NSImage(
             cgImage: snapshot.cgImage,
             size: NSSize(width: snapshot.cgImage.width, height: snapshot.cgImage.height),
         )
+    }
+
+    /// Downsampled image for small Settings previews (e.g. Quick Access thumbnails).
+    /// The ImageIO snapshot is created off the main thread; the NSImage is built on it.
+    /// - Parameters:
+    ///   - url: Source image URL
+    ///   - maxPixelSize: Maximum pixel dimension for the output
+    nonisolated static func downsampledPreviewImage(at url: URL, maxPixelSize: CGFloat) async -> NSImage? {
+        let snapshot = await Task.detached(priority: .userInitiated) {
+            createDownsampledImageSnapshot(from: url, maxSize: maxPixelSize)
+        }.value
+        guard let snapshot else { return nil }
+        return await MainActor.run { makeImage(from: snapshot) }
     }
 
     // MARK: - Preview Image Loading (Canvas Display)

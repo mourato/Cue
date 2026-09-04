@@ -6,8 +6,9 @@
 //
 
 import Combine
+import Foundation
 
-enum PreferencesTab: Hashable {
+enum PreferencesTab: String, Hashable {
     case general
     case capture
     case annotate
@@ -23,7 +24,17 @@ enum PreferencesTab: Hashable {
 final class PreferencesNavigationState: ObservableObject {
     static let shared = PreferencesNavigationState()
 
-    @Published var selectedTab: PreferencesTab = .general
+    @Published var selectedTab: PreferencesTab {
+        didSet {
+            userDefaults.set(selectedTab.rawValue, forKey: PreferencesKeys.selectedPreferencesTab)
+        }
+    }
 
-    private init() {}
+    private let userDefaults: UserDefaults
+
+    init(userDefaults: UserDefaults = .standard) {
+        self.userDefaults = userDefaults
+        let raw = userDefaults.string(forKey: PreferencesKeys.selectedPreferencesTab)
+        selectedTab = raw.flatMap(PreferencesTab.init(rawValue:)) ?? .general
+    }
 }

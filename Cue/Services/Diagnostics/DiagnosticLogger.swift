@@ -333,6 +333,18 @@ final class DiagnosticLogger: Sendable {
         state.logDirectoryURL
     }
 
+    /// Total size in bytes of the files directly inside a log directory.
+    /// Synchronous file I/O — call off the main thread (e.g. via `Task.detached`).
+    nonisolated static func totalLogFileSize(at logDirectoryURL: URL) -> Int64 {
+        let fm = FileManager.default
+        guard let files = try? fm.contentsOfDirectory(atPath: logDirectoryURL.path) else { return 0 }
+        return files.reduce(Int64(0)) { partial, file in
+            let path = logDirectoryURL.appendingPathComponent(file).path
+            guard let size = (try? fm.attributesOfItem(atPath: path))?[.size] as? Int else { return partial }
+            return partial + Int64(size)
+        }
+    }
+
     /// Path to today's log file.
     var currentLogFileURL: URL {
         state.currentLogFileURL

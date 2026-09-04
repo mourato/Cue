@@ -132,9 +132,10 @@ struct ShortcutsSettingsView: View {
             ),
         )
         _shortcutsEnabled = State(initialValue: KeyboardShortcutManager.shared.isEnabled)
-        _hasSystemConflict = State(
-            initialValue: SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts(),
-        )
+        // System conflict detection reads com.apple.symbolichotkeys; defer it to
+        // .task so opening any Preferences tab never pays for this panel's check.
+        _hasSystemConflict = State(initialValue: false)
+        _isRefreshingConflict = State(initialValue: true)
     }
 
     var body: some View {
@@ -275,6 +276,7 @@ struct ShortcutsSettingsView: View {
                 ) {
                     Toggle("", isOn: $shortcutsEnabled)
                         .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesShortcuts.enableShortcutsTitle)
                         .onChange(of: shortcutsEnabled) { newValue in
                             if newValue {
                                 manager.enable()
@@ -799,6 +801,9 @@ struct ShortcutsSettingsView: View {
         .formStyle(.grouped)
         .onAppear {
             accessibilityGranted = AXIsProcessTrusted()
+        }
+        .task {
+            refreshSystemConflict()
         }
         .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) { _ in
             accessibilityGranted = AXIsProcessTrusted()
@@ -1381,6 +1386,7 @@ private struct CaptureOverlayShortcutRecorderRow: View {
 
             Toggle("", isOn: isEnabled)
                 .labelsHidden()
+                .accessibilityLabel(label)
         }
     }
 

@@ -120,6 +120,7 @@ struct AdvancedSettingsView: View {
                 ) {
                     Toggle("", isOn: $urlSchemeEnabled)
                         .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesAdvanced.urlSchemeTitle)
                 }
             }
 
@@ -137,6 +138,7 @@ struct AdvancedSettingsView: View {
                 ) {
                     Toggle("", isOn: $diagnosticsEnabled)
                         .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesAdvanced.diagnosticLoggingTitle)
                 }
 
                 SettingRow(
@@ -522,20 +524,16 @@ struct AdvancedSettingsView: View {
 
     private func updateLogSize() {
         let logDir = DiagnosticLogger.shared.logDirectoryURL
-        let fm = FileManager.default
-        guard let files = try? fm.contentsOfDirectory(atPath: logDir.path) else {
-            logSizeText = L10n.PreferencesAdvanced.noLogs
-            return
-        }
-        let totalBytes = files.compactMap { file -> Int? in
-            let path = logDir.appendingPathComponent(file).path
-            return (try? fm.attributesOfItem(atPath: path))?[.size] as? Int
-        }.reduce(0, +)
+        Task {
+            let totalBytes = await Task.detached(priority: .utility) {
+                DiagnosticLogger.totalLogFileSize(at: logDir)
+            }.value
 
-        if totalBytes == 0 {
-            logSizeText = L10n.PreferencesAdvanced.noLogs
-        } else {
-            logSizeText = ByteCountFormatter.string(fromByteCount: Int64(totalBytes), countStyle: .file)
+            if totalBytes == 0 {
+                logSizeText = L10n.PreferencesAdvanced.noLogs
+            } else {
+                logSizeText = ByteCountFormatter.string(fromByteCount: totalBytes, countStyle: .file)
+            }
         }
     }
 
@@ -655,6 +653,7 @@ struct AdvancedSettingsView: View {
             ) {
                 Toggle("", isOn: toggleBinding)
                     .labelsHidden()
+                    .accessibilityLabel(L10n.PreferencesAdvanced.videoModuleTitle)
                     .disabled(isRecordingActive && isEnabled)
             }
             .onReceive(NotificationCenter.default.publisher(for: .videoModuleAvailabilityDidChange)) { _ in

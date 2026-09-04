@@ -18,6 +18,9 @@ enum PreferencesKeys {
     static let notinhasIdentityMigrationCompleted = "migration.notinhasIdentity.completed"
     static let cueIdentityMigrationCompleted = "migration.cueIdentity.completed"
 
+    /// Preferences window
+    static let selectedPreferencesTab = "preferences.selectedTab"
+
     // General
     static let playSounds = "playSounds"
     static let urlSchemeEnabled = "urlSchemeEnabled"

@@ -26,6 +26,7 @@ struct PreferencesScreenshotDefaultPresetPicker: View {
                 }
             }
             .labelsHidden()
+            .accessibilityLabel(L10n.PreferencesCapture.defaultPresetTitle)
             .pickerStyle(.menu)
             .frame(width: 220, alignment: .trailing)
         }

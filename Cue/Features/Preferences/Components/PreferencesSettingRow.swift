@@ -17,17 +17,19 @@ struct SettingRow<Content: View>: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.title2)
+                .font(.body)
                 .foregroundColor(.secondary)
-                .frame(width: 28)
+                .frame(width: 24)
 
             VStack(alignment: .leading, spacing: 2) {
                 if let tooltip {
                     Text(title)
+                        .font(.body)
                         .fontWeight(.medium)
                         .hint(tooltip, variant: .icon(.info))
                 } else {
                     Text(title)
+                        .font(.body)
                         .fontWeight(.medium)
                 }
                 if let description {

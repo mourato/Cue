@@ -155,6 +155,18 @@ second canonical design-system document.
   Cancel / Auto Scroll / Done buttons at regular size. Session status stays
   in the region overlay guidance, toasts, and logs — never as preview chrome.
 
+- Preferences `SettingRow` icons render at `.body` in a 24-point column with
+  `.secondary` tint; titles use `.body` medium and descriptions `.caption`.
+  Every `Toggle`, `Picker`, `TextField`, and `Slider` in a row carries an
+  explicit `.accessibilityLabel` (the row title) even when `.labelsHidden()`
+  hides its visual label.
+- Preferences preview thumbnails must load bundled artwork through
+  `SystemWallpaperManager.downsampledPreviewImage(at:maxPixelSize:)` (512px
+  for Quick Access cards), never through full-resolution
+  `NSImage(contentsOf:)`.
+- `PreferencesNavigationState` persists the last visited tab under
+  `preferences.selectedTab` and restores it on launch.
+
 ## States and accessibility
 
 For affected surfaces verify idle, hover, pressed, focused, selected,
