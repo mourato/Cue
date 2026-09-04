@@ -38,6 +38,10 @@ second canonical design-system document.
 ## Principles and invariants
 
 - Preserve the handoff loop: capture → annotate → export/copy.
+- In the menubar, use `Capture` for screenshots and `Record` for screen
+  recordings. Keep the primary actions ordered as All-In-One Capture, Capture
+  Area, Record Area, and Capture Text (OCR); place the remaining capture modes
+  under `Capture`, with Record Application last after a separator.
 - Prefer native macOS controls and semantic system appearance over decorative
   chrome. Reuse shared tokens before adding local values.
 - The standard spacing grid is 4, 8, 16, 24, and 32 points. Shared radii are

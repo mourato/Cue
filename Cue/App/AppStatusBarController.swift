@@ -476,9 +476,6 @@ final class AppStatusBarController: ObservableObject {
         menu?.addItem(captureAllInOneItem)
         menu?.addItem(NSMenuItem.separator())
 
-        let captureMenu = NSMenu(title: L10n.Preferences.captureTab)
-        captureMenu.autoenablesItems = false
-
         let captureAreaItem = NSMenuItem(
             title: L10n.Actions.captureArea,
             action: #selector(captureAreaAction),
@@ -490,16 +487,35 @@ final class AppStatusBarController: ObservableObject {
         captureAreaItem.isEnabled = viewModel.hasPermission
         menu?.addItem(captureAreaItem)
 
-        let captureAreaAnnotateItem = NSMenuItem(
-            title: L10n.Actions.captureAreaAnnotate,
-            action: #selector(captureAreaAnnotateAction),
+        if isVideoModuleEnabled {
+            #if CUE_VIDEO_MODULE
+                let recordItem = NSMenuItem(
+                    title: L10n.Menu.recordScreen,
+                    action: #selector(recordScreenAction),
+                    keyEquivalent: "",
+                )
+                applyConfiguredShortcut(recordItem, for: .recording, using: shortcutManager)
+                recordItem.target = self
+                recordItem.image = NSImage(systemSymbolName: "record.circle", accessibilityDescription: nil)
+                recordItem.isEnabled = viewModel.hasPermission && !recorder.isActive
+                menu?.addItem(recordItem)
+            #endif
+        }
+
+        let captureOCRItem = NSMenuItem(
+            title: L10n.Actions.captureTextOCR,
+            action: #selector(captureOCRAction),
             keyEquivalent: "",
         )
-        applyConfiguredShortcut(captureAreaAnnotateItem, for: .areaAnnotate, using: shortcutManager)
-        captureAreaAnnotateItem.target = self
-        captureAreaAnnotateItem.image = NSImage(systemSymbolName: "pencil.and.scribble", accessibilityDescription: nil)
-        captureAreaAnnotateItem.isEnabled = viewModel.hasPermission
-        captureMenu.addItem(captureAreaAnnotateItem)
+        applyConfiguredShortcut(captureOCRItem, for: .ocr, using: shortcutManager)
+        captureOCRItem.target = self
+        captureOCRItem.image = NSImage(systemSymbolName: "text.viewfinder", accessibilityDescription: nil)
+        captureOCRItem.isEnabled = viewModel.hasPermission
+        menu?.addItem(captureOCRItem)
+        menu?.addItem(NSMenuItem.separator())
+
+        let captureMenu = NSMenu(title: L10n.Preferences.captureTab)
+        captureMenu.autoenablesItems = false
 
         let applicationCaptureItem = NSMenuItem(
             title: L10n.Menu.chooseApplicationWindow,
@@ -509,7 +525,7 @@ final class AppStatusBarController: ObservableObject {
         applicationCaptureItem.target = self
         applicationCaptureItem.image = NSImage(systemSymbolName: "macwindow", accessibilityDescription: nil)
         applicationCaptureItem.isEnabled = viewModel.hasPermission
-        menu?.addItem(applicationCaptureItem)
+        captureMenu.addItem(applicationCaptureItem)
 
         let captureFullscreenItem = NSMenuItem(
             title: L10n.Actions.captureFullscreen,
@@ -522,21 +538,7 @@ final class AppStatusBarController: ObservableObject {
             systemSymbolName: "rectangle.dashed", accessibilityDescription: nil,
         )
         captureFullscreenItem.isEnabled = viewModel.hasPermission
-        menu?.addItem(captureFullscreenItem)
-        menu?.addItem(NSMenuItem.separator())
-
-        let captureActiveWindowItem = NSMenuItem(
-            title: L10n.Actions.captureActiveWindow,
-            action: #selector(captureActiveWindowAction),
-            keyEquivalent: "",
-        )
-        applyConfiguredShortcut(captureActiveWindowItem, for: .activeWindow, using: shortcutManager)
-        captureActiveWindowItem.target = self
-        captureActiveWindowItem.image = NSImage(
-            systemSymbolName: "macwindow.on.rectangle", accessibilityDescription: nil,
-        )
-        captureActiveWindowItem.isEnabled = viewModel.hasPermission
-        captureMenu.addItem(captureActiveWindowItem)
+        captureMenu.addItem(captureFullscreenItem)
 
         let scrollingCaptureItem = NSMenuItem(
             title: L10n.Actions.scrollingCapture,
@@ -548,17 +550,6 @@ final class AppStatusBarController: ObservableObject {
         scrollingCaptureItem.image = NSImage(systemSymbolName: "arrow.up.and.down", accessibilityDescription: nil)
         scrollingCaptureItem.isEnabled = viewModel.hasPermission && !ScrollingCaptureCoordinator.shared.isActive
         captureMenu.addItem(scrollingCaptureItem)
-
-        let captureOCRItem = NSMenuItem(
-            title: L10n.Actions.captureTextOCR,
-            action: #selector(captureOCRAction),
-            keyEquivalent: "",
-        )
-        applyConfiguredShortcut(captureOCRItem, for: .ocr, using: shortcutManager)
-        captureOCRItem.target = self
-        captureOCRItem.image = NSImage(systemSymbolName: "text.viewfinder", accessibilityDescription: nil)
-        captureOCRItem.isEnabled = viewModel.hasPermission
-        captureMenu.addItem(captureOCRItem)
 
         let captureSmartElementItem = NSMenuItem(
             title: L10n.Actions.captureSmartElement,
@@ -590,26 +581,15 @@ final class AppStatusBarController: ObservableObject {
                 captureMenu.addItem(NSMenuItem.separator())
 
                 // Recording
-                let recordItem = NSMenuItem(
-                    title: L10n.Menu.recordScreen,
-                    action: #selector(recordScreenAction),
-                    keyEquivalent: "",
-                )
-                applyConfiguredShortcut(recordItem, for: .recording, using: shortcutManager)
-                recordItem.target = self
-                recordItem.image = NSImage(systemSymbolName: "record.circle", accessibilityDescription: nil)
-                recordItem.isEnabled = viewModel.hasPermission && !recorder.isActive
-                captureMenu.addItem(recordItem)
-
                 let applicationRecordingShortcut = CaptureOverlayShortcutSettings.recordingApplicationCaptureShortcut
                 let applicationRecordingItem = NSMenuItem(
-                    title: L10n.PreferencesShortcuts.applicationRecordingTitle,
+                    title: L10n.Menu.recordApplication,
                     action: #selector(recordApplicationAction),
                     keyEquivalent: "",
                 )
                 configureOverlayMenuItem(
                     applicationRecordingItem,
-                    base: L10n.PreferencesShortcuts.applicationRecordingTitle,
+                    base: L10n.Menu.recordApplication,
                     shortcut: applicationRecordingShortcut,
                     parentKind: .recording,
                     using: shortcutManager,

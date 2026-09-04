@@ -715,8 +715,13 @@ nonisolated enum L10n {
 
         static let recordScreen = string(
             "menu.record-screen",
-            defaultValue: "Record Screen",
-            comment: "Status bar menu item title for screen recording",
+            defaultValue: "Record Area",
+            comment: "Status bar menu item title for area recording",
+        )
+        static let recordApplication = string(
+            "menu.record-application",
+            defaultValue: "Record Application",
+            comment: "Status bar menu item title for application-window recording",
         )
         static let editVideo = string(
             "menu.edit-video",
@@ -725,8 +730,8 @@ nonisolated enum L10n {
         )
         static let chooseApplicationWindow = string(
             "menu.choose-application-window",
-            defaultValue: "Choose Application Window…",
-            comment: "Status bar menu item title for choosing an application window to capture",
+            defaultValue: "Capture Window",
+            comment: "Status bar menu item title for application-window screenshot capture",
         )
         static let keyboardShortcuts = string(
             "menu.keyboard-shortcuts",
@@ -740,8 +745,8 @@ nonisolated enum L10n {
         )
         static let preferences = string(
             "menu.preferences",
-            defaultValue: "Preferences...",
-            comment: "Status bar menu item title for opening preferences",
+            defaultValue: "Settings",
+            comment: "Status bar menu item title for opening settings",
         )
         static let quitCue = string(
             "menu.quit-notinhas",

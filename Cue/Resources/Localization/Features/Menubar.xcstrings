@@ -72,61 +72,61 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Anwendungsfenster auswählen…"
+            "value": "Fenster aufnehmen"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Choose Application Window…"
+            "value": "Capture Window"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Elegir ventana de la aplicación…"
+            "value": "Capturar ventana"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Choisir la fenêtre de l’application…"
+            "value": "Capturer la fenêtre"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "アプリケーションウィンドウを選択…"
+            "value": "ウィンドウをキャプチャ"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "응용 프로그램 윈도우 선택…"
+            "value": "창 캡처"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Выбрать окно приложения…"
+            "value": "Захватить окно"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Chọn cửa sổ ứng dụng…"
+            "value": "Chụp cửa sổ"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "选择应用程序窗口…"
+            "value": "捕获窗口"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "選擇應用程式視窗…"
+            "value": "擷取視窗"
           }
         }
       }
@@ -267,37 +267,37 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Präferenzen..."
+            "value": "Einstellungen"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Preferences..."
+            "value": "Settings"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Preferencias..."
+            "value": "Configuración"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Préférences..."
+            "value": "Réglages"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "設定..."
+            "value": "設定"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "환경설정..."
+            "value": "설정"
           }
         },
         "ru": {
@@ -309,19 +309,19 @@
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cài đặt..."
+            "value": "Cài đặt"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "偏好设置..."
+            "value": "设置"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "偏好設置..."
+            "value": "設定"
           }
         }
       }
@@ -391,67 +391,132 @@
         }
       }
     },
+    "menu.record-application": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anwendung aufnehmen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Record Application"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grabar aplicación"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistrer l’application"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アプリケーションを録画"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "앱 녹화"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Записать приложение"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ghi ứng dụng"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "录制应用程序"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "錄製應用程式"
+          }
+        }
+      }
+    },
     "menu.record-screen": {
       "extractionState": "stale",
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aufnahmebildschirm"
+            "value": "Bereich aufnehmen"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Record Screen"
+            "value": "Record Area"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Grabar pantalla"
+            "value": "Grabar área"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Écran d'enregistrement"
+            "value": "Enregistrer la zone"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "録画画面"
+            "value": "範囲を録画"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "기록 화면"
+            "value": "영역 녹화"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Запись экрана"
+            "value": "Записать область"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ghi màn hình"
+            "value": "Ghi khu vực"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "录制屏幕"
+            "value": "录制区域"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "錄製螢幕"
+            "value": "錄製區域"
           }
         }
       }
