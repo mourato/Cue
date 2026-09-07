@@ -15,7 +15,6 @@ enum PreferencesTab: String, Hashable {
     case quickAccess
     case history
     case shortcuts
-    case permissions
     case cloud
     case advanced
 }
@@ -35,7 +34,12 @@ final class PreferencesNavigationState: ObservableObject {
     init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
         let raw = userDefaults.string(forKey: PreferencesKeys.selectedPreferencesTab)
-        let restored = raw.flatMap(PreferencesTab.init(rawValue:)) ?? .general
+        let restored: PreferencesTab = {
+            if raw == "permissions" {
+                return .advanced
+            }
+            return raw.flatMap(PreferencesTab.init(rawValue:)) ?? .general
+        }()
         #if CUE_VIDEO_MODULE
             selectedTab = restored
         #else

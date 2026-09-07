@@ -45,6 +45,8 @@ struct AdvancedSettingsView: View {
 
     var body: some View {
         Form {
+            PermissionsSettingsSection()
+
             Section(L10n.PreferencesAdvanced.fileNameSection) {
                 SettingRow(
                     title: L10n.PreferencesAdvanced.askForNameTitle,

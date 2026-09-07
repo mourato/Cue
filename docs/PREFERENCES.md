@@ -4,8 +4,8 @@ Reference for the Settings window: sidebar structure, every section, and how pre
 
 ## Root
 
-- `PreferencesView` (`Cue/Features/Preferences/PreferencesView.swift`) — SwiftUI `NavigationSplitView` with a native sidebar, fixed 760×550, eight destinations when Video is off / nine with Screen Recording (no About/update/report destination; no dedicated Annotate destination).
-- Selection driven by `PreferencesNavigationState.shared.selectedTab` (`Models/PreferencesNavigationState.swift`, `PreferencesTab` enum) — set programmatically from menu bar, deep links (`cue://settings?tab=`, see [SHORTCUTS.md](SHORTCUTS.md)), and the shortcut overlay. Legacy `annotate` deep links open **General**.
+- `PreferencesView` (`Cue/Features/Preferences/PreferencesView.swift`) — SwiftUI `NavigationSplitView` with a native sidebar, fixed 760×550, seven destinations when Video is off / eight with Screen Recording (no About/update/report destination; no dedicated Annotate or Permissions destination).
+- Selection driven by `PreferencesNavigationState.shared.selectedTab` (`Models/PreferencesNavigationState.swift`, `PreferencesTab` enum) — set programmatically from menu bar, deep links (`cue://settings?tab=`, see [SHORTCUTS.md](SHORTCUTS.md)), and the shortcut overlay. Legacy `annotate` deep links open **General**. Legacy `permissions` / `privacy` deep links and a persisted `permissions` selected tab open **Advanced**.
 - Presented through the `Settings` scene in `CueApp`; activation-policy dance handled by `AppStatusBarController` (see [APP_LIFECYCLE.md](APP_LIFECYCLE.md)).
 
 ## Storage pattern
@@ -85,21 +85,13 @@ Screen Recording settings view for the current control set.
 - System-conflict guidance via `SystemScreenshotShortcutManager`.
 - Full mechanics and default bindings: [SHORTCUTS.md](SHORTCUTS.md).
 
-### Permissions (`PreferencesPermissionsSettingsView.swift`)
-
-- Rows with status labels + System Settings deep links:
-  - Screen Recording → `Privacy_ScreenCapture`
-  - Save Folder → `Privacy_FilesAndFolders`
-  - Microphone → `Privacy_Microphone`
-  - Accessibility → `Privacy_Accessibility`
-- Shows `grantedButUnavailableDueToAppIdentity` when `AppIdentityManager` reports issues (see [APP_LIFECYCLE.md](APP_LIFECYCLE.md)).
-
 ### Uploads (`PreferencesCloudSettingsView.swift`)
 
 The **Uploads** section owns provider selection (ImgBB, ImageKit, or Cloudflare Worker), image optimization/derivative settings, and the selected provider credential. Secrets are stored only in provider-scoped Keychain items and are not exported. Existing users retain ImgBB unless they explicitly select another provider; invalid or missing selection safely uses ImgBB. GIFs can be uploaded through either provider; MOV/MP4/M4V uploads are supported by ImageKit or Cloudflare. When ImageKit is selected, the plan picker controls the local video upload target (Free 100 MB, Lite 300 MB, Pro 2 GB, or custom) because ImageKit does not expose plan limits through its API. Cloudflare uses a fixed 95 MiB client target. The Cloudflare documentation link covers the BYO Worker setup; Cue does not deploy a companion Worker. UploadThing is unavailable. BYO provider settings, usage, password, transfer, and upload-history controls remain retired. See [CLOUD.md](CLOUD.md).
 
 ### Advanced (`PreferencesAdvancedSettingsView.swift`)
 
+- **Permissions** (`PreferencesPermissionsSettingsView.swift` / `PermissionsSettingsSection`): status rows + System Settings deep links for Screen Recording (`Privacy_ScreenCapture`), Save Folder (`Privacy_FilesAndFolders`), Microphone (`Privacy_Microphone`, when Video is available), and Accessibility (`Privacy_Accessibility`). Shows `grantedButUnavailableDueToAppIdentity` when `AppIdentityManager` reports issues (see [APP_LIFECYCLE.md](APP_LIFECYCLE.md)).
 - **Backup**: TOML Import / Export / Restore Defaults (`CueConfiguration*` services).
 - **Configuration File**: grant access to `~/.config/cue`, Sync Now, Open Config, status/issues — see [CONFIGURATION.md](CONFIGURATION.md).
 - **Integration**: URL Scheme toggle (`urlSchemeEnabled`).

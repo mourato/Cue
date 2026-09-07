@@ -278,7 +278,7 @@ enum CueDeepLinkAction: Equatable {
         case "shortcuts", "keyboard-shortcuts":
             .shortcuts
         case "permissions", "privacy":
-            .permissions
+            .advanced
         case "uploads":
             .cloud
         case "advanced", "configuration", "config", "toml":

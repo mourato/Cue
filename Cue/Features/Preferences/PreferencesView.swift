@@ -34,9 +34,6 @@ struct PreferencesView: View {
                 Label(L10n.Preferences.shortcutsTab, systemImage: "keyboard.fill")
                     .tag(PreferencesTab.shortcuts)
 
-                Label(L10n.Preferences.permissionsTab, systemImage: "lock.shield.fill")
-                    .tag(PreferencesTab.permissions)
-
                 Label(L10n.Preferences.cloudTab, systemImage: "icloud.fill")
                     .tag(PreferencesTab.cloud)
 
@@ -87,8 +84,6 @@ struct PreferencesView: View {
             HistorySettingsView()
         case .shortcuts:
             ShortcutsSettingsView()
-        case .permissions:
-            PermissionsSettingsView()
         case .cloud:
             CloudSettingsView()
         case .advanced:
@@ -104,7 +99,6 @@ struct PreferencesView: View {
         case .quickAccess: L10n.Preferences.quickAccessTab
         case .history: L10n.Preferences.historyTab
         case .shortcuts: L10n.Preferences.shortcutsTab
-        case .permissions: L10n.Preferences.permissionsTab
         case .cloud: L10n.Preferences.cloudTab
         case .advanced: L10n.Preferences.advancedTab
         }
