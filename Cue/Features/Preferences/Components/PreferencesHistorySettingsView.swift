@@ -38,7 +38,7 @@ struct HistorySettingsView: View {
                     }
                     .labelsHidden()
                     .accessibilityLabel(L10n.PreferencesHistory.panelPositionTitle)
-                    .pickerStyle(.menu)
+                    .standardMenuPickerStyle()
                     .fixedSize()
                     .frame(width: 140, alignment: .trailing)
                 }
@@ -60,7 +60,7 @@ struct HistorySettingsView: View {
                     }
                     .labelsHidden()
                     .accessibilityLabel(L10n.PreferencesHistory.defaultFilterTitle)
-                    .pickerStyle(.menu)
+                    .standardMenuPickerStyle()
                     .fixedSize()
                     .frame(width: 140, alignment: .trailing)
                 }

@@ -29,7 +29,7 @@ struct QuickAccessSettingsView: View {
                     }
                     .labelsHidden()
                     .accessibilityLabel(L10n.PreferencesQuickAccess.screenEdgeTitle)
-                    .pickerStyle(.menu)
+                    .standardMenuPickerStyle()
                     .onChange(of: positionIsLeft) { newValue in
                         manager.setPosition(newValue ? .bottomLeft : .bottomRight)
                     }
@@ -94,7 +94,7 @@ struct QuickAccessSettingsView: View {
                     }
                     .labelsHidden()
                     .accessibilityLabel(L10n.PreferencesQuickAccess.animationStyleTitle)
-                    .pickerStyle(.menu)
+                    .standardMenuPickerStyle()
                     .fixedSize()
                     .frame(width: 150, alignment: .trailing)
                 }
@@ -182,7 +182,7 @@ struct QuickAccessSettingsView: View {
                         }
                         .labelsHidden()
                         .accessibilityLabel(L10n.PreferencesQuickAccess.trackpadSwipeModeTitle)
-                        .pickerStyle(.menu)
+                        .standardMenuPickerStyle()
                         .fixedSize()
                         .frame(width: 200, alignment: .trailing)
                     }
@@ -221,7 +221,7 @@ struct QuickAccessSettingsView: View {
         }
         .labelsHidden()
         .accessibilityLabel(accessibilityLabel)
-        .pickerStyle(.menu)
+        .standardMenuPickerStyle()
         .fixedSize()
         .frame(width: 100, alignment: .trailing)
         .accessibilityValue(Text("\(Int(normalizedSelection.wrappedValue * 100))%"))

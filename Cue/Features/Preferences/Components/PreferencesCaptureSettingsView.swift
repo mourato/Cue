@@ -178,7 +178,7 @@ struct CaptureSettingsView: View {
                                     }
                                     .labelsHidden()
                                     .accessibilityLabel(L10n.PreferencesCapture.selectionColorSensitivityTitle)
-                                    .pickerStyle(.menu)
+                                    .standardMenuPickerStyle()
                                 }
                             }
                             .padding(.top, 4)
@@ -282,7 +282,7 @@ struct CaptureSettingsView: View {
             }
             .labelsHidden()
             .accessibilityLabel(L10n.PreferencesCapture.imageFormatTitle)
-            .pickerStyle(.menu)
+            .standardMenuPickerStyle()
         }
 
         if screenshotFormat == ImageFormatOption.jpeg.rawValue {

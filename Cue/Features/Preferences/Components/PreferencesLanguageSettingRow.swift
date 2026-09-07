@@ -31,8 +31,7 @@ struct PreferencesLanguageSettingRow: View {
             }
             .labelsHidden()
             .accessibilityLabel(L10n.PreferencesGeneral.languageTitle)
-            .pickerStyle(.menu)
-            .controlSize(.small)
+            .standardMenuPickerStyle()
             .disabled(isRelaunching)
         }
         .alert(L10n.PreferencesGeneral.languageRelaunchConfirmationTitle, isPresented: $showRelaunchConfirmation) {

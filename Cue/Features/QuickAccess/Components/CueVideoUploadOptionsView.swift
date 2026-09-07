@@ -35,18 +35,21 @@ struct CueVideoUploadOptionsView: View {
                     Text("\(dimension) px").tag(dimension)
                 }
             }
+            .standardMenuPickerStyle()
 
             Picker(L10n.QuickAccess.videoUploadQuality, selection: $settings.quality) {
                 ForEach(CueVideoUploadQuality.allCases) { quality in
                     Text(qualityName(quality)).tag(quality)
                 }
             }
+            .standardMenuPickerStyle()
 
             Picker(L10n.QuickAccess.videoUploadFrameRate, selection: $settings.frameRate) {
                 ForEach([60, 30, 24], id: \.self) { frameRate in
                     Text("\(frameRate) FPS").tag(frameRate)
                 }
             }
+            .standardMenuPickerStyle()
 
             Toggle(L10n.QuickAccess.videoUploadAudio, isOn: $settings.includesAudio)
 

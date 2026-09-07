@@ -123,6 +123,15 @@ struct PopoverMenuItemStyle: ViewModifier {
     }
 }
 
+extension View {
+    /// Menu-style picker sizing shared across Preferences and compact editor panels.
+    /// Matches the Language row in Settings → General (`.controlSize(.small)`).
+    func standardMenuPickerStyle() -> some View {
+        pickerStyle(.menu)
+            .controlSize(.small)
+    }
+}
+
 // MARK: - Typography
 
 enum Typography {

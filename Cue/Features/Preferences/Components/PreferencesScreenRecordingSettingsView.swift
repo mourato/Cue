@@ -108,7 +108,7 @@
                         }
                         .labelsHidden()
                         .accessibilityLabel(L10n.PreferencesScreenRecording.videoFormatTitle)
-                        .pickerStyle(.menu)
+                        .standardMenuPickerStyle()
                     }
                     .padding(.vertical, 4)
 
@@ -122,7 +122,7 @@
                         }
                         .labelsHidden()
                         .accessibilityLabel(L10n.PreferencesScreenRecording.frameRateTitle)
-                        .pickerStyle(.menu)
+                        .standardMenuPickerStyle()
                     }
                     .padding(.vertical, 4)
 
@@ -137,7 +137,7 @@
                             }
                             .labelsHidden()
                             .accessibilityLabel(L10n.PreferencesScreenRecording.maxResolutionTitle)
-                            .pickerStyle(.menu)
+                            .standardMenuPickerStyle()
                         }
                         Text(L10n.PreferencesScreenRecording.maxResolutionDescription)
                             .font(.caption)
@@ -175,7 +175,7 @@
                             }
                             .labelsHidden()
                             .accessibilityLabel(L10n.PreferencesScreenRecording.audioTracksTitle)
-                            .pickerStyle(.menu)
+                            .standardMenuPickerStyle()
                         }
                         Text(L10n.PreferencesScreenRecording.audioTracksDescription)
                             .font(.caption)
@@ -195,7 +195,7 @@
                         }
                         .labelsHidden()
                         .accessibilityLabel(L10n.PreferencesScreenRecording.frameRateTitle)
-                        .pickerStyle(.menu)
+                        .standardMenuPickerStyle()
                     }
                     .padding(.vertical, 4)
 
@@ -209,7 +209,7 @@
                         }
                         .labelsHidden()
                         .accessibilityLabel(L10n.PreferencesScreenRecording.resolutionTitle)
-                        .pickerStyle(.menu)
+                        .standardMenuPickerStyle()
                     }
                     .padding(.vertical, 4)
 
@@ -420,7 +420,7 @@
                     }
                     .labelsHidden()
                     .accessibilityLabel(L10n.PreferencesCapture.positionTitle)
-                    .pickerStyle(.menu)
+                    .standardMenuPickerStyle()
                 }
 
                 HStack {
