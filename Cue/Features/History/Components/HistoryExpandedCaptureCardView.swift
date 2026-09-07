@@ -69,7 +69,6 @@ struct HistoryExpandedCaptureCardView: View, Equatable {
         )
         .shadow(color: cardShadowColor, radius: isSelected ? 14 : 3, x: 0, y: isSelected ? 8 : 2)
         .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .scaleEffect(isSelected ? 1.01 : (isHovering ? 1.005 : 1))
         .animation(.spring(response: 0.24, dampingFraction: 0.9), value: isSelected)
         .animation(.easeOut(duration: 0.16), value: isHovering)
         .onHover { hovering in
