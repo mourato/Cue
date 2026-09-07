@@ -165,11 +165,40 @@
             XCTAssertEqual(try channelLayoutTag(from: settings), kAudioChannelLayoutTag_Stereo)
         }
 
+        func testMakeAudioSettings_monoUsesSingleChannelMonoLayout() throws {
+            let system = RecordingAudioEncodingSettings.makeSystemAudioSettings(mono: true)
+            XCTAssertEqual(system[AVNumberOfChannelsKey] as? Int, 1)
+            XCTAssertEqual(try channelLayoutTag(from: system), kAudioChannelLayoutTag_Mono)
+
+            let mic = RecordingAudioEncodingSettings.makeMicrophoneAudioSettings(mono: true)
+            XCTAssertEqual(mic[AVNumberOfChannelsKey] as? Int, 1)
+            XCTAssertEqual(try channelLayoutTag(from: mic), kAudioChannelLayoutTag_Mono)
+
+            let mixed = RecordingAudioEncodingSettings.makeMixedAudioSettings(mono: true)
+            XCTAssertEqual(mixed[AVNumberOfChannelsKey] as? Int, 1)
+            XCTAssertEqual(try channelLayoutTag(from: mixed), kAudioChannelLayoutTag_Mono)
+        }
+
         func testAudioCompatibilityExporterRequiresMixDownOnlyForMultipleAudioTracks() {
             XCTAssertFalse(RecordingAudioCompatibilityExporter.requiresMixDown(audioTrackCount: 0))
             XCTAssertFalse(RecordingAudioCompatibilityExporter.requiresMixDown(audioTrackCount: 1))
             XCTAssertTrue(RecordingAudioCompatibilityExporter.requiresMixDown(audioTrackCount: 2))
             XCTAssertTrue(RecordingAudioCompatibilityExporter.requiresMixDown(audioTrackCount: 3))
+        }
+
+        func testAudioCompatibilityExporterSkipsMixDownWhenKeepingSeparateTracks() {
+            XCTAssertFalse(RecordingAudioCompatibilityExporter.requiresMixDown(
+                audioTrackCount: 2,
+                keepSeparateTracks: true,
+            ))
+            XCTAssertFalse(RecordingAudioCompatibilityExporter.requiresMixDown(
+                audioTrackCount: 1,
+                keepSeparateTracks: true,
+            ))
+            XCTAssertTrue(RecordingAudioCompatibilityExporter.requiresMixDown(
+                audioTrackCount: 2,
+                keepSeparateTracks: false,
+            ))
         }
 
         func testAudioCompatibilityExporterMixdownInputVolumeAddsHeadroom() {
@@ -181,6 +210,56 @@
                 1.0 / 3.0,
                 accuracy: 0.0001,
             )
+        }
+
+        func testCaptureScale_longEdgeCapsMatchResolutionSettings() {
+            XCTAssertEqual(RecordingCaptureScale.longEdgeCap(for: "720p"), 1280)
+            XCTAssertEqual(RecordingCaptureScale.longEdgeCap(for: "1080p"), 1920)
+            XCTAssertEqual(RecordingCaptureScale.longEdgeCap(for: "1440p"), 2560)
+            XCTAssertEqual(RecordingCaptureScale.longEdgeCap(for: "2160p"), 3840)
+            XCTAssertNil(RecordingCaptureScale.longEdgeCap(for: "Original"))
+            XCTAssertNil(RecordingCaptureScale.longEdgeCap(for: "bogus"))
+        }
+
+        func testCaptureScale_retinaTo1xIgnoresDisplayScale() {
+            let scale = RecordingCaptureScale.effectiveScale(
+                displayScale: 2.0,
+                scaleRetinaTo1x: true,
+                maxResolution: "Original",
+                pointSize: CGSize(width: 800, height: 600),
+            )
+            XCTAssertEqual(scale, 1.0, accuracy: 0.0001)
+        }
+
+        func testCaptureScale_fullResolutionKeepsDisplayScale() {
+            let scale = RecordingCaptureScale.effectiveScale(
+                displayScale: 2.0,
+                scaleRetinaTo1x: false,
+                maxResolution: "Original",
+                pointSize: CGSize(width: 800, height: 600),
+            )
+            XCTAssertEqual(scale, 2.0, accuracy: 0.0001)
+        }
+
+        func testCaptureScale_maxResolutionCapsLongEdge() {
+            // 800x600pt at 2x = 1600x1200px; 720p caps the long edge at 1280.
+            let scale = RecordingCaptureScale.effectiveScale(
+                displayScale: 2.0,
+                scaleRetinaTo1x: false,
+                maxResolution: "720p",
+                pointSize: CGSize(width: 800, height: 600),
+            )
+            XCTAssertEqual(scale, 1.6, accuracy: 0.0001)
+        }
+
+        func testCaptureScale_smallSelectionsKeepBaseScale() {
+            let scale = RecordingCaptureScale.effectiveScale(
+                displayScale: 2.0,
+                scaleRetinaTo1x: false,
+                maxResolution: "1080p",
+                pointSize: CGSize(width: 400, height: 300),
+            )
+            XCTAssertEqual(scale, 2.0, accuracy: 0.0001)
         }
 
         private func codecRawValue(_ value: Any?) -> String? {

@@ -1,6 +1,6 @@
 # 116 — Screen Recording backends for the new preferences tab
 
-- Status: TODO
+- Status: In progress — all backends implemented except DND (dropped, awaiting UI decision in §7)
 - Priority: P1 / Effort: M
 - Depends on: Screen Recording preferences tab (keys + UI landed; this plan wires behavior)
 - Primary skill: `capture-annotate-export` (recording scope)
@@ -22,19 +22,19 @@ show cursor (`recording.showCursor`), highlight clicks (`recording.highlightClic
 
 ## 2. Keys to wire (all defaults already match the reference)
 
-| Key | Default | Owner |
-| --- | --- | --- |
-| `recording.dimScreenWhileRecording` | `true` | `RecordingRegionOverlayWindow` (already dims at 0.4 alpha; gate on key, observe live) |
-| `recording.showCountdown` | `false` | `RecordingCoordinator` + new countdown overlay before `ScreenRecordingManager` start |
-| `recording.doNotDisturbWhileRecording` | `true` | Research first: no public DND API; timebox, may become best-effort/dropped |
-| `recording.maxResolution` (`720p`/`1080p`/`1440p`/`2160p`/`Original`) | `1080p` | `ScreenRecordingManager` session/video settings (downscale capture) |
-| `recording.scaleRetinaTo1x` | `true` | Capture-size computation (backing-scale division) |
-| `recording.audioMono` | `false` | `RecordingAudioEncodingSettings` (mono AAC variant) |
-| `recording.audioTracks` (`single`/`separate`) | `single` | Writer inputs + `RecordingMetadata` roles + `VideoEditorAudioTrackRole` mapping |
-| `recording.gif.frameRate` | `15` | `RecordingCoordinator` GIF flow → `GIFConverter.Options(fps:)` |
-| `recording.gif.maxWidth` (`480`/`600`/`800`/`960`/`0`=Original) | `800` | `GIFConverter.Options(maxWidth:)` — note: changes current implicit `960` default, confirm |
-| `recording.gif.optimize` | `true` | Define first: global color map is already on; decide palette/frame-diff work in `GIFConverter` |
-| `recording.gif.quality` (`0.1`…`1.0`) | `0.75` | Map to ImageIO output properties; research `kCGImageDestinationLossyCompressionQuality` vs quantizer |
+| Key | Default | Owner | Status |
+| --- | --- | --- | --- |
+| `recording.dimScreenWhileRecording` | `true` | `RecordingRegionOverlayWindow` (gated dim fill + clear; live via `UserDefaults.didChangeNotification`) | ✅ Done |
+| `recording.showCountdown` | `false` | `RecordingCountdownWindow` (3-2-1, main start flow only) + `RecordingToolbarPreferences.showCountdown()` | ✅ Done |
+| `recording.doNotDisturbWhileRecording` | `true` | ⛔ DROPPED — see §7 | UI row removed; key/helper/TOML kept |
+| `recording.maxResolution` | `1080p` | `RecordingCaptureScale.effectiveScale` (long-edge caps 720p→1280 … 2160p→3840) threaded `prepareRecording` → `resolveCaptureGeometry` | ✅ Done |
+| `recording.scaleRetinaTo1x` | `true` | Same as above (base scale 1x vs display scale) | ✅ Done |
+| `recording.audioMono` | `false` | `makeAACSettings(mono:)` (mono channel layout) threaded writer inputs + mixdown output | ✅ Done |
+| `recording.audioTracks` (`single`/`separate`) | `single` | `requiresMixDown(keepSeparateTracks:)` + `normalizeIfNeeded` skip; editor resolves roles by track index (system=0, mic=1, matching writer order) | ✅ Done |
+| `recording.gif.frameRate` | `15` | `RecordingToolbarPreferences.gifOptions()` → `GIFConverter.Options` in `handleGIFConversion` | ✅ Done |
+| `recording.gif.maxWidth` | `800` | Same; `0` = Original (source width) | ✅ Done |
+| `recording.gif.optimize` | `true` | `GIFFramePlan`: exact-duplicate collapse via 8×8 FNV-1a hash, delays extended | ✅ Done |
+| `recording.gif.quality` | `0.75` | `GIFPaletteQuantizer`: quality → 16…256 colors via median-cut on 15-bit histogram + bucket-LUT remap | ✅ Done |
 
 ## 3. Scope
 
@@ -76,3 +76,27 @@ show cursor (`recording.showCursor`), highlight clicks (`recording.highlightClic
 - Unexpected changed paths in worktree → STOP, report, preserve.
 - DND without public API → research note, drop, do not swizzle.
 - GIF `maxWidth` default shift (960 → 800) needs explicit product confirm before changing converter default.
+
+## 7. DND research outcome (2026-09-07, timebox closed)
+
+There is **no sanctioned macOS API to enable Do Not Disturb / Focus programmatically**.
+What exists:
+- `AppIntents` Focus collection: observe Focus state and filter *your own app's*
+  notifications — cannot toggle system Focus.
+- Community workarounds, all unsuitable for Cue: private frameworks (`macos-focus`
+  explicitly marks `[Private API]`), AppleScript driving System Events (needs extra
+  Accessibility trust for a fragile toggle), Shortcuts-app URL schemes (requires the
+  user to hand-build a Shortcut), `sindresorhus/do-not-disturb` (notes it does not
+  work sandboxed and asks users to file Feedback Assistant radars instead).
+- Writing `com.apple.ncprefs` / Focus databases directly is SIP-adjacent, sandbox-
+  breaking, and risks corrupting Focus state.
+
+Decision: **do not implement system-wide DND**. The `recording.doNotDisturbWhileRecording`
+key stays persisted (harmless) with TOML parity, but nothing reads it yet. Open UI
+question for the owner: remove the `"Do Not Disturb" while recording` row from the
+Screen Recording tab, or keep it dormant until Apple ships an API.
+
+Outcome (2026-09-07): owner chose **remove the row**. The toggle row and its L10n string
+are gone from `PreferencesScreenRecordingSettingsView`; the key, the
+`RecordingToolbarPreferences.doNotDisturbWhileRecording()` helper, and the TOML
+`do_not_disturb_while_recording` field remain for a future API.

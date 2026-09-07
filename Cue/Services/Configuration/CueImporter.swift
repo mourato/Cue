@@ -312,6 +312,51 @@ enum CueConfigurationImporter {
             collectBool(&reader, "recording", "show_keystrokes", mutations: &mutations) {
                 defaults.set($0, forKey: PreferencesKeys.recordingShowKeystrokes)
             }
+            collectBool(&reader, "recording", "dim_screen_while_recording", mutations: &mutations) {
+                defaults.set($0, forKey: PreferencesKeys.recordingDimScreenWhileRecording)
+            }
+            collectBool(&reader, "recording", "show_countdown", mutations: &mutations) {
+                defaults.set($0, forKey: PreferencesKeys.recordingShowCountdown)
+            }
+            collectBool(&reader, "recording", "do_not_disturb_while_recording", mutations: &mutations) {
+                defaults.set($0, forKey: PreferencesKeys.recordingDoNotDisturbWhileRecording)
+            }
+            collectEnumString(
+                &reader,
+                "recording",
+                "max_resolution",
+                allowed: ["720p", "1080p", "1440p", "2160p", "Original"],
+                mutations: &mutations,
+            ) {
+                defaults.set($0, forKey: PreferencesKeys.recordingMaxResolution)
+            }
+            collectBool(&reader, "recording", "scale_retina_to_1x", mutations: &mutations) {
+                defaults.set($0, forKey: PreferencesKeys.recordingScaleRetinaTo1x)
+            }
+            collectBool(&reader, "recording", "record_audio_in_mono", mutations: &mutations) {
+                defaults.set($0, forKey: PreferencesKeys.recordingAudioMono)
+            }
+            collectEnumString(
+                &reader,
+                "recording",
+                "audio_tracks",
+                allowed: ["single", "separate"],
+                mutations: &mutations,
+            ) {
+                defaults.set($0, forKey: PreferencesKeys.recordingAudioTracks)
+            }
+            collectInt(&reader, "recording", "gif", "fps", range: 1 ... 60, mutations: &mutations) {
+                defaults.set($0, forKey: PreferencesKeys.recordingGifFrameRate)
+            }
+            collectInt(&reader, "recording", "gif", "max_width", range: 0 ... 7680, mutations: &mutations) {
+                defaults.set($0, forKey: PreferencesKeys.recordingGifMaxWidth)
+            }
+            collectBool(&reader, "recording", "gif", "optimize", mutations: &mutations) {
+                defaults.set($0, forKey: PreferencesKeys.recordingGifOptimize)
+            }
+            collectDouble(&reader, "recording", "gif", "quality", range: 0.1 ... 1.0, mutations: &mutations) {
+                defaults.set($0, forKey: PreferencesKeys.recordingGifQuality)
+            }
             collectDouble(&reader, "recording", "mouse_highlight", "size", range: 20 ... 120, mutations: &mutations) {
                 defaults.set($0, forKey: PreferencesKeys.mouseHighlightSize)
             }

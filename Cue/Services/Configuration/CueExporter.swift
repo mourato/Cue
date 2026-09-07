@@ -171,6 +171,22 @@ enum CueConfigurationExporter {
             writer.value("highlight_clicks", RecordingToolbarPreferences.highlightClicks(defaults: defaults))
             writer.value("show_keystrokes", RecordingToolbarPreferences.showKeystrokes(defaults: defaults))
             writer.value(
+                "dim_screen_while_recording",
+                RecordingToolbarPreferences.dimScreenWhileRecording(defaults: defaults),
+            )
+            writer.value("show_countdown", RecordingToolbarPreferences.showCountdown(defaults: defaults))
+            writer.value(
+                "do_not_disturb_while_recording",
+                RecordingToolbarPreferences.doNotDisturbWhileRecording(defaults: defaults),
+            )
+            writer.value("max_resolution", RecordingToolbarPreferences.maxResolution(defaults: defaults))
+            writer.value("scale_retina_to_1x", RecordingToolbarPreferences.scaleRetinaTo1x(defaults: defaults))
+            writer.value("record_audio_in_mono", RecordingToolbarPreferences.recordAudioInMono(defaults: defaults))
+            writer.value(
+                "audio_tracks",
+                defaults.string(forKey: PreferencesKeys.recordingAudioTracks) ?? "single",
+            )
+            writer.value(
                 "video_editor_zoom_transition_duration",
                 defaults.doubleValue(PreferencesKeys.videoEditorZoomTransitionDuration, default: 0.4),
             )
@@ -197,6 +213,13 @@ enum CueConfigurationExporter {
                 "display_duration",
                 defaults.doubleValue(PreferencesKeys.keystrokeDisplayDuration, default: 1.5),
             )
+
+            writer.section("recording.gif")
+            let gifOptions = RecordingToolbarPreferences.gifOptions(defaults: defaults)
+            writer.value("fps", gifOptions.fps)
+            writer.value("max_width", Int(gifOptions.maxWidth))
+            writer.value("optimize", gifOptions.optimize)
+            writer.value("quality", gifOptions.quality)
 
             writer.section("recording.annotation_shortcuts")
             writer.value(

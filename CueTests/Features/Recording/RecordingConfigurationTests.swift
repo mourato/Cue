@@ -74,6 +74,71 @@
             XCTAssertEqual(RecordingToolbarPreferences.outputMode(defaults: defaults), .video)
         }
 
+        func testScreenRecordingPreferences_defaults() {
+            XCTAssertTrue(RecordingToolbarPreferences.dimScreenWhileRecording(defaults: defaults))
+            XCTAssertFalse(RecordingToolbarPreferences.showCountdown(defaults: defaults))
+            XCTAssertTrue(RecordingToolbarPreferences.doNotDisturbWhileRecording(defaults: defaults))
+            XCTAssertEqual(RecordingToolbarPreferences.maxResolution(defaults: defaults), "1080p")
+            XCTAssertTrue(RecordingToolbarPreferences.scaleRetinaTo1x(defaults: defaults))
+            XCTAssertFalse(RecordingToolbarPreferences.recordAudioInMono(defaults: defaults))
+            XCTAssertFalse(RecordingToolbarPreferences.keepSeparateAudioTracks(defaults: defaults))
+
+            let gif = RecordingToolbarPreferences.gifOptions(defaults: defaults)
+            XCTAssertEqual(gif.fps, 15)
+            XCTAssertEqual(gif.maxWidth, 800)
+            XCTAssertTrue(gif.optimize)
+            XCTAssertEqual(gif.quality, 0.75, accuracy: 0.001)
+        }
+
+        func testScreenRecordingPreferences_usePersistedValues() {
+            defaults.set(false, forKey: PreferencesKeys.recordingDimScreenWhileRecording)
+            defaults.set(true, forKey: PreferencesKeys.recordingShowCountdown)
+            defaults.set(false, forKey: PreferencesKeys.recordingDoNotDisturbWhileRecording)
+            defaults.set("720p", forKey: PreferencesKeys.recordingMaxResolution)
+            defaults.set(false, forKey: PreferencesKeys.recordingScaleRetinaTo1x)
+            defaults.set(true, forKey: PreferencesKeys.recordingAudioMono)
+            defaults.set("separate", forKey: PreferencesKeys.recordingAudioTracks)
+            defaults.set(24, forKey: PreferencesKeys.recordingGifFrameRate)
+            defaults.set(600, forKey: PreferencesKeys.recordingGifMaxWidth)
+            defaults.set(false, forKey: PreferencesKeys.recordingGifOptimize)
+            defaults.set(0.4, forKey: PreferencesKeys.recordingGifQuality)
+
+            XCTAssertFalse(RecordingToolbarPreferences.dimScreenWhileRecording(defaults: defaults))
+            XCTAssertTrue(RecordingToolbarPreferences.showCountdown(defaults: defaults))
+            XCTAssertFalse(RecordingToolbarPreferences.doNotDisturbWhileRecording(defaults: defaults))
+            XCTAssertEqual(RecordingToolbarPreferences.maxResolution(defaults: defaults), "720p")
+            XCTAssertFalse(RecordingToolbarPreferences.scaleRetinaTo1x(defaults: defaults))
+            XCTAssertTrue(RecordingToolbarPreferences.recordAudioInMono(defaults: defaults))
+            XCTAssertTrue(RecordingToolbarPreferences.keepSeparateAudioTracks(defaults: defaults))
+
+            let gif = RecordingToolbarPreferences.gifOptions(defaults: defaults)
+            XCTAssertEqual(gif.fps, 24)
+            XCTAssertEqual(gif.maxWidth, 600)
+            XCTAssertFalse(gif.optimize)
+            XCTAssertEqual(gif.quality, 0.4, accuracy: 0.001)
+        }
+
+        func testScreenRecordingPreferences_clampsOutOfRangeGifValues() {
+            defaults.set(240, forKey: PreferencesKeys.recordingGifFrameRate)
+            defaults.set(-100, forKey: PreferencesKeys.recordingGifMaxWidth)
+            defaults.set(9.9, forKey: PreferencesKeys.recordingGifQuality)
+
+            let gif = RecordingToolbarPreferences.gifOptions(defaults: defaults)
+            XCTAssertEqual(gif.fps, 60)
+            XCTAssertEqual(gif.maxWidth, 0)
+            XCTAssertEqual(gif.quality, 1.0, accuracy: 0.001)
+        }
+
+        func testRegionOverlayDimPreference_defaultsToDimmed() {
+            XCTAssertTrue(RecordingRegionOverlayView.dimScreenPreference(defaults: defaults))
+        }
+
+        func testRegionOverlayDimPreference_usesPersistedValue() {
+            defaults.set(false, forKey: PreferencesKeys.recordingDimScreenWhileRecording)
+
+            XCTAssertFalse(RecordingRegionOverlayView.dimScreenPreference(defaults: defaults))
+        }
+
         func testRecordingToolbarPlacement_usesOutsideGapWhenBelowSelectionFits() {
             let toolbarSize = CGSize(width: 240, height: 44)
             let screenFrame = CGRect(x: 0, y: 0, width: 1200, height: 900)

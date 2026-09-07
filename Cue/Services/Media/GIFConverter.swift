@@ -22,8 +22,14 @@
             /// Frame rate for the GIF (higher = smoother but larger)
             var fps: Int = 15
 
-            /// Max output width in pixels (source width used if smaller)
+            /// Max output width in pixels (source width used if smaller; 0 keeps the source width)
             var maxWidth: CGFloat = 960
+
+            /// Collapse consecutive duplicate frames, extending the previous frame delay
+            var optimize: Bool = true
+
+            /// Output quality 0.1 (low) … 1.0 (high); maps to palette color count
+            var quality: Double = 0.75
 
             /// Infinite loop by default
             var loopCount: Int = 0
@@ -89,8 +95,10 @@
                 naturalSize = CGSize(width: 640, height: 480)
             }
 
-            // Scale only if source exceeds maxWidth — never upscale
-            let scale = min(1.0, options.maxWidth / naturalSize.width)
+            // Scale only if source exceeds maxWidth — never upscale.
+            // A non-positive maxWidth keeps the source width ("Original").
+            let effectiveMaxWidth = options.maxWidth > 0 ? options.maxWidth : naturalSize.width
+            let scale = min(1.0, effectiveMaxWidth / naturalSize.width)
             let outputWidth = Int(naturalSize.width * scale)
             let outputHeight = Int(naturalSize.height * scale)
 
@@ -128,43 +136,8 @@
             generator.requestedTimeToleranceBefore = CMTime(seconds: 0.02, preferredTimescale: 9600)
             generator.requestedTimeToleranceAfter = CMTime(seconds: 0.02, preferredTimescale: 9600)
 
-            // Generate output URL (same directory, .gif extension)
-            let gifURL = videoURL.deletingPathExtension().appendingPathExtension("gif")
-
-            // Remove existing GIF if any
-            try? FileManager.default.removeItem(at: gifURL)
-
-            // Create GIF destination
-            guard let destination = CGImageDestinationCreateWithURL(
-                gifURL as CFURL,
-                UTType.gif.identifier as CFString,
-                totalFrames,
-                nil,
-            ) else {
-                DiagnosticLogger.shared.log(.error, .recording, "GIF conversion destination creation failed", context: [
-                    "file": gifURL.lastPathComponent,
-                    "expectedFrames": "\(totalFrames)",
-                ])
-                throw GIFConversionError.destinationCreationFailed
-            }
-
-            // Set GIF-level properties (loop count + color model)
-            let gifProperties: [String: Any] = [
-                kCGImagePropertyGIFDictionary as String: [
-                    kCGImagePropertyGIFLoopCount as String: options.loopCount,
-                    kCGImagePropertyGIFHasGlobalColorMap as String: true,
-                ],
-            ]
-            CGImageDestinationSetProperties(destination, gifProperties as CFDictionary)
-
-            // Frame delay for each frame
-            let frameDelay = 1.0 / Double(options.fps)
-            let frameProperties: [String: Any] = [
-                kCGImagePropertyGIFDictionary as String: [
-                    kCGImagePropertyGIFDelayTime as String: frameDelay,
-                    kCGImagePropertyGIFUnclampedDelayTime as String: frameDelay,
-                ],
-            ]
+            // Output assembly happens after frame extraction, once the final
+            // (possibly optimized) frame count is known.
 
             // Extract frames — collect with index to preserve ordering
             let orderedFrames = try await withCheckedThrowingContinuation {
@@ -198,13 +171,60 @@
                 )
             }
 
+            // Collapse duplicates and quantize the palette per options, then write.
+            let plannedFrames = GIFFramePlan.process(frames: orderedFrames, options: options)
+            DiagnosticLogger.shared.log(.debug, .recording, "GIF conversion frames planned", context: [
+                "extractedFrames": "\(orderedFrames.count)",
+                "outputFrames": "\(plannedFrames.images.count)",
+                "optimize": "\(options.optimize)",
+                "quality": String(format: "%.2f", options.quality),
+            ])
+
+            // Generate output URL (same directory, .gif extension)
+            let gifURL = videoURL.deletingPathExtension().appendingPathExtension("gif")
+
+            // Remove existing GIF if any
+            try? FileManager.default.removeItem(at: gifURL)
+
+            // Create GIF destination
+            guard let destination = CGImageDestinationCreateWithURL(
+                gifURL as CFURL,
+                UTType.gif.identifier as CFString,
+                plannedFrames.images.count,
+                nil,
+            ) else {
+                DiagnosticLogger.shared.log(.error, .recording, "GIF conversion destination creation failed", context: [
+                    "file": gifURL.lastPathComponent,
+                    "expectedFrames": "\(plannedFrames.images.count)",
+                ])
+                throw GIFConversionError.destinationCreationFailed
+            }
+
+            // Set GIF-level properties (loop count + color model)
+            let gifProperties: [String: Any] = [
+                kCGImagePropertyGIFDictionary as String: [
+                    kCGImagePropertyGIFLoopCount as String: options.loopCount,
+                    kCGImagePropertyGIFHasGlobalColorMap as String: true,
+                ],
+            ]
+            CGImageDestinationSetProperties(destination, gifProperties as CFDictionary)
+
             // Add all frames to GIF destination
-            for (idx, frame) in orderedFrames.enumerated() {
+            for (idx, frame) in plannedFrames.images.enumerated() {
+                let frameProperties: [String: Any] = [
+                    kCGImagePropertyGIFDictionary as String: [
+                        kCGImagePropertyGIFDelayTime as String: plannedFrames.delays[idx],
+                        kCGImagePropertyGIFUnclampedDelayTime as String: plannedFrames.delays[idx],
+                    ],
+                ]
                 CGImageDestinationAddImage(destination, frame, frameProperties as CFDictionary)
 
                 // Progress for assembly phase (85% → 100%)
-                let assemblyProgress = 0.85 + (Double(idx) / Double(orderedFrames.count)) * 0.15
+                let assemblyProgress = 0.85 + (Double(idx) / Double(plannedFrames.images.count)) * 0.15
                 onProgress(assemblyProgress)
+                if idx % 8 == 7 {
+                    await Task.yield()
+                }
             }
 
             // Finalize GIF
@@ -245,6 +265,280 @@
             case .destinationCreationFailed: L10n.GIF.cannotCreateOutputFile
             case .finalizationFailed: L10n.GIF.finalizeFailed
             }
+        }
+    }
+
+    /// Frame planning: duplicate collapse (optimize) and palette reduction (quality).
+    enum GIFFramePlan {
+        struct PlannedFrames {
+            let images: [CGImage]
+            let delays: [Double]
+        }
+
+        static func process(frames: [CGImage], options: GIFConverter.Options) -> PlannedFrames {
+            let baseDelay = 1.0 / Double(max(options.fps, 1))
+            var images: [CGImage] = []
+            var delays: [Double] = []
+            var previousHash: UInt64?
+            for frame in frames {
+                let hash = thumbnailHash(frame)
+                if options.optimize, let previousHash, previousHash == hash, !delays.isEmpty {
+                    delays[delays.count - 1] += baseDelay
+                    continue
+                }
+                previousHash = hash
+                images.append(frame)
+                delays.append(baseDelay)
+            }
+            let maxColors = GIFPaletteQuantizer.colorCount(for: options.quality)
+            guard maxColors < 256 else {
+                return PlannedFrames(images: images, delays: delays)
+            }
+            let quantized = images.map { GIFPaletteQuantizer.quantize($0, maxColors: maxColors) ?? $0 }
+            return PlannedFrames(images: quantized, delays: delays)
+        }
+
+        /// Exact-match hash over an 8×8 thumbnail. Static screen content extracts
+        /// bit-identical frames, so equality is a safe collapse signal.
+        static func thumbnailHash(_ image: CGImage) -> UInt64 {
+            guard let thumbnail = GIFPaletteQuantizer.downsampledRGBA(of: image, maxDimension: 8) else {
+                return 0
+            }
+            var hash: UInt64 = 14_695_981_039_122_823
+            for byte in thumbnail.pixels {
+                hash ^= UInt64(byte)
+                hash &*= 1_099_511_628_211
+            }
+            return hash
+        }
+
+        /// Collapses consecutive duplicate hashes, extending the previous delay.
+        /// Pure helper kept separate for deterministic testing.
+        static func collapse(hashes: [UInt64], frameDelay: Double) -> (indices: [Int], delays: [Double]) {
+            var indices: [Int] = []
+            var delays: [Double] = []
+            var previousHash: UInt64?
+            for (index, hash) in hashes.enumerated() {
+                if let previousHash, previousHash == hash, !delays.isEmpty {
+                    delays[delays.count - 1] += frameDelay
+                    continue
+                }
+                previousHash = hash
+                indices.append(index)
+                delays.append(frameDelay)
+            }
+            return (indices, delays)
+        }
+    }
+
+    /// Median-cut palette reduction mapping the Quality slider to color counts.
+    enum GIFPaletteQuantizer {
+        struct RGBAImage {
+            let width: Int
+            let height: Int
+            var pixels: [UInt8]
+        }
+
+        /// Maps 0.1 (low) … 1.0 (high) to 16 … 256 colors. 1.0 keeps full color.
+        static func colorCount(for quality: Double) -> Int {
+            if quality >= 1.0 {
+                return 256
+            }
+            let clamped = min(max(quality, 0.1), 1.0)
+            return Int((16.0 + (clamped - 0.1) / 0.9 * 224.0).rounded())
+        }
+
+        /// Reduces `image` to at most `maxColors` distinct colors, preserving
+        /// dimensions and alpha. Returns nil when pixels are unreadable.
+        static func quantize(_ image: CGImage, maxColors: Int) -> CGImage? {
+            guard maxColors < 256 else { return image }
+            guard let sample = downsampledRGBA(of: image, maxDimension: 480),
+                  let full = downsampledRGBA(of: image, maxDimension: max(image.width, image.height))
+            else {
+                return nil
+            }
+            let (palette, lookup) = medianCutPalette(pixels: sample.pixels, maxColors: maxColors)
+            guard !palette.isEmpty else { return nil }
+            var remapped = full.pixels
+            remapped.withUnsafeMutableBufferPointer { buffer in
+                guard let base = buffer.baseAddress else { return }
+                var i = 0
+                while i + 3 < buffer.count {
+                    let bucket = bucketIndex(r: base[i], g: base[i + 1], b: base[i + 2])
+                    let color = palette[lookup[bucket]]
+                    base[i] = color.0
+                    base[i + 1] = color.1
+                    base[i + 2] = color.2
+                    i += 4
+                }
+            }
+            return makeImage(width: full.width, height: full.height, pixels: remapped)
+        }
+
+        // MARK: - Internals
+
+        static func downsampledRGBA(of image: CGImage, maxDimension: Int) -> RGBAImage? {
+            var width = image.width
+            var height = image.height
+            guard width > 0, height > 0 else { return nil }
+            let longest = max(width, height)
+            if longest > maxDimension {
+                let scale = Double(maxDimension) / Double(longest)
+                width = max(1, Int((Double(width) * scale).rounded()))
+                height = max(1, Int((Double(height) * scale).rounded()))
+            }
+            guard let context = CGContext(
+                data: nil,
+                width: width,
+                height: height,
+                bitsPerComponent: 8,
+                bytesPerRow: width * 4,
+                space: CGColorSpaceCreateDeviceRGB(),
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+            ), let data = context.data else {
+                return nil
+            }
+            context.interpolationQuality = .medium
+            context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
+            let byteCount = width * height * 4
+            var pixels = [UInt8](repeating: 0, count: byteCount)
+            pixels.withUnsafeMutableBufferPointer { buffer in
+                guard let base = buffer.baseAddress else { return }
+                memcpy(base, data, byteCount)
+            }
+            return RGBAImage(width: width, height: height, pixels: pixels)
+        }
+
+        private static let histogramLevels = 32
+
+        private static func bucketIndex(r: UInt8, g: UInt8, b: UInt8) -> Int {
+            (Int(r) >> 3) << 10 | (Int(g) >> 3) << 5 | (Int(b) >> 3)
+        }
+
+        private static func medianCutPalette(
+            pixels: [UInt8],
+            maxColors: Int,
+        ) -> (palette: [(UInt8, UInt8, UInt8)], lookup: [Int]) {
+            let bucketCount = histogramLevels * histogramLevels * histogramLevels
+            var counts = [Int](repeating: 0, count: bucketCount)
+            var index = 0
+            while index + 3 < pixels.count {
+                counts[bucketIndex(r: pixels[index], g: pixels[index + 1], b: pixels[index + 2])] += 1
+                index += 4
+            }
+            var boxes: [[Int]] = [counts.indices.filter { counts[$0] > 0 }]
+            guard !boxes[0].isEmpty else { return ([], []) }
+            while boxes.count < maxColors {
+                guard let splitIndex = widestSplittableBox(boxes, counts: counts),
+                      let (head, tail) = splitBox(boxes[splitIndex], counts: counts)
+                else {
+                    break
+                }
+                boxes[splitIndex] = head
+                boxes.append(tail)
+            }
+            var lookup = [Int](repeating: 0, count: bucketCount)
+            var palette: [(UInt8, UInt8, UInt8)] = []
+            for (boxIndex, box) in boxes.enumerated() {
+                palette.append(centroid(of: box, counts: counts))
+                for bucket in box {
+                    lookup[bucket] = boxIndex
+                }
+            }
+            return (palette, lookup)
+        }
+
+        private static func channelRanges(of box: [Int]) -> (r: Int, g: Int, b: Int) {
+            var rMin = 31, rMax = 0, gMin = 31, gMax = 0, bMin = 31, bMax = 0
+            for bucket in box {
+                let r = (bucket >> 10) & 31, g = (bucket >> 5) & 31, b = bucket & 31
+                rMin = min(rMin, r)
+                rMax = max(rMax, r)
+                gMin = min(gMin, g)
+                gMax = max(gMax, g)
+                bMin = min(bMin, b)
+                bMax = max(bMax, b)
+            }
+            return (rMax - rMin, gMax - gMin, bMax - bMin)
+        }
+
+        private static func widestSplittableBox(_ boxes: [[Int]], counts: [Int]) -> Int? {
+            var bestIndex: Int?
+            var bestScore = 0
+            for (index, box) in boxes.enumerated() where box.count > 1 {
+                let ranges = channelRanges(of: box)
+                let pixels = box.reduce(0) { $0 + counts[$1] }
+                let score = (max(ranges.r, ranges.g, ranges.b) + 1) * pixels
+                if score > bestScore {
+                    bestScore = score
+                    bestIndex = index
+                }
+            }
+            return bestIndex
+        }
+
+        private static func splitBox(_ box: [Int], counts: [Int]) -> ([Int], [Int])? {
+            let ranges = channelRanges(of: box)
+            let channel = if ranges.r >= ranges.g, ranges.r >= ranges.b {
+                0
+            } else if ranges.g >= ranges.b {
+                1
+            } else {
+                2
+            }
+            let sorted = box.sorted {
+                channelValue($0, channel: channel) < channelValue($1, channel: channel)
+            }
+            let total = sorted.reduce(0) { $0 + counts[$1] }
+            var running = 0
+            for (position, bucket) in sorted.enumerated() {
+                running += counts[bucket]
+                if running >= (total + 1) / 2, position + 1 < sorted.count {
+                    let splitPoint = position + 1
+                    return (Array(sorted[..<splitPoint]), Array(sorted[splitPoint...]))
+                }
+            }
+            return nil
+        }
+
+        private static func channelValue(_ bucket: Int, channel: Int) -> Int {
+            switch channel {
+            case 0: (bucket >> 10) & 31
+            case 1: (bucket >> 5) & 31
+            default: bucket & 31
+            }
+        }
+
+        private static func centroid(of box: [Int], counts: [Int]) -> (UInt8, UInt8, UInt8) {
+            var rSum = 0, gSum = 0, bSum = 0, total = 0
+            for bucket in box {
+                let count = counts[bucket]
+                total += count
+                // Bucket center restores the dropped low bits.
+                rSum += (((bucket >> 10) & 31) * 8 + 4) * count
+                gSum += (((bucket >> 5) & 31) * 8 + 4) * count
+                bSum += ((bucket & 31) * 8 + 4) * count
+            }
+            guard total > 0 else { return (0, 0, 0) }
+            return (UInt8(min(rSum / total, 255)), UInt8(min(gSum / total, 255)), UInt8(min(bSum / total, 255)))
+        }
+
+        private static func makeImage(width: Int, height: Int, pixels: [UInt8]) -> CGImage? {
+            let data = Data(pixels)
+            guard let provider = CGDataProvider(data: data as CFData) else { return nil }
+            return CGImage(
+                width: width,
+                height: height,
+                bitsPerComponent: 8,
+                bitsPerPixel: 32,
+                bytesPerRow: width * 4,
+                space: CGColorSpaceCreateDeviceRGB(),
+                bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue),
+                provider: provider,
+                decode: nil,
+                shouldInterpolate: false,
+                intent: .defaultIntent,
+            )
         }
     }
 

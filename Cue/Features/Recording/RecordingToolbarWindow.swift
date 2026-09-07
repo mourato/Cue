@@ -111,6 +111,56 @@
         static func showTimeOnMenuBar(defaults: UserDefaults = .standard) -> Bool {
             defaults.object(forKey: PreferencesKeys.recordingShowTimeOnMenuBar) as? Bool ?? true
         }
+
+        /// Whether the screen dims outside the selection while recording. Defaults to `true`.
+        static func dimScreenWhileRecording(defaults: UserDefaults = .standard) -> Bool {
+            defaults.object(forKey: PreferencesKeys.recordingDimScreenWhileRecording) as? Bool ?? true
+        }
+
+        /// Whether a 3-2-1 countdown runs before recording starts. Defaults to `false`.
+        static func showCountdown(defaults: UserDefaults = .standard) -> Bool {
+            defaults.object(forKey: PreferencesKeys.recordingShowCountdown) as? Bool ?? false
+        }
+
+        /// Whether Do Not Disturb is requested while recording. Defaults to `true`.
+        /// No sanctioned macOS API exists; honored on a best-effort basis only.
+        static func doNotDisturbWhileRecording(defaults: UserDefaults = .standard) -> Bool {
+            defaults.object(forKey: PreferencesKeys.recordingDoNotDisturbWhileRecording) as? Bool ?? true
+        }
+
+        /// Maximum output resolution cap (`720p`/`1080p`/`1440p`/`2160p`/`Original`). Defaults to `1080p`.
+        static func maxResolution(defaults: UserDefaults = .standard) -> String {
+            defaults.string(forKey: PreferencesKeys.recordingMaxResolution) ?? "1080p"
+        }
+
+        /// Whether Retina captures are scaled to 1x. Defaults to `true`.
+        static func scaleRetinaTo1x(defaults: UserDefaults = .standard) -> Bool {
+            defaults.object(forKey: PreferencesKeys.recordingScaleRetinaTo1x) as? Bool ?? true
+        }
+
+        /// Whether recording audio is captured in mono. Defaults to `false`.
+        static func recordAudioInMono(defaults: UserDefaults = .standard) -> Bool {
+            defaults.object(forKey: PreferencesKeys.recordingAudioMono) as? Bool ?? false
+        }
+
+        /// Whether system and microphone audio stay on separate tracks. Defaults to `false` (single mixed track).
+        static func keepSeparateAudioTracks(defaults: UserDefaults = .standard) -> Bool {
+            defaults.string(forKey: PreferencesKeys.recordingAudioTracks) == "separate"
+        }
+
+        /// GIF export options resolved from preferences.
+        static func gifOptions(defaults: UserDefaults = .standard) -> GIFConverter.Options {
+            let fps = defaults.object(forKey: PreferencesKeys.recordingGifFrameRate) as? Int ?? 15
+            let maxWidth = defaults.object(forKey: PreferencesKeys.recordingGifMaxWidth) as? Int ?? 800
+            let optimize = defaults.object(forKey: PreferencesKeys.recordingGifOptimize) as? Bool ?? true
+            let quality = defaults.object(forKey: PreferencesKeys.recordingGifQuality) as? Double ?? 0.75
+            return GIFConverter.Options(
+                fps: min(max(fps, 1), 60),
+                maxWidth: CGFloat(max(maxWidth, 0)),
+                optimize: optimize,
+                quality: min(max(quality, 0.1), 1.0),
+            )
+        }
     }
 
     enum RecordingToolbarPlacement {

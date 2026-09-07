@@ -100,6 +100,13 @@ enum CueConfigurationDefaultDocument {
             writer.value("show_cursor", true)
             writer.value("highlight_clicks", false)
             writer.value("show_keystrokes", false)
+            writer.value("dim_screen_while_recording", true)
+            writer.value("show_countdown", false)
+            writer.value("do_not_disturb_while_recording", true)
+            writer.value("max_resolution", "1080p")
+            writer.value("scale_retina_to_1x", true)
+            writer.value("record_audio_in_mono", false)
+            writer.value("audio_tracks", "single")
             writer.value("video_editor_zoom_transition_duration", 0.4)
 
             writer.section("recording.mouse_highlight")
@@ -116,6 +123,12 @@ enum CueConfigurationDefaultDocument {
             writer.value("font_size", Double(KeystrokeOverlayConfiguration.defaultFontSize))
             writer.value("position", KeystrokeOverlayConfiguration.defaultPosition.rawValue)
             writer.value("display_duration", KeystrokeOverlayConfiguration.defaultDisplayDuration)
+
+            writer.section("recording.gif")
+            writer.value("fps", 15)
+            writer.value("max_width", 800)
+            writer.value("optimize", true)
+            writer.value("quality", 0.75)
 
             writer.section("recording.annotation_shortcuts")
             writer.value("modifier", RecordingAnnotationShortcutConfig.defaultModifier.rawValue)

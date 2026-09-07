@@ -3505,11 +3505,6 @@ nonisolated enum L10n {
             defaultValue: "Show countdown",
             comment: "Screen recording setting title",
         )
-        static let doNotDisturbTitle = string(
-            "preferences-recording.do-not-disturb-title",
-            defaultValue: "\"Do Not Disturb\" while recording",
-            comment: "Screen recording setting title",
-        )
         static let cursorSection = string(
             "preferences-recording.section-cursor",
             defaultValue: "Cursor",

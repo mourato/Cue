@@ -18,7 +18,6 @@
         @AppStorage(PreferencesKeys.recordingShowTimeOnMenuBar) private var displayTimeInMenuBar = true
         @AppStorage(PreferencesKeys.recordingDimScreenWhileRecording) private var dimScreenWhileRecording = true
         @AppStorage(PreferencesKeys.recordingShowCountdown) private var showCountdown = false
-        @AppStorage(PreferencesKeys.recordingDoNotDisturbWhileRecording) private var doNotDisturbWhileRecording = true
 
         // MARK: - Cursor & Keystrokes
 
@@ -70,10 +69,6 @@
                     ScreenRecordingToggleRow(
                         title: L10n.PreferencesScreenRecording.showCountdownTitle,
                         isOn: $showCountdown,
-                    )
-                    ScreenRecordingToggleRow(
-                        title: L10n.PreferencesScreenRecording.doNotDisturbTitle,
-                        isOn: $doNotDisturbWhileRecording,
                     )
                 }
 

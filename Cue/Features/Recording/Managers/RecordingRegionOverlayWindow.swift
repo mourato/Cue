@@ -225,6 +225,14 @@ final class RecordingRegionOverlayView: NSView {
     var showBorder: Bool = true
     var drawsContinuousBorder: Bool = true
     var isInteractionEnabled: Bool = false
+    /// Whether the screen outside the selection is dimmed. Bound to the
+    /// `recording.dimScreenWhileRecording` preference (live).
+    var dimsOutsideSelection = true {
+        didSet {
+            needsDisplay = true
+        }
+    }
+
     var guidance: RecordingRegionOverlayGuidance? {
         didSet {
             needsDisplay = true
@@ -279,12 +287,38 @@ final class RecordingRegionOverlayView: NSView {
     init(frame: CGRect, highlightRect: CGRect) {
         self.highlightRect = highlightRect
         super.init(frame: frame)
+        dimsOutsideSelection = Self.dimScreenPreference()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(dimScreenPreferenceChanged),
+            name: UserDefaults.didChangeNotification,
+            object: nil,
+        )
         setupTrackingArea()
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UserDefaults.didChangeNotification, object: nil)
+    }
+
+    private static func dimScreenPreference() -> Bool {
+        dimScreenPreference(defaults: .standard)
+    }
+
+    static func dimScreenPreference(defaults: UserDefaults) -> Bool {
+        defaults.object(forKey: PreferencesKeys.recordingDimScreenWhileRecording) as? Bool ?? true
+    }
+
+    @objc private func dimScreenPreferenceChanged() {
+        let value = Self.dimScreenPreference()
+        if dimsOutsideSelection != value {
+            dimsOutsideSelection = value
+        }
     }
 
     private func setupTrackingArea() {
@@ -729,9 +763,12 @@ extension RecordingRegionOverlayView {
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
 
-        // Draw dim overlay — only the dirty region
-        dimColor.setFill()
-        dirtyRect.fill()
+        // Draw dim overlay — only the dirty region. Skipped when dimming is off,
+        // leaving the window transparent (border/handles still draw below).
+        if dimsOutsideSelection {
+            dimColor.setFill()
+            dirtyRect.fill()
+        }
         drawBoundarySnapGuides(in: dirtyRect)
 
         // If actively making new selection, draw that instead
@@ -756,9 +793,10 @@ extension RecordingRegionOverlayView {
         // Clamp to bounds
         let clampedRect = localRect.intersection(bounds)
 
-        // Clear the highlight area (only the portion within dirtyRect)
+        // Clear the highlight area (only the portion within dirtyRect).
+        // With dimming off there is nothing to clear — the window is transparent.
         let clearRect = clampedRect.intersection(dirtyRect)
-        if !clearRect.isNull {
+        if dimsOutsideSelection, !clearRect.isNull {
             NSColor.clear.setFill()
             clearRect.fill(using: .copy)
         }

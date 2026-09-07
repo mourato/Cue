@@ -418,6 +418,82 @@ final class CueConfigurationImporterTests: XCTestCase {
             XCTAssertTrue(result.hasErrors)
             XCTAssertNil(defaults.object(forKey: PreferencesKeys.videoEditorZoomTransitionDuration))
         }
+
+        func testImportAppliesScreenRecordingSettings() {
+            let defaults = UserDefaultsFactory.make()
+            let source = """
+            schema_version = 1
+
+            [recording]
+            dim_screen_while_recording = false
+            show_countdown = true
+            do_not_disturb_while_recording = false
+            max_resolution = "720p"
+            scale_retina_to_1x = false
+            record_audio_in_mono = true
+            audio_tracks = "separate"
+
+            [recording.gif]
+            fps = 24
+            max_width = 600
+            optimize = false
+            quality = 0.4
+            """
+
+            let result = CueConfigurationImporter.importTOML(source, defaults: defaults)
+
+            XCTAssertFalse(result.hasErrors)
+            XCTAssertEqual(defaults.object(forKey: PreferencesKeys.recordingDimScreenWhileRecording) as? Bool, false)
+            XCTAssertEqual(defaults.object(forKey: PreferencesKeys.recordingShowCountdown) as? Bool, true)
+            XCTAssertEqual(
+                defaults.object(forKey: PreferencesKeys.recordingDoNotDisturbWhileRecording) as? Bool,
+                false,
+            )
+            XCTAssertEqual(defaults.string(forKey: PreferencesKeys.recordingMaxResolution), "720p")
+            XCTAssertEqual(defaults.object(forKey: PreferencesKeys.recordingScaleRetinaTo1x) as? Bool, false)
+            XCTAssertEqual(defaults.object(forKey: PreferencesKeys.recordingAudioMono) as? Bool, true)
+            XCTAssertEqual(defaults.string(forKey: PreferencesKeys.recordingAudioTracks), "separate")
+            XCTAssertEqual(defaults.object(forKey: PreferencesKeys.recordingGifFrameRate) as? Int, 24)
+            XCTAssertEqual(defaults.object(forKey: PreferencesKeys.recordingGifMaxWidth) as? Int, 600)
+            XCTAssertEqual(defaults.object(forKey: PreferencesKeys.recordingGifOptimize) as? Bool, false)
+            XCTAssertEqual(defaults.object(forKey: PreferencesKeys.recordingGifQuality) as? Double, 0.4)
+        }
+
+        func testImportRejectsInvalidScreenRecordingValues() {
+            let defaults = UserDefaultsFactory.make()
+            let source = """
+            schema_version = 1
+
+            [recording]
+            max_resolution = "8k"
+            audio_tracks = "surround"
+
+            [recording.gif]
+            fps = 120
+            quality = 2.0
+            """
+
+            let result = CueConfigurationImporter.importTOML(source, defaults: defaults)
+
+            XCTAssertTrue(result.hasErrors)
+            XCTAssertNil(defaults.object(forKey: PreferencesKeys.recordingMaxResolution))
+            XCTAssertNil(defaults.object(forKey: PreferencesKeys.recordingAudioTracks))
+            XCTAssertNil(defaults.object(forKey: PreferencesKeys.recordingGifFrameRate))
+            XCTAssertNil(defaults.object(forKey: PreferencesKeys.recordingGifQuality))
+        }
+
+        func testExportIncludesScreenRecordingKeys() {
+            let exported = CueConfigurationExporter.exportTOML(defaults: UserDefaultsFactory.make())
+
+            XCTAssertTrue(exported.contains("dim_screen_while_recording"))
+            XCTAssertTrue(exported.contains("show_countdown"))
+            XCTAssertTrue(exported.contains("do_not_disturb_while_recording"))
+            XCTAssertTrue(exported.contains("max_resolution"))
+            XCTAssertTrue(exported.contains("scale_retina_to_1x"))
+            XCTAssertTrue(exported.contains("record_audio_in_mono"))
+            XCTAssertTrue(exported.contains("audio_tracks"))
+            XCTAssertTrue(exported.contains("[recording.gif]"))
+        }
     #endif
 
     func testImportRejectsInvalidEnumValues() {

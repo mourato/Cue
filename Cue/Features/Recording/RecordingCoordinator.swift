@@ -683,6 +683,10 @@
                         fps: fps,
                         captureSystemAudio: savedCaptureAudio,
                         captureMicrophone: savedCaptureMicrophone,
+                        recordAudioInMono: RecordingToolbarPreferences.recordAudioInMono(),
+                        keepSeparateAudioTracks: RecordingToolbarPreferences.keepSeparateAudioTracks(),
+                        scaleRetinaTo1x: RecordingToolbarPreferences.scaleRetinaTo1x(),
+                        maxResolution: RecordingToolbarPreferences.maxResolution(),
                         microphoneDeviceID: savedMicrophoneDeviceID,
                         captureCamera: savedCaptureCamera,
                         cameraDeviceID: savedCameraDeviceID,
@@ -879,6 +883,15 @@
                         exportDirectory: saveDirectory,
                     )
 
+                    if RecordingToolbarPreferences.showCountdown() {
+                        let countdown = RecordingCountdownWindow()
+                        guard await countdown.run(in: rect) else {
+                            self.finishRecordingStartAttempt()
+                            self.cancel()
+                            return
+                        }
+                    }
+
                     try await recorder.prepareRecording(
                         rect: rect,
                         windowTarget: self.selectedWindowTarget,
@@ -887,6 +900,10 @@
                         fps: fps,
                         captureSystemAudio: captureSystemAudio,
                         captureMicrophone: captureMicrophone,
+                        recordAudioInMono: RecordingToolbarPreferences.recordAudioInMono(),
+                        keepSeparateAudioTracks: RecordingToolbarPreferences.keepSeparateAudioTracks(),
+                        scaleRetinaTo1x: RecordingToolbarPreferences.scaleRetinaTo1x(),
+                        maxResolution: RecordingToolbarPreferences.maxResolution(),
                         microphoneDeviceID: microphoneDeviceID,
                         captureCamera: captureCamera,
                         cameraDeviceID: cameraDeviceID,
@@ -1063,6 +1080,10 @@
                         fps: fps,
                         captureSystemAudio: captureSystemAudio,
                         captureMicrophone: false,
+                        recordAudioInMono: RecordingToolbarPreferences.recordAudioInMono(),
+                        keepSeparateAudioTracks: RecordingToolbarPreferences.keepSeparateAudioTracks(),
+                        scaleRetinaTo1x: RecordingToolbarPreferences.scaleRetinaTo1x(),
+                        maxResolution: RecordingToolbarPreferences.maxResolution(),
                         captureCamera: captureCamera,
                         cameraDeviceID: window.cameraDeviceID,
                         cameraOverlayLayout: cameraOverlayLayout,
@@ -1196,8 +1217,16 @@
 
             // Run GIF conversion
             do {
+                let gifOptions = RecordingToolbarPreferences.gifOptions()
+                DiagnosticLogger.shared.log(.debug, .recording, "GIF conversion options", context: [
+                    "fps": "\(gifOptions.fps)",
+                    "maxWidth": "\(Int(gifOptions.maxWidth))",
+                    "optimize": "\(gifOptions.optimize)",
+                    "quality": String(format: "%.2f", gifOptions.quality),
+                ])
                 let gifURL = try await GIFConverter.convert(
                     videoURL: videoURL,
+                    options: gifOptions,
                     onProgress: { progress in
                         quickAccess.updateProcessingState(id: itemId, state: .processing(progress: progress))
                     },

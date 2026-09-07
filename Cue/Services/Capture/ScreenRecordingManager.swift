@@ -95,6 +95,34 @@
         }
     }
 
+    enum RecordingCaptureScale {
+        /// Long-edge pixel cap per max-resolution setting. `nil` keeps full size.
+        static func longEdgeCap(for maxResolution: String) -> CGFloat? {
+            switch maxResolution {
+            case "720p": 1280
+            case "1080p": 1920
+            case "1440p": 2560
+            case "2160p": 3840
+            default: nil
+            }
+        }
+
+        /// Effective capture scale: 1x when Retina scaling is on, otherwise the
+        /// display scale, further reduced so the output long edge fits the cap.
+        static func effectiveScale(
+            displayScale: CGFloat,
+            scaleRetinaTo1x: Bool,
+            maxResolution: String,
+            pointSize: CGSize,
+        ) -> CGFloat {
+            let base = scaleRetinaTo1x ? 1.0 : max(displayScale, 1.0)
+            guard let cap = longEdgeCap(for: maxResolution) else { return base }
+            let longEdge = max(pointSize.width, pointSize.height) * base
+            guard longEdge > cap, longEdge > 0 else { return base }
+            return base * cap / longEdge
+        }
+    }
+
     enum RecordingVideoEncodingSettings {
         static func cameraDimensions(
             cameraSize: CGSize?,
@@ -173,16 +201,16 @@
         static let microphoneAudioBitrate = 128_000
         static let mixedAudioBitrate = 192_000
 
-        static func makeSystemAudioSettings() -> [String: Any] {
-            makeStereoAACSettings(bitrate: systemAudioBitrate)
+        static func makeSystemAudioSettings(mono: Bool = false) -> [String: Any] {
+            makeAACSettings(bitrate: systemAudioBitrate, mono: mono)
         }
 
-        static func makeMicrophoneAudioSettings() -> [String: Any] {
-            makeStereoAACSettings(bitrate: microphoneAudioBitrate)
+        static func makeMicrophoneAudioSettings(mono: Bool = false) -> [String: Any] {
+            makeAACSettings(bitrate: microphoneAudioBitrate, mono: mono)
         }
 
-        static func makeMixedAudioSettings() -> [String: Any] {
-            makeStereoAACSettings(bitrate: mixedAudioBitrate)
+        static func makeMixedAudioSettings(mono: Bool = false) -> [String: Any] {
+            makeAACSettings(bitrate: mixedAudioBitrate, mono: mono)
         }
 
         /// LPCM settings for the microphone `AVCaptureAudioDataOutput`.
@@ -206,14 +234,24 @@
             ]
         }
 
-        private static func makeStereoAACSettings(bitrate: Int) -> [String: Any] {
+        private static func makeAACSettings(bitrate: Int, mono: Bool) -> [String: Any] {
             [
                 AVFormatIDKey: kAudioFormatMPEG4AAC,
                 AVSampleRateKey: sampleRate,
-                AVNumberOfChannelsKey: channelCount,
+                AVNumberOfChannelsKey: mono ? 1 : channelCount,
                 AVEncoderBitRateKey: bitrate,
-                AVChannelLayoutKey: stereoChannelLayoutData(),
+                AVChannelLayoutKey: mono ? monoChannelLayoutData() : stereoChannelLayoutData(),
             ]
+        }
+
+        private static func makeStereoAACSettings(bitrate: Int) -> [String: Any] {
+            makeAACSettings(bitrate: bitrate, mono: false)
+        }
+
+        private static func monoChannelLayoutData() -> Data {
+            var layout = AudioChannelLayout()
+            layout.mChannelLayoutTag = kAudioChannelLayoutTag_Mono
+            return Data(bytes: &layout, count: MemoryLayout<AudioChannelLayout>.size)
         }
 
         private static func stereoChannelLayoutData() -> Data {
@@ -263,8 +301,8 @@
             }
         }
 
-        static func requiresMixDown(audioTrackCount: Int) -> Bool {
-            audioTrackCount > 1
+        static func requiresMixDown(audioTrackCount: Int, keepSeparateTracks: Bool = false) -> Bool {
+            !keepSeparateTracks && audioTrackCount > 1
         }
 
         static func mixdownInputVolume(audioTrackCount: Int) -> Float {
@@ -277,10 +315,23 @@
             fileType: AVFileType,
             preservesAudioSource: Bool = true,
             appliesMixdownHeadroom: Bool = false,
+            recordMono: Bool = false,
+            keepSeparateAudioTracks: Bool = false,
         ) async throws -> Result {
             let asset = AVURLAsset(url: sourceURL)
             let audioTracks = try await asset.loadTracks(withMediaType: .audio)
             let videoTracks = try await asset.loadTracks(withMediaType: .video)
+            if keepSeparateAudioTracks, audioTracks.count > 1 {
+                // Separate-tracks mode: keep system/microphone tracks as recorded
+                // so they stay independently editable. No preserved source needed —
+                // the output file itself carries the separate tracks.
+                return Result(
+                    outputURL: sourceURL,
+                    audioTrackCount: audioTracks.count,
+                    didNormalize: false,
+                    audioSourceURL: nil,
+                )
+            }
             if videoTracks.count > 1 {
                 // Keep the camera source intact until the editor owns multi-track composition.
                 return Result(
@@ -321,6 +372,7 @@
                     outputURL: normalizedURL,
                     fileType: fileType,
                     audioInputVolume: inputVolume,
+                    recordMono: recordMono,
                 )
                 if let preservedSourceURL {
                     try? FileManager.default.removeItem(at: preservedSourceURL)
@@ -387,6 +439,7 @@
             outputURL: URL,
             fileType: AVFileType,
             audioInputVolume: Float,
+            recordMono: Bool = false,
         ) async throws {
             try? FileManager.default.removeItem(at: outputURL)
 
@@ -407,6 +460,7 @@
                             outputURL: outputURL,
                             fileType: fileType,
                             audioInputVolume: audioInputVolume,
+                            recordMono: recordMono,
                         )
                         continuation.resume()
                     } catch {
@@ -426,6 +480,7 @@
             outputURL: URL,
             fileType: AVFileType,
             audioInputVolume: Float,
+            recordMono: Bool = false,
         ) throws {
             let reader = try AVAssetReader(asset: asset)
             reader.timeRange = CMTimeRange(start: .zero, duration: duration)
@@ -464,7 +519,7 @@
 
             let audioInput = AVAssetWriterInput(
                 mediaType: .audio,
-                outputSettings: RecordingAudioEncodingSettings.makeMixedAudioSettings(),
+                outputSettings: RecordingAudioEncodingSettings.makeMixedAudioSettings(mono: recordMono),
             )
             audioInput.expectsMediaDataInRealTime = false
             guard writer.canAdd(audioInput) else {
@@ -686,6 +741,10 @@
         private var fps: Int = 30
         private var captureSystemAudio: Bool = true
         private var captureMicrophone: Bool = false
+        private var recordAudioInMono: Bool = false
+        private var keepSeparateAudioTracks: Bool = false
+        private var scaleRetinaVideosTo1x: Bool = true
+        private var maxRecordingResolution: String = "1080p"
         private var microphoneDeviceID: String?
         private var captureCamera = false
         private var cameraDeviceID: String?
@@ -760,6 +819,10 @@
             fps: Int = 30,
             captureSystemAudio: Bool = true,
             captureMicrophone: Bool = false,
+            recordAudioInMono: Bool = false,
+            keepSeparateAudioTracks: Bool = false,
+            scaleRetinaTo1x: Bool = true,
+            maxResolution: String = "1080p",
             microphoneDeviceID: String? = nil,
             captureCamera: Bool = false,
             cameraDeviceID: String? = nil,
@@ -814,6 +877,10 @@
             self.fps = fps
             self.captureSystemAudio = captureSystemAudio
             self.captureMicrophone = captureMicrophone
+            self.recordAudioInMono = recordAudioInMono
+            self.keepSeparateAudioTracks = keepSeparateAudioTracks
+            scaleRetinaVideosTo1x = scaleRetinaTo1x
+            maxRecordingResolution = maxResolution
             self.microphoneDeviceID = microphoneDeviceID
             self.captureCamera = captureCamera
             self.cameraDeviceID = cameraDeviceID
@@ -922,8 +989,9 @@
                 throw RecordingError.noDisplayFound
             }
 
-            // Get scale factor for Retina from the matching NSScreen
-            let scaleFactor: CGFloat = if let screen = targetScreen {
+            // Get scale factor for Retina from the matching NSScreen, then apply the
+            // Scale-Retina-to-1x and Max-Resolution preferences.
+            let displayScaleFactor: CGFloat = if let screen = targetScreen {
                 screen.backingScaleFactor
             } else if let screen = NSScreen.screens.first(where: {
                 Int($0.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? CGDirectDisplayID ?? 0)
@@ -933,6 +1001,12 @@
             } else {
                 2.0
             }
+            let scaleFactor = RecordingCaptureScale.effectiveScale(
+                displayScale: displayScaleFactor,
+                scaleRetinaTo1x: scaleRetinaVideosTo1x,
+                maxResolution: maxRecordingResolution,
+                pointSize: requestedRect.size,
+            )
 
             let captureGeometry: CaptureGeometry
             do {
@@ -944,7 +1018,9 @@
             } catch {
                 DiagnosticLogger.shared.logError(.recording, error, "Recording geometry resolution failed", context: [
                     "displayID": "\(display.displayID)",
+                    "displayScaleFactor": String(format: "%.2f", displayScaleFactor),
                     "scaleFactor": String(format: "%.2f", scaleFactor),
+                    "maxResolution": maxRecordingResolution,
                     "requestedRect": "\(Int(requestedRect.width))x\(Int(requestedRect.height))",
                 ])
                 cleanup()
@@ -1039,6 +1115,7 @@
                     height: captureGeometry.outputHeight,
                     captureSystemAudio: captureSystemAudio,
                     captureMicrophone: captureMicrophone,
+                    recordAudioInMono: recordAudioInMono,
                     captureCamera: self.captureCamera,
                     cameraSize: self.captureCamera
                         ? RecordingCameraDeviceProvider.captureSize(matching: cameraDeviceID)
@@ -1646,6 +1723,8 @@
                     at: writerURL,
                     fileType: videoFormat.fileType,
                     appliesMixdownHeadroom: true,
+                    recordMono: recordAudioInMono,
+                    keepSeparateAudioTracks: keepSeparateAudioTracks,
                 )
                 if result.didNormalize {
                     DiagnosticLogger.shared.log(
@@ -1927,6 +2006,7 @@
             height: Int,
             captureSystemAudio: Bool,
             captureMicrophone: Bool,
+            recordAudioInMono: Bool = false,
             captureCamera: Bool = false,
             cameraSize: CGSize? = nil,
         ) throws {
@@ -2054,7 +2134,7 @@
 
             // Audio settings (AAC) for system audio
             if captureSystemAudio {
-                let audioSettings = RecordingAudioEncodingSettings.makeSystemAudioSettings()
+                let audioSettings = RecordingAudioEncodingSettings.makeSystemAudioSettings(mono: recordAudioInMono)
                 let audioIn = AVAssetWriterInput(mediaType: .audio, outputSettings: audioSettings)
                 audioIn.expectsMediaDataInRealTime = true
                 guard writer.canAdd(audioIn) else {
@@ -2067,7 +2147,7 @@
 
             // Microphone audio settings (AAC) - separate track
             if captureMicrophone {
-                let micSettings = RecordingAudioEncodingSettings.makeMicrophoneAudioSettings()
+                let micSettings = RecordingAudioEncodingSettings.makeMicrophoneAudioSettings(mono: recordAudioInMono)
                 let micIn = AVAssetWriterInput(mediaType: .audio, outputSettings: micSettings)
                 micIn.expectsMediaDataInRealTime = true
                 guard writer.canAdd(micIn) else {
