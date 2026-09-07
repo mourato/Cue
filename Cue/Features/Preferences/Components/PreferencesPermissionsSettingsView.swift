@@ -2,14 +2,14 @@
 //  PreferencesPermissionsSettingsView.swift
 //  Notinhas
 //
-//  Permissions status tab showing system permission states and settings links
+//  Permissions status section for Advanced preferences.
 //
 
 import AppKit
 import AVFoundation
 import SwiftUI
 
-struct PermissionsSettingsView: View {
+struct PermissionsSettingsSection: View {
     @ObservedObject private var screenCaptureManager = ScreenCaptureManager.shared
     @ObservedObject private var identityManager = AppIdentityManager.shared
     @State private var microphoneGranted = false
@@ -32,95 +32,92 @@ struct PermissionsSettingsView: View {
         "x-apple.systempreferences:com.apple.preference.security?Privacy_FilesAndFolders"
 
     var body: some View {
-        Form {
-            Section(L10n.Preferences.permissionsTab) {
-                Text(L10n.PreferencesPermissions.intro)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+        Section(L10n.Preferences.permissionsTab) {
+            Text(L10n.PreferencesPermissions.intro)
+                .font(.caption)
+                .foregroundColor(.secondary)
 
+            permissionRow(
+                icon: "rectangle.inset.filled.and.person.filled",
+                name: L10n.Onboarding.screenRecording,
+                description: screenRecordingDescription,
+                statusLabel: screenRecordingStatusLabel,
+                statusIcon: screenRecordingStatusIcon,
+                statusColor: screenRecordingStatusColor,
+                isRequired: true,
+                settingsURL: screenRecordingURL,
+            )
+
+            permissionRow(
+                icon: "folder.fill",
+                name: L10n.Onboarding.saveFolder,
+                description: L10n.Onboarding.requiredForCaptures,
+                statusLabel: saveFolderGranted ? L10n.PermissionRow.granted : L10n.Common.notGranted,
+                statusIcon: saveFolderGranted ? "checkmark.circle.fill" : "xmark.circle.fill",
+                statusColor: permissionStatusColor(isGranted: saveFolderGranted),
+                isRequired: true,
+                settingsURL: filesAndFoldersURL,
+            )
+
+            if videoModuleEnabled {
                 permissionRow(
-                    icon: "rectangle.inset.filled.and.person.filled",
-                    name: L10n.Onboarding.screenRecording,
-                    description: screenRecordingDescription,
-                    statusLabel: screenRecordingStatusLabel,
-                    statusIcon: screenRecordingStatusIcon,
-                    statusColor: screenRecordingStatusColor,
-                    isRequired: true,
-                    settingsURL: screenRecordingURL,
-                )
-
-                permissionRow(
-                    icon: "folder.fill",
-                    name: L10n.Onboarding.saveFolder,
-                    description: L10n.Onboarding.requiredForCaptures,
-                    statusLabel: saveFolderGranted ? L10n.PermissionRow.granted : L10n.Common.notGranted,
-                    statusIcon: saveFolderGranted ? "checkmark.circle.fill" : "xmark.circle.fill",
-                    statusColor: permissionStatusColor(isGranted: saveFolderGranted),
-                    isRequired: true,
-                    settingsURL: filesAndFoldersURL,
-                )
-
-                if videoModuleEnabled {
-                    permissionRow(
-                        icon: "mic.fill",
-                        name: L10n.Onboarding.microphone,
-                        description: L10n.Onboarding.optionalForVoiceRecording,
-                        statusLabel: microphoneGranted ? L10n.PermissionRow.granted : L10n.Common.notGranted,
-                        statusIcon: microphoneGranted ? "checkmark.circle.fill" : "xmark.circle.fill",
-                        statusColor: permissionStatusColor(isGranted: microphoneGranted),
-                        isRequired: false,
-                        settingsURL: microphoneURL,
-                    )
-                }
-
-                permissionRow(
-                    icon: "hand.raised.fill",
-                    name: L10n.Onboarding.accessibility,
-                    description: L10n.Onboarding.optionalForGlobalShortcuts,
-                    statusLabel: accessibilityGranted ? L10n.PermissionRow.granted : L10n.Common.notGranted,
-                    statusIcon: accessibilityGranted ? "checkmark.circle.fill" : "xmark.circle.fill",
-                    statusColor: permissionStatusColor(isGranted: accessibilityGranted),
+                    icon: "mic.fill",
+                    name: L10n.Onboarding.microphone,
+                    description: L10n.Onboarding.optionalForVoiceRecording,
+                    statusLabel: microphoneGranted ? L10n.PermissionRow.granted : L10n.Common.notGranted,
+                    statusIcon: microphoneGranted ? "checkmark.circle.fill" : "xmark.circle.fill",
+                    statusColor: permissionStatusColor(isGranted: microphoneGranted),
                     isRequired: false,
-                    settingsURL: accessibilityURL,
+                    settingsURL: microphoneURL,
                 )
-
-                if !identityManager.health.isHealthy {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(L10n.Onboarding.buildIdentityNeedsAttention)
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.orange)
-
-                        ForEach(identityManager.health.issues, id: \.self) { issue in
-                            Text("• \(issue.description)")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .padding(.vertical, 4)
-                }
-
-                HStack {
-                    Spacer()
-                    Button {
-                        checkAllPermissions()
-                    } label: {
-                        HStack(spacing: 4) {
-                            if isChecking {
-                                ProgressView()
-                                    .controlSize(.small)
-                            } else {
-                                Image(systemName: "arrow.clockwise")
-                            }
-                            Text(L10n.Onboarding.refreshStatus)
-                        }
-                    }
-                    .disabled(isChecking)
-                }
-                .padding(.top, 4)
             }
+
+            permissionRow(
+                icon: "hand.raised.fill",
+                name: L10n.Onboarding.accessibility,
+                description: L10n.Onboarding.optionalForGlobalShortcuts,
+                statusLabel: accessibilityGranted ? L10n.PermissionRow.granted : L10n.Common.notGranted,
+                statusIcon: accessibilityGranted ? "checkmark.circle.fill" : "xmark.circle.fill",
+                statusColor: permissionStatusColor(isGranted: accessibilityGranted),
+                isRequired: false,
+                settingsURL: accessibilityURL,
+            )
+
+            if !identityManager.health.isHealthy {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(L10n.Onboarding.buildIdentityNeedsAttention)
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.orange)
+
+                    ForEach(identityManager.health.issues, id: \.self) { issue in
+                        Text("• \(issue.description)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .padding(.vertical, 4)
+            }
+
+            HStack {
+                Spacer()
+                Button {
+                    checkAllPermissions()
+                } label: {
+                    HStack(spacing: 4) {
+                        if isChecking {
+                            ProgressView()
+                                .controlSize(.small)
+                        } else {
+                            Image(systemName: "arrow.clockwise")
+                        }
+                        Text(L10n.Onboarding.refreshStatus)
+                    }
+                }
+                .disabled(isChecking)
+            }
+            .padding(.top, 4)
         }
-        .preferencesFormStyle()
         .onAppear {
             hasAppeared = true
             checkAllPermissions()
@@ -282,6 +279,9 @@ struct PermissionsSettingsView: View {
 }
 
 #Preview {
-    PermissionsSettingsView()
-        .frame(width: 600, height: 400)
+    Form {
+        PermissionsSettingsSection()
+    }
+    .preferencesFormStyle()
+    .frame(width: 600, height: 400)
 }

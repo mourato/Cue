@@ -105,7 +105,7 @@ final class CueDeepLinkHandlerTests: XCTestCase {
             ("quick-access", .quickAccess),
             ("history", .history),
             ("shortcuts", .shortcuts),
-            ("permissions", .permissions),
+            ("permissions", .advanced),
             ("uploads", .cloud),
             ("advanced", .advanced),
         ]

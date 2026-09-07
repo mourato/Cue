@@ -129,12 +129,11 @@ final class PreferencesCoreTests: XCTestCase {
             .quickAccess,
             .history,
             .shortcuts,
-            .permissions,
             .cloud,
             .advanced,
         ]
 
-        XCTAssertEqual(tabs.count, 9)
+        XCTAssertEqual(tabs.count, 8)
     }
 
     func testPreferencesNumericPickerValue_sanitizesAndBoundsCustomInput() {
@@ -199,6 +198,13 @@ final class PreferencesCoreTests: XCTestCase {
 
         defaults.set("annotate", forKey: PreferencesKeys.selectedPreferencesTab)
         XCTAssertEqual(PreferencesNavigationState(userDefaults: defaults).selectedTab, .general)
+    }
+
+    @MainActor
+    func testSelectedPreferencesTab_mapsLegacyPermissionsToAdvanced() throws {
+        let defaults = try makeDefaults()
+        defaults.set("permissions", forKey: PreferencesKeys.selectedPreferencesTab)
+        XCTAssertEqual(PreferencesNavigationState(userDefaults: defaults).selectedTab, .advanced)
     }
 
     func testTotalLogFileSize_sumsFilesAndIgnoresMissingDirectory() throws {
