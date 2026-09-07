@@ -8,11 +8,30 @@ DEBUG_BUNDLE_IDENTIFIER="com.mourato.cue.debug"
 SCHEME="Cue"
 PROJECT="Cue.xcodeproj"
 LOG_SUBSYSTEM="${LOG_SUBSYSTEM:-Cue}"
-# The existing local development identity shared with Vozinha. Override this for
-# a different local keychain identity without changing project settings.
-LOCAL_CODE_SIGN_IDENTITY="${LOCAL_CODE_SIGN_IDENTITY:-Prisma Local Code Signing}"
-LOCAL_ENABLE_HARDENED_RUNTIME="${LOCAL_ENABLE_HARDENED_RUNTIME:-NO}"
+# Use the Apple Development identity for local builds. Override this for a
+# different local keychain identity without changing project settings.
+LOCAL_CODE_SIGN_IDENTITY="${LOCAL_CODE_SIGN_IDENTITY:-Apple Development}"
 APPLICATIONS_DIR="${APPLICATIONS_DIR:-/Applications}"
+
+resolve_signing_identity() {
+  local requested="$1"
+  local hash=""
+  local name=""
+
+  if [[ "${requested}" =~ ^[[:xdigit:]]{40}$ ]]; then
+    printf '%s\n' "${requested}"
+    return 0
+  fi
+
+  while IFS=$'\t' read -r hash name; do
+    if [[ "${name}" == "${requested}" || ( "${requested}" == "Apple Development" && "${name}" == "Apple Development:"* ) ]]; then
+      printf '%s\n' "${hash}"
+      return 0
+    fi
+  done < <(security find-identity -v -p codesigning 2>/dev/null | sed -nE 's/^[[:space:]]*[0-9]+\) ([[:xdigit:]]{40}) "([^"]+)".*/\1\t\2/p')
+
+  fail "Signing identity not found: ${requested}"
+}
 
 MODE="run"
 CONFIGURATION="${CONFIGURATION:-Debug}"
@@ -454,16 +473,13 @@ run_xcodebuild() {
     -derivedDataPath "$DERIVED_DATA_PATH"
   )
 
-  # The project targets an unavailable legacy development team. Use the shared
-  # Vozinha identity for local app bundles instead. Its local, team-less
-  # certificate is intended for local builds, so hardened runtime is disabled
-  # by default. A trusted Apple distribution identity can opt in with
-  # LOCAL_ENABLE_HARDENED_RUNTIME=YES.
+  # Build without provisioning, then apply the selected local Apple Development
+  # identity directly to the finished app bundle.
   args+=(
-    "CODE_SIGN_STYLE=Manual"
-    "CODE_SIGN_IDENTITY=$LOCAL_CODE_SIGN_IDENTITY"
+    "CODE_SIGN_IDENTITY=-"
+    "CODE_SIGNING_ALLOWED=NO"
+    "CODE_SIGNING_REQUIRED=NO"
     "DEVELOPMENT_TEAM="
-    "ENABLE_HARDENED_RUNTIME=$LOCAL_ENABLE_HARDENED_RUNTIME"
   )
   if [[ "$CONFIGURATION" != Debug* ]]; then
     # Xcode 17's Swift 6.3.3 whole-module optimizer crashes while compiling
@@ -510,6 +526,10 @@ build_app() {
 
   local app_bundle
   app_bundle="$(app_bundle_path)"
+  local resolved_signing_identity
+  resolved_signing_identity="$(resolve_signing_identity "$LOCAL_CODE_SIGN_IDENTITY")"
+  info "Signing $APP_NAME with Apple Development identity..."
+  /usr/bin/codesign --force --deep --timestamp=none --sign "$resolved_signing_identity" "$app_bundle" || fail "Could not sign app bundle: $app_bundle"
   validate_app_bundle "$app_bundle" || fail "Built app bundle failed validation: $app_bundle"
 
   success "Build ready: $app_bundle"
