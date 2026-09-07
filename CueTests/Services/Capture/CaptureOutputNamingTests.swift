@@ -41,6 +41,30 @@ final class CaptureOutputNamingTests: XCTestCase {
         XCTAssertEqual(result, "My Screenshot")
     }
 
+    func testResolveBaseName_addsRetinaSuffixWhenEnabled() {
+        defaults.set(true, forKey: PreferencesKeys.screenshotAddRetinaSuffix)
+
+        let result = CaptureOutputNaming.resolveBaseName(
+            customName: "My Screenshot",
+            kind: .screenshot,
+            defaults: defaults,
+            scaleFactor: 2,
+        )
+
+        XCTAssertEqual(result, "My Screenshot@2x")
+    }
+
+    func testMakeRenamedFileURL_sanitizesNameAndKeepsExtension() {
+        let sourceURL = tempDirectory.appendingPathComponent("capture.png")
+
+        let result = CaptureOutputNaming.makeRenamedFileURL(
+            for: sourceURL,
+            requestedName: "  Design: handoff.png  ",
+        )
+
+        XCTAssertEqual(result?.lastPathComponent, "Design_ handoff.png")
+    }
+
     func testResolveBaseName_withNilCustomName_fallsBackToTemplate() {
         let result = CaptureOutputNaming.resolveBaseName(
             customName: nil,

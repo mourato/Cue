@@ -78,6 +78,13 @@ final class PreferencesCoreTests: XCTestCase {
         XCTAssertEqual(HistoryBackgroundStyle.currentStoredStyle(userDefaults: defaults), .hud)
     }
 
+    func testCaptureHistoryRetention_mapsStoredDurations() {
+        XCTAssertEqual(CaptureHistoryRetention(enabled: true, days: 30), .month)
+        XCTAssertEqual(CaptureHistoryRetention(enabled: false, days: 30), .disabled)
+        XCTAssertEqual(CaptureHistoryRetention(enabled: true, days: 0), .forever)
+        XCTAssertEqual(CaptureHistoryRetention(enabled: true, days: 7).days, 7)
+    }
+
     func testAnnotateClipboardImageBehaviorStored_readsValidValueAndFallsBackToAsk() throws {
         let defaults = try makeDefaults()
         XCTAssertEqual(AnnotateClipboardImageBehavior.stored(userDefaults: defaults), .ask)

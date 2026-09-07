@@ -195,6 +195,176 @@ nonisolated enum L10n {
             defaultValue: "Integration",
             comment: "Advanced preferences integration section title",
         )
+        static let fileNameSection = string(
+            "preferences-advanced.file-name-section",
+            defaultValue: "File Name",
+            comment: "Advanced preferences file name section title",
+        )
+        static let clipboardSection = string(
+            "preferences-advanced.clipboard-section",
+            defaultValue: "Clipboard",
+            comment: "Advanced preferences clipboard section title",
+        )
+        static let captureHistorySection = string(
+            "preferences-advanced.capture-history-section",
+            defaultValue: "Capture History",
+            comment: "Advanced preferences capture history section title",
+        )
+        static let textRecognitionSection = string(
+            "preferences-advanced.text-recognition-section",
+            defaultValue: "Text Recognition",
+            comment: "Advanced preferences text recognition section title",
+        )
+        static let allInOneSection = string(
+            "preferences-advanced.all-in-one-section",
+            defaultValue: "All-In-One",
+            comment: "Advanced preferences All-In-One section title",
+        )
+        static let askForNameTitle = string(
+            "preferences-advanced.ask-for-name-title",
+            defaultValue: "Ask for name after every capture",
+            comment: "Advanced preferences capture naming toggle",
+        )
+        static let fileNameFormatTitle = string(
+            "preferences-advanced.file-name-format-title",
+            defaultValue: "File name format",
+            comment: "Advanced preferences filename format row",
+        )
+        static let customizeButton = string(
+            "preferences-advanced.customize-button",
+            defaultValue: "Customize…",
+            comment: "Advanced preferences filename customization button",
+        )
+        static let retinaSuffixTitle = string(
+            "preferences-advanced.retina-suffix-title",
+            defaultValue: "Add \"@2x\" suffix to Retina screenshots",
+            comment: "Advanced preferences Retina filename suffix toggle",
+        )
+        static let retinaSuffixDescription = string(
+            "preferences-advanced.retina-suffix-description",
+            defaultValue: "This option improves compatibility with displaying Retina screenshots in third-party apps.",
+            comment: "Advanced preferences Retina filename suffix explanation",
+        )
+        static let copyToClipboardTitle = string(
+            "preferences-advanced.copy-to-clipboard-title",
+            defaultValue: "Copy to clipboard",
+            comment: "Advanced preferences clipboard format row",
+        )
+        static let copyToClipboardDescription = string(
+            "preferences-advanced.copy-to-clipboard-description",
+            defaultValue: "Adjust this option if you've encountered any issues with pasting from clipboard or clipboard managers.",
+            comment: "Advanced preferences clipboard format explanation",
+        )
+        static let clipboardFileAndImage = string(
+            "preferences-advanced.clipboard-file-and-image",
+            defaultValue: "File & Image (default)",
+            comment: "Clipboard copy mode option",
+        )
+        static let clipboardFileOnly = string(
+            "preferences-advanced.clipboard-file-only",
+            defaultValue: "File",
+            comment: "Clipboard copy mode option",
+        )
+        static let clipboardImageOnly = string(
+            "preferences-advanced.clipboard-image-only",
+            defaultValue: "Image",
+            comment: "Clipboard copy mode option",
+        )
+        static let keepHistoryTitle = string(
+            "preferences-advanced.keep-history-title",
+            defaultValue: "Keep history",
+            comment: "Advanced preferences capture history retention row",
+        )
+        static let keepHistoryDescription = string(
+            "preferences-advanced.keep-history-description",
+            defaultValue: "You can restore old files with the Capture History option from the menu bar.",
+            comment: "Advanced preferences capture history retention explanation",
+        )
+        static let historyDisabled = string(
+            "preferences-advanced.history-disabled",
+            defaultValue: "Off",
+            comment: "Capture history retention option",
+        )
+        static let historyOneWeek = string(
+            "preferences-advanced.history-one-week",
+            defaultValue: "1 week",
+            comment: "Capture history retention option",
+        )
+        static let historyOneMonth = string(
+            "preferences-advanced.history-one-month",
+            defaultValue: "1 month",
+            comment: "Capture history retention option",
+        )
+        static let historyThreeMonths = string(
+            "preferences-advanced.history-three-months",
+            defaultValue: "3 months",
+            comment: "Capture history retention option",
+        )
+        static let ocrLanguageTitle = string(
+            "preferences-advanced.ocr-language-title",
+            defaultValue: "Language",
+            comment: "Advanced preferences OCR language row",
+        )
+        static let ocrAutomaticLanguage = string(
+            "preferences-advanced.ocr-automatic-language",
+            defaultValue: "Automatically Detect Language",
+            comment: "Advanced preferences OCR automatic language option",
+        )
+        static let keepLineBreaksTitle = string(
+            "preferences-advanced.keep-line-breaks-title",
+            defaultValue: "Keep line breaks",
+            comment: "Advanced preferences OCR line break toggle",
+        )
+        static let detectLinksTitle = string(
+            "preferences-advanced.detect-links-title",
+            defaultValue: "Detect links",
+            comment: "Advanced preferences OCR link detection toggle",
+        )
+        static let rememberLastSelectionTitle = string(
+            "preferences-advanced.remember-last-selection-title",
+            defaultValue: "Remember last selection",
+            comment: "Advanced preferences All-In-One selection toggle",
+        )
+        static let urlSchemeAPITitle = string(
+            "preferences-advanced.url-scheme-api-title",
+            defaultValue: "URL scheme API",
+            comment: "Advanced preferences build-configured URL scheme row",
+        )
+        static let urlSchemeAPIDescription = string(
+            "preferences-advanced.url-scheme-api-description",
+            defaultValue: "The scheme used by external capture and automation links.",
+            comment: "Advanced preferences build-configured URL scheme explanation",
+        )
+        static let screenshotFileNameFormat = string(
+            "preferences-advanced.screenshot-file-name-format",
+            defaultValue: "Screenshot",
+            comment: "Advanced filename editor screenshot field",
+        )
+        static let recordingFileNameFormat = string(
+            "preferences-advanced.recording-file-name-format",
+            defaultValue: "Recording",
+            comment: "Advanced filename editor recording field",
+        )
+        static let fileNameFormatHint = string(
+            "preferences-advanced.file-name-format-hint",
+            defaultValue: "Use the same tokens as the Screenshot settings filename editor.",
+            comment: "Advanced filename editor hint",
+        )
+        static let captureNamePromptTitle = string(
+            "preferences-advanced.capture-name-prompt-title",
+            defaultValue: "Name capture",
+            comment: "Capture filename prompt title",
+        )
+        static let captureNamePromptMessage = string(
+            "preferences-advanced.capture-name-prompt-message",
+            defaultValue: "Choose a name for this capture.",
+            comment: "Capture filename prompt message",
+        )
+        static let captureNamePromptPlaceholder = string(
+            "preferences-advanced.capture-name-prompt-placeholder",
+            defaultValue: "File name",
+            comment: "Capture filename prompt placeholder",
+        )
         static let optionalModulesSection = string(
             "preferences-advanced.optional-modules-section",
             defaultValue: "Optional modules",
@@ -221,8 +391,8 @@ nonisolated enum L10n {
             comment: "Advanced preferences setting title",
         )
         static let urlSchemeDescription = string(
-            "preferences-advanced.url-scheme-description",
-            defaultValue: "Allow external triggers via cue:// URLs",
+            "preferences-advanced.url-scheme-description-v2",
+            defaultValue: "Allow external triggers via the URL scheme API",
             comment: "Advanced preferences setting description",
         )
         static let diagnosticsSection = PreferencesGeneral.diagnosticsSection

@@ -139,6 +139,42 @@ enum ClipboardHelper {
         logger.info("Clipboard: copied file \(url.lastPathComponent)")
     }
 
+    /// Copy image pixels without exposing the source file URL.
+    static func copyImageOnly(from url: URL, to pasteboard: NSPasteboard = .general) {
+        guard let image = NSImage(contentsOf: url) else {
+            logger.error("ClipboardHelper: could not decode image \(url.lastPathComponent)")
+            return
+        }
+        pasteboard.clearContents()
+        pasteboard.writeObjects([image])
+    }
+
+    static func copyImagesOnly(from urls: [URL], to pasteboard: NSPasteboard = .general) {
+        let images = urls.compactMap { NSImage(contentsOf: $0) }
+        guard !images.isEmpty else { return }
+        pasteboard.clearContents()
+        pasteboard.writeObjects(images)
+    }
+
+    /// Copy multiple screenshots while keeping file and image representations on each item.
+    static func copyImagesAndFiles(from urls: [URL], to pasteboard: NSPasteboard = .general) {
+        guard !urls.isEmpty else { return }
+        pasteboard.clearContents()
+        guard pasteboard.writeObjects(urls.map { $0 as NSURL }),
+              let items = pasteboard.pasteboardItems else { return }
+
+        for (index, url) in urls.enumerated() where index < items.count {
+            let image = NSImage(contentsOf: url)
+            if let encodedData = try? Data(contentsOf: url),
+               let encodedType = pasteboardImageType(for: url.pathExtension) {
+                items[index].setData(encodedData, forType: encodedType)
+            }
+            if let tiffData = image?.tiffRepresentation {
+                items[index].setData(tiffData, forType: .tiff)
+            }
+        }
+    }
+
     /// Off-main variant of `copyImage(from:)` for the post-save re-copy path.
     /// File read, image decode and TIFF encode (the expensive parts, 50-150ms+ for
     /// Retina captures) run on the calling background queue; only the pasteboard

@@ -140,7 +140,8 @@ final class AllInOneCaptureCoordinator {
         installModeShortcutMonitorsIfNeeded()
 
         let screenFrames = NSScreen.screens.map(\.frame)
-        if let lastRect = CaptureLastSelectionStore.load(userDefaults: .standard, screens: screenFrames) {
+        if CaptureLastSelectionStore.isEnabled(userDefaults: .standard),
+           let lastRect = CaptureLastSelectionStore.load(userDefaults: .standard, screens: screenFrames) {
             showFrozenBackdropHostIfNeeded()
             beginRefinement(with: lastRect, generation: generation)
         } else {
@@ -363,7 +364,9 @@ final class AllInOneCaptureCoordinator {
         frozenSession = nil
 
         if let rect, mode.preservesSelectionRect {
-            CaptureLastSelectionStore.save(rect, userDefaults: .standard)
+            if CaptureLastSelectionStore.isEnabled(userDefaults: .standard) {
+                CaptureLastSelectionStore.save(rect, userDefaults: .standard)
+            }
         }
 
         if case let .timer(rect) = command {

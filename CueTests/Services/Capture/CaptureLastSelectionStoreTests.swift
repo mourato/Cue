@@ -36,6 +36,14 @@ final class CaptureLastSelectionStoreTests: XCTestCase {
         XCTAssertNil(CaptureLastSelectionStore.load(userDefaults: defaults, screens: screens))
     }
 
+    func testIsEnabled_defaultsToTrueAndHonorsPreference() {
+        XCTAssertTrue(CaptureLastSelectionStore.isEnabled(userDefaults: defaults))
+
+        defaults.set(false, forKey: PreferencesKeys.captureAllInOneRememberLastSelection)
+
+        XCTAssertFalse(CaptureLastSelectionStore.isEnabled(userDefaults: defaults))
+    }
+
     func testLoad_rejectsRectThatDoesNotIntersectAnyScreen() {
         let rect = CGRect(x: 5000, y: 5000, width: 200, height: 200)
         let screens = [CGRect(x: 0, y: 0, width: 1440, height: 900)]

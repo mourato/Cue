@@ -1018,6 +1018,7 @@ final class ScreenCaptureManager: ObservableObject {
             customName: fileName,
             kind: .screenshot,
             context: context,
+            scaleFactor: scaleFactor,
         )
         let fileExtension = format.fileExtension
 

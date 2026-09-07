@@ -60,6 +60,9 @@ enum PreferencesKeys {
     static let screenshotFormat = "screenshot.format"
     static let screenshotJpegQuality = "screenshot.jpegQuality"
     static let screenshotFileNameTemplate = "screenshot.fileNameTemplate"
+    static let captureAskForNameAfterCapture = "capture.askForNameAfterCapture"
+    static let screenshotAddRetinaSuffix = "screenshot.addRetinaSuffix"
+    static let clipboardCopyMode = "clipboard.copyMode"
     static let screenshotIncludeOwnApp = "screenshot.includeOwnApp"
     static let screenshotShowCursor = "screenshot.showCursor"
     static let screenshotFreezeArea = "screenshot.freezeArea"
@@ -68,6 +71,7 @@ enum PreferencesKeys {
     static let screenshotReverseMagnifierZoomDirection = "screenshot.reverseMagnifierZoomDirection"
     static let scrollingCaptureShowHints = "scrollingCapture.showHints"
     static let captureAllInOneLastAreaRect = "capture.allInOne.lastAreaRect"
+    static let captureAllInOneRememberLastSelection = "capture.allInOne.rememberLastSelection"
     static let captureAllInOneAspectRatioLocked = "capture.allInOne.aspectRatioLocked"
     static let captureAllInOneModeOrder = "capture.allInOne.modeOrder.v1"
     static let captureAllInOneEnabledModes = "capture.allInOne.enabledModes.v1"
@@ -101,6 +105,8 @@ enum PreferencesKeys {
     static let annotateFavoriteColors = "annotate.favoriteColors.v1"
     static let ocrSuccessNotificationEnabled = "ocr.successNotificationEnabled"
     static let ocrLinkDetectionEnabled = "ocr.linkDetectionEnabled"
+    static let ocrLanguage = "ocr.language"
+    static let ocrKeepLineBreaks = "ocr.keepLineBreaks"
 
     // Floating Screenshot (Quick Access)
     static let floatingEnabled = "floatingScreenshot.enabled"

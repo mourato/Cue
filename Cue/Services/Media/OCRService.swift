@@ -99,6 +99,7 @@ final class OCRService {
             image: normalizedImage,
             preferredLanguageIdentifier: request.preferredLanguageIdentifier,
             contentType: request.contentType,
+            keepLineBreaks: request.keepLineBreaks,
         )
 
         let profile = VisionOCRProfile.resolve(for: request)
@@ -130,6 +131,7 @@ final class OCRService {
                     image: enhancedImage,
                     preferredLanguageIdentifier: request.preferredLanguageIdentifier,
                     contentType: request.contentType,
+                    keepLineBreaks: request.keepLineBreaks,
                 )
 
                 DiagnosticLogger.shared.log(
@@ -162,6 +164,7 @@ final class OCRService {
                 image: verticalImage,
                 preferredLanguageIdentifier: request.preferredLanguageIdentifier,
                 contentType: request.contentType,
+                keepLineBreaks: request.keepLineBreaks,
             )
             let verticalProfiles = uniqueProfiles(
                 [profile]
@@ -218,12 +221,14 @@ final class OCRService {
         from image: CGImage,
         preferredLanguageIdentifier: String? = nil,
         contentType: OCRContentType = .interfaceText,
+        keepLineBreaks: Bool = true,
     ) async throws -> String {
         let result = try await recognize(
             OCRRequest(
                 image: image,
                 preferredLanguageIdentifier: preferredLanguageIdentifier,
                 contentType: contentType,
+                keepLineBreaks: keepLineBreaks,
             ),
         )
         return result.text
@@ -236,6 +241,7 @@ final class OCRService {
         from image: NSImage,
         preferredLanguageIdentifier: String? = nil,
         contentType: OCRContentType = .interfaceText,
+        keepLineBreaks: Bool = true,
     ) async throws -> String {
         guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
             DiagnosticLogger.shared.log(.error, .ocr, "NSImage to CGImage conversion failed")
@@ -245,6 +251,7 @@ final class OCRService {
             from: cgImage,
             preferredLanguageIdentifier: preferredLanguageIdentifier,
             contentType: contentType,
+            keepLineBreaks: keepLineBreaks,
         )
     }
 
@@ -599,6 +606,11 @@ final class OCRService {
     }
 
     private func formatText(from lines: [OCRTextLine], request: OCRRequest) -> String {
+        guard request.keepLineBreaks else {
+            return lines.map { $0.text.trimmingCharacters(in: .whitespacesAndNewlines) }
+                .filter { !$0.isEmpty }
+                .joined(separator: " ")
+        }
         let paragraphs = groupParagraphs(from: lines)
         let formattedParagraphs = paragraphs.map { paragraph -> String in
             if shouldReflowParagraph(paragraph, request: request) {
