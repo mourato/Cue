@@ -144,7 +144,7 @@ nonisolated enum L10n {
         )
         static let captureTab = string(
             "preferences.tab.capture",
-            defaultValue: "Capture",
+            defaultValue: "Screenshot",
             comment: "Preferences tab title",
         )
         static let annotateTab = string(
@@ -2701,6 +2701,16 @@ nonisolated enum L10n {
             defaultValue: "Output",
             comment: "Capture preferences section title",
         )
+        static let captureSection = string(
+            "preferences-capture.section-capture",
+            defaultValue: "Capture",
+            comment: "Capture preferences section title",
+        )
+        static let windowScreenshotsSection = string(
+            "preferences-capture.section-window-screenshots",
+            defaultValue: "Window Screenshots",
+            comment: "Capture preferences section title",
+        )
         static let postProcessingSection = string(
             "preferences-capture.section-post-processing",
             defaultValue: "Post-Processing",
@@ -2923,6 +2933,11 @@ nonisolated enum L10n {
             defaultValue: "Include mouse pointer in captured screenshots",
             comment: "Capture preferences setting description",
         )
+        static let showCursorFootnote = string(
+            "preferences-capture.show-cursor-footnote",
+            defaultValue: "This works in Fullscreen or Self-Timer modes only.",
+            comment: "Footnote for the screenshot cursor setting",
+        )
         static let freezeAreaTitle = string(
             "preferences-capture.freeze-area-title",
             defaultValue: "Freeze screen",
@@ -3041,6 +3056,26 @@ nonisolated enum L10n {
             "preferences-capture.reset-naming-defaults",
             defaultValue: "Reset Naming Defaults",
             comment: "Button title to reset filename templates",
+        )
+        static let resetScreenshotDefaults = string(
+            "preferences-capture.reset-screenshot-defaults",
+            defaultValue: "Reset Screenshot Defaults",
+            comment: "Button title to reset only the displayed screenshot settings",
+        )
+        static let resetScreenshotDefaultsConfirmationTitle = string(
+            "preferences-capture.reset-screenshot-defaults-confirmation-title",
+            defaultValue: "Reset screenshot defaults?",
+            comment: "Screenshot settings reset confirmation alert title",
+        )
+        static let resetScreenshotDefaultsConfirmationMessage = string(
+            "preferences-capture.reset-screenshot-defaults-confirmation-message",
+            defaultValue: "This resets only the displayed screenshot settings. Filename templates and other preferences stay unchanged.",
+            comment: "Screenshot settings reset confirmation alert message",
+        )
+        static let resetScreenshotDefaultsConfirmButton = string(
+            "preferences-capture.reset-screenshot-defaults-confirm-button",
+            defaultValue: "Reset Defaults",
+            comment: "Destructive confirmation button for screenshot settings reset",
         )
         static let videoFormatTitle = string(
             "preferences-capture.video-format-title",
