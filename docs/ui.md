@@ -77,7 +77,7 @@ second canonical design-system document.
 - Selected rectangles, including note rectangles, expose corner and midpoint
   side handles; a side drag changes one dimension while keeping the opposite
   edge fixed and respecting the minimum size.
-- The **Uploads** preferences tab owns both hosting-provider configuration and
+- The **Uploads** preferences destination owns both hosting-provider configuration and
   image upload encoding controls. Upload optimization creates a temporary
   derivative for the provider; it never changes the local capture or the
   annotation source.
@@ -153,6 +153,9 @@ second canonical design-system document.
 - The clipboard handoff action is the primary labeled action in the bottom
   action island; secondary actions may remain icon-only with explicit tooltips
   and accessibility labels.
+- Preferences navigation uses the native `NavigationSplitView` sidebar with
+  the selected destination persisted through `PreferencesNavigationState`;
+  settings content remains in the detail column.
 - Scrolling-capture floats are content-only: the preview card shows the
   stitched image with no header, badge, caption, padding, or border (the
   image fills 100% of the card), and the control island shows only the
@@ -166,7 +169,7 @@ second canonical design-system document.
   available for reorderable lists. Every `Toggle`, `Picker`, `TextField`, and
   `Slider` in a row carries an explicit `.accessibilityLabel` (the row title)
   even when `.labelsHidden()` hides its visual label.
-- The **Screen Recording** preferences tab follows the same plain-row rule and
+- The **Screen Recording** preferences destination follows the same plain-row rule and
   mirrors the reference layout (General / Cursor / Keystrokes / Video / Audio
   / GIF) with subtitles, inline `Options…` popovers, and value pickers — no
   `SettingRow` icons. Click-highlight and keystroke detail controls live in
@@ -176,7 +179,7 @@ second canonical design-system document.
   `SystemWallpaperManager.downsampledPreviewImage(at:maxPixelSize:)` (512px
   for Quick Access cards), never through full-resolution
   `NSImage(contentsOf:)`.
-- `PreferencesNavigationState` persists the last visited tab under
+- `PreferencesNavigationState` persists the last visited sidebar destination under
   `preferences.selectedTab` and restores it on launch.
 
 ## States and accessibility
