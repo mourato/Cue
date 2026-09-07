@@ -234,7 +234,7 @@
                     .padding(.vertical, 4)
                 }
             }
-            .formStyle(.grouped)
+            .preferencesFormStyle()
         }
 
         private func gifResolutionLabel(for width: Int) -> String {

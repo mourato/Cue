@@ -155,7 +155,10 @@ second canonical design-system document.
   and accessibility labels.
 - Preferences navigation uses the native `NavigationSplitView` sidebar with
   the selected destination persisted through `PreferencesNavigationState`;
-  settings content remains in the detail column.
+  settings content remains in the detail column. The Settings window uses a
+  compact unified toolbar (traffic lights aligned with the sidebar toggle) and
+  destination `Form`s use `preferencesFormStyle()` so the first section sits
+  close under the toolbar without an empty title band.
 - Scrolling-capture floats are content-only: the preview card shows the
   stitched image with no header, badge, caption, padding, or border (the
   image fills 100% of the card), and the control island shows only the

@@ -140,7 +140,7 @@ struct HistorySettingsView: View {
                 }
             }
         }
-        .formStyle(.grouped)
+        .preferencesFormStyle()
         .onAppear {
             updateCaptureStorageSize()
             reconcileDefaultFilter()
