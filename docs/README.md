@@ -16,7 +16,7 @@ Cue optimizes **capture → annotate with numbered pins/notes → clipboard expo
 | [STRUCTURE.md](STRUCTURE.md) | Source tree and runtime ownership |
 | [APP_LIFECYCLE.md](APP_LIFECYCLE.md) | Launch, onboarding, menu bar, migrations |
 | [SHORTCUTS.md](SHORTCUTS.md) | Hotkeys and `cue://` automation |
-| [PREFERENCES.md](PREFERENCES.md) | Settings tabs and storage keys |
+| [PREFERENCES.md](PREFERENCES.md) | Settings sidebar and storage keys |
 | [CONFIGURATION.md](CONFIGURATION.md) | `~/.config/cue/config.toml` |
 | [UPDATES.md](UPDATES.md) | Local diagnostics (no Sparkle) |
 | [RELEASES.md](RELEASES.md) | GitHub Release / DMG workflow |

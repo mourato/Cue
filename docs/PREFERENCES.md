@@ -1,11 +1,11 @@
 # Preferences
 
-Reference for the Settings window: tab structure, every section, and how preferences are stored. Verified against `Cue/Features/Preferences/` at HEAD (`v1.30.0-beta.4`).
+Reference for the Settings window: sidebar structure, every section, and how preferences are stored. Verified against `Cue/Features/Preferences/` at HEAD (`v1.30.0-beta.4`).
 
 ## Root
 
-- `PreferencesView` (`Cue/Features/Preferences/PreferencesView.swift`) — SwiftUI `TabView`, fixed 760×550, eight tabs when Video is off / nine with Screen Recording (no About/update/report tab; no dedicated Annotate tab).
-- Selection driven by `PreferencesNavigationState.shared.selectedTab` (`Models/PreferencesNavigationState.swift`, `PreferencesTab` enum) — set programmatically from menu bar, deep links (`cue://settings?tab=`, see [SHORTCUTS.md](SHORTCUTS.md)), and the shortcut overlay. Legacy `annotate` tab deep links open **General**.
+- `PreferencesView` (`Cue/Features/Preferences/PreferencesView.swift`) — SwiftUI `NavigationSplitView` with a native sidebar, fixed 760×550, eight destinations when Video is off / nine with Screen Recording (no About/update/report destination; no dedicated Annotate destination).
+- Selection driven by `PreferencesNavigationState.shared.selectedTab` (`Models/PreferencesNavigationState.swift`, `PreferencesTab` enum) — set programmatically from menu bar, deep links (`cue://settings?tab=`, see [SHORTCUTS.md](SHORTCUTS.md)), and the shortcut overlay. Legacy `annotate` deep links open **General**.
 - Presented through the `Settings` scene in `CueApp`; activation-policy dance handled by `AppStatusBarController` (see [APP_LIFECYCLE.md](APP_LIFECYCLE.md)).
 
 ## Storage pattern
@@ -22,7 +22,7 @@ token generation, explicit reveal/copy actions, a link to the official
 Worker documentation, and Verify Connection. Uploads remain manual; no provider
 fallback is automatic.
 
-## Tabs
+## Sidebar destinations
 
 ### General (`PreferencesGeneralSettingsView.swift`)
 
@@ -45,8 +45,8 @@ fallback is automatic.
 
 ### Capture / Screenshot (`PreferencesCaptureSettingsView.swift`)
 
-Screenshot-oriented pane (tab label **Screenshot**). Screen recording lives on its
-own tab when the Video module is compiled in.
+Screenshot-oriented destination (sidebar label **Screenshot**). Screen recording
+gets its own sidebar destination when the Video module is compiled in.
 
 - **Output**: Image Format (`screenshot.format`, `ImageFormatOption`; WebP warning, JPEG cutout note) + default annotate canvas preset (`PreferencesScreenshotDefaultPresetPicker`).
 - **Capture**: Include Cue windows (`screenshot.includeOwnApp`), Show Cursor (`screenshot.showCursor`), Freeze Area (`screenshot.freezeArea`).
@@ -58,7 +58,7 @@ own tab when the Video module is compiled in.
 
 ### Screen Recording (`PreferencesScreenRecordingSettingsView.swift`)
 
-Optional Video-module tab: format, quality, cursor/camera preview, hover bar,
+Optional Video-module destination: format, quality, cursor/camera preview, hover bar,
 mouse highlight, keystroke overlay, and audio/microphone controls. See the
 Screen Recording settings view for the current control set.
 
@@ -125,7 +125,7 @@ flowchart LR
 ## Related docs
 
 - [SHORTCUTS.md](SHORTCUTS.md) — shortcut mechanics, defaults, conflicts
-- [CLOUD.md](CLOUD.md) — Uploads tab and image-host sharing boundary
+- [CLOUD.md](CLOUD.md) — Uploads settings and image-host sharing boundary
 - [UPDATES.md](UPDATES.md) — local diagnostics and manual upgrade notes
 - [APP_LIFECYCLE.md](APP_LIFECYCLE.md) — seeded defaults, activation policy, onboarding
 - [CONFIGURATION.md](CONFIGURATION.md) — TOML backup/sync of these prefs

@@ -16,7 +16,7 @@ Separated feature docs cover each runtime area in depth:
 - [`VIDEO_EDITOR.md`](VIDEO_EDITOR.md) — Video trim/zoom/speed editing and export
 - [`CLOUD.md`](CLOUD.md) — Local sharing, direct providers, and limited BYO Cloudflare boundary
 - [`SHORTCUTS.md`](SHORTCUTS.md) — Global/overlay shortcut registration and conflicts
-- [`PREFERENCES.md`](PREFERENCES.md) — Settings tabs, preference storage, defaults
+- [`PREFERENCES.md`](PREFERENCES.md) — Settings sidebar, preference storage, defaults
 - [`APP_LIFECYCLE.md`](APP_LIFECYCLE.md) — Launch sequence, onboarding, menu bar bootstrap
 - [`UPDATES.md`](UPDATES.md) — local diagnostics, logs, manual upgrade notes
 
@@ -231,7 +231,7 @@ CueUITests/
 | `Features/QuickAccess/` | Floating post-capture stack, temp-file persistence UX, drag-to-app, pinned screenshot windows |
 | `Features/Annotate/` | Image editor, export, crop, blur, mockup, cutout-aware editing, inline area annotate |
 | `Features/VideoEditor/` | Trim, zoom, speed (timelapse) segments, background, Smart Camera, GIF/video export |
-| `Features/Preferences/` | General, Capture, Annotate, Quick Access, History, Shortcuts, Permissions, Uploads, Advanced tabs |
+| `Features/Preferences/` | General, Capture, Annotate, Quick Access, History, Shortcuts, Permissions, Uploads, Advanced settings destinations |
 | `Features/Shortcuts/` | Keyboard shortcut cheat-sheet overlay |
 
 ## Service Roots

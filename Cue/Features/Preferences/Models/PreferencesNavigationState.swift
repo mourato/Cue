@@ -2,7 +2,7 @@
 //  PreferencesNavigationState.swift
 //  Notinhas
 //
-//  Shared navigation state for selecting Preferences tabs programmatically.
+//  Shared navigation state for selecting Preferences destinations programmatically.
 //
 
 import Combine

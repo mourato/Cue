@@ -21,7 +21,7 @@ flowchart TD
 - Engine: `KeyboardShortcutManager.shared` (`Cue/Services/Shortcuts/KeyboardShortcutManager.swift`) — Carbon `RegisterEventHotKey` / `UnregisterEventHotKey`; hotkey IDs use signatures `ZSF1`…`ZSFK` (`0x5A53_46xx`).
 - Config model: `ShortcutConfig { keyCode: UInt32, modifiers: UInt32 }` (Carbon modifiers), persisted as JSON in UserDefaults under per-shortcut keys (`fullscreenShortcut`, `areaShortcut`, `recordingShortcut`, …).
 - Fn modifier: custom bit `ShortcutConfig.functionCarbonModifier = 0x2000`. Carbon `RegisterEventHotKey` cannot express Fn, so Fn-containing configs are **not** Carbon-registered — they are collected into `fnBindings` and dispatched via global+local `NSEvent` keyDown monitors (`updateFnMonitors()` / `handleFnKeyDown`), matched exactly (keyCode + full modifier set incl. Fn) by `ShortcutConfig.matches(event:)`. Fn-only combos (e.g. `fn+F3`) and Fn+modifier combos (e.g. `fn+⌘+F3`) both fire; the non-Fn sibling combo is never hijacked.
-  - Requires Accessibility permission (global key monitors silently deliver nothing without it) — the Shortcuts settings tab shows a hint row when an Fn binding exists but `AXIsProcessTrusted()` is false (`KeyboardShortcutManager.hasFnBoundShortcuts`).
+  - Requires Accessibility permission (global key monitors silently deliver nothing without it) — the Shortcuts settings destination shows a hint row when an Fn binding exists but `AXIsProcessTrusted()` is false (`KeyboardShortcutManager.hasFnBoundShortcuts`).
   - Monitors are passive: unlike Carbon hotkeys, the frontmost app still receives the keystroke.
   - Monitors are installed only while `shouldRegisterShortcuts` holds and at least one Fn binding exists; temporary suppression (shortcut recording) removes them.
 - Delegate: `KeyboardShortcutDelegate.shortcutTriggered(ShortcutAction)` — implemented by `ScreenCaptureViewModel` (`Cue/Features/Capture/CaptureViewModel.swift`).
@@ -153,7 +153,7 @@ Dispatch: AppleEvent `kAEGetURL` → `AppDelegate` (queued pre-launch) → `AppC
 | `cue://open/video-editor` | Open empty Video Editor |
 | `cue://open/history` | Toggle History panel |
 | `cue://show/shortcuts` | Toggle shortcut cheat sheet |
-| `cue://settings` / `cue://settings?tab=<tab>` | Open Settings, optionally to a tab |
+| `cue://settings` / `cue://settings?tab=<tab>` | Open Settings, optionally to a sidebar destination |
 
 - `open/combine` query params: repeat `?file=` with absolute paths; ≥2 valid files → combines directly, otherwise opens the combine picker (`CombineImagesCoordinator.presentPicker()`). Example:
 
@@ -161,13 +161,13 @@ Dispatch: AppleEvent `kAEGetURL` → `AppDelegate` (queued pre-launch) → `AppC
   open 'cue://open/combine?file=/tmp/first.png&file=/tmp/second.png'
   ```
 
-- Settings tabs: `general`, `capture`, `quick-access`, `history`, `shortcuts`, `permissions`, `uploads`, `advanced` (plus `screen-recording` when the Video module is compiled in). Legacy `annotate` / `annotation` / `annotations` tab aliases open **General**. Also accepted as path form (`cue://settings/capture`).
-- Aliases exist for most routes — e.g. `capture/focused-window`, `capture/window`, `record/window`, `screenshot/area`, `ocr`, `annotate`, `combine`, `uploads`, `history`, `shortcuts`, `preferences`, plus tab aliases (`screenshots`, `privacy`, `config`, `toml`, …). Full alias list: `CueDeepLinkAction.init?(url:)` in `Cue/App/CueDeepLinkHandler.swift`.
+- Settings destinations: `general`, `capture`, `quick-access`, `history`, `shortcuts`, `permissions`, `uploads`, `advanced` (plus `screen-recording` when the Video module is compiled in). Legacy `annotate` / `annotation` / `annotations` aliases open **General**. Also accepted as path form (`cue://settings/capture`).
+- Aliases exist for most routes — e.g. `capture/focused-window`, `capture/window`, `record/window`, `screenshot/area`, `ocr`, `annotate`, `combine`, `uploads`, `history`, `shortcuts`, `preferences`, plus settings aliases (`screenshots`, `privacy`, `config`, `toml`, …). Full alias list: `CueDeepLinkAction.init?(url:)` in `Cue/App/CueDeepLinkHandler.swift`.
 
 ## Related docs
 
 - [APP_LIFECYCLE.md](APP_LIFECYCLE.md) — deep-link dispatch, entitlements, menu bar
-- [PREFERENCES.md](PREFERENCES.md) — Shortcuts tab reference
+- [PREFERENCES.md](PREFERENCES.md) — Shortcuts settings reference
 - [CAPTURE.md](CAPTURE.md) — capture flows triggered by shortcuts
 - [RECORDING.md](RECORDING.md) — recording start/stop/pause behavior
 - [ANNOTATE.md](ANNOTATE.md) — editor tools and actions
