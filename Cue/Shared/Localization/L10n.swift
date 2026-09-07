@@ -2935,7 +2935,7 @@ nonisolated enum L10n {
         )
         static let showCursorFootnote = string(
             "preferences-capture.show-cursor-footnote",
-            defaultValue: "The cursor is included when the selected capture mode supports it.",
+            defaultValue: "This works in Fullscreen or Self-Timer modes only.",
             comment: "Footnote for the screenshot cursor setting",
         )
         static let freezeAreaTitle = string(
