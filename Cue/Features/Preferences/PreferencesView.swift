@@ -53,7 +53,12 @@ struct PreferencesView: View {
         .navigationSplitViewStyle(.balanced)
         .toolbar(removing: .title)
         .preferencesHostingWindowChrome()
-        .frame(width: 760, height: 550)
+        .frame(
+            minWidth: PreferencesWindowChrome.defaultWidth,
+            idealWidth: PreferencesWindowChrome.defaultWidth,
+            minHeight: PreferencesWindowChrome.defaultHeight,
+            idealHeight: PreferencesWindowChrome.defaultHeight,
+        )
     }
 
     private var selectedTabBinding: Binding<PreferencesTab?> {

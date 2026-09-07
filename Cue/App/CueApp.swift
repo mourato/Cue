@@ -30,6 +30,11 @@ struct CueApp: App {
             PreferencesView()
                 .preferredColorScheme(themeManager.systemAppearance)
         }
+        .defaultSize(
+            width: PreferencesWindowChrome.defaultWidth,
+            height: PreferencesWindowChrome.defaultHeight,
+        )
+        .windowResizability(.contentMinSize)
         .windowToolbarStyle(.unifiedCompact)
     }
 }

@@ -9,15 +9,21 @@ import AppKit
 import SwiftUI
 
 enum PreferencesWindowChrome {
+    static let defaultWidth: CGFloat = 760
+    static let defaultHeight: CGFloat = 550
+
     /// Settings scenes often ignore SwiftUI `.windowToolbarStyle`. Force the
     /// compact unified toolbar so traffic lights and the sidebar toggle share
     /// one row, and the detail column does not reserve an empty title band.
+    /// Also keep the window user-resizable with the documented minimum size.
     @MainActor
     static func apply(to window: NSWindow?) {
         guard let window else { return }
         window.titleVisibility = .hidden
         window.toolbarStyle = .unifiedCompact
         window.toolbar?.displayMode = .iconOnly
+        window.styleMask.insert(.resizable)
+        window.minSize = NSSize(width: defaultWidth, height: defaultHeight)
     }
 }
 
