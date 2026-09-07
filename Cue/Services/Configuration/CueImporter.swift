@@ -624,7 +624,10 @@ enum CueConfigurationImporter {
             ("save", .save),
             ("quick_access", .showQuickAccess),
             ("copy_file", .copyFile),
+            ("upload_to_cloud", .uploadToCloud),
             ("open_annotate", .openAnnotate),
+            ("pin_to_screen", .pinToScreen),
+            ("open_video_editor", .openVideoEditor),
         ]
 
         for (key, action) in mapping {

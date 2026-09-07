@@ -71,16 +71,25 @@ struct AfterCaptureMatrixView: View {
 
     @ViewBuilder
     private func toggleColumn(captureType: CaptureType, action: AfterCaptureAction, type: CaptureType) -> some View {
-        let isDisabled = action == .openAnnotate && type == .recording
-        Toggle("", isOn: binding(for: action, type: type))
-            .labelsHidden()
-            .accessibilityLabel(L10n.AfterCapture.accessibilityLabel(
-                action.displayName,
-                captureKind: captureType.displayName,
-            ))
-            .frame(width: 70)
-            .disabled(isDisabled)
-            .opacity(isDisabled ? 0.3 : 1)
+        if action.supports(type) {
+            Toggle("", isOn: binding(for: action, type: type))
+                .labelsHidden()
+                .accessibilityLabel(L10n.AfterCapture.accessibilityLabel(
+                    action.displayName,
+                    captureKind: captureType.displayName,
+                ))
+                .frame(width: 70)
+        } else {
+            Text(verbatim: "—")
+                .font(.body)
+                .foregroundColor(.secondary)
+                .frame(width: 70)
+                .accessibilityLabel(L10n.AfterCapture.accessibilityLabel(
+                    action.displayName,
+                    captureKind: captureType.displayName,
+                ))
+                .accessibilityValue(Text(L10n.AfterCapture.notApplicable))
+        }
     }
 
     private func iconName(for action: AfterCaptureAction) -> String {
@@ -91,8 +100,14 @@ struct AfterCaptureMatrixView: View {
             "doc.on.clipboard"
         case .save:
             "square.and.arrow.down"
+        case .uploadToCloud:
+            "icloud.and.arrow.up"
         case .openAnnotate:
             "pencil.and.outline"
+        case .pinToScreen:
+            "pin"
+        case .openVideoEditor:
+            "film"
         }
     }
 
@@ -104,8 +119,14 @@ struct AfterCaptureMatrixView: View {
             L10n.AfterCapture.copyFileDescription
         case .save:
             L10n.AfterCapture.saveDescription
+        case .uploadToCloud:
+            L10n.AfterCapture.uploadToCloudDescription
         case .openAnnotate:
             L10n.AfterCapture.openAnnotateDescription
+        case .pinToScreen:
+            L10n.AfterCapture.pinToScreenDescription
+        case .openVideoEditor:
+            L10n.AfterCapture.openVideoEditorDescription
         }
     }
 

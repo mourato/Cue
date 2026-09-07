@@ -234,7 +234,10 @@ enum CueConfigurationDefaultDocument {
         writer.value("save", true)
         writer.value("quick_access", true)
         writer.value("copy_file", true)
+        writer.value("upload_to_cloud", false)
         writer.value("open_annotate", false)
+        writer.value("pin_to_screen", false)
+        writer.value("open_video_editor", false)
     }
 
     private static func writeGlobalShortcut(_ writer: inout SimpleTOMLWriter, kind: GlobalShortcutKind) {

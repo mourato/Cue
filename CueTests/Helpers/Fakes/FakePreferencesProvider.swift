@@ -27,7 +27,7 @@ final class FakePreferencesProvider: PreferencesProviding {
         switch action {
         case .showQuickAccess, .save, .copyFile:
             true
-        case .openAnnotate:
+        case .uploadToCloud, .openAnnotate, .pinToScreen, .openVideoEditor:
             false
         }
     }

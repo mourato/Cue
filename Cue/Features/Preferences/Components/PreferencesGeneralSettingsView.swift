@@ -2,7 +2,7 @@
 //  PreferencesGeneralSettingsView.swift
 //  Notinhas
 //
-//  General preferences tab with startup, appearance, storage, and help
+//  General preferences tab: app, capture, sounds, export, and after-capture
 //
 
 import SwiftUI
@@ -10,6 +10,8 @@ import SwiftUI
 struct GeneralSettingsView: View {
     @AppStorage(PreferencesKeys.playSounds) private var playSounds = true
     @AppStorage(PreferencesKeys.showMenuBarIcon) private var showMenuBarIcon = true
+    @AppStorage(PreferencesKeys.hideDesktopIcons) private var hideDesktopIcons = false
+    @AppStorage(PreferencesKeys.hideDesktopWidgets) private var hideDesktopWidgets = false
     @AppStorage(PreferencesKeys.exportLocation) private var exportLocation = ""
     @Environment(\.openWindow) private var openWindow
     @ObservedObject private var themeManager = ThemeManager.shared
@@ -19,7 +21,7 @@ struct GeneralSettingsView: View {
 
     var body: some View {
         Form {
-            Section(L10n.PreferencesGeneral.startupSection) {
+            Section(L10n.PreferencesGeneral.appSection) {
                 SettingRow(
                     icon: "power.circle",
                     title: L10n.PreferencesGeneral.startAtLoginTitle,
@@ -31,16 +33,6 @@ struct GeneralSettingsView: View {
                         .onChange(of: startAtLogin) { newValue in
                             LoginItemManager.setEnabled(newValue)
                         }
-                }
-
-                SettingRow(
-                    icon: "speaker.wave.2",
-                    title: L10n.PreferencesGeneral.playSoundsTitle,
-                    description: L10n.PreferencesGeneral.playSoundsDescription,
-                ) {
-                    Toggle("", isOn: $playSounds)
-                        .labelsHidden()
-                        .accessibilityLabel(L10n.PreferencesGeneral.playSoundsTitle)
                 }
 
                 SettingRow(
@@ -57,6 +49,70 @@ struct GeneralSettingsView: View {
                 }
             }
 
+            Section(L10n.PreferencesGeneral.captureSection) {
+                SettingRow(
+                    icon: "eye.slash",
+                    title: L10n.PreferencesCapture.hideDesktopIconsTitle,
+                    description: L10n.PreferencesCapture.hideDesktopIconsDescription,
+                ) {
+                    Toggle("", isOn: $hideDesktopIcons)
+                        .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesCapture.hideDesktopIconsTitle)
+                }
+
+                SettingRow(
+                    icon: "widget.small",
+                    title: L10n.PreferencesCapture.hideDesktopWidgetsTitle,
+                    description: L10n.PreferencesCapture.hideDesktopWidgetsDescription,
+                ) {
+                    Toggle("", isOn: $hideDesktopWidgets)
+                        .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesCapture.hideDesktopWidgetsTitle)
+                }
+
+                Text(L10n.PreferencesGeneral.hideDesktopIconsHint)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Section(L10n.PreferencesGeneral.soundsSection) {
+                SettingRow(
+                    icon: "speaker.wave.2",
+                    title: L10n.PreferencesGeneral.playSoundsTitle,
+                    description: L10n.PreferencesGeneral.playSoundsDescription,
+                ) {
+                    Toggle("", isOn: $playSounds)
+                        .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesGeneral.playSoundsTitle)
+                }
+            }
+
+            Section(L10n.PreferencesGeneral.exportSection) {
+                SettingRow(
+                    icon: "folder.fill",
+                    title: L10n.PreferencesGeneral.exportLocationTitle,
+                    description: exportLocationDisplay,
+                ) {
+                    Button(L10n.PreferencesGeneral.chooseButton) {
+                        chooseExportLocation()
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                }
+
+                Text(L10n.PreferencesGeneral.exportLocationDescription)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Section {
+                AfterCaptureMatrixView()
+            } header: {
+                Text(L10n.PreferencesGeneral.afterCaptureSection)
+            } footer: {
+                Text(L10n.PreferencesGeneral.afterCaptureDescription)
+            }
+
             Section(L10n.PreferencesGeneral.appearanceSection) {
                 PreferencesLanguageSettingRow()
 
@@ -66,20 +122,6 @@ struct GeneralSettingsView: View {
                     description: L10n.PreferencesGeneral.themeDescription,
                 ) {
                     AppearanceModePicker(selection: $themeManager.preferredAppearance)
-                }
-            }
-
-            Section(L10n.PreferencesGeneral.storageSection) {
-                SettingRow(
-                    icon: "folder.fill",
-                    title: L10n.PreferencesGeneral.saveLocationTitle,
-                    description: exportLocationDisplay,
-                ) {
-                    Button(L10n.PreferencesGeneral.chooseButton) {
-                        chooseExportLocation()
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
                 }
             }
 

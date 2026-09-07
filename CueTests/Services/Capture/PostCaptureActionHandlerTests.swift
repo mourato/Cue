@@ -69,7 +69,7 @@ final class PostCaptureActionHandlerTests: XCTestCase {
         switch action {
         case .showQuickAccess, .save, .copyFile:
             true
-        case .openAnnotate:
+        case .uploadToCloud, .openAnnotate, .pinToScreen, .openVideoEditor:
             false
         }
     }
@@ -78,6 +78,8 @@ final class PostCaptureActionHandlerTests: XCTestCase {
         quickAccess: QuickAccessManaging,
         clipboardAction: @escaping @MainActor (URL, Bool) -> Void = { _, _ in },
         annotateAction: @escaping (QuickAccessItem?, URL, AnnotationSessionData?) -> Void = { _, _, _ in },
+        uploadAction: @escaping @MainActor (URL) -> Void = { _ in },
+        videoEditorAction: @escaping @MainActor (QuickAccessItem?, URL) -> Void = { _, _ in },
         historyAction: ((URL) async -> Void)? = nil,
     ) -> PostCaptureActionHandler {
         PostCaptureActionHandler(
@@ -87,6 +89,8 @@ final class PostCaptureActionHandlerTests: XCTestCase {
             screenshotPresetAutoApplier: screenshotPresetAutoApplier,
             clipboardAction: clipboardAction,
             annotateAction: annotateAction,
+            uploadAction: uploadAction,
+            videoEditorAction: videoEditorAction,
             historyAction: historyAction,
         )
     }
@@ -386,11 +390,83 @@ final class PostCaptureActionHandlerTests: XCTestCase {
 
     func testAfterCaptureAction_allCases() {
         let allCases = AfterCaptureAction.allCases
-        XCTAssertEqual(allCases.count, 4)
+        XCTAssertEqual(allCases.count, 7)
         XCTAssertTrue(allCases.contains(.showQuickAccess))
         XCTAssertTrue(allCases.contains(.copyFile))
         XCTAssertTrue(allCases.contains(.save))
+        XCTAssertTrue(allCases.contains(.uploadToCloud))
         XCTAssertTrue(allCases.contains(.openAnnotate))
+        XCTAssertTrue(allCases.contains(.pinToScreen))
+        XCTAssertTrue(allCases.contains(.openVideoEditor))
+    }
+
+    func testAfterCaptureAction_supportedCaptureTypes() {
+        XCTAssertEqual(AfterCaptureAction.showQuickAccess.supportedCaptureTypes, [.screenshot, .recording])
+        XCTAssertEqual(AfterCaptureAction.copyFile.supportedCaptureTypes, [.screenshot, .recording])
+        XCTAssertEqual(AfterCaptureAction.save.supportedCaptureTypes, [.screenshot, .recording])
+        XCTAssertEqual(AfterCaptureAction.uploadToCloud.supportedCaptureTypes, [.screenshot, .recording])
+        XCTAssertEqual(AfterCaptureAction.openAnnotate.supportedCaptureTypes, [.screenshot])
+        XCTAssertEqual(AfterCaptureAction.pinToScreen.supportedCaptureTypes, [.screenshot])
+        XCTAssertEqual(AfterCaptureAction.openVideoEditor.supportedCaptureTypes, [.recording])
+    }
+
+    func testAfterCaptureAction_newActionsDefaultToDisabled() {
+        let freshPreferences = PreferencesManager(defaults: UserDefaultsFactory.make())
+        for action: AfterCaptureAction in [.uploadToCloud, .pinToScreen, .openVideoEditor] {
+            XCTAssertFalse(freshPreferences.isActionEnabled(action, for: .screenshot), "\(action) screenshot")
+            XCTAssertFalse(freshPreferences.isActionEnabled(action, for: .recording), "\(action) recording")
+        }
+    }
+
+    func testHandleScreenshotCapture_pinActionPreferencePinsItem() async throws {
+        preferences.setAction(.copyFile, for: .screenshot, enabled: false)
+        preferences.setAction(.pinToScreen, for: .screenshot, enabled: true)
+        let fakeQuickAccess = FakeQuickAccessManager()
+        let handler = makeHandler(quickAccess: fakeQuickAccess)
+
+        await handler.handleScreenshotCapture(url: tempFileURL)
+
+        let item = try XCTUnwrap(fakeQuickAccess.createdScreenshotItems.first)
+        XCTAssertEqual(fakeQuickAccess.pinnedScreenshotIDs, [item.id])
+    }
+
+    func testHandleScreenshotCapture_uploadActionPreferenceTriggersUpload() async {
+        preferences.setAction(.copyFile, for: .screenshot, enabled: false)
+        preferences.setAction(.showQuickAccess, for: .screenshot, enabled: false)
+        preferences.setAction(.uploadToCloud, for: .screenshot, enabled: true)
+        let uploaded = XCTestExpectation(description: "upload action runs")
+        var uploadedURL: URL?
+        let fakeQuickAccess = FakeQuickAccessManager()
+        let handler = makeHandler(
+            quickAccess: fakeQuickAccess,
+            uploadAction: { url in
+                uploadedURL = url
+                uploaded.fulfill()
+            },
+        )
+
+        await handler.handleScreenshotCapture(url: tempFileURL)
+
+        await fulfillment(of: [uploaded], timeout: 2)
+        XCTAssertEqual(uploadedURL, tempFileURL)
+    }
+
+    func testHandleVideoCapture_videoEditorActionPreferenceOpensEditor() async throws {
+        let videoURL = tempDirectory.appendingPathComponent("test_editor.mp4")
+        try Data([0, 1, 2, 3]).write(to: videoURL)
+        preferences.setAction(.copyFile, for: .recording, enabled: false)
+        preferences.setAction(.showQuickAccess, for: .recording, enabled: false)
+        preferences.setAction(.openVideoEditor, for: .recording, enabled: true)
+        let fakeQuickAccess = FakeQuickAccessManager()
+        var editorURL: URL?
+        let handler = makeHandler(
+            quickAccess: fakeQuickAccess,
+            videoEditorAction: { _, url in editorURL = url },
+        )
+
+        await handler.handleVideoCapture(url: videoURL)
+
+        XCTAssertEqual(editorURL, videoURL)
     }
 
     func testAfterCaptureAction_displayNames_nonEmpty() {

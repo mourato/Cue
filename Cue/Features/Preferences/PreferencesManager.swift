@@ -13,15 +13,37 @@ enum AfterCaptureAction: String, CaseIterable, Codable {
     case showQuickAccess
     case copyFile
     case save
+    case uploadToCloud
     case openAnnotate
+    case pinToScreen
+    case openVideoEditor
 
     var displayName: String {
         switch self {
         case .showQuickAccess: L10n.Actions.showQuickAccessOverlay
         case .copyFile: L10n.AfterCapture.copyFileAction
         case .save: L10n.AfterCapture.saveAction
+        case .uploadToCloud: L10n.AfterCapture.uploadToCloudAction
         case .openAnnotate: L10n.AfterCapture.openAnnotateAction
+        case .pinToScreen: L10n.AfterCapture.pinToScreenAction
+        case .openVideoEditor: L10n.AfterCapture.openVideoEditorAction
         }
+    }
+
+    /// Capture types each action applies to. Unsupported combinations render as "—".
+    var supportedCaptureTypes: [CaptureType] {
+        switch self {
+        case .openAnnotate, .pinToScreen:
+            [.screenshot]
+        case .openVideoEditor:
+            [.recording]
+        case .showQuickAccess, .copyFile, .save, .uploadToCloud:
+            [.screenshot, .recording]
+        }
+    }
+
+    func supports(_ type: CaptureType) -> Bool {
+        supportedCaptureTypes.contains(type)
     }
 }
 
@@ -139,8 +161,8 @@ final class PreferencesManager: ObservableObject {
         switch action {
         case .showQuickAccess, .save, .copyFile:
             true
-        case .openAnnotate:
-            // Opt-in: disabled by default, only for screenshots
+        case .uploadToCloud, .openAnnotate, .pinToScreen, .openVideoEditor:
+            // Opt-in: disabled by default
             false
         }
     }

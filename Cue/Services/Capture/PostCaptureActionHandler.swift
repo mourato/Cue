@@ -29,6 +29,8 @@ final class PostCaptureActionHandler {
     private let screenshotPresetAutoApplier: ScreenshotPresetAutoApplier
     private let clipboardAction: @MainActor (URL, Bool) -> Void
     private let annotateAction: (QuickAccessItem?, URL, AnnotationSessionData?) -> Void
+    private let uploadAction: @MainActor (URL) -> Void
+    private let videoEditorAction: @MainActor (QuickAccessItem?, URL) -> Void
     private let historyAction: ((URL) async -> Void)?
 
     init(
@@ -50,6 +52,12 @@ final class PostCaptureActionHandler {
                 AnnotateManager.shared.openAnnotation(url: url, sessionData: sessionData)
             }
         },
+        uploadAction: @escaping @MainActor (URL) -> Void = { url in
+            Task { @MainActor in await PostCaptureActionHandler.uploadAndCopyLink(url: url) }
+        },
+        videoEditorAction: @escaping @MainActor (QuickAccessItem?, URL) -> Void = { item, url in
+            PostCaptureActionHandler.openVideoEditor(item: item, url: url)
+        },
         historyAction: ((URL) async -> Void)? = nil,
     ) {
         self.preferences = preferences
@@ -58,6 +66,8 @@ final class PostCaptureActionHandler {
         self.screenshotPresetAutoApplier = screenshotPresetAutoApplier
         self.clipboardAction = clipboardAction
         self.annotateAction = annotateAction
+        self.uploadAction = uploadAction
+        self.videoEditorAction = videoEditorAction
         self.historyAction = historyAction
     }
 
@@ -169,6 +179,19 @@ final class PostCaptureActionHandler {
                     "skippedCount": "\(max(0, validURLs.count - 1))",
                 ],
             )
+        }
+
+        if preferences.isActionEnabled(.pinToScreen, for: .screenshot) {
+            for url in validURLs {
+                await quickAccess.pinScreenshot(url: url)
+            }
+        }
+
+        if preferences.isActionEnabled(.uploadToCloud, for: .screenshot) {
+            for url in validURLs {
+                let uploadURL = url
+                Task { @MainActor in await PostCaptureActionHandler.uploadAndCopyLink(url: uploadURL) }
+            }
         }
 
         for url in validURLs {
@@ -428,7 +451,7 @@ final class PostCaptureActionHandler {
             )
         }
 
-        if captureType == .screenshot, pinToScreen {
+        if captureType == .screenshot, pinToScreen || preferences.isActionEnabled(.pinToScreen, for: .screenshot) {
             if let quickAccessItem {
                 quickAccess.pinScreenshot(id: quickAccessItem.id)
             } else {
@@ -459,7 +482,78 @@ final class PostCaptureActionHandler {
             )
         }
 
+        // Upload to Cloud & copy link (fire-and-forget; failures stay silent in toasts)
+        if AfterCaptureAction.uploadToCloud.supports(captureType),
+           preferences.isActionEnabled(.uploadToCloud, for: captureType) {
+            let uploadURL = url
+            Task { @MainActor in uploadAction(uploadURL) }
+            DiagnosticLogger.shared.log(
+                .info,
+                .action,
+                "Post-capture upload action started",
+                context: ["captureType": typeLabel, "fileName": url.lastPathComponent],
+            )
+        }
+
+        // Open Video Editor (recordings only)
+        if captureType == .recording, preferences.isActionEnabled(.openVideoEditor, for: .recording) {
+            videoEditorAction(quickAccessItem, url)
+            DiagnosticLogger.shared.log(
+                .info,
+                .action,
+                "Post-capture video editor action executed",
+                context: ["fileName": url.lastPathComponent],
+            )
+        }
+
         return quickAccessItem
+    }
+
+    /// Headless cloud upload: skips silently when no provider is configured,
+    /// otherwise uploads and copies the link to the clipboard.
+    @MainActor
+    static func uploadAndCopyLink(url: URL) async {
+        let configuration = CueUploadConfigurationStore.shared
+        let mediaKind = CueUploadMediaKind(fileExtension: url.pathExtension)
+        guard configuration.isConfigured, configuration.provider.supports(mediaKind) else {
+            DiagnosticLogger.shared.log(
+                .debug,
+                .action,
+                "Post-capture upload skipped; provider not configured",
+                context: ["fileName": url.lastPathComponent],
+            )
+            return
+        }
+
+        let coordinator = CueUploadCoordinator()
+        guard let link = await coordinator.upload(fileURL: url) else {
+            if let message = coordinator.lastErrorMessage {
+                AppToastManager.shared.show(message: message, style: .error)
+            }
+            return
+        }
+
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(link, forType: .string)
+        SoundManager.play("Pop")
+        AppToastManager.shared.showCopiedToClipboard()
+    }
+
+    /// Open a recording in the video editor, preferring the Quick Access item link.
+    @MainActor
+    static func openVideoEditor(item: QuickAccessItem?, url: URL) {
+        #if CUE_VIDEO_MODULE
+            guard VideoModuleAvailability.isEnabled else { return }
+            if let item {
+                VideoEditorManager.shared.openEditor(for: item)
+            } else {
+                VideoEditorManager.shared.openEditor(for: url)
+            }
+        #else
+            _ = item
+            _ = url
+        #endif
     }
 
     /// Copy file to clipboard (format-aware image data for screenshots, file URL for videos)

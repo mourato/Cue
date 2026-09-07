@@ -40,8 +40,6 @@ private enum CaptureSettingsPane: CaseIterable, Hashable, Identifiable {
 
 struct CaptureSettingsView: View {
     // Screenshot behavior & environment
-    @AppStorage(PreferencesKeys.hideDesktopIcons) private var hideDesktopIcons = false
-    @AppStorage(PreferencesKeys.hideDesktopWidgets) private var hideDesktopWidgets = false
     @AppStorage(PreferencesKeys.screenshotIncludeOwnApp) private var includeOwnAppInScreenshots = false
     @AppStorage(PreferencesKeys.screenshotShowCursor) private var screenshotShowCursor = false
     @AppStorage(PreferencesKeys.screenshotFreezeArea) private var freezeAreaCapture = false
@@ -62,7 +60,6 @@ struct CaptureSettingsView: View {
     @State private var showSnappingAdvancedSettings = false
 
     // Output & Format
-    @AppStorage(PreferencesKeys.exportLocation) private var exportLocation = ""
     @AppStorage(PreferencesKeys.screenshotFormat) private var screenshotFormat = "png"
     @AppStorage(PreferencesKeys.screenshotJpegQuality) private var screenshotJpegQuality = 0.85
     @AppStorage(PreferencesKeys.screenshotFileNameTemplate)
@@ -95,10 +92,8 @@ struct CaptureSettingsView: View {
         @State private var microphoneDevices: [RecordingMicrophoneDevice] = []
     #endif
 
-    @ObservedObject private var preferencesManager = PreferencesManager.shared
     @State private var selectedPane: CaptureSettingsPane = .capture
     @State private var videoModuleEnabled = VideoModuleAvailability.isEnabled
-    private let fileAccessManager = SandboxFileAccessManager.shared
 
     private var availablePanes: [CaptureSettingsPane] {
         CaptureSettingsPane.availablePanes(videoModuleEnabled: videoModuleEnabled)
@@ -141,26 +136,6 @@ struct CaptureSettingsView: View {
                             Toggle("", isOn: $includeOwnAppInScreenshots)
                                 .labelsHidden()
                                 .accessibilityLabel(L10n.PreferencesCapture.includeInScreenshotsTitle)
-                        }
-
-                        SettingRow(
-                            icon: "eye.slash",
-                            title: L10n.PreferencesCapture.hideDesktopIconsTitle,
-                            description: L10n.PreferencesCapture.hideDesktopIconsDescription,
-                        ) {
-                            Toggle("", isOn: $hideDesktopIcons)
-                                .labelsHidden()
-                                .accessibilityLabel(L10n.PreferencesCapture.hideDesktopIconsTitle)
-                        }
-
-                        SettingRow(
-                            icon: "widget.small",
-                            title: L10n.PreferencesCapture.hideDesktopWidgetsTitle,
-                            description: L10n.PreferencesCapture.hideDesktopWidgetsDescription,
-                        ) {
-                            Toggle("", isOn: $hideDesktopWidgets)
-                                .labelsHidden()
-                                .accessibilityLabel(L10n.PreferencesCapture.hideDesktopWidgetsTitle)
                         }
 
                         SettingRow(
@@ -293,65 +268,9 @@ struct CaptureSettingsView: View {
                         }
                     }
 
-                    // MARK: - After Capture
-
-                    Section(L10n.PreferencesCapture.afterCaptureSection) {
-                        SettingRow(
-                            icon: "doc.on.clipboard",
-                            title: L10n.AfterCapture.copyFileAction,
-                            description: L10n.AfterCapture.copyFileDescription,
-                        ) {
-                            Toggle("", isOn: afterCaptureBinding(for: .copyFile))
-                                .labelsHidden()
-                                .accessibilityLabel(L10n.AfterCapture.copyFileAction)
-                        }
-
-                        SettingRow(
-                            icon: "macwindow.badge.plus",
-                            title: L10n.PreferencesCapture.afterCaptureShowQuickAccessTitle,
-                            description: L10n.AfterCapture.showQuickAccessDescription,
-                        ) {
-                            Toggle("", isOn: afterCaptureBinding(for: .showQuickAccess))
-                                .labelsHidden()
-                                .accessibilityLabel(L10n.PreferencesCapture.afterCaptureShowQuickAccessTitle)
-                        }
-
-                        SettingRow(
-                            icon: "square.and.arrow.down",
-                            title: L10n.AfterCapture.saveAction,
-                            description: L10n.AfterCapture.saveDescription,
-                        ) {
-                            Toggle("", isOn: afterCaptureBinding(for: .save))
-                                .labelsHidden()
-                                .accessibilityLabel(L10n.AfterCapture.saveAction)
-                        }
-
-                        SettingRow(
-                            icon: "pencil.and.outline",
-                            title: L10n.AfterCapture.openAnnotateAction,
-                            description: L10n.AfterCapture.openAnnotateDescription,
-                        ) {
-                            Toggle("", isOn: afterCaptureBinding(for: .openAnnotate))
-                                .labelsHidden()
-                                .accessibilityLabel(L10n.AfterCapture.openAnnotateAction)
-                        }
-                    }
-
                     // MARK: - Output & Storage
 
                     Section(L10n.PreferencesCapture.outputSection) {
-                        SettingRow(
-                            icon: "folder",
-                            title: L10n.PreferencesGeneral.saveLocationTitle,
-                            description: exportLocationDisplay,
-                        ) {
-                            Button(L10n.PreferencesGeneral.chooseButton) {
-                                chooseExportLocation()
-                            }
-                            .buttonStyle(.bordered)
-                            .controlSize(.small)
-                        }
-
                         SettingRow(
                             icon: "photo",
                             title: L10n.PreferencesCapture.imageFormatTitle,
@@ -696,41 +615,6 @@ struct CaptureSettingsView: View {
                         }
                     }
 
-                    // MARK: - Recording After Capture
-
-                    if selectedPane == .recording {
-                        Section(L10n.PreferencesCapture.afterCaptureSection) {
-                            SettingRow(
-                                icon: "doc.on.clipboard",
-                                title: L10n.AfterCapture.copyFileAction,
-                                description: L10n.AfterCapture.copyFileDescription,
-                            ) {
-                                Toggle("", isOn: afterCaptureBinding(for: .copyFile, type: .recording))
-                                    .labelsHidden()
-                                    .accessibilityLabel(L10n.AfterCapture.copyFileAction)
-                            }
-
-                            SettingRow(
-                                icon: "macwindow.badge.plus",
-                                title: L10n.PreferencesCapture.afterCaptureShowQuickAccessTitle,
-                                description: L10n.AfterCapture.showQuickAccessDescription,
-                            ) {
-                                Toggle("", isOn: afterCaptureBinding(for: .showQuickAccess, type: .recording))
-                                    .labelsHidden()
-                                    .accessibilityLabel(L10n.PreferencesCapture.afterCaptureShowQuickAccessTitle)
-                            }
-
-                            SettingRow(
-                                icon: "square.and.arrow.down",
-                                title: L10n.AfterCapture.saveAction,
-                                description: L10n.AfterCapture.saveDescription,
-                            ) {
-                                Toggle("", isOn: afterCaptureBinding(for: .save, type: .recording))
-                                    .labelsHidden()
-                                    .accessibilityLabel(L10n.AfterCapture.saveAction)
-                            }
-                        }
-                    }
                 #endif
             }
             .formStyle(.grouped)
@@ -740,7 +624,6 @@ struct CaptureSettingsView: View {
                 refreshMicrophoneDevices()
             #endif
             reconcileSelectedPane()
-            initializeExportLocation()
         }
         .onReceive(NotificationCenter.default.publisher(for: .videoModuleAvailabilityDidChange)) { _ in
             videoModuleEnabled = VideoModuleAvailability.isEnabled
@@ -756,46 +639,6 @@ struct CaptureSettingsView: View {
     }
 
     // MARK: - Helpers
-
-    private var exportLocationDisplay: String {
-        if exportLocation.isEmpty {
-            return L10n.PreferencesGeneral.defaultSaveLocation
-        }
-
-        let folderName = URL(fileURLWithPath: exportLocation).lastPathComponent
-        if fileAccessManager.hasPersistedExportPermission {
-            return folderName
-        }
-
-        return L10n.PreferencesGeneral.accessNotGranted(folderName)
-    }
-
-    private func initializeExportLocation() {
-        fileAccessManager.ensureExportLocationInitialized()
-        exportLocation = fileAccessManager.exportLocationPath
-    }
-
-    private func chooseExportLocation() {
-        if let url = fileAccessManager.chooseExportDirectory(
-            message: L10n.PreferencesGeneral.chooseSaveLocationMessage,
-            prompt: L10n.PreferencesGeneral.saveHereButton,
-            directoryURL: fileAccessManager.resolvedExportDirectoryURL(),
-        ) {
-            exportLocation = url.path
-        }
-    }
-
-    private func afterCaptureBinding(for action: AfterCaptureAction, type: CaptureType = .screenshot) -> Binding<Bool> {
-        Binding(
-            get: { preferencesManager.isActionEnabled(action, for: type) },
-            set: { newValue in
-                preferencesManager.setAction(action, for: type, enabled: newValue)
-                if action == .showQuickAccess, type == .screenshot {
-                    QuickAccessManager.shared.isEnabled = newValue
-                }
-            },
-        )
-    }
 
     private var screenshotFilenamePreview: String {
         let sampleContext = CaptureContext(appName: "Safari", windowTitle: "GitHub")

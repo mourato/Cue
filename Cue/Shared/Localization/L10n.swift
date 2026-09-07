@@ -2093,6 +2093,52 @@ nonisolated enum L10n {
     }
 
     enum PreferencesGeneral {
+        static let appSection = string(
+            "preferences-general.section-app",
+            defaultValue: "App",
+            comment: "General preferences section title",
+        )
+        static let captureSection = string(
+            "preferences-general.section-capture",
+            defaultValue: "Capture",
+            comment: "General preferences section title",
+        )
+        static let soundsSection = string(
+            "preferences-general.section-sounds",
+            defaultValue: "Sounds",
+            comment: "General preferences section title",
+        )
+        static let exportSection = string(
+            "preferences-general.section-export",
+            defaultValue: "Export",
+            comment: "General preferences section title",
+        )
+        static let afterCaptureSection = string(
+            "preferences-general.section-after-capture",
+            defaultValue: "After Capture",
+            comment: "General preferences section title",
+        )
+        static let afterCaptureDescription = string(
+            "preferences-general.after-capture-description",
+            defaultValue: "Decide what should happen after taking a screenshot or recording a video.",
+            comment: "General preferences section description",
+        )
+        static let exportLocationTitle = string(
+            "preferences-general.export-location-title",
+            defaultValue: "Export location",
+            comment: "General preferences setting title",
+        )
+        static let exportLocationDescription = string(
+            "preferences-general.export-location-description",
+            defaultValue:
+            "Set the default save location used when saving from the Quick Access Overlay, After Capture, and other Save actions across the app.",
+            comment: "General preferences setting description",
+        )
+        static let hideDesktopIconsHint = string(
+            "preferences-general.hide-desktop-icons-hint",
+            defaultValue: "You can set a custom wallpaper to hide desktop icons in wallpaper settings.",
+            comment: "General preferences helper text shown below the hide desktop icons setting",
+        )
         static let startupSection = string(
             "preferences-general.section-startup",
             defaultValue: "Startup",
@@ -6947,6 +6993,21 @@ nonisolated enum L10n {
             defaultValue: "Open Annotate Editor",
             comment: "After capture action title",
         )
+        static let uploadToCloudAction = string(
+            "after-capture.upload-to-cloud-action",
+            defaultValue: "Upload to Cloud & copy link",
+            comment: "After capture action title",
+        )
+        static let pinToScreenAction = string(
+            "after-capture.pin-to-screen-action",
+            defaultValue: "Pin to the screen",
+            comment: "After capture action title",
+        )
+        static let openVideoEditorAction = string(
+            "after-capture.open-video-editor-action",
+            defaultValue: "Open Video Editor",
+            comment: "After capture action title",
+        )
 
         static let showQuickAccessDescription = string(
             "after-capture.show-quick-access-description",
@@ -6967,6 +7028,27 @@ nonisolated enum L10n {
             "after-capture.open-annotate-description",
             defaultValue: "Open annotate editor after capture",
             comment: "After capture action description",
+        )
+        static let uploadToCloudDescription = string(
+            "after-capture.upload-to-cloud-description",
+            defaultValue: "Upload to the configured cloud provider and copy the link",
+            comment: "After capture action description",
+        )
+        static let pinToScreenDescription = string(
+            "after-capture.pin-to-screen-description",
+            defaultValue: "Keep the screenshot floating above other windows",
+            comment: "After capture action description",
+        )
+        static let openVideoEditorDescription = string(
+            "after-capture.open-video-editor-description",
+            defaultValue: "Open the recording in the video editor",
+            comment: "After capture action description",
+        )
+
+        static let notApplicable = string(
+            "after-capture.not-applicable",
+            defaultValue: "Not applicable",
+            comment: "Accessibility value for an after-capture action that does not apply to a capture kind",
         )
 
         static func accessibilityLabel(_ action: String, captureKind: String) -> String {

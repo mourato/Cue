@@ -296,7 +296,10 @@ enum CueConfigurationExporter {
         writer.value("save", manager.isActionEnabled(.save, for: type))
         writer.value("quick_access", manager.isActionEnabled(.showQuickAccess, for: type))
         writer.value("copy_file", manager.isActionEnabled(.copyFile, for: type))
+        writer.value("upload_to_cloud", manager.isActionEnabled(.uploadToCloud, for: type))
         writer.value("open_annotate", manager.isActionEnabled(.openAnnotate, for: type))
+        writer.value("pin_to_screen", manager.isActionEnabled(.pinToScreen, for: type))
+        writer.value("open_video_editor", manager.isActionEnabled(.openVideoEditor, for: type))
     }
 }
 
