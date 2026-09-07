@@ -7,11 +7,18 @@
 
 import SwiftUI
 
-struct AnnotateChromeCustomizationView: View {
+enum AnnotateChromeCustomizationSurface {
+    case toolbar
+    case bottomBar
+}
+
+struct AnnotateChromeCustomizationContent: View {
+    let surface: AnnotateChromeCustomizationSurface
     @ObservedObject private var chromeStore = AnnotateChromeConfigurationStore.shared
 
     var body: some View {
-        Section(L10n.PreferencesAnnotate.chromeToolbarSection) {
+        switch surface {
+        case .toolbar:
             chromeListSection(
                 items: chromeStore.toolbarItemOrder,
                 showsFootnote: true,
@@ -20,9 +27,7 @@ struct AnnotateChromeCustomizationView: View {
                     chromeStore.moveToolbarItem(from: source, to: destination)
                 },
             )
-        }
-
-        Section(L10n.PreferencesAnnotate.chromeBottomSection) {
+        case .bottomBar:
             chromeListSection(
                 items: chromeStore.bottomActionOrder,
                 showsFootnote: false,
@@ -35,7 +40,7 @@ struct AnnotateChromeCustomizationView: View {
     }
 }
 
-private extension AnnotateChromeCustomizationView {
+private extension AnnotateChromeCustomizationContent {
     func chromeListSection(
         items: [AnnotateChromeItem],
         showsFootnote: Bool,
@@ -46,7 +51,6 @@ private extension AnnotateChromeCustomizationView {
             Text(L10n.PreferencesAnnotate.chromeDescription)
                 .font(.caption)
                 .foregroundColor(.secondary)
-                .padding(.horizontal, 10)
 
             PreferencesReorderToggleList(
                 items: items,
@@ -71,7 +75,6 @@ private extension AnnotateChromeCustomizationView {
                 Text(L10n.PreferencesAnnotate.chromeAlwaysOnFootnote)
                     .font(.caption)
                     .foregroundColor(.secondary)
-                    .padding(.horizontal, 10)
             }
         }
     }

@@ -126,11 +126,11 @@ final class PreferencesCoreTests: XCTestCase {
             .general,
             .capture,
             .screenRecording,
-            .annotate,
             .quickAccess,
             .history,
             .shortcuts,
             .permissions,
+            .cloud,
             .advanced,
         ]
 
@@ -195,6 +195,9 @@ final class PreferencesCoreTests: XCTestCase {
         XCTAssertEqual(PreferencesNavigationState(userDefaults: defaults).selectedTab, .general)
 
         defaults.set("not-a-tab", forKey: PreferencesKeys.selectedPreferencesTab)
+        XCTAssertEqual(PreferencesNavigationState(userDefaults: defaults).selectedTab, .general)
+
+        defaults.set("annotate", forKey: PreferencesKeys.selectedPreferencesTab)
         XCTAssertEqual(PreferencesNavigationState(userDefaults: defaults).selectedTab, .general)
     }
 
