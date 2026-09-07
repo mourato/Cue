@@ -50,6 +50,7 @@ struct PreferencesView: View {
                 .navigationTitle(selectedTabTitle)
         }
         .navigationSplitViewStyle(.balanced)
+        .toolbar(removing: .title)
         .frame(width: 760, height: 550)
     }
 
