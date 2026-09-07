@@ -2465,7 +2465,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         }
 
         let linkDetectionEnabled = UserDefaults.standard
-            .object(forKey: PreferencesKeys.ocrLinkDetectionEnabled) as? Bool ?? true
+            .object(forKey: PreferencesKeys.ocrLinkDetectionEnabled) as? Bool ?? false
         if linkDetectionEnabled {
             let detectedLinks = OCRLinkDetector.detectWebLinks(in: clipboardText)
             if !detectedLinks.isEmpty {
@@ -2799,7 +2799,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                                 }
 
                                 let linkDetectionEnabled = UserDefaults.standard
-                                    .object(forKey: PreferencesKeys.ocrLinkDetectionEnabled) as? Bool ?? true
+                                    .object(forKey: PreferencesKeys.ocrLinkDetectionEnabled) as? Bool ?? false
                                 if linkDetectionEnabled {
                                     let detectedLinks = OCRLinkDetector.detectWebLinks(in: clipboardText)
                                     if !detectedLinks.isEmpty {
@@ -2871,8 +2871,10 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         do {
             let text = try await OCRService.shared.recognizeText(
                 from: image,
-                preferredLanguageIdentifier: AppLanguageManager.shared.activeOCRLanguageIdentifier,
+                preferredLanguageIdentifier: preferredOCRLanguageIdentifier,
                 contentType: .interfaceText,
+                keepLineBreaks: UserDefaults.standard
+                    .object(forKey: PreferencesKeys.ocrKeepLineBreaks) as? Bool ?? true,
             )
             DiagnosticLogger.shared.log(
                 .debug,
@@ -2898,6 +2900,12 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
             )
             return nil
         }
+    }
+
+    private var preferredOCRLanguageIdentifier: String? {
+        let stored = UserDefaults.standard.string(forKey: PreferencesKeys.ocrLanguage) ?? ""
+        guard !stored.isEmpty else { return nil }
+        return AppLanguageManager.normalizedLanguageIdentifier(from: stored)
     }
 
     private static func elapsedMilliseconds(since startTime: CFAbsoluteTime) -> String {

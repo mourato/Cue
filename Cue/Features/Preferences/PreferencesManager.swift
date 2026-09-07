@@ -96,6 +96,85 @@ enum AnnotateClipboardImageBehavior: String, CaseIterable, Identifiable {
     }
 }
 
+enum ClipboardCopyMode: String, CaseIterable, Identifiable {
+    case fileAndImage
+    case fileOnly
+    case imageOnly
+
+    var id: String {
+        rawValue
+    }
+
+    var displayName: String {
+        switch self {
+        case .fileAndImage:
+            L10n.PreferencesAdvanced.clipboardFileAndImage
+        case .fileOnly:
+            L10n.PreferencesAdvanced.clipboardFileOnly
+        case .imageOnly:
+            L10n.PreferencesAdvanced.clipboardImageOnly
+        }
+    }
+
+    static func stored(userDefaults: UserDefaults = .standard) -> Self {
+        guard let rawValue = userDefaults.string(forKey: PreferencesKeys.clipboardCopyMode),
+              let mode = Self(rawValue: rawValue) else {
+            return .fileAndImage
+        }
+        return mode
+    }
+}
+
+enum CaptureHistoryRetention: String, CaseIterable, Identifiable {
+    case disabled
+    case week
+    case month
+    case threeMonths
+    case forever
+
+    var id: String {
+        rawValue
+    }
+
+    var displayName: String {
+        switch self {
+        case .disabled:
+            L10n.PreferencesAdvanced.historyDisabled
+        case .week:
+            L10n.PreferencesAdvanced.historyOneWeek
+        case .month:
+            L10n.PreferencesAdvanced.historyOneMonth
+        case .threeMonths:
+            L10n.PreferencesAdvanced.historyThreeMonths
+        case .forever:
+            L10n.PreferencesHistory.keepForever
+        }
+    }
+
+    init(enabled: Bool, days: Int) {
+        guard enabled else {
+            self = .disabled
+            return
+        }
+        switch days {
+        case 0: self = .forever
+        case 0 ... 7: self = .week
+        case 8 ... 60: self = .month
+        default: self = .threeMonths
+        }
+    }
+
+    var days: Int? {
+        switch self {
+        case .disabled: nil
+        case .week: 7
+        case .month: 30
+        case .threeMonths: 90
+        case .forever: 0
+        }
+    }
+}
+
 enum AnnotateQuickPropertiesSyncPreference {
     static func isEnabled(userDefaults: UserDefaults = .standard) -> Bool {
         userDefaults.object(forKey: PreferencesKeys.annotateQuickPropertiesSyncEnabled) as? Bool ?? true

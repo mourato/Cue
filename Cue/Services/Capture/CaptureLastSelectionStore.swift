@@ -9,6 +9,10 @@ import CoreGraphics
 import Foundation
 
 enum CaptureLastSelectionStore {
+    static func isEnabled(userDefaults: UserDefaults) -> Bool {
+        userDefaults.object(forKey: PreferencesKeys.captureAllInOneRememberLastSelection) as? Bool ?? true
+    }
+
     // MARK: - Save
 
     static func save(_ rect: CGRect, userDefaults: UserDefaults) {

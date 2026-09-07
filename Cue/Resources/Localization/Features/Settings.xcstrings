@@ -10660,7 +10660,42 @@
           }
         }
       }
-    }
+    },
+    "preferences-advanced.file-name-section": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"File Name"}}}},
+    "preferences-advanced.clipboard-section": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Clipboard"}}}},
+    "preferences-advanced.capture-history-section": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Capture History"}}}},
+    "preferences-advanced.text-recognition-section": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Text Recognition"}}}},
+    "preferences-advanced.all-in-one-section": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"All-In-One"}}}},
+    "preferences-advanced.ask-for-name-title": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Ask for name after every capture"}}}},
+    "preferences-advanced.file-name-format-title": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"File name format"}}}},
+    "preferences-advanced.customize-button": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Customize…"}}}},
+    "preferences-advanced.retina-suffix-title": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Add \"@2x\" suffix to Retina screenshots"}}}},
+    "preferences-advanced.retina-suffix-description": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"This option improves compatibility with displaying Retina screenshots in third-party apps."}}}},
+    "preferences-advanced.copy-to-clipboard-title": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Copy to clipboard"}}}},
+    "preferences-advanced.copy-to-clipboard-description": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Adjust this option if you've encountered any issues with pasting from clipboard or clipboard managers."}}}},
+    "preferences-advanced.clipboard-file-and-image": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"File & Image (default)"}}}},
+    "preferences-advanced.clipboard-file-only": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"File"}}}},
+    "preferences-advanced.clipboard-image-only": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Image"}}}},
+    "preferences-advanced.keep-history-title": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Keep history"}}}},
+    "preferences-advanced.keep-history-description": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"You can restore old files with the Capture History option from the menu bar."}}}},
+    "preferences-advanced.history-disabled": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Off"}}}},
+    "preferences-advanced.history-one-week": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"1 week"}}}},
+    "preferences-advanced.history-one-month": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"1 month"}}}},
+    "preferences-advanced.history-three-months": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"3 months"}}}},
+    "preferences-advanced.ocr-language-title": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Language"}}}},
+    "preferences-advanced.ocr-automatic-language": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Automatically Detect Language"}}}},
+    "preferences-advanced.keep-line-breaks-title": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Keep line breaks"}}}},
+    "preferences-advanced.detect-links-title": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Detect links"}}}},
+    "preferences-advanced.remember-last-selection-title": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Remember last selection"}}}},
+    "preferences-advanced.url-scheme-api-title": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"URL scheme API"}}}},
+    "preferences-advanced.url-scheme-api-description": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"The scheme used by external capture and automation links."}}}},
+    "preferences-advanced.url-scheme-description-v2": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Allow external triggers via the URL scheme API"}}}},
+    "preferences-advanced.screenshot-file-name-format": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Screenshot"}}}},
+    "preferences-advanced.recording-file-name-format": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Recording"}}}},
+    "preferences-advanced.file-name-format-hint": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Use the same tokens as the Screenshot settings filename editor."}}}},
+    "preferences-advanced.capture-name-prompt-title": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Name capture"}}}},
+    "preferences-advanced.capture-name-prompt-message": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Choose a name for this capture."}}}},
+    "preferences-advanced.capture-name-prompt-placeholder": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"File name"}}}}
   },
   "version": "1.0"
 }

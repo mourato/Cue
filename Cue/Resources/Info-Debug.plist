@@ -14,7 +14,7 @@
 			<string>com.mourato.cue</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>cue</string>
+				<string>$(CUE_URL_SCHEME)</string>
 			</array>
 		</dict>
 	</array>

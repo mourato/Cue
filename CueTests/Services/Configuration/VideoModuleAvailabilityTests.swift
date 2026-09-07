@@ -21,9 +21,9 @@ final class VideoModuleAvailabilityTests: XCTestCase {
         super.tearDown()
     }
 
-    func testRuntimeDefaultIsOffWhenKeyUnset() {
+    func testAvailabilityMatchesCompileTimeModule() {
         defaults.removeObject(forKey: PreferencesKeys.videoModuleEnabled)
-        XCTAssertFalse(VideoModuleAvailability.isEnabled(using: defaults))
+        XCTAssertEqual(VideoModuleAvailability.isEnabled(using: defaults), VideoModuleAvailability.isCompiledIn)
     }
 
     func testSetEnabledRoundTrip() throws {
@@ -32,13 +32,13 @@ final class VideoModuleAvailabilityTests: XCTestCase {
             "Requires CUE_VIDEO_MODULE (Notinhas Video / Debug+Video)",
         )
 
-        XCTAssertFalse(VideoModuleAvailability.isEnabled(using: defaults))
+        XCTAssertTrue(VideoModuleAvailability.isEnabled(using: defaults))
 
         VideoModuleAvailability.setEnabled(true, using: defaults)
         XCTAssertTrue(VideoModuleAvailability.isEnabled(using: defaults))
 
         VideoModuleAvailability.setEnabled(false, using: defaults)
-        XCTAssertFalse(VideoModuleAvailability.isEnabled(using: defaults))
+        XCTAssertTrue(VideoModuleAvailability.isEnabled(using: defaults))
     }
 
     func testDisabledWhenNotCompiledIn() throws {

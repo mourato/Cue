@@ -10,6 +10,17 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct AdvancedSettingsView: View {
+    @AppStorage(PreferencesKeys.captureAskForNameAfterCapture) private var askForNameAfterCapture = false
+    @AppStorage(PreferencesKeys.screenshotAddRetinaSuffix) private var addRetinaSuffix = true
+    @AppStorage(PreferencesKeys.clipboardCopyMode) private var clipboardCopyMode = ClipboardCopyMode.fileAndImage
+        .rawValue
+    @AppStorage(PreferencesKeys.historyEnabled) private var historyEnabled = true
+    @AppStorage(PreferencesKeys.historyRetentionDays) private var historyRetentionDays = 30
+    @AppStorage(PreferencesKeys.ocrLanguage) private var ocrLanguage = ""
+    @AppStorage(PreferencesKeys.ocrKeepLineBreaks) private var keepOCRLineBreaks = true
+    @AppStorage(PreferencesKeys.ocrLinkDetectionEnabled) private var detectOCRLinks = false
+    @AppStorage(PreferencesKeys.captureAllInOneRememberLastSelection)
+    private var rememberLastSelection = true
     @AppStorage(PreferencesKeys.diagnosticsEnabled) private var diagnosticsEnabled = true
     @AppStorage(PreferencesKeys.diagnosticsRetentionDays) private var diagnosticsRetentionDays = LogCleanupScheduler
         .defaultRetentionDays
@@ -21,7 +32,9 @@ struct AdvancedSettingsView: View {
     @State private var pendingConfigSyncURL: URL?
     @State private var pendingConfigSyncSignature: String?
     @State private var logSizeText = L10n.PreferencesAdvanced.calculating
+    @State private var isNameFormatEditorPresented = false
     @ObservedObject private var configSyncCoordinator = CueConfigurationSyncCoordinator.shared
+    @ObservedObject private var languageManager = AppLanguageManager.shared
 
     private let service = CueConfigurationService.shared
     private let tomlContentType = UTType(filenameExtension: "toml") ?? .plainText
@@ -32,6 +45,150 @@ struct AdvancedSettingsView: View {
 
     var body: some View {
         Form {
+            Section(L10n.PreferencesAdvanced.fileNameSection) {
+                SettingRow(
+                    icon: "textformat",
+                    title: L10n.PreferencesAdvanced.askForNameTitle,
+                    description: nil,
+                ) {
+                    Toggle("", isOn: $askForNameAfterCapture)
+                        .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesAdvanced.askForNameTitle)
+                }
+
+                SettingRow(
+                    icon: "rectangle.and.pencil.and.ellipsis",
+                    title: L10n.PreferencesAdvanced.fileNameFormatTitle,
+                    description: nil,
+                ) {
+                    Button(L10n.PreferencesAdvanced.customizeButton) {
+                        isNameFormatEditorPresented = true
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                }
+
+                SettingRow(
+                    icon: "display",
+                    title: L10n.PreferencesAdvanced.retinaSuffixTitle,
+                    description: L10n.PreferencesAdvanced.retinaSuffixDescription,
+                ) {
+                    Toggle("", isOn: $addRetinaSuffix)
+                        .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesAdvanced.retinaSuffixTitle)
+                }
+            }
+
+            Section(L10n.PreferencesAdvanced.clipboardSection) {
+                SettingRow(
+                    icon: "doc.on.clipboard",
+                    title: L10n.PreferencesAdvanced.copyToClipboardTitle,
+                    description: L10n.PreferencesAdvanced.copyToClipboardDescription,
+                ) {
+                    Picker("", selection: $clipboardCopyMode) {
+                        ForEach(ClipboardCopyMode.allCases) { mode in
+                            Text(mode.displayName).tag(mode.rawValue)
+                        }
+                    }
+                    .labelsHidden()
+                    .accessibilityLabel(L10n.PreferencesAdvanced.copyToClipboardTitle)
+                    .pickerStyle(.menu)
+                    .fixedSize()
+                }
+            }
+
+            Section(L10n.PreferencesAdvanced.captureHistorySection) {
+                SettingRow(
+                    icon: "clock.arrow.circlepath",
+                    title: L10n.PreferencesAdvanced.keepHistoryTitle,
+                    description: L10n.PreferencesAdvanced.keepHistoryDescription,
+                ) {
+                    Picker("", selection: historyRetentionBinding) {
+                        ForEach(CaptureHistoryRetention.allCases) { option in
+                            Text(option.displayName).tag(option)
+                        }
+                    }
+                    .labelsHidden()
+                    .accessibilityLabel(L10n.PreferencesAdvanced.keepHistoryTitle)
+                    .pickerStyle(.menu)
+                    .fixedSize()
+                }
+            }
+
+            Section(L10n.PreferencesAdvanced.textRecognitionSection) {
+                SettingRow(
+                    icon: "character.textbox",
+                    title: L10n.PreferencesAdvanced.ocrLanguageTitle,
+                    description: nil,
+                ) {
+                    Picker("", selection: $ocrLanguage) {
+                        Text(L10n.PreferencesAdvanced.ocrAutomaticLanguage).tag("")
+                        ForEach(languageManager.availableOptions) { option in
+                            Text(verbatim: option.displayName).tag(option.identifier)
+                        }
+                    }
+                    .labelsHidden()
+                    .accessibilityLabel(L10n.PreferencesAdvanced.ocrLanguageTitle)
+                    .pickerStyle(.menu)
+                    .fixedSize()
+                }
+
+                SettingRow(
+                    icon: "text.alignleft",
+                    title: L10n.PreferencesAdvanced.keepLineBreaksTitle,
+                    description: nil,
+                ) {
+                    Toggle("", isOn: $keepOCRLineBreaks)
+                        .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesAdvanced.keepLineBreaksTitle)
+                }
+
+                SettingRow(
+                    icon: "link",
+                    title: L10n.PreferencesAdvanced.detectLinksTitle,
+                    description: nil,
+                ) {
+                    Toggle("", isOn: $detectOCRLinks)
+                        .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesAdvanced.detectLinksTitle)
+                }
+            }
+
+            Section(L10n.PreferencesAdvanced.allInOneSection) {
+                SettingRow(
+                    icon: "rectangle.on.rectangle",
+                    title: L10n.PreferencesAdvanced.rememberLastSelectionTitle,
+                    description: nil,
+                ) {
+                    Toggle("", isOn: $rememberLastSelection)
+                        .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesAdvanced.rememberLastSelectionTitle)
+                }
+            }
+
+            Section(L10n.PreferencesAdvanced.integrationSection) {
+                SettingRow(
+                    icon: "link.badge.plus",
+                    title: L10n.PreferencesAdvanced.urlSchemeAPITitle,
+                    description: L10n.PreferencesAdvanced.urlSchemeAPIDescription,
+                ) {
+                    Text("\(CueURLScheme.current)://")
+                        .font(.body.monospaced())
+                        .foregroundStyle(.secondary)
+                        .accessibilityLabel(L10n.PreferencesAdvanced.urlSchemeAPITitle)
+                }
+
+                SettingRow(
+                    icon: "link",
+                    title: L10n.PreferencesAdvanced.urlSchemeTitle,
+                    description: L10n.PreferencesAdvanced.urlSchemeDescription,
+                ) {
+                    Toggle("", isOn: $urlSchemeEnabled)
+                        .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesAdvanced.urlSchemeTitle)
+                }
+            }
+
             Section(L10n.PreferencesAdvanced.backupSection) {
                 if needsConfigAccess {
                     AdvancedConfigAccessWarningRow {
@@ -112,24 +269,6 @@ struct AdvancedSettingsView: View {
                 }
             }
 
-            Section(L10n.PreferencesAdvanced.integrationSection) {
-                SettingRow(
-                    icon: "link",
-                    title: L10n.PreferencesAdvanced.urlSchemeTitle,
-                    description: L10n.PreferencesAdvanced.urlSchemeDescription,
-                ) {
-                    Toggle("", isOn: $urlSchemeEnabled)
-                        .labelsHidden()
-                        .accessibilityLabel(L10n.PreferencesAdvanced.urlSchemeTitle)
-                }
-            }
-
-            #if CUE_VIDEO_MODULE
-                Section(L10n.PreferencesAdvanced.optionalModulesSection) {
-                    VideoModuleToggleRow()
-                }
-            #endif
-
             Section(L10n.PreferencesAdvanced.diagnosticsSection) {
                 SettingRow(
                     icon: "doc.text.magnifyingglass",
@@ -207,6 +346,23 @@ struct AdvancedSettingsView: View {
         } message: {
             Text(L10n.PreferencesAdvanced.configSyncConfirmationMessage)
         }
+        .sheet(isPresented: $isNameFormatEditorPresented) {
+            AdvancedFilenameFormatEditor()
+                .frame(width: 620, height: 260)
+                .padding()
+        }
+    }
+
+    private var historyRetentionBinding: Binding<CaptureHistoryRetention> {
+        Binding(
+            get: { CaptureHistoryRetention(enabled: historyEnabled, days: historyRetentionDays) },
+            set: { option in
+                historyEnabled = option != .disabled
+                if let days = option.days {
+                    historyRetentionDays = days
+                }
+            },
+        )
     }
 
     private var disabledBackupActionHelp: String {
@@ -621,47 +777,30 @@ struct AdvancedSettingsView: View {
     }
 }
 
-#if CUE_VIDEO_MODULE
-    private struct VideoModuleToggleRow: View {
-        @ObservedObject private var recorder = ScreenRecordingManager.shared
-        @State private var isEnabled = VideoModuleAvailability.isEnabled
+private struct AdvancedFilenameFormatEditor: View {
+    @AppStorage(PreferencesKeys.screenshotFileNameTemplate)
+    private var screenshotTemplate = CaptureOutputKind.screenshot.defaultTemplate
 
-        private var isRecordingActive: Bool {
-            recorder.isActive
-        }
+    #if CUE_VIDEO_MODULE
+        @AppStorage(PreferencesKeys.recordingFileNameTemplate)
+        private var recordingTemplate = CaptureOutputKind.recording.defaultTemplate
+    #endif
 
-        private var toggleBinding: Binding<Bool> {
-            Binding(
-                get: { isEnabled },
-                set: { newValue in
-                    if !newValue, isRecordingActive {
-                        return
-                    }
-                    isEnabled = newValue
-                    VideoModuleAvailability.setEnabled(newValue)
-                },
-            )
+    var body: some View {
+        Form {
+            TextField(L10n.PreferencesAdvanced.screenshotFileNameFormat, text: $screenshotTemplate)
+                .accessibilityLabel(L10n.PreferencesAdvanced.screenshotFileNameFormat)
+            #if CUE_VIDEO_MODULE
+                TextField(L10n.PreferencesAdvanced.recordingFileNameFormat, text: $recordingTemplate)
+                    .accessibilityLabel(L10n.PreferencesAdvanced.recordingFileNameFormat)
+            #endif
+            Text(L10n.PreferencesAdvanced.fileNameFormatHint)
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
-
-        var body: some View {
-            SettingRow(
-                icon: "video.fill",
-                title: L10n.PreferencesAdvanced.videoModuleTitle,
-                description: isRecordingActive && isEnabled
-                    ? L10n.PreferencesAdvanced.videoModuleDisabledWhileRecording
-                    : L10n.PreferencesAdvanced.videoModuleDescription,
-            ) {
-                Toggle("", isOn: toggleBinding)
-                    .labelsHidden()
-                    .accessibilityLabel(L10n.PreferencesAdvanced.videoModuleTitle)
-                    .disabled(isRecordingActive && isEnabled)
-            }
-            .onReceive(NotificationCenter.default.publisher(for: .videoModuleAvailabilityDidChange)) { _ in
-                isEnabled = VideoModuleAvailability.isEnabled
-            }
-        }
+        .formStyle(.grouped)
     }
-#endif
+}
 
 private struct AdvancedConfigAccessWarningRow: View {
     let onGrant: () -> Void

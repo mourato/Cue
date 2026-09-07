@@ -62,6 +62,23 @@ enum CueConfigurationExporter {
         writer.section("capture.naming")
         writer.value("screenshot_template", CaptureOutputNaming.resolvedTemplate(for: .screenshot, defaults: defaults))
         writer.value("recording_template", CaptureOutputNaming.resolvedTemplate(for: .recording, defaults: defaults))
+        writer.value(
+            "ask_for_name_after_capture",
+            defaults.boolValue(PreferencesKeys.captureAskForNameAfterCapture, default: false),
+        )
+        writer.value(
+            "add_retina_suffix",
+            defaults.boolValue(PreferencesKeys.screenshotAddRetinaSuffix, default: true),
+        )
+
+        writer.section("capture.clipboard")
+        writer.value("copy_mode", ClipboardCopyMode.stored(userDefaults: defaults).rawValue)
+
+        writer.section("capture.all_in_one")
+        writer.value(
+            "remember_last_selection",
+            defaults.boolValue(PreferencesKeys.captureAllInOneRememberLastSelection, default: true),
+        )
 
         writer.section("capture.screenshot")
         writer.value(
@@ -108,6 +125,18 @@ enum CueConfigurationExporter {
         writer.value(
             "success_notification",
             defaults.boolValue(PreferencesKeys.ocrSuccessNotificationEnabled, default: true),
+        )
+        writer.value(
+            "language",
+            defaults.string(forKey: PreferencesKeys.ocrLanguage) ?? "auto",
+        )
+        writer.value(
+            "keep_line_breaks",
+            defaults.boolValue(PreferencesKeys.ocrKeepLineBreaks, default: true),
+        )
+        writer.value(
+            "link_detection",
+            defaults.boolValue(PreferencesKeys.ocrLinkDetectionEnabled, default: false),
         )
 
         writer.section("capture.object_cutout")

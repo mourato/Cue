@@ -186,7 +186,7 @@ final class CueDeepLinkHandlerTests: XCTestCase {
         handler.handle(url)
     }
 
-    func testVideoDeepLinksIgnoredWhenModuleDisabled() throws {
+    func testVideoDeepLinksRemainAvailableWhenCompiledIn() throws {
         let defaults = UserDefaults.standard
         let originalModuleValue = defaults.object(forKey: PreferencesKeys.videoModuleEnabled)
         defer {
@@ -198,32 +198,37 @@ final class CueDeepLinkHandlerTests: XCTestCase {
         }
 
         defaults.set(false, forKey: PreferencesKeys.videoModuleEnabled)
-        XCTAssertFalse(
-            VideoModuleAvailability.isEnabled,
-            "Video deep-link handlers must see the module as disabled",
-        )
-        XCTAssertFalse(
-            VideoModuleMediaRouting.shouldDispatchVideoAction(),
-            "Routing gate must refuse video deep links when the module is off",
-        )
-
-        let viewModel = ScreenCaptureViewModel()
-        let handler = CueDeepLinkHandler(screenCaptureViewModel: viewModel)
-        let urls = [
-            "cue://record/screen",
-            "cue://record/application",
-            "cue://open/video-editor",
-        ]
-
-        for urlString in urls {
-            let url = try XCTUnwrap(URL(string: urlString))
-            XCTAssertNotNil(CueDeepLinkAction(url: url), urlString)
-            handler.handle(url)
-            XCTAssertFalse(
-                VideoModuleMediaRouting.shouldDispatchVideoAction(),
-                "Module must stay disabled after handling \(urlString)",
+        #if CUE_VIDEO_MODULE
+            XCTAssertTrue(
+                VideoModuleAvailability.isEnabled,
+                "Compiled video builds must keep video actions available",
             )
-        }
+            XCTAssertTrue(
+                VideoModuleMediaRouting.shouldDispatchVideoAction(),
+                "Routing gate must allow compiled video deep links",
+            )
+
+            let viewModel = ScreenCaptureViewModel()
+            let handler = CueDeepLinkHandler(screenCaptureViewModel: viewModel)
+            let urls = [
+                "cue://record/screen",
+                "cue://record/application",
+                "cue://open/video-editor",
+            ]
+
+            for urlString in urls {
+                let url = try XCTUnwrap(URL(string: urlString))
+                XCTAssertNotNil(CueDeepLinkAction(url: url), urlString)
+                handler.handle(url)
+                XCTAssertTrue(
+                    VideoModuleMediaRouting.shouldDispatchVideoAction(),
+                    "Module must stay available after handling \(urlString)",
+                )
+            }
+        #else
+            XCTAssertFalse(VideoModuleAvailability.isEnabled)
+            XCTAssertFalse(VideoModuleMediaRouting.shouldDispatchVideoAction())
+        #endif
     }
 
     func testVideoDeepLinkRoutingGateMatchesExplicitFlags() {

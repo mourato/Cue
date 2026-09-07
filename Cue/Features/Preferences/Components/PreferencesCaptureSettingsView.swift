@@ -62,20 +62,15 @@ struct CaptureSettingsView: View {
     // Output & Format
     @AppStorage(PreferencesKeys.screenshotFormat) private var screenshotFormat = "png"
     @AppStorage(PreferencesKeys.screenshotJpegQuality) private var screenshotJpegQuality = 0.85
-    @AppStorage(PreferencesKeys.screenshotFileNameTemplate)
-    private var screenshotFileNameTemplate = CaptureOutputKind.screenshot.defaultTemplate
 
     // Specialized capture
     @AppStorage(PreferencesKeys.scrollingCaptureShowHints) private var scrollingCaptureShowHints = true
     @AppStorage(PreferencesKeys.backgroundCutoutAutoCropEnabled) private var backgroundCutoutAutoCropEnabled = true
     @AppStorage(PreferencesKeys.ocrSuccessNotificationEnabled) private var ocrSuccessNotification = true
-    @AppStorage(PreferencesKeys.ocrLinkDetectionEnabled) private var ocrLinkDetection = true
 
     #if CUE_VIDEO_MODULE
         /// Recording settings
         @AppStorage(PreferencesKeys.recordingFormat) private var format = "mov"
-        @AppStorage(PreferencesKeys.recordingFileNameTemplate)
-        private var recordingFileNameTemplate = CaptureOutputKind.recording.defaultTemplate
         @AppStorage(PreferencesKeys.recordingFPS) private var fps = 30
         @AppStorage(PreferencesKeys.recordingQuality) private var quality = "high"
         @AppStorage(PreferencesKeys.recordingMicrophoneDeviceID)
@@ -343,16 +338,6 @@ struct CaptureSettingsView: View {
                                 .labelsHidden()
                                 .accessibilityLabel(L10n.PreferencesCapture.ocrSuccessNotificationTitle)
                         }
-
-                        SettingRow(
-                            icon: "link",
-                            title: L10n.PreferencesCapture.ocrLinkDetectionTitle,
-                            description: L10n.PreferencesCapture.ocrLinkDetectionDescription,
-                        ) {
-                            Toggle("", isOn: $ocrLinkDetection)
-                                .labelsHidden()
-                                .accessibilityLabel(L10n.PreferencesCapture.ocrLinkDetectionTitle)
-                        }
                     }
 
                     Section {
@@ -617,113 +602,11 @@ struct CaptureSettingsView: View {
             .padding(.vertical, 4)
         }
 
-        SettingRow(
-            icon: "textformat",
-            title: L10n.PreferencesCapture.screenshotTemplateTitle,
-            description: L10n.PreferencesCapture.screenshotTemplateDescription,
-        ) {
-            TextField("", text: $screenshotFileNameTemplate)
-                .textFieldStyle(.roundedBorder)
-                .frame(width: 260)
-                .accessibilityLabel(L10n.PreferencesCapture.screenshotTemplateTitle)
-        }
-
-        #if CUE_VIDEO_MODULE
-            if videoModuleEnabled {
-                SettingRow(
-                    icon: "textformat.abc",
-                    title: L10n.PreferencesCapture.recordingTemplateTitle,
-                    description: L10n.PreferencesCapture.recordingTemplateDescription,
-                ) {
-                    TextField("", text: $recordingFileNameTemplate)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(width: 260)
-                        .accessibilityLabel(L10n.PreferencesCapture.recordingTemplateTitle)
-                }
-            }
-        #endif
-
-        HStack(alignment: .top, spacing: 6) {
-            Image(systemName: "info.circle")
-                .foregroundColor(.secondary)
-                .font(.system(size: 12))
-                .padding(.top, 1)
-            Text(L10n.PreferencesCapture.availableTokens)
-                .font(.system(size: 11))
-                .foregroundColor(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(.vertical, 2)
-
-        VStack(alignment: .leading, spacing: 2) {
-            Text(L10n.PreferencesCapture.screenshotPreview(screenshotFilenamePreview))
-            #if CUE_VIDEO_MODULE
-                if videoModuleEnabled {
-                    Text(L10n.PreferencesCapture.recordingPreview(recordingFilenamePreview))
-                }
-            #endif
-        }
-        .font(.system(size: 11))
-        .foregroundColor(.secondary)
-        .padding(.top, 2)
-
-        HStack {
-            Spacer()
-            Button(L10n.PreferencesCapture.resetNamingDefaults) {
-                resetOutputNamingDefaults()
-            }
-            .font(.system(size: 11))
-            .foregroundColor(.secondary)
-            .buttonStyle(.plain)
-        }
-
         PreferencesScreenshotDefaultPresetPicker()
 
         Text(L10n.PreferencesCapture.defaultPresetDescription)
             .font(.caption)
             .foregroundColor(.secondary)
-    }
-
-    private var screenshotFilenamePreview: String {
-        let sampleContext = CaptureContext(appName: "Safari", windowTitle: "GitHub")
-        let baseName = CaptureOutputNaming.resolveTemplateBaseName(
-            previewTemplate(screenshotFileNameTemplate, kind: .screenshot),
-            kind: .screenshot,
-            context: sampleContext,
-        )
-        return "\(baseName).\(screenshotFileExtension)"
-    }
-
-    private var recordingFilenamePreview: String {
-        #if CUE_VIDEO_MODULE
-            let sampleContext = CaptureContext(appName: "Safari", windowTitle: "GitHub")
-            let baseName = CaptureOutputNaming.resolveTemplateBaseName(
-                previewTemplate(recordingFileNameTemplate, kind: .recording),
-                kind: .recording,
-                context: sampleContext,
-            )
-            return "\(baseName).\(recordingFileExtension)"
-        #else
-            return ""
-        #endif
-    }
-
-    private func previewTemplate(_ template: String, kind: CaptureOutputKind) -> String {
-        template.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            ? kind.defaultTemplate
-            : template
-    }
-
-    private var screenshotFileExtension: String {
-        ImageFormatOption(rawValue: screenshotFormat)?.format.fileExtension ?? "png"
-    }
-
-    private var recordingFileExtension: String {
-        #if CUE_VIDEO_MODULE
-            VideoFormat(rawValue: format)?.fileExtension ?? "mov"
-        #else
-            "mov"
-        #endif
     }
 
     #if CUE_VIDEO_MODULE
@@ -735,13 +618,6 @@ struct CaptureSettingsView: View {
     #endif
 
     // MARK: - Reset Defaults
-
-    private func resetOutputNamingDefaults() {
-        screenshotFileNameTemplate = CaptureOutputKind.screenshot.defaultTemplate
-        #if CUE_VIDEO_MODULE
-            recordingFileNameTemplate = CaptureOutputKind.recording.defaultTemplate
-        #endif
-    }
 
     private func resetScreenshotDefaults() {
         screenshotFormat = ImageFormatOption.png.rawValue

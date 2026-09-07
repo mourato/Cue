@@ -141,6 +141,25 @@ enum CueConfigurationImporter {
         collectString(&reader, "capture", "naming", "recording_template", mutations: &mutations) {
             defaults.set($0, forKey: PreferencesKeys.recordingFileNameTemplate)
         }
+        collectBool(&reader, "capture", "naming", "ask_for_name_after_capture", mutations: &mutations) {
+            defaults.set($0, forKey: PreferencesKeys.captureAskForNameAfterCapture)
+        }
+        collectBool(&reader, "capture", "naming", "add_retina_suffix", mutations: &mutations) {
+            defaults.set($0, forKey: PreferencesKeys.screenshotAddRetinaSuffix)
+        }
+        collectEnumString(
+            &reader,
+            "capture",
+            "clipboard",
+            "copy_mode",
+            allowed: ClipboardCopyMode.allCases.map(\.rawValue),
+            mutations: &mutations,
+        ) {
+            defaults.set($0, forKey: PreferencesKeys.clipboardCopyMode)
+        }
+        collectBool(&reader, "capture", "all_in_one", "remember_last_selection", mutations: &mutations) {
+            defaults.set($0, forKey: PreferencesKeys.captureAllInOneRememberLastSelection)
+        }
         if let format = reader.string("capture", "screenshot", "format") {
             guard ImageFormatOption(rawValue: format) != nil else {
                 reader.error("capture.screenshot.format must be png, jpeg, or webp")
@@ -196,6 +215,21 @@ enum CueConfigurationImporter {
         }
         collectBool(&reader, "capture", "ocr", "success_notification", mutations: &mutations) {
             defaults.set($0, forKey: PreferencesKeys.ocrSuccessNotificationEnabled)
+        }
+        if let language = reader.string("capture", "ocr", "language") {
+            guard language == "auto" || AppLanguageManager.normalizedLanguageIdentifier(from: language) != nil else {
+                reader.error("capture.ocr.language must be auto or a supported language identifier")
+                return
+            }
+            mutations.append {
+                defaults.set(language == "auto" ? "" : language, forKey: PreferencesKeys.ocrLanguage)
+            }
+        }
+        collectBool(&reader, "capture", "ocr", "keep_line_breaks", mutations: &mutations) {
+            defaults.set($0, forKey: PreferencesKeys.ocrKeepLineBreaks)
+        }
+        collectBool(&reader, "capture", "ocr", "link_detection", mutations: &mutations) {
+            defaults.set($0, forKey: PreferencesKeys.ocrLinkDetectionEnabled)
         }
         collectBool(&reader, "capture", "object_cutout", "auto_crop", mutations: &mutations) {
             defaults.set($0, forKey: PreferencesKeys.backgroundCutoutAutoCropEnabled)

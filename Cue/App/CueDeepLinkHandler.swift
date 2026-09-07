@@ -8,6 +8,21 @@
 import AppKit
 import Foundation
 
+enum CueURLScheme {
+    static let defaultValue = "cue"
+
+    static var current: String {
+        value(in: .main)
+    }
+
+    static func value(in bundle: Bundle) -> String {
+        let urlTypes = bundle.object(forInfoDictionaryKey: "CFBundleURLTypes") as? [[String: Any]]
+        let schemes = (urlTypes ?? []).compactMap { $0["CFBundleURLSchemes"] as? [String] }.flatMap(\.self)
+        return schemes.first(where: { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty })?.lowercased()
+            ?? defaultValue
+    }
+}
+
 @MainActor
 struct CueDeepLinkHandler {
     private let screenCaptureViewModel: ScreenCaptureViewModel
@@ -144,7 +159,7 @@ enum CueDeepLinkAction: Equatable {
     case openSettings(PreferencesTab?)
 
     init?(url: URL) {
-        guard url.scheme?.lowercased() == "cue" else { return nil }
+        guard url.scheme?.lowercased() == CueURLScheme.current else { return nil }
 
         let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
         let host = url.host?.lowercased()

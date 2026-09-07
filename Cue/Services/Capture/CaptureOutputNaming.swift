@@ -92,16 +92,39 @@ enum CaptureOutputNaming {
         date: Date = Date(),
         context: CaptureContext = .empty,
         defaults: UserDefaults = .standard,
+        scaleFactor: CGFloat? = nil,
     ) -> String {
         if let customName {
             let sanitizedCustomName = sanitizeBaseName(customName)
             if !sanitizedCustomName.isEmpty {
-                return sanitizedCustomName
+                return appendRetinaSuffixIfNeeded(
+                    sanitizedCustomName,
+                    kind: kind,
+                    scaleFactor: scaleFactor,
+                    defaults: defaults,
+                )
             }
         }
 
         let template = resolvedTemplate(for: kind, defaults: defaults)
-        return resolveTemplateBaseName(template, kind: kind, date: date, context: context)
+        return appendRetinaSuffixIfNeeded(
+            resolveTemplateBaseName(template, kind: kind, date: date, context: context),
+            kind: kind,
+            scaleFactor: scaleFactor,
+            defaults: defaults,
+        )
+    }
+
+    static func makeRenamedFileURL(for sourceURL: URL, requestedName: String) -> URL? {
+        let sanitizedName = sanitizePathComponent(requestedName)
+        guard !sanitizedName.isEmpty else { return nil }
+        let baseName = stripKnownExtension(from: sanitizedName)
+        guard !baseName.isEmpty else { return nil }
+        return makeUniqueFileURL(
+            in: sourceURL.deletingLastPathComponent(),
+            baseName: baseName,
+            fileExtension: sourceURL.pathExtension,
+        )
     }
 
     static func resolvedTemplate(for kind: CaptureOutputKind, defaults: UserDefaults = .standard) -> String {
@@ -212,6 +235,21 @@ enum CaptureOutputNaming {
 
         sanitized = sanitized.trimmingCharacters(in: CharacterSet(charactersIn: ". "))
         return sanitized
+    }
+
+    private static func appendRetinaSuffixIfNeeded(
+        _ baseName: String,
+        kind: CaptureOutputKind,
+        scaleFactor: CGFloat?,
+        defaults: UserDefaults,
+    ) -> String {
+        guard kind == .screenshot,
+              scaleFactor ?? 1 >= 1.5,
+              defaults.object(forKey: PreferencesKeys.screenshotAddRetinaSuffix) as? Bool ?? true,
+              !baseName.hasSuffix("@2x") else {
+            return baseName
+        }
+        return "\(baseName)@2x"
     }
 
     private static func format(_ date: Date, style: String) -> String {

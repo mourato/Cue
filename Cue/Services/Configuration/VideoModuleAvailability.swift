@@ -1,6 +1,6 @@
 import Foundation
 
-/// Compile + runtime gate for Recording / Video Editor (Notinhas optional module).
+/// Compile-time gate for Recording / Video Editor.
 enum VideoModuleAvailability {
     static var isCompiledIn: Bool {
         #if CUE_VIDEO_MODULE
@@ -15,11 +15,8 @@ enum VideoModuleAvailability {
     }
 
     static func isEnabled(using defaults: UserDefaults) -> Bool {
-        guard isCompiledIn else { return false }
-        if defaults.object(forKey: PreferencesKeys.videoModuleEnabled) == nil {
-            return false
-        }
-        return defaults.bool(forKey: PreferencesKeys.videoModuleEnabled)
+        _ = defaults
+        return isCompiledIn
     }
 
     static func setEnabled(_ enabled: Bool) {
@@ -27,9 +24,8 @@ enum VideoModuleAvailability {
     }
 
     static func setEnabled(_ enabled: Bool, using defaults: UserDefaults) {
-        guard isCompiledIn else { return }
-        defaults.set(enabled, forKey: PreferencesKeys.videoModuleEnabled)
-        NotificationCenter.default.post(name: .videoModuleAvailabilityDidChange, object: nil)
+        _ = enabled
+        _ = defaults
     }
 }
 

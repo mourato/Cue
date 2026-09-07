@@ -42,7 +42,14 @@ final class PostCaptureActionHandler {
             if isVideo {
                 ClipboardHelper.copyMediaFile(from: url)
             } else {
-                ClipboardHelper.copyImage(from: url)
+                switch ClipboardCopyMode.stored() {
+                case .fileAndImage:
+                    ClipboardHelper.copyImage(from: url)
+                case .fileOnly:
+                    ClipboardHelper.copyFileURLs([url])
+                case .imageOnly:
+                    ClipboardHelper.copyImageOnly(from: url)
+                }
             }
         },
         annotateAction: @escaping (QuickAccessItem?, URL, AnnotationSessionData?) -> Void = { item, url, sessionData in
@@ -76,14 +83,15 @@ final class PostCaptureActionHandler {
     /// Execute all enabled post-capture actions for a screenshot
     @discardableResult
     func handleScreenshotCapture(url: URL, pinToScreen: Bool = false) async -> QuickAccessItem? {
+        let outputURL = promptForNameIfNeeded(url, kind: .screenshot)
         let quickAccessItem = await executeActions(
             for: .screenshot,
-            url: url,
+            url: outputURL,
             pinToScreen: pinToScreen,
         )
 
         // Add to capture history
-        await recordScreenshotHistory(url: url)
+        await recordScreenshotHistory(url: outputURL)
 
         return quickAccessItem
     }
@@ -134,15 +142,17 @@ final class PostCaptureActionHandler {
             return
         }
 
+        let namedURLs = validURLs.map { promptForNameIfNeeded($0, kind: .screenshot) }
+
         DiagnosticLogger.shared.log(
             .info,
             .action,
             "Screenshot batch post-capture started",
-            context: ["count": "\(validURLs.count)"],
+            context: ["count": "\(namedURLs.count)"],
         )
 
         var sessionDataByURL: [URL: AnnotationSessionData] = [:]
-        for url in validURLs {
+        for url in namedURLs {
             if let sessionData = screenshotPresetAutoApplier.applyDefaultPresetIfNeeded(to: url) {
                 sessionDataByURL[url] = sessionData
                 persistAnnotationSessionIfNeeded(sessionData, for: url)
@@ -150,17 +160,24 @@ final class PostCaptureActionHandler {
         }
 
         if preferences.isActionEnabled(.copyFile, for: .screenshot) {
-            ClipboardHelper.copyFileURLs(validURLs)
+            switch ClipboardCopyMode.stored() {
+            case .fileAndImage:
+                ClipboardHelper.copyImagesAndFiles(from: namedURLs)
+            case .fileOnly:
+                ClipboardHelper.copyFileURLs(namedURLs)
+            case .imageOnly:
+                ClipboardHelper.copyImagesOnly(from: namedURLs)
+            }
             DiagnosticLogger.shared.log(
                 .info,
                 .clipboard,
                 "Screenshot batch file URLs copied to clipboard",
-                context: ["count": "\(validURLs.count)"],
+                context: ["count": "\(namedURLs.count)"],
             )
         }
 
         if preferences.isActionEnabled(.showQuickAccess, for: .screenshot) {
-            for url in validURLs {
+            for url in namedURLs {
                 let item = await quickAccess.addScreenshot(url: url)
                 if let item, let sessionData = sessionDataByURL[url] {
                     AnnotateManager.shared.saveSessionData(sessionData, for: item.id)
@@ -168,7 +185,7 @@ final class PostCaptureActionHandler {
             }
         }
 
-        if preferences.isActionEnabled(.openAnnotate, for: .screenshot), let firstURL = validURLs.first {
+        if preferences.isActionEnabled(.openAnnotate, for: .screenshot), let firstURL = namedURLs.first {
             AnnotateManager.shared.openAnnotation(url: firstURL, sessionData: sessionDataByURL[firstURL])
             DiagnosticLogger.shared.log(
                 .info,
@@ -176,25 +193,25 @@ final class PostCaptureActionHandler {
                 "Screenshot batch opened first capture in Annotate",
                 context: [
                     "fileName": firstURL.lastPathComponent,
-                    "skippedCount": "\(max(0, validURLs.count - 1))",
+                    "skippedCount": "\(max(0, namedURLs.count - 1))",
                 ],
             )
         }
 
         if preferences.isActionEnabled(.pinToScreen, for: .screenshot) {
-            for url in validURLs {
+            for url in namedURLs {
                 await quickAccess.pinScreenshot(url: url)
             }
         }
 
         if preferences.isActionEnabled(.uploadToCloud, for: .screenshot) {
-            for url in validURLs {
+            for url in namedURLs {
                 let uploadURL = url
                 Task { @MainActor in await PostCaptureActionHandler.uploadAndCopyLink(url: uploadURL) }
             }
         }
 
-        for url in validURLs {
+        for url in namedURLs {
             await recordScreenshotHistory(url: url)
         }
     }
@@ -254,10 +271,11 @@ final class PostCaptureActionHandler {
     /// Execute all enabled post-capture actions for a video recording
     /// - Parameter skipQuickAccess: When true, skip adding to QuickAccess (e.g. GIF flow already added it)
     func handleVideoCapture(url: URL, skipQuickAccess: Bool = false) async {
-        await executeActions(for: .recording, url: url, skipQuickAccess: skipQuickAccess)
+        let outputURL = promptForNameIfNeeded(url, kind: .recording)
+        await executeActions(for: .recording, url: outputURL, skipQuickAccess: skipQuickAccess)
 
         // Add to capture history
-        await addVideoToHistory(url: url)
+        await addVideoToHistory(url: outputURL)
     }
 
     /// Add a video or GIF to capture history
@@ -355,6 +373,54 @@ final class PostCaptureActionHandler {
     private var editedClipboardTask: Task<Void, Never>?
 
     // MARK: - Private
+
+    private func promptForNameIfNeeded(_ url: URL, kind: CaptureOutputKind) -> URL {
+        guard UserDefaults.standard.object(forKey: PreferencesKeys.captureAskForNameAfterCapture) as? Bool ?? false,
+              FileManager.default.fileExists(atPath: url.path) else {
+            return url
+        }
+
+        let alert = NSAlert()
+        alert.messageText = L10n.PreferencesAdvanced.captureNamePromptTitle
+        alert.informativeText = L10n.PreferencesAdvanced.captureNamePromptMessage
+        let field = NSTextField(string: url.deletingPathExtension().lastPathComponent)
+        field.placeholderString = L10n.PreferencesAdvanced.captureNamePromptPlaceholder
+        field.frame = NSRect(x: 0, y: 0, width: 320, height: 24)
+        alert.accessoryView = field
+        alert.addButton(withTitle: L10n.Common.save)
+        alert.addButton(withTitle: L10n.Common.cancel)
+
+        guard alert.runModal() == .alertFirstButtonReturn else {
+            return url
+        }
+
+        let currentBaseName = url.deletingPathExtension().lastPathComponent
+        guard field.stringValue.trimmingCharacters(in: .whitespacesAndNewlines) != currentBaseName else {
+            return url
+        }
+
+        guard
+            let destination = CaptureOutputNaming.makeRenamedFileURL(
+                for: url,
+                requestedName: field.stringValue,
+            ),
+            destination != url else {
+            return url
+        }
+
+        do {
+            try FileManager.default.moveItem(at: url, to: destination)
+            return destination
+        } catch {
+            DiagnosticLogger.shared.logError(
+                .capture,
+                error,
+                "Capture rename failed",
+                context: ["kind": kind.typeTokenValue, "fileName": url.lastPathComponent],
+            )
+            return url
+        }
+    }
 
     @discardableResult
     private func executeActions(
