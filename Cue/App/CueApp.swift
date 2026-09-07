@@ -30,6 +30,7 @@ struct CueApp: App {
             PreferencesView()
                 .preferredColorScheme(themeManager.systemAppearance)
         }
+        .windowToolbarStyle(.unifiedCompact)
     }
 }
 
