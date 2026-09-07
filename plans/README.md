@@ -249,6 +249,7 @@ Recording pane remains separate and conditional on the Video module.
 | Plan | Title | Priority | Effort | Depends on | Status |
 |---|---|---:|---:|---|---|
 | 043 | Unify General and Screenshot preferences into one Capture flow | P1 | M | — | DONE |
+| 115 | Screenshot preferences reshuffle | P1 | S–M | 043 | DONE (`c48af87e1`, source `1e16cb1a`; thermo APPROVE; manual Preferences gate pending) |
 
 ### Dependency notes (043)
 
