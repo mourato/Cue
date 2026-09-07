@@ -44,6 +44,7 @@ struct PreferencesView: View {
                     .tag(PreferencesTab.advanced)
             }
             .listStyle(.sidebar)
+            .contentMargins(.top, 0, for: .scrollContent)
             .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 240)
         } detail: {
             settingsContent
@@ -51,6 +52,7 @@ struct PreferencesView: View {
         }
         .navigationSplitViewStyle(.balanced)
         .toolbar(removing: .title)
+        .preferencesHostingWindowChrome()
         .frame(width: 760, height: 550)
     }
 

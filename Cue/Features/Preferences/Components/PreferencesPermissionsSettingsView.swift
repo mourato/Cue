@@ -120,7 +120,7 @@ struct PermissionsSettingsView: View {
                 .padding(.top, 4)
             }
         }
-        .formStyle(.grouped)
+        .preferencesFormStyle()
         .onAppear {
             hasAppeared = true
             checkAllPermissions()

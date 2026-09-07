@@ -285,7 +285,7 @@ struct AdvancedSettingsView: View {
                 }
             }
         }
-        .formStyle(.grouped)
+        .preferencesFormStyle()
         .onAppear {
             refreshConfigAccessState()
             updateLogSize()

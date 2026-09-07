@@ -791,7 +791,7 @@ struct ShortcutsSettingsView: View {
                 }
             }
         }
-        .formStyle(.grouped)
+        .preferencesFormStyle()
         .onAppear {
             accessibilityGranted = AXIsProcessTrusted()
         }

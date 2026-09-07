@@ -254,7 +254,7 @@ struct CaptureSettingsView: View {
                 }
             }
         }
-        .formStyle(.grouped)
+        .preferencesFormStyle()
         .alert(
             L10n.PreferencesCapture.resetScreenshotDefaultsConfirmationTitle,
             isPresented: $isResetScreenshotDefaultsConfirmationPresented,

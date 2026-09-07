@@ -194,7 +194,7 @@ struct QuickAccessSettingsView: View {
                 }
             }
         }
-        .formStyle(.grouped)
+        .preferencesFormStyle()
         .onAppear {
             positionIsLeft = manager.position.isLeftSide
         }

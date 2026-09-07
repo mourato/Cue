@@ -134,7 +134,7 @@ struct CloudSettingsView: View {
                 .onAppear(perform: prefillCloudflareTokenIfNeeded)
             }
         }
-        .formStyle(.grouped)
+        .preferencesFormStyle()
         .alert(L10n.CloudSettings.transferAlertTitle, isPresented: errorBinding) {
             Button(L10n.Common.ok, role: .cancel) { errorMessage = nil }
         } message: {
