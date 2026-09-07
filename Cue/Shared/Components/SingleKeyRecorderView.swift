@@ -61,20 +61,20 @@ struct SingleKeyRecorderView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 4) {
+            HStack(alignment: .center, spacing: 6) {
                 Text(tool.displayName)
                     .font(.body)
-                HStack(spacing: 4) {
-                    ForEach(context.badges, id: \.label) { badge in
-                        Text(badge.label)
-                            .font(.system(size: 9, weight: .medium))
-                            .foregroundColor(badge.color)
-                            .padding(.horizontal, 5)
-                            .padding(.vertical, 1)
-                            .background(
-                                Capsule().fill(badge.color.opacity(0.15)),
-                            )
-                    }
+                    .layoutPriority(1)
+
+                ForEach(context.badges, id: \.label) { badge in
+                    Text(badge.label)
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundColor(badge.color)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 1)
+                        .background(
+                            Capsule().fill(badge.color.opacity(0.15)),
+                        )
                 }
             }
             .frame(minWidth: 100, alignment: .leading)

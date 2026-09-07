@@ -22,6 +22,7 @@ struct CloudSettingsView: View {
                         Text(provider.name).tag(provider)
                     }
                 }
+                .standardMenuPickerStyle()
 
                 Text(description)
                     .foregroundStyle(.secondary)
@@ -72,6 +73,7 @@ struct CloudSettingsView: View {
                             Text(imageKitPlanName(plan)).tag(plan)
                         }
                     }
+                    .standardMenuPickerStyle()
 
                     if uploadConfiguration.imageKitPlan == .custom {
                         TextField(

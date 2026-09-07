@@ -126,7 +126,7 @@ struct GeneralSettingsView: View {
                     }
                     .labelsHidden()
                     .accessibilityLabel(L10n.PreferencesAnnotate.clipboardTitle)
-                    .pickerStyle(.menu)
+                    .standardMenuPickerStyle()
                     .fixedSize()
                     .frame(width: 180, alignment: .trailing)
                 }

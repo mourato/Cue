@@ -247,9 +247,8 @@
                         }
                     }
                     .labelsHidden()
-                    .pickerStyle(.menu)
+                    .standardMenuPickerStyle()
                     .frame(minWidth: 220)
-                    .controlSize(.small)
 
                     if state.exportSettings.dimensionPreset == .custom {
                         customDimensionFields

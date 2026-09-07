@@ -265,7 +265,7 @@
                                     }
                                 }
                                 .labelsHidden()
-                                .pickerStyle(.menu)
+                                .standardMenuPickerStyle()
                                 .frame(width: 130)
                             }
 
@@ -314,17 +314,20 @@
                         Text(L10n.VideoEditor.bottomLeading).tag(VideoEditorCameraOverlayPosition.bottomLeading)
                         Text(L10n.VideoEditor.bottomTrailing).tag(VideoEditorCameraOverlayPosition.bottomTrailing)
                     }
+                    .standardMenuPickerStyle()
                     Picker(L10n.VideoEditor.cameraSize, selection: $state.cameraOverlayLayout.size) {
                         Text(L10n.VideoEditor.small).tag(VideoEditorCameraOverlaySize.small)
                         Text(L10n.VideoEditor.medium).tag(VideoEditorCameraOverlaySize.medium)
                         Text(L10n.VideoEditor.large).tag(VideoEditorCameraOverlaySize.large)
                         Text(L10n.Camera.huge).tag(VideoEditorCameraOverlaySize.huge)
                     }
+                    .standardMenuPickerStyle()
                     Picker(L10n.Camera.previewShape, selection: $state.cameraOverlayLayout.shape) {
                         ForEach(RecordingCameraPreviewShape.allCases) { shape in
                             Text(shape.displayName).tag(shape)
                         }
                     }
+                    .standardMenuPickerStyle()
                     .disabled(!state.cameraOverlayLayout.usesCapturedGeometry)
                 }
             }

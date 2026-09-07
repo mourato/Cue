@@ -86,7 +86,7 @@ struct AdvancedSettingsView: View {
                     }
                     .labelsHidden()
                     .accessibilityLabel(L10n.PreferencesAdvanced.copyToClipboardTitle)
-                    .pickerStyle(.menu)
+                    .standardMenuPickerStyle()
                     .fixedSize()
                 }
             }
@@ -103,7 +103,7 @@ struct AdvancedSettingsView: View {
                     }
                     .labelsHidden()
                     .accessibilityLabel(L10n.PreferencesAdvanced.keepHistoryTitle)
-                    .pickerStyle(.menu)
+                    .standardMenuPickerStyle()
                     .fixedSize()
                 }
             }
@@ -120,7 +120,7 @@ struct AdvancedSettingsView: View {
                     }
                     .labelsHidden()
                     .accessibilityLabel(L10n.PreferencesAdvanced.ocrLanguageTitle)
-                    .pickerStyle(.menu)
+                    .standardMenuPickerStyle()
                     .fixedSize()
                 }
 

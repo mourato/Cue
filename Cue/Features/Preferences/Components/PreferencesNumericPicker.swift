@@ -142,7 +142,7 @@ struct PreferencesNumericPicker: View {
                 Text(L10n.Common.custom).tag(Selection.custom)
             }
             .labelsHidden()
-            .pickerStyle(.menu)
+            .standardMenuPickerStyle()
             .fixedSize()
             .accessibilityLabel(Text(accessibilityTitle))
             .accessibilityValue(Text(valueLabel(value)))

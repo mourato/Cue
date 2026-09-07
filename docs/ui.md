@@ -166,6 +166,12 @@ second canonical design-system document.
   available for reorderable lists. Every `Toggle`, `Picker`, `TextField`, and
   `Slider` in a row carries an explicit `.accessibilityLabel` (the row title)
   even when `.labelsHidden()` hides its visual label.
+- Menu-style `Picker`s in Preferences, compact editor sidebars, Cloud, and
+  Quick Access upload options use `standardMenuPickerStyle()` (`.menu` +
+  `.controlSize(.small)`), matching the Language row in Settings → General.
+  Do not leave those surfaces on the default regular control size.
+- Annotation tool shortcut rows keep Screenshot / Recording context badges
+  inline with the tool title (same row), not stacked beneath it.
 - The **Screen Recording** preferences tab follows the same plain-row rule and
   mirrors the reference layout (General / Cursor / Keystrokes / Video / Audio
   / GIF) with subtitles, inline `Options…` popovers, and value pickers — no
