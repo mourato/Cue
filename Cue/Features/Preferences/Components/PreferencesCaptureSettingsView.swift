@@ -38,7 +38,6 @@ struct CaptureSettingsView: View {
     @AppStorage(PreferencesKeys.backgroundCutoutAutoCropEnabled) private var backgroundCutoutAutoCropEnabled = true
     @AppStorage(PreferencesKeys.ocrSuccessNotificationEnabled) private var ocrSuccessNotification = true
 
-    @State private var videoModuleEnabled = VideoModuleAvailability.isEnabled
     @State private var isResetScreenshotDefaultsConfirmationPresented = false
 
     var body: some View {
@@ -204,10 +203,6 @@ struct CaptureSettingsView: View {
                 }
             }
 
-            // MARK: - All-In-One Customization
-
-            PreferencesAllInOneModeCustomizationView(videoModuleEnabled: videoModuleEnabled)
-
             // MARK: - Post Processing
 
             Section(L10n.PreferencesCapture.postProcessingSection) {
@@ -274,9 +269,6 @@ struct CaptureSettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .onReceive(NotificationCenter.default.publisher(for: .videoModuleAvailabilityDidChange)) { _ in
-            videoModuleEnabled = VideoModuleAvailability.isEnabled
-        }
         .alert(
             L10n.PreferencesCapture.resetScreenshotDefaultsConfirmationTitle,
             isPresented: $isResetScreenshotDefaultsConfirmationPresented,

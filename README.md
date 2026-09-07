@@ -109,7 +109,7 @@ Cue registers the `cue://` URL scheme. Toggle integration under **Settings → A
 | Fullscreen screenshot | `cue://capture/fullscreen` |
 | Open Annotate | `cue://open/annotate` |
 | Open Settings | `cue://settings` |
-| Open Settings tab | `cue://settings?tab=annotate` |
+| Open Settings tab | `cue://settings?tab=general` |
 
 Legacy `notinhas://` and `snapzy://` links are **rejected** — update automations to `cue://`. Full route table: [docs/SHORTCUTS.md](docs/SHORTCUTS.md).
 

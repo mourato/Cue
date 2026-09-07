@@ -161,7 +161,7 @@ Dispatch: AppleEvent `kAEGetURL` → `AppDelegate` (queued pre-launch) → `AppC
   open 'cue://open/combine?file=/tmp/first.png&file=/tmp/second.png'
   ```
 
-- Settings tabs: `general`, `capture`, `annotate`, `quick-access`, `history`, `shortcuts`, `permissions`, `uploads`, `advanced`. Also accepted as path form (`cue://settings/capture`).
+- Settings tabs: `general`, `capture`, `quick-access`, `history`, `shortcuts`, `permissions`, `uploads`, `advanced` (plus `screen-recording` when the Video module is compiled in). Legacy `annotate` / `annotation` / `annotations` tab aliases open **General**. Also accepted as path form (`cue://settings/capture`).
 - Aliases exist for most routes — e.g. `capture/focused-window`, `capture/window`, `record/window`, `screenshot/area`, `ocr`, `annotate`, `combine`, `uploads`, `history`, `shortcuts`, `preferences`, plus tab aliases (`screenshots`, `privacy`, `config`, `toml`, …). Full alias list: `CueDeepLinkAction.init?(url:)` in `Cue/App/CueDeepLinkHandler.swift`.
 
 ## Related docs

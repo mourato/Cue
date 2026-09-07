@@ -270,7 +270,7 @@ enum CueDeepLinkAction: Equatable {
         case "screen-recording", "recording", "record-screen":
             .screenRecording
         case "annotate", "annotation", "annotations":
-            .annotate
+            .general
         case "quick-access", "quickaccess":
             .quickAccess
         case "history":

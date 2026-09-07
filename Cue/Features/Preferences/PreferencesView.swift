@@ -29,10 +29,6 @@ struct PreferencesView: View {
                     .tag(PreferencesTab.screenRecording)
             #endif
 
-            AnnotateSettingsView()
-                .tabItem { Label(L10n.Preferences.annotateTab, systemImage: "pencil.and.scribble") }
-                .tag(PreferencesTab.annotate)
-
             QuickAccessSettingsView()
                 .tabItem { Label(L10n.Preferences.quickAccessTab, systemImage: "square.stack.fill") }
                 .tag(PreferencesTab.quickAccess)

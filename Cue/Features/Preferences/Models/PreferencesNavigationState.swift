@@ -12,7 +12,6 @@ enum PreferencesTab: String, Hashable {
     case general
     case capture
     case screenRecording
-    case annotate
     case quickAccess
     case history
     case shortcuts

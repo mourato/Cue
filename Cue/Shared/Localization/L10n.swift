@@ -2278,6 +2278,16 @@ nonisolated enum L10n {
             defaultValue: "Capture",
             comment: "General preferences section title",
         )
+        static let annotateSection = string(
+            "preferences-general.section-annotate",
+            defaultValue: "Annotate",
+            comment: "General preferences section title for Annotate behavior and chrome customization",
+        )
+        static let customizeButton = string(
+            "preferences-general.customize-button",
+            defaultValue: "Customize…",
+            comment: "General preferences button that opens a customization sheet",
+        )
         static let soundsSection = string(
             "preferences-general.section-sounds",
             defaultValue: "Sounds",
