@@ -4,7 +4,7 @@ Reference for the Settings window: sidebar structure, every section, and how pre
 
 ## Root
 
-- `PreferencesView` (`Cue/Features/Preferences/PreferencesView.swift`) — SwiftUI `NavigationSplitView` with a native sidebar, fixed 760×550, eight destinations when Video is off / nine with Screen Recording (no About/update/report destination; no dedicated Annotate destination).
+- `PreferencesView` (`Cue/Features/Preferences/PreferencesView.swift`) — SwiftUI `NavigationSplitView` with a native sidebar, user-resizable with a 760×550 default/minimum (`PreferencesWindowChrome`), eight destinations when Video is off / nine with Screen Recording (no About/update/report destination; no dedicated Annotate destination).
 - Selection driven by `PreferencesNavigationState.shared.selectedTab` (`Models/PreferencesNavigationState.swift`, `PreferencesTab` enum) — set programmatically from menu bar, deep links (`cue://settings?tab=`, see [SHORTCUTS.md](SHORTCUTS.md)), and the shortcut overlay. Legacy `annotate` deep links open **General**.
 - Presented through the `Settings` scene in `CueApp`; activation-policy dance handled by `AppStatusBarController` (see [APP_LIFECYCLE.md](APP_LIFECYCLE.md)).
 
