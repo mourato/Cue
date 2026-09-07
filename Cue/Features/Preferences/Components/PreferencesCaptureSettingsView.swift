@@ -52,7 +52,6 @@ struct CaptureSettingsView: View {
 
             Section(L10n.PreferencesCapture.captureSection) {
                 SettingRow(
-                    icon: "photo.on.rectangle",
                     title: L10n.PreferencesCapture.includeInScreenshotsTitle,
                     description: L10n.PreferencesCapture.includeInScreenshotsDescription,
                 ) {
@@ -62,9 +61,7 @@ struct CaptureSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "cursorarrow",
                     title: L10n.PreferencesCapture.showCursorTitle,
-                    description: L10n.PreferencesCapture.showCursorDescription,
                 ) {
                     Toggle("", isOn: $screenshotShowCursor)
                         .labelsHidden()
@@ -76,7 +73,6 @@ struct CaptureSettingsView: View {
                     .foregroundColor(.secondary)
 
                 SettingRow(
-                    icon: "snowflake",
                     title: L10n.PreferencesCapture.freezeAreaTitle,
                     description: L10n.PreferencesCapture.freezeAreaDescription,
                 ) {
@@ -90,7 +86,6 @@ struct CaptureSettingsView: View {
 
             Section(L10n.PreferencesCapture.windowScreenshotsSection) {
                 SettingRow(
-                    icon: "shadow",
                     title: L10n.PreferencesCapture.windowShadowTitle,
                     description: L10n.PreferencesCapture.windowShadowDescription,
                 ) {
@@ -108,7 +103,6 @@ struct CaptureSettingsView: View {
 
             Section(L10n.PreferencesCapture.selectionSection) {
                 SettingRow(
-                    icon: "macwindow",
                     title: L10n.PreferencesCapture.showSelectionAreaOverlayTitle,
                     description: L10n.PreferencesCapture.showSelectionAreaOverlayDescription,
                 ) {
@@ -118,7 +112,6 @@ struct CaptureSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "arrow.up.and.down",
                     title: L10n.PreferencesCapture.reverseMagnifierZoomDirectionTitle,
                     description: L10n.PreferencesCapture.reverseMagnifierZoomDirectionDescription,
                 ) {
@@ -128,7 +121,6 @@ struct CaptureSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "magnet",
                     title: L10n.PreferencesCapture.snappingTitle,
                     description: L10n.PreferencesCapture.snappingDescription,
                 ) {
@@ -143,7 +135,6 @@ struct CaptureSettingsView: View {
                         content: {
                             VStack(spacing: 8) {
                                 SettingRow(
-                                    icon: "ruler",
                                     title: L10n.PreferencesCapture.selectionSnapGuidesTitle,
                                     description: L10n.PreferencesCapture.selectionSnapGuidesDescription,
                                 ) {
@@ -153,7 +144,6 @@ struct CaptureSettingsView: View {
                                 }
 
                                 SettingRow(
-                                    icon: "arrow.left.and.right.square",
                                     title: L10n.PreferencesCapture.selectionSnapDistanceTitle,
                                     description: L10n.PreferencesCapture.selectionSnapDistanceDescription,
                                 ) {
@@ -175,7 +165,6 @@ struct CaptureSettingsView: View {
                                 }
 
                                 SettingRow(
-                                    icon: "eyedropper.halffull",
                                     title: L10n.PreferencesCapture.selectionColorSensitivityTitle,
                                     description: L10n.PreferencesCapture.selectionColorSensitivityDescription,
                                 ) {
@@ -211,7 +200,6 @@ struct CaptureSettingsView: View {
                     .foregroundColor(.secondary)
 
                 SettingRow(
-                    icon: "person.crop.rectangle",
                     title: L10n.PreferencesCapture.autoCropSubjectTitle,
                     description: L10n.PreferencesCapture.autoCropSubjectDescription,
                 ) {
@@ -225,7 +213,6 @@ struct CaptureSettingsView: View {
 
             Section(L10n.PreferencesCapture.specializedCaptureSection) {
                 SettingRow(
-                    icon: "lightbulb",
                     title: L10n.PreferencesCapture.showSessionHintsTitle,
                     description: L10n.PreferencesCapture.showSessionHintsDescription,
                 ) {
@@ -247,7 +234,6 @@ struct CaptureSettingsView: View {
                 .padding(.vertical, 4)
 
                 SettingRow(
-                    icon: "bell.badge",
                     title: L10n.PreferencesCapture.ocrSuccessNotificationTitle,
                     description: L10n.PreferencesCapture.ocrSuccessNotificationDescription,
                 ) {
@@ -287,9 +273,7 @@ struct CaptureSettingsView: View {
     @ViewBuilder
     private var outputSettings: some View {
         SettingRow(
-            icon: "photo",
             title: L10n.PreferencesCapture.imageFormatTitle,
-            description: L10n.PreferencesCapture.imageFormatDescription,
         ) {
             Picker("", selection: $screenshotFormat) {
                 ForEach(ImageFormatOption.allCases, id: \.self) { option in
@@ -303,7 +287,6 @@ struct CaptureSettingsView: View {
 
         if screenshotFormat == ImageFormatOption.jpeg.rawValue {
             SettingRow(
-                icon: "slider.horizontal.3",
                 title: L10n.PreferencesCapture.jpegQualityTitle,
                 description: L10n.PreferencesCapture.jpegQualityDescription,
             ) {
@@ -352,10 +335,6 @@ struct CaptureSettingsView: View {
         }
 
         PreferencesScreenshotDefaultPresetPicker()
-
-        Text(L10n.PreferencesCapture.defaultPresetDescription)
-            .font(.caption)
-            .foregroundColor(.secondary)
     }
 
     // MARK: - Reset Defaults

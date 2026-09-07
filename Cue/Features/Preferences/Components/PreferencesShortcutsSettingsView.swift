@@ -300,7 +300,6 @@ struct ShortcutsSettingsView: View {
                     .foregroundColor(.secondary)
 
                 SettingRow(
-                    icon: "keyboard",
                     title: L10n.PreferencesShortcuts.enableShortcutsTitle,
                     description: L10n.PreferencesShortcuts.enableShortcutsDescription,
                 ) {
@@ -367,8 +366,6 @@ struct ShortcutsSettingsView: View {
                 Section {
                     ShortcutRecorderView(
                         label: L10n.Actions.captureFullscreen,
-                        icon: "rectangle.dashed.and.paperclip",
-                        description: L10n.PreferencesShortcuts.captureFullscreenDescription,
                         shortcut: $fullscreenShortcut,
                         defaultShortcut: .defaultFullscreen,
                         isEnabled: globalEnabledBinding(for: .fullscreen),
@@ -379,7 +376,6 @@ struct ShortcutsSettingsView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         ShortcutRecorderView(
                             label: L10n.Actions.captureAllInOne,
-                            icon: "viewfinder",
                             description: L10n.PreferencesShortcuts.captureAllInOneDescription,
                             shortcut: $allInOneShortcut,
                             defaultShortcut: .defaultAllInOne,
@@ -394,8 +390,7 @@ struct ShortcutsSettingsView: View {
                         ) { index, mode in
                             CaptureOverlayShortcutRecorderRow(
                                 label: mode.compactTitle,
-                                icon: mode.systemImage,
-                                description: "",
+                                description: nil,
                                 shortcut: allInOneModeShortcutBinding(for: mode),
                                 defaultShortcut: AllInOneModeShortcutSettings.defaultShortcut(for: mode),
                                 isEnabled: globalEnabledBinding(for: .allInOne),
@@ -413,8 +408,6 @@ struct ShortcutsSettingsView: View {
 
                     ShortcutRecorderView(
                         label: L10n.Actions.captureArea,
-                        icon: "rectangle.dashed",
-                        description: L10n.PreferencesShortcuts.captureAreaDescription,
                         shortcut: $areaShortcut,
                         defaultShortcut: .defaultArea,
                         isEnabled: globalEnabledBinding(for: .area),
@@ -424,7 +417,6 @@ struct ShortcutsSettingsView: View {
 
                     ShortcutRecorderView(
                         label: L10n.Actions.captureAreaAnnotate,
-                        icon: "pencil.and.scribble",
                         description: L10n.PreferencesShortcuts.captureAreaAnnotateDescription,
                         shortcut: $areaAnnotateShortcut,
                         defaultShortcut: .defaultAreaAnnotate,
@@ -435,7 +427,6 @@ struct ShortcutsSettingsView: View {
 
                     ShortcutRecorderView(
                         label: L10n.Actions.captureActiveWindow,
-                        icon: "macwindow",
                         description: L10n.PreferencesShortcuts.captureActiveWindowDescription,
                         shortcut: $activeWindowShortcut,
                         defaultShortcut: .defaultActiveWindowCapture,
@@ -446,7 +437,6 @@ struct ShortcutsSettingsView: View {
 
                     ShortcutRecorderView(
                         label: GlobalShortcutKind.scrollingCapture.displayName,
-                        icon: "arrow.up.and.down",
                         description: "Guided session for long screenshots",
                         shortcut: $scrollingCaptureShortcut,
                         defaultShortcut: .defaultScrollingCapture,
@@ -457,7 +447,6 @@ struct ShortcutsSettingsView: View {
 
                     ShortcutRecorderView(
                         label: GlobalShortcutKind.objectCutout.displayName,
-                        icon: "person.crop.rectangle",
                         description: "Select an area, isolate the subject, and optionally auto-crop",
                         shortcut: $objectCutoutShortcut,
                         defaultShortcut: .defaultObjectCutout,
@@ -468,7 +457,6 @@ struct ShortcutsSettingsView: View {
 
                     ShortcutRecorderView(
                         label: L10n.Actions.captureTextOCR,
-                        icon: "text.viewfinder",
                         description: L10n.PreferencesShortcuts.captureTextDescription,
                         shortcut: $ocrShortcut,
                         defaultShortcut: .defaultOCR,
@@ -479,7 +467,6 @@ struct ShortcutsSettingsView: View {
 
                     ShortcutRecorderView(
                         label: L10n.Actions.captureSmartElement,
-                        icon: "dot.viewfinder",
                         description: L10n.PreferencesShortcuts.smartElementCaptureDescription,
                         shortcut: $smartElementShortcut,
                         defaultShortcut: .defaultSmartElement,
@@ -504,8 +491,6 @@ struct ShortcutsSettingsView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             ShortcutRecorderView(
                                 label: L10n.Actions.recordVideo,
-                                icon: "record.circle",
-                                description: L10n.PreferencesShortcuts.recordVideoDescription,
                                 shortcut: $recordingShortcut,
                                 defaultShortcut: .defaultRecording,
                                 isEnabled: globalEnabledBinding(for: .recording),
@@ -527,7 +512,6 @@ struct ShortcutsSettingsView: View {
 
                             ShortcutRecorderView(
                                 label: L10n.Actions.pauseResumeRecording,
-                                icon: "pause.circle",
                                 description: L10n.PreferencesShortcuts.pauseResumeRecordingDescription,
                                 shortcut: $pauseResumeRecordingShortcut,
                                 defaultShortcut: nil,
@@ -538,7 +522,6 @@ struct ShortcutsSettingsView: View {
 
                             ShortcutRecorderView(
                                 label: L10n.Actions.togglePenRecording,
-                                icon: "pencil.tip.crop.circle",
                                 description: L10n.PreferencesShortcuts.togglePenRecordingDescription,
                                 shortcut: $togglePenRecordingShortcut,
                                 defaultShortcut: nil,
@@ -549,7 +532,6 @@ struct ShortcutsSettingsView: View {
 
                             ShortcutRecorderView(
                                 label: L10n.Actions.restartRecording,
-                                icon: "arrow.counterclockwise.circle",
                                 description: L10n.PreferencesShortcuts.restartRecordingDescription,
                                 shortcut: $restartRecordingShortcut,
                                 defaultShortcut: nil,
@@ -560,7 +542,6 @@ struct ShortcutsSettingsView: View {
 
                             ShortcutRecorderView(
                                 label: L10n.Actions.deleteRecording,
-                                icon: "trash.circle",
                                 description: L10n.PreferencesShortcuts.deleteRecordingDescription,
                                 shortcut: $deleteRecordingShortcut,
                                 defaultShortcut: nil,
@@ -586,8 +567,6 @@ struct ShortcutsSettingsView: View {
                 Section {
                     ShortcutRecorderView(
                         label: L10n.Actions.openAnnotate,
-                        icon: "pencil.and.scribble",
-                        description: L10n.PreferencesShortcuts.openAnnotateDescription,
                         shortcut: $annotateShortcut,
                         defaultShortcut: .defaultAnnotate,
                         isEnabled: globalEnabledBinding(for: .annotate),
@@ -598,8 +577,6 @@ struct ShortcutsSettingsView: View {
                     if videoModuleEnabled {
                         ShortcutRecorderView(
                             label: L10n.Actions.openVideoEditor,
-                            icon: "film",
-                            description: L10n.PreferencesShortcuts.openVideoEditorDescription,
                             shortcut: $videoEditorShortcut,
                             defaultShortcut: .defaultVideoEditor,
                             isEnabled: globalEnabledBinding(for: .videoEditor),
@@ -610,7 +587,6 @@ struct ShortcutsSettingsView: View {
 
                     ShortcutRecorderView(
                         label: L10n.Actions.showShortcutList,
-                        icon: "list.bullet.rectangle",
                         description: L10n.PreferencesShortcuts.shortcutListDescription,
                         shortcut: $shortcutListShortcut,
                         defaultShortcut: .defaultShortcutList,
@@ -642,8 +618,6 @@ struct ShortcutsSettingsView: View {
 
                     ShortcutRecorderView(
                         label: L10n.Actions.openHistory,
-                        icon: "clock.arrow.circlepath",
-                        description: L10n.PreferencesShortcuts.openHistoryDescription,
                         shortcut: $historyShortcut,
                         defaultShortcut: .defaultHistory,
                         isEnabled: globalEnabledBinding(for: .history),
@@ -669,7 +643,6 @@ struct ShortcutsSettingsView: View {
 
                     ShortcutRecorderView(
                         label: L10n.PreferencesShortcuts.editLatestCapture,
-                        icon: "pencil.tip.crop.circle",
                         description: L10n.PreferencesShortcuts.editLatestCaptureDescription,
                         shortcut: $openEditorShortcut,
                         defaultShortcut: QuickAccessManager.defaultOpenEditorShortcut,
@@ -704,7 +677,6 @@ struct ShortcutsSettingsView: View {
 
                     ShortcutRecorderView(
                         label: L10n.ShortcutOverlay.copyAndClose,
-                        icon: "doc.on.doc",
                         description: L10n.PreferencesShortcuts.copyAndCloseDescription,
                         shortcut: $copyAndCloseShortcut,
                         defaultShortcut: AnnotateShortcutManager.defaultCopyAndClose,
@@ -715,7 +687,6 @@ struct ShortcutsSettingsView: View {
 
                     ShortcutRecorderView(
                         label: L10n.AnnotateUI.toggleSidebar,
-                        icon: "sidebar.left",
                         shortcut: $toggleSidebarShortcut,
                         defaultShortcut: AnnotateShortcutManager.defaultToggleSidebar,
                         isEnabled: annotateActionEnabledBinding(for: .toggleSidebar),
@@ -725,7 +696,6 @@ struct ShortcutsSettingsView: View {
 
                     ShortcutRecorderView(
                         label: L10n.ShortcutOverlay.togglePin,
-                        icon: "pin",
                         description: L10n.PreferencesShortcuts.togglePinDescription,
                         shortcut: $togglePinShortcut,
                         defaultShortcut: AnnotateShortcutManager.defaultTogglePin,
@@ -736,7 +706,6 @@ struct ShortcutsSettingsView: View {
 
                     ShortcutRecorderView(
                         label: L10n.ShortcutOverlay.autoRedactSensitiveData,
-                        icon: "shield.lefthalf.filled",
                         description: L10n.PreferencesShortcuts.autoRedactSensitiveDataDescription,
                         shortcut: $autoRedactSensitiveDataShortcut,
                         defaultShortcut: AnnotateShortcutManager.defaultAutoRedactSensitiveData,
@@ -796,31 +765,26 @@ struct ShortcutsSettingsView: View {
                         .foregroundColor(.secondary)
 
                     ReadOnlyShortcutRow(
-                        icon: "square.and.arrow.down",
                         label: L10n.ShortcutOverlay.saveDone,
                         shortcut: "⌘ S",
                     )
                     ReadOnlyShortcutRow(
-                        icon: "square.and.arrow.down.on.square",
                         label: L10n.ShortcutOverlay.saveAs,
                         shortcut: "⌘ ⇧ S",
                     )
-                    ReadOnlyShortcutRow(icon: "arrow.uturn.backward", label: L10n.ShortcutOverlay.undo, shortcut: "⌘ Z")
+                    ReadOnlyShortcutRow(label: L10n.ShortcutOverlay.undo, shortcut: "⌘ Z")
                     ReadOnlyShortcutRow(
-                        icon: "arrow.uturn.forward",
                         label: L10n.ShortcutOverlay.redo,
                         shortcut: "⌘ ⇧ Z",
                     )
-                    ReadOnlyShortcutRow(icon: "trash", label: L10n.ShortcutOverlay.deleteAnnotation, shortcut: "⌫")
-                    ReadOnlyShortcutRow(icon: "escape", label: L10n.ShortcutOverlay.cancelDeselect, shortcut: "⎋")
-                    ReadOnlyShortcutRow(icon: "return", label: L10n.ShortcutOverlay.confirmCrop, shortcut: "↩")
+                    ReadOnlyShortcutRow(label: L10n.ShortcutOverlay.deleteAnnotation, shortcut: "⌫")
+                    ReadOnlyShortcutRow(label: L10n.ShortcutOverlay.cancelDeselect, shortcut: "⎋")
+                    ReadOnlyShortcutRow(label: L10n.ShortcutOverlay.confirmCrop, shortcut: "↩")
                     ReadOnlyShortcutRow(
-                        icon: "arrow.up.arrow.down.arrow.left.arrow.right",
                         label: L10n.ShortcutOverlay.nudgeAnnotation,
                         shortcut: "← → ↑ ↓",
                     )
                     ReadOnlyShortcutRow(
-                        icon: "arrow.up.arrow.down.arrow.left.arrow.right",
                         label: L10n.ShortcutOverlay.nudgeTenPixels,
                         shortcut: "⇧ ← → ↑ ↓",
                     )
@@ -1332,8 +1296,7 @@ private struct ModeShortcutState: Equatable {
 
 private struct CaptureOverlayShortcutRecorderRow: View {
     let label: String
-    var icon: String = "macwindow"
-    let description: String
+    let description: String?
     @Binding var shortcut: CaptureOverlayShortcut?
     let defaultShortcut: CaptureOverlayShortcut?
     let isEnabled: Binding<Bool>
@@ -1355,15 +1318,10 @@ private struct CaptureOverlayShortcutRecorderRow: View {
                     .frame(width: 16)
             }
 
-            Image(systemName: icon)
-                .font(isChild ? .callout : .title2)
-                .foregroundColor(.secondary)
-                .frame(width: isChild ? 20 : 28)
-
             VStack(alignment: .leading, spacing: 2) {
                 Text(label)
-                    .fontWeight(isChild ? .regular : .medium)
-                if !description.isEmpty {
+                    .font(.body)
+                if let description {
                     Text(description)
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -1525,18 +1483,13 @@ private struct PreferencesGuideStep: View {
 // MARK: - Read-Only Shortcut Row
 
 private struct ReadOnlyShortcutRow: View {
-    let icon: String
     let label: String
     let shortcut: String
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.title3)
-                .foregroundColor(.secondary)
-                .frame(width: 24)
-
             Text(label)
+                .font(.body)
                 .frame(minWidth: 100, alignment: .leading)
 
             Spacer()

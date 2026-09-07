@@ -159,17 +159,19 @@ second canonical design-system document.
   Cancel / Auto Scroll / Done buttons at regular size. Session status stays
   in the region overlay guidance, toasts, and logs — never as preview chrome.
 
-- Preferences `SettingRow` icons render at `.body` in a 24-point column with
-  `.secondary` tint; titles use `.body` medium and descriptions `.caption`.
-  Every `Toggle`, `Picker`, `TextField`, and `Slider` in a row carries an
-  explicit `.accessibilityLabel` (the row title) even when `.labelsHidden()`
-  hides its visual label.
-- The **Screen Recording** preferences tab is the exception to the icon rule:
-  it mirrors the reference layout (General / Cursor / Keystrokes / Video /
-  Audio / GIF) with plain text rows, subtitles, inline `Options…` popovers,
-  and value pickers — no `SettingRow` icons. Click-highlight and keystroke
-  detail controls live in those popovers, reusing the
-  `recording.mouseHighlight.*` / `recording.keystroke.*` keys.
+- Preferences setting rows are plain by default: no leading icons, `.body`
+  regular titles, and `.caption` descriptions only when they add relevant
+  context beyond the title. Icons are reserved for rare cases where they
+  communicate status or a direct interaction affordance; drag handles remain
+  available for reorderable lists. Every `Toggle`, `Picker`, `TextField`, and
+  `Slider` in a row carries an explicit `.accessibilityLabel` (the row title)
+  even when `.labelsHidden()` hides its visual label.
+- The **Screen Recording** preferences tab follows the same plain-row rule and
+  mirrors the reference layout (General / Cursor / Keystrokes / Video / Audio
+  / GIF) with subtitles, inline `Options…` popovers, and value pickers — no
+  `SettingRow` icons. Click-highlight and keystroke detail controls live in
+  those popovers, reusing the `recording.mouseHighlight.*` /
+  `recording.keystroke.*` keys.
 - Preferences preview thumbnails must load bundled artwork through
   `SystemWallpaperManager.downsampledPreviewImage(at:maxPixelSize:)` (512px
   for Quick Access cards), never through full-resolution

@@ -158,7 +158,7 @@ struct PermissionsSettingsView: View {
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
                     Text(name)
-                        .fontWeight(.medium)
+                        .font(.body)
                     if isRequired {
                         StatusBadge(
                             label: L10n.PermissionRow.required,

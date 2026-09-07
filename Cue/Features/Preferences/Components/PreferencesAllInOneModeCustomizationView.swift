@@ -20,7 +20,6 @@ struct PreferencesAllInOneModeCustomizationContent: View {
             PreferencesReorderToggleList(
                 items: store.orderedModes(videoEnabled: videoModuleEnabled, includeDisabled: true),
                 title: { $0.compactTitle },
-                systemImage: { $0.systemImage },
                 isEnabled: { mode in
                     Binding(
                         get: { store.isEnabled(mode) },

@@ -21,9 +21,7 @@ struct QuickAccessSettingsView: View {
 
             Section(L10n.PreferencesQuickAccess.positionSection) {
                 SettingRow(
-                    icon: "rectangle.leadinghalf.inset.filled",
                     title: L10n.PreferencesQuickAccess.screenEdgeTitle,
-                    description: L10n.PreferencesQuickAccess.screenEdgeDescription,
                 ) {
                     Picker("", selection: $positionIsLeft) {
                         Text(L10n.PreferencesQuickAccess.left).tag(true)
@@ -40,9 +38,7 @@ struct QuickAccessSettingsView: View {
 
             Section(L10n.PreferencesQuickAccess.appearanceSection) {
                 SettingRow(
-                    icon: "arrow.up.left.and.arrow.down.right",
                     title: L10n.PreferencesQuickAccess.overlaySizeTitle,
-                    description: L10n.PreferencesQuickAccess.overlaySizeDescription,
                 ) {
                     scalePicker(
                         selection: $manager.overlayScale,
@@ -52,7 +48,6 @@ struct QuickAccessSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "circle.grid.cross",
                     title: L10n.PreferencesQuickAccess.cornerButtonSizeTitle,
                     description: L10n.PreferencesQuickAccess.cornerButtonSizeDescription,
                 ) {
@@ -66,7 +61,6 @@ struct QuickAccessSettingsView: View {
 
             Section(L10n.PreferencesQuickAccess.behaviorsSection) {
                 SettingRow(
-                    icon: "square.on.square",
                     title: L10n.PreferencesQuickAccess.floatingOverlayTitle,
                     description: L10n.PreferencesQuickAccess.floatingOverlayDescription,
                 ) {
@@ -75,15 +69,13 @@ struct QuickAccessSettingsView: View {
                         .accessibilityLabel(L10n.PreferencesQuickAccess.floatingOverlayTitle)
                 }
 
-                SettingRow(icon: "timer", title: L10n.PreferencesQuickAccess.autoCloseTitle,
-                           description: autoCloseDescription) {
+                SettingRow(title: L10n.PreferencesQuickAccess.autoCloseTitle, description: autoCloseDescription) {
                     Toggle("", isOn: $manager.autoDismissEnabled)
                         .labelsHidden()
                         .accessibilityLabel(L10n.PreferencesQuickAccess.autoCloseTitle)
                 }
 
                 SettingRow(
-                    icon: "eye.slash",
                     title: L10n.PreferencesQuickAccess.hideCardWhenWindowOpenTitle,
                     description: L10n.PreferencesQuickAccess.hideCardWhenWindowOpenDescription,
                 ) {
@@ -93,9 +85,7 @@ struct QuickAccessSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "sparkles",
                     title: L10n.PreferencesQuickAccess.animationStyleTitle,
-                    description: L10n.PreferencesQuickAccess.animationStyleDescription,
                 ) {
                     Picker("", selection: $manager.animationStyle) {
                         ForEach(QuickAccessAnimationStyle.allCases) { style in
@@ -111,13 +101,8 @@ struct QuickAccessSettingsView: View {
 
                 if manager.autoDismissEnabled {
                     HStack(spacing: 12) {
-                        Image(systemName: "clock")
-                            .font(.title2)
-                            .foregroundColor(.secondary)
-                            .frame(width: 28)
-
                         Text(L10n.PreferencesQuickAccess.closeAfter)
-                            .fontWeight(.medium)
+                            .font(.body)
 
                         Spacer()
 
@@ -136,9 +121,7 @@ struct QuickAccessSettingsView: View {
 
                 if manager.autoDismissEnabled {
                     SettingRow(
-                        icon: "cursorarrow.motionlines",
                         title: L10n.PreferencesQuickAccess.pauseOnHoverTitle,
-                        description: L10n.PreferencesQuickAccess.pauseOnHoverDescription,
                     ) {
                         Toggle("", isOn: $manager.pauseCountdownOnHover)
                             .labelsHidden()
@@ -147,7 +130,6 @@ struct QuickAccessSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "hand.draw",
                     title: L10n.PreferencesQuickAccess.dragAndDropTitle,
                     description: L10n.PreferencesQuickAccess.dragAndDropDescription,
                 ) {
@@ -157,7 +139,6 @@ struct QuickAccessSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "hand.point.right",
                     title: L10n.PreferencesQuickAccess.twoFingerSwipeTitle,
                     description: L10n.PreferencesQuickAccess.twoFingerSwipeDescription,
                 ) {
@@ -168,7 +149,6 @@ struct QuickAccessSettingsView: View {
 
                 if manager.twoFingerSwipeToDismissEnabled {
                     SettingRow(
-                        icon: "gauge.with.dots.needle.33percent",
                         title: L10n.PreferencesQuickAccess.swipeSensitivityTitle,
                         description: L10n.PreferencesQuickAccess.swipeSensitivityDescription,
                     ) {
@@ -189,7 +169,6 @@ struct QuickAccessSettingsView: View {
             if manager.twoFingerSwipeToDismissEnabled {
                 Section(L10n.PreferencesQuickAccess.trackpadSwipeModeTitle) {
                     SettingRow(
-                        icon: "arrow.left.arrow.right",
                         title: L10n.PreferencesQuickAccess.trackpadSwipeModeTitle,
                         description: L10n.PreferencesQuickAccess.trackpadSwipeModeDescription,
                     ) {

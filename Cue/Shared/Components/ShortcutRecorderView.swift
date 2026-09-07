@@ -12,7 +12,6 @@ import SwiftUI
 /// A view that allows users to record custom keyboard shortcuts
 struct ShortcutRecorderView: View {
     let label: String
-    let icon: String
     let description: String
     @Binding var shortcut: ShortcutConfig?
     let defaultShortcut: ShortcutConfig?
@@ -26,7 +25,6 @@ struct ShortcutRecorderView: View {
 
     init(
         label: String,
-        icon: String = "command",
         description: String = "",
         shortcut: Binding<ShortcutConfig?>,
         defaultShortcut: ShortcutConfig? = nil,
@@ -35,7 +33,6 @@ struct ShortcutRecorderView: View {
         onShortcutChanged: @escaping (ShortcutConfig?) -> Bool,
     ) {
         self.label = label
-        self.icon = icon
         self.description = description
         _shortcut = shortcut
         self.defaultShortcut = defaultShortcut
@@ -46,14 +43,9 @@ struct ShortcutRecorderView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundColor(.secondary)
-                .frame(width: 28)
-
             VStack(alignment: .leading, spacing: 2) {
                 Text(label)
-                    .fontWeight(.medium)
+                    .font(.body)
                 if !description.isEmpty {
                     Text(description)
                         .font(.caption)

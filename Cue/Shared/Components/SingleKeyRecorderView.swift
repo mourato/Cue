@@ -61,13 +61,9 @@ struct SingleKeyRecorderView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: tool.icon)
-                .font(.title3)
-                .foregroundColor(.secondary)
-                .frame(width: 24)
-
             VStack(alignment: .leading, spacing: 4) {
                 Text(tool.displayName)
+                    .font(.body)
                 HStack(spacing: 4) {
                     ForEach(context.badges, id: \.label) { badge in
                         Text(badge.label)

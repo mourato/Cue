@@ -16,11 +16,10 @@ struct PreferencesLanguageSettingRow: View {
 
     var body: some View {
         SettingRow(
-            icon: "globe",
             title: L10n.PreferencesGeneral.languageTitle,
             description: languageManager.requiresRelaunch
                 ? L10n.PreferencesGeneral.languageRestartHint
-                : L10n.PreferencesGeneral.languageDescription,
+                : nil,
         ) {
             Picker("", selection: languageSelection) {
                 Text(L10n.PreferencesGeneral.languageSystem).tag("")

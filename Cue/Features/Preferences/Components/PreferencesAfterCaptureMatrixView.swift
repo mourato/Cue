@@ -16,8 +16,6 @@ struct AfterCaptureMatrixView: View {
             // Column headers
             HStack(spacing: 12) {
                 Spacer()
-                    .frame(width: 28)
-                Spacer()
                 HStack(spacing: 16) {
                     Text(CaptureType.screenshot.displayName)
                         .font(.caption2)
@@ -44,14 +42,9 @@ struct AfterCaptureMatrixView: View {
 
     private func actionRow(for action: AfterCaptureAction) -> some View {
         HStack(spacing: 12) {
-            Image(systemName: iconName(for: action))
-                .font(.title2)
-                .foregroundColor(.secondary)
-                .frame(width: 28)
-
             VStack(alignment: .leading, spacing: 2) {
                 Text(action.displayName)
-                    .fontWeight(.medium)
+                    .font(.body)
                 Text(description(for: action))
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -89,25 +82,6 @@ struct AfterCaptureMatrixView: View {
                     captureKind: captureType.displayName,
                 ))
                 .accessibilityValue(Text(L10n.AfterCapture.notApplicable))
-        }
-    }
-
-    private func iconName(for action: AfterCaptureAction) -> String {
-        switch action {
-        case .showQuickAccess:
-            "rectangle.on.rectangle.angled"
-        case .copyFile:
-            "doc.on.clipboard"
-        case .save:
-            "square.and.arrow.down"
-        case .uploadToCloud:
-            "icloud.and.arrow.up"
-        case .openAnnotate:
-            "pencil.and.outline"
-        case .pinToScreen:
-            "pin"
-        case .openVideoEditor:
-            "film"
         }
     }
 

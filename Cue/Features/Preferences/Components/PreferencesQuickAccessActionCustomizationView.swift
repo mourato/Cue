@@ -40,7 +40,6 @@ struct QuickAccessActionCustomizationView: View {
                 PreferencesReorderToggleList(
                     items: actionStore.actionOrder,
                     title: { $0.settingsTitle },
-                    systemImage: { $0.systemImage },
                     isEnabled: { action in
                         Binding(
                             get: { actionStore.isEnabled(action) },

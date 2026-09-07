@@ -21,9 +21,7 @@ struct HistorySettingsView: View {
         Form {
             Section(L10n.PreferencesHistory.floatingPanelSection) {
                 SettingRow(
-                    icon: "rectangle.stack.badge.person.crop",
                     title: L10n.PreferencesHistory.floatingPanelTitle,
-                    description: L10n.PreferencesHistory.floatingPanelDescription,
                 ) {
                     Toggle("", isOn: $manager.isEnabled)
                         .labelsHidden()
@@ -31,9 +29,7 @@ struct HistorySettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "arrow.up.and.down",
                     title: L10n.PreferencesHistory.panelPositionTitle,
-                    description: L10n.PreferencesHistory.panelPositionDescription,
                 ) {
                     Picker("", selection: $manager.position) {
                         ForEach(HistoryPanelPosition.allCases, id: \.self) { position in
@@ -50,7 +46,6 @@ struct HistorySettingsView: View {
 
             Section(L10n.PreferencesHistory.displaySection) {
                 SettingRow(
-                    icon: "line.3.horizontal.decrease.circle",
                     title: L10n.PreferencesHistory.defaultFilterTitle,
                     description: L10n.PreferencesHistory.defaultFilterDescription,
                 ) {
@@ -71,7 +66,6 @@ struct HistorySettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "macwindow",
                     title: L10n.PreferencesHistory.backgroundStyleTitle,
                     description: L10n.PreferencesHistory.backgroundStyleDescription,
                 ) {
@@ -82,7 +76,6 @@ struct HistorySettingsView: View {
 
             Section(L10n.PreferencesHistory.retentionSection) {
                 SettingRow(
-                    icon: "clock.arrow.circlepath",
                     title: L10n.PreferencesHistory.retentionDaysTitle,
                     description: retentionDaysDescription,
                 ) {
@@ -103,9 +96,7 @@ struct HistorySettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "archivebox",
                     title: L10n.PreferencesHistory.maxCountTitle,
-                    description: L10n.PreferencesHistory.maxCountDescription,
                 ) {
                     PreferencesNumericPicker(
                         value: Binding(
@@ -126,7 +117,6 @@ struct HistorySettingsView: View {
 
             Section(L10n.PreferencesHistory.storageSection) {
                 SettingRow(
-                    icon: "externaldrive.fill",
                     title: L10n.PreferencesHistory.captureStorageTitle,
                     description: captureStorageSizeText,
                 ) {
@@ -138,7 +128,6 @@ struct HistorySettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "trash",
                     title: L10n.PreferencesHistory.clearHistoryTitle,
                     description: L10n.PreferencesHistory.clearHistoryDescription,
                 ) {

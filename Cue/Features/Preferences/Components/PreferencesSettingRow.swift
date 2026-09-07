@@ -2,35 +2,39 @@
 //  PreferencesSettingRow.swift
 //  Notinhas
 //
-//  Reusable settings row with icon, title, description, and trailing content
+//  Reusable settings row with title, optional description, and trailing content
 //
 
 import SwiftUI
 
 struct SettingRow<Content: View>: View {
-    let icon: String
     let title: String
     let description: String?
     var tooltip: String?
     @ViewBuilder let content: () -> Content
 
+    init(
+        title: String,
+        description: String? = nil,
+        tooltip: String? = nil,
+        @ViewBuilder content: @escaping () -> Content,
+    ) {
+        self.title = title
+        self.description = description
+        self.tooltip = tooltip
+        self.content = content
+    }
+
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.body)
-                .foregroundColor(.secondary)
-                .frame(width: 24)
-
             VStack(alignment: .leading, spacing: 2) {
                 if let tooltip {
                     Text(title)
                         .font(.body)
-                        .fontWeight(.medium)
                         .hint(tooltip, variant: .icon(.info))
                 } else {
                     Text(title)
                         .font(.body)
-                        .fontWeight(.medium)
                 }
                 if let description {
                     Text(description)

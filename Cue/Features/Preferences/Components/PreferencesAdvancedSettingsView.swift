@@ -47,9 +47,7 @@ struct AdvancedSettingsView: View {
         Form {
             Section(L10n.PreferencesAdvanced.fileNameSection) {
                 SettingRow(
-                    icon: "textformat",
                     title: L10n.PreferencesAdvanced.askForNameTitle,
-                    description: nil,
                 ) {
                     Toggle("", isOn: $askForNameAfterCapture)
                         .labelsHidden()
@@ -57,9 +55,7 @@ struct AdvancedSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "rectangle.and.pencil.and.ellipsis",
                     title: L10n.PreferencesAdvanced.fileNameFormatTitle,
-                    description: nil,
                 ) {
                     Button(L10n.PreferencesAdvanced.customizeButton) {
                         isNameFormatEditorPresented = true
@@ -69,7 +65,6 @@ struct AdvancedSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "display",
                     title: L10n.PreferencesAdvanced.retinaSuffixTitle,
                     description: L10n.PreferencesAdvanced.retinaSuffixDescription,
                 ) {
@@ -81,7 +76,6 @@ struct AdvancedSettingsView: View {
 
             Section(L10n.PreferencesAdvanced.clipboardSection) {
                 SettingRow(
-                    icon: "doc.on.clipboard",
                     title: L10n.PreferencesAdvanced.copyToClipboardTitle,
                     description: L10n.PreferencesAdvanced.copyToClipboardDescription,
                 ) {
@@ -99,7 +93,6 @@ struct AdvancedSettingsView: View {
 
             Section(L10n.PreferencesAdvanced.captureHistorySection) {
                 SettingRow(
-                    icon: "clock.arrow.circlepath",
                     title: L10n.PreferencesAdvanced.keepHistoryTitle,
                     description: L10n.PreferencesAdvanced.keepHistoryDescription,
                 ) {
@@ -117,9 +110,7 @@ struct AdvancedSettingsView: View {
 
             Section(L10n.PreferencesAdvanced.textRecognitionSection) {
                 SettingRow(
-                    icon: "character.textbox",
                     title: L10n.PreferencesAdvanced.ocrLanguageTitle,
-                    description: nil,
                 ) {
                     Picker("", selection: $ocrLanguage) {
                         Text(L10n.PreferencesAdvanced.ocrAutomaticLanguage).tag("")
@@ -134,9 +125,7 @@ struct AdvancedSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "text.alignleft",
                     title: L10n.PreferencesAdvanced.keepLineBreaksTitle,
-                    description: nil,
                 ) {
                     Toggle("", isOn: $keepOCRLineBreaks)
                         .labelsHidden()
@@ -144,9 +133,7 @@ struct AdvancedSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "link",
                     title: L10n.PreferencesAdvanced.detectLinksTitle,
-                    description: nil,
                 ) {
                     Toggle("", isOn: $detectOCRLinks)
                         .labelsHidden()
@@ -156,9 +143,7 @@ struct AdvancedSettingsView: View {
 
             Section(L10n.PreferencesAdvanced.allInOneSection) {
                 SettingRow(
-                    icon: "rectangle.on.rectangle",
                     title: L10n.PreferencesAdvanced.rememberLastSelectionTitle,
-                    description: nil,
                 ) {
                     Toggle("", isOn: $rememberLastSelection)
                         .labelsHidden()
@@ -168,7 +153,6 @@ struct AdvancedSettingsView: View {
 
             Section(L10n.PreferencesAdvanced.integrationSection) {
                 SettingRow(
-                    icon: "link.badge.plus",
                     title: L10n.PreferencesAdvanced.urlSchemeAPITitle,
                     description: L10n.PreferencesAdvanced.urlSchemeAPIDescription,
                 ) {
@@ -179,7 +163,6 @@ struct AdvancedSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "link",
                     title: L10n.PreferencesAdvanced.urlSchemeTitle,
                     description: L10n.PreferencesAdvanced.urlSchemeDescription,
                 ) {
@@ -197,7 +180,6 @@ struct AdvancedSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "square.and.arrow.down",
                     title: L10n.PreferencesAdvanced.importTitle,
                     description: L10n.PreferencesAdvanced.importDescription,
                 ) {
@@ -211,7 +193,6 @@ struct AdvancedSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "square.and.arrow.up",
                     title: L10n.PreferencesAdvanced.exportTitle,
                     description: L10n.PreferencesAdvanced.exportDescription,
                 ) {
@@ -225,9 +206,7 @@ struct AdvancedSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "arrow.counterclockwise.circle",
                     title: L10n.PreferencesAdvanced.restoreDefaultsTitle,
-                    description: L10n.PreferencesAdvanced.restoreDefaultsDescription,
                 ) {
                     Button(L10n.PreferencesAdvanced.restoreDefaultsButton, role: .destructive) {
                         requestRestoreDefaults()
@@ -239,7 +218,6 @@ struct AdvancedSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "arrow.triangle.2.circlepath",
                     title: L10n.PreferencesAdvanced.configSyncStatusTitle,
                     description: configSyncStatusDescription,
                 ) {
@@ -271,7 +249,6 @@ struct AdvancedSettingsView: View {
 
             Section(L10n.PreferencesAdvanced.diagnosticsSection) {
                 SettingRow(
-                    icon: "doc.text.magnifyingglass",
                     title: L10n.PreferencesAdvanced.diagnosticLoggingTitle,
                     description: L10n.PreferencesAdvanced.diagnosticLoggingDescription,
                 ) {
@@ -281,7 +258,6 @@ struct AdvancedSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "calendar.badge.clock",
                     title: L10n.PreferencesAdvanced.logRetentionTitle,
                     description: L10n.PreferencesAdvanced.logRetentionDescription(diagnosticsRetentionDays),
                 ) {
@@ -300,7 +276,7 @@ struct AdvancedSettingsView: View {
                     )
                 }
 
-                SettingRow(icon: "folder", title: L10n.PreferencesAdvanced.logFilesTitle, description: logSizeText) {
+                SettingRow(title: L10n.PreferencesAdvanced.logFilesTitle, description: logSizeText) {
                     Button(L10n.PreferencesAdvanced.openFolderButton) {
                         revealLogFolder()
                     }

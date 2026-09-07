@@ -37,9 +37,7 @@ struct GeneralSettingsView: View {
         Form {
             Section(L10n.PreferencesGeneral.appSection) {
                 SettingRow(
-                    icon: "power.circle",
                     title: L10n.PreferencesGeneral.startAtLoginTitle,
-                    description: L10n.PreferencesGeneral.startAtLoginDescription,
                 ) {
                     Toggle("", isOn: $startAtLogin)
                         .labelsHidden()
@@ -50,7 +48,6 @@ struct GeneralSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "menubar.rectangle",
                     title: L10n.PreferencesGeneral.menuBarIconTitle,
                     description: L10n.PreferencesGeneral.menuBarIconDescription,
                 ) {
@@ -65,7 +62,6 @@ struct GeneralSettingsView: View {
 
             Section(L10n.PreferencesGeneral.captureSection) {
                 SettingRow(
-                    icon: "eye.slash",
                     title: L10n.PreferencesCapture.hideDesktopIconsTitle,
                     description: L10n.PreferencesCapture.hideDesktopIconsDescription,
                 ) {
@@ -75,7 +71,6 @@ struct GeneralSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "widget.small",
                     title: L10n.PreferencesCapture.hideDesktopWidgetsTitle,
                     description: L10n.PreferencesCapture.hideDesktopWidgetsDescription,
                 ) {
@@ -89,7 +84,6 @@ struct GeneralSettingsView: View {
                     .foregroundColor(.secondary)
 
                 SettingRow(
-                    icon: "square.grid.2x2",
                     title: L10n.PreferencesCapture.allInOneModesSection,
                     description: L10n.PreferencesCapture.allInOneModesDescription,
                 ) {
@@ -104,7 +98,6 @@ struct GeneralSettingsView: View {
 
             Section(L10n.PreferencesGeneral.annotateSection) {
                 SettingRow(
-                    icon: "slider.horizontal.3",
                     title: L10n.PreferencesAnnotate.quickPropertiesSyncTitle,
                     description: L10n.PreferencesAnnotate.quickPropertiesSyncDescription,
                 ) {
@@ -114,7 +107,6 @@ struct GeneralSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "rectangle.stack",
                     title: L10n.PreferencesAnnotate.combineSaveAsEditTitle,
                     description: L10n.PreferencesAnnotate.combineSaveAsEditDescription,
                 ) {
@@ -124,7 +116,6 @@ struct GeneralSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "doc.on.clipboard",
                     title: L10n.PreferencesAnnotate.clipboardTitle,
                     description: L10n.PreferencesAnnotate.clipboardDescription,
                 ) {
@@ -141,7 +132,6 @@ struct GeneralSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "arrow.up.forward.app",
                     title: L10n.PreferencesAnnotate.closeAfterDragTitle,
                     description: L10n.PreferencesAnnotate.closeAfterDragDescription,
                 ) {
@@ -151,7 +141,6 @@ struct GeneralSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "macwindow",
                     title: L10n.PreferencesAnnotate.bringForwardAfterDragTitle,
                     description: L10n.PreferencesAnnotate.bringForwardAfterDragDescription,
                 ) {
@@ -162,7 +151,6 @@ struct GeneralSettingsView: View {
                 .disabled(annotateCloseAfterDrag)
 
                 SettingRow(
-                    icon: "hammer",
                     title: L10n.PreferencesAnnotate.chromeToolbarSection,
                     description: L10n.PreferencesAnnotate.chromeDescription,
                 ) {
@@ -175,7 +163,6 @@ struct GeneralSettingsView: View {
                 }
 
                 SettingRow(
-                    icon: "menubar.dock.rectangle",
                     title: L10n.PreferencesAnnotate.chromeBottomSection,
                     description: L10n.PreferencesAnnotate.chromeDescription,
                 ) {
@@ -190,9 +177,7 @@ struct GeneralSettingsView: View {
 
             Section(L10n.PreferencesGeneral.soundsSection) {
                 SettingRow(
-                    icon: "speaker.wave.2",
                     title: L10n.PreferencesGeneral.playSoundsTitle,
-                    description: L10n.PreferencesGeneral.playSoundsDescription,
                 ) {
                     Toggle("", isOn: $playSounds)
                         .labelsHidden()
@@ -202,7 +187,6 @@ struct GeneralSettingsView: View {
 
             Section(L10n.PreferencesGeneral.exportSection) {
                 SettingRow(
-                    icon: "folder.fill",
                     title: L10n.PreferencesGeneral.exportLocationTitle,
                     description: exportLocationDisplay,
                 ) {
@@ -230,9 +214,7 @@ struct GeneralSettingsView: View {
                 PreferencesLanguageSettingRow()
 
                 SettingRow(
-                    icon: "circle.lefthalf.filled",
                     title: L10n.PreferencesGeneral.themeTitle,
-                    description: L10n.PreferencesGeneral.themeDescription,
                 ) {
                     AppearanceModePicker(selection: $themeManager.preferredAppearance)
                 }
@@ -240,9 +222,7 @@ struct GeneralSettingsView: View {
 
             Section(L10n.PreferencesGeneral.helpSection) {
                 SettingRow(
-                    icon: "arrow.counterclockwise.circle",
                     title: L10n.PreferencesGeneral.restartOnboardingTitle,
-                    description: L10n.PreferencesGeneral.restartOnboardingDescription,
                 ) {
                     Button(L10n.PreferencesGeneral.restartButton) {
                         restartOnboarding()

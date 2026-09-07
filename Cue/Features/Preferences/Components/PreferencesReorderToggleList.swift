@@ -19,7 +19,6 @@ struct PreferencesReorderToggleList<
 >: View {
     let items: [Item]
     let title: (Item) -> String
-    let systemImage: (Item) -> String
     let isEnabled: (Item) -> Binding<Bool>
     let canReorder: (Item) -> Bool
     let canToggle: (Item) -> Bool
@@ -44,7 +43,6 @@ struct PreferencesReorderToggleList<
                 ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                     PreferencesReorderToggleRow(
                         title: title(item),
-                        systemImage: systemImage(item),
                         isEnabled: isEnabled(item),
                         canReorder: canReorder(item),
                         canToggle: canToggle(item),
@@ -154,7 +152,6 @@ extension PreferencesReorderToggleList where BodyDragPreview == EmptyView {
     init(
         items: [Item],
         title: @escaping (Item) -> String,
-        systemImage: @escaping (Item) -> String,
         isEnabled: @escaping (Item) -> Binding<Bool>,
         canReorder: @escaping (Item) -> Bool,
         canToggle: @escaping (Item) -> Bool,
@@ -167,7 +164,6 @@ extension PreferencesReorderToggleList where BodyDragPreview == EmptyView {
     ) {
         self.items = items
         self.title = title
-        self.systemImage = systemImage
         self.isEnabled = isEnabled
         self.canReorder = canReorder
         self.canToggle = canToggle
@@ -188,7 +184,6 @@ extension PreferencesReorderToggleList {
     init(
         items: [Item],
         title: @escaping (Item) -> String,
-        systemImage: @escaping (Item) -> String,
         isEnabled: @escaping (Item) -> Binding<Bool>,
         canReorder: @escaping (Item) -> Bool,
         canToggle: @escaping (Item) -> Bool,
@@ -205,7 +200,6 @@ extension PreferencesReorderToggleList {
     ) {
         self.items = items
         self.title = title
-        self.systemImage = systemImage
         self.isEnabled = isEnabled
         self.canReorder = canReorder
         self.canToggle = canToggle
@@ -224,7 +218,6 @@ extension PreferencesReorderToggleList {
 
 struct PreferencesReorderToggleRow<Accessory: View, BodyDragPreview: View>: View {
     let title: String
-    let systemImage: String
     @Binding var isEnabled: Bool
     let canReorder: Bool
     let canToggle: Bool
@@ -282,15 +275,9 @@ struct PreferencesReorderToggleRow<Accessory: View, BodyDragPreview: View>: View
     @ViewBuilder
     private var rowBody: some View {
         let label = HStack(spacing: 10) {
-            HStack(spacing: 10) {
-                Image(systemName: systemImage)
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(.secondary)
-                    .frame(width: 18)
-
-                Text(title)
-                    .lineLimit(1)
-            }
+            Text(title)
+                .font(.body)
+                .lineLimit(1)
 
             Spacer()
 

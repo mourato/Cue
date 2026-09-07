@@ -55,7 +55,6 @@ private extension AnnotateChromeCustomizationContent {
             PreferencesReorderToggleList(
                 items: items,
                 title: { $0.settingsTitle },
-                systemImage: { $0.systemImage },
                 isEnabled: { item in
                     Binding(
                         get: { chromeStore.isEnabled(item) },
