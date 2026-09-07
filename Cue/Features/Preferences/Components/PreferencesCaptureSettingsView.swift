@@ -94,6 +94,7 @@ struct CaptureSettingsView: View {
 
     @State private var selectedPane: CaptureSettingsPane = .capture
     @State private var videoModuleEnabled = VideoModuleAvailability.isEnabled
+    @State private var isResetScreenshotDefaultsConfirmationPresented = false
 
     private var availablePanes: [CaptureSettingsPane] {
         CaptureSettingsPane.availablePanes(videoModuleEnabled: videoModuleEnabled)
@@ -125,9 +126,15 @@ struct CaptureSettingsView: View {
 
             Form {
                 if selectedPane == .capture {
-                    // MARK: - Capture Environment & Behavior
+                    // MARK: - Output
 
-                    Section(L10n.PreferencesCapture.captureEnvironmentSection) {
+                    Section(L10n.PreferencesCapture.outputSection) {
+                        outputSettings
+                    }
+
+                    // MARK: - Capture
+
+                    Section(L10n.PreferencesCapture.captureSection) {
                         SettingRow(
                             icon: "photo.on.rectangle",
                             title: L10n.PreferencesCapture.includeInScreenshotsTitle,
@@ -148,15 +155,9 @@ struct CaptureSettingsView: View {
                                 .accessibilityLabel(L10n.PreferencesCapture.showCursorTitle)
                         }
 
-                        SettingRow(
-                            icon: "shadow",
-                            title: L10n.PreferencesCapture.windowShadowTitle,
-                            description: L10n.PreferencesCapture.windowShadowDescription,
-                        ) {
-                            Toggle("", isOn: $captureWindowShadow)
-                                .labelsHidden()
-                                .accessibilityLabel(L10n.PreferencesCapture.windowShadowTitle)
-                        }
+                        Text(L10n.PreferencesCapture.showCursorFootnote)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
 
                         SettingRow(
                             icon: "snowflake",
@@ -167,6 +168,24 @@ struct CaptureSettingsView: View {
                                 .labelsHidden()
                                 .accessibilityLabel(L10n.PreferencesCapture.freezeAreaTitle)
                         }
+                    }
+
+                    // MARK: - Window Screenshots
+
+                    Section(L10n.PreferencesCapture.windowScreenshotsSection) {
+                        SettingRow(
+                            icon: "shadow",
+                            title: L10n.PreferencesCapture.windowShadowTitle,
+                            description: L10n.PreferencesCapture.windowShadowDescription,
+                        ) {
+                            Toggle("", isOn: $captureWindowShadow)
+                                .labelsHidden()
+                                .accessibilityLabel(L10n.PreferencesCapture.windowShadowTitle)
+                        }
+
+                        Text(L10n.PreferencesGeneral.hideDesktopIconsHint)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
 
                     // MARK: - Selection & Snapping
@@ -268,135 +287,6 @@ struct CaptureSettingsView: View {
                         }
                     }
 
-                    // MARK: - Output & Storage
-
-                    Section(L10n.PreferencesCapture.outputSection) {
-                        SettingRow(
-                            icon: "photo",
-                            title: L10n.PreferencesCapture.imageFormatTitle,
-                            description: L10n.PreferencesCapture.imageFormatDescription,
-                        ) {
-                            Picker("", selection: $screenshotFormat) {
-                                ForEach(ImageFormatOption.allCases, id: \.self) { option in
-                                    Text(option.displayName).tag(option.rawValue)
-                                }
-                            }
-                            .labelsHidden()
-                            .accessibilityLabel(L10n.PreferencesCapture.imageFormatTitle)
-                            .pickerStyle(.menu)
-                        }
-
-                        if screenshotFormat == ImageFormatOption.jpeg.rawValue {
-                            SettingRow(
-                                icon: "slider.horizontal.3",
-                                title: L10n.PreferencesCapture.jpegQualityTitle,
-                                description: L10n.PreferencesCapture.jpegQualityDescription,
-                            ) {
-                                HStack(spacing: 8) {
-                                    Slider(
-                                        value: $screenshotJpegQuality,
-                                        in: 0.1 ... 1.0,
-                                        step: 0.05,
-                                    )
-                                    .frame(width: 120)
-                                    .accessibilityLabel(L10n.PreferencesCapture.jpegQualityTitle)
-                                    .accessibilityValue(Text("\(Int((screenshotJpegQuality * 100).rounded()))%"))
-
-                                    Text("\(Int((screenshotJpegQuality * 100).rounded()))%")
-                                        .font(.caption.monospacedDigit())
-                                        .foregroundColor(.secondary)
-                                        .frame(width: 36, alignment: .trailing)
-                                }
-                            }
-
-                            HStack(alignment: .top, spacing: 6) {
-                                Image(systemName: "info.circle.fill")
-                                    .foregroundColor(.blue)
-                                    .font(.system(size: 12))
-                                    .padding(.top, 1)
-                                Text(L10n.PreferencesCapture.jpegCutoutNote)
-                                    .font(.system(size: 11))
-                                    .foregroundColor(.secondary)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                            .padding(.vertical, 4)
-                        }
-
-                        if screenshotFormat == ImageFormatOption.webp.rawValue {
-                            HStack(alignment: .top, spacing: 6) {
-                                Image(systemName: "exclamationmark.triangle.fill")
-                                    .foregroundColor(.orange)
-                                    .font(.system(size: 12))
-                                    .padding(.top, 1)
-                                Text(L10n.PreferencesCapture.webpWarning)
-                                    .font(.system(size: 11))
-                                    .foregroundColor(.orange)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                            .padding(.vertical, 4)
-                        }
-
-                        SettingRow(
-                            icon: "textformat",
-                            title: L10n.PreferencesCapture.screenshotTemplateTitle,
-                            description: L10n.PreferencesCapture.screenshotTemplateDescription,
-                        ) {
-                            TextField("", text: $screenshotFileNameTemplate)
-                                .textFieldStyle(.roundedBorder)
-                                .frame(width: 260)
-                                .accessibilityLabel(L10n.PreferencesCapture.screenshotTemplateTitle)
-                        }
-
-                        #if CUE_VIDEO_MODULE
-                            if videoModuleEnabled {
-                                SettingRow(
-                                    icon: "textformat.abc",
-                                    title: L10n.PreferencesCapture.recordingTemplateTitle,
-                                    description: L10n.PreferencesCapture.recordingTemplateDescription,
-                                ) {
-                                    TextField("", text: $recordingFileNameTemplate)
-                                        .textFieldStyle(.roundedBorder)
-                                        .frame(width: 260)
-                                        .accessibilityLabel(L10n.PreferencesCapture.recordingTemplateTitle)
-                                }
-                            }
-                        #endif
-
-                        HStack(alignment: .top, spacing: 6) {
-                            Image(systemName: "info.circle")
-                                .foregroundColor(.secondary)
-                                .font(.system(size: 12))
-                                .padding(.top, 1)
-                            Text(L10n.PreferencesCapture.availableTokens)
-                                .font(.system(size: 11))
-                                .foregroundColor(.secondary)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                        .padding(.vertical, 2)
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(L10n.PreferencesCapture.screenshotPreview(screenshotFilenamePreview))
-                            #if CUE_VIDEO_MODULE
-                                if videoModuleEnabled {
-                                    Text(L10n.PreferencesCapture.recordingPreview(recordingFilenamePreview))
-                                }
-                            #endif
-                        }
-                        .font(.system(size: 11))
-                        .foregroundColor(.secondary)
-                        .padding(.top, 2)
-
-                        HStack {
-                            Spacer()
-                            Button(L10n.PreferencesCapture.resetNamingDefaults) {
-                                resetOutputNamingDefaults()
-                            }
-                            .font(.system(size: 11))
-                            .foregroundColor(.secondary)
-                            .buttonStyle(.plain)
-                        }
-                    }
-
                     // MARK: - All-In-One Customization
 
                     PreferencesAllInOneModeCustomizationView(videoModuleEnabled: videoModuleEnabled)
@@ -404,8 +294,6 @@ struct CaptureSettingsView: View {
                     // MARK: - Post Processing
 
                     Section(L10n.PreferencesCapture.postProcessingSection) {
-                        PreferencesScreenshotDefaultPresetPicker()
-
                         Text(L10n.PreferencesCapture.removeBackground)
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -464,6 +352,17 @@ struct CaptureSettingsView: View {
                             Toggle("", isOn: $ocrLinkDetection)
                                 .labelsHidden()
                                 .accessibilityLabel(L10n.PreferencesCapture.ocrLinkDetectionTitle)
+                        }
+                    }
+
+                    Section {
+                        HStack {
+                            Spacer()
+                            Button(L10n.PreferencesCapture.resetScreenshotDefaults, role: .destructive) {
+                                isResetScreenshotDefaultsConfirmationPresented = true
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
                         }
                     }
                 }
@@ -629,6 +528,17 @@ struct CaptureSettingsView: View {
             videoModuleEnabled = VideoModuleAvailability.isEnabled
             reconcileSelectedPane()
         }
+        .alert(
+            L10n.PreferencesCapture.resetScreenshotDefaultsConfirmationTitle,
+            isPresented: $isResetScreenshotDefaultsConfirmationPresented,
+        ) {
+            Button(L10n.Common.cancel, role: .cancel) {}
+            Button(L10n.PreferencesCapture.resetScreenshotDefaultsConfirmButton, role: .destructive) {
+                resetScreenshotDefaults()
+            }
+        } message: {
+            Text(L10n.PreferencesCapture.resetScreenshotDefaultsConfirmationMessage)
+        }
     }
 
     private func reconcileSelectedPane() {
@@ -639,6 +549,140 @@ struct CaptureSettingsView: View {
     }
 
     // MARK: - Helpers
+
+    @ViewBuilder
+    private var outputSettings: some View {
+        SettingRow(
+            icon: "photo",
+            title: L10n.PreferencesCapture.imageFormatTitle,
+            description: L10n.PreferencesCapture.imageFormatDescription,
+        ) {
+            Picker("", selection: $screenshotFormat) {
+                ForEach(ImageFormatOption.allCases, id: \.self) { option in
+                    Text(option.displayName).tag(option.rawValue)
+                }
+            }
+            .labelsHidden()
+            .accessibilityLabel(L10n.PreferencesCapture.imageFormatTitle)
+            .pickerStyle(.menu)
+        }
+
+        if screenshotFormat == ImageFormatOption.jpeg.rawValue {
+            SettingRow(
+                icon: "slider.horizontal.3",
+                title: L10n.PreferencesCapture.jpegQualityTitle,
+                description: L10n.PreferencesCapture.jpegQualityDescription,
+            ) {
+                HStack(spacing: 8) {
+                    Slider(
+                        value: $screenshotJpegQuality,
+                        in: 0.1 ... 1.0,
+                        step: 0.05,
+                    )
+                    .frame(width: 120)
+                    .accessibilityLabel(L10n.PreferencesCapture.jpegQualityTitle)
+                    .accessibilityValue(Text("\(Int((screenshotJpegQuality * 100).rounded()))%"))
+
+                    Text("\(Int((screenshotJpegQuality * 100).rounded()))%")
+                        .font(.caption.monospacedDigit())
+                        .foregroundColor(.secondary)
+                        .frame(width: 36, alignment: .trailing)
+                }
+            }
+
+            HStack(alignment: .top, spacing: 6) {
+                Image(systemName: "info.circle.fill")
+                    .foregroundColor(.blue)
+                    .font(.system(size: 12))
+                    .padding(.top, 1)
+                Text(L10n.PreferencesCapture.jpegCutoutNote)
+                    .font(.system(size: 11))
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.vertical, 4)
+        }
+
+        if screenshotFormat == ImageFormatOption.webp.rawValue {
+            HStack(alignment: .top, spacing: 6) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundColor(.orange)
+                    .font(.system(size: 12))
+                    .padding(.top, 1)
+                Text(L10n.PreferencesCapture.webpWarning)
+                    .font(.system(size: 11))
+                    .foregroundColor(.orange)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.vertical, 4)
+        }
+
+        SettingRow(
+            icon: "textformat",
+            title: L10n.PreferencesCapture.screenshotTemplateTitle,
+            description: L10n.PreferencesCapture.screenshotTemplateDescription,
+        ) {
+            TextField("", text: $screenshotFileNameTemplate)
+                .textFieldStyle(.roundedBorder)
+                .frame(width: 260)
+                .accessibilityLabel(L10n.PreferencesCapture.screenshotTemplateTitle)
+        }
+
+        #if CUE_VIDEO_MODULE
+            if videoModuleEnabled {
+                SettingRow(
+                    icon: "textformat.abc",
+                    title: L10n.PreferencesCapture.recordingTemplateTitle,
+                    description: L10n.PreferencesCapture.recordingTemplateDescription,
+                ) {
+                    TextField("", text: $recordingFileNameTemplate)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 260)
+                        .accessibilityLabel(L10n.PreferencesCapture.recordingTemplateTitle)
+                }
+            }
+        #endif
+
+        HStack(alignment: .top, spacing: 6) {
+            Image(systemName: "info.circle")
+                .foregroundColor(.secondary)
+                .font(.system(size: 12))
+                .padding(.top, 1)
+            Text(L10n.PreferencesCapture.availableTokens)
+                .font(.system(size: 11))
+                .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.vertical, 2)
+
+        VStack(alignment: .leading, spacing: 2) {
+            Text(L10n.PreferencesCapture.screenshotPreview(screenshotFilenamePreview))
+            #if CUE_VIDEO_MODULE
+                if videoModuleEnabled {
+                    Text(L10n.PreferencesCapture.recordingPreview(recordingFilenamePreview))
+                }
+            #endif
+        }
+        .font(.system(size: 11))
+        .foregroundColor(.secondary)
+        .padding(.top, 2)
+
+        HStack {
+            Spacer()
+            Button(L10n.PreferencesCapture.resetNamingDefaults) {
+                resetOutputNamingDefaults()
+            }
+            .font(.system(size: 11))
+            .foregroundColor(.secondary)
+            .buttonStyle(.plain)
+        }
+
+        PreferencesScreenshotDefaultPresetPicker()
+
+        Text(L10n.PreferencesCapture.defaultPresetDescription)
+            .font(.caption)
+            .foregroundColor(.secondary)
+    }
 
     private var screenshotFilenamePreview: String {
         let sampleContext = CaptureContext(appName: "Safari", windowTitle: "GitHub")
@@ -697,5 +741,15 @@ struct CaptureSettingsView: View {
         #if CUE_VIDEO_MODULE
             recordingFileNameTemplate = CaptureOutputKind.recording.defaultTemplate
         #endif
+    }
+
+    private func resetScreenshotDefaults() {
+        screenshotFormat = ImageFormatOption.png.rawValue
+        screenshotJpegQuality = 0.85
+        includeOwnAppInScreenshots = false
+        screenshotShowCursor = false
+        freezeAreaCapture = false
+        captureWindowShadow = true
+        AnnotateCanvasPresetStore.shared.clearDefaultPresetId()
     }
 }
