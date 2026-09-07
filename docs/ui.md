@@ -173,9 +173,9 @@ second canonical design-system document.
   `Slider` in a row carries an explicit `.accessibilityLabel` (the row title)
   even when `.labelsHidden()` hides its visual label.
 - Menu-style `Picker`s in Preferences, compact editor sidebars, Cloud, and
-  Quick Access upload options use `standardMenuPickerStyle()` (`.menu` +
-  `.controlSize(.small)`), matching the Language row in Settings → General.
-  Do not leave those surfaces on the default regular control size.
+  Quick Access upload options use `standardMenuPickerStyle()` (`.menu`) with
+  the system's default control metrics, so their labels retain normal text
+  sizing.
 - Annotation tool shortcut rows keep Screenshot / Recording context badges
   inline with the tool title (same row), not stacked beneath it.
 - The **Screen Recording** preferences destination follows the same plain-row rule and
