@@ -147,6 +147,11 @@ nonisolated enum L10n {
             defaultValue: "Screenshot",
             comment: "Preferences tab title",
         )
+        static let screenRecordingTab = string(
+            "preferences.tab.screen-recording",
+            defaultValue: "Screen Recording",
+            comment: "Preferences tab title",
+        )
         static let annotateTab = string(
             "preferences.tab.annotate",
             defaultValue: "Annotate",
@@ -3467,6 +3472,211 @@ nonisolated enum L10n {
             defaultValue: "Offer to open web links found in captured text",
             comment: "Capture preferences setting description",
         )
+    }
+
+    enum PreferencesScreenRecording {
+        static let generalSection = string(
+            "preferences-recording.section-general",
+            defaultValue: "General",
+            comment: "Screen recording preferences section title",
+        )
+        static let showControlsTitle = string(
+            "preferences-recording.show-controls-title",
+            defaultValue: "Show controls while recording",
+            comment: "Screen recording setting title",
+        )
+        static let rememberLastSelectionTitle = string(
+            "preferences-recording.remember-last-selection-title",
+            defaultValue: "Remember last selection",
+            comment: "Screen recording setting title",
+        )
+        static let displayTimeInMenuBarTitle = string(
+            "preferences-recording.display-time-in-menu-bar-title",
+            defaultValue: "Display recording time in menu bar",
+            comment: "Screen recording setting title",
+        )
+        static let dimScreenTitle = string(
+            "preferences-recording.dim-screen-title",
+            defaultValue: "Dim screen while recording",
+            comment: "Screen recording setting title",
+        )
+        static let showCountdownTitle = string(
+            "preferences-recording.show-countdown-title",
+            defaultValue: "Show countdown",
+            comment: "Screen recording setting title",
+        )
+        static let doNotDisturbTitle = string(
+            "preferences-recording.do-not-disturb-title",
+            defaultValue: "\"Do Not Disturb\" while recording",
+            comment: "Screen recording setting title",
+        )
+        static let cursorSection = string(
+            "preferences-recording.section-cursor",
+            defaultValue: "Cursor",
+            comment: "Screen recording preferences section title",
+        )
+        static let highlightClicksTitle = string(
+            "preferences-recording.highlight-clicks-title",
+            defaultValue: "Highlight clicks",
+            comment: "Screen recording setting title",
+        )
+        static let optionsButton = string(
+            "preferences-recording.options-button",
+            defaultValue: "Options…",
+            comment: "Button opening detail options popover",
+        )
+        static let clickOptionsTitle = string(
+            "preferences-recording.click-options-title",
+            defaultValue: "Click highlight options",
+            comment: "Popover title for click highlight customization",
+        )
+        static let keystrokesSection = string(
+            "preferences-recording.section-keystrokes",
+            defaultValue: "Keystrokes",
+            comment: "Screen recording preferences section title",
+        )
+        static let showKeystrokesTitle = string(
+            "preferences-recording.show-keystrokes-title",
+            defaultValue: "Show keystrokes",
+            comment: "Screen recording setting title",
+        )
+        static let keystrokeOptionsTitle = string(
+            "preferences-recording.keystroke-options-title",
+            defaultValue: "Keystroke options",
+            comment: "Popover title for keystroke overlay customization",
+        )
+        static let videoSection = string(
+            "preferences-recording.section-video",
+            defaultValue: "Video",
+            comment: "Screen recording preferences section title",
+        )
+        static let videoFormatTitle = string(
+            "preferences-recording.video-format-title",
+            defaultValue: "Format",
+            comment: "Screen recording setting title",
+        )
+        static let frameRateTitle = string(
+            "preferences-recording.frame-rate-title",
+            defaultValue: "Frame rate",
+            comment: "Screen recording setting title",
+        )
+        static let maxResolutionTitle = string(
+            "preferences-recording.max-resolution-title",
+            defaultValue: "Max resolution",
+            comment: "Screen recording setting title",
+        )
+        static let maxResolutionDescription = string(
+            "preferences-recording.max-resolution-description",
+            defaultValue: "Set maximum resolution to reduce file size and upload time.",
+            comment: "Screen recording setting description",
+        )
+        static let scaleRetinaTitle = string(
+            "preferences-recording.scale-retina-title",
+            defaultValue: "Scale Retina videos to 1x",
+            comment: "Screen recording setting title",
+        )
+        static let audioSection = string(
+            "preferences-recording.section-audio",
+            defaultValue: "Audio",
+            comment: "Screen recording preferences section title",
+        )
+        static let recordMonoTitle = string(
+            "preferences-recording.record-mono-title",
+            defaultValue: "Record audio in mono",
+            comment: "Screen recording setting title",
+        )
+        static let recordSystemAudioTitle = string(
+            "preferences-recording.record-system-audio-title",
+            defaultValue: "Record system audio",
+            comment: "Screen recording setting title",
+        )
+        static let recordSystemAudioDescription = string(
+            "preferences-recording.record-system-audio-description",
+            defaultValue: "Enable this option to record sound that comes from other applications.",
+            comment: "Screen recording setting description",
+        )
+        static let audioTracksTitle = string(
+            "preferences-recording.audio-tracks-title",
+            defaultValue: "Audio tracks",
+            comment: "Screen recording setting title",
+        )
+        static let audioTracksDescription = string(
+            "preferences-recording.audio-tracks-description",
+            defaultValue: "Choose separate tracks to edit the microphone and system audio independently in video editing software.",
+            comment: "Screen recording setting description",
+        )
+        static let singleTrack = string(
+            "preferences-recording.audio-tracks-single",
+            defaultValue: "Single track",
+            comment: "Audio tracks option",
+        )
+        static let separateTracks = string(
+            "preferences-recording.audio-tracks-separate",
+            defaultValue: "Separate tracks",
+            comment: "Audio tracks option",
+        )
+        static let gifSection = string(
+            "preferences-recording.section-gif",
+            defaultValue: "GIF",
+            comment: "Screen recording preferences section title",
+        )
+        static let resolutionTitle = string(
+            "preferences-recording.resolution-title",
+            defaultValue: "Resolution",
+            comment: "Screen recording setting title",
+        )
+        static let optimizeGIFsTitle = string(
+            "preferences-recording.optimize-gifs-title",
+            defaultValue: "Optimize GIFs",
+            comment: "Screen recording setting title",
+        )
+        static let qualityTitle = string(
+            "preferences-recording.quality-title",
+            defaultValue: "Quality",
+            comment: "Screen recording setting title",
+        )
+        static let low = string(
+            "preferences-recording.quality-low",
+            defaultValue: "Low",
+            comment: "Quality slider minimum label",
+        )
+        static let high = string(
+            "preferences-recording.quality-high",
+            defaultValue: "High",
+            comment: "Quality slider maximum label",
+        )
+        static let originalResolution = string(
+            "preferences-recording.resolution-original",
+            defaultValue: "Original",
+            comment: "Resolution option keeping source size",
+        )
+
+        static func fpsLabel(_ fps: Int) -> String {
+            format(
+                "preferences-recording.fps-label",
+                defaultValue: "%d fps",
+                comment: "Frame rate picker label. %d is frames per second.",
+                fps,
+            )
+        }
+
+        static func gifResolutionLabel(_ width: Int) -> String {
+            format(
+                "preferences-recording.gif-resolution-label",
+                defaultValue: "%d x auto",
+                comment: "GIF resolution picker label. %d is the max width in pixels.",
+                width,
+            )
+        }
+
+        static func gifResolutionDefaultLabel(_ width: Int) -> String {
+            format(
+                "preferences-recording.gif-resolution-default-label",
+                defaultValue: "%d x auto (default)",
+                comment: "GIF resolution picker label for the default width. %d is the max width in pixels.",
+                width,
+            )
+        }
     }
 
     enum PreferencesAnnotate {

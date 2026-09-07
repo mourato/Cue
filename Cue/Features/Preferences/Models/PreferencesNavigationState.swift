@@ -11,6 +11,7 @@ import Foundation
 enum PreferencesTab: String, Hashable {
     case general
     case capture
+    case screenRecording
     case annotate
     case quickAccess
     case history
@@ -35,6 +36,11 @@ final class PreferencesNavigationState: ObservableObject {
     init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
         let raw = userDefaults.string(forKey: PreferencesKeys.selectedPreferencesTab)
-        selectedTab = raw.flatMap(PreferencesTab.init(rawValue:)) ?? .general
+        let restored = raw.flatMap(PreferencesTab.init(rawValue:)) ?? .general
+        #if CUE_VIDEO_MODULE
+            selectedTab = restored
+        #else
+            selectedTab = restored == .screenRecording ? .general : restored
+        #endif
     }
 }

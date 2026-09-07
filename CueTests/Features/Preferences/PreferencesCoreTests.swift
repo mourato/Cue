@@ -125,6 +125,7 @@ final class PreferencesCoreTests: XCTestCase {
         let tabs: Set<PreferencesTab> = [
             .general,
             .capture,
+            .screenRecording,
             .annotate,
             .quickAccess,
             .history,
@@ -133,7 +134,7 @@ final class PreferencesCoreTests: XCTestCase {
             .advanced,
         ]
 
-        XCTAssertEqual(tabs.count, 8)
+        XCTAssertEqual(tabs.count, 9)
     }
 
     func testPreferencesNumericPickerValue_sanitizesAndBoundsCustomInput() {

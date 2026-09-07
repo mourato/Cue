@@ -21,6 +21,14 @@ struct PreferencesView: View {
                 .tabItem { Label(L10n.Preferences.captureTab, systemImage: "camera.fill") }
                 .tag(PreferencesTab.capture)
 
+            #if CUE_VIDEO_MODULE
+                ScreenRecordingSettingsView()
+                    .tabItem {
+                        Label(L10n.Preferences.screenRecordingTab, systemImage: "record.circle")
+                    }
+                    .tag(PreferencesTab.screenRecording)
+            #endif
+
             AnnotateSettingsView()
                 .tabItem { Label(L10n.Preferences.annotateTab, systemImage: "pencil.and.scribble") }
                 .tag(PreferencesTab.annotate)

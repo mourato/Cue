@@ -164,6 +164,12 @@ second canonical design-system document.
   Every `Toggle`, `Picker`, `TextField`, and `Slider` in a row carries an
   explicit `.accessibilityLabel` (the row title) even when `.labelsHidden()`
   hides its visual label.
+- The **Screen Recording** preferences tab is the exception to the icon rule:
+  it mirrors the reference layout (General / Cursor / Keystrokes / Video /
+  Audio / GIF) with plain text rows, subtitles, inline `Options…` popovers,
+  and value pickers — no `SettingRow` icons. Click-highlight and keystroke
+  detail controls live in those popovers, reusing the
+  `recording.mouseHighlight.*` / `recording.keystroke.*` keys.
 - Preferences preview thumbnails must load bundled artwork through
   `SystemWallpaperManager.downsampledPreviewImage(at:maxPixelSize:)` (512px
   for Quick Access cards), never through full-resolution

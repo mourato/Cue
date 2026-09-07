@@ -100,6 +100,7 @@ final class CueDeepLinkHandlerTests: XCTestCase {
         let cases: [(String, PreferencesTab)] = [
             ("general", .general),
             ("capture", .capture),
+            ("screen-recording", .screenRecording),
             ("annotate", .annotate),
             ("quick-access", .quickAccess),
             ("history", .history),
