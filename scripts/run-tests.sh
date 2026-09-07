@@ -17,10 +17,7 @@ CONFIGURATION="${CONFIGURATION:-Debug}"
 DESTINATION="${DESTINATION:-platform=macOS}"
 BUILD_DIR="${BUILD_DIR:-build}"
 DERIVED_DATA_PATH="${DERIVED_DATA_PATH:-${BUILD_DIR}/DerivedData}"
-# Local builds use the same team-less development identity as build_and_run.sh.
-# CI overrides these settings below with code signing disabled.
-LOCAL_CODE_SIGN_IDENTITY="${LOCAL_CODE_SIGN_IDENTITY:-Prisma Local Code Signing}"
-LOCAL_ENABLE_HARDENED_RUNTIME="${LOCAL_ENABLE_HARDENED_RUNTIME:-NO}"
+# Tests do not install or distribute the app, so keep the test runner signing-free.
 # If running in CI, default to local package cache to avoid caching issues on CI runners.
 # Otherwise, default to empty to let xcodebuild use the user's global SwiftPM cache for speed.
 if [[ -n "${CI:-}" || -n "${GITHUB_ACTIONS:-}" ]]; then
@@ -132,8 +129,6 @@ Options:
 
 Environment:
   ENABLE_VIDEO_MODULE                 Set to 1 or 0 to enable/disable the Video module non-interactively.
-  LOCAL_CODE_SIGN_IDENTITY            Local signing identity. Default: Prisma Local Code Signing.
-  LOCAL_ENABLE_HARDENED_RUNTIME       Local hardened-runtime setting. Default: NO.
   CUE_QUIET_TESTS                      Keep test-side effects quiet. Default: 1.
   CUE_SKIP_VISUAL_TESTS                Set to 1 for the same effect as --skip-visual.
   CUE_ALLOW_TEST_SOUNDS                Set to 1 only for an intentional audio integration run.
@@ -286,20 +281,11 @@ XCODEBUILD_CMD=(
   -resultBundlePath "$RESULT_BUNDLE_PATH"
 )
 
-if [[ -n "${CI:-}" || -n "${GITHUB_ACTIONS:-}" ]]; then
-  XCODEBUILD_CMD+=(
-    CODE_SIGN_IDENTITY=
-    CODE_SIGNING_REQUIRED=NO
-    CODE_SIGNING_ALLOWED=NO
-  )
-else
-  XCODEBUILD_CMD+=(
-    CODE_SIGN_STYLE=Manual
-    "CODE_SIGN_IDENTITY=$LOCAL_CODE_SIGN_IDENTITY"
-    DEVELOPMENT_TEAM=
-    "ENABLE_HARDENED_RUNTIME=$LOCAL_ENABLE_HARDENED_RUNTIME"
-  )
-fi
+XCODEBUILD_CMD+=(
+  CODE_SIGN_IDENTITY=
+  CODE_SIGNING_REQUIRED=NO
+  CODE_SIGNING_ALLOWED=NO
+)
 
 if [[ -n "$SOURCE_PACKAGES_PATH" ]]; then
   XCODEBUILD_CMD+=(-clonedSourcePackagesDirPath "$SOURCE_PACKAGES_PATH")
