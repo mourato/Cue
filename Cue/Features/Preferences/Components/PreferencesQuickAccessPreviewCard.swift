@@ -102,6 +102,7 @@ struct QuickAccessSettingsPreviewCard: View {
             }
         }
         .frame(width: previewFrameWidth, height: stackViewportHeight)
+        .frame(width: stackViewportWidth, height: stackViewportHeight)
         .animation(.easeOut(duration: 0.12), value: hoveredSlot)
         .animation(.easeOut(duration: 0.12), value: hoveredSwipeDirection)
     }
