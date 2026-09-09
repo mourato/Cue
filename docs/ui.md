@@ -163,6 +163,11 @@ second canonical design-system document.
   without an empty title band. AppKit chrome that Settings scenes ignore is
   applied by `AppStatusBarController` when Preferences content appears, not by
   a leaf `NSViewRepresentable`.
+- General preferences keep app shell, sounds, export, after-capture, appearance,
+  and help. Screenshot preferences own capture environment (including hide-
+  desktop and All-In-One mode customization) and Annotate editor preferences.
+  Legacy `annotate` settings deep links and a persisted `annotate` tab restore
+  to Screenshot.
 - Scrolling-capture floats are content-only: the preview card shows the
   stitched image with no header, badge, caption, padding, or border (the
   image fills 100% of the card), and the control island shows only the

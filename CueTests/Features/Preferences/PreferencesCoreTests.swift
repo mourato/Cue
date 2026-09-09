@@ -195,9 +195,6 @@ final class PreferencesCoreTests: XCTestCase {
 
         defaults.set("not-a-tab", forKey: PreferencesKeys.selectedPreferencesTab)
         XCTAssertEqual(PreferencesNavigationState(userDefaults: defaults).selectedTab, .general)
-
-        defaults.set("annotate", forKey: PreferencesKeys.selectedPreferencesTab)
-        XCTAssertEqual(PreferencesNavigationState(userDefaults: defaults).selectedTab, .general)
     }
 
     @MainActor
@@ -205,6 +202,13 @@ final class PreferencesCoreTests: XCTestCase {
         let defaults = try makeDefaults()
         defaults.set("permissions", forKey: PreferencesKeys.selectedPreferencesTab)
         XCTAssertEqual(PreferencesNavigationState(userDefaults: defaults).selectedTab, .advanced)
+    }
+
+    @MainActor
+    func testSelectedPreferencesTab_mapsLegacyAnnotateToCapture() throws {
+        let defaults = try makeDefaults()
+        defaults.set("annotate", forKey: PreferencesKeys.selectedPreferencesTab)
+        XCTAssertEqual(PreferencesNavigationState(userDefaults: defaults).selectedTab, .capture)
     }
 
     func testTotalLogFileSize_sumsFilesAndIgnoresMissingDirectory() throws {

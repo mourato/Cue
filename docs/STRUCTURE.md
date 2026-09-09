@@ -231,7 +231,7 @@ CueUITests/
 | `Features/QuickAccess/` | Floating post-capture stack, temp-file persistence UX, drag-to-app, pinned screenshot windows |
 | `Features/Annotate/` | Image editor, export, crop, blur, mockup, cutout-aware editing, inline area annotate |
 | `Features/VideoEditor/` | Trim, zoom, speed (timelapse) segments, background, Smart Camera, GIF/video export |
-| `Features/Preferences/` | General, Capture, Annotate, Quick Access, History, Shortcuts, Permissions, Uploads, Advanced settings destinations |
+| `Features/Preferences/` | General, Screenshot (Capture + Annotate prefs), Quick Access, History, Shortcuts, Permissions (under Advanced), Uploads, Advanced settings destinations |
 | `Features/Shortcuts/` | Keyboard shortcut cheat-sheet overlay |
 
 ## Service Roots
@@ -302,7 +302,7 @@ CueUITests/
 - `PostCaptureActionHandler` executes clipboard copy before slower Quick Access and screenshot auto-open actions after files already exist, so auto-copy is not blocked by thumbnail generation or overlay work.
 - `PostCaptureActionHandler` also persists editable annotation sidecars when screenshot default presets are auto-applied before the file reaches clipboard, Quick Access, history, or Annotate auto-open. `ScreenshotPresetAutoApplier` keeps this route lightweight by rendering preset canvas effects directly, without spinning up a full Annotate state object.
 - Manual Open Annotate (`⇧⌘A`, menu bar, and `cue://open/annotate`) opens an empty editor through `AnnotateManager.openEmptyAnnotation()` and then applies the configured clipboard-image behavior: ask by default, load automatically, or do nothing.
-- Settings → General → Annotate owns full-editor Annotate preferences, including clipboard-image import behavior, `Close after drop`, `Reactivate after drop`, and Customize sheets for toolbar / bottom-bar chrome. `Close after drop` defaults on for legacy behavior; `AnnotateWindowController` reads both drag preferences when a drag-to-app session completes.
+- Settings → Screenshot → Annotate owns full-editor Annotate preferences, including clipboard-image import behavior, `Close after drop`, `Reactivate after drop`, and Customize sheets for toolbar / bottom-bar chrome. `Close after drop` defaults on for legacy behavior; `AnnotateWindowController` reads both drag preferences when a drag-to-app session completes.
 - `AnnotateManager` restores screenshot editability from the Quick Access session cache first, then `AnnotationSessionStore`, then the flattened screenshot file. `AnnotationSessionStore` stores only committed sessions and validates the source file signature before returning editable data.
 - `TempCaptureManager` is where the `Save` after-capture toggle becomes real behavior. Recording uses an internal per-session processing directory first, then moves the final video to export or the temp capture root after AVAssetWriter finishes.
 - `DatabaseManager` is initialized before launch cleanup and schedulers run. If `cue.db` cannot open or migrate, `AppDelegate` presents repair/reset/quit recovery UI; reset archives existing DB files into `DatabaseRecovery-<yyyyMMdd-HHmmss>[-N]/` before creating a fresh database.

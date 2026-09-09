@@ -2,7 +2,7 @@
 //  PreferencesGeneralSettingsView.swift
 //  Notinhas
 //
-//  General preferences tab: app, capture, annotate, sounds, export, and after-capture
+//  General preferences: app shell, sounds, export, after-capture, appearance, help.
 //
 
 import SwiftUI
@@ -10,27 +10,11 @@ import SwiftUI
 struct GeneralSettingsView: View {
     @AppStorage(PreferencesKeys.playSounds) private var playSounds = true
     @AppStorage(PreferencesKeys.showMenuBarIcon) private var showMenuBarIcon = true
-    @AppStorage(PreferencesKeys.hideDesktopIcons) private var hideDesktopIcons = false
-    @AppStorage(PreferencesKeys.hideDesktopWidgets) private var hideDesktopWidgets = false
     @AppStorage(PreferencesKeys.exportLocation) private var exportLocation = ""
-    @AppStorage(PreferencesKeys.annotateClipboardImageOpenBehavior)
-    private var annotateClipboardImageOpenBehavior = AnnotateClipboardImageBehavior.ask.rawValue
-    @AppStorage(PreferencesKeys.annotateCloseAfterDrag) private var annotateCloseAfterDrag = true
-    @AppStorage(PreferencesKeys.annotateBringForwardAfterDrag)
-    private var annotateBringForwardAfterDrag = false
-    @AppStorage(PreferencesKeys.annotateQuickPropertiesSyncEnabled)
-    private var annotateQuickPropertiesSyncEnabled = true
-    @AppStorage(PreferencesKeys.annotateCombineSaveAsEdit)
-    private var annotateCombineSaveAsEdit = true
 
-    @Environment(\.openWindow) private var openWindow
     @ObservedObject private var themeManager = ThemeManager.shared
 
     @State private var startAtLogin = LoginItemManager.isEnabled
-    @State private var videoModuleEnabled = VideoModuleAvailability.isEnabled
-    @State private var isAllInOneModesPresented = false
-    @State private var isAnnotateToolbarPresented = false
-    @State private var isAnnotateBottomBarPresented = false
     private let fileAccessManager = SandboxFileAccessManager.shared
 
     var body: some View {
@@ -57,121 +41,6 @@ struct GeneralSettingsView: View {
                         .onChange(of: showMenuBarIcon) { newValue in
                             AppStatusBarController.shared.setMenuBarIconVisible(newValue)
                         }
-                }
-            }
-
-            Section(L10n.PreferencesGeneral.captureSection) {
-                SettingRow(
-                    title: L10n.PreferencesCapture.hideDesktopIconsTitle,
-                    description: L10n.PreferencesCapture.hideDesktopIconsDescription,
-                ) {
-                    Toggle("", isOn: $hideDesktopIcons)
-                        .labelsHidden()
-                        .accessibilityLabel(L10n.PreferencesCapture.hideDesktopIconsTitle)
-                }
-
-                SettingRow(
-                    title: L10n.PreferencesCapture.hideDesktopWidgetsTitle,
-                    description: L10n.PreferencesCapture.hideDesktopWidgetsDescription,
-                ) {
-                    Toggle("", isOn: $hideDesktopWidgets)
-                        .labelsHidden()
-                        .accessibilityLabel(L10n.PreferencesCapture.hideDesktopWidgetsTitle)
-                }
-
-                Text(L10n.PreferencesGeneral.hideDesktopIconsHint)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-
-                SettingRow(
-                    title: L10n.PreferencesCapture.allInOneModesSection,
-                    description: L10n.PreferencesCapture.allInOneModesDescription,
-                ) {
-                    Button(L10n.PreferencesGeneral.customizeButton) {
-                        isAllInOneModesPresented = true
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                    .accessibilityLabel(L10n.PreferencesCapture.allInOneModesSection)
-                }
-            }
-
-            Section(L10n.PreferencesGeneral.annotateSection) {
-                SettingRow(
-                    title: L10n.PreferencesAnnotate.quickPropertiesSyncTitle,
-                    description: L10n.PreferencesAnnotate.quickPropertiesSyncDescription,
-                ) {
-                    Toggle("", isOn: $annotateQuickPropertiesSyncEnabled)
-                        .labelsHidden()
-                        .accessibilityLabel(L10n.PreferencesAnnotate.quickPropertiesSyncTitle)
-                }
-
-                SettingRow(
-                    title: L10n.PreferencesAnnotate.combineSaveAsEditTitle,
-                    description: L10n.PreferencesAnnotate.combineSaveAsEditDescription,
-                ) {
-                    Toggle("", isOn: $annotateCombineSaveAsEdit)
-                        .labelsHidden()
-                        .accessibilityLabel(L10n.PreferencesAnnotate.combineSaveAsEditTitle)
-                }
-
-                SettingRow(
-                    title: L10n.PreferencesAnnotate.clipboardTitle,
-                    description: L10n.PreferencesAnnotate.clipboardDescription,
-                ) {
-                    Picker("", selection: $annotateClipboardImageOpenBehavior) {
-                        ForEach(AnnotateClipboardImageBehavior.allCases) { behavior in
-                            Text(behavior.displayName).tag(behavior.rawValue)
-                        }
-                    }
-                    .labelsHidden()
-                    .accessibilityLabel(L10n.PreferencesAnnotate.clipboardTitle)
-                    .standardMenuPickerStyle()
-                    .fixedSize()
-                    .frame(width: 180, alignment: .trailing)
-                }
-
-                SettingRow(
-                    title: L10n.PreferencesAnnotate.closeAfterDragTitle,
-                    description: L10n.PreferencesAnnotate.closeAfterDragDescription,
-                ) {
-                    Toggle("", isOn: $annotateCloseAfterDrag)
-                        .labelsHidden()
-                        .accessibilityLabel(L10n.PreferencesAnnotate.closeAfterDragTitle)
-                }
-
-                SettingRow(
-                    title: L10n.PreferencesAnnotate.bringForwardAfterDragTitle,
-                    description: L10n.PreferencesAnnotate.bringForwardAfterDragDescription,
-                ) {
-                    Toggle("", isOn: $annotateBringForwardAfterDrag)
-                        .labelsHidden()
-                        .accessibilityLabel(L10n.PreferencesAnnotate.bringForwardAfterDragTitle)
-                }
-                .disabled(annotateCloseAfterDrag)
-
-                SettingRow(
-                    title: L10n.PreferencesAnnotate.chromeToolbarSection,
-                    description: L10n.PreferencesAnnotate.chromeDescription,
-                ) {
-                    Button(L10n.PreferencesGeneral.customizeButton) {
-                        isAnnotateToolbarPresented = true
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                    .accessibilityLabel(L10n.PreferencesAnnotate.chromeToolbarSection)
-                }
-
-                SettingRow(
-                    title: L10n.PreferencesAnnotate.chromeBottomSection,
-                    description: L10n.PreferencesAnnotate.chromeDescription,
-                ) {
-                    Button(L10n.PreferencesGeneral.customizeButton) {
-                        isAnnotateBottomBarPresented = true
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                    .accessibilityLabel(L10n.PreferencesAnnotate.chromeBottomSection)
                 }
             }
 
@@ -236,24 +105,6 @@ struct GeneralSettingsView: View {
         .onAppear {
             startAtLogin = LoginItemManager.isEnabled
             initializeExportLocation()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .videoModuleAvailabilityDidChange)) { _ in
-            videoModuleEnabled = VideoModuleAvailability.isEnabled
-        }
-        .sheet(isPresented: $isAllInOneModesPresented) {
-            PreferencesAllInOneModeCustomizationContent(videoModuleEnabled: videoModuleEnabled)
-                .frame(width: 520, height: 480)
-                .padding()
-        }
-        .sheet(isPresented: $isAnnotateToolbarPresented) {
-            AnnotateChromeCustomizationContent(surface: .toolbar)
-                .frame(width: 520, height: 480)
-                .padding()
-        }
-        .sheet(isPresented: $isAnnotateBottomBarPresented) {
-            AnnotateChromeCustomizationContent(surface: .bottomBar)
-                .frame(width: 520, height: 480)
-                .padding()
         }
     }
 

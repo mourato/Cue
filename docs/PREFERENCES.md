@@ -4,8 +4,8 @@ Reference for the Settings window: sidebar structure, every section, and how pre
 
 ## Root
 
-- `PreferencesView` (`Cue/Features/Preferences/PreferencesView.swift`) — SwiftUI `NavigationSplitView` with a native sidebar, user-resizable with a 760×550 default/minimum (`PreferencesWindowChrome`), seven destinations when Video is off / eight with Screen Recording (no About/update/report destination; no dedicated Annotate or Permissions destination).
-- Selection driven by `PreferencesNavigationState.shared.selectedTab` (`Models/PreferencesNavigationState.swift`, `PreferencesTab` enum) — set programmatically from menu bar, deep links (`cue://settings?tab=`, see [SHORTCUTS.md](SHORTCUTS.md)), and the shortcut overlay. Legacy `annotate` deep links open **General**. Legacy `permissions` / `privacy` deep links and a persisted `permissions` selected tab open **Advanced**.
+- `PreferencesView` (`Cue/Features/Preferences/PreferencesView.swift`) — SwiftUI `NavigationSplitView` with a native sidebar, user-resizable with a 760×550 default/minimum (`PreferencesWindowChrome`), seven destinations when Video is off / eight with Screen Recording (no About/update/report destination; no dedicated Annotate or Permissions destination — Annotate prefs live under Screenshot).
+- Selection driven by `PreferencesNavigationState.shared.selectedTab` (`Models/PreferencesNavigationState.swift`, `PreferencesTab` enum) — set programmatically from menu bar, deep links (`cue://settings?tab=`, see [SHORTCUTS.md](SHORTCUTS.md)), and the shortcut overlay. Legacy `annotate` deep links and a persisted `annotate` selected tab open **Screenshot** (`capture`). Legacy `permissions` / `privacy` deep links and a persisted `permissions` selected tab open **Advanced**.
 - Presented through the `Settings` scene in `CueApp`; activation-policy dance and AppKit window chrome (`PreferencesWindowChrome.apply`) are owned by `AppStatusBarController` when Preferences content appears (see [APP_LIFECYCLE.md](APP_LIFECYCLE.md)).
 
 ## Storage pattern
@@ -27,16 +27,6 @@ fallback is automatic.
 ### General (`PreferencesGeneralSettingsView.swift`)
 
 - **App**: Start at Login (`LoginItemManager` / SMAppService), Show Menu Bar Icon (`showMenuBarIcon`).
-- **Capture**:
-  - Hide Desktop Icons (`hideDesktopIcons`), Hide Desktop Widgets (`hideDesktopWidgets`).
-  - All-In-One Modes: `Customize…` opens a sheet (`PreferencesAllInOneModeCustomizationContent`) to reorder and enable toolbar modes using `capture.allInOne.modeOrder.v1` and `capture.allInOne.enabledModes.v1`. Reset restores the default order and enables every mode. Recording appears only when Video is available, while its saved position and enabled state are retained. At least one non-Video mode must remain enabled.
-- **Annotate**:
-  - Sync Tool Defaults / quick-properties sync (`annotate.quickPropertiesSyncEnabled`, default on).
-  - Combine Save-as-Edit (`annotate.combineSaveAsEdit`, default on).
-  - Clipboard image open behavior (`annotate.clipboardImageOpenBehavior`): `ask` (default) / `loadAutomatically` / `doNothing` (`AnnotateClipboardImageBehavior`).
-  - Close After Drag (`annotate.closeAfterDrag`, default on).
-  - Bring Forward After Drag (`annotate.bringForwardAfterDrag`, default off; disabled when Close After Drag is on).
-  - Toolbar / Bottom bar: each has a `Customize…` sheet (`AnnotateChromeCustomizationContent`) to reorder and enable/disable items. Toolbar: crop, background, rotate, drawing tools, cutout, Save as. Bottom bar: New window, Share, selected-provider upload, Pin, Copy, Delete. The persisted `uploadToImgBB` raw action remains a compatibility identifier. Selection, Undo, Redo, and Done always stay visible; zoom, pan, mode tabs, and Drag to app are fixed. Keys `annotate.chrome.toolbarOrder.v1`, `annotate.chrome.bottomOrder.v1`, `annotate.chrome.enabled.v1`; Reset chrome restores defaults. Inline Capture Markup uses the same drawing-tool order/enable subset.
 - **Sounds**: Play Sounds (`playSounds`).
 - **Export**: Save Location (`exportLocation` + `exportLocation.bookmark`, via `SandboxFileAccessManager`).
 - **After Capture**: Action matrix (`PreferencesAfterCaptureMatrixView`); see below.
@@ -49,8 +39,9 @@ Screenshot-oriented destination (sidebar label **Screenshot**). Screen recording
 gets its own sidebar destination when the Video module is compiled in.
 
 - **Output**: Image Format (`screenshot.format`, `ImageFormatOption`; WebP warning, JPEG cutout note) + default annotate canvas preset (`PreferencesScreenshotDefaultPresetPicker`).
-- **Capture**: Include Cue windows (`screenshot.includeOwnApp`), Show Cursor (`screenshot.showCursor`), Freeze Area (`screenshot.freezeArea`).
+- **Capture**: Include Cue windows (`screenshot.includeOwnApp`), Show Cursor (`screenshot.showCursor`), Freeze Area (`screenshot.freezeArea`), Hide Desktop Icons (`hideDesktopIcons`), Hide Desktop Widgets (`hideDesktopWidgets`), All-In-One Modes `Customize…` sheet (`PreferencesAllInOneModeCustomizationContent` — `capture.allInOne.modeOrder.v1` / `capture.allInOne.enabledModes.v1`; Reset restores defaults; Recording appears only when Video is available; at least one non-Video mode must remain enabled).
 - **Window Screenshots**: Capture window shadow (`capture.windowShadow`).
+- **Annotate**: Sync Tool Defaults (`annotate.quickPropertiesSyncEnabled`, default on); Combine Save-as-Edit (`annotate.combineSaveAsEdit`, default on); Clipboard image open behavior (`annotate.clipboardImageOpenBehavior`: `ask` / `loadAutomatically` / `doNothing`); Close After Drag (`annotate.closeAfterDrag`, default on); Bring Forward After Drag (`annotate.bringForwardAfterDrag`, default off; disabled when Close After Drag is on); Toolbar / Bottom bar `Customize…` sheets (`AnnotateChromeCustomizationContent`; keys `annotate.chrome.toolbarOrder.v1`, `annotate.chrome.bottomOrder.v1`, `annotate.chrome.enabled.v1`).
 - **Selection & Snapping**: Selection Area Overlay, Reverse Magnifier Zoom, snapping toggle + advanced snap distance / guides / color sensitivity (`capture.selection.*`) — applies to All-In-One resize refinement.
 - **Post-Processing**: Auto-Crop Subject (`backgroundCutout.autoCropEnabled`).
 - **Specialized Capture**: Scrolling Capture session hints (`scrollingCapture.showHints`) + OCR Success Notification (`ocr.successNotificationEnabled`).

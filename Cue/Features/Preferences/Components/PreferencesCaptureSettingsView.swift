@@ -2,8 +2,8 @@
 //  PreferencesCaptureSettingsView.swift
 //  Notinhas
 //
-//  Capture preferences tab for screenshot behavior and post-capture actions.
-//  Screen recording settings live in PreferencesScreenRecordingSettingsView.
+//  Screenshot preferences: output, capture environment, annotate chrome, and
+//  selection behavior. Screen recording lives in PreferencesScreenRecordingSettingsView.
 //
 
 import SwiftUI
@@ -13,10 +13,23 @@ struct CaptureSettingsView: View {
     @AppStorage(PreferencesKeys.screenshotIncludeOwnApp) private var includeOwnAppInScreenshots = false
     @AppStorage(PreferencesKeys.screenshotShowCursor) private var screenshotShowCursor = false
     @AppStorage(PreferencesKeys.screenshotFreezeArea) private var freezeAreaCapture = false
+    @AppStorage(PreferencesKeys.hideDesktopIcons) private var hideDesktopIcons = false
+    @AppStorage(PreferencesKeys.hideDesktopWidgets) private var hideDesktopWidgets = false
     @AppStorage(PreferencesKeys.captureWindowShadow) private var captureWindowShadow = true
     @AppStorage(PreferencesKeys.screenshotShowSelectionAreaOverlay) private var showSelectionAreaOverlay = true
     @AppStorage(PreferencesKeys.screenshotReverseMagnifierZoomDirection) private var reverseMagnifierZoomDirection =
         false
+
+    // Annotate
+    @AppStorage(PreferencesKeys.annotateClipboardImageOpenBehavior)
+    private var annotateClipboardImageOpenBehavior = AnnotateClipboardImageBehavior.ask.rawValue
+    @AppStorage(PreferencesKeys.annotateCloseAfterDrag) private var annotateCloseAfterDrag = true
+    @AppStorage(PreferencesKeys.annotateBringForwardAfterDrag)
+    private var annotateBringForwardAfterDrag = false
+    @AppStorage(PreferencesKeys.annotateQuickPropertiesSyncEnabled)
+    private var annotateQuickPropertiesSyncEnabled = true
+    @AppStorage(PreferencesKeys.annotateCombineSaveAsEdit)
+    private var annotateCombineSaveAsEdit = true
 
     // Snapping
     @AppStorage(PreferencesKeys.captureSelectionSnappingEnabled) private var captureSelectionSnappingEnabled = true
@@ -39,6 +52,10 @@ struct CaptureSettingsView: View {
     @AppStorage(PreferencesKeys.ocrSuccessNotificationEnabled) private var ocrSuccessNotification = true
 
     @State private var isResetScreenshotDefaultsConfirmationPresented = false
+    @State private var videoModuleEnabled = VideoModuleAvailability.isEnabled
+    @State private var isAllInOneModesPresented = false
+    @State private var isAnnotateToolbarPresented = false
+    @State private var isAnnotateBottomBarPresented = false
 
     var body: some View {
         Form {
@@ -80,6 +97,40 @@ struct CaptureSettingsView: View {
                         .labelsHidden()
                         .accessibilityLabel(L10n.PreferencesCapture.freezeAreaTitle)
                 }
+
+                SettingRow(
+                    title: L10n.PreferencesCapture.hideDesktopIconsTitle,
+                    description: L10n.PreferencesCapture.hideDesktopIconsDescription,
+                ) {
+                    Toggle("", isOn: $hideDesktopIcons)
+                        .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesCapture.hideDesktopIconsTitle)
+                }
+
+                SettingRow(
+                    title: L10n.PreferencesCapture.hideDesktopWidgetsTitle,
+                    description: L10n.PreferencesCapture.hideDesktopWidgetsDescription,
+                ) {
+                    Toggle("", isOn: $hideDesktopWidgets)
+                        .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesCapture.hideDesktopWidgetsTitle)
+                }
+
+                Text(L10n.PreferencesGeneral.hideDesktopIconsHint)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                SettingRow(
+                    title: L10n.PreferencesCapture.allInOneModesSection,
+                    description: L10n.PreferencesCapture.allInOneModesDescription,
+                ) {
+                    Button(L10n.PreferencesGeneral.customizeButton) {
+                        isAllInOneModesPresented = true
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .accessibilityLabel(L10n.PreferencesCapture.allInOneModesSection)
+                }
             }
 
             // MARK: - Window Screenshots
@@ -93,10 +144,87 @@ struct CaptureSettingsView: View {
                         .labelsHidden()
                         .accessibilityLabel(L10n.PreferencesCapture.windowShadowTitle)
                 }
+            }
 
-                Text(L10n.PreferencesGeneral.hideDesktopIconsHint)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+            // MARK: - Annotate
+
+            Section(L10n.PreferencesGeneral.annotateSection) {
+                SettingRow(
+                    title: L10n.PreferencesAnnotate.quickPropertiesSyncTitle,
+                    description: L10n.PreferencesAnnotate.quickPropertiesSyncDescription,
+                ) {
+                    Toggle("", isOn: $annotateQuickPropertiesSyncEnabled)
+                        .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesAnnotate.quickPropertiesSyncTitle)
+                }
+
+                SettingRow(
+                    title: L10n.PreferencesAnnotate.combineSaveAsEditTitle,
+                    description: L10n.PreferencesAnnotate.combineSaveAsEditDescription,
+                ) {
+                    Toggle("", isOn: $annotateCombineSaveAsEdit)
+                        .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesAnnotate.combineSaveAsEditTitle)
+                }
+
+                SettingRow(
+                    title: L10n.PreferencesAnnotate.clipboardTitle,
+                    description: L10n.PreferencesAnnotate.clipboardDescription,
+                ) {
+                    Picker("", selection: $annotateClipboardImageOpenBehavior) {
+                        ForEach(AnnotateClipboardImageBehavior.allCases) { behavior in
+                            Text(behavior.displayName).tag(behavior.rawValue)
+                        }
+                    }
+                    .labelsHidden()
+                    .accessibilityLabel(L10n.PreferencesAnnotate.clipboardTitle)
+                    .standardMenuPickerStyle()
+                    .fixedSize()
+                    .frame(width: 180, alignment: .trailing)
+                }
+
+                SettingRow(
+                    title: L10n.PreferencesAnnotate.closeAfterDragTitle,
+                    description: L10n.PreferencesAnnotate.closeAfterDragDescription,
+                ) {
+                    Toggle("", isOn: $annotateCloseAfterDrag)
+                        .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesAnnotate.closeAfterDragTitle)
+                }
+
+                SettingRow(
+                    title: L10n.PreferencesAnnotate.bringForwardAfterDragTitle,
+                    description: L10n.PreferencesAnnotate.bringForwardAfterDragDescription,
+                ) {
+                    Toggle("", isOn: $annotateBringForwardAfterDrag)
+                        .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesAnnotate.bringForwardAfterDragTitle)
+                }
+                .disabled(annotateCloseAfterDrag)
+
+                SettingRow(
+                    title: L10n.PreferencesAnnotate.chromeToolbarSection,
+                    description: L10n.PreferencesAnnotate.chromeDescription,
+                ) {
+                    Button(L10n.PreferencesGeneral.customizeButton) {
+                        isAnnotateToolbarPresented = true
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .accessibilityLabel(L10n.PreferencesAnnotate.chromeToolbarSection)
+                }
+
+                SettingRow(
+                    title: L10n.PreferencesAnnotate.chromeBottomSection,
+                    description: L10n.PreferencesAnnotate.chromeDescription,
+                ) {
+                    Button(L10n.PreferencesGeneral.customizeButton) {
+                        isAnnotateBottomBarPresented = true
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .accessibilityLabel(L10n.PreferencesAnnotate.chromeBottomSection)
+                }
             }
 
             // MARK: - Selection & Snapping
@@ -255,6 +383,27 @@ struct CaptureSettingsView: View {
             }
         }
         .preferencesFormStyle()
+        .onAppear {
+            videoModuleEnabled = VideoModuleAvailability.isEnabled
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .videoModuleAvailabilityDidChange)) { _ in
+            videoModuleEnabled = VideoModuleAvailability.isEnabled
+        }
+        .sheet(isPresented: $isAllInOneModesPresented) {
+            PreferencesAllInOneModeCustomizationContent(videoModuleEnabled: videoModuleEnabled)
+                .frame(width: 520, height: 480)
+                .padding()
+        }
+        .sheet(isPresented: $isAnnotateToolbarPresented) {
+            AnnotateChromeCustomizationContent(surface: .toolbar)
+                .frame(width: 520, height: 480)
+                .padding()
+        }
+        .sheet(isPresented: $isAnnotateBottomBarPresented) {
+            AnnotateChromeCustomizationContent(surface: .bottomBar)
+                .frame(width: 520, height: 480)
+                .padding()
+        }
         .alert(
             L10n.PreferencesCapture.resetScreenshotDefaultsConfirmationTitle,
             isPresented: $isResetScreenshotDefaultsConfirmationPresented,
