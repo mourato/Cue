@@ -50,12 +50,18 @@ struct CaptureSettingsView: View {
     @AppStorage(PreferencesKeys.scrollingCaptureShowHints) private var scrollingCaptureShowHints = true
     @AppStorage(PreferencesKeys.backgroundCutoutAutoCropEnabled) private var backgroundCutoutAutoCropEnabled = true
     @AppStorage(PreferencesKeys.ocrSuccessNotificationEnabled) private var ocrSuccessNotification = true
+    @AppStorage(PreferencesKeys.ocrLanguage) private var ocrLanguage = ""
+    @AppStorage(PreferencesKeys.ocrKeepLineBreaks) private var keepOCRLineBreaks = true
+    @AppStorage(PreferencesKeys.ocrLinkDetectionEnabled) private var detectOCRLinks = false
+    @AppStorage(PreferencesKeys.captureAllInOneRememberLastSelection)
+    private var rememberLastSelection = true
 
     @State private var isResetScreenshotDefaultsConfirmationPresented = false
     @State private var videoModuleEnabled = VideoModuleAvailability.isEnabled
     @State private var isAllInOneModesPresented = false
     @State private var isAnnotateToolbarPresented = false
     @State private var isAnnotateBottomBarPresented = false
+    @ObservedObject private var languageManager = AppLanguageManager.shared
 
     var body: some View {
         Form {
@@ -68,6 +74,8 @@ struct CaptureSettingsView: View {
             } footer: {
                 outputSectionFooter
             }
+
+            PreferencesFilenameSettingsSection()
 
             // MARK: - Capture
 
@@ -124,6 +132,14 @@ struct CaptureSettingsView: View {
                     .buttonStyle(.bordered)
                     .controlSize(.small)
                     .accessibilityLabel(L10n.PreferencesCapture.allInOneModesSection)
+                }
+
+                SettingRow(
+                    title: L10n.PreferencesAdvanced.rememberLastSelectionTitle,
+                ) {
+                    Toggle("", isOn: $rememberLastSelection)
+                        .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesAdvanced.rememberLastSelectionTitle)
                 }
             } header: {
                 Text(L10n.PreferencesCapture.captureSection)
@@ -352,6 +368,37 @@ struct CaptureSettingsView: View {
                     Toggle("", isOn: $ocrSuccessNotification)
                         .labelsHidden()
                         .accessibilityLabel(L10n.PreferencesCapture.ocrSuccessNotificationTitle)
+                }
+
+                SettingRow(
+                    title: L10n.PreferencesAdvanced.ocrLanguageTitle,
+                ) {
+                    Picker("", selection: $ocrLanguage) {
+                        Text(L10n.PreferencesAdvanced.ocrAutomaticLanguage).tag("")
+                        ForEach(languageManager.availableOptions) { option in
+                            Text(verbatim: option.displayName).tag(option.identifier)
+                        }
+                    }
+                    .labelsHidden()
+                    .accessibilityLabel(L10n.PreferencesAdvanced.ocrLanguageTitle)
+                    .standardMenuPickerStyle()
+                    .fixedSize()
+                }
+
+                SettingRow(
+                    title: L10n.PreferencesAdvanced.keepLineBreaksTitle,
+                ) {
+                    Toggle("", isOn: $keepOCRLineBreaks)
+                        .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesAdvanced.keepLineBreaksTitle)
+                }
+
+                SettingRow(
+                    title: L10n.PreferencesAdvanced.detectLinksTitle,
+                ) {
+                    Toggle("", isOn: $detectOCRLinks)
+                        .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesAdvanced.detectLinksTitle)
                 }
             } header: {
                 Text(L10n.PreferencesCapture.specializedCaptureSection)

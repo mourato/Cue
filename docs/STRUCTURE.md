@@ -231,7 +231,7 @@ CueUITests/
 | `Features/QuickAccess/` | Floating post-capture stack, temp-file persistence UX, drag-to-app, pinned screenshot windows |
 | `Features/Annotate/` | Image editor, export, crop, blur, mockup, cutout-aware editing, inline area annotate |
 | `Features/VideoEditor/` | Trim, zoom, speed (timelapse) segments, background, Smart Camera, GIF/video export |
-| `Features/Preferences/` | General, Screenshot (Capture + Annotate prefs), Quick Access, History, Shortcuts, Permissions (under Advanced), Uploads, Advanced settings destinations |
+| `Features/Preferences/` | General, Screenshot (Capture + Annotate + filename/OCR), Quick Access, History, Shortcuts (+ support views), Permissions (under Advanced), Uploads, Advanced (permissions/integration/backup/diagnostics) |
 | `Features/Shortcuts/` | Keyboard shortcut cheat-sheet overlay |
 
 ## Service Roots
