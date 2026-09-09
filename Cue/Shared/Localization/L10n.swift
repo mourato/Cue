@@ -4810,6 +4810,47 @@ nonisolated enum L10n {
             defaultValue: "Used to decide when Quick Access should optimize a video before uploading. ImageKit plan limits are not exposed by its API.",
             comment: "Description for the ImageKit video upload limit setting",
         )
+
+        static let imageEncodingSection = string(
+            "cloud-settings.image-encoding-section",
+            defaultValue: "Image Upload Encoding",
+            comment: "Uploads preferences section for image derivative encoding",
+        )
+        static let optimizeImagesTitle = string(
+            "cloud-settings.optimize-images-title",
+            defaultValue: "Optimize image uploads",
+            comment: "Toggle title for creating smaller upload derivatives",
+        )
+        static let optimizeImagesDescription = string(
+            "cloud-settings.optimize-images-description",
+            defaultValue: "Creates a temporary smaller derivative for ImgBB and ImageKit. Local captures stay unchanged.",
+            comment: "Description for optimize image uploads toggle",
+        )
+        static let uploadImageFormatTitle = string(
+            "cloud-settings.upload-image-format-title",
+            defaultValue: "Derivative format",
+            comment: "Picker title for upload image format",
+        )
+        static let uploadMaximumDimensionTitle = string(
+            "cloud-settings.upload-maximum-dimension-title",
+            defaultValue: "Maximum dimension",
+            comment: "Numeric control title for upload longest-edge limit",
+        )
+        static let uploadMaximumDimensionDescription = string(
+            "cloud-settings.upload-maximum-dimension-description",
+            defaultValue: "Longest edge in physical pixels for optimized uploads",
+            comment: "Description for upload maximum dimension",
+        )
+        static let uploadQualityTitle = string(
+            "cloud-settings.upload-quality-title",
+            defaultValue: "Compression quality",
+            comment: "Slider title for JPEG/WebP upload quality",
+        )
+        static let imageEncodingFooter = string(
+            "cloud-settings.image-encoding-footer",
+            defaultValue: "GIFs and videos pass through unchanged. Transparent JPEG sources upload as WebP.",
+            comment: "Footer explaining upload encoding exceptions",
+        )
     }
 
     enum AnnotateUI {

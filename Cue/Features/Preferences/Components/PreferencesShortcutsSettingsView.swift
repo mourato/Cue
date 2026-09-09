@@ -301,7 +301,6 @@ struct ShortcutsSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesShortcuts.enableShortcutsTitle,
-                    description: L10n.PreferencesShortcuts.enableShortcutsDescription,
                 ) {
                     Toggle("", isOn: $shortcutsEnabled)
                         .labelsHidden()
@@ -437,7 +436,6 @@ struct ShortcutsSettingsView: View {
 
                     ShortcutRecorderView(
                         label: GlobalShortcutKind.scrollingCapture.displayName,
-                        description: "Guided session for long screenshots",
                         shortcut: $scrollingCaptureShortcut,
                         defaultShortcut: .defaultScrollingCapture,
                         isEnabled: globalEnabledBinding(for: .scrollingCapture),
@@ -447,7 +445,6 @@ struct ShortcutsSettingsView: View {
 
                     ShortcutRecorderView(
                         label: GlobalShortcutKind.objectCutout.displayName,
-                        description: "Select an area, isolate the subject, and optionally auto-crop",
                         shortcut: $objectCutoutShortcut,
                         defaultShortcut: .defaultObjectCutout,
                         isEnabled: globalEnabledBinding(for: .objectCutout),
@@ -457,7 +454,6 @@ struct ShortcutsSettingsView: View {
 
                     ShortcutRecorderView(
                         label: L10n.Actions.captureTextOCR,
-                        description: L10n.PreferencesShortcuts.captureTextDescription,
                         shortcut: $ocrShortcut,
                         defaultShortcut: .defaultOCR,
                         isEnabled: globalEnabledBinding(for: .ocr),
@@ -587,7 +583,6 @@ struct ShortcutsSettingsView: View {
 
                     ShortcutRecorderView(
                         label: L10n.Actions.showShortcutList,
-                        description: L10n.PreferencesShortcuts.shortcutListDescription,
                         shortcut: $shortcutListShortcut,
                         defaultShortcut: .defaultShortcutList,
                         isEnabled: globalEnabledBinding(for: .shortcutList),
@@ -696,7 +691,6 @@ struct ShortcutsSettingsView: View {
 
                     ShortcutRecorderView(
                         label: L10n.ShortcutOverlay.togglePin,
-                        description: L10n.PreferencesShortcuts.togglePinDescription,
                         shortcut: $togglePinShortcut,
                         defaultShortcut: AnnotateShortcutManager.defaultTogglePin,
                         isEnabled: annotateActionEnabledBinding(for: .togglePin),

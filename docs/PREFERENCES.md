@@ -81,22 +81,20 @@ Screen Recording settings view for the current control set.
 ### Uploads (`PreferencesCloudSettingsView.swift`)
 
 The **Uploads** Settings destination owns provider selection (ImgBB, ImageKit, or
-Cloudflare Worker) and the selected provider credential. Image upload encoding
-defaults (`uploads.optimizeImages`, format, maximum dimension, JPEG quality) are
-applied by the upload pipeline and are editable via `config.toml` /
-Import–Export — not exposed as Settings controls today; see
-[CONFIGURATION.md](CONFIGURATION.md) and [ADR 073](adr/073-upload-image-derivatives.md).
-Secrets stay in provider-scoped Keychain items and are not exported. Existing
-users retain ImgBB unless they explicitly select another provider; invalid or
-missing selection safely uses ImgBB. GIFs can be uploaded through either
-provider; MOV/MP4/M4V uploads are supported by ImageKit or Cloudflare. When
-ImageKit is selected, the plan picker controls the local video upload target
-(Free 100 MB, Lite 300 MB, Pro 2 GB, or custom) because ImageKit does not expose
-plan limits through its API. Cloudflare uses a fixed 95 MiB client target. The
-Cloudflare documentation link covers the BYO Worker setup; Cue does not deploy a
-companion Worker. UploadThing is unavailable. BYO provider settings, usage,
-password, transfer, and upload-history controls remain retired. See
-[CLOUD.md](CLOUD.md).
+Cloudflare Worker), the selected provider credential, and image upload encoding
+controls (`PreferencesUploadEncodingSettingsSection`: optimize, format, maximum
+dimension, quality). Encoding creates a temporary derivative for ImgBB/ImageKit
+only; local captures stay unchanged. Secrets stay in provider-scoped Keychain
+items and are not exported. Existing users retain ImgBB unless they explicitly
+select another provider; invalid or missing selection safely uses ImgBB. GIFs
+can be uploaded through either provider; MOV/MP4/M4V uploads are supported by
+ImageKit or Cloudflare. When ImageKit is selected, the plan picker controls the
+local video upload target (Free 100 MB, Lite 300 MB, Pro 2 GB, or custom)
+because ImageKit does not expose plan limits through its API. Cloudflare uses a
+fixed 95 MiB client target. The Cloudflare documentation link covers the BYO
+Worker setup; Cue does not deploy a companion Worker. UploadThing is unavailable.
+BYO provider settings, usage, password, transfer, and upload-history controls
+remain retired. See [CLOUD.md](CLOUD.md).
 
 ### Advanced (`PreferencesAdvancedSettingsView.swift`)
 

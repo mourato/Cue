@@ -77,12 +77,11 @@ second canonical design-system document.
 - Selected rectangles, including note rectangles, expose corner and midpoint
   side handles; a side drag changes one dimension while keeping the opposite
   edge fixed and respecting the minimum size.
-- The **Uploads** preferences destination owns hosting-provider configuration and
-  credentials. Image upload encoding (optimize / format / max dimension /
-  quality) uses shared defaults and `config.toml` `[uploads]` keys; it is not a
-  Settings control surface today. Upload optimization creates a temporary
-  derivative for the provider; it never changes the local capture or the
-  annotation source.
+- The **Uploads** preferences destination owns hosting-provider configuration,
+  credentials, and image upload encoding controls (optimize / format / max
+  dimension / quality). Upload optimization creates a temporary derivative for
+  the provider; it never changes the local capture or the annotation source.
+  The same keys remain available in `config.toml` `[uploads]`.
 - ImageKit video upload uses the configured plan limit with a 5% safety margin.
   Quick Access presents one compact popover at or above that target with MP4 /
   H.264 output, dimensions, quality, frame rate, and audio controls. The source
@@ -179,8 +178,8 @@ second canonical design-system document.
 - Shortcuts settings remain a dense, product-owned surface (many recorders and
   conflict cues). Shared recorder chrome lives in
   `PreferencesShortcutsSupportViews.swift`. Quick Access settings keep a live
-  card preview because slot assignment is spatial — that preview is product
-  chrome, not decorative Settings styling.
+  card preview because slot assignment is spatial; preview cards use stroke
+  hierarchy without decorative drop shadows in Settings.
 - Scrolling-capture floats are content-only: the preview card shows the
   stitched image with no header, badge, caption, padding, or border (the
   image fills 100% of the card), and the control island shows only the

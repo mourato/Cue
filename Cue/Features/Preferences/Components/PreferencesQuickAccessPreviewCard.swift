@@ -159,7 +159,6 @@ struct QuickAccessSettingsPreviewCard: View {
             RoundedRectangle(cornerRadius: 16)
                 .stroke(Color.white.opacity(0.2), lineWidth: 1),
         )
-        .shadow(color: Color.black.opacity(0.16), radius: 10, x: 0, y: 5)
     }
 
     private var simulatedCardSurface: some View {
@@ -175,7 +174,6 @@ struct QuickAccessSettingsPreviewCard: View {
             RoundedRectangle(cornerRadius: 16)
                 .stroke(Color.white.opacity(0.18), lineWidth: 1),
         )
-        .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 4)
         .opacity(0.72)
         .allowsHitTesting(false)
     }

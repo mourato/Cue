@@ -66,6 +66,8 @@ struct CloudSettingsView: View {
                 }
             }
 
+            PreferencesUploadEncodingSettingsSection()
+
             if uploadConfiguration.provider == .imageKit {
                 Section(L10n.CloudSettings.imageKitVideoUploadSection) {
                     Picker(L10n.CloudSettings.imageKitVideoUploadPlan, selection: imageKitPlanBinding) {

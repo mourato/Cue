@@ -115,7 +115,7 @@ optimize_images = true
 image_format = "webp" # "webp" | "jpeg" | "png"
 maximum_dimension = 2048
 jpeg_quality = 0.9 # 0.5 ... 1.0
-# Applied by the upload pipeline; not exposed in Settings → Uploads UI.
+# Also editable in Settings → Uploads.
 
 [capture]
 hide_desktop_icons = false
