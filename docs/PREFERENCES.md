@@ -29,6 +29,7 @@ fallback is automatic.
 - **App**: Start at Login (`LoginItemManager` / SMAppService), Show Menu Bar Icon (`showMenuBarIcon`).
 - **Sounds**: Play Sounds (`playSounds`).
 - **Export**: Save Location (`exportLocation` + `exportLocation.bookmark`, via `SandboxFileAccessManager`).
+- **Clipboard**: Copy mode (`clipboardCopyMode` — file+image / file / image).
 - **After Capture**: Action matrix (`PreferencesAfterCaptureMatrixView`); see below.
 - **Appearance**: Language row (`PreferencesLanguageSettingRow`), theme picker (`AppearanceModePicker` → `appearanceMode`).
 - **Help**: Restart Onboarding (`OnboardingFlowView.resetOnboarding()` + `.showOnboarding`).
@@ -39,12 +40,13 @@ Screenshot-oriented destination (sidebar label **Screenshot**). Screen recording
 gets its own sidebar destination when the Video module is compiled in.
 
 - **Output**: Image Format (`screenshot.format`, `ImageFormatOption`; WebP warning, JPEG cutout note) + default annotate canvas preset (`PreferencesScreenshotDefaultPresetPicker`).
-- **Capture**: Include Cue windows (`screenshot.includeOwnApp`), Show Cursor (`screenshot.showCursor`), Freeze Area (`screenshot.freezeArea`), Hide Desktop Icons (`hideDesktopIcons`), Hide Desktop Widgets (`hideDesktopWidgets`), All-In-One Modes `Customize…` sheet (`PreferencesAllInOneModeCustomizationContent` — `capture.allInOne.modeOrder.v1` / `capture.allInOne.enabledModes.v1`; Reset restores defaults; Recording appears only when Video is available; at least one non-Video mode must remain enabled).
+- **File Name**: Ask for name after capture, Customize filename templates sheet, Retina `@2x` suffix (`PreferencesFilenameSettingsSection`).
+- **Capture**: Include Cue windows (`screenshot.includeOwnApp`), Show Cursor (`screenshot.showCursor`), Freeze Area (`screenshot.freezeArea`), Hide Desktop Icons (`hideDesktopIcons`), Hide Desktop Widgets (`hideDesktopWidgets`), All-In-One Modes `Customize…` sheet (`PreferencesAllInOneModeCustomizationContent` — `capture.allInOne.modeOrder.v1` / `capture.allInOne.enabledModes.v1`; Reset restores defaults; Recording appears only when Video is available; at least one non-Video mode must remain enabled), Remember last All-In-One selection (`capture.allInOne.rememberLastSelection`).
 - **Window Screenshots**: Capture window shadow (`capture.windowShadow`).
 - **Annotate**: Sync Tool Defaults (`annotate.quickPropertiesSyncEnabled`, default on); Combine Save-as-Edit (`annotate.combineSaveAsEdit`, default on); Clipboard image open behavior (`annotate.clipboardImageOpenBehavior`: `ask` / `loadAutomatically` / `doNothing`); Close After Drag (`annotate.closeAfterDrag`, default on); Bring Forward After Drag (`annotate.bringForwardAfterDrag`, default off; disabled when Close After Drag is on); Toolbar / Bottom bar `Customize…` sheets (`AnnotateChromeCustomizationContent`; keys `annotate.chrome.toolbarOrder.v1`, `annotate.chrome.bottomOrder.v1`, `annotate.chrome.enabled.v1`).
 - **Selection & Snapping**: Selection Area Overlay, Reverse Magnifier Zoom, snapping toggle + advanced snap distance / guides / color sensitivity (`capture.selection.*`) — applies to All-In-One resize refinement.
 - **Post-Processing**: Auto-Crop Subject (`backgroundCutout.autoCropEnabled`).
-- **Specialized Capture**: Scrolling Capture session hints (`scrollingCapture.showHints`) + OCR Success Notification (`ocr.successNotificationEnabled`).
+- **Specialized Capture**: Scrolling Capture session hints (`scrollingCapture.showHints`) + OCR Success Notification (`ocr.successNotificationEnabled`) + OCR language / keep line breaks / detect links.
 - Scoped **Reset Defaults** for this screen’s screenshot keys and default preset.
 
 ### Screen Recording (`PreferencesScreenRecordingSettingsView.swift`)
@@ -99,10 +101,11 @@ password, transfer, and upload-history controls remain retired. See
 ### Advanced (`PreferencesAdvancedSettingsView.swift`)
 
 - **Permissions** (`PreferencesPermissionsSettingsView.swift` / `PermissionsSettingsSection`): status rows + System Settings deep links for Screen Recording (`Privacy_ScreenCapture`), Save Folder (`Privacy_FilesAndFolders`), Microphone (`Privacy_Microphone`, when Video is available), and Accessibility (`Privacy_Accessibility`). Shows `grantedButUnavailableDueToAppIdentity` when `AppIdentityManager` reports issues (see [APP_LIFECYCLE.md](APP_LIFECYCLE.md)).
+- **Integration**: URL Scheme display + toggle (`urlSchemeEnabled`).
 - **Backup**: TOML Import / Export / Restore Defaults (`CueConfiguration*` services).
 - **Configuration File**: grant access to `~/.config/cue`, Sync Now, Open Config, status/issues — see [CONFIGURATION.md](CONFIGURATION.md).
-- **Integration**: URL Scheme toggle (`urlSchemeEnabled`).
 - **Diagnostics**: enable toggle (`diagnostics.enabled`), retention days (`diagnostics.retentionDays`, default 3, range 1–30 via `LogCleanupScheduler`), Open Folder (`~/Library/Logs/Cue`) — see [UPDATES.md](UPDATES.md).
+- Filename, clipboard, OCR, and All-In-One remember-last controls live under Screenshot / General (not Advanced).
 
 ## After-capture matrix
 

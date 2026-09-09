@@ -165,14 +165,22 @@ second canonical design-system document.
   without an empty title band. AppKit chrome that Settings scenes ignore is
   applied by `AppStatusBarController` when Preferences content appears, not by
   a leaf `NSViewRepresentable`.
-- General preferences keep app shell, sounds, export, after-capture, appearance,
-  and help. Screenshot preferences own capture environment (including hide-
-  desktop and All-In-One mode customization) and Annotate editor preferences.
-  Legacy `annotate` settings deep links and a persisted `annotate` tab restore
-  to Screenshot.
+- General preferences keep app shell, sounds, export, clipboard copy mode,
+  after-capture, appearance, and help. Screenshot preferences own capture
+  environment (including hide-desktop, All-In-One mode customization, remember
+  last selection), filename templates, Annotate editor preferences, and OCR
+  text-recognition options. Legacy `annotate` settings deep links and a
+  persisted `annotate` tab restore to Screenshot.
+- Advanced preferences keep permissions, URL-scheme integration, TOML
+  backup/sync, and diagnostics only.
 - History preferences own the capture-history master enable (`history.enabled`)
   together with retention days and max count. Advanced must not duplicate those
   controls.
+- Shortcuts settings remain a dense, product-owned surface (many recorders and
+  conflict cues). Shared recorder chrome lives in
+  `PreferencesShortcutsSupportViews.swift`. Quick Access settings keep a live
+  card preview because slot assignment is spatial — that preview is product
+  chrome, not decorative Settings styling.
 - Scrolling-capture floats are content-only: the preview card shows the
   stitched image with no header, badge, caption, padding, or border (the
   image fills 100% of the card), and the control island shows only the

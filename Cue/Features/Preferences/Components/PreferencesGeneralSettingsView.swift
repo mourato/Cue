@@ -11,6 +11,8 @@ struct GeneralSettingsView: View {
     @AppStorage(PreferencesKeys.playSounds) private var playSounds = true
     @AppStorage(PreferencesKeys.showMenuBarIcon) private var showMenuBarIcon = true
     @AppStorage(PreferencesKeys.exportLocation) private var exportLocation = ""
+    @AppStorage(PreferencesKeys.clipboardCopyMode) private var clipboardCopyMode = ClipboardCopyMode.fileAndImage
+        .rawValue
 
     @ObservedObject private var themeManager = ThemeManager.shared
 
@@ -69,6 +71,23 @@ struct GeneralSettingsView: View {
                 Text(L10n.PreferencesGeneral.exportLocationDescription)
                     .font(.caption)
                     .foregroundColor(.secondary)
+            }
+
+            Section(L10n.PreferencesAdvanced.clipboardSection) {
+                SettingRow(
+                    title: L10n.PreferencesAdvanced.copyToClipboardTitle,
+                    description: L10n.PreferencesAdvanced.copyToClipboardDescription,
+                ) {
+                    Picker("", selection: $clipboardCopyMode) {
+                        ForEach(ClipboardCopyMode.allCases) { mode in
+                            Text(mode.displayName).tag(mode.rawValue)
+                        }
+                    }
+                    .labelsHidden()
+                    .accessibilityLabel(L10n.PreferencesAdvanced.copyToClipboardTitle)
+                    .standardMenuPickerStyle()
+                    .fixedSize()
+                }
             }
 
             Section {
