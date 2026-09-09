@@ -62,7 +62,6 @@ struct QuickAccessSettingsView: View {
             Section(L10n.PreferencesQuickAccess.behaviorsSection) {
                 SettingRow(
                     title: L10n.PreferencesQuickAccess.floatingOverlayTitle,
-                    description: L10n.PreferencesQuickAccess.floatingOverlayDescription,
                 ) {
                     Toggle("", isOn: $manager.isEnabled)
                         .labelsHidden()
@@ -131,7 +130,6 @@ struct QuickAccessSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesQuickAccess.dragAndDropTitle,
-                    description: L10n.PreferencesQuickAccess.dragAndDropDescription,
                 ) {
                     Toggle("", isOn: $manager.dragDropEnabled)
                         .labelsHidden()
@@ -167,30 +165,25 @@ struct QuickAccessSettingsView: View {
             }
 
             if manager.twoFingerSwipeToDismissEnabled {
-                Section(L10n.PreferencesQuickAccess.trackpadSwipeModeTitle) {
-                    SettingRow(
-                        title: L10n.PreferencesQuickAccess.trackpadSwipeModeTitle,
-                        description: L10n.PreferencesQuickAccess.trackpadSwipeModeDescription,
-                    ) {
-                        Picker("", selection: Binding(
+                Section {
+                    Picker(
+                        L10n.PreferencesQuickAccess.trackpadSwipeModeTitle,
+                        selection: Binding(
                             get: { trackpadSwipeModeStore.mode },
                             set: { trackpadSwipeModeStore.setMode($0) },
-                        )) {
-                            ForEach(QuickAccessTrackpadSwipeMode.allCases) { mode in
-                                Text(mode.displayName).tag(mode)
-                            }
+                        ),
+                    ) {
+                        ForEach(QuickAccessTrackpadSwipeMode.allCases) { mode in
+                            Text(mode.displayName).tag(mode)
                         }
-                        .labelsHidden()
-                        .accessibilityLabel(L10n.PreferencesQuickAccess.trackpadSwipeModeTitle)
-                        .standardMenuPickerStyle()
-                        .fixedSize()
-                        .frame(width: 200, alignment: .trailing)
                     }
-
-                    Text(L10n.PreferencesQuickAccess.swipeActionsDescription)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .padding(.vertical, 2)
+                    .accessibilityLabel(L10n.PreferencesQuickAccess.trackpadSwipeModeTitle)
+                    .standardMenuPickerStyle()
+                } footer: {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(L10n.PreferencesQuickAccess.trackpadSwipeModeDescription)
+                        Text(L10n.PreferencesQuickAccess.swipeActionsDescription)
+                    }
                 }
             }
         }

@@ -61,13 +61,17 @@ struct CaptureSettingsView: View {
         Form {
             // MARK: - Output
 
-            Section(L10n.PreferencesCapture.outputSection) {
+            Section {
                 outputSettings
+            } header: {
+                Text(L10n.PreferencesCapture.outputSection)
+            } footer: {
+                outputSectionFooter
             }
 
             // MARK: - Capture
 
-            Section(L10n.PreferencesCapture.captureSection) {
+            Section {
                 SettingRow(
                     title: L10n.PreferencesCapture.includeInScreenshotsTitle,
                     description: L10n.PreferencesCapture.includeInScreenshotsDescription,
@@ -85,10 +89,6 @@ struct CaptureSettingsView: View {
                         .accessibilityLabel(L10n.PreferencesCapture.showCursorTitle)
                 }
 
-                Text(L10n.PreferencesCapture.showCursorFootnote)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-
                 SettingRow(
                     title: L10n.PreferencesCapture.freezeAreaTitle,
                     description: L10n.PreferencesCapture.freezeAreaDescription,
@@ -100,7 +100,6 @@ struct CaptureSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesCapture.hideDesktopIconsTitle,
-                    description: L10n.PreferencesCapture.hideDesktopIconsDescription,
                 ) {
                     Toggle("", isOn: $hideDesktopIcons)
                         .labelsHidden()
@@ -109,16 +108,11 @@ struct CaptureSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesCapture.hideDesktopWidgetsTitle,
-                    description: L10n.PreferencesCapture.hideDesktopWidgetsDescription,
                 ) {
                     Toggle("", isOn: $hideDesktopWidgets)
                         .labelsHidden()
                         .accessibilityLabel(L10n.PreferencesCapture.hideDesktopWidgetsTitle)
                 }
-
-                Text(L10n.PreferencesGeneral.hideDesktopIconsHint)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
 
                 SettingRow(
                     title: L10n.PreferencesCapture.allInOneModesSection,
@@ -131,6 +125,13 @@ struct CaptureSettingsView: View {
                     .controlSize(.small)
                     .accessibilityLabel(L10n.PreferencesCapture.allInOneModesSection)
                 }
+            } header: {
+                Text(L10n.PreferencesCapture.captureSection)
+            } footer: {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(L10n.PreferencesCapture.showCursorFootnote)
+                    Text(L10n.PreferencesGeneral.hideDesktopIconsHint)
+                }
             }
 
             // MARK: - Window Screenshots
@@ -138,7 +139,6 @@ struct CaptureSettingsView: View {
             Section(L10n.PreferencesCapture.windowScreenshotsSection) {
                 SettingRow(
                     title: L10n.PreferencesCapture.windowShadowTitle,
-                    description: L10n.PreferencesCapture.windowShadowDescription,
                 ) {
                     Toggle("", isOn: $captureWindowShadow)
                         .labelsHidden()
@@ -148,7 +148,7 @@ struct CaptureSettingsView: View {
 
             // MARK: - Annotate
 
-            Section(L10n.PreferencesGeneral.annotateSection) {
+            Section {
                 SettingRow(
                     title: L10n.PreferencesAnnotate.quickPropertiesSyncTitle,
                     description: L10n.PreferencesAnnotate.quickPropertiesSyncDescription,
@@ -204,7 +204,6 @@ struct CaptureSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesAnnotate.chromeToolbarSection,
-                    description: L10n.PreferencesAnnotate.chromeDescription,
                 ) {
                     Button(L10n.PreferencesGeneral.customizeButton) {
                         isAnnotateToolbarPresented = true
@@ -216,7 +215,6 @@ struct CaptureSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesAnnotate.chromeBottomSection,
-                    description: L10n.PreferencesAnnotate.chromeDescription,
                 ) {
                     Button(L10n.PreferencesGeneral.customizeButton) {
                         isAnnotateBottomBarPresented = true
@@ -225,6 +223,10 @@ struct CaptureSettingsView: View {
                     .controlSize(.small)
                     .accessibilityLabel(L10n.PreferencesAnnotate.chromeBottomSection)
                 }
+            } header: {
+                Text(L10n.PreferencesGeneral.annotateSection)
+            } footer: {
+                Text(L10n.PreferencesAnnotate.chromeDescription)
             }
 
             // MARK: - Selection & Snapping
@@ -264,7 +266,6 @@ struct CaptureSettingsView: View {
                             VStack(spacing: 8) {
                                 SettingRow(
                                     title: L10n.PreferencesCapture.selectionSnapGuidesTitle,
-                                    description: L10n.PreferencesCapture.selectionSnapGuidesDescription,
                                 ) {
                                     Toggle("", isOn: $captureSelectionShowSnapGuides)
                                         .labelsHidden()
@@ -323,10 +324,6 @@ struct CaptureSettingsView: View {
             // MARK: - Post Processing
 
             Section(L10n.PreferencesCapture.postProcessingSection) {
-                Text(L10n.PreferencesCapture.removeBackground)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-
                 SettingRow(
                     title: L10n.PreferencesCapture.autoCropSubjectTitle,
                     description: L10n.PreferencesCapture.autoCropSubjectDescription,
@@ -339,27 +336,14 @@ struct CaptureSettingsView: View {
 
             // MARK: - Specialized Capture
 
-            Section(L10n.PreferencesCapture.specializedCaptureSection) {
+            Section {
                 SettingRow(
                     title: L10n.PreferencesCapture.showSessionHintsTitle,
-                    description: L10n.PreferencesCapture.showSessionHintsDescription,
                 ) {
                     Toggle("", isOn: $scrollingCaptureShowHints)
                         .labelsHidden()
                         .accessibilityLabel(L10n.PreferencesCapture.showSessionHintsTitle)
                 }
-
-                HStack(alignment: .top, spacing: 6) {
-                    Image(systemName: "info.circle.fill")
-                        .foregroundColor(.blue)
-                        .font(.system(size: 12))
-                        .padding(.top, 1)
-                    Text(L10n.PreferencesCapture.scrollingCaptureInfo)
-                        .font(.system(size: 11))
-                        .foregroundColor(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                .padding(.vertical, 4)
 
                 SettingRow(
                     title: L10n.PreferencesCapture.ocrSuccessNotificationTitle,
@@ -369,6 +353,10 @@ struct CaptureSettingsView: View {
                         .labelsHidden()
                         .accessibilityLabel(L10n.PreferencesCapture.ocrSuccessNotificationTitle)
                 }
+            } header: {
+                Text(L10n.PreferencesCapture.specializedCaptureSection)
+            } footer: {
+                Text(L10n.PreferencesCapture.scrollingCaptureInfo)
             }
 
             Section {
@@ -420,6 +408,15 @@ struct CaptureSettingsView: View {
     // MARK: - Helpers
 
     @ViewBuilder
+    private var outputSectionFooter: some View {
+        if screenshotFormat == ImageFormatOption.jpeg.rawValue {
+            Text(L10n.PreferencesCapture.jpegCutoutNote)
+        } else if screenshotFormat == ImageFormatOption.webp.rawValue {
+            Text(L10n.PreferencesCapture.webpWarning)
+        }
+    }
+
+    @ViewBuilder
     private var outputSettings: some View {
         SettingRow(
             title: L10n.PreferencesCapture.imageFormatTitle,
@@ -437,7 +434,6 @@ struct CaptureSettingsView: View {
         if screenshotFormat == ImageFormatOption.jpeg.rawValue {
             SettingRow(
                 title: L10n.PreferencesCapture.jpegQualityTitle,
-                description: L10n.PreferencesCapture.jpegQualityDescription,
             ) {
                 HStack(spacing: 8) {
                     Slider(
@@ -455,32 +451,6 @@ struct CaptureSettingsView: View {
                         .frame(width: 36, alignment: .trailing)
                 }
             }
-
-            HStack(alignment: .top, spacing: 6) {
-                Image(systemName: "info.circle.fill")
-                    .foregroundColor(.blue)
-                    .font(.system(size: 12))
-                    .padding(.top, 1)
-                Text(L10n.PreferencesCapture.jpegCutoutNote)
-                    .font(.system(size: 11))
-                    .foregroundColor(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .padding(.vertical, 4)
-        }
-
-        if screenshotFormat == ImageFormatOption.webp.rawValue {
-            HStack(alignment: .top, spacing: 6) {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundColor(.orange)
-                    .font(.system(size: 12))
-                    .padding(.top, 1)
-                Text(L10n.PreferencesCapture.webpWarning)
-                    .font(.system(size: 11))
-                    .foregroundColor(.orange)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .padding(.vertical, 4)
         }
 
         PreferencesScreenshotDefaultPresetPicker()
