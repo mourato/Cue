@@ -177,9 +177,12 @@ second canonical design-system document.
   controls.
 - Shortcuts settings remain a dense, product-owned surface (many recorders and
   conflict cues). Shared recorder chrome lives in
-  `PreferencesShortcutsSupportViews.swift`. Quick Access settings keep a live
-  card preview because slot assignment is spatial; preview cards use stroke
-  hierarchy without decorative drop shadows in Settings.
+  `PreferencesShortcutsSupportViews.swift`. Secondary Shortcut blocks
+  (optional recording extras, annotate tool keys, annotate reference) use
+  collapsed `DisclosureGroup`s so the first screen stays capture-primary.
+  Quick Access settings keep a live card preview because slot assignment is
+  spatial; preview cards use stroke hierarchy without decorative drop shadows
+  in Settings.
 - Scrolling-capture floats are content-only: the preview card shows the
   stitched image with no header, badge, caption, padding, or border (the
   image fills 100% of the card), and the control island shows only the

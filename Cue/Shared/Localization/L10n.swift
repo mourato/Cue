@@ -4396,6 +4396,11 @@ nonisolated enum L10n {
             defaultValue: "Single-key shortcuts for switching tools in the annotation editor.",
             comment: "Description for annotation tool shortcut section",
         )
+        static let moreRecordingShortcuts = string(
+            "preferences-shortcuts.more-recording-shortcuts",
+            defaultValue: "More recording shortcuts",
+            comment: "Disclosure label for optional recording shortcut rows",
+        )
         static let singleKeyHint = string(
             "preferences-shortcuts.single-key-hint",
             defaultValue: "Click to record. Use Backspace/Delete while recording to clear keys. Use the row toggle to turn a shortcut off. Esc to cancel.",

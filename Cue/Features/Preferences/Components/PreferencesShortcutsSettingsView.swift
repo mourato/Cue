@@ -60,6 +60,9 @@ struct ShortcutsSettingsView: View {
     @State private var systemConflictStatus: SystemConflictStatus
     @State private var accessibilityGranted: Bool = AXIsProcessTrusted()
     @State private var videoModuleEnabled = VideoModuleAvailability.isEnabled
+    @State private var showRecordingExtras = false
+    @State private var showAnnotateToolKeys = false
+    @State private var showAnnotateReference = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private let manager = KeyboardShortcutManager.shared
@@ -506,45 +509,58 @@ struct ShortcutsSettingsView: View {
                                 handleCaptureOverlayShortcutChange(newShortcut, for: .applicationRecording)
                             }
 
-                            ShortcutRecorderView(
-                                label: L10n.Actions.pauseResumeRecording,
-                                description: L10n.PreferencesShortcuts.pauseResumeRecordingDescription,
-                                shortcut: $pauseResumeRecordingShortcut,
-                                defaultShortcut: nil,
-                                isEnabled: globalEnabledBinding(for: .pauseResumeRecording),
-                                validationIssue: globalValidationIssues[.pauseResumeRecording],
-                                onShortcutChanged: { handleGlobalShortcutChange($0, for: .pauseResumeRecording) },
-                            )
+                            DisclosureGroup(
+                                L10n.PreferencesShortcuts.moreRecordingShortcuts,
+                                isExpanded: $showRecordingExtras,
+                            ) {
+                                ShortcutRecorderView(
+                                    label: L10n.Actions.pauseResumeRecording,
+                                    description: L10n.PreferencesShortcuts.pauseResumeRecordingDescription,
+                                    shortcut: $pauseResumeRecordingShortcut,
+                                    defaultShortcut: nil,
+                                    isEnabled: globalEnabledBinding(for: .pauseResumeRecording),
+                                    validationIssue: globalValidationIssues[.pauseResumeRecording],
+                                    onShortcutChanged: {
+                                        handleGlobalShortcutChange($0, for: .pauseResumeRecording)
+                                    },
+                                )
 
-                            ShortcutRecorderView(
-                                label: L10n.Actions.togglePenRecording,
-                                description: L10n.PreferencesShortcuts.togglePenRecordingDescription,
-                                shortcut: $togglePenRecordingShortcut,
-                                defaultShortcut: nil,
-                                isEnabled: globalEnabledBinding(for: .togglePenRecording),
-                                validationIssue: globalValidationIssues[.togglePenRecording],
-                                onShortcutChanged: { handleGlobalShortcutChange($0, for: .togglePenRecording) },
-                            )
+                                ShortcutRecorderView(
+                                    label: L10n.Actions.togglePenRecording,
+                                    description: L10n.PreferencesShortcuts.togglePenRecordingDescription,
+                                    shortcut: $togglePenRecordingShortcut,
+                                    defaultShortcut: nil,
+                                    isEnabled: globalEnabledBinding(for: .togglePenRecording),
+                                    validationIssue: globalValidationIssues[.togglePenRecording],
+                                    onShortcutChanged: {
+                                        handleGlobalShortcutChange($0, for: .togglePenRecording)
+                                    },
+                                )
 
-                            ShortcutRecorderView(
-                                label: L10n.Actions.restartRecording,
-                                description: L10n.PreferencesShortcuts.restartRecordingDescription,
-                                shortcut: $restartRecordingShortcut,
-                                defaultShortcut: nil,
-                                isEnabled: globalEnabledBinding(for: .restartRecording),
-                                validationIssue: globalValidationIssues[.restartRecording],
-                                onShortcutChanged: { handleGlobalShortcutChange($0, for: .restartRecording) },
-                            )
+                                ShortcutRecorderView(
+                                    label: L10n.Actions.restartRecording,
+                                    description: L10n.PreferencesShortcuts.restartRecordingDescription,
+                                    shortcut: $restartRecordingShortcut,
+                                    defaultShortcut: nil,
+                                    isEnabled: globalEnabledBinding(for: .restartRecording),
+                                    validationIssue: globalValidationIssues[.restartRecording],
+                                    onShortcutChanged: {
+                                        handleGlobalShortcutChange($0, for: .restartRecording)
+                                    },
+                                )
 
-                            ShortcutRecorderView(
-                                label: L10n.Actions.deleteRecording,
-                                description: L10n.PreferencesShortcuts.deleteRecordingDescription,
-                                shortcut: $deleteRecordingShortcut,
-                                defaultShortcut: nil,
-                                isEnabled: globalEnabledBinding(for: .deleteRecording),
-                                validationIssue: globalValidationIssues[.deleteRecording],
-                                onShortcutChanged: { handleGlobalShortcutChange($0, for: .deleteRecording) },
-                            )
+                                ShortcutRecorderView(
+                                    label: L10n.Actions.deleteRecording,
+                                    description: L10n.PreferencesShortcuts.deleteRecordingDescription,
+                                    shortcut: $deleteRecordingShortcut,
+                                    defaultShortcut: nil,
+                                    isEnabled: globalEnabledBinding(for: .deleteRecording),
+                                    validationIssue: globalValidationIssues[.deleteRecording],
+                                    onShortcutChanged: {
+                                        handleGlobalShortcutChange($0, for: .deleteRecording)
+                                    },
+                                )
+                            }
                         }
                         .padding(.vertical, 2)
                     } header: {
@@ -720,27 +736,23 @@ struct ShortcutsSettingsView: View {
                 }
 
                 Section {
-                    Text(L10n.PreferencesShortcuts.annotationToolDescription)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-
-                    ForEach(AnnotateShortcutManager.configurableTools, id: \.self) { tool in
-                        SingleKeyRecorderView(
-                            tool: tool,
-                            shortcut: bindingForTool(tool),
-                            isEnabled: toolEnabledBinding(for: tool),
-                            validationIssue: annotateToolValidationIssues[tool],
-                            onChanged: { handleAnnotateToolShortcutChange($0, for: tool) },
-                            conflictingTool: conflictForTool(tool),
-                            context: toolContext(for: tool),
-                            defaultShortcut: tool.defaultShortcut,
-                        )
+                    DisclosureGroup(
+                        L10n.PreferencesShortcuts.annotationToolDescription,
+                        isExpanded: $showAnnotateToolKeys,
+                    ) {
+                        ForEach(AnnotateShortcutManager.configurableTools, id: \.self) { tool in
+                            SingleKeyRecorderView(
+                                tool: tool,
+                                shortcut: bindingForTool(tool),
+                                isEnabled: toolEnabledBinding(for: tool),
+                                validationIssue: annotateToolValidationIssues[tool],
+                                onChanged: { handleAnnotateToolShortcutChange($0, for: tool) },
+                                conflictingTool: conflictForTool(tool),
+                                context: toolContext(for: tool),
+                                defaultShortcut: tool.defaultShortcut,
+                            )
+                        }
                     }
-
-                    Text(L10n.PreferencesShortcuts.singleKeyHint)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .padding(.top, 4)
                 } header: {
                     HStack {
                         Text(L10n.ShortcutOverlay.annotateToolKeys)
@@ -751,37 +763,42 @@ struct ShortcutsSettingsView: View {
                         .buttonStyle(.borderless)
                         .font(.caption)
                     }
+                } footer: {
+                    Text(L10n.PreferencesShortcuts.singleKeyHint)
                 }
 
-                Section(L10n.ShortcutOverlay.annotateReference) {
-                    Text(L10n.PreferencesShortcuts.referenceDescription)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-
-                    ReadOnlyShortcutRow(
-                        label: L10n.ShortcutOverlay.saveDone,
-                        shortcut: "⌘ S",
-                    )
-                    ReadOnlyShortcutRow(
-                        label: L10n.ShortcutOverlay.saveAs,
-                        shortcut: "⌘ ⇧ S",
-                    )
-                    ReadOnlyShortcutRow(label: L10n.ShortcutOverlay.undo, shortcut: "⌘ Z")
-                    ReadOnlyShortcutRow(
-                        label: L10n.ShortcutOverlay.redo,
-                        shortcut: "⌘ ⇧ Z",
-                    )
-                    ReadOnlyShortcutRow(label: L10n.ShortcutOverlay.deleteAnnotation, shortcut: "⌫")
-                    ReadOnlyShortcutRow(label: L10n.ShortcutOverlay.cancelDeselect, shortcut: "⎋")
-                    ReadOnlyShortcutRow(label: L10n.ShortcutOverlay.confirmCrop, shortcut: "↩")
-                    ReadOnlyShortcutRow(
-                        label: L10n.ShortcutOverlay.nudgeAnnotation,
-                        shortcut: "← → ↑ ↓",
-                    )
-                    ReadOnlyShortcutRow(
-                        label: L10n.ShortcutOverlay.nudgeTenPixels,
-                        shortcut: "⇧ ← → ↑ ↓",
-                    )
+                Section {
+                    DisclosureGroup(
+                        L10n.PreferencesShortcuts.referenceDescription,
+                        isExpanded: $showAnnotateReference,
+                    ) {
+                        ReadOnlyShortcutRow(
+                            label: L10n.ShortcutOverlay.saveDone,
+                            shortcut: "⌘ S",
+                        )
+                        ReadOnlyShortcutRow(
+                            label: L10n.ShortcutOverlay.saveAs,
+                            shortcut: "⌘ ⇧ S",
+                        )
+                        ReadOnlyShortcutRow(label: L10n.ShortcutOverlay.undo, shortcut: "⌘ Z")
+                        ReadOnlyShortcutRow(
+                            label: L10n.ShortcutOverlay.redo,
+                            shortcut: "⌘ ⇧ Z",
+                        )
+                        ReadOnlyShortcutRow(label: L10n.ShortcutOverlay.deleteAnnotation, shortcut: "⌫")
+                        ReadOnlyShortcutRow(label: L10n.ShortcutOverlay.cancelDeselect, shortcut: "⎋")
+                        ReadOnlyShortcutRow(label: L10n.ShortcutOverlay.confirmCrop, shortcut: "↩")
+                        ReadOnlyShortcutRow(
+                            label: L10n.ShortcutOverlay.nudgeAnnotation,
+                            shortcut: "← → ↑ ↓",
+                        )
+                        ReadOnlyShortcutRow(
+                            label: L10n.ShortcutOverlay.nudgeTenPixels,
+                            shortcut: "⇧ ← → ↑ ↓",
+                        )
+                    }
+                } header: {
+                    Text(L10n.ShortcutOverlay.annotateReference)
                 }
             }
         }

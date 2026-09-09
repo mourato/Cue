@@ -74,7 +74,7 @@ Screen Recording settings view for the current control set.
 ### Shortcuts (`PreferencesShortcutsSettingsView.swift`)
 
 - Master toggle (`shortcutsEnabled`).
-- Grouped recorders with per-shortcut enable toggles and per-section Reset: Capture, Recording, Tools, History, Quick Access, Annotate Actions, Annotate Tool Keys; Reset to Defaults (all).
+- Grouped recorders with per-shortcut enable toggles and per-section Reset: Capture, Recording (optional extras collapsed), Tools, History, Quick Access, Annotate Actions, Annotate Tool Keys (collapsed), Annotate Reference (collapsed); Reset to Defaults (all).
 - System-conflict guidance via `SystemScreenshotShortcutManager`.
 - Full mechanics and default bindings: [SHORTCUTS.md](SHORTCUTS.md).
 
