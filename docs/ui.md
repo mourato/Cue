@@ -180,6 +180,7 @@ second canonical design-system document.
   `PreferencesShortcutsSupportViews.swift`. Secondary Shortcut blocks
   (optional recording extras, annotate tool keys, annotate reference) use
   collapsed `DisclosureGroup`s so the first screen stays capture-primary.
+  All-In-One child modes use leading indentation (20pt), not connector lines.
   Quick Access settings keep a live card preview because slot assignment is
   spatial; preview cards use stroke hierarchy without decorative drop shadows
   in Settings.

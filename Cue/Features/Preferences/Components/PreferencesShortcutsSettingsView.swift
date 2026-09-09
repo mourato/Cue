@@ -386,25 +386,25 @@ struct ShortcutsSettingsView: View {
                             onShortcutChanged: { handleGlobalShortcutChange($0, for: .allInOne) },
                         )
 
-                        ForEach(
-                            Array(AllInOneCaptureMode.availableModes(videoEnabled: videoModuleEnabled).enumerated()),
-                            id: \.element,
-                        ) { index, mode in
-                            CaptureOverlayShortcutRecorderRow(
-                                label: mode.compactTitle,
-                                description: nil,
-                                shortcut: allInOneModeShortcutBinding(for: mode),
-                                defaultShortcut: AllInOneModeShortcutSettings.defaultShortcut(for: mode),
-                                isEnabled: globalEnabledBinding(for: .allInOne),
-                                validationIssue: allInOneModeValidationIssues[mode],
-                                allowsIndependent: false,
-                                isChild: true,
-                                isLastChild: index == AllInOneCaptureMode
-                                    .availableModes(videoEnabled: videoModuleEnabled).count - 1,
-                            ) { newShortcut in
-                                handleAllInOneModeShortcutChange(newShortcut, for: mode)
+                        VStack(alignment: .leading, spacing: 4) {
+                            ForEach(
+                                AllInOneCaptureMode.availableModes(videoEnabled: videoModuleEnabled),
+                                id: \.self,
+                            ) { mode in
+                                CaptureOverlayShortcutRecorderRow(
+                                    label: mode.compactTitle,
+                                    description: nil,
+                                    shortcut: allInOneModeShortcutBinding(for: mode),
+                                    defaultShortcut: AllInOneModeShortcutSettings.defaultShortcut(for: mode),
+                                    isEnabled: globalEnabledBinding(for: .allInOne),
+                                    validationIssue: allInOneModeValidationIssues[mode],
+                                    allowsIndependent: false,
+                                ) { newShortcut in
+                                    handleAllInOneModeShortcutChange(newShortcut, for: mode)
+                                }
                             }
                         }
+                        .padding(.leading, 20)
                     }
                     .padding(.vertical, 2)
 

@@ -21,8 +21,6 @@ struct CaptureOverlayShortcutRecorderRow: View {
     let isEnabled: Binding<Bool>
     let validationIssue: ShortcutValidationIssue?
     var allowsIndependent: Bool = true
-    var isChild: Bool = false
-    var isLastChild: Bool = false
     let onShortcutChanged: (CaptureOverlayShortcut?) -> Bool
 
     @State private var isRecording = false
@@ -31,12 +29,6 @@ struct CaptureOverlayShortcutRecorderRow: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            if isChild {
-                GuideBranch(isLast: isLastChild)
-                    .stroke(Color.secondary.opacity(0.25), lineWidth: 1)
-                    .frame(width: 16)
-            }
-
             VStack(alignment: .leading, spacing: 2) {
                 Text(label)
                     .font(.body)
@@ -238,30 +230,5 @@ struct ReadOnlyShortcutRow: View {
 
     private var modifierTokens: Set<String> {
         ["⌘", "⇧", "⌥", "⌃"]
-    }
-}
-
-// MARK: - Guide Branch Shape
-
-struct GuideBranch: Shape {
-    let isLast: Bool
-
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let midY = rect.midY
-        let rightX = rect.maxX
-        let leftX = rect.minX
-
-        path.move(to: CGPoint(x: leftX, y: midY))
-        path.addLine(to: CGPoint(x: rightX, y: midY))
-
-        if isLast {
-            path.move(to: CGPoint(x: leftX, y: rect.minY))
-            path.addLine(to: CGPoint(x: leftX, y: midY))
-        } else {
-            path.move(to: CGPoint(x: leftX, y: rect.minY))
-            path.addLine(to: CGPoint(x: leftX, y: rect.maxY))
-        }
-        return path
     }
 }
