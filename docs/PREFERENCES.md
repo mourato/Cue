@@ -113,14 +113,17 @@ flowchart LR
     B --> C["showQuickAccess → Quick Access card"]
     B --> D["copyFile → clipboard"]
     B --> E["save → export location"]
-    B --> F["openAnnotate → editor (screenshot only)"]
+    B --> F["uploadToCloud → selected host + copy link"]
+    B --> G["openAnnotate → editor (screenshot only)"]
+    B --> H["pinToScreen → pin window (screenshot only)"]
+    B --> I["openVideoEditor → editor (recording only)"]
 ```
 
-- `AfterCaptureAction` (4 cases) × `CaptureType` (2: screenshot, recording) — defined in `PreferencesManager.swift`.
-- Defaults: `showQuickAccess`, `copyFile`, `save` = on for both types; `openAnnotate` = off (opt-in, screenshot-only).
+- `AfterCaptureAction` (7 cases) × `CaptureType` (2: screenshot, recording) — defined in `PreferencesManager.swift`. Unsupported cells render as "—" in the matrix.
+- Defaults (on for both types unless noted): `showQuickAccess`, `copyFile`, `save`. Opt-in off: `uploadToCloud` (both), `openAnnotate` / `pinToScreen` (screenshot only), `openVideoEditor` (recording only).
 - Stored as JSON `[String: [String: Bool]]` under UserDefaults key `afterCaptureActions`; load failures fall back to seeded defaults.
 - Edited via `PreferencesAfterCaptureMatrixView.swift` (General → After Capture).
-- **Plan 089**: Generic BYO cloud uploads and their after-capture UI were retired. Local sharing and the selected ImgBB, ImageKit, or Cloudflare upload remain — see [CLOUD.md](CLOUD.md).
+- **Plan 089**: Generic BYO cloud providers were retired. `uploadToCloud` still runs for the selected ImgBB, ImageKit, or Cloudflare host — see [CLOUD.md](CLOUD.md) and [POST_CAPTURE.md](POST_CAPTURE.md).
 
 ## Related docs
 

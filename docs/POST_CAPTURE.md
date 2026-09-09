@@ -12,17 +12,20 @@ Post-capture routing is everything that happens after a capture file exists: des
 
 ## After-Capture Action Matrix
 
-`AfterCaptureAction` (`Cue/Features/Preferences/PreferencesManager.swift`) has 4 cases as of HEAD, each gated per `CaptureType` (`.screenshot`, `.recording`):
+`AfterCaptureAction` (`Cue/Features/Preferences/PreferencesManager.swift`) has **7** cases, each gated per `CaptureType` (`.screenshot`, `.recording`). Unsupported combinations render as "—" in Settings:
 
-| Action | Screenshot default | Recording default | Effect |
-| --- | --- | --- | --- |
-| `save` | ON | ON | Chooses export directory vs temp capture directory |
-| `showQuickAccess` | ON | ON | Adds a card to the Quick Access stack |
-| `copyFile` | ON | ON | Copies file/image to the pasteboard |
-| `openAnnotate` | OFF (screenshot only) | n/a | Auto-opens the Annotate editor |
+| Action | Screenshot | Recording | Default | Effect |
+| --- | --- | --- | --- | --- |
+| `save` | yes | yes | ON | Chooses export directory vs temp capture directory |
+| `showQuickAccess` | yes | yes | ON | Adds a card to the Quick Access stack |
+| `copyFile` | yes | yes | ON | Copies file/image to the pasteboard |
+| `uploadToCloud` | yes | yes | OFF | Uploads via the selected host and copies the link |
+| `openAnnotate` | yes | — | OFF | Auto-opens the Annotate editor |
+| `pinToScreen` | yes | — | OFF | Opens an always-on-top pin window |
+| `openVideoEditor` | — | yes | OFF | Auto-opens the Video Editor |
 
 - The matrix is stored as `[AfterCaptureAction: [CaptureType: Bool]]` JSON-encoded in `UserDefaults` under the `afterCaptureActions` key via `PreferencesManager`; unset entries fall back to the defaults above. See [`PREFERENCES.md`](PREFERENCES.md).
-- BYO cloud upload was retired by Plan 089. Post-capture actions are local save/copy/export; selected-provider image sharing remains an explicit action from Annotate and Quick Access. See [`CLOUD.md`](CLOUD.md) and [`CONFIGURATION.md`](CONFIGURATION.md).
+- Generic BYO cloud providers were retired by Plan 089. `uploadToCloud` still runs for the selected ImgBB, ImageKit, or Cloudflare host (skipped silently when none is configured). Manual share actions also remain on Annotate and Quick Access. See [`CLOUD.md`](CLOUD.md) and [`CONFIGURATION.md`](CONFIGURATION.md).
 
 ```mermaid
 flowchart TD
@@ -44,13 +47,19 @@ flowchart TD
     J --> K{"Show Quick Access enabled?"}
     K -->|Yes| L["QuickAccessManager.addScreenshot / addVideo"]
     K -->|No| M
-    L --> M{"pinToScreen requested?"}
+    L --> M{"pinToScreen enabled or requested (screenshot)?"}
     M -->|Yes| N["Pin window via QuickAccessManager"]
     M -->|No| O
     N --> O{"openAnnotate enabled (screenshot only)?"}
     O -->|Yes| P["AnnotateManager.openAnnotation"]
     O -->|No| Q
-    P --> Q["CaptureHistoryStore.addCapture"]
+    P --> Q{"uploadToCloud enabled?"}
+    Q -->|Yes| R["Selected host upload + copy link"]
+    Q -->|No| S
+    R --> S{"openVideoEditor enabled (recording only)?"}
+    S -->|Yes| T["VideoEditor open"]
+    S -->|No| U
+    T --> U["CaptureHistoryStore.addCapture"]
 ```
 
 ## Execution Order
@@ -61,9 +70,11 @@ flowchart TD
 2. **Preset auto-apply (screenshots)** — `ScreenshotPresetAutoApplier.applyDefaultPresetIfNeeded(to:)` checks the default Annotate canvas preset; when it changes the canvas it renders effects through the lightweight `AnnotateExporter.renderCanvasEffects(sourceImage:effects:)` path (no full `AnnotateState`), atomically rewrites the screenshot file, and returns `AnnotationSessionData` which is persisted via `AnnotationSessionStore` and cached on the Quick Access item so the capture reopens editable. See [`ANNOTATE.md`](ANNOTATE.md).
 3. **copyFile FIRST** — clipboard copy runs before any thumbnail generation, overlay presentation, or editor work so auto-copy is never blocked by slower UI actions.
 4. **showQuickAccess** — `QuickAccessManager.addScreenshot(url:)` / `addVideo(url:)`; skipped when `skipQuickAccess` is true (GIF two-step flow).
-5. **pinToScreen** — optional caller flag (inline annotate Pin): pins the existing Quick Access item or pins directly from URL.
+5. **pinToScreen** — screenshots only when the matrix toggle is on, or when the caller passes `pinToScreen: true` (inline annotate Pin); pins the existing Quick Access item or pins directly from URL.
 6. **openAnnotate** — screenshots only; opens through `AnnotateManager` with the Quick Access item when one exists, otherwise from the URL with preset session data.
-7. **History record** — screenshots read pixel dimensions via `CGImageSource`; videos read duration and track `naturalSize` via `AVURLAsset` (macOS 15 async load APIs with older fallbacks); `.gif` extension maps to the GIF history type.
+7. **uploadToCloud** — fire-and-forget upload through the selected host; copies the share link on success; skips silently when no provider is configured.
+8. **openVideoEditor** — recordings only; opens through the video-editor entry point with the Quick Access item when one exists.
+9. **History record** — screenshots read pixel dimensions via `CGImageSource`; videos read duration and track `naturalSize` via `AVURLAsset` (macOS 15 async load APIs with older fallbacks); `.gif` extension maps to the GIF history type.
 
 Batch variant `handleScreenshotCaptures(urls:)`: filters missing files, delegates single-URL batches to the normal path, auto-applies presets per file, copies all file URLs at once (`ClipboardHelper.copyFileURLs`), adds every file to Quick Access, opens only the **first** capture in Annotate, and records each file in history.
 
