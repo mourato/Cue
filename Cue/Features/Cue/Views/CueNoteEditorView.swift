@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct CueNoteEditorView: View {
@@ -34,11 +35,13 @@ struct CueNoteEditorView: View {
         .fixedSize(horizontal: false, vertical: true)
         .background {
             ZStack {
-                panelShape.fill(.regularMaterial)
+                panelShape.fill(Color(nsColor: .windowBackgroundColor))
                 panelDragSurface
             }
         }
         .clipShape(panelShape)
+        .overlay(panelShape.strokeBorder(Color.primary.opacity(0.2), lineWidth: 0.5))
+        .shadow(color: .black.opacity(0.22), radius: 12, x: 0, y: 4)
         .accessibilityHint(CueL10n.noteEditorDragHint)
         .onAppear { isFocused = true }
     }
