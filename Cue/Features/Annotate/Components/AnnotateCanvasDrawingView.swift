@@ -411,6 +411,7 @@ final class DrawingCanvasNSView: NSView {
         default:
             // Tool shortcuts — use configured shortcuts from AnnotateShortcutManager
             if !event.modifierFlags.contains(.command),
+               state.notinhasEditingNoteID == nil,
                let char = event.characters?.lowercased().first,
                let matchedTool = shortcutManager.tool(for: char) {
                 Task { @MainActor in

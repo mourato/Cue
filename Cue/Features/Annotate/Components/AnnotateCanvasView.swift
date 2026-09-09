@@ -609,6 +609,7 @@ struct AnnotateCanvasView: View {
     private func handleCanvasKeyPress(_ keyPress: KeyPress) -> KeyPress.Result {
         guard state.hasImage else { return .ignored }
         guard state.editingTextAnnotationId == nil else { return .ignored }
+        guard state.notinhasEditingNoteID == nil else { return .ignored }
 
         let disallowedModifiers: EventModifiers = [.command, .option, .control]
         guard keyPress.modifiers.intersection(disallowedModifiers).isEmpty else {
