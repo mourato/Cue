@@ -101,7 +101,7 @@ final class CueDeepLinkHandlerTests: XCTestCase {
             ("general", .general),
             ("capture", .capture),
             ("screen-recording", .screenRecording),
-            ("annotate", .general),
+            ("annotate", .capture),
             ("quick-access", .quickAccess),
             ("history", .history),
             ("shortcuts", .shortcuts),

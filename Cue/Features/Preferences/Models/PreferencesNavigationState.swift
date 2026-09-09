@@ -38,6 +38,10 @@ final class PreferencesNavigationState: ObservableObject {
             if raw == "permissions" {
                 return .advanced
             }
+            // Legacy Annotate destination now lives under Screenshot / Capture.
+            if raw == "annotate" {
+                return .capture
+            }
             return raw.flatMap(PreferencesTab.init(rawValue:)) ?? .general
         }()
         #if CUE_VIDEO_MODULE
