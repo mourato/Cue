@@ -49,13 +49,15 @@ struct PreferencesView: View {
         }
         .navigationSplitViewStyle(.balanced)
         .toolbar(removing: .title)
-        .preferencesHostingWindowChrome()
         .frame(
             minWidth: PreferencesWindowChrome.defaultWidth,
             idealWidth: PreferencesWindowChrome.defaultWidth,
             minHeight: PreferencesWindowChrome.defaultHeight,
             idealHeight: PreferencesWindowChrome.defaultHeight,
         )
+        .onAppear {
+            NotificationCenter.default.post(name: .cuePreferencesContentDidAppear, object: nil)
+        }
     }
 
     private var selectedTabBinding: Binding<PreferencesTab?> {

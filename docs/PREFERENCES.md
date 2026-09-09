@@ -6,7 +6,7 @@ Reference for the Settings window: sidebar structure, every section, and how pre
 
 - `PreferencesView` (`Cue/Features/Preferences/PreferencesView.swift`) — SwiftUI `NavigationSplitView` with a native sidebar, user-resizable with a 760×550 default/minimum (`PreferencesWindowChrome`), seven destinations when Video is off / eight with Screen Recording (no About/update/report destination; no dedicated Annotate or Permissions destination).
 - Selection driven by `PreferencesNavigationState.shared.selectedTab` (`Models/PreferencesNavigationState.swift`, `PreferencesTab` enum) — set programmatically from menu bar, deep links (`cue://settings?tab=`, see [SHORTCUTS.md](SHORTCUTS.md)), and the shortcut overlay. Legacy `annotate` deep links open **General**. Legacy `permissions` / `privacy` deep links and a persisted `permissions` selected tab open **Advanced**.
-- Presented through the `Settings` scene in `CueApp`; activation-policy dance handled by `AppStatusBarController` (see [APP_LIFECYCLE.md](APP_LIFECYCLE.md)).
+- Presented through the `Settings` scene in `CueApp`; activation-policy dance and AppKit window chrome (`PreferencesWindowChrome.apply`) are owned by `AppStatusBarController` when Preferences content appears (see [APP_LIFECYCLE.md](APP_LIFECYCLE.md)).
 
 ## Storage pattern
 
