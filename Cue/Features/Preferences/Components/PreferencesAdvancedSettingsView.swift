@@ -14,8 +14,6 @@ struct AdvancedSettingsView: View {
     @AppStorage(PreferencesKeys.screenshotAddRetinaSuffix) private var addRetinaSuffix = true
     @AppStorage(PreferencesKeys.clipboardCopyMode) private var clipboardCopyMode = ClipboardCopyMode.fileAndImage
         .rawValue
-    @AppStorage(PreferencesKeys.historyEnabled) private var historyEnabled = true
-    @AppStorage(PreferencesKeys.historyRetentionDays) private var historyRetentionDays = 30
     @AppStorage(PreferencesKeys.ocrLanguage) private var ocrLanguage = ""
     @AppStorage(PreferencesKeys.ocrKeepLineBreaks) private var keepOCRLineBreaks = true
     @AppStorage(PreferencesKeys.ocrLinkDetectionEnabled) private var detectOCRLinks = false
@@ -88,23 +86,6 @@ struct AdvancedSettingsView: View {
                     }
                     .labelsHidden()
                     .accessibilityLabel(L10n.PreferencesAdvanced.copyToClipboardTitle)
-                    .standardMenuPickerStyle()
-                    .fixedSize()
-                }
-            }
-
-            Section(L10n.PreferencesAdvanced.captureHistorySection) {
-                SettingRow(
-                    title: L10n.PreferencesAdvanced.keepHistoryTitle,
-                    description: L10n.PreferencesAdvanced.keepHistoryDescription,
-                ) {
-                    Picker("", selection: historyRetentionBinding) {
-                        ForEach(CaptureHistoryRetention.allCases) { option in
-                            Text(option.displayName).tag(option)
-                        }
-                    }
-                    .labelsHidden()
-                    .accessibilityLabel(L10n.PreferencesAdvanced.keepHistoryTitle)
                     .standardMenuPickerStyle()
                     .fixedSize()
                 }
@@ -329,18 +310,6 @@ struct AdvancedSettingsView: View {
                 .frame(width: 620, height: 260)
                 .padding()
         }
-    }
-
-    private var historyRetentionBinding: Binding<CaptureHistoryRetention> {
-        Binding(
-            get: { CaptureHistoryRetention(enabled: historyEnabled, days: historyRetentionDays) },
-            set: { option in
-                historyEnabled = option != .disabled
-                if let days = option.days {
-                    historyRetentionDays = days
-                }
-            },
-        )
     }
 
     private var disabledBackupActionHelp: String {

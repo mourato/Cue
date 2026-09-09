@@ -8371,6 +8371,16 @@ nonisolated enum L10n {
             defaultValue: "Retention",
             comment: "History settings section title for retention",
         )
+        static let enableHistoryTitle = string(
+            "preferences-history.enable-history-title",
+            defaultValue: "Keep history",
+            comment: "History settings master enable title",
+        )
+        static let enableHistoryDescription = string(
+            "preferences-history.enable-history-description",
+            defaultValue: "You can restore old files with the Capture History option from the menu bar.",
+            comment: "History settings master enable description",
+        )
         static let retentionDaysTitle = string(
             "preferences-history.retention-days-title",
             defaultValue: "Auto-Clear After",

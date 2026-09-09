@@ -77,8 +77,10 @@ second canonical design-system document.
 - Selected rectangles, including note rectangles, expose corner and midpoint
   side handles; a side drag changes one dimension while keeping the opposite
   edge fixed and respecting the minimum size.
-- The **Uploads** preferences destination owns both hosting-provider configuration and
-  image upload encoding controls. Upload optimization creates a temporary
+- The **Uploads** preferences destination owns hosting-provider configuration and
+  credentials. Image upload encoding (optimize / format / max dimension /
+  quality) uses shared defaults and `config.toml` `[uploads]` keys; it is not a
+  Settings control surface today. Upload optimization creates a temporary
   derivative for the provider; it never changes the local capture or the
   annotation source.
 - ImageKit video upload uses the configured plan limit with a 5% safety margin.
@@ -168,6 +170,9 @@ second canonical design-system document.
   desktop and All-In-One mode customization) and Annotate editor preferences.
   Legacy `annotate` settings deep links and a persisted `annotate` tab restore
   to Screenshot.
+- History preferences own the capture-history master enable (`history.enabled`)
+  together with retention days and max count. Advanced must not duplicate those
+  controls.
 - Scrolling-capture floats are content-only: the preview card shows the
   stitched image with no header, badge, caption, padding, or border (the
   image fills 100% of the card), and the control island shows only the

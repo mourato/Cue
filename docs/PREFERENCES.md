@@ -65,9 +65,9 @@ Screen Recording settings view for the current control set.
 
 - **Floating Panel**: enable (`history.floating.enabled`), Panel Position (`history.floating.position`).
 - **Display**: Default Filter (all/screenshots/videos/gifs), Background Style (`history.backgroundStyle`, thumbnail picker).
-- **Retention**: Retention Days 0–90, 0 = keep forever (`history.retentionDays`), Max Count 0–1000, 0 = unlimited (`history.maxCount`).
+- **Retention**: Keep History master toggle (`history.enabled`, default on), Retention Days 0–90, 0 = keep forever (`history.retentionDays`), Max Count 0–1000, 0 = unlimited (`history.maxCount`). Days and max count are disabled when Keep History is off.
 - **Storage**: capture storage size + Open Capture Storage (`CaptureStorageManager`), Clear History with confirmation (`HistoryWindowController.deleteRecords`).
-- Master history enable (`history.enabled`) seeded on; see [APP_LIFECYCLE.md](APP_LIFECYCLE.md) for seeded defaults.
+- Master history enable is owned only here (not duplicated under Advanced); see [APP_LIFECYCLE.md](APP_LIFECYCLE.md) for seeded defaults.
 
 ### Shortcuts (`PreferencesShortcutsSettingsView.swift`)
 
@@ -78,7 +78,23 @@ Screen Recording settings view for the current control set.
 
 ### Uploads (`PreferencesCloudSettingsView.swift`)
 
-The **Uploads** section owns provider selection (ImgBB, ImageKit, or Cloudflare Worker), image optimization/derivative settings, and the selected provider credential. Secrets are stored only in provider-scoped Keychain items and are not exported. Existing users retain ImgBB unless they explicitly select another provider; invalid or missing selection safely uses ImgBB. GIFs can be uploaded through either provider; MOV/MP4/M4V uploads are supported by ImageKit or Cloudflare. When ImageKit is selected, the plan picker controls the local video upload target (Free 100 MB, Lite 300 MB, Pro 2 GB, or custom) because ImageKit does not expose plan limits through its API. Cloudflare uses a fixed 95 MiB client target. The Cloudflare documentation link covers the BYO Worker setup; Cue does not deploy a companion Worker. UploadThing is unavailable. BYO provider settings, usage, password, transfer, and upload-history controls remain retired. See [CLOUD.md](CLOUD.md).
+The **Uploads** Settings destination owns provider selection (ImgBB, ImageKit, or
+Cloudflare Worker) and the selected provider credential. Image upload encoding
+defaults (`uploads.optimizeImages`, format, maximum dimension, JPEG quality) are
+applied by the upload pipeline and are editable via `config.toml` /
+Import–Export — not exposed as Settings controls today; see
+[CONFIGURATION.md](CONFIGURATION.md) and [ADR 073](adr/073-upload-image-derivatives.md).
+Secrets stay in provider-scoped Keychain items and are not exported. Existing
+users retain ImgBB unless they explicitly select another provider; invalid or
+missing selection safely uses ImgBB. GIFs can be uploaded through either
+provider; MOV/MP4/M4V uploads are supported by ImageKit or Cloudflare. When
+ImageKit is selected, the plan picker controls the local video upload target
+(Free 100 MB, Lite 300 MB, Pro 2 GB, or custom) because ImageKit does not expose
+plan limits through its API. Cloudflare uses a fixed 95 MiB client target. The
+Cloudflare documentation link covers the BYO Worker setup; Cue does not deploy a
+companion Worker. UploadThing is unavailable. BYO provider settings, usage,
+password, transfer, and upload-history controls remain retired. See
+[CLOUD.md](CLOUD.md).
 
 ### Advanced (`PreferencesAdvancedSettingsView.swift`)
 
@@ -102,7 +118,7 @@ flowchart LR
 - `AfterCaptureAction` (4 cases) × `CaptureType` (2: screenshot, recording) — defined in `PreferencesManager.swift`.
 - Defaults: `showQuickAccess`, `copyFile`, `save` = on for both types; `openAnnotate` = off (opt-in, screenshot-only).
 - Stored as JSON `[String: [String: Bool]]` under UserDefaults key `afterCaptureActions`; load failures fall back to seeded defaults.
-- Edited via `PreferencesAfterCaptureMatrixView.swift` (Capture → After Capture section).
+- Edited via `PreferencesAfterCaptureMatrixView.swift` (General → After Capture).
 - **Plan 089**: Generic BYO cloud uploads and their after-capture UI were retired. Local sharing and the selected ImgBB, ImageKit, or Cloudflare upload remain — see [CLOUD.md](CLOUD.md).
 
 ## Related docs

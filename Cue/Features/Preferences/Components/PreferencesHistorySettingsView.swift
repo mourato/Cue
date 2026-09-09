@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HistorySettingsView: View {
     @ObservedObject private var manager = HistoryFloatingManager.shared
+    @AppStorage(PreferencesKeys.historyEnabled) private var historyEnabled = true
     @AppStorage(PreferencesKeys.historyRetentionDays) private var historyRetentionDays = 30
     @AppStorage(PreferencesKeys.historyMaxCount) private var historyMaxCount = 500
     @AppStorage(PreferencesKeys.historyBackgroundStyle) private var historyBackgroundStyle: HistoryBackgroundStyle =
@@ -76,6 +77,15 @@ struct HistorySettingsView: View {
 
             Section(L10n.PreferencesHistory.retentionSection) {
                 SettingRow(
+                    title: L10n.PreferencesHistory.enableHistoryTitle,
+                    description: L10n.PreferencesHistory.enableHistoryDescription,
+                ) {
+                    Toggle("", isOn: $historyEnabled)
+                        .labelsHidden()
+                        .accessibilityLabel(L10n.PreferencesHistory.enableHistoryTitle)
+                }
+
+                SettingRow(
                     title: L10n.PreferencesHistory.retentionDaysTitle,
                     description: retentionDaysDescription,
                 ) {
@@ -94,6 +104,7 @@ struct HistorySettingsView: View {
                         specialLabel: L10n.PreferencesHistory.keepForever,
                     )
                 }
+                .disabled(!historyEnabled)
 
                 SettingRow(
                     title: L10n.PreferencesHistory.maxCountTitle,
@@ -113,6 +124,7 @@ struct HistorySettingsView: View {
                         specialLabel: L10n.Common.unlimited,
                     )
                 }
+                .disabled(!historyEnabled)
             }
 
             Section(L10n.PreferencesHistory.storageSection) {
