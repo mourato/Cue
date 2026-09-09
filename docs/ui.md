@@ -181,11 +181,14 @@ second canonical design-system document.
 
 - Preferences setting rows are plain by default: no leading icons, `.body`
   regular titles, and `.caption` descriptions only when they add relevant
-  context beyond the title. Icons are reserved for rare cases where they
-  communicate status or a direct interaction affordance; drag handles remain
-  available for reorderable lists. Every `Toggle`, `Picker`, `TextField`, and
-  `Slider` in a row carries an explicit `.accessibilityLabel` (the row title)
-  even when `.labelsHidden()` hides its visual label.
+  context beyond the title. Prefer `Section` footers for shared guidance and
+  risk notes (format caveats, scrolling tips) instead of tinted
+  `info.circle` / warning callout stacks inside the form. Icons are reserved
+  for rare cases where they communicate status or a direct interaction
+  affordance; drag handles remain available for reorderable lists. Every
+  `Toggle`, `Picker`, `TextField`, and `Slider` in a row carries an explicit
+  `.accessibilityLabel` (the row title) even when `.labelsHidden()` hides its
+  visual label.
 - Menu-style `Picker`s in Preferences, compact editor sidebars, Cloud, and
   Quick Access upload options use `standardMenuPickerStyle()` (`.menu`) with
   the system's default control metrics, so their labels retain normal text
