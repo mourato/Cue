@@ -8,11 +8,17 @@
 import AppKit
 import SwiftUI
 
+extension Notification.Name {
+    /// Posted when Preferences content appears so the app shell can apply window chrome.
+    static let cuePreferencesContentDidAppear = Notification.Name("cuePreferencesContentDidAppear")
+}
+
 enum PreferencesWindowChrome {
     static let defaultWidth: CGFloat = 760
     static let defaultHeight: CGFloat = 550
 
-    /// Settings scenes often ignore SwiftUI `.windowToolbarStyle`. Force the
+    /// AppKit Preferences window chrome owned by the app shell.
+    /// Settings scenes often ignore SwiftUI `.windowToolbarStyle`; apply the
     /// compact unified toolbar so traffic lights and the sidebar toggle share
     /// one row, and the detail column does not reserve an empty title band.
     /// Also keep the window user-resizable with the documented minimum size.
@@ -27,31 +33,7 @@ enum PreferencesWindowChrome {
     }
 }
 
-/// Resolves the hosting `NSWindow` for Preferences and applies compact chrome.
-private struct PreferencesHostingWindowConfigurator: NSViewRepresentable {
-    func makeNSView(context _: Context) -> NSView {
-        let view = NSView()
-        scheduleApply(from: view)
-        return view
-    }
-
-    func updateNSView(_ nsView: NSView, context _: Context) {
-        scheduleApply(from: nsView)
-    }
-
-    private func scheduleApply(from view: NSView) {
-        DispatchQueue.main.async {
-            PreferencesWindowChrome.apply(to: view.window)
-        }
-    }
-}
-
 extension View {
-    /// Applies AppKit Preferences window chrome to the hosting settings window.
-    func preferencesHostingWindowChrome() -> some View {
-        background(PreferencesHostingWindowConfigurator())
-    }
-
     /// Grouped Preferences form with a tighter top content margin under the toolbar.
     func preferencesFormStyle() -> some View {
         formStyle(.grouped)

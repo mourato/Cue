@@ -53,6 +53,7 @@ final class AppStatusBarController: ObservableObject {
         syncStatusItemVisibility()
         buildMenu()
         observeRecordingState()
+        observePreferencesWindowChrome()
 
         // Pre-allocate area selection windows for instant activation (<150ms)
         AreaSelectionController.shared.prepareWindowPool()
@@ -984,6 +985,7 @@ final class AppStatusBarController: ObservableObject {
                 !existingWindowNumbers.contains($0.windowNumber)
         }) {
             trackedPreferencesWindow = candidate
+            PreferencesWindowChrome.apply(to: candidate)
             DiagnosticLogger.shared.log(
                 .debug,
                 .preferences,
@@ -1007,6 +1009,23 @@ final class AppStatusBarController: ObservableObject {
         }
         pendingPreferencesWindowTrackingWorkItem = workItem
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: workItem)
+    }
+
+    private func observePreferencesWindowChrome() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(preferencesContentDidAppear(_:)),
+            name: .cuePreferencesContentDidAppear,
+            object: nil,
+        )
+    }
+
+    @objc private func preferencesContentDidAppear(_: Notification) {
+        if let trackedPreferencesWindow {
+            PreferencesWindowChrome.apply(to: trackedPreferencesWindow)
+            return
+        }
+        PreferencesWindowChrome.apply(to: NSApp.keyWindow)
     }
 
     private func syncTrackedPreferencesWindowExclusion() {

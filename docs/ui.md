@@ -160,7 +160,9 @@ second canonical design-system document.
   (`PreferencesWindowChrome`), uses a compact unified toolbar (traffic lights
   aligned with the sidebar toggle), and destination `Form`s use
   `preferencesFormStyle()` so the first section sits close under the toolbar
-  without an empty title band.
+  without an empty title band. AppKit chrome that Settings scenes ignore is
+  applied by `AppStatusBarController` when Preferences content appears, not by
+  a leaf `NSViewRepresentable`.
 - Scrolling-capture floats are content-only: the preview card shows the
   stitched image with no header, badge, caption, padding, or border (the
   image fills 100% of the card), and the control island shows only the

@@ -173,10 +173,9 @@ struct QuickAccessCardView: View {
         .onTapGesture(count: 2) {
             handleDoubleClick()
         }
-        .background(
-            QuickAccessContextMenuPresenter(entries: quickAccessContextMenuEntries)
-                .frame(width: scaledWidth, height: scaledHeight),
-        )
+        .contextMenu {
+            quickAccessContextMenuContent
+        }
         .overlay(dragInteractionBridge.frame(width: scaledWidth, height: scaledHeight))
         .onDisappear {
             isDragging = false
@@ -729,35 +728,40 @@ struct QuickAccessCardView: View {
             .shadow(color: Color.black.opacity(0.3), radius: 4, x: 0, y: 2)
     }
 
-    private var quickAccessContextMenuEntries: [QuickAccessContextMenuEntry] {
+    private var contextMenuActions: [QuickAccessActionKind] {
         guard canPerformCardActions else { return [] }
-
-        let contextActions = orderedEnabledActions.filter {
+        return orderedEnabledActions.filter {
             isActionAvailable($0, on: .contextMenu)
         }
-        let orderedContextActions = contextActions
-        var entries: [QuickAccessContextMenuEntry] = []
-        var insertedDestructiveSeparator = false
+    }
 
-        for action in orderedContextActions {
-            if action.isContextMenuDestructiveGroup, !insertedDestructiveSeparator {
-                if !entries.isEmpty {
-                    entries.append(.separator)
-                }
-                insertedDestructiveSeparator = true
+    @ViewBuilder
+    private var quickAccessContextMenuContent: some View {
+        let actions = contextMenuActions
+        let regularActions = actions.filter { !$0.isContextMenuDestructiveGroup }
+        let destructiveActions = actions.filter(\.isContextMenuDestructiveGroup)
+
+        ForEach(regularActions, id: \.self) { action in
+            Button {
+                performAction(action)
+            } label: {
+                Label(actionTitle(for: action), systemImage: actionIcon(for: action))
             }
-
-            entries.append(
-                .action(
-                    title: actionTitle(for: action),
-                    systemImage: actionIcon(for: action),
-                    isEnabled: isActionEnabled(action),
-                    action: { performAction(action) },
-                ),
-            )
+            .disabled(!isActionEnabled(action))
         }
 
-        return entries
+        if !regularActions.isEmpty, !destructiveActions.isEmpty {
+            Divider()
+        }
+
+        ForEach(destructiveActions, id: \.self) { action in
+            Button(role: .destructive) {
+                performAction(action)
+            } label: {
+                Label(actionTitle(for: action), systemImage: actionIcon(for: action))
+            }
+            .disabled(!isActionEnabled(action))
+        }
     }
 
     // MARK: - ImgBB Sharing
@@ -896,208 +900,6 @@ private struct QuickAccessCardScreenBoundsReporter: NSViewRepresentable {
             let screenFrame = window.convertToScreen(convert(bounds, to: nil))
             onResolveScreenFrame?(screenFrame)
         }
-    }
-}
-
-// MARK: - Context Menu
-
-private enum QuickAccessContextMenuEntry {
-    case action(
-        title: String,
-        systemImage: String,
-        isEnabled: Bool = true,
-        action: () -> Void,
-    )
-    case separator
-}
-
-private struct QuickAccessContextMenuPresenter: NSViewRepresentable {
-    let entries: [QuickAccessContextMenuEntry]
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(entries: entries)
-    }
-
-    func makeNSView(context: Context) -> ContextMenuHostView {
-        let view = ContextMenuHostView()
-        view.coordinator = context.coordinator
-        return view
-    }
-
-    func updateNSView(_ nsView: ContextMenuHostView, context: Context) {
-        context.coordinator.entries = entries
-        nsView.coordinator = context.coordinator
-    }
-
-    final class Coordinator: NSObject {
-        var entries: [QuickAccessContextMenuEntry]
-
-        init(entries: [QuickAccessContextMenuEntry]) {
-            self.entries = entries
-        }
-
-        var hasMenuItems: Bool {
-            entries.contains { entry in
-                if case .action = entry {
-                    return true
-                }
-                return false
-            }
-        }
-
-        func showMenu(for event: NSEvent, in view: NSView) {
-            guard hasMenuItems else { return }
-            guard let window = view.window else { return }
-
-            let menu = NSMenu()
-            menu.autoenablesItems = false
-
-            for entry in entries {
-                switch entry {
-                case .action(let title, let systemImage, let isEnabled, let action):
-                    let item = NSMenuItem(title: title, action: #selector(performMenuAction(_:)), keyEquivalent: "")
-                    item.target = self
-                    item.isEnabled = isEnabled
-                    item.image = NSImage(systemSymbolName: systemImage, accessibilityDescription: title)
-                    item.representedObject = QuickAccessContextMenuAction(action)
-
-                    menu.addItem(item)
-                case .separator:
-                    menu.addItem(.separator())
-                }
-            }
-
-            menu.update()
-
-            let screenPoint = window.convertPoint(toScreen: event.locationInWindow)
-            let menuLocation = menuTopLeftLocationWithCursorNearTailItem(
-                from: screenPoint,
-                menu: menu,
-                window: window,
-            )
-            menu.popUp(positioning: nil, at: menuLocation, in: nil)
-        }
-
-        @objc private func performMenuAction(_ sender: NSMenuItem) {
-            guard let action = sender.representedObject as? QuickAccessContextMenuAction else { return }
-            action.perform()
-        }
-
-        private func menuTopLeftLocationWithCursorNearTailItem(
-            from point: NSPoint,
-            menu: NSMenu,
-            window: NSWindow,
-        ) -> NSPoint {
-            let targetIndex = menuItemIndexNearCursor(in: menu)
-            let targetCenterY = verticalOffsetToItemCenter(at: targetIndex, in: menu)
-            let menuSize = menuSize(for: menu)
-            let preferredPoint = NSPoint(
-                x: point.x - 28,
-                y: point.y + targetCenterY,
-            )
-            let screen = window.screen ?? NSScreen.screens.first
-
-            guard let visibleFrame = screen?.visibleFrame else {
-                return preferredPoint
-            }
-
-            return NSPoint(
-                x: min(max(preferredPoint.x, visibleFrame.minX + 8), visibleFrame.maxX - menuSize.width - 8),
-                y: min(max(preferredPoint.y, visibleFrame.minY + menuSize.height + 8), visibleFrame.maxY - 8),
-            )
-        }
-
-        private func menuItemIndexNearCursor(in menu: NSMenu) -> Int {
-            let candidateIndex = max(0, menu.items.count - 2)
-            if !menu.items[candidateIndex].isSeparatorItem {
-                return candidateIndex
-            }
-
-            return menu.items.lastIndex { !$0.isSeparatorItem } ?? 0
-        }
-
-        private func verticalOffsetToItemCenter(at targetIndex: Int, in menu: NSMenu) -> CGFloat {
-            let rowsAbove = menu.items.prefix(targetIndex).reduce(6) { partial, item in
-                partial + menuItemHeight(item)
-            }
-            return rowsAbove + menuItemHeight(menu.items[targetIndex]) / 2
-        }
-
-        private func menuItemHeight(_ item: NSMenuItem) -> CGFloat {
-            item.isSeparatorItem ? 9 : 22
-        }
-
-        private func menuSize(for menu: NSMenu) -> NSSize {
-            let measured = menu.size
-            guard measured.width > 0, measured.height > 0 else {
-                let height = menu.items.reduce(12) { partial, item in
-                    partial + menuItemHeight(item)
-                }
-                return NSSize(width: 220, height: height)
-            }
-            return measured
-        }
-    }
-
-    @MainActor
-    final class ContextMenuHostView: NSView {
-        weak var coordinator: Coordinator?
-        private var eventMonitor: Any?
-
-        override func viewDidMoveToWindow() {
-            super.viewDidMoveToWindow()
-            updateEventMonitor()
-        }
-
-        isolated deinit {
-            if let eventMonitor {
-                NSEvent.removeMonitor(eventMonitor)
-            }
-        }
-
-        private func updateEventMonitor() {
-            if let eventMonitor {
-                NSEvent.removeMonitor(eventMonitor)
-                self.eventMonitor = nil
-            }
-
-            guard window != nil else { return }
-
-            eventMonitor = NSEvent.addLocalMonitorForEvents(matching: [
-                .rightMouseDown,
-                .leftMouseDown,
-            ]) { [weak self] event in
-                guard let self else { return event }
-                return handleMouseDown(event)
-            }
-        }
-
-        private func handleMouseDown(_ event: NSEvent) -> NSEvent? {
-            guard event.window === window else { return event }
-            guard isContextClick(event) else { return event }
-            guard bounds.contains(convert(event.locationInWindow, from: nil)) else { return event }
-            guard coordinator?.hasMenuItems == true else { return event }
-
-            coordinator?.showMenu(for: event, in: self)
-            return nil
-        }
-
-        private func isContextClick(_ event: NSEvent) -> Bool {
-            event.type == .rightMouseDown || (event.type == .leftMouseDown && event.modifierFlags.contains(.control))
-        }
-    }
-}
-
-private final class QuickAccessContextMenuAction: NSObject {
-    private let action: () -> Void
-
-    init(_ action: @escaping () -> Void) {
-        self.action = action
-        super.init()
-    }
-
-    func perform() {
-        action()
     }
 }
 
