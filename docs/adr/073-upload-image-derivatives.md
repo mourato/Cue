@@ -22,10 +22,9 @@ to ImgBB or ImageKit:
 - use WebP when JPEG is selected for an image with transparency.
 
 Those values live under `PreferencesKeys.upload*` / `config.toml` `[uploads]`
-and are read by `CueUploadEncodingSettings`. The **Uploads** Settings destination
-configures provider and credentials only; it does not currently expose encoding
-controls in the UI. Operators change encoding through configuration import /
-`config.toml` until a Settings surface is added.
+and are read by `CueUploadEncodingSettings`. Settings → Uploads exposes the same
+controls via `PreferencesUploadEncodingSettingsSection` (optimize, format,
+maximum dimension, quality).
 
 Static image uploads receive a temporary derivative. GIFs and supported videos
 pass through unchanged so animation and playback are preserved. The original

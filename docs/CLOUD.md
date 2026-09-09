@@ -21,18 +21,18 @@ explicit action for the selected provider. Capture history and
 `DatabaseManager` remain intact. Direct credentials are intended for this
 personal app only; image hosts are not a replacement for the retired generic
 cloud architecture.
-Image upload encoding (optimize / format / max dimension / quality) follows
-`config.toml` `[uploads]` defaults — see [CONFIGURATION.md](CONFIGURATION.md)
-and [ADR 073](adr/073-upload-image-derivatives.md); Settings → Uploads does not
-expose those controls. Cloudflare uses a fixed 95 MiB client target; the Worker
-streams uploads to R2 and serves a minimal public image/video page. The Worker
-URL is stored in UserDefaults and its upload token only in Keychain. Cue links
-to Cloudflare's official Worker documentation; the Worker implementation and
-deployment remain the user's responsibility. ImageKit does not expose the
-account plan's upload limit through the API. The Uploads preferences therefore
-let the user select Free (100 MB), Lite (300 MB), Pro (2 GB), or enter a custom
-limit for an adjustable plan. Cue uses 95% of that value as the preflight target
-so the multipart request has headroom.
+Image upload encoding (optimize / format / max dimension / quality) is editable
+in Settings → Uploads and via `config.toml` `[uploads]` — see
+[CONFIGURATION.md](CONFIGURATION.md) and
+[ADR 073](adr/073-upload-image-derivatives.md). Cloudflare uses a fixed 95 MiB
+client target; the Worker streams uploads to R2 and serves a minimal public
+image/video page. The Worker URL is stored in UserDefaults and its upload token
+only in Keychain. Cue links to Cloudflare's official Worker documentation; the
+Worker implementation and deployment remain the user's responsibility. ImageKit
+does not expose the account plan's upload limit through the API. The Uploads
+preferences therefore let the user select Free (100 MB), Lite (300 MB), Pro
+(2 GB), or enter a custom limit for an adjustable plan. Cue uses 95% of that
+value as the preflight target so the multipart request has headroom.
 Legacy cloud keychain readers and persisted `cloudURL`/`cloudKey` fields remain
 for migration and decoding compatibility.
 
