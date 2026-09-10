@@ -1,13 +1,13 @@
 //
-//  RecordingRegionOverlayWindow.swift
+//  CaptureSelectionOverlayWindow.swift
 //  Notinhas
 //
-//  Persistent overlay window showing the recording region highlight
+//  Persistent overlay window showing the capture / recording region highlight
 //
 
 import AppKit
 
-enum RecordingRegionOverlayGuidanceTone {
+enum CaptureSelectionOverlayGuidanceTone {
     case neutral
     case active
     case warning
@@ -27,15 +27,15 @@ enum RecordingRegionOverlayGuidanceTone {
     }
 }
 
-struct RecordingRegionOverlayGuidance {
+struct CaptureSelectionOverlayGuidance {
     let title: String
     let detail: String?
-    let tone: RecordingRegionOverlayGuidanceTone
+    let tone: CaptureSelectionOverlayGuidanceTone
 }
 
 /// Dirty-rect math for highlight updates. Exposed for the reselection hitch regression:
 /// collapsing a large remembered rect before the first drag keeps this union small.
-enum RecordingRegionOverlayInvalidation {
+enum CaptureSelectionOverlayInvalidation {
     /// cornerHandleLength + margin
     static let handlePadding: CGFloat = 25
 
@@ -45,36 +45,36 @@ enum RecordingRegionOverlayInvalidation {
     }
 }
 
-// MARK: - RecordingRegionOverlayDelegate
+// MARK: - CaptureSelectionOverlayDelegate
 
 /// Delegate protocol for overlay interaction events
 @MainActor
-protocol RecordingRegionOverlayDelegate: AnyObject {
-    func overlayDidRequestReselection(_ overlay: RecordingRegionOverlayWindow)
-    func overlay(_ overlay: RecordingRegionOverlayWindow, didMoveRegionTo rect: CGRect)
-    func overlayDidFinishMoving(_ overlay: RecordingRegionOverlayWindow)
-    func overlay(_ overlay: RecordingRegionOverlayWindow, didReselectWithRect rect: CGRect)
+protocol CaptureSelectionOverlayDelegate: AnyObject {
+    func overlayDidRequestReselection(_ overlay: CaptureSelectionOverlayWindow)
+    func overlay(_ overlay: CaptureSelectionOverlayWindow, didMoveRegionTo rect: CGRect)
+    func overlayDidFinishMoving(_ overlay: CaptureSelectionOverlayWindow)
+    func overlay(_ overlay: CaptureSelectionOverlayWindow, didReselectWithRect rect: CGRect)
     func overlay(
-        _ overlay: RecordingRegionOverlayWindow,
+        _ overlay: CaptureSelectionOverlayWindow,
         didResizeRegionTo rect: CGRect,
         modifiers: NSEvent.ModifierFlags,
     )
-    func overlayDidFinishResizing(_ overlay: RecordingRegionOverlayWindow)
+    func overlayDidFinishResizing(_ overlay: CaptureSelectionOverlayWindow)
 }
 
-// MARK: - RecordingRegionOverlayWindow
+// MARK: - CaptureSelectionOverlayWindow
 
 /// Overlay panel showing the recording region highlight during recording
 /// Uses NSPanel with .nonactivatingPanel to prevent background windows from deactivating
 @MainActor
-final class RecordingRegionOverlayWindow: NSPanel {
-    weak var interactionDelegate: RecordingRegionOverlayDelegate?
+final class CaptureSelectionOverlayWindow: NSPanel {
+    weak var interactionDelegate: CaptureSelectionOverlayDelegate?
 
-    private let overlayView: RecordingRegionOverlayView
+    private let overlayView: CaptureSelectionOverlayView
     private var receivesKeyboardInput = false
 
     init(screen: NSScreen, highlightRect: CGRect) {
-        overlayView = RecordingRegionOverlayView(
+        overlayView = CaptureSelectionOverlayView(
             frame: screen.frame,
             highlightRect: highlightRect,
         )
@@ -125,7 +125,7 @@ final class RecordingRegionOverlayWindow: NSPanel {
         // Dirty-rect invalidation: only redraw the union of old + new positions
         // with padding for resize handles and border width, instead of the entire
         // full-screen view (which can be 15M+ pixels on 4K/5K).
-        let dirtyRect = RecordingRegionOverlayInvalidation.dirtyRect(
+        let dirtyRect = CaptureSelectionOverlayInvalidation.dirtyRect(
             from: oldLocalRect,
             to: newLocalRect,
         )
@@ -136,7 +136,7 @@ final class RecordingRegionOverlayWindow: NSPanel {
         overlayView.boundarySnapGuides = guides
     }
 
-    func updateGuidance(_ guidance: RecordingRegionOverlayGuidance?) {
+    func updateGuidance(_ guidance: CaptureSelectionOverlayGuidance?) {
         overlayView.guidance = guidance
     }
 
@@ -230,10 +230,10 @@ final class RecordingRegionOverlayWindow: NSPanel {
     }
 }
 
-// MARK: - RecordingRegionOverlayView
+// MARK: - CaptureSelectionOverlayView
 
 /// View that draws the dimmed overlay with highlighted recording region
-final class RecordingRegionOverlayView: NSView {
+final class CaptureSelectionOverlayView: NSView {
     var highlightRect: CGRect
     var showBorder: Bool = true
     var drawsContinuousBorder: Bool = true
@@ -246,7 +246,7 @@ final class RecordingRegionOverlayView: NSView {
         }
     }
 
-    var guidance: RecordingRegionOverlayGuidance? {
+    var guidance: CaptureSelectionOverlayGuidance? {
         didSet {
             needsDisplay = true
         }
@@ -258,7 +258,7 @@ final class RecordingRegionOverlayView: NSView {
         }
     }
 
-    weak var overlayWindow: RecordingRegionOverlayWindow?
+    weak var overlayWindow: CaptureSelectionOverlayWindow?
 
     // Drag state
     private var isDragging = false
@@ -465,7 +465,7 @@ final class RecordingRegionOverlayView: NSView {
 
 // MARK: - Drawing helpers (continued)
 
-extension RecordingRegionOverlayView {
+extension CaptureSelectionOverlayView {
     private func calculateResizedRect(
         handle: RecordingResizeHandle,
         delta: CGPoint,
@@ -831,7 +831,7 @@ extension RecordingRegionOverlayView {
                     borderPath.stroke()
                 }
 
-                drawRecordingResizeHandles(for: clampedRect)
+                drawSelectionResizeHandles(for: clampedRect)
             }
         }
 
@@ -866,7 +866,7 @@ extension RecordingRegionOverlayView {
         guidePath.stroke()
     }
 
-    private func drawGuidance(_ guidance: RecordingRegionOverlayGuidance, in rect: CGRect) {
+    private func drawGuidance(_ guidance: CaptureSelectionOverlayGuidance, in rect: CGRect) {
         let horizontalInset = min(max(16, rect.width * 0.08), 28)
         let availableWidth = rect.width - horizontalInset * 2
         guard availableWidth >= 120 else { return }
@@ -976,7 +976,7 @@ extension RecordingRegionOverlayView {
         }
     }
 
-    private func drawRecordingResizeHandles(for rect: CGRect) {
+    private func drawSelectionResizeHandles(for rect: CGRect) {
         let colors = CaptureSelectionChromeAppearance
             .colors(for: CaptureSelectionChromeAppearanceContext(backdropLuma: nil))
 
@@ -1063,3 +1063,12 @@ extension RecordingRegionOverlayView {
         sizeText.draw(at: CGPoint(x: textRect.minX + 4, y: textRect.minY + 2), withAttributes: attributes)
     }
 }
+
+// MARK: - Backwards Compatibility Aliases
+
+typealias RecordingRegionOverlayWindow = CaptureSelectionOverlayWindow
+typealias RecordingRegionOverlayView = CaptureSelectionOverlayView
+typealias RecordingRegionOverlayDelegate = CaptureSelectionOverlayDelegate
+typealias RecordingRegionOverlayGuidance = CaptureSelectionOverlayGuidance
+typealias RecordingRegionOverlayGuidanceTone = CaptureSelectionOverlayGuidanceTone
+typealias RecordingRegionOverlayInvalidation = CaptureSelectionOverlayInvalidation

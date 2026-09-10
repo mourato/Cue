@@ -16,7 +16,7 @@ final class AllInOneSelectionRefinementController: NSObject {
     var cursorExclusionFrames: () -> [CGRect] = { [] }
 
     private var currentRect: CGRect
-    private var regionOverlayWindows: [ObjectIdentifier: RecordingRegionOverlayWindow] = [:]
+    private var regionOverlayWindows: [ObjectIdentifier: CaptureSelectionOverlayWindow] = [:]
     private var cursorTrackingTimer: Timer?
     private var keyboardOwnerOverlayID: ObjectIdentifier?
     private var localEscapeMonitor: Any?
@@ -145,8 +145,8 @@ final class AllInOneSelectionRefinementController: NSObject {
 
     // MARK: - Overlays
 
-    private func makeRegionOverlay(for screen: NSScreen) -> RecordingRegionOverlayWindow {
-        let overlay = RecordingRegionOverlayWindow(screen: screen, highlightRect: currentRect)
+    private func makeRegionOverlay(for screen: NSScreen) -> CaptureSelectionOverlayWindow {
+        let overlay = CaptureSelectionOverlayWindow(screen: screen, highlightRect: currentRect)
         overlay.setDrawsContinuousBorder(false)
         overlay.updateBoundarySnapGuides(boundarySnapGuides)
         overlay.interactionDelegate = self
@@ -306,7 +306,7 @@ final class AllInOneSelectionRefinementController: NSObject {
         semanticProvider.clearCache()
     }
 
-    private func beginResizeIfNeeded(with proposedRect: CGRect, overlay: RecordingRegionOverlayWindow) {
+    private func beginResizeIfNeeded(with proposedRect: CGRect, overlay: CaptureSelectionOverlayWindow) {
         guard resizeStartRect == nil else { return }
         resizeStartRect = currentRect
         if let recordingHandle = overlay.currentResizeHandle {
@@ -585,25 +585,25 @@ final class AllInOneSelectionRefinementController: NSObject {
     }
 }
 
-// MARK: - RecordingRegionOverlayDelegate
+// MARK: - CaptureSelectionOverlayDelegate
 
-extension AllInOneSelectionRefinementController: RecordingRegionOverlayDelegate {
-    func overlayDidRequestReselection(_: RecordingRegionOverlayWindow) {}
+extension AllInOneSelectionRefinementController: CaptureSelectionOverlayDelegate {
+    func overlayDidRequestReselection(_: CaptureSelectionOverlayWindow) {}
 
-    func overlay(_: RecordingRegionOverlayWindow, didMoveRegionTo rect: CGRect) {
+    func overlay(_: CaptureSelectionOverlayWindow, didMoveRegionTo rect: CGRect) {
         updateRect(rect)
     }
 
-    func overlayDidFinishMoving(_: RecordingRegionOverlayWindow) {
+    func overlayDidFinishMoving(_: CaptureSelectionOverlayWindow) {
         finishInteraction(with: currentRect)
     }
 
-    func overlay(_: RecordingRegionOverlayWindow, didReselectWithRect rect: CGRect) {
+    func overlay(_: CaptureSelectionOverlayWindow, didReselectWithRect rect: CGRect) {
         finishInteraction(with: rect)
     }
 
     func overlay(
-        _ overlay: RecordingRegionOverlayWindow,
+        _ overlay: CaptureSelectionOverlayWindow,
         didResizeRegionTo rect: CGRect,
         modifiers: NSEvent.ModifierFlags,
     ) {
@@ -618,7 +618,7 @@ extension AllInOneSelectionRefinementController: RecordingRegionOverlayDelegate 
         updateRect(aspectLocked ? aspectLockedResizeRect(from: snappedRect) : snappedRect)
     }
 
-    func overlayDidFinishResizing(_: RecordingRegionOverlayWindow) {
+    func overlayDidFinishResizing(_: CaptureSelectionOverlayWindow) {
         finishInteraction(with: currentRect)
     }
 }

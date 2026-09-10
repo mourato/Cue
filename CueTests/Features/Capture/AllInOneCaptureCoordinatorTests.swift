@@ -175,7 +175,7 @@ final class AllInOneCaptureCoordinatorTests: XCTestCase {
             XCTFail("Expected a main screen")
             return
         }
-        let overlay = RecordingRegionOverlayWindow(screen: screen, highlightRect: screen.frame.insetBy(dx: 80, dy: 80))
+        let overlay = CaptureSelectionOverlayWindow(screen: screen, highlightRect: screen.frame.insetBy(dx: 80, dy: 80))
         defer { overlay.close() }
 
         XCTAssertFalse(overlay.canBecomeKey)
@@ -251,8 +251,8 @@ final class AllInOneCaptureCoordinatorTests: XCTestCase {
         let growing = CGRect(x: 1200, y: 80, width: 90, height: 70)
 
         // WHEN: Computing dirty unions with vs without collapsing first
-        let staleDirty = RecordingRegionOverlayInvalidation.dirtyRect(from: remembered, to: growing)
-        let collapsedDirty = RecordingRegionOverlayInvalidation.dirtyRect(from: collapsed, to: growing)
+        let staleDirty = CaptureSelectionOverlayInvalidation.dirtyRect(from: remembered, to: growing)
+        let collapsedDirty = CaptureSelectionOverlayInvalidation.dirtyRect(from: collapsed, to: growing)
 
         // THEN: Collapsing keeps invalidation proportional to the new selection
         let staleArea = staleDirty.width * staleDirty.height

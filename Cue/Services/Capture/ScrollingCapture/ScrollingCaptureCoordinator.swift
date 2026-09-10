@@ -43,7 +43,7 @@ final class ScrollingCaptureCoordinator {
     private var sessionModel: ScrollingCaptureSessionModel?
     private var hudWindow: ScrollingCaptureHUDWindow?
     private var previewWindow: ScrollingCapturePreviewWindow?
-    private var regionOverlayWindows: [RecordingRegionOverlayWindow] = []
+    private var regionOverlayWindows: [CaptureSelectionOverlayWindow] = []
     private var sessionModelObservation: AnyCancellable?
     private var latestImage: CGImage?
     private var stitcher: ScrollingCaptureStitcher?
@@ -848,7 +848,7 @@ final class ScrollingCaptureCoordinator {
         regionOverlayWindows.removeAll()
 
         for screen in NSScreen.screens {
-            let overlay = RecordingRegionOverlayWindow(screen: screen, highlightRect: rect)
+            let overlay = CaptureSelectionOverlayWindow(screen: screen, highlightRect: rect)
             overlay.interactionDelegate = self
             overlay.setInteractionEnabled(true)
             overlay.updateGuidance(currentRegionOverlayGuidance())
@@ -874,9 +874,9 @@ final class ScrollingCaptureCoordinator {
         }
     }
 
-    private func currentRegionOverlayGuidance() -> RecordingRegionOverlayGuidance? {
+    private func currentRegionOverlayGuidance() -> CaptureSelectionOverlayGuidance? {
         guard let guidance = sessionModel?.selectionGuidance else { return nil }
-        let tone: RecordingRegionOverlayGuidanceTone = switch guidance.tone {
+        let tone: CaptureSelectionOverlayGuidanceTone = switch guidance.tone {
         case .neutral:
             .neutral
         case .active:
@@ -887,7 +887,7 @@ final class ScrollingCaptureCoordinator {
             .progress
         }
 
-        return RecordingRegionOverlayGuidance(
+        return CaptureSelectionOverlayGuidance(
             title: guidance.title,
             detail: guidance.detail,
             tone: tone,
@@ -1872,10 +1872,10 @@ final class ScrollingCaptureCoordinator {
     }
 }
 
-extension ScrollingCaptureCoordinator: RecordingRegionOverlayDelegate {
-    func overlayDidRequestReselection(_: RecordingRegionOverlayWindow) {}
+extension ScrollingCaptureCoordinator: CaptureSelectionOverlayDelegate {
+    func overlayDidRequestReselection(_: CaptureSelectionOverlayWindow) {}
 
-    func overlay(_: RecordingRegionOverlayWindow, didMoveRegionTo rect: CGRect) {
+    func overlay(_: CaptureSelectionOverlayWindow, didMoveRegionTo rect: CGRect) {
         guard let sessionModel, sessionModel.phase == .ready else { return }
         updateSelectedRect(rect, reprepareSession: false)
         sessionModel.setStatus(
@@ -1884,7 +1884,7 @@ extension ScrollingCaptureCoordinator: RecordingRegionOverlayDelegate {
         )
     }
 
-    func overlayDidFinishMoving(_: RecordingRegionOverlayWindow) {
+    func overlayDidFinishMoving(_: CaptureSelectionOverlayWindow) {
         guard let sessionModel, sessionModel.phase == .ready else { return }
         refreshSelectionPreparation()
         sessionModel.setStatus(
@@ -1893,7 +1893,7 @@ extension ScrollingCaptureCoordinator: RecordingRegionOverlayDelegate {
         )
     }
 
-    func overlay(_: RecordingRegionOverlayWindow, didReselectWithRect rect: CGRect) {
+    func overlay(_: CaptureSelectionOverlayWindow, didReselectWithRect rect: CGRect) {
         guard let sessionModel, sessionModel.phase == .ready else { return }
         updateSelectedRect(rect, reprepareSession: true)
         sessionModel.setStatus(
@@ -1903,7 +1903,7 @@ extension ScrollingCaptureCoordinator: RecordingRegionOverlayDelegate {
     }
 
     func overlay(
-        _: RecordingRegionOverlayWindow,
+        _: CaptureSelectionOverlayWindow,
         didResizeRegionTo rect: CGRect,
         modifiers _: NSEvent.ModifierFlags,
     ) {
@@ -1915,7 +1915,7 @@ extension ScrollingCaptureCoordinator: RecordingRegionOverlayDelegate {
         )
     }
 
-    func overlayDidFinishResizing(_: RecordingRegionOverlayWindow) {
+    func overlayDidFinishResizing(_: CaptureSelectionOverlayWindow) {
         guard let sessionModel, sessionModel.phase == .ready else { return }
         refreshSelectionPreparation()
         sessionModel.setStatus(

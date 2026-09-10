@@ -18,7 +18,7 @@
         @Published private(set) var isActive = false
 
         private var toolbarWindow: RecordingToolbarWindow?
-        private var regionOverlayWindows: [RecordingRegionOverlayWindow] = []
+        private var regionOverlayWindows: [CaptureSelectionOverlayWindow] = []
         private var selectedRect: CGRect?
         private var selectedWindowTarget: WindowCaptureTarget?
         private let captureManager = ScreenCaptureManager.shared
@@ -731,7 +731,7 @@
 
         private func showRegionOverlay(for rect: CGRect, interactionEnabled: Bool) {
             for screen in NSScreen.screens {
-                let overlay = RecordingRegionOverlayWindow(screen: screen, highlightRect: rect)
+                let overlay = CaptureSelectionOverlayWindow(screen: screen, highlightRect: rect)
                 overlay.interactionDelegate = self
                 overlay.setInteractionEnabled(interactionEnabled)
                 overlay.orderFrontRegardless()
@@ -1500,30 +1500,30 @@
         }
     }
 
-    // MARK: - RecordingRegionOverlayDelegate
+    // MARK: - CaptureSelectionOverlayDelegate
 
-    extension RecordingCoordinator: RecordingRegionOverlayDelegate {
-        func overlayDidRequestReselection(_: RecordingRegionOverlayWindow) {
+    extension RecordingCoordinator: CaptureSelectionOverlayDelegate {
+        func overlayDidRequestReselection(_: CaptureSelectionOverlayWindow) {
             restartSelection(for: .area)
         }
 
-        func overlay(_: RecordingRegionOverlayWindow, didMoveRegionTo rect: CGRect) {
+        func overlay(_: CaptureSelectionOverlayWindow, didMoveRegionTo rect: CGRect) {
             // Lightweight path: update overlay visuals only, skip persistence + toolbar reposition
             updateOverlayHighlightsOnly(rect)
         }
 
-        func overlayDidFinishMoving(_: RecordingRegionOverlayWindow) {
+        func overlayDidFinishMoving(_: CaptureSelectionOverlayWindow) {
             // Persist rect and reposition toolbar now that drag is complete
             finalizeDragOrResize()
         }
 
-        func overlay(_: RecordingRegionOverlayWindow, didReselectWithRect rect: CGRect) {
+        func overlay(_: CaptureSelectionOverlayWindow, didReselectWithRect rect: CGRect) {
             // Full update for reselection — not a continuous drag, so full sync is fine
             updateSelectedRect(rect)
         }
 
         func overlay(
-            _: RecordingRegionOverlayWindow,
+            _: CaptureSelectionOverlayWindow,
             didResizeRegionTo rect: CGRect,
             modifiers _: NSEvent.ModifierFlags,
         ) {
@@ -1531,7 +1531,7 @@
             updateOverlayHighlightsOnly(rect)
         }
 
-        func overlayDidFinishResizing(_: RecordingRegionOverlayWindow) {
+        func overlayDidFinishResizing(_: CaptureSelectionOverlayWindow) {
             // Persist rect and reposition toolbar now that resize is complete
             finalizeDragOrResize()
         }
