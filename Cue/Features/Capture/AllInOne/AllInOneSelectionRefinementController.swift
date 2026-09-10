@@ -607,6 +607,12 @@ extension AllInOneSelectionRefinementController: RecordingRegionOverlayDelegate 
         didResizeRegionTo rect: CGRect,
         modifiers: NSEvent.ModifierFlags,
     ) {
+        // Reselect previews must not enter resize snapping (no real handle). A synthetic
+        // handle + cold AX/image snap on the first drag frame hitch the main thread.
+        guard overlay.currentResizeHandle != nil || resizeStartRect != nil else {
+            updateRect(rect)
+            return
+        }
         beginResizeIfNeeded(with: rect, overlay: overlay)
         let snappedRect = applySnapping(to: rect, pointer: NSEvent.mouseLocation, modifiers: modifiers)
         updateRect(aspectLocked ? aspectLockedResizeRect(from: snappedRect) : snappedRect)

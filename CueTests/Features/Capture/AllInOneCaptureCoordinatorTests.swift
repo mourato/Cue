@@ -242,4 +242,22 @@ final class AllInOneCaptureCoordinatorTests: XCTestCase {
 
         XCTAssertEqual(controller.backdropCacheCountForTesting, 1)
     }
+
+    func testReselectionDirtyRect_staysBoundedAfterCollapsingStaleHighlight() {
+        // GIVEN: A large remembered selection and a small first-drag preview elsewhere
+        let remembered = CGRect(x: 50, y: 50, width: 900, height: 700)
+        let click = CGPoint(x: 1200, y: 80)
+        let collapsed = CGRect(origin: click, size: .zero)
+        let growing = CGRect(x: 1200, y: 80, width: 90, height: 70)
+
+        // WHEN: Computing dirty unions with vs without collapsing first
+        let staleDirty = RecordingRegionOverlayInvalidation.dirtyRect(from: remembered, to: growing)
+        let collapsedDirty = RecordingRegionOverlayInvalidation.dirtyRect(from: collapsed, to: growing)
+
+        // THEN: Collapsing keeps invalidation proportional to the new selection
+        let staleArea = staleDirty.width * staleDirty.height
+        let collapsedArea = collapsedDirty.width * collapsedDirty.height
+        XCTAssertGreaterThan(staleArea, 500_000, "stale union should cover most of the jump")
+        XCTAssertLessThan(collapsedArea, 30_000, "collapsed union must stay near the new selection")
+    }
 }

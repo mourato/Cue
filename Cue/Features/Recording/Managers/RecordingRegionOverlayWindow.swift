@@ -33,6 +33,18 @@ struct RecordingRegionOverlayGuidance {
     let tone: RecordingRegionOverlayGuidanceTone
 }
 
+/// Dirty-rect math for highlight updates. Exposed for the reselection hitch regression:
+/// collapsing a large remembered rect before the first drag keeps this union small.
+enum RecordingRegionOverlayInvalidation {
+    /// cornerHandleLength + margin
+    static let handlePadding: CGFloat = 25
+
+    static func dirtyRect(from oldLocal: CGRect, to newLocal: CGRect) -> CGRect {
+        oldLocal.insetBy(dx: -handlePadding, dy: -handlePadding)
+            .union(newLocal.insetBy(dx: -handlePadding, dy: -handlePadding))
+    }
+}
+
 // MARK: - RecordingRegionOverlayDelegate
 
 /// Delegate protocol for overlay interaction events
@@ -113,9 +125,10 @@ final class RecordingRegionOverlayWindow: NSPanel {
         // Dirty-rect invalidation: only redraw the union of old + new positions
         // with padding for resize handles and border width, instead of the entire
         // full-screen view (which can be 15M+ pixels on 4K/5K).
-        let handlePadding: CGFloat = 25 // cornerHandleLength + margin
-        let dirtyRect = oldLocalRect.insetBy(dx: -handlePadding, dy: -handlePadding)
-            .union(newLocalRect.insetBy(dx: -handlePadding, dy: -handlePadding))
+        let dirtyRect = RecordingRegionOverlayInvalidation.dirtyRect(
+            from: oldLocalRect,
+            to: newLocalRect,
+        )
         overlayView.setNeedsDisplay(dirtyRect)
     }
 
@@ -604,16 +617,12 @@ extension RecordingRegionOverlayView {
         }
 
         if isNewSelecting {
-            // Reselect: track in screen coordinates.
+            // Reselect: track in screen coordinates. Preview via move (not resize) so
+            // refinement does not invent a snap handle / run AX+pixel snapping per frame.
             newSelectionEnd = screenPoint
-            // Trigger redraw on all overlay windows via the delegate's highlight update.
             let rect = calculateNewSelectionScreenRect()
             if rect.width > 0, rect.height > 0 {
-                overlayWindow.interactionDelegate?.overlay(
-                    overlayWindow,
-                    didResizeRegionTo: rect,
-                    modifiers: modifiers,
-                )
+                overlayWindow.interactionDelegate?.overlay(overlayWindow, didMoveRegionTo: rect)
             }
             return
         }
@@ -669,7 +678,7 @@ extension RecordingRegionOverlayView {
     // MARK: - Mouse Events
 
     override func mouseDown(with event: NSEvent) {
-        guard isInteractionEnabled, overlayWindow != nil else { return }
+        guard isInteractionEnabled, let overlayWindow else { return }
 
         let point = convert(event.locationInWindow, from: nil)
         let localRect = localHighlightRect()
@@ -704,6 +713,14 @@ extension RecordingRegionOverlayView {
             newSelectionStart = screenPoint
             newSelectionEnd = screenPoint
             NSCursor.crosshair.set()
+            // Collapse the previous highlight before the first drag frame. Otherwise
+            // updateHighlightRect unions the remembered (often large) rect with the
+            // tiny new selection and dirty-fills most of the display — a one-shot hitch
+            // that disappears on later reselects once the stored rect is smaller.
+            let cleared = CGRect(origin: screenPoint, size: .zero)
+            highlightRect = cleared
+            needsDisplay = true
+            overlayWindow.interactionDelegate?.overlay(overlayWindow, didMoveRegionTo: cleared)
             installCrossDisplayMonitorIfNeeded()
         }
     }
