@@ -110,6 +110,7 @@ final class AreaSelectionController: NSObject {
     private var pointerTrackingTimer: Timer?
     private var requestedDisplayActivationIDs = Set<CGDirectDisplayID>()
     private var deferredBackdropDisplayIDs = Set<CGDirectDisplayID>()
+    private var selectionStateMachine = CaptureSelectionStateMachine()
     private var manualSelectionStartPoint: CGPoint?
     private var manualSelectionCurrentPoint: CGPoint?
     private weak var manualSelectionSourceWindow: AreaSelectionWindow?
@@ -1267,6 +1268,7 @@ final class AreaSelectionController: NSObject {
             return
         }
 
+        selectionStateMachine.startSelection(at: screenPoint)
         manualSelectionStartPoint = screenPoint
         manualSelectionCurrentPoint = screenPoint
         manualSelectionSourceWindow = window
@@ -1280,6 +1282,7 @@ final class AreaSelectionController: NSObject {
     private func updateManualSelection(to screenPoint: CGPoint, modifiers: NSEvent.ModifierFlags = []) {
         guard manualSelectionStartPoint != nil else { return }
         manualSelectionModifierFlags = modifiers
+        selectionStateMachine.updateSelection(to: screenPoint)
         guard screenPoint != manualSelectionCurrentPoint else { return }
         manualSelectionCurrentPoint = screenPoint
 
@@ -1309,6 +1312,7 @@ final class AreaSelectionController: NSObject {
         manualSelectionModifierFlags = modifiers
         manualSelectionCurrentPoint = screenPoint
         removeManualSelectionMonitor()
+        selectionStateMachine.commitSelection(minSize: 5)
 
         guard let rect = manualSelectionRect, rect.width > 5, rect.height > 5 else {
             clearManualSelectionTracking(render: true)
@@ -1331,16 +1335,7 @@ final class AreaSelectionController: NSObject {
     }
 
     private var rawManualSelectionRect: CGRect? {
-        guard let start = manualSelectionStartPoint,
-              let current = manualSelectionCurrentPoint else {
-            return nil
-        }
-        return CGRect(
-            x: min(start.x, current.x),
-            y: min(start.y, current.y),
-            width: abs(current.x - start.x),
-            height: abs(current.y - start.y),
-        )
+        selectionStateMachine.currentRect
     }
 
     private var manualSelectionSnapResult: CaptureSelectionSnappingResult? {
@@ -1435,6 +1430,7 @@ final class AreaSelectionController: NSObject {
 
     private func clearManualSelectionTracking(render: Bool) {
         removeManualSelectionMonitor()
+        selectionStateMachine.reset()
         manualSelectionStartPoint = nil
         manualSelectionCurrentPoint = nil
         manualSelectionSourceWindow = nil
