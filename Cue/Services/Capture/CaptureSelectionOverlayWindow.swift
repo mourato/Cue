@@ -497,7 +497,7 @@ extension CaptureSelectionOverlayView {
     /// cross-display drag/resize/reselect so the selection can move freely
     /// between displays but not drift outside the physical display area.
     private static var unifiedDesktopFrame: CGRect {
-        NSScreen.screens.reduce(CGRect.null) { $0.union($1.frame) }
+        CaptureSelectionDisplayTopology.unifiedDesktopFrame
     }
 
     // MARK: - Cross-Display Event Monitors
@@ -562,40 +562,17 @@ extension CaptureSelectionOverlayView {
 
     /// Clamp `rect` so it stays fully within the unified desktop frame.
     private func clampRectToDesktop(_ rect: CGRect) -> CGRect {
-        let desktop = Self.unifiedDesktopFrame
-        var origin = rect.origin
-        origin.x = max(desktop.minX, min(origin.x, desktop.maxX - rect.width))
-        origin.y = max(desktop.minY, min(origin.y, desktop.maxY - rect.height))
-        return CGRect(origin: origin, size: rect.size)
+        CaptureSelectionDisplayTopology.clampRect(rect, to: Self.unifiedDesktopFrame)
     }
 
     /// Clamp resize result so edges stay within the unified desktop frame
     /// while enforcing minimum selection size.
     private func clampResizedRectToDesktop(_ rect: CGRect) -> CGRect {
-        let desktop = Self.unifiedDesktopFrame
-        var r = rect
-        // Clamp left edge
-        if r.minX < desktop.minX {
-            r.size.width -= (desktop.minX - r.minX)
-            r.origin.x = desktop.minX
-        }
-        // Clamp bottom edge
-        if r.minY < desktop.minY {
-            r.size.height -= (desktop.minY - r.minY)
-            r.origin.y = desktop.minY
-        }
-        // Clamp right edge
-        if r.maxX > desktop.maxX {
-            r.size.width = desktop.maxX - r.origin.x
-        }
-        // Clamp top edge
-        if r.maxY > desktop.maxY {
-            r.size.height = desktop.maxY - r.origin.y
-        }
-        // Re-enforce minimum size after clamping
-        r.size.width = max(r.width, minimumSelectionSize)
-        r.size.height = max(r.height, minimumSelectionSize)
-        return r
+        CaptureSelectionDisplayTopology.clampResizedRect(
+            rect,
+            to: Self.unifiedDesktopFrame,
+            minSize: minimumSelectionSize,
+        )
     }
 
     private func handleCrossDisplayDrag(screenPoint: CGPoint, modifiers: NSEvent.ModifierFlags) {

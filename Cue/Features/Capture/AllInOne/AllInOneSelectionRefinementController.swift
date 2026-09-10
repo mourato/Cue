@@ -469,12 +469,11 @@ final class AllInOneSelectionRefinementController: NSObject {
     }
 
     private var unifiedDesktopFrame: CGRect {
-        NSScreen.screens.reduce(CGRect.null) { $0.union($1.frame) }
+        CaptureSelectionDisplayTopology.unifiedDesktopFrame
     }
 
     private func screenContaining(point: CGPoint) -> NSScreen? {
-        NSScreen.screens.first { $0.frame.contains(point) }
-            ?? NSScreen.screens.first { $0.frame.insetBy(dx: -1, dy: -1).contains(point) }
+        CaptureSelectionDisplayTopology.screenContaining(point: point)
     }
 
     private static func loadSnappingConfiguration() -> CaptureSelectionSnappingConfiguration {
