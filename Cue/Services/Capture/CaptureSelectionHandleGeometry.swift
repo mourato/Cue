@@ -393,6 +393,38 @@ enum CaptureSelectionHandleGeometry {
         }
     }
 
+    /// Exact anchor point for a handle on a selection rectangle.
+    static func anchor(
+        for handle: CaptureSelectionResizeHandle,
+        in rect: CGRect,
+        coordinateSpace: CaptureSelectionCoordinateSpace,
+    ) -> CGPoint {
+        switch coordinateSpace {
+        case .bottomLeftOrigin:
+            switch handle {
+            case .topLeft: CGPoint(x: rect.minX, y: rect.maxY)
+            case .top: CGPoint(x: rect.midX, y: rect.maxY)
+            case .topRight: CGPoint(x: rect.maxX, y: rect.maxY)
+            case .left: CGPoint(x: rect.minX, y: rect.midY)
+            case .right: CGPoint(x: rect.maxX, y: rect.midY)
+            case .bottomLeft: CGPoint(x: rect.minX, y: rect.minY)
+            case .bottom: CGPoint(x: rect.midX, y: rect.minY)
+            case .bottomRight: CGPoint(x: rect.maxX, y: rect.minY)
+            }
+        case .topLeftOrigin:
+            switch handle {
+            case .topLeft: CGPoint(x: rect.minX, y: rect.minY)
+            case .top: CGPoint(x: rect.midX, y: rect.minY)
+            case .topRight: CGPoint(x: rect.maxX, y: rect.minY)
+            case .left: CGPoint(x: rect.minX, y: rect.midY)
+            case .right: CGPoint(x: rect.maxX, y: rect.midY)
+            case .bottomLeft: CGPoint(x: rect.minX, y: rect.maxY)
+            case .bottom: CGPoint(x: rect.midX, y: rect.maxY)
+            case .bottomRight: CGPoint(x: rect.maxX, y: rect.maxY)
+            }
+        }
+    }
+
     /// Corner anchor points for drawing L-handles around a selection rect.
     static func cornerAnchors(
         in rect: CGRect,

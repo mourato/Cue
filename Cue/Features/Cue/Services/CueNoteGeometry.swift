@@ -9,11 +9,7 @@ import CoreGraphics
 import Foundation
 
 nonisolated enum CueNoteGeometry {
-    enum ResizeHandle: Equatable {
-        case topLeft, top, topRight
-        case left, right
-        case bottomLeft, bottom, bottomRight
-    }
+    typealias ResizeHandle = CaptureSelectionResizeHandle
 
     static let pinDiameter: CGFloat = 28
     static let dragThreshold: CGFloat = 8

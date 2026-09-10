@@ -43,6 +43,20 @@ enum ResizeHandle: Equatable {
     case top, bottom, left, right
     case lineStart, lineEnd
     case textCalloutTail
+
+    var asCaptureResizeHandle: CaptureSelectionResizeHandle? {
+        switch self {
+        case .topLeft: .topLeft
+        case .topRight: .topRight
+        case .bottomLeft: .bottomLeft
+        case .bottomRight: .bottomRight
+        case .top: .top
+        case .bottom: .bottom
+        case .left: .left
+        case .right: .right
+        case .lineStart, .lineEnd, .textCalloutTail: nil
+        }
+    }
 }
 
 /// Transparent drawing layer of the annotate canvas. Renders via `drawBody`
@@ -511,18 +525,74 @@ final class DrawingCanvasNSView: NSView {
         includingSides: Bool = false,
     ) -> [(ResizeHandle, CGRect)] {
         var handles: [(ResizeHandle, CGRect)] = [
-            (.topLeft, handleRect(at: CGPoint(x: bounds.minX, y: bounds.maxY))),
-            (.topRight, handleRect(at: CGPoint(x: bounds.maxX, y: bounds.maxY))),
-            (.bottomLeft, handleRect(at: CGPoint(x: bounds.minX, y: bounds.minY))),
-            (.bottomRight, handleRect(at: CGPoint(x: bounds.maxX, y: bounds.minY))),
+            (
+                .topLeft,
+                handleRect(at: CaptureSelectionHandleGeometry.anchor(
+                    for: .topLeft,
+                    in: bounds,
+                    coordinateSpace: .bottomLeftOrigin,
+                )),
+            ),
+            (
+                .topRight,
+                handleRect(at: CaptureSelectionHandleGeometry.anchor(
+                    for: .topRight,
+                    in: bounds,
+                    coordinateSpace: .bottomLeftOrigin,
+                )),
+            ),
+            (
+                .bottomLeft,
+                handleRect(at: CaptureSelectionHandleGeometry.anchor(
+                    for: .bottomLeft,
+                    in: bounds,
+                    coordinateSpace: .bottomLeftOrigin,
+                )),
+            ),
+            (
+                .bottomRight,
+                handleRect(at: CaptureSelectionHandleGeometry.anchor(
+                    for: .bottomRight,
+                    in: bounds,
+                    coordinateSpace: .bottomLeftOrigin,
+                )),
+            ),
         ]
         guard includingSides else { return handles }
 
         handles += [
-            (.top, handleRect(at: CGPoint(x: bounds.midX, y: bounds.maxY))),
-            (.bottom, handleRect(at: CGPoint(x: bounds.midX, y: bounds.minY))),
-            (.left, handleRect(at: CGPoint(x: bounds.minX, y: bounds.midY))),
-            (.right, handleRect(at: CGPoint(x: bounds.maxX, y: bounds.midY))),
+            (
+                .top,
+                handleRect(at: CaptureSelectionHandleGeometry.anchor(
+                    for: .top,
+                    in: bounds,
+                    coordinateSpace: .bottomLeftOrigin,
+                )),
+            ),
+            (
+                .bottom,
+                handleRect(at: CaptureSelectionHandleGeometry.anchor(
+                    for: .bottom,
+                    in: bounds,
+                    coordinateSpace: .bottomLeftOrigin,
+                )),
+            ),
+            (
+                .left,
+                handleRect(at: CaptureSelectionHandleGeometry.anchor(
+                    for: .left,
+                    in: bounds,
+                    coordinateSpace: .bottomLeftOrigin,
+                )),
+            ),
+            (
+                .right,
+                handleRect(at: CaptureSelectionHandleGeometry.anchor(
+                    for: .right,
+                    in: bounds,
+                    coordinateSpace: .bottomLeftOrigin,
+                )),
+            ),
         ]
         return handles
     }
@@ -2068,14 +2138,7 @@ final class DrawingCanvasNSView: NSView {
            let note = state.cueNotes.first(where: { $0.id == selectedId }),
            case .rect = note.target,
            let handle = hitTestNotinhasResizeHandle(at: displayPoint, for: note) {
-            switch handle {
-            case .top, .bottom:
-                NSCursor.resizeUpDown.set()
-            case .left, .right:
-                NSCursor.resizeLeftRight.set()
-            default:
-                NSCursor.crosshair.set()
-            }
+            CaptureSelectionResizeCursor.cursor(for: handle).set()
             return
         }
 
@@ -2125,92 +2188,19 @@ final class DrawingCanvasNSView: NSView {
     }
 
     private func setCursorForHandle(_ handle: ResizeHandle) {
-        switch handle {
-        case .topLeft, .bottomRight, .lineStart, .lineEnd, .textCalloutTail:
+        if let captureHandle = handle.asCaptureResizeHandle {
+            CaptureSelectionResizeCursor.cursor(for: captureHandle).set()
+        } else {
             NSCursor.crosshair.set()
-        case .topRight, .bottomLeft:
-            NSCursor.crosshair.set()
-        case .top, .bottom:
-            NSCursor.resizeUpDown.set()
-        case .left, .right:
-            NSCursor.resizeLeftRight.set()
         }
     }
 
     private func setCursorForCropHandle(_ handle: CropHandle) {
-        // Note: In image coordinates, Y increases upward (bottom-left origin)
-        // But visually on screen, Y increases downward (top-left origin)
-        // So topLeft visually appears at top-left of screen
-        switch handle {
-        case .topLeft, .bottomRight:
-            // NW-SE diagonal resize (↖↘)
-            NSCursor(image: diagonalResizeCursorImage(nwse: true), hotSpot: NSPoint(x: 8, y: 8)).set()
-        case .topRight, .bottomLeft:
-            // NE-SW diagonal resize (↗↙)
-            NSCursor(image: diagonalResizeCursorImage(nwse: false), hotSpot: NSPoint(x: 8, y: 8)).set()
-        case .top, .bottom:
-            NSCursor.resizeUpDown.set()
-        case .left, .right:
-            NSCursor.resizeLeftRight.set()
-        case .body:
+        if let captureHandle = handle.asCaptureResizeHandle {
+            CaptureSelectionResizeCursor.cursor(for: captureHandle).set()
+        } else {
             NSCursor.openHand.set()
         }
-    }
-
-    /// Generate diagonal resize cursor image
-    private func diagonalResizeCursorImage(nwse: Bool) -> NSImage {
-        let size = NSSize(width: 16, height: 16)
-        let image = NSImage(size: size)
-        image.lockFocus()
-
-        let path = NSBezierPath()
-        path.lineWidth = 1.5
-        path.lineCapStyle = .round
-
-        if nwse {
-            // NW-SE diagonal (↖↘)
-            // Arrow pointing to top-left
-            path.move(to: NSPoint(x: 3, y: 13))
-            path.line(to: NSPoint(x: 3, y: 8))
-            path.move(to: NSPoint(x: 3, y: 13))
-            path.line(to: NSPoint(x: 8, y: 13))
-            // Main diagonal line
-            path.move(to: NSPoint(x: 3, y: 13))
-            path.line(to: NSPoint(x: 13, y: 3))
-            // Arrow pointing to bottom-right
-            path.move(to: NSPoint(x: 13, y: 3))
-            path.line(to: NSPoint(x: 13, y: 8))
-            path.move(to: NSPoint(x: 13, y: 3))
-            path.line(to: NSPoint(x: 8, y: 3))
-        } else {
-            // NE-SW diagonal (↗↙)
-            // Arrow pointing to top-right
-            path.move(to: NSPoint(x: 13, y: 13))
-            path.line(to: NSPoint(x: 13, y: 8))
-            path.move(to: NSPoint(x: 13, y: 13))
-            path.line(to: NSPoint(x: 8, y: 13))
-            // Main diagonal line
-            path.move(to: NSPoint(x: 13, y: 13))
-            path.line(to: NSPoint(x: 3, y: 3))
-            // Arrow pointing to bottom-left
-            path.move(to: NSPoint(x: 3, y: 3))
-            path.line(to: NSPoint(x: 3, y: 8))
-            path.move(to: NSPoint(x: 3, y: 3))
-            path.line(to: NSPoint(x: 8, y: 3))
-        }
-
-        // Draw white outline for visibility
-        NSColor.white.setStroke()
-        path.lineWidth = 3
-        path.stroke()
-
-        // Draw black line
-        NSColor.black.setStroke()
-        path.lineWidth = 1.5
-        path.stroke()
-
-        image.unlockFocus()
-        return image
     }
 
     // MARK: - Crop Handling
@@ -2263,19 +2253,13 @@ final class DrawingCanvasNSView: NSView {
         // Use a fixed handle radius in image coordinates (not scaled)
         let handleRadius: CGFloat = max(15, 12 / displayScale)
 
-        // In image coordinates: origin is bottom-left, Y increases upward
-        let handles: [(CropHandle, CGPoint)] = [
-            (.topLeft, CGPoint(x: cropRect.minX, y: cropRect.maxY)),
-            (.top, CGPoint(x: cropRect.midX, y: cropRect.maxY)),
-            (.topRight, CGPoint(x: cropRect.maxX, y: cropRect.maxY)),
-            (.left, CGPoint(x: cropRect.minX, y: cropRect.midY)),
-            (.right, CGPoint(x: cropRect.maxX, y: cropRect.midY)),
-            (.bottomLeft, CGPoint(x: cropRect.minX, y: cropRect.minY)),
-            (.bottom, CGPoint(x: cropRect.midX, y: cropRect.minY)),
-            (.bottomRight, CGPoint(x: cropRect.maxX, y: cropRect.minY)),
-        ]
-
-        for (handle, center) in handles {
+        for handle in CropHandle.allCases {
+            guard let resizeHandle = handle.asCaptureResizeHandle else { continue }
+            let center = CaptureSelectionHandleGeometry.anchor(
+                for: resizeHandle,
+                in: cropRect,
+                coordinateSpace: .bottomLeftOrigin,
+            )
             let distance = hypot(point.x - center.x, point.y - center.y)
             if distance <= handleRadius {
                 return handle

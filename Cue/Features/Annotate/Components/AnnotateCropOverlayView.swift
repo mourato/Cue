@@ -13,8 +13,8 @@ struct CropOverlayView: View {
     let scale: CGFloat
     let canvasBounds: CGRect
 
-    private let handleSize: CGFloat = 12
-    private let cornerHandleLength: CGFloat = 20
+    private let handleSize: CGFloat = CaptureSelectionChromeMetrics.handleHitSize
+    private let cornerHandleLength: CGFloat = CaptureSelectionChromeMetrics.cornerHandleLength
 
     /// Whether crop is being actively edited (vs just previewing applied crop)
     private var isActivelyEditing: Bool {
@@ -53,7 +53,7 @@ struct CropOverlayView: View {
 
         // Crop border
         Rectangle()
-            .stroke(Color.white, lineWidth: 1.5)
+            .stroke(Color.white, lineWidth: CaptureSelectionChromeMetrics.continuousBorderWidth)
             .frame(width: scaledCrop.width, height: scaledCrop.height)
             .position(x: scaledCrop.midX, y: scaledCrop.midY)
             .shadow(color: .black.opacity(0.5), radius: 1, x: 0, y: 0)
@@ -65,7 +65,7 @@ struct CropOverlayView: View {
                 .allowsHitTesting(false)
         }
 
-        // Corner L-shaped handles (CleanShot X style)
+        // Corner L-shaped handles
         ForEach(CropHandle.corners, id: \.self) { handle in
             CropCornerHandle(handle: handle, length: cornerHandleLength)
                 .position(handlePosition(for: handle, in: scaledCrop))
@@ -122,17 +122,10 @@ struct CropOverlayView: View {
     }
 
     private func handlePosition(for handle: CropHandle, in rect: CGRect) -> CGPoint {
-        switch handle {
-        case .topLeft: CGPoint(x: rect.minX, y: rect.minY)
-        case .top: CGPoint(x: rect.midX, y: rect.minY)
-        case .topRight: CGPoint(x: rect.maxX, y: rect.minY)
-        case .left: CGPoint(x: rect.minX, y: rect.midY)
-        case .right: CGPoint(x: rect.maxX, y: rect.midY)
-        case .bottomLeft: CGPoint(x: rect.minX, y: rect.maxY)
-        case .bottom: CGPoint(x: rect.midX, y: rect.maxY)
-        case .bottomRight: CGPoint(x: rect.maxX, y: rect.maxY)
-        case .body: CGPoint(x: rect.midX, y: rect.midY)
+        if let resizeHandle = handle.asCaptureResizeHandle {
+            return CaptureSelectionHandleGeometry.anchor(for: resizeHandle, in: rect, coordinateSpace: .topLeftOrigin)
         }
+        return CGPoint(x: rect.midX, y: rect.midY)
     }
 }
 
@@ -143,6 +136,33 @@ enum CropHandle: String, CaseIterable {
     case left, right
     case bottomLeft, bottom, bottomRight
     case body
+
+    var asCaptureResizeHandle: CaptureSelectionResizeHandle? {
+        switch self {
+        case .topLeft: .topLeft
+        case .top: .top
+        case .topRight: .topRight
+        case .left: .left
+        case .right: .right
+        case .bottomLeft: .bottomLeft
+        case .bottom: .bottom
+        case .bottomRight: .bottomRight
+        case .body: nil
+        }
+    }
+
+    init(_ resizeHandle: CaptureSelectionResizeHandle) {
+        switch resizeHandle {
+        case .topLeft: self = .topLeft
+        case .top: self = .top
+        case .topRight: self = .topRight
+        case .left: self = .left
+        case .right: self = .right
+        case .bottomLeft: self = .bottomLeft
+        case .bottom: self = .bottom
+        case .bottomRight: self = .bottomRight
+        }
+    }
 
     static var corners: [CropHandle] {
         [.topLeft, .topRight, .bottomLeft, .bottomRight]
@@ -246,12 +266,12 @@ struct CropGridOverlay: View {
     }
 }
 
-// MARK: - Corner Handle (L-shaped, CleanShot X style)
+// MARK: - Corner Handle (L-shaped)
 
 struct CropCornerHandle: View {
     let handle: CropHandle
-    let length: CGFloat
-    private let thickness: CGFloat = 3
+    var length: CGFloat = CaptureSelectionChromeMetrics.cornerHandleLength
+    private let thickness: CGFloat = CaptureSelectionChromeMetrics.handleThickness
 
     var body: some View {
         ZStack {
@@ -309,8 +329,8 @@ struct CropCornerHandle: View {
 struct CropEdgeHandle: View {
     let handle: CropHandle
     let cropRect: CGRect
-    private let handleLength: CGFloat = 24
-    private let thickness: CGFloat = 3
+    private let handleLength: CGFloat = CaptureSelectionChromeMetrics.edgeHandleLength
+    private let thickness: CGFloat = CaptureSelectionChromeMetrics.handleThickness
 
     var body: some View {
         Rectangle()

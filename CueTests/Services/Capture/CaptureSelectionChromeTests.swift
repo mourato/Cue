@@ -216,6 +216,50 @@ final class CaptureSelectionChromeTests: XCTestCase {
         )
     }
 
+    func testAnchor_matchesExpectedCoordinatesInBothSpaces() {
+        let sampleRect = CGRect(x: 10, y: 20, width: 100, height: 200)
+
+        // Bottom-left origin (AppKit): Y increases upward
+        XCTAssertEqual(
+            CaptureSelectionHandleGeometry.anchor(for: .topLeft, in: sampleRect, coordinateSpace: .bottomLeftOrigin),
+            CGPoint(x: 10, y: 220),
+        )
+        XCTAssertEqual(
+            CaptureSelectionHandleGeometry.anchor(
+                for: .bottomRight,
+                in: sampleRect,
+                coordinateSpace: .bottomLeftOrigin,
+            ),
+            CGPoint(x: 110, y: 20),
+        )
+        XCTAssertEqual(
+            CaptureSelectionHandleGeometry.anchor(for: .top, in: sampleRect, coordinateSpace: .bottomLeftOrigin),
+            CGPoint(x: 60, y: 220),
+        )
+        XCTAssertEqual(
+            CaptureSelectionHandleGeometry.anchor(for: .left, in: sampleRect, coordinateSpace: .bottomLeftOrigin),
+            CGPoint(x: 10, y: 120),
+        )
+
+        // Top-left origin (SwiftUI): Y increases downward
+        XCTAssertEqual(
+            CaptureSelectionHandleGeometry.anchor(for: .topLeft, in: sampleRect, coordinateSpace: .topLeftOrigin),
+            CGPoint(x: 10, y: 20),
+        )
+        XCTAssertEqual(
+            CaptureSelectionHandleGeometry.anchor(for: .bottomRight, in: sampleRect, coordinateSpace: .topLeftOrigin),
+            CGPoint(x: 110, y: 220),
+        )
+        XCTAssertEqual(
+            CaptureSelectionHandleGeometry.anchor(for: .top, in: sampleRect, coordinateSpace: .topLeftOrigin),
+            CGPoint(x: 60, y: 20),
+        )
+        XCTAssertEqual(
+            CaptureSelectionHandleGeometry.anchor(for: .left, in: sampleRect, coordinateSpace: .topLeftOrigin),
+            CGPoint(x: 10, y: 120),
+        )
+    }
+
     // MARK: - Adaptive layout
 
     func testLayout_largeRectangle_keepsAllHandlesAndDefaultMetrics() {
