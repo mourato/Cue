@@ -55,6 +55,24 @@ VISUAL_TEST_IDENTIFIERS=(
 )
 XCODEBUILD_ARGS=()
 
+cleanup_test_preferences() {
+  local preferences_dir="${HOME:-}/Library/Preferences"
+  [[ -d "$preferences_dir" ]] || return 0
+
+  find "$preferences_dir" -maxdepth 1 -type f \
+    \( \
+      -name 'NotinhasTests.*.plist' \
+      -o -name 'SnapzyTests.*.plist' \
+      -o -name 'AnnotateChromeConfigurationStoreTests.*.plist' \
+      -o -name 'CaptureSelectionSnappingTests.*.plist' \
+      -o -name 'notinhas.imgbb.tests.*.plist' \
+      -o -name 'notinhas.imagekit.*.plist' \
+      -o -name 'notinhas.upload-provider.*.plist' \
+      -o -name 'notinhas.upload-plan.*.plist' \
+      -o -name 'notinhas.cloudflare.*.plist' \
+    \) -delete || true
+}
+
 if [ -t 1 ]; then
   BOLD=$'\033[1m'
   BLUE=$'\033[0;34m'
@@ -254,6 +272,11 @@ if [[ -n "$SOURCE_PACKAGES_PATH" ]]; then
   mkdir_paths+=("$SOURCE_PACKAGES_PATH")
 fi
 mkdir -p "${mkdir_paths[@]}"
+
+# UserDefaults(suiteName:) persists each suite under the user's preferences.
+# Remove only the test-owned domains, including when a test fails.
+trap cleanup_test_preferences EXIT
+trap 'exit 130' INT TERM
 
 if [ "$KEEP_RESULT" -eq 0 ]; then
   rm -rf "$RESULT_BUNDLE_PATH"
