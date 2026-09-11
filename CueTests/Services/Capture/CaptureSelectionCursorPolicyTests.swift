@@ -26,6 +26,20 @@ final class CaptureSelectionCursorPolicyTests: XCTestCase {
         )
     }
 
+    func testResizeCursor_usesSystemFrameResizeForEveryHandle() {
+        for handle in CaptureSelectionResizeHandle.allCases {
+            let expected = NSCursor.frameResize(
+                position: CaptureSelectionResizeCursor.position(for: handle),
+                directions: .all,
+            )
+            XCTAssertEqual(
+                CaptureSelectionResizeCursor.cursor(for: handle),
+                expected,
+                "Handle \(handle) must use NSCursor.frameResize",
+            )
+        }
+    }
+
     func testPolicy_outsideInitialSelectionUsesCrosshair() {
         XCTAssertEqual(
             CaptureSelectionCursorPolicy.cursorKind(zone: .outside, phase: .initialAreaSelection),
