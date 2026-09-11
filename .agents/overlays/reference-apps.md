@@ -41,9 +41,9 @@ a bounded proposal:
 - **Description:** Native capture/annotation flow, precise selection, editable history, beautify, OCR, and redaction patterns.
 - **License:** GPL-3.0 — https://www.gnu.org/licenses/gpl-3.0.html
 - **Reuse decision:** Inspiration and independent reimplementation only. Do not copy or adapt code/assets without a separate GPL compliance decision.
-- **Cloned:** no.
-- **Local path:** —
-- **Consultation:** Remote GitHub repository/README, verified 2026-08-23; no local clone was needed.
+- **Cloned:** yes.
+- **Local path:** `~/Documents/Projects/References/Macshot/`
+- **Consultation:** Local clone at commit `a94be2d` (`origin/main`), overlay selection cursors and root `LICENSE` verified 2026-09-11.
 - **Product touchpoints:** Capture, Annotate, QuickAccess, History.
 
 ### BetterShot
@@ -53,9 +53,9 @@ a bounded proposal:
 - **Description:** Floating post-capture preview, drag-to-app, compact recording status, one-key editor actions, history, and confirmation feedback.
 - **License:** BSD-3-Clause — https://opensource.org/license/bsd-3-clause
 - **Reuse decision:** Inspiration first. Reuse is permitted only with the license notices and attribution required by the exact version being used; no code/assets are currently reused.
-- **Cloned:** no.
-- **Local path:** —
-- **Consultation:** Remote GitHub repository/README, verified 2026-08-23; no local clone was needed.
+- **Cloned:** yes.
+- **Local path:** `~/Documents/Projects/References/BetterShot/`
+- **Consultation:** Local clone at commit `288f714` (`origin/main`), region-selection `NSCursor.frameResize` usage and root `LICENSE` verified 2026-09-11.
 - **Product touchpoints:** QuickAccess, Capture, Annotate, History.
 
 ### Capso
@@ -65,9 +65,9 @@ a bounded proposal:
 - **Description:** All-in-one HUD, capture presets, OCR/translation, persistent history, webcam PiP, and BYO-storage setup patterns.
 - **License:** Business Source License 1.1 — https://mariadb.com/bsl11/
 - **Reuse decision:** Behavior reference only for the current competing product. Do not copy or adapt Capso code/assets; the project's competing-product restriction applies before its stated future conversion.
-- **Cloned:** no.
-- **Local path:** —
-- **Consultation:** Remote GitHub repository/README, verified 2026-08-23; no local clone was needed.
+- **Cloned:** yes.
+- **Local path:** `~/Documents/Projects/References/Capso/`
+- **Consultation:** Local clone at commit `644d8c2` (`origin/main`), All-In-One custom resize cursors and root `LICENSE` verified 2026-09-11.
 - **Product touchpoints:** Capture, QuickAccess, History, Recording, VideoEditor.
 
 ### Screendrop
@@ -79,8 +79,20 @@ a bounded proposal:
 - **Reuse decision:** Reuse is legally permitted by CC0, but Notinhas will independently reimplement the bounded ideas and will not copy code/assets. Preserve the Cue capture → annotate → clipboard product boundary.
 - **Cloned:** yes.
 - **Local path:** `~/Documents/Projects/References/Screendrop/`
-- **Consultation:** Local clone at commit `f4883be` (`origin/main`), README, recording sources, and root `LICENSE` verified 2026-08-23.
+- **Consultation:** Local clone at commit `57a48dd` (`origin/main`); crop/annotation cursor surfaces rechecked 2026-09-11 (no dedicated selection-resize cursor set).
 - **Product touchpoints:** Recording, VideoEditor, QuickAccess, History, and the frame-to-brief route into Annotate.
+
+### Reframed
+
+- **Classification:** UI/UX; same-domain; engineering.
+- **Remote:** https://github.com/jkuri/Reframed
+- **Description:** Native macOS screen recorder/editor with area capture refinement, timeline editing, and system-cursor recording/replay.
+- **License:** MIT — https://opensource.org/license/mit
+- **Reuse decision:** Inspiration first. Reuse is permitted only with the MIT copyright and license notices for any copied code/assets; none are currently reused.
+- **Cloned:** yes.
+- **Local path:** `~/Documents/Projects/References/Reframed/`
+- **Consultation:** Local clone at commit `b6a1709` (`origin/main`), `ResizeHandle` private AppKit diagonal cursors and root `LICENSE` verified 2026-09-11.
+- **Product touchpoints:** Capture, Recording, VideoEditor.
 
 ## Maintenance rules
 
