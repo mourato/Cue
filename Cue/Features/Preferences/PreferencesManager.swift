@@ -8,6 +8,21 @@
 import Combine
 import Foundation
 
+/// One-shot after-capture matrix override for deeplink `action=` (MainActor only).
+/// While armed, `PreferencesManager.isActionEnabled` reports only this action as enabled.
+@MainActor
+enum AfterCaptureActionOverride {
+    private(set) static var onlyAction: AfterCaptureAction?
+
+    static func arm(_ action: AfterCaptureAction) {
+        onlyAction = action
+    }
+
+    static func clear() {
+        onlyAction = nil
+    }
+}
+
 /// Actions that can be triggered after capture
 enum AfterCaptureAction: String, CaseIterable, Codable {
     case showQuickAccess
@@ -232,7 +247,11 @@ final class PreferencesManager: ObservableObject {
 
     /// Check if an action is enabled for a capture type
     func isActionEnabled(_ action: AfterCaptureAction, for type: CaptureType) -> Bool {
-        afterCaptureActions[action]?[type] ?? defaultValue(for: action, type: type)
+        // ponytail: global one-shot deeplink override; ceiling = concurrent captures share it; upgrade = pass override through capture context
+        if let only = AfterCaptureActionOverride.onlyAction {
+            return action == only && only.supports(type)
+        }
+        return afterCaptureActions[action]?[type] ?? defaultValue(for: action, type: type)
     }
 
     /// Default values for after-capture actions

@@ -44,6 +44,7 @@ final class PostCaptureActionHandlerTests: XCTestCase {
     }
 
     override func tearDown() async throws {
+        AfterCaptureActionOverride.clear()
         if let tempDirectory {
             try? FileManager.default.removeItem(at: tempDirectory)
         }
@@ -187,6 +188,34 @@ final class PostCaptureActionHandlerTests: XCTestCase {
 
         // Re-enable
         preferences.setAction(.showQuickAccess, for: .screenshot, enabled: true)
+        XCTAssertTrue(preferences.isActionEnabled(.showQuickAccess, for: .screenshot))
+    }
+
+    func testOneShotActionOverride_limitsEnabledActionsUntilCleared() async {
+        preferences.setAction(.copyFile, for: .screenshot, enabled: true)
+        preferences.setAction(.showQuickAccess, for: .screenshot, enabled: true)
+        preferences.setAction(.openAnnotate, for: .screenshot, enabled: true)
+
+        AfterCaptureActionOverride.arm(.copyFile)
+        XCTAssertTrue(preferences.isActionEnabled(.copyFile, for: .screenshot))
+        XCTAssertFalse(preferences.isActionEnabled(.showQuickAccess, for: .screenshot))
+        XCTAssertFalse(preferences.isActionEnabled(.openAnnotate, for: .screenshot))
+
+        var copied = 0
+        var annotated = 0
+        let fakeQuickAccess = FakeQuickAccessManager()
+        let handler = makeHandler(
+            quickAccess: fakeQuickAccess,
+            clipboardAction: { _, _ in copied += 1 },
+            annotateAction: { _, _, _ in annotated += 1 },
+        )
+
+        _ = await handler.handleScreenshotCapture(url: tempFileURL)
+
+        XCTAssertEqual(copied, 1)
+        XCTAssertEqual(annotated, 0)
+        XCTAssertTrue(fakeQuickAccess.addedScreenshots.isEmpty)
+        XCTAssertNil(AfterCaptureActionOverride.onlyAction)
         XCTAssertTrue(preferences.isActionEnabled(.showQuickAccess, for: .screenshot))
     }
 

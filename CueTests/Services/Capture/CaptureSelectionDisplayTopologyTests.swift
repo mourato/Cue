@@ -60,4 +60,30 @@ final class CaptureSelectionDisplayTopologyTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(clamped.width, 10)
         XCTAssertGreaterThanOrEqual(clamped.height, 10)
     }
+
+    func testAppKitRect_convertsDisplayLocalTopLeftToGlobalBottomLeft() {
+        let screenFrame = CGRect(x: 100, y: 200, width: 1920, height: 1080)
+        let rect = CaptureSelectionDisplayTopology.appKitRect(
+            fromDisplayLocalTopLeftX: 10,
+            y: 20,
+            width: 300,
+            height: 150,
+            screenFrame: screenFrame,
+        )
+        XCTAssertEqual(rect.origin.x, 110)
+        XCTAssertEqual(rect.origin.y, 200 + 1080 - 20 - 150)
+        XCTAssertEqual(rect.size, CGSize(width: 300, height: 150))
+    }
+
+    func testScreensOrderedForDeepLink_placesMainFirst() {
+        let screens = NSScreen.screens
+        guard screens.count >= 1 else { return }
+        let ordered = CaptureSelectionDisplayTopology.screensOrderedForDeepLink(screens)
+        XCTAssertEqual(ordered.count, screens.count)
+        if let main = ordered.first?.displayID {
+            XCTAssertEqual(main, CGMainDisplayID())
+        }
+        let first = CaptureSelectionDisplayTopology.screenForDeepLinkDisplay(1, screens: screens)
+        XCTAssertEqual(first?.displayID, ordered.first?.displayID)
+    }
 }
