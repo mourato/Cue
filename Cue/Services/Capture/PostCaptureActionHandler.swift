@@ -83,6 +83,8 @@ final class PostCaptureActionHandler {
     /// Execute all enabled post-capture actions for a screenshot
     @discardableResult
     func handleScreenshotCapture(url: URL, pinToScreen: Bool = false) async -> QuickAccessItem? {
+        defer { AfterCaptureActionOverride.clear() }
+
         let outputURL = promptForNameIfNeeded(url, kind: .screenshot)
         let quickAccessItem = await executeActions(
             for: .screenshot,

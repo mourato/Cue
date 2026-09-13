@@ -78,6 +78,56 @@ enum CaptureSelectionDisplayTopology {
         return r
     }
 
+    /// Displays ordered for deeplink `display=` numbering: main first (1), then others.
+    static func screensOrderedForDeepLink(_ screens: [NSScreen] = NSScreen.screens) -> [NSScreen] {
+        let mainID = CGMainDisplayID()
+        var main: NSScreen?
+        var others: [NSScreen] = []
+        for screen in screens {
+            if screen.displayID == mainID {
+                main = screen
+            } else {
+                others.append(screen)
+            }
+        }
+        if let main {
+            return [main] + others
+        }
+        return screens
+    }
+
+    /// Resolves `display` (1-based, main = 1). When omitted, uses the screen under `cursorPoint`.
+    static func screenForDeepLinkDisplay(
+        _ display: Int?,
+        cursorPoint: CGPoint = NSEvent.mouseLocation,
+        screens: [NSScreen] = NSScreen.screens,
+    ) -> NSScreen? {
+        let ordered = screensOrderedForDeepLink(screens)
+        if let display {
+            guard display >= 1, display <= ordered.count else {
+                return screenContaining(point: cursorPoint, screens: screens) ?? ordered.first
+            }
+            return ordered[display - 1]
+        }
+        return screenContaining(point: cursorPoint, screens: screens) ?? ordered.first
+    }
+
+    /// Converts display-local top-left geometry into a global AppKit bottom-left rect.
+    static func appKitRect(
+        fromDisplayLocalTopLeftX x: CGFloat,
+        y: CGFloat,
+        width: CGFloat,
+        height: CGFloat,
+        screenFrame: CGRect,
+    ) -> CGRect {
+        CGRect(
+            x: screenFrame.minX + x,
+            y: screenFrame.maxY - y - height,
+            width: width,
+            height: height,
+        )
+    }
+
     private static func distance(from point: CGPoint, to rect: CGRect) -> CGFloat {
         let dx = max(rect.minX - point.x, 0, point.x - rect.maxX)
         let dy = max(rect.minY - point.y, 0, point.y - rect.maxY)

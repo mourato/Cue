@@ -14,7 +14,7 @@ final class CueDeepLinkHandlerTests: XCTestCase {
         let cases: [(String, CueDeepLinkAction)] = [
             ("cue://capture/fullscreen", .captureFullscreen),
             ("cue://capture/all-in-one", .captureAllInOne),
-            ("cue://capture/area", .captureArea),
+            ("cue://capture/area", .captureArea(.empty)),
             ("cue://capture/application", .captureApplication),
             ("cue://capture/area-annotate", .captureAreaAnnotate),
             ("cue://capture/scrolling", .captureScrolling),
@@ -235,5 +235,63 @@ final class CueDeepLinkHandlerTests: XCTestCase {
     func testVideoDeepLinkRoutingGateMatchesExplicitFlags() {
         XCTAssertFalse(VideoModuleMediaRouting.shouldDispatchVideoAction(videoModuleEnabled: false))
         XCTAssertTrue(VideoModuleMediaRouting.shouldDispatchVideoAction(videoModuleEnabled: true))
+    }
+
+    func testCaptureAreaQueryParsesGeometryDisplayAndAction() throws {
+        let url = try XCTUnwrap(
+            URL(string: "cue://capture/area?x=10&y=20&width=300&height=200&display=2&action=copy"),
+        )
+        XCTAssertEqual(
+            CueDeepLinkAction(url: url),
+            .captureArea(
+                CaptureAreaDeepLinkQuery(
+                    x: 10,
+                    y: 20,
+                    width: 300,
+                    height: 200,
+                    display: 2,
+                    action: .copyFile,
+                ),
+            ),
+        )
+    }
+
+    func testCaptureAreaQueryMapsActionAliases() throws {
+        let cases: [(String, AfterCaptureAction)] = [
+            ("copy", .copyFile),
+            ("save", .save),
+            ("annotate", .openAnnotate),
+            ("upload", .uploadToCloud),
+            ("pin", .pinToScreen),
+        ]
+        for (action, expected) in cases {
+            let url = try XCTUnwrap(URL(string: "cue://capture/area?action=\(action)"))
+            XCTAssertEqual(
+                CueDeepLinkAction(url: url),
+                .captureArea(CaptureAreaDeepLinkQuery(action: expected)),
+                action,
+            )
+        }
+    }
+
+    func testCaptureAreaQueryIgnoresUnknownActionAndIncompleteGeometry() throws {
+        let url = try XCTUnwrap(URL(string: "cue://capture/area?x=1&width=100&action=nope"))
+        let action = try XCTUnwrap(CueDeepLinkAction(url: url))
+        guard case .captureArea(let query) = action else {
+            return XCTFail("expected captureArea")
+        }
+        XCTAssertEqual(query.x, 1)
+        XCTAssertEqual(query.width, 100)
+        XCTAssertNil(query.action)
+        XCTAssertFalse(query.hasCompleteGeometry)
+        XCTAssertNil(CueDeepLinkHandler.resolveAreaRect(query))
+    }
+
+    func testCaptureAreaAliasesPreserveQueryParams() throws {
+        let url = try XCTUnwrap(URL(string: "cue://screenshot/area?action=annotate"))
+        XCTAssertEqual(
+            CueDeepLinkAction(url: url),
+            .captureArea(CaptureAreaDeepLinkQuery(action: .openAnnotate)),
+        )
     }
 }

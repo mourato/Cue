@@ -137,7 +137,7 @@ Dispatch: AppleEvent `kAEGetURL` → `AppDelegate` (queued pre-launch) → `AppC
 | Route | Action |
 | --- | --- |
 | `cue://capture/fullscreen` | Capture fullscreen |
-| `cue://capture/area` | Capture area |
+| `cue://capture/area` | Capture area (optional query params below) |
 | `cue://capture/all-in-one` | All-In-One capture HUD |
 | `cue://capture/application` | Application-window capture |
 | `cue://capture/active-window` | Capture active window |
@@ -159,6 +159,15 @@ Dispatch: AppleEvent `kAEGetURL` → `AppDelegate` (queued pre-launch) → `AppC
 
   ```sh
   open 'cue://open/combine?file=/tmp/first.png&file=/tmp/second.png'
+  ```
+
+- `capture/area` query params (all optional):
+  - `x`, `y`, `width`, `height` — display-local top-left geometry. When all four are present and `width`/`height` > 0, Cue captures that rect immediately (no selection overlay). Incomplete geometry falls back to interactive area selection.
+  - `display` — 1-based display index (`1` = main). When omitted, uses the display under the cursor.
+  - `action` — one-shot post-capture override for this capture only: `copy`, `save`, `annotate`, `upload`, `pin` (maps to `copyFile` / `save` / `openAnnotate` / `uploadToCloud` / `pinToScreen`). When set, preference matrix actions other than that one are ignored for the capture. When omitted, normal after-capture preferences apply.
+
+  ```sh
+  open 'cue://capture/area?x=100&y=200&width=800&height=600&display=1&action=copy'
   ```
 
 - Settings destinations: `general`, `capture`, `quick-access`, `history`, `shortcuts`, `uploads`, `advanced` (plus `screen-recording` when the Video module is compiled in). Legacy `annotate` / `annotation` / `annotations` aliases open **Screenshot** (`capture`). Legacy `permissions` / `privacy` aliases open **Advanced**. Also accepted as path form (`cue://settings/capture`).

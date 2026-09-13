@@ -23,6 +23,23 @@ enum CueURLScheme {
     }
 }
 
+/// Optional query parameters for `cue://capture/area`.
+struct CaptureAreaDeepLinkQuery: Equatable {
+    var x: CGFloat?
+    var y: CGFloat?
+    var width: CGFloat?
+    var height: CGFloat?
+    var display: Int?
+    var action: AfterCaptureAction?
+
+    static let empty = CaptureAreaDeepLinkQuery()
+
+    var hasCompleteGeometry: Bool {
+        guard let width, let height, x != nil, y != nil else { return false }
+        return width > 0 && height > 0
+    }
+}
+
 @MainActor
 struct CueDeepLinkHandler {
     private let screenCaptureViewModel: ScreenCaptureViewModel
@@ -66,8 +83,8 @@ struct CueDeepLinkHandler {
         switch action {
         case .captureFullscreen:
             screenCaptureViewModel.captureFullscreen()
-        case .captureArea:
-            screenCaptureViewModel.captureArea()
+        case .captureArea(let query):
+            handleCaptureArea(query)
         case .captureAllInOne:
             screenCaptureViewModel.captureAllInOne()
         case .captureApplication:
@@ -128,6 +145,36 @@ struct CueDeepLinkHandler {
         }
     }
 
+    private func handleCaptureArea(_ query: CaptureAreaDeepLinkQuery) {
+        if let rect = Self.resolveAreaRect(query) {
+            screenCaptureViewModel.captureArea(at: rect, afterCaptureAction: query.action)
+        } else {
+            screenCaptureViewModel.captureArea(afterCaptureAction: query.action)
+        }
+    }
+
+    /// Converts complete display-local top-left geometry into a clamped AppKit screen rect.
+    static func resolveAreaRect(_ query: CaptureAreaDeepLinkQuery) -> CGRect? {
+        guard query.hasCompleteGeometry,
+              let x = query.x,
+              let y = query.y,
+              let width = query.width,
+              let height = query.height,
+              let screen = CaptureSelectionDisplayTopology.screenForDeepLinkDisplay(query.display)
+        else {
+            return nil
+        }
+
+        let raw = CaptureSelectionDisplayTopology.appKitRect(
+            fromDisplayLocalTopLeftX: x,
+            y: y,
+            width: width,
+            height: height,
+            screenFrame: screen.frame,
+        )
+        return CaptureSelectionDisplayTopology.clampRect(raw, to: screen.frame)
+    }
+
     private func logIgnoredVideoDeepLink(action: CueDeepLinkAction) {
         DiagnosticLogger.shared.log(
             .info,
@@ -140,7 +187,7 @@ struct CueDeepLinkHandler {
 
 enum CueDeepLinkAction: Equatable {
     case captureFullscreen
-    case captureArea
+    case captureArea(CaptureAreaDeepLinkQuery)
     case captureAllInOne
     case captureApplication
     case captureActiveWindow
@@ -171,7 +218,7 @@ enum CueDeepLinkAction: Equatable {
         case "capture/fullscreen", "capture-screen", "capture-fullscreen", "fullscreen", "screenshot/fullscreen":
             self = .captureFullscreen
         case "capture/area", "capture-area", "area", "screenshot/area":
-            self = .captureArea
+            self = .captureArea(Self.captureAreaQuery(from: components))
         case "capture/all-in-one", "capture-all-in-one", "all-in-one", "screenshot/all-in-one":
             self = .captureAllInOne
         case "capture/application", "capture/window", "application-capture", "window-capture", "screenshot/window":
@@ -219,7 +266,8 @@ enum CueDeepLinkAction: Equatable {
     var logName: String {
         switch self {
         case .captureFullscreen: "captureFullscreen"
-        case .captureArea: "captureArea"
+        case .captureArea(let query):
+            query == .empty ? "captureArea" : "captureArea(params)"
         case .captureAllInOne: "captureAllInOne"
         case .captureApplication: "captureApplication"
         case .captureActiveWindow: "captureActiveWindow"
@@ -236,6 +284,37 @@ enum CueDeepLinkAction: Equatable {
         case .openHistory: "openHistory"
         case .showShortcuts: "showShortcuts"
         case .openSettings(let tab): "openSettings(\(String(describing: tab)))"
+        }
+    }
+
+    private static func captureAreaQuery(from components: URLComponents?) -> CaptureAreaDeepLinkQuery {
+        let items = components?.queryItems ?? []
+        func value(_ name: String) -> String? {
+            items.first(where: { $0.name.lowercased() == name })?.value
+        }
+        func cgFloat(_ name: String) -> CGFloat? {
+            guard let raw = value(name), let number = Double(raw) else { return nil }
+            return CGFloat(number)
+        }
+
+        return CaptureAreaDeepLinkQuery(
+            x: cgFloat("x"),
+            y: cgFloat("y"),
+            width: cgFloat("width"),
+            height: cgFloat("height"),
+            display: value("display").flatMap(Int.init),
+            action: afterCaptureAction(named: value("action")),
+        )
+    }
+
+    private static func afterCaptureAction(named name: String?) -> AfterCaptureAction? {
+        switch name?.lowercased() {
+        case "copy": .copyFile
+        case "save": .save
+        case "annotate": .openAnnotate
+        case "upload": .uploadToCloud
+        case "pin": .pinToScreen
+        default: nil
         }
     }
 

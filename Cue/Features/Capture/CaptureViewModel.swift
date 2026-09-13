@@ -139,11 +139,13 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
     func recordCaptureResult(_ result: CaptureResult) {
         lastCaptureResult = result
         guard case .failure(let error) = result else { return }
+        AfterCaptureActionOverride.clear()
         recordCaptureFailureFeedback(for: error)
     }
 
     func recordCaptureFailure(_ error: CaptureError) {
         lastCaptureResult = .failure(error)
+        AfterCaptureActionOverride.clear()
         recordCaptureFailureFeedback(for: error)
     }
 
@@ -568,8 +570,8 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         }
     }
 
-    func captureArea() {
-        startAreaCapture(initialInteractionMode: .manualRegion)
+    func captureArea(afterCaptureAction: AfterCaptureAction? = nil) {
+        startAreaCapture(initialInteractionMode: .manualRegion, afterCaptureAction: afterCaptureAction)
     }
 
     func captureAllInOne() {
@@ -599,7 +601,10 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         AllInOneCaptureCoordinator.shared.cancel()
     }
 
-    func captureArea(at rect: CGRect) {
+    func captureArea(at rect: CGRect, afterCaptureAction: AfterCaptureAction? = nil) {
+        if let afterCaptureAction {
+            AfterCaptureActionOverride.arm(afterCaptureAction)
+        }
         Task { @MainActor in
             await performAreaCapture(at: rect)
         }
@@ -760,7 +765,10 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         startInlineAreaAnnotateCapture()
     }
 
-    private func startAreaCapture(initialInteractionMode: AreaSelectionInteractionMode) {
+    private func startAreaCapture(
+        initialInteractionMode: AreaSelectionInteractionMode,
+        afterCaptureAction: AfterCaptureAction? = nil,
+    ) {
         cancelAllInOneSessionIfNeeded()
 
         // Prevent multiple area captures - only one at a time
@@ -778,6 +786,10 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
             return
         }
         saveDirectory = resolvedSaveDirectory
+
+        if let afterCaptureAction {
+            AfterCaptureActionOverride.arm(afterCaptureAction)
+        }
 
         let captureContext = CaptureContext.fromFrontmostApp()
         // Set flag BEFORE delay to close the race window
@@ -1195,7 +1207,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 resolvedSession().invalidate()
                 hiddenWindowSession.restore()
                 DiagnosticLogger.shared.log(.info, .capture, "Area capture cancelled by user")
-                lastCaptureResult = .failure(.cancelled)
+                recordCaptureFailure(.cancelled)
                 return
             }
 
@@ -1395,7 +1407,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
             guard let selection else {
                 hiddenWindowSession.restore()
                 DiagnosticLogger.shared.log(.info, .capture, "Live area capture cancelled by user")
-                lastCaptureResult = .failure(.cancelled)
+                recordCaptureFailure(.cancelled)
                 return
             }
 
