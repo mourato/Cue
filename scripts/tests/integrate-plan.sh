@@ -173,6 +173,10 @@ setup_repo() {
   install_integrate_plan "$tmp"
   git -C "$tmp" add scripts/integrate-plan.sh
   git -C "$tmp" commit -q -m "add integrate-plan"
+  git -C "$tmp" push -q origin main
+  git -C "$tmp" checkout -q advisor/feature
+  git -C "$tmp" rebase -q main
+  git -C "$tmp" checkout -q main
   printf '%s|%s' "$tmp" "$bare"
 }
 
@@ -204,6 +208,8 @@ main() {
   assert_exit "help exits zero" 0 "$INTEGRATE_PLAN" --help
   assert_output_contains "help documents dry-run default" "--dry-run" "$INTEGRATE_PLAN" --help
   assert_output_contains "help documents apply" "--apply" "$INTEGRATE_PLAN" --help
+  assert_output_contains "help documents ff-only" "--ff-only" "$INTEGRATE_PLAN" --help
+  assert_output_contains "help documents explicit fallback" "--merge-fallback" "$INTEGRATE_PLAN" --help
   assert_output_contains "help documents no force push" "No force-push" "$INTEGRATE_PLAN" --help
 
   local repo_pair repo bare
@@ -223,6 +229,10 @@ main() {
   assert_output_missing "dry-run avoids force push" "--force" \
     run_integrate "$repo" --dry-run --source-branch advisor/feature --target-branch main --remote origin
   assert_output_contains "dry-run plans post-merge validation" "make -C" \
+    run_integrate "$repo" --dry-run --source-branch advisor/feature --target-branch main --remote origin
+  assert_output_contains "dry-run prefers ff-only" "merge --ff-only" \
+    run_integrate "$repo" --dry-run --source-branch advisor/feature --target-branch main --remote origin
+  assert_output_missing "dry-run does not plan traditional merge" "merge --no-ff" \
     run_integrate "$repo" --dry-run --source-branch advisor/feature --target-branch main --remote origin
 
   manifest="$(write_evidence_bundle "$repo" "advisor/feature" "$sha")"
@@ -287,6 +297,29 @@ main() {
     fail "push updated bare remote" "origin/main missing"
   fi
 
+  local fallback_repo_pair fallback_repo fallback_bare fallback_sha fallback_manifest
+  fallback_repo_pair="$(setup_repo)"
+  fallback_repo="${fallback_repo_pair%%|*}"
+  fallback_bare="${fallback_repo_pair##*|}"
+  fallback_sha="$(source_sha "$fallback_repo")"
+  fallback_manifest="$(write_evidence_bundle "$fallback_repo" "advisor/feature" "$fallback_sha")"
+  printf 'target\n' >"${fallback_repo}/target.txt"
+  git -C "$fallback_repo" add target.txt
+  git -C "$fallback_repo" commit -q -m "target change"
+  git -C "$fallback_repo" push -q origin main
+  assert_exit "explicit fallback apply succeeds" 0 \
+    run_integrate "$fallback_repo" --apply --merge-fallback --fetch \
+      --source-branch advisor/feature --target-branch main --remote origin \
+      --evidence "$fallback_manifest" --reviewed-commit "$fallback_sha"
+  TESTS_RUN=$((TESTS_RUN + 1))
+  if [[ -n "$(git -C "$fallback_repo" rev-list --merges main)" ]]; then
+    pass
+    printf 'ok  explicit fallback creates merge commit\n'
+  else
+    fail "explicit fallback creates merge commit" "main has no merge commit"
+  fi
+  rm -rf "$fallback_repo" "$fallback_bare"
+
   local conflict_repo_pair conflict_repo conflict_bare conflict_sha conflict_manifest
   conflict_repo_pair="$(setup_repo)"
   conflict_repo="${conflict_repo_pair%%|*}"
@@ -296,12 +329,24 @@ main() {
   echo "conflict on main" >>"${conflict_repo}/README.md"
   git -C "$conflict_repo" add README.md
   git -C "$conflict_repo" commit -q -m "conflict on main"
-  assert_exit "merge conflict stops apply" 1 \
+  git -C "$conflict_repo" push -q origin main
+  assert_exit "unprepared source stops apply" 1 \
     run_integrate "$conflict_repo" --apply --source-branch advisor/feature --target-branch main \
       --remote origin --evidence "$conflict_manifest" --reviewed-commit "$conflict_sha"
-  assert_output_contains "merge conflict stop" "STOP:" \
+  assert_output_contains "unprepared source stop" "must be rebased" \
     run_integrate "$conflict_repo" --apply --source-branch advisor/feature --target-branch main \
       --remote origin --evidence "$conflict_manifest" --reviewed-commit "$conflict_sha"
+  assert_output_contains "fallback plans traditional merge" "merge --no-ff" \
+    run_integrate "$conflict_repo" --dry-run --merge-fallback \
+      --source-branch advisor/feature --target-branch main --remote origin
+  assert_exit "explicit fallback conflict stops apply" 1 \
+    run_integrate "$conflict_repo" --apply --merge-fallback --source-branch advisor/feature \
+      --target-branch main --remote origin --evidence "$conflict_manifest" \
+      --reviewed-commit "$conflict_sha"
+  assert_output_contains "explicit fallback conflict stop" "STOP:" \
+    run_integrate "$conflict_repo" --apply --merge-fallback --source-branch advisor/feature \
+      --target-branch main --remote origin --evidence "$conflict_manifest" \
+      --reviewed-commit "$conflict_sha"
   rm -rf "$conflict_repo" "$conflict_bare"
 
   local push_repo_pair push_repo push_bare push_sha push_manifest
@@ -310,7 +355,8 @@ main() {
   push_bare="${push_repo_pair##*|}"
   push_sha="$(source_sha "$push_repo")"
   push_manifest="$(write_evidence_bundle "$push_repo" "advisor/feature" "$push_sha")"
-  rm -rf "$push_bare"
+  printf '#!/usr/bin/env bash\nexit 1\n' >"${push_bare}/hooks/pre-receive"
+  chmod +x "${push_bare}/hooks/pre-receive"
   assert_exit "failed push stops apply" 1 \
     run_integrate "$push_repo" --apply --source-branch advisor/feature --target-branch main \
       --remote origin --evidence "$push_manifest" --reviewed-commit "$push_sha"

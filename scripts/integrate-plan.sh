@@ -1,7 +1,7 @@
 #!/bin/bash
 # Explicit local Git integration protocol for Notinhas handoff plans.
-# After review and remediation, follows the global merge -> validate -> push
-# -> cleanup lifecycle.
+# After review and remediation, follows the global rebase -> ff-only merge ->
+# validate -> push -> cleanup lifecycle.
 #
 # Usage:
 #   ./scripts/integrate-plan.sh --dry-run \
@@ -19,6 +19,7 @@ DRY_RUN=1
 APPLY=0
 FETCH=0
 CLEANUP=0
+MERGE_FALLBACK=0
 SOURCE_BRANCH=""
 TARGET_BRANCH=""
 REMOTE=""
@@ -47,7 +48,8 @@ Required arguments:
 Modes:
   --dry-run                 Preview the protocol (default).
   --apply                   Perform the guarded merge/validate/push sequence.
-                            Requires --evidence and --reviewed-commit.
+                            Requires --evidence and --reviewed-commit. The
+                            default merge strategy is --ff-only.
 
 Evidence and review (required with --apply):
   --evidence PATH           Integration evidence manifest or report file.
@@ -61,7 +63,11 @@ Evidence and review (required with --apply):
                             only; it does not judge review quality.
 
 Optional apply flags:
-  --fetch                   Fetch the named remote before merging.
+  --fetch                   Include a fetch in the dry-run plan; apply mode
+                            always fetches before its target check.
+  --merge-fallback          Explicitly permit --no-ff for an intentional
+                            traditional merge; it never rebases or resolves
+                            conflicts automatically.
   --cleanup                 After a successful push, delete the recorded source
                             branch when its identity matches --source-branch.
   --source-worktree PATH    Expected source worktree path for cleanup checks.
@@ -69,7 +75,10 @@ Optional apply flags:
                             current worktree must match before apply.
 
 Safety policy:
-  - No force-push, rebase, or automatic conflict resolution.
+  - The default requires the reviewed source tip to be rebased onto the target
+    and uses --ff-only.
+  - --merge-fallback is explicit only and uses --no-ff when needed.
+  - No force-push, rebase after review, or automatic conflict resolution.
   - Runs make validate after merge and before push.
   - Stops on dirty worktree, missing refs, merge conflicts, failed pushes,
     evidence gaps, or mismatched reviewed commits.
@@ -154,6 +163,10 @@ parse_args() {
         ;;
       --fetch)
         FETCH=1
+        shift
+        ;;
+      --merge-fallback)
+        MERGE_FALLBACK=1
         shift
         ;;
       --cleanup)
@@ -274,6 +287,52 @@ check_target_worktree() {
 resolve_ref() {
   local ref="$1"
   git -C "$REPO_ROOT" rev-parse --verify "$ref" 2>/dev/null
+}
+
+MERGE_STRATEGY=""
+
+resolve_merge_strategy() {
+  local source_sha="$1"
+  local target_sha="$2"
+  if git -C "$REPO_ROOT" merge-base --is-ancestor "$source_sha" "$target_sha"; then
+    MERGE_STRATEGY="already-integrated"
+  elif git -C "$REPO_ROOT" merge-base --is-ancestor "$target_sha" "$source_sha"; then
+    MERGE_STRATEGY="ff-only"
+  elif [[ "$MERGE_FALLBACK" -eq 1 ]]; then
+    MERGE_STRATEGY="no-ff-fallback"
+  else
+    MERGE_STRATEGY=""
+    return 1
+  fi
+}
+
+check_merge_strategy() {
+  local source_sha="$1"
+  local target_sha="$2"
+  if resolve_merge_strategy "$source_sha" "$target_sha"; then
+    record_check "merge_strategy" 1 "$MERGE_STRATEGY"
+    return 0
+  fi
+  record_check "merge_strategy" 0 \
+    "source tip must be rebased onto ${TARGET_BRANCH}; use --merge-fallback only for an intentional traditional merge"
+  return 1
+}
+
+check_target_remote_sync() {
+  local target_sha remote_target_sha
+  target_sha="$(resolve_ref "$TARGET_BRANCH" || true)"
+  remote_target_sha="$(resolve_ref "${REMOTE}/${TARGET_BRANCH}" || true)"
+  if [[ -z "$remote_target_sha" ]]; then
+    record_check "target_remote_sync" 0 "cannot resolve ${REMOTE}/${TARGET_BRANCH}"
+    return 1
+  fi
+  if [[ "$target_sha" != "$remote_target_sha" ]]; then
+    record_check "target_remote_sync" 0 \
+      "${TARGET_BRANCH} ${target_sha:-unknown} != ${REMOTE}/${TARGET_BRANCH} ${remote_target_sha}"
+    return 1
+  fi
+  record_check "target_remote_sync" 1 "target matches ${REMOTE}/${TARGET_BRANCH}"
+  return 0
 }
 
 check_refs() {
@@ -431,13 +490,17 @@ check_reviewed_commit() {
 
 build_plan() {
   local source_sha="$1"
-  if [[ "$FETCH" -eq 1 ]]; then
+  if [[ "$FETCH" -eq 1 || "$APPLY" -eq 1 ]]; then
     plan_command "git -C ${REPO_ROOT} fetch ${REMOTE}"
   fi
   plan_command "git -C ${REPO_ROOT} checkout ${TARGET_BRANCH}"
-  plan_command "git -C ${REPO_ROOT} merge --no-ff ${SOURCE_BRANCH}"
+  if [[ "$MERGE_STRATEGY" == "no-ff-fallback" ]]; then
+    plan_command "git -C ${REPO_ROOT} merge --no-ff --no-edit ${SOURCE_BRANCH}"
+  else
+    plan_command "git -C ${REPO_ROOT} merge --ff-only ${SOURCE_BRANCH}"
+  fi
   plan_command "make -C ${REPO_ROOT} validate"
-  plan_command "git -C ${REPO_ROOT} push ${REMOTE} ${TARGET_BRANCH}"
+  plan_command "git -C ${REPO_ROOT} push ${REMOTE} ${TARGET_BRANCH}:${TARGET_BRANCH}"
   if [[ "$CLEANUP" -eq 1 ]]; then
     if [[ -n "$SOURCE_WORKTREE" ]]; then
       plan_command "git -C ${REPO_ROOT} worktree remove ${SOURCE_WORKTREE}"
@@ -450,22 +513,29 @@ build_plan() {
 run_apply() {
   local source_sha="$1"
   info "APPLY: starting guarded integration"
-  if [[ "$FETCH" -eq 1 ]]; then
-    git -C "$REPO_ROOT" fetch "$REMOTE"
-  fi
+  git -C "$REPO_ROOT" fetch "$REMOTE"
+  check_target_remote_sync || stop "target is not synchronized with ${REMOTE}; fast-forward it and retry"
   local current_source_sha
   current_source_sha="$(resolve_ref "$SOURCE_BRANCH" || true)"
   if [[ "$current_source_sha" != "$source_sha" ]]; then
     stop "source branch changed after evidence validation"
   fi
+  local current_target_sha
+  current_target_sha="$(resolve_ref "$TARGET_BRANCH" || true)"
+  check_merge_strategy "$source_sha" "$current_target_sha" \
+    || stop "source is no longer prepared for ${MERGE_STRATEGY:-ff-only} integration"
   git -C "$REPO_ROOT" checkout "$TARGET_BRANCH"
-  if ! git -C "$REPO_ROOT" merge --no-ff "$SOURCE_BRANCH"; then
+  if [[ "$MERGE_STRATEGY" == "no-ff-fallback" ]]; then
+    if ! git -C "$REPO_ROOT" merge --no-ff --no-edit "$SOURCE_BRANCH"; then
+      stop "fallback merge failed or conflicts detected"
+    fi
+  elif ! git -C "$REPO_ROOT" merge --ff-only "$SOURCE_BRANCH"; then
     stop "merge failed or conflicts detected"
   fi
   if ! make -C "$REPO_ROOT" validate; then
     stop "post-merge validation failed; target remains merged and unpushed"
   fi
-  if ! git -C "$REPO_ROOT" push "$REMOTE" "$TARGET_BRANCH"; then
+  if ! git -C "$REPO_ROOT" push "$REMOTE" "$TARGET_BRANCH:$TARGET_BRANCH"; then
     stop "push failed"
   fi
   if [[ "$CLEANUP" -eq 1 ]]; then
@@ -502,6 +572,14 @@ main() {
 
   local source_sha
   source_sha="$(check_refs)" || failed=1
+  if [[ "$failed" -eq 1 ]]; then
+    emit_checks
+    stop "preflight checks failed"
+  fi
+
+  local target_sha
+  target_sha="$(resolve_ref "$TARGET_BRANCH" || true)"
+  check_merge_strategy "$source_sha" "$target_sha" || failed=1
   if [[ "$failed" -eq 1 ]]; then
     emit_checks
     stop "preflight checks failed"

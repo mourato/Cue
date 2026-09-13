@@ -117,15 +117,18 @@ Prompt the subagent to:
   capture reports under `build/plan-preflight/` and `build/verification/`.
 - Preview integration with `./scripts/integrate-plan.sh --dry-run` using
   explicit `--source-branch`, `--target-branch`, and `--remote`.
-- The executor never merges, pushes, or cleans up. After review and explicit
-  authorization, the orchestrator may run `./scripts/integrate-plan.sh
-  --apply --fetch` with `--evidence` (integration manifest or passing reports)
-  and `--reviewed-commit` matching the source tip; add `--cleanup` only after a
-  successful post-merge validation and push for the recorded source
-  branch/worktree.
-- The script performs merge (`--no-ff`), `make validate`, push (never
-  `--force`), and optional cleanup in that order. It does not mark plans
-  `DONE`; thermo review still follows.
+- The executor never merges, pushes, or cleans up. Before review, the source
+  tip must be rebased onto the target and the reviewed SHA must be that exact
+  tip. After review and explicit authorization, the orchestrator may run
+  `./scripts/integrate-plan.sh --apply --fetch` with `--evidence` (integration
+  manifest or passing reports) and `--reviewed-commit` matching the source
+  tip; add `--cleanup` only after a successful post-merge validation and push
+  for the recorded source branch/worktree.
+- The script performs a default fast-forward-only merge (`--ff-only`),
+  `make validate`, push (never `--force`), and optional cleanup in that order.
+  `--merge-fallback` explicitly permits a traditional `--no-ff` merge when
+  required; it never rebases after review or auto-resolves conflicts. It does
+  not mark plans `DONE`; thermo review still follows.
 - Reply with:
 
 ```

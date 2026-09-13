@@ -149,11 +149,16 @@ Accessibility / TCC / WindowServer / clipboard checks when those surfaces change
 ## Local Git integration protocol
 
 After preflight and changed-surface verification succeed, use the integration
-protocol runner to standardize commit → merge → cleanup → push. Default mode is
-**dry-run** (no Git side effects). `--apply` requires explicit source/target
-refs, remote name, evidence path, and `--reviewed-commit` matching the source
-tip. The command never force-pushes, auto-resolves conflicts, or marks plans
-`DONE` in `plans/README.md`; integrated thermo review remains mandatory.
+protocol runner to standardize commit → prepare/rebase → review → merge →
+validate → push → cleanup. Default mode is **dry-run** (no Git side effects).
+Before evidence is captured, run `git rebase <target-branch>` from the source
+worktree and review that exact tip. `--apply` requires explicit source/target
+refs, remote name,
+evidence path, and `--reviewed-commit` matching the source tip. The default
+merge is `--ff-only`; `--merge-fallback` explicitly permits `--no-ff` when a
+traditional merge is intentional. The command never force-pushes, rebases
+after review, auto-resolves conflicts, or marks plans `DONE` in
+`plans/README.md`; integrated thermo review remains mandatory.
 
 ```bash
 ./scripts/integrate-plan.sh --dry-run \

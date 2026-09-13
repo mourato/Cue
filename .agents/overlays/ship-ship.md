@@ -51,10 +51,15 @@ reviewed source tip:
 
 `--evidence` accepts a Cue integration manifest, a passing
 plan-preflight JSON report (plan units), or verification evidence tied to
-the source commit. After review and remediation, the script merges with
-`--no-ff`, runs `make validate`, pushes without `--force`, and only then
-performs optional recorded worktree/branch cleanup. It never marks plans
-`DONE` — review and index updates stay with the orchestrator after ship.
+the source commit. Before evidence is captured, prepare the source branch by
+running `git rebase <target-branch>` from its worktree, then review that exact
+tip. After review and
+remediation, the script uses `--ff-only`, runs `make validate`, pushes without
+`--force`, and only then performs optional recorded worktree/branch cleanup.
+Use `--merge-fallback` only for an intentional traditional merge; it uses
+`--no-ff` and still stops on conflicts. It never rebases after review, marks
+plans `DONE`, or auto-resolves conflicts — review and index updates stay with
+the orchestrator after ship.
 
 ## Plans index
 
