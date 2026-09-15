@@ -3,7 +3,8 @@
     //  GIFProcessingTests.swift
     //  NotinhasTests
 //
-    //  Unit tests for GIF frame planning (duplicate collapse) and palette quantization.
+    //  Unit tests for GIF frame planning (duplicate collapse) — frames stay
+    //  full-color (Macshot strategy): no manual palette quantization.
 //
 
     import CoreGraphics
@@ -11,12 +12,20 @@
     import XCTest
 
     final class GIFProcessingTests: XCTestCase {
-        func testPaletteColorCount_mapsQualityRange() {
-            XCTAssertEqual(GIFPaletteQuantizer.colorCount(for: 1.0), 256)
-            XCTAssertEqual(GIFPaletteQuantizer.colorCount(for: 2.0), 256)
-            XCTAssertEqual(GIFPaletteQuantizer.colorCount(for: 0.75), 178)
-            XCTAssertEqual(GIFPaletteQuantizer.colorCount(for: 0.1), 16)
-            XCTAssertEqual(GIFPaletteQuantizer.colorCount(for: 0.0), 16)
+        func testGifskiQuality_mapsSliderRange() {
+            XCTAssertEqual(gifskiQuality(for: 1.0), 100)
+            XCTAssertEqual(gifskiQuality(for: 0.75), 75)
+            XCTAssertEqual(gifskiQuality(for: 0.1), 30)
+            XCTAssertEqual(gifskiQuality(for: 0.0), 30)
+            XCTAssertEqual(gifskiQuality(for: 2.0), 100)
+        }
+
+        func testDefaultOptions_preserveFullQuality() {
+            XCTAssertEqual(GIFConverter.Options.default.quality, 1.0)
+        }
+
+        func testLocateGifskiBinary_returnsWithoutCrashing() {
+            _ = locateGifskiBinary()
         }
 
         func testCollapse_extendsDelayForConsecutiveDuplicates() {
@@ -58,27 +67,17 @@
             )
         }
 
-        func testQuantize_preservesTwoColorImageWithinBudget() throws {
-            let image = try halfSplitImage(
-                left: (255, 0, 0),
-                right: (0, 0, 255),
-                width: 64,
-                height: 64,
-            )
-            let quantized = try XCTUnwrap(GIFPaletteQuantizer.quantize(image, maxColors: 2))
-
-            XCTAssertEqual(quantized.width, 64)
-            XCTAssertEqual(quantized.height, 64)
-            XCTAssertLessThanOrEqual(try distinctColorCount(of: quantized), 2)
-        }
-
-        func testQuantize_reducesGradientToBudget() throws {
+        func testProcess_keepsFullColorRegardlessOfQuality() throws {
             let image = try horizontalGradientImage(width: 256, height: 16)
-            let quantized = try XCTUnwrap(GIFPaletteQuantizer.quantize(image, maxColors: 16))
+            var options = GIFConverter.Options()
+            options.fps = 10
+            options.optimize = false
+            options.quality = 0.1
 
-            XCTAssertEqual(quantized.width, 256)
-            XCTAssertEqual(quantized.height, 16)
-            XCTAssertLessThanOrEqual(try distinctColorCount(of: quantized), 16)
+            let planned = GIFFramePlan.process(frames: [image], options: options)
+
+            XCTAssertEqual(planned.images.count, 1)
+            XCTAssertGreaterThan(try distinctColorCount(of: planned.images[0]), 200)
         }
 
         func testProcess_withoutOptimizeKeepsAllFrames() throws {
@@ -122,25 +121,6 @@
                 mutable[i + 3] = 255
             }
             return try imageFromRGBA(width: size, height: size, pixels: mutable)
-        }
-
-        private func halfSplitImage(
-            left: (UInt8, UInt8, UInt8),
-            right: (UInt8, UInt8, UInt8),
-            width: Int,
-            height: Int,
-        ) throws -> CGImage {
-            var pixels = [UInt8](repeating: 255, count: width * height * 4)
-            for y in 0 ..< height {
-                for x in 0 ..< width {
-                    let base = (y * width + x) * 4
-                    let color = x < width / 2 ? left : right
-                    pixels[base] = color.0
-                    pixels[base + 1] = color.1
-                    pixels[base + 2] = color.2
-                }
-            }
-            return try imageFromRGBA(width: width, height: height, pixels: pixels)
         }
 
         private func horizontalGradientImage(width: Int, height: Int) throws -> CGImage {

@@ -3,13 +3,15 @@
     //  GIFConverter.swift
     //  Notinhas
 //
-    //  Converts video files to animated GIF using AVFoundation + ImageIO
-    //  Optimizes for visual quality while keeping file size reasonable
-    //  No FFmpeg dependency — pure Apple frameworks
+    //  Converts video files to animated GIF (Macshot strategy):
+    //  gifski when available (bundled/Homebrew auto-detect, --quality 90-class),
+    //  otherwise full-color frames straight to ImageIO with no manual palette cut.
+    //  No FFmpeg dependency.
 //
 
     import AVFoundation
     import CoreGraphics
+    import CoreVideo
     import Foundation
     import ImageIO
     import UniformTypeIdentifiers
@@ -28,8 +30,9 @@
             /// Collapse consecutive duplicate frames, extending the previous frame delay
             var optimize: Bool = true
 
-            /// Output quality 0.1 (low) … 1.0 (high); maps to palette color count
-            var quality: Double = 0.75
+            /// Output quality 0.1 (low) … 1.0 (high); maps to gifski --quality.
+            /// The ImageIO fallback always receives full-color frames.
+            var quality: Double = 1.0
 
             /// Infinite loop by default
             var loopCount: Int = 0
@@ -102,6 +105,30 @@
             let outputWidth = Int(naturalSize.width * scale)
             let outputHeight = Int(naturalSize.height * scale)
 
+            // Preferred path (Macshot): gifski when a binary is available.
+            // Optional auto-detect only — any failure falls through to ImageIO.
+            if let gifskiBinary = locateGifskiBinary() {
+                do {
+                    return try await exportViaGifski(
+                        binary: gifskiBinary,
+                        asset: asset,
+                        videoURL: videoURL,
+                        outputWidth: outputWidth,
+                        outputHeight: outputHeight,
+                        durationSeconds: durationSeconds,
+                        options: options,
+                        onProgress: onProgress,
+                    )
+                } catch {
+                    DiagnosticLogger.shared.log(
+                        .warning,
+                        .recording,
+                        "GIF gifski export failed; falling back to ImageIO",
+                        context: ["file": videoURL.lastPathComponent],
+                    )
+                }
+            }
+
             // Calculate frame times
             let totalFrames = Int(ceil(durationSeconds * Double(options.fps)))
             guard totalFrames > 0 else {
@@ -171,7 +198,7 @@
                 )
             }
 
-            // Collapse duplicates and quantize the palette per options, then write.
+            // Collapse duplicates only — frames stay full-color for ImageIO.
             let plannedFrames = GIFFramePlan.process(frames: orderedFrames, options: options)
             DiagnosticLogger.shared.log(.debug, .recording, "GIF conversion frames planned", context: [
                 "extractedFrames": "\(orderedFrames.count)",
@@ -200,11 +227,10 @@
                 throw GIFConversionError.destinationCreationFailed
             }
 
-            // Set GIF-level properties (loop count + color model)
+            // Set GIF-level properties (loop count only — ImageIO picks the color map)
             let gifProperties: [String: Any] = [
                 kCGImagePropertyGIFDictionary as String: [
                     kCGImagePropertyGIFLoopCount as String: options.loopCount,
-                    kCGImagePropertyGIFHasGlobalColorMap as String: true,
                 ],
             ]
             CGImageDestinationSetProperties(destination, gifProperties as CFDictionary)
@@ -268,7 +294,9 @@
         }
     }
 
-    /// Frame planning: duplicate collapse (optimize) and palette reduction (quality).
+    /// Frame planning: duplicate collapse only (optimize).
+    /// Frames stay full-color — quantization belongs to the encoder
+    /// (gifski, or ImageIO's single pass), never to a manual pre-cut.
     enum GIFFramePlan {
         struct PlannedFrames {
             let images: [CGImage]
@@ -290,18 +318,13 @@
                 images.append(frame)
                 delays.append(baseDelay)
             }
-            let maxColors = GIFPaletteQuantizer.colorCount(for: options.quality)
-            guard maxColors < 256 else {
-                return PlannedFrames(images: images, delays: delays)
-            }
-            let quantized = images.map { GIFPaletteQuantizer.quantize($0, maxColors: maxColors) ?? $0 }
-            return PlannedFrames(images: quantized, delays: delays)
+            return PlannedFrames(images: images, delays: delays)
         }
 
         /// Exact-match hash over an 8×8 thumbnail. Static screen content extracts
         /// bit-identical frames, so equality is a safe collapse signal.
         static func thumbnailHash(_ image: CGImage) -> UInt64 {
-            guard let thumbnail = GIFPaletteQuantizer.downsampledRGBA(of: image, maxDimension: 8) else {
+            guard let thumbnail = downsampledRGBA(of: image, maxDimension: 8) else {
                 return 0
             }
             var hash: UInt64 = 14_695_981_039_122_823
@@ -329,53 +352,12 @@
             }
             return (indices, delays)
         }
-    }
 
-    /// Median-cut palette reduction mapping the Quality slider to color counts.
-    enum GIFPaletteQuantizer {
         struct RGBAImage {
             let width: Int
             let height: Int
             var pixels: [UInt8]
         }
-
-        /// Maps 0.1 (low) … 1.0 (high) to 16 … 256 colors. 1.0 keeps full color.
-        static func colorCount(for quality: Double) -> Int {
-            if quality >= 1.0 {
-                return 256
-            }
-            let clamped = min(max(quality, 0.1), 1.0)
-            return Int((16.0 + (clamped - 0.1) / 0.9 * 224.0).rounded())
-        }
-
-        /// Reduces `image` to at most `maxColors` distinct colors, preserving
-        /// dimensions and alpha. Returns nil when pixels are unreadable.
-        static func quantize(_ image: CGImage, maxColors: Int) -> CGImage? {
-            guard maxColors < 256 else { return image }
-            guard let sample = downsampledRGBA(of: image, maxDimension: 480),
-                  let full = downsampledRGBA(of: image, maxDimension: max(image.width, image.height))
-            else {
-                return nil
-            }
-            let (palette, lookup) = medianCutPalette(pixels: sample.pixels, maxColors: maxColors)
-            guard !palette.isEmpty else { return nil }
-            var remapped = full.pixels
-            remapped.withUnsafeMutableBufferPointer { buffer in
-                guard let base = buffer.baseAddress else { return }
-                var i = 0
-                while i + 3 < buffer.count {
-                    let bucket = bucketIndex(r: base[i], g: base[i + 1], b: base[i + 2])
-                    let color = palette[lookup[bucket]]
-                    base[i] = color.0
-                    base[i + 1] = color.1
-                    base[i + 2] = color.2
-                    i += 4
-                }
-            }
-            return makeImage(width: full.width, height: full.height, pixels: remapped)
-        }
-
-        // MARK: - Internals
 
         static func downsampledRGBA(of image: CGImage, maxDimension: Int) -> RGBAImage? {
             var width = image.width
@@ -408,138 +390,150 @@
             }
             return RGBAImage(width: width, height: height, pixels: pixels)
         }
+    }
 
-        private static let histogramLevels = 32
+    // MARK: - Gifski (Macshot strategy, optional auto-detect)
 
-        private static func bucketIndex(r: UInt8, g: UInt8, b: UInt8) -> Int {
-            (Int(r) >> 3) << 10 | (Int(g) >> 3) << 5 | (Int(b) >> 3)
+    /// Bundled binary first, then Homebrew locations. Nil when absent —
+    /// callers must fall back to ImageIO silently.
+    func locateGifskiBinary() -> URL? {
+        var candidates: [URL] = []
+        if let res = Bundle.main.resourceURL {
+            candidates.append(res.appendingPathComponent("gifski"))
         }
+        candidates.append(URL(fileURLWithPath: "/opt/homebrew/bin/gifski"))
+        candidates.append(URL(fileURLWithPath: "/usr/local/bin/gifski"))
+        return candidates.first { FileManager.default.isExecutableFile(atPath: $0.path) }
+    }
 
-        private static func medianCutPalette(
-            pixels: [UInt8],
-            maxColors: Int,
-        ) -> (palette: [(UInt8, UInt8, UInt8)], lookup: [Int]) {
-            let bucketCount = histogramLevels * histogramLevels * histogramLevels
-            var counts = [Int](repeating: 0, count: bucketCount)
-            var index = 0
-            while index + 3 < pixels.count {
-                counts[bucketIndex(r: pixels[index], g: pixels[index + 1], b: pixels[index + 2])] += 1
-                index += 4
-            }
-            var boxes: [[Int]] = [counts.indices.filter { counts[$0] > 0 }]
-            guard !boxes[0].isEmpty else { return ([], []) }
-            while boxes.count < maxColors {
-                guard let splitIndex = widestSplittableBox(boxes, counts: counts),
-                      let (head, tail) = splitBox(boxes[splitIndex], counts: counts)
-                else {
-                    break
-                }
-                boxes[splitIndex] = head
-                boxes.append(tail)
-            }
-            var lookup = [Int](repeating: 0, count: bucketCount)
-            var palette: [(UInt8, UInt8, UInt8)] = []
-            for (boxIndex, box) in boxes.enumerated() {
-                palette.append(centroid(of: box, counts: counts))
-                for bucket in box {
-                    lookup[bucket] = boxIndex
-                }
-            }
-            return (palette, lookup)
-        }
+    /// Maps the 0.1…1.0 Quality slider to gifski --quality (30…100).
+    func gifskiQuality(for quality: Double) -> Int {
+        min(100, max(30, Int((min(max(quality, 0.1), 1.0) * 100).rounded())))
+    }
 
-        private static func channelRanges(of box: [Int]) -> (r: Int, g: Int, b: Int) {
-            var rMin = 31, rMax = 0, gMin = 31, gMax = 0, bMin = 31, bMax = 0
-            for bucket in box {
-                let r = (bucket >> 10) & 31, g = (bucket >> 5) & 31, b = bucket & 31
-                rMin = min(rMin, r)
-                rMax = max(rMax, r)
-                gMin = min(gMin, g)
-                gMax = max(gMax, g)
-                bMin = min(bMin, b)
-                bMax = max(bMax, b)
-            }
-            return (rMax - rMin, gMax - gMin, bMax - bMin)
-        }
+    /// Preferred export: stage full-color PNGs via AVAssetReader, then gifski.
+    /// Throws on any failure so the caller falls back to ImageIO.
+    // ponytail: sequential PNG staging + coarse progress; parallelize if slow.
+    @MainActor
+    private func exportViaGifski(
+        binary: URL,
+        asset: AVURLAsset,
+        videoURL: URL,
+        outputWidth: Int,
+        outputHeight: Int,
+        durationSeconds: Double,
+        options: GIFConverter.Options,
+        onProgress: @escaping (Double) -> Void,
+    ) async throws -> URL {
+        let gifFPS = min(max(options.fps, 1), 50)
+        let tracks = try? await asset.loadTracks(withMediaType: .video)
+        guard let videoTrack = tracks?.first else { throw GIFConversionError.noFrames }
+        let sourceFPS = max(Int(videoTrack.nominalFrameRate.rounded()), gifFPS, 1)
+        let gifURL = videoURL.deletingPathExtension().appendingPathExtension("gif")
 
-        private static func widestSplittableBox(_ boxes: [[Int]], counts: [Int]) -> Int? {
-            var bestIndex: Int?
-            var bestScore = 0
-            for (index, box) in boxes.enumerated() where box.count > 1 {
-                let ranges = channelRanges(of: box)
-                let pixels = box.reduce(0) { $0 + counts[$1] }
-                let score = (max(ranges.r, ranges.g, ranges.b) + 1) * pixels
-                if score > bestScore {
-                    bestScore = score
-                    bestIndex = index
-                }
-            }
-            return bestIndex
-        }
+        let reader = try AVAssetReader(asset: asset)
+        let trackOutput = AVAssetReaderTrackOutput(track: videoTrack, outputSettings: [
+            kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
+        ])
+        trackOutput.alwaysCopiesSampleData = true
+        guard reader.canAdd(trackOutput) else { throw GIFConversionError.noFrames }
+        reader.add(trackOutput)
 
-        private static func splitBox(_ box: [Int], counts: [Int]) -> ([Int], [Int])? {
-            let ranges = channelRanges(of: box)
-            let channel = if ranges.r >= ranges.g, ranges.r >= ranges.b {
-                0
-            } else if ranges.g >= ranges.b {
-                1
-            } else {
-                2
-            }
-            let sorted = box.sorted {
-                channelValue($0, channel: channel) < channelValue($1, channel: channel)
-            }
-            let total = sorted.reduce(0) { $0 + counts[$1] }
-            var running = 0
-            for (position, bucket) in sorted.enumerated() {
-                running += counts[bucket]
-                if running >= (total + 1) / 2, position + 1 < sorted.count {
-                    let splitPoint = position + 1
-                    return (Array(sorted[..<splitPoint]), Array(sorted[splitPoint...]))
-                }
-            }
-            return nil
-        }
+        let workDir = FileManager.default.temporaryDirectory.appendingPathComponent("gifski-" + UUID().uuidString)
+        try FileManager.default.createDirectory(at: workDir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: workDir) }
 
-        private static func channelValue(_ bucket: Int, channel: Int) -> Int {
-            switch channel {
-            case 0: (bucket >> 10) & 31
-            case 1: (bucket >> 5) & 31
-            default: bucket & 31
+        // Phase 1 (0–50%): decode, decimate, stage PNGs.
+        var framePaths: [String] = []
+        var inputIndex = 0
+        reader.startReading()
+        while reader.status == .reading {
+            guard let sampleBuffer = trackOutput.copyNextSampleBuffer(),
+                  let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)
+            else { break }
+            inputIndex += 1
+            let prevTargetIndex = (inputIndex - 1) * gifFPS / sourceFPS
+            let targetIndex = inputIndex * gifFPS / sourceFPS
+            guard targetIndex > prevTargetIndex else { continue }
+            guard let image = scaledImage(from: pixelBuffer, dstWidth: outputWidth, dstHeight: outputHeight)
+            else { continue }
+            let path = workDir.appendingPathComponent(String(format: "frame_%06d.png", framePaths.count)).path
+            guard writePNG(image, toPath: path) else { throw GIFConversionError.destinationCreationFailed }
+            framePaths.append(path)
+            let pts = CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
+            if durationSeconds > 0, pts.isFinite {
+                onProgress(min(0.5, pts / durationSeconds * 0.5))
+            }
+            if framePaths.count % 8 == 0 {
+                await Task.yield()
             }
         }
+        guard reader.status != .failed, !framePaths.isEmpty else { throw GIFConversionError.noFrames }
 
-        private static func centroid(of box: [Int], counts: [Int]) -> (UInt8, UInt8, UInt8) {
-            var rSum = 0, gSum = 0, bSum = 0, total = 0
-            for bucket in box {
-                let count = counts[bucket]
-                total += count
-                // Bucket center restores the dropped low bits.
-                rSum += (((bucket >> 10) & 31) * 8 + 4) * count
-                gSum += (((bucket >> 5) & 31) * 8 + 4) * count
-                bSum += ((bucket & 31) * 8 + 4) * count
+        // Phase 2 (50–100%): gifski across all cores.
+        onProgress(0.5)
+        let tmpGIF = workDir.appendingPathComponent("out.gif")
+        let exitCode: Int32 = try await withCheckedThrowingContinuation { continuation in
+            let proc = Process()
+            proc.executableURL = binary
+            proc.arguments = ["--fps", String(gifFPS), "--quality", String(gifskiQuality(for: options.quality)),
+                              "-o", tmpGIF.path] + framePaths
+            proc.standardOutput = Pipe()
+            proc.standardError = Pipe()
+            proc.terminationHandler = { process in
+                continuation.resume(returning: process.terminationStatus)
             }
-            guard total > 0 else { return (0, 0, 0) }
-            return (UInt8(min(rSum / total, 255)), UInt8(min(gSum / total, 255)), UInt8(min(bSum / total, 255)))
+            do {
+                try proc.run()
+            } catch {
+                continuation.resume(throwing: error)
+            }
         }
+        guard exitCode == 0 else { throw GIFConversionError.finalizationFailed }
 
-        private static func makeImage(width: Int, height: Int, pixels: [UInt8]) -> CGImage? {
-            let data = Data(pixels)
-            guard let provider = CGDataProvider(data: data as CFData) else { return nil }
-            return CGImage(
-                width: width,
-                height: height,
-                bitsPerComponent: 8,
-                bitsPerPixel: 32,
-                bytesPerRow: width * 4,
-                space: CGColorSpaceCreateDeviceRGB(),
-                bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue),
-                provider: provider,
-                decode: nil,
-                shouldInterpolate: false,
-                intent: .defaultIntent,
-            )
-        }
+        try? FileManager.default.removeItem(at: gifURL)
+        try FileManager.default.moveItem(at: tmpGIF, to: gifURL)
+        onProgress(1.0)
+        return gifURL
+    }
+
+    /// Full-color sRGB copy of a BGRA buffer, scaled (down only) with high
+    /// interpolation. Owns its pixels — safe to encode after unlock.
+    private func scaledImage(from pixelBuffer: CVPixelBuffer, dstWidth: Int, dstHeight: Int) -> CGImage? {
+        let srcWidth = CVPixelBufferGetWidth(pixelBuffer)
+        let srcHeight = CVPixelBufferGetHeight(pixelBuffer)
+        guard srcWidth > 0, srcHeight > 0, dstWidth > 0, dstHeight > 0 else { return nil }
+        CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
+        defer { CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly) }
+        guard let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer) else { return nil }
+        let srcBytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
+        let colorSpace = CGColorSpace(name: CGColorSpace.sRGB) ?? CGColorSpaceCreateDeviceRGB()
+        guard let srcProvider = CGDataProvider(
+            dataInfo: nil, data: baseAddress, size: srcBytesPerRow * srcHeight, releaseData: { _, _, _ in },
+        ) else { return nil }
+        guard let srcImage = CGImage(
+            width: srcWidth, height: srcHeight, bitsPerComponent: 8, bitsPerPixel: 32,
+            bytesPerRow: srcBytesPerRow, space: colorSpace,
+            bitmapInfo: CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder32Little.rawValue
+                | CGImageAlphaInfo.premultipliedFirst.rawValue),
+            provider: srcProvider, decode: nil, shouldInterpolate: false, intent: .defaultIntent,
+        ) else { return nil }
+        guard let dstContext = CGContext(
+            data: nil, width: dstWidth, height: dstHeight, bitsPerComponent: 8, bytesPerRow: dstWidth * 4,
+            space: colorSpace,
+            bitmapInfo: CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.premultipliedLast.rawValue,
+        ) else { return nil }
+        dstContext.interpolationQuality = .high
+        dstContext.draw(srcImage, in: CGRect(x: 0, y: 0, width: dstWidth, height: dstHeight))
+        return dstContext.makeImage()
+    }
+
+    private func writePNG(_ image: CGImage, toPath path: String) -> Bool {
+        guard let dest = CGImageDestinationCreateWithURL(
+            URL(fileURLWithPath: path) as CFURL, UTType.png.identifier as CFString, 1, nil,
+        ) else { return false }
+        CGImageDestinationAddImage(dest, image, nil)
+        return CGImageDestinationFinalize(dest)
     }
 
     /// Serializes callback bookkeeping on the MainActor. AVAssetImageGenerator

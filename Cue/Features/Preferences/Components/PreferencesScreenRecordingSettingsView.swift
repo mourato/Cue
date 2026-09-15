@@ -43,9 +43,9 @@
         // MARK: - GIF
 
         @AppStorage(PreferencesKeys.recordingGifFrameRate) private var gifFrameRate = 15
-        @AppStorage(PreferencesKeys.recordingGifMaxWidth) private var gifMaxWidth = 800
+        @AppStorage(PreferencesKeys.recordingGifMaxWidth) private var gifMaxWidth = 960
         @AppStorage(PreferencesKeys.recordingGifOptimize) private var optimizeGIFs = true
-        @AppStorage(PreferencesKeys.recordingGifQuality) private var gifQuality = 0.75
+        @AppStorage(PreferencesKeys.recordingGifQuality) private var gifQuality = 1.0
 
         var body: some View {
             Form {
@@ -239,7 +239,7 @@
 
         private func gifResolutionLabel(for width: Int) -> String {
             guard width > 0 else { return L10n.PreferencesScreenRecording.originalResolution }
-            if width == 800 {
+            if width == 960 {
                 return L10n.PreferencesScreenRecording.gifResolutionDefaultLabel(width)
             }
             return L10n.PreferencesScreenRecording.gifResolutionLabel(width)

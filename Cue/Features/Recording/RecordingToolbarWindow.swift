@@ -151,9 +151,9 @@
         /// GIF export options resolved from preferences.
         static func gifOptions(defaults: UserDefaults = .standard) -> GIFConverter.Options {
             let fps = defaults.object(forKey: PreferencesKeys.recordingGifFrameRate) as? Int ?? 15
-            let maxWidth = defaults.object(forKey: PreferencesKeys.recordingGifMaxWidth) as? Int ?? 800
+            let maxWidth = defaults.object(forKey: PreferencesKeys.recordingGifMaxWidth) as? Int ?? 960
             let optimize = defaults.object(forKey: PreferencesKeys.recordingGifOptimize) as? Bool ?? true
-            let quality = defaults.object(forKey: PreferencesKeys.recordingGifQuality) as? Double ?? 0.75
+            let quality = defaults.object(forKey: PreferencesKeys.recordingGifQuality) as? Double ?? 1.0
             return GIFConverter.Options(
                 fps: min(max(fps, 1), 60),
                 maxWidth: CGFloat(max(maxWidth, 0)),
