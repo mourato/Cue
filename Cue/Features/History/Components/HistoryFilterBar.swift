@@ -55,7 +55,7 @@ private struct FilterPill: View {
                     .font(.system(size: 11, weight: .semibold))
                 Text(label)
                     .font(.system(size: 12, weight: .semibold))
-                if !isEmpty {
+                if count >= 1 {
                     Text("\(count)")
                         .font(.system(size: 10, weight: .bold))
                         .padding(.horizontal, 6)
