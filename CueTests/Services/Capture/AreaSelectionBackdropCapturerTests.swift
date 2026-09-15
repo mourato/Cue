@@ -14,14 +14,14 @@ final class AreaSelectionBackdropCapturerTests: XCTestCase {
         XCTAssertTrue(
             AreaSelectionBackdropCapturerPolicy.shouldUseLiveCapturer(
                 environment: [:],
-                xctestRuntimePresent: { false },
-            ),
+                xctestRuntimePresent: { false }
+            )
         )
         XCTAssertTrue(
             AreaSelectionBackdropCapturerPolicy.makeDefault(
                 environment: [:],
-                xctestRuntimePresent: { false },
-            ) is LiveAreaSelectionBackdropCapturer,
+                xctestRuntimePresent: { false }
+            ) is LiveAreaSelectionBackdropCapturer
         )
     }
 
@@ -29,33 +29,33 @@ final class AreaSelectionBackdropCapturerTests: XCTestCase {
         XCTAssertFalse(
             AreaSelectionBackdropCapturerPolicy.shouldUseLiveCapturer(
                 environment: ["XCTestConfigurationFilePath": "/tmp/NotinhasTests.xctestconfiguration"],
-                xctestRuntimePresent: { false },
-            ),
+                xctestRuntimePresent: { false }
+            )
         )
         XCTAssertTrue(
             AreaSelectionBackdropCapturerPolicy.makeDefault(
                 environment: ["XCTestConfigurationFilePath": "/tmp/NotinhasTests.xctestconfiguration"],
-                xctestRuntimePresent: { false },
-            ) is SyntheticAreaSelectionBackdropCapturer,
+                xctestRuntimePresent: { false }
+            ) is SyntheticAreaSelectionBackdropCapturer
         )
     }
 
     func testPolicy_underXCTest_canOptInLiveCapturer() {
         let environment = [
             "XCTestConfigurationFilePath": "/tmp/NotinhasTests.xctestconfiguration",
-            AreaSelectionBackdropCapturerPolicy.allowScreenCaptureInTestsEnvironmentKey: "1",
+            AreaSelectionBackdropCapturerPolicy.allowScreenCaptureInTestsEnvironmentKey: "1"
         ]
         XCTAssertTrue(
             AreaSelectionBackdropCapturerPolicy.shouldUseLiveCapturer(
                 environment: environment,
-                xctestRuntimePresent: { false },
-            ),
+                xctestRuntimePresent: { false }
+            )
         )
         XCTAssertTrue(
             AreaSelectionBackdropCapturerPolicy.makeDefault(
                 environment: environment,
-                xctestRuntimePresent: { false },
-            ) is LiveAreaSelectionBackdropCapturer,
+                xctestRuntimePresent: { false }
+            ) is LiveAreaSelectionBackdropCapturer
         )
     }
 
@@ -65,7 +65,7 @@ final class AreaSelectionBackdropCapturerTests: XCTestCase {
             displayID: 7,
             captureRect: CGRect(x: 0, y: 0, width: 1920, height: 1080),
             scaleFactor: 2,
-            isVisible: false,
+            isVisible: false
         )
 
         let unwrapped = try XCTUnwrap(backdrop)

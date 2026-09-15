@@ -55,7 +55,7 @@ final class ScrollingCaptureMetricsTests: XCTestCase {
             previewPublishDurationMs: 3,
             totalDurationMs: 18,
             outcome: .initialized,
-            alignmentDebug: nil,
+            alignmentDebug: nil
         )
 
         XCTAssertEqual(metrics.refreshAttemptCount, 1)
@@ -75,7 +75,7 @@ final class ScrollingCaptureMetricsTests: XCTestCase {
             pixelScore: 2.1,
             totalScore: 3.0,
             appendDeltaY: 42,
-            visionAgreementCount: 0,
+            visionAgreementCount: 0
         )
         metrics.recordRefreshSuccess(
             reason: "scroll",
@@ -84,7 +84,7 @@ final class ScrollingCaptureMetricsTests: XCTestCase {
             previewPublishDurationMs: 3,
             totalDurationMs: 18,
             outcome: .appended(deltaY: 42),
-            alignmentDebug: debug,
+            alignmentDebug: debug
         )
 
         XCTAssertEqual(metrics.appendedCount, 1)
@@ -107,7 +107,7 @@ final class ScrollingCaptureMetricsTests: XCTestCase {
                 previewPublishDurationMs: 0,
                 totalDurationMs: 15,
                 outcome: .ignoredAlignmentFailed,
-                alignmentDebug: nil,
+                alignmentDebug: nil
             )
         }
 
@@ -122,7 +122,7 @@ final class ScrollingCaptureMetricsTests: XCTestCase {
             previewPublishDurationMs: 3,
             totalDurationMs: 18,
             outcome: .appended(deltaY: 10),
-            alignmentDebug: nil,
+            alignmentDebug: nil
         )
 
         // Max streak still 3 even after reset
@@ -137,7 +137,7 @@ final class ScrollingCaptureMetricsTests: XCTestCase {
             previewPublishDurationMs: 0,
             totalDurationMs: 15,
             outcome: .ignoredAlignmentFailed,
-            alignmentDebug: nil,
+            alignmentDebug: nil
         )
 
         XCTAssertEqual(metrics.alignmentFailureStreakMax, 3)
@@ -152,7 +152,7 @@ final class ScrollingCaptureMetricsTests: XCTestCase {
             previewPublishDurationMs: 3,
             totalDurationMs: 18,
             outcome: .reachedHeightLimit,
-            alignmentDebug: nil,
+            alignmentDebug: nil
         )
 
         XCTAssertEqual(metrics.reachedHeightLimitCount, 1)
@@ -167,7 +167,7 @@ final class ScrollingCaptureMetricsTests: XCTestCase {
             pixelScore: nil,
             totalScore: nil,
             appendDeltaY: 30,
-            visionAgreementCount: 5,
+            visionAgreementCount: 5
         )
         metrics.recordRefreshSuccess(
             reason: "scroll",
@@ -176,7 +176,7 @@ final class ScrollingCaptureMetricsTests: XCTestCase {
             previewPublishDurationMs: 3,
             totalDurationMs: 18,
             outcome: .appended(deltaY: 30),
-            alignmentDebug: debug,
+            alignmentDebug: debug
         )
 
         XCTAssertEqual(metrics.visionEstimateCount, 1)
@@ -192,7 +192,7 @@ final class ScrollingCaptureMetricsTests: XCTestCase {
             pixelScore: nil,
             totalScore: nil,
             appendDeltaY: nil,
-            visionAgreementCount: 0,
+            visionAgreementCount: 0
         )
         metrics.recordRefreshSuccess(
             reason: "scroll",
@@ -201,7 +201,7 @@ final class ScrollingCaptureMetricsTests: XCTestCase {
             previewPublishDurationMs: 0,
             totalDurationMs: 15,
             outcome: .ignoredNoMovement,
-            alignmentDebug: debug,
+            alignmentDebug: debug
         )
 
         XCTAssertEqual(metrics.likelyBoundaryNoMovementCount, 1)
@@ -216,7 +216,7 @@ final class ScrollingCaptureMetricsTests: XCTestCase {
             reason: "capture-error",
             captureDurationMs: 10,
             stitchDurationMs: 0,
-            totalDurationMs: 10,
+            totalDurationMs: 10
         )
 
         XCTAssertEqual(metrics.refreshAttemptCount, 1)
@@ -342,7 +342,7 @@ final class ScrollingCaptureMetricsTests: XCTestCase {
             previewPublishDurationMs: 3,
             totalDurationMs: 18,
             outcome: .initialized,
-            alignmentDebug: nil,
+            alignmentDebug: nil
         )
 
         let context = metrics.summaryContext(reason: "test-done")
@@ -363,7 +363,7 @@ final class ScrollingCaptureMetricsTests: XCTestCase {
             "previewTruthLiveAhead", "previewTruthLiveAheadMaxLagMs",
             "tentativeStitches", "unsafeStitches",
             "finalizingStarts", "finalizingAvgMs", "finalizingBlockedInput",
-            "preStartEscapeCancels", "mouseMoveSuppressionActive",
+            "preStartEscapeCancels", "mouseMoveSuppressionActive"
         ]
 
         for key in expectedKeys {
@@ -380,15 +380,15 @@ final class ScrollingCaptureMetricsTests: XCTestCase {
         metrics.recordRefreshSuccess(
             reason: "scroll", captureDurationMs: 0, stitchDurationMs: 0,
             previewPublishDurationMs: 0, totalDurationMs: 0,
-            outcome: .initialized, alignmentDebug: nil,
+            outcome: .initialized, alignmentDebug: nil
         )
         metrics.recordRefreshSuccess(
             reason: "scroll", captureDurationMs: 0, stitchDurationMs: 0,
             previewPublishDurationMs: 0, totalDurationMs: 0,
-            outcome: .appended(deltaY: 10), alignmentDebug: nil,
+            outcome: .appended(deltaY: 10), alignmentDebug: nil
         )
         metrics.recordRefreshFailure(
-            reason: "timer", captureDurationMs: 0, stitchDurationMs: 0, totalDurationMs: 0,
+            reason: "timer", captureDurationMs: 0, stitchDurationMs: 0, totalDurationMs: 0
         )
 
         let context = metrics.summaryContext(reason: "done")
@@ -406,12 +406,12 @@ final class ScrollingCaptureMetricsTests: XCTestCase {
         for delta in deltas {
             let debug = ScrollingCaptureAlignmentDebugInfo(
                 path: .fastGuided, usedVisionEstimate: false, confidence: 0.9,
-                pixelScore: nil, totalScore: nil, appendDeltaY: delta, visionAgreementCount: 0,
+                pixelScore: nil, totalScore: nil, appendDeltaY: delta, visionAgreementCount: 0
             )
             metrics.recordRefreshSuccess(
                 reason: "scroll", captureDurationMs: 0, stitchDurationMs: 0,
                 previewPublishDurationMs: 0, totalDurationMs: 0,
-                outcome: .appended(deltaY: delta), alignmentDebug: debug,
+                outcome: .appended(deltaY: delta), alignmentDebug: debug
             )
         }
 

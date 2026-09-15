@@ -78,11 +78,12 @@ struct QuickAccessSettingsPreviewCard: View {
                 .zIndex(3)
 
             if let hoveredSlot,
-               let action = actionStore.action(in: hoveredSlot) {
+               let action = actionStore.action(in: hoveredSlot)
+            {
                 QuickAccessPreviewActionPopover(
                     action: action,
                     slot: hoveredSlot,
-                    isEnabled: actionStore.isEnabled(action),
+                    isEnabled: actionStore.isEnabled(action)
                 )
                 .offset(popoverOffset(for: hoveredSlot))
                 .transition(.opacity.combined(with: .scale(scale: 0.96)))
@@ -93,7 +94,7 @@ struct QuickAccessSettingsPreviewCard: View {
             if let hoveredSwipeDirection, hoveredSlot == nil {
                 QuickAccessPreviewSwipeZonePopover(
                     direction: hoveredSwipeDirection,
-                    action: swipeActionStore.action(for: hoveredSwipeDirection),
+                    action: swipeActionStore.action(for: hoveredSwipeDirection)
                 )
                 .offset(swipePopoverOffset(for: hoveredSwipeDirection))
                 .transition(.opacity.combined(with: .scale(scale: 0.96)))
@@ -121,7 +122,7 @@ struct QuickAccessSettingsPreviewCard: View {
             isHighlighted: hoveredSwipeDirection == direction || dropTargetSwipeDirection == direction,
             cardWidth: cardWidth,
             targetOffsetX: swipeTargetOffsetX,
-            targetDiameter: swipeTargetDiameter,
+            targetDiameter: swipeTargetDiameter
         )
     }
 
@@ -157,7 +158,7 @@ struct QuickAccessSettingsPreviewCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.white.opacity(0.2), lineWidth: 1),
+                .stroke(Color.white.opacity(0.2), lineWidth: 1)
         )
     }
 
@@ -172,7 +173,7 @@ struct QuickAccessSettingsPreviewCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.white.opacity(0.18), lineWidth: 1),
+                .stroke(Color.white.opacity(0.18), lineWidth: 1)
         )
         .opacity(0.72)
         .allowsHitTesting(false)
@@ -186,20 +187,20 @@ struct QuickAccessSettingsPreviewCard: View {
                     RoundedRectangle(cornerRadius: 20)
                         .stroke(
                             Color(nsColor: .systemRed).opacity(0.65),
-                            style: StrokeStyle(lineWidth: 1, dash: [6, 5]),
+                            style: StrokeStyle(lineWidth: 1, dash: [6, 5])
                         )
                 }
             }
             .contentShape(Rectangle())
             .onDrop(
                 of: isReordering ? [] : QuickAccessActionDragPayload.typeIdentifiers,
-                isTargeted: $isRemoveTargeted,
+                isTargeted: $isRemoveTargeted
             ) { providers in
                 QuickAccessActionDragPayload.load(from: providers) { payload in
                     switch payload.source {
-                    case .preview(let sourceSlot):
+                    case let .preview(sourceSlot):
                         actionStore.clearSlot(sourceSlot)
-                    case .swipePreview(let direction):
+                    case let .swipePreview(direction):
                         swipeActionStore.setAction(direction, action: nil)
                     case .actionList:
                         break
@@ -232,12 +233,12 @@ struct QuickAccessSettingsPreviewCard: View {
             action: actionStore.action(in: slot),
             isEnabled: actionStore.action(in: slot).map(actionStore.isEnabled) ?? false,
             isTargeted: dropTargetSlot == slot,
-            onHover: { updateHover($0, slot: slot) },
+            onHover: { updateHover($0, slot: slot) }
         )
         return draggableSlot(slotView, slot: slot)
             .onDrop(
                 of: isReordering ? [] : QuickAccessActionDragPayload.typeIdentifiers,
-                isTargeted: dropTargetBinding(for: slot),
+                isTargeted: dropTargetBinding(for: slot)
             ) { providers in
                 assignDroppedAction(from: providers, to: slot)
             }
@@ -247,8 +248,8 @@ struct QuickAccessSettingsPreviewCard: View {
         let metrics = QuickAccessCornerButtonMetrics(
             scale: QuickAccessCornerButtonMetrics.resolvedScale(
                 cornerButtonScale: cornerButtonScale,
-                overlayScale: scale,
-            ),
+                overlayScale: scale
+            )
         )
         let slotView = QuickAccessPreviewIconSlot(
             slot: slot,
@@ -256,13 +257,13 @@ struct QuickAccessSettingsPreviewCard: View {
             isEnabled: actionStore.action(in: slot).map(actionStore.isEnabled) ?? false,
             isTargeted: dropTargetSlot == slot,
             onHover: { updateHover($0, slot: slot) },
-            sizeScale: metrics.scale,
+            sizeScale: metrics.scale
         )
         return draggableSlot(slotView, slot: slot)
             .padding(metrics.padding)
             .onDrop(
                 of: isReordering ? [] : QuickAccessActionDragPayload.typeIdentifiers,
-                isTargeted: dropTargetBinding(for: slot),
+                isTargeted: dropTargetBinding(for: slot)
             ) { providers in
                 assignDroppedAction(from: providers, to: slot)
             }
@@ -275,7 +276,7 @@ struct QuickAccessSettingsPreviewCard: View {
     private func popoverOffset(for slot: QuickAccessActionSlot) -> CGSize {
         CGSize(
             width: popoverXOffset(for: slot),
-            height: popoverYOffset(for: slot),
+            height: popoverYOffset(for: slot)
         )
     }
 
@@ -324,7 +325,7 @@ struct QuickAccessSettingsPreviewCard: View {
             get: { dropTargetSlot == slot },
             set: { isTargeted in
                 dropTargetSlot = isTargeted ? slot : (dropTargetSlot == slot ? nil : dropTargetSlot)
-            },
+            }
         )
     }
 
@@ -341,13 +342,13 @@ struct QuickAccessSettingsPreviewCard: View {
             onHover: { isHovering in
                 hoveredSwipeDirection = isHovering ? direction :
                     (hoveredSwipeDirection == direction ? nil : hoveredSwipeDirection)
-            },
+            }
         )
 
         return draggableSwipeTarget(swipeView, direction: direction, action: action)
             .onDrop(
                 of: isReordering ? [] : QuickAccessActionDragPayload.typeIdentifiers,
-                isTargeted: swipeDropTargetBinding(for: direction),
+                isTargeted: swipeDropTargetBinding(for: direction)
             ) { providers in
                 assignDroppedSwipeAction(from: providers, to: direction)
             }
@@ -365,7 +366,7 @@ struct QuickAccessSettingsPreviewCard: View {
     private func draggableSwipeTarget(
         _ content: some View,
         direction: QuickAccessSwipeDirection,
-        action: QuickAccessActionKind?,
+        action: QuickAccessActionKind?
     ) -> some View {
         if let action {
             content.onDrag {
@@ -376,8 +377,10 @@ struct QuickAccessSettingsPreviewCard: View {
         }
     }
 
-    private func assignDroppedSwipeAction(from providers: [NSItemProvider],
-                                          to direction: QuickAccessSwipeDirection) -> Bool {
+    private func assignDroppedSwipeAction(
+        from providers: [NSItemProvider],
+        to direction: QuickAccessSwipeDirection
+    ) -> Bool {
         QuickAccessActionDragPayload.load(from: providers) { payload in
             swipeActionStore.setAction(direction, action: payload.action)
         }
@@ -390,7 +393,7 @@ struct QuickAccessSettingsPreviewCard: View {
             set: { isTargeted in
                 dropTargetSwipeDirection = isTargeted ? direction :
                     (dropTargetSwipeDirection == direction ? nil : dropTargetSwipeDirection)
-            },
+            }
         )
     }
 

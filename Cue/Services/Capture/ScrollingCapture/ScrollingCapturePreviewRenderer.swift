@@ -99,7 +99,7 @@ final class ScrollingCapturePreviewImageView: NSView {
 
         let scaledSize = CGSize(
             width: currentImageSize.width * scale,
-            height: currentImageSize.height * scale,
+            height: currentImageSize.height * scale
         )
 
         let originX = (bounds.width - scaledSize.width) / 2

@@ -22,7 +22,7 @@ final class SmartElementWindowOwnerResolverTests: XCTestCase {
         let ownBundleID = try XCTUnwrap(NSRunningApplication(processIdentifier: ownPID)?.bundleIdentifier)
         let resolver = makeResolver(
             windows: [windowInfo(frame: CGRect(x: 20, y: 20, width: 200, height: 120), pid: ownPID)],
-            ownBundleIdentifier: ownBundleID,
+            ownBundleIdentifier: ownBundleID
         )
 
         XCTAssertNil(resolver.resolveOwner(at: CGPoint(x: 30, y: 30)))
@@ -30,7 +30,7 @@ final class SmartElementWindowOwnerResolverTests: XCTestCase {
 
     func testForeignEntryContainingPoint_returnsOwner() throws {
         let resolver = makeResolver(
-            windows: [windowInfo(frame: CGRect(x: 20, y: 20, width: 200, height: 120), pid: 12, windowID: 77)],
+            windows: [windowInfo(frame: CGRect(x: 20, y: 20, width: 200, height: 120), pid: 12, windowID: 77)]
         )
 
         let owner = try XCTUnwrap(resolver.resolveOwner(at: CGPoint(x: 30, y: 30)))
@@ -43,8 +43,8 @@ final class SmartElementWindowOwnerResolverTests: XCTestCase {
         let resolver = makeResolver(
             windows: [
                 windowInfo(frame: CGRect(x: 20, y: 20, width: 200, height: 120), pid: 44, windowID: 10),
-                windowInfo(frame: CGRect(x: 20, y: 20, width: 200, height: 120), pid: 55, windowID: 11),
-            ],
+                windowInfo(frame: CGRect(x: 20, y: 20, width: 200, height: 120), pid: 55, windowID: 11)
+            ]
         )
 
         let owner = try XCTUnwrap(resolver.resolveOwner(at: CGPoint(x: 30, y: 30)))
@@ -55,7 +55,7 @@ final class SmartElementWindowOwnerResolverTests: XCTestCase {
 
     func testLayerNotZero_isSkipped() {
         let resolver = makeResolver(
-            windows: [windowInfo(frame: CGRect(x: 20, y: 20, width: 200, height: 120), pid: 12, layer: 1)],
+            windows: [windowInfo(frame: CGRect(x: 20, y: 20, width: 200, height: 120), pid: 12, layer: 1)]
         )
 
         XCTAssertNil(resolver.resolveOwner(at: CGPoint(x: 30, y: 30)))
@@ -63,7 +63,7 @@ final class SmartElementWindowOwnerResolverTests: XCTestCase {
 
     func testPointOutsideAllEntries_returnsNil() {
         let resolver = makeResolver(
-            windows: [windowInfo(frame: CGRect(x: 20, y: 20, width: 200, height: 120), pid: 12)],
+            windows: [windowInfo(frame: CGRect(x: 20, y: 20, width: 200, height: 120), pid: 12)]
         )
 
         XCTAssertNil(resolver.resolveOwner(at: CGPoint(x: 300, y: 300)))
@@ -71,11 +71,11 @@ final class SmartElementWindowOwnerResolverTests: XCTestCase {
 
     private func makeResolver(
         windows: [[String: Any]],
-        ownBundleIdentifier: String? = "com.snapzy.tests",
+        ownBundleIdentifier: String? = "com.snapzy.tests"
     ) -> SmartElementWindowOwnerResolver {
         SmartElementWindowOwnerResolver(
             windowListSource: FakeSmartElementWindowListSource(windows: windows),
-            ownBundleIdentifier: ownBundleIdentifier,
+            ownBundleIdentifier: ownBundleIdentifier
         )
     }
 
@@ -83,13 +83,13 @@ final class SmartElementWindowOwnerResolverTests: XCTestCase {
         frame: CGRect,
         pid: Int32,
         windowID: CGWindowID = 99,
-        layer: Int = 0,
+        layer: Int = 0
     ) -> [String: Any] {
         [
             kCGWindowLayer as String: NSNumber(value: layer),
             kCGWindowNumber as String: NSNumber(value: windowID),
             kCGWindowOwnerPID as String: NSNumber(value: pid),
-            kCGWindowBounds as String: quartzBounds(fromAppKitFrame: frame) as NSDictionary,
+            kCGWindowBounds as String: quartzBounds(fromAppKitFrame: frame) as NSDictionary
         ]
     }
 

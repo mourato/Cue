@@ -41,12 +41,12 @@ enum WindowSelectionQueryService {
 
     static func prepareSnapshot(
         prefetchedContentTask: ShareableContentPrefetchTask?,
-        excludeOwnApplication: Bool,
+        excludeOwnApplication: Bool
     ) async -> WindowSelectionSnapshot? {
         do {
             let content = try await loadShareableContent(prefetchedContentTask: prefetchedContentTask)
             let shareableWindowsByID = Dictionary(
-                uniqueKeysWithValues: content.windows.filter(\.isOnScreen).map { ($0.windowID, $0) },
+                uniqueKeysWithValues: content.windows.filter(\.isOnScreen).map { ($0.windowID, $0) }
             )
             let ownBundleIdentifier = Bundle.main.bundleIdentifier
 
@@ -54,7 +54,7 @@ enum WindowSelectionQueryService {
                 guard
                     let rawWindowInfo = CGWindowListCopyWindowInfo(
                         [.optionOnScreenOnly, .excludeDesktopElements],
-                        kCGNullWindowID,
+                        kCGNullWindowID
                     ) as? [[String: Any]]
                 else {
                     return [RawWindowInfo]()
@@ -66,7 +66,7 @@ enum WindowSelectionQueryService {
 
                     let layer = (windowInfo[kCGWindowLayer as String] as? NSNumber)?.intValue
 
-                    var quartzBounds: CGRect? = nil
+                    var quartzBounds: CGRect?
                     if let boundsDictionary = windowInfo[kCGWindowBounds as String] as? NSDictionary {
                         quartzBounds = CGRect(dictionaryRepresentation: boundsDictionary)?.standardized
                     }
@@ -83,7 +83,7 @@ enum WindowSelectionQueryService {
                         alpha: alpha,
                         ownerPID: ownerPID,
                         ownerName: ownerName,
-                        title: title,
+                        title: title
                     )
                 }
             }.value
@@ -126,11 +126,11 @@ enum WindowSelectionQueryService {
                             displayID: displayID,
                             title: title,
                             bundleIdentifier: bundleIdentifier,
-                            ownerPID: info.ownerPID,
+                            ownerPID: info.ownerPID
                         ),
                         ownerName: ownerNameVal,
-                        windowLayer: windowLayer,
-                    ),
+                        windowLayer: windowLayer
+                    )
                 )
             }
 
@@ -139,7 +139,7 @@ enum WindowSelectionQueryService {
             DiagnosticLogger.shared.logError(
                 .capture,
                 error,
-                "Failed to prepare application mode window candidates",
+                "Failed to prepare application mode window candidates"
             )
             return nil
         }
@@ -147,7 +147,7 @@ enum WindowSelectionQueryService {
 
     static func resolveWindow(
         windowID: CGWindowID,
-        prefetchedContentTask: ShareableContentPrefetchTask?,
+        prefetchedContentTask: ShareableContentPrefetchTask?
     ) async -> SCWindow? {
         do {
             let content = try await loadShareableContent(prefetchedContentTask: prefetchedContentTask)
@@ -161,14 +161,14 @@ enum WindowSelectionQueryService {
             DiagnosticLogger.shared.logError(
                 .capture,
                 error,
-                "Failed to resolve shareable window \(windowID)",
+                "Failed to resolve shareable window \(windowID)"
             )
             return nil
         }
     }
 
     private static func loadShareableContent(
-        prefetchedContentTask: ShareableContentPrefetchTask?,
+        prefetchedContentTask: ShareableContentPrefetchTask?
     ) async throws -> SCShareableContent {
         if let prefetchedContentTask {
             return try await prefetchedContentTask.value.value
@@ -203,7 +203,7 @@ enum WindowSelectionQueryService {
             x: rect.origin.x,
             y: mainScreenHeight - rect.maxY,
             width: rect.width,
-            height: rect.height,
+            height: rect.height
         )
     }
 }

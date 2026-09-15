@@ -34,7 +34,7 @@ final class AnnotateWatermarkTests: XCTestCase {
         AnnotationItem(
             type: .watermark(text),
             bounds: CGRect(x: 0, y: 0, width: 420, height: 90),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
     }
 
@@ -46,7 +46,7 @@ final class AnnotateWatermarkTests: XCTestCase {
         state.updateWatermarkText(id: annotation.id, text: "Confidential")
 
         let updated = try XCTUnwrap(state.annotations.first)
-        guard case .watermark(let text) = updated.type else {
+        guard case let .watermark(text) = updated.type else {
             return XCTFail("Expected watermark annotation, got \(updated.type)")
         }
         XCTAssertEqual(text, "Confidential")
@@ -57,7 +57,7 @@ final class AnnotateWatermarkTests: XCTestCase {
         let rectangle = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 0, y: 0, width: 40, height: 40),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         state.annotations = [rectangle]
 
@@ -74,7 +74,7 @@ final class AnnotateWatermarkTests: XCTestCase {
         state.updateWatermarkText(id: UUID(), text: "Ghost")
 
         let unchanged = try XCTUnwrap(state.annotations.first)
-        guard case .watermark(let text) = unchanged.type else {
+        guard case let .watermark(text) = unchanged.type else {
             return XCTFail("Expected watermark annotation, got \(unchanged.type)")
         }
         XCTAssertEqual(text, "Cue")

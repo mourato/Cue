@@ -62,7 +62,7 @@ struct RecordingToolbarDivider: View {
                 .padding(.vertical, 6)
                 .background(
                     RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
-                        .fill(Color.primary.opacity(configuration.isPressed ? 0.12 : 0)),
+                        .fill(Color.primary.opacity(configuration.isPressed ? 0.12 : 0))
                 )
                 .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
                 .animation(ToolbarConstants.pressAnimation, value: configuration.isPressed)
@@ -80,7 +80,7 @@ struct RecordingToolbarDivider: View {
                 .padding(.vertical, 6)
                 .background(
                     RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
-                        .fill(Color.primary.opacity(configuration.isPressed ? 0.12 : 0)),
+                        .fill(Color.primary.opacity(configuration.isPressed ? 0.12 : 0))
                 )
                 .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
                 .animation(ToolbarConstants.pressAnimation, value: configuration.isPressed)
@@ -99,11 +99,11 @@ struct RecordingToolbarDivider: View {
                 .foregroundColor(.primary.opacity(isActive ? (isHovered ? 1.0 : 0.85) : (isHovered ? 0.72 : 0.5)))
                 .frame(
                     width: ToolbarConstants.iconButtonSize,
-                    height: ToolbarConstants.iconButtonSize,
+                    height: ToolbarConstants.iconButtonSize
                 )
                 .background(
                     RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
-                        .fill(Color.primary.opacity(isHovered ? 0.1 : 0)),
+                        .fill(Color.primary.opacity(isHovered ? 0.1 : 0))
                 )
                 .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
                 .animation(ToolbarConstants.hoverAnimation, value: isHovered)
@@ -121,7 +121,7 @@ struct RecordingToolbarDivider: View {
                 .padding(.vertical, 6)
                 .background(
                     RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
-                        .fill(Color.primary.opacity(configuration.isPressed ? 0.12 : 0)),
+                        .fill(Color.primary.opacity(configuration.isPressed ? 0.12 : 0))
                 )
                 .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
                 .animation(ToolbarConstants.pressAnimation, value: configuration.isPressed)

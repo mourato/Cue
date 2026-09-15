@@ -43,7 +43,7 @@ final class AllInOneCaptureShortcutTests: XCTestCase {
         manager.setAllInOneShortcut(nil)
         XCTAssertNil(
             manager.shortcut(for: .allInOne),
-            "Clearing the All-In-One shortcut must resolve to nil, never the seeded recommended combo",
+            "Clearing the All-In-One shortcut must resolve to nil, never the seeded recommended combo"
         )
     }
 

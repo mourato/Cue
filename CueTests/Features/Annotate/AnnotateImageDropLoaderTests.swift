@@ -29,7 +29,7 @@ final class AnnotateImageDropLoaderTests: XCTestCase {
         provider.registerFileRepresentation(
             forTypeIdentifier: UTType.tiff.identifier,
             fileOptions: [],
-            visibility: .all,
+            visibility: .all
         ) { completion in
             completion(sourceURL, false, nil)
             return nil

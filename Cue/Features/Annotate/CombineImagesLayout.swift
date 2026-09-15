@@ -27,7 +27,7 @@ enum CombineImagesLayout {
     static func resolveDirection(
         requested: CombineImagesDirection,
         items: [CombineImagesLayoutItem],
-        gap: CGFloat = 0,
+        gap: CGFloat = 0
     ) -> CombineImagesDirection {
         guard requested == .smart else { return requested }
         guard let first = items.first, first.size.width > 0, first.size.height > 0 else {
@@ -55,13 +55,13 @@ enum CombineImagesLayout {
     static func layout(
         items: [CombineImagesLayoutItem],
         direction requestedDirection: CombineImagesDirection,
-        gap: CGFloat,
+        gap: CGFloat
     ) -> CombineImagesLayoutResult {
         guard let first = items.first, first.size.width > 0, first.size.height > 0 else {
             return CombineImagesLayoutResult(
                 direction: requestedDirection == .vertical ? .vertical : .horizontal,
                 boundsByID: [:],
-                contentBounds: .zero,
+                contentBounds: .zero
             )
         }
 
@@ -91,7 +91,7 @@ enum CombineImagesLayout {
         return CombineImagesLayoutResult(
             direction: direction,
             boundsByID: boundsByID,
-            contentBounds: contentBounds,
+            contentBounds: contentBounds
         )
     }
 

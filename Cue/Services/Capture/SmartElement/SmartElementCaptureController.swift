@@ -31,7 +31,7 @@ final class SmartElementCaptureController: NSObject {
         snapshotProvider: SmartElementQueryProviding? = nil,
         ownerResolver: SmartElementWindowOwnerResolving? = nil,
         capturePerformer: SmartElementCapturePerforming? = nil,
-        windowFactory: ((NSScreen) -> SmartElementOverlayWindowProviding)? = nil,
+        windowFactory: ((NSScreen) -> SmartElementOverlayWindowProviding)? = nil
     ) {
         self.snapshotProvider = snapshotProvider ?? SmartElementQueryService.shared
         self.ownerResolver = ownerResolver ?? SmartElementWindowOwnerResolver()
@@ -57,7 +57,7 @@ final class SmartElementCaptureController: NSObject {
             .info,
             .capture,
             "Smart element capture started",
-            context: ["screenCount": "\(windows.count)"],
+            context: ["screenCount": "\(windows.count)"]
         )
     }
 
@@ -116,7 +116,7 @@ final class SmartElementCaptureController: NSObject {
         screenChangeObserver = NotificationCenter.default.addObserver(
             forName: NSApplication.didChangeScreenParametersNotification,
             object: nil,
-            queue: .main,
+            queue: .main
         ) { [weak self] _ in
             MainActor.assumeIsolated {
                 self?.refreshWindowPool()

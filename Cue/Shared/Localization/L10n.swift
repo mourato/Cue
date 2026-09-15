@@ -58,7 +58,7 @@ nonisolated enum L10n {
         ("shortcut-overlay.", "Shortcuts"),
         ("shortcut-recorder.", "Shortcuts"),
         ("shortcut-validation.", "Shortcuts"),
-        ("system-shortcuts.", "Shortcuts"),
+        ("system-shortcuts.", "Shortcuts")
     ]
 
     private nonisolated static func tableName(for key: String) -> String? {
@@ -88,7 +88,7 @@ nonisolated enum L10n {
             tableName: tableName(for: key),
             bundle: .main,
             value: defaultValue,
-            comment: comment,
+            comment: comment
         )
     }
 
@@ -96,13 +96,13 @@ nonisolated enum L10n {
         _ key: String,
         defaultValue: String,
         localeIdentifier: String,
-        comment _: String,
+        comment _: String
     ) -> String {
         let lookupBundle = bundle(for: localeIdentifier)
         return lookupBundle.localizedString(
             forKey: key,
             value: defaultValue,
-            table: tableName(for: key),
+            table: tableName(for: key)
         )
     }
 
@@ -110,7 +110,7 @@ nonisolated enum L10n {
         _ key: String,
         defaultValue: String,
         comment: String,
-        _ arguments: CVarArg...,
+        _ arguments: CVarArg...
     ) -> String {
         let format = string(key, defaultValue: defaultValue, comment: comment)
         return String(format: format, locale: Locale.current, arguments: arguments)
@@ -121,18 +121,18 @@ nonisolated enum L10n {
         defaultValue: String,
         localeIdentifier: String,
         comment: String,
-        _ arguments: CVarArg...,
+        _ arguments: CVarArg...
     ) -> String {
         let format = string(
             key,
             defaultValue: defaultValue,
             localeIdentifier: localeIdentifier,
-            comment: comment,
+            comment: comment
         )
         return String(
             format: format,
             locale: Locale(identifier: localeIdentifier),
-            arguments: arguments,
+            arguments: arguments
         )
     }
 
@@ -140,52 +140,52 @@ nonisolated enum L10n {
         static let generalTab = string(
             "preferences.tab.general",
             defaultValue: "General",
-            comment: "Preferences tab title",
+            comment: "Preferences tab title"
         )
         static let captureTab = string(
             "preferences.tab.capture",
             defaultValue: "Screenshot",
-            comment: "Preferences tab title",
+            comment: "Preferences tab title"
         )
         static let screenRecordingTab = string(
             "preferences.tab.screen-recording",
             defaultValue: "Screen Recording",
-            comment: "Preferences tab title",
+            comment: "Preferences tab title"
         )
         static let annotateTab = string(
             "preferences.tab.annotate",
             defaultValue: "Annotate",
-            comment: "Preferences tab title",
+            comment: "Preferences tab title"
         )
         static let quickAccessTab = string(
             "preferences.tab.quick-access",
             defaultValue: "Quick Access",
-            comment: "Preferences tab title",
+            comment: "Preferences tab title"
         )
         static let historyTab = string(
             "preferences.tab.history",
             defaultValue: "History",
-            comment: "Preferences tab title",
+            comment: "Preferences tab title"
         )
         static let shortcutsTab = string(
             "preferences.tab.shortcuts",
             defaultValue: "Shortcuts",
-            comment: "Preferences tab title",
+            comment: "Preferences tab title"
         )
         static let permissionsTab = string(
             "preferences.tab.permissions",
             defaultValue: "Permissions",
-            comment: "Preferences tab title",
+            comment: "Preferences tab title"
         )
         static let cloudTab = string(
             "preferences.tab.cloud",
             defaultValue: "Uploads",
-            comment: "Preferences tab title",
+            comment: "Preferences tab title"
         )
         static let advancedTab = string(
             "preferences.tab.advanced",
             defaultValue: "Advanced",
-            comment: "Preferences tab title",
+            comment: "Preferences tab title"
         )
     }
 
@@ -193,212 +193,212 @@ nonisolated enum L10n {
         static let backupSection = string(
             "preferences-advanced.backup-section",
             defaultValue: "Backup",
-            comment: "Advanced preferences backup section title",
+            comment: "Advanced preferences backup section title"
         )
         static let integrationSection = string(
             "preferences-advanced.section-integration",
             defaultValue: "Integration",
-            comment: "Advanced preferences integration section title",
+            comment: "Advanced preferences integration section title"
         )
         static let fileNameSection = string(
             "preferences-advanced.file-name-section",
             defaultValue: "File Name",
-            comment: "Advanced preferences file name section title",
+            comment: "Advanced preferences file name section title"
         )
         static let clipboardSection = string(
             "preferences-advanced.clipboard-section",
             defaultValue: "Clipboard",
-            comment: "Advanced preferences clipboard section title",
+            comment: "Advanced preferences clipboard section title"
         )
         static let captureHistorySection = string(
             "preferences-advanced.capture-history-section",
             defaultValue: "Capture History",
-            comment: "Advanced preferences capture history section title",
+            comment: "Advanced preferences capture history section title"
         )
         static let textRecognitionSection = string(
             "preferences-advanced.text-recognition-section",
             defaultValue: "Text Recognition",
-            comment: "Advanced preferences text recognition section title",
+            comment: "Advanced preferences text recognition section title"
         )
         static let allInOneSection = string(
             "preferences-advanced.all-in-one-section",
             defaultValue: "All-In-One",
-            comment: "Advanced preferences All-In-One section title",
+            comment: "Advanced preferences All-In-One section title"
         )
         static let askForNameTitle = string(
             "preferences-advanced.ask-for-name-title",
             defaultValue: "Ask for name after every capture",
-            comment: "Advanced preferences capture naming toggle",
+            comment: "Advanced preferences capture naming toggle"
         )
         static let fileNameFormatTitle = string(
             "preferences-advanced.file-name-format-title",
             defaultValue: "File name format",
-            comment: "Advanced preferences filename format row",
+            comment: "Advanced preferences filename format row"
         )
         static let customizeButton = string(
             "preferences-advanced.customize-button",
             defaultValue: "Customize…",
-            comment: "Advanced preferences filename customization button",
+            comment: "Advanced preferences filename customization button"
         )
         static let retinaSuffixTitle = string(
             "preferences-advanced.retina-suffix-title",
             defaultValue: "Add \"@2x\" suffix to Retina screenshots",
-            comment: "Advanced preferences Retina filename suffix toggle",
+            comment: "Advanced preferences Retina filename suffix toggle"
         )
         static let retinaSuffixDescription = string(
             "preferences-advanced.retina-suffix-description",
             defaultValue: "This option improves compatibility with displaying Retina screenshots in third-party apps.",
-            comment: "Advanced preferences Retina filename suffix explanation",
+            comment: "Advanced preferences Retina filename suffix explanation"
         )
         static let copyToClipboardTitle = string(
             "preferences-advanced.copy-to-clipboard-title",
             defaultValue: "Copy to clipboard",
-            comment: "Advanced preferences clipboard format row",
+            comment: "Advanced preferences clipboard format row"
         )
         static let copyToClipboardDescription = string(
             "preferences-advanced.copy-to-clipboard-description",
             defaultValue: "Adjust this option if you've encountered any issues with pasting from clipboard or clipboard managers.",
-            comment: "Advanced preferences clipboard format explanation",
+            comment: "Advanced preferences clipboard format explanation"
         )
         static let clipboardFileAndImage = string(
             "preferences-advanced.clipboard-file-and-image",
             defaultValue: "File & Image (default)",
-            comment: "Clipboard copy mode option",
+            comment: "Clipboard copy mode option"
         )
         static let clipboardFileOnly = string(
             "preferences-advanced.clipboard-file-only",
             defaultValue: "File",
-            comment: "Clipboard copy mode option",
+            comment: "Clipboard copy mode option"
         )
         static let clipboardImageOnly = string(
             "preferences-advanced.clipboard-image-only",
             defaultValue: "Image",
-            comment: "Clipboard copy mode option",
+            comment: "Clipboard copy mode option"
         )
         static let keepHistoryTitle = string(
             "preferences-advanced.keep-history-title",
             defaultValue: "Keep history",
-            comment: "Advanced preferences capture history retention row",
+            comment: "Advanced preferences capture history retention row"
         )
         static let keepHistoryDescription = string(
             "preferences-advanced.keep-history-description",
             defaultValue: "You can restore old files with the Capture History option from the menu bar.",
-            comment: "Advanced preferences capture history retention explanation",
+            comment: "Advanced preferences capture history retention explanation"
         )
         static let historyDisabled = string(
             "preferences-advanced.history-disabled",
             defaultValue: "Off",
-            comment: "Capture history retention option",
+            comment: "Capture history retention option"
         )
         static let historyOneWeek = string(
             "preferences-advanced.history-one-week",
             defaultValue: "1 week",
-            comment: "Capture history retention option",
+            comment: "Capture history retention option"
         )
         static let historyOneMonth = string(
             "preferences-advanced.history-one-month",
             defaultValue: "1 month",
-            comment: "Capture history retention option",
+            comment: "Capture history retention option"
         )
         static let historyThreeMonths = string(
             "preferences-advanced.history-three-months",
             defaultValue: "3 months",
-            comment: "Capture history retention option",
+            comment: "Capture history retention option"
         )
         static let ocrLanguageTitle = string(
             "preferences-advanced.ocr-language-title",
             defaultValue: "Language",
-            comment: "Advanced preferences OCR language row",
+            comment: "Advanced preferences OCR language row"
         )
         static let ocrAutomaticLanguage = string(
             "preferences-advanced.ocr-automatic-language",
             defaultValue: "Automatically Detect Language",
-            comment: "Advanced preferences OCR automatic language option",
+            comment: "Advanced preferences OCR automatic language option"
         )
         static let keepLineBreaksTitle = string(
             "preferences-advanced.keep-line-breaks-title",
             defaultValue: "Keep line breaks",
-            comment: "Advanced preferences OCR line break toggle",
+            comment: "Advanced preferences OCR line break toggle"
         )
         static let detectLinksTitle = string(
             "preferences-advanced.detect-links-title",
             defaultValue: "Detect links",
-            comment: "Advanced preferences OCR link detection toggle",
+            comment: "Advanced preferences OCR link detection toggle"
         )
         static let rememberLastSelectionTitle = string(
             "preferences-advanced.remember-last-selection-title",
             defaultValue: "Remember last selection",
-            comment: "Advanced preferences All-In-One selection toggle",
+            comment: "Advanced preferences All-In-One selection toggle"
         )
         static let urlSchemeAPITitle = string(
             "preferences-advanced.url-scheme-api-title",
             defaultValue: "URL scheme API",
-            comment: "Advanced preferences build-configured URL scheme row",
+            comment: "Advanced preferences build-configured URL scheme row"
         )
         static let urlSchemeAPIDescription = string(
             "preferences-advanced.url-scheme-api-description",
             defaultValue: "The scheme used by external capture and automation links.",
-            comment: "Advanced preferences build-configured URL scheme explanation",
+            comment: "Advanced preferences build-configured URL scheme explanation"
         )
         static let screenshotFileNameFormat = string(
             "preferences-advanced.screenshot-file-name-format",
             defaultValue: "Screenshot",
-            comment: "Advanced filename editor screenshot field",
+            comment: "Advanced filename editor screenshot field"
         )
         static let recordingFileNameFormat = string(
             "preferences-advanced.recording-file-name-format",
             defaultValue: "Recording",
-            comment: "Advanced filename editor recording field",
+            comment: "Advanced filename editor recording field"
         )
         static let fileNameFormatHint = string(
             "preferences-advanced.file-name-format-hint",
             defaultValue: "Use the same tokens as the Screenshot settings filename editor.",
-            comment: "Advanced filename editor hint",
+            comment: "Advanced filename editor hint"
         )
         static let captureNamePromptTitle = string(
             "preferences-advanced.capture-name-prompt-title",
             defaultValue: "Name capture",
-            comment: "Capture filename prompt title",
+            comment: "Capture filename prompt title"
         )
         static let captureNamePromptMessage = string(
             "preferences-advanced.capture-name-prompt-message",
             defaultValue: "Choose a name for this capture.",
-            comment: "Capture filename prompt message",
+            comment: "Capture filename prompt message"
         )
         static let captureNamePromptPlaceholder = string(
             "preferences-advanced.capture-name-prompt-placeholder",
             defaultValue: "File name",
-            comment: "Capture filename prompt placeholder",
+            comment: "Capture filename prompt placeholder"
         )
         static let optionalModulesSection = string(
             "preferences-advanced.optional-modules-section",
             defaultValue: "Optional modules",
-            comment: "Advanced preferences optional modules section title",
+            comment: "Advanced preferences optional modules section title"
         )
         static let videoModuleTitle = string(
             "preferences-advanced.video-module-title",
             defaultValue: "Video recording & editor",
-            comment: "Advanced preferences video module toggle title",
+            comment: "Advanced preferences video module toggle title"
         )
         static let videoModuleDescription = string(
             "preferences-advanced.video-module-description",
             defaultValue: "Enable screen recording, GIF capture, and the video editor. Off by default.",
-            comment: "Advanced preferences video module toggle description",
+            comment: "Advanced preferences video module toggle description"
         )
         static let videoModuleDisabledWhileRecording = string(
             "preferences-advanced.video-module-disabled-while-recording",
             defaultValue: "Stop the active recording before disabling the video module",
-            comment: "Help text when the video module toggle is disabled during recording",
+            comment: "Help text when the video module toggle is disabled during recording"
         )
         static let urlSchemeTitle = string(
             "preferences-advanced.url-scheme-title",
             defaultValue: "URL Scheme integration",
-            comment: "Advanced preferences setting title",
+            comment: "Advanced preferences setting title"
         )
         static let urlSchemeDescription = string(
             "preferences-advanced.url-scheme-description-v2",
             defaultValue: "Allow external triggers via the URL scheme API",
-            comment: "Advanced preferences setting description",
+            comment: "Advanced preferences setting description"
         )
         static let diagnosticsSection = PreferencesGeneral.diagnosticsSection
         static let diagnosticLoggingTitle = PreferencesGeneral.diagnosticLoggingTitle
@@ -415,119 +415,119 @@ nonisolated enum L10n {
         static let exportTitle = string(
             "preferences-advanced.export-title",
             defaultValue: "Export backup",
-            comment: "Advanced preferences export row title",
+            comment: "Advanced preferences export row title"
         )
         static let exportDescription = string(
             "preferences-advanced.export-description",
             defaultValue: "Save portable copy",
-            comment: "Advanced preferences export row description",
+            comment: "Advanced preferences export row description"
         )
         static let importTitle = string(
             "preferences-advanced.import-title",
             defaultValue: "Import backup",
-            comment: "Advanced preferences import row title",
+            comment: "Advanced preferences import row title"
         )
         static let importDescription = string(
             "preferences-advanced.import-description",
             defaultValue: "Replace from .toml file",
-            comment: "Advanced preferences import row description",
+            comment: "Advanced preferences import row description"
         )
         static let restoreDefaultsTitle = string(
             "preferences-advanced.restore-defaults-title",
             defaultValue: "Restore defaults",
-            comment: "Advanced preferences restore defaults row title",
+            comment: "Advanced preferences restore defaults row title"
         )
         static let restoreDefaultsDescription = string(
             "preferences-advanced.restore-defaults-description",
             defaultValue: "Reset all settings",
-            comment: "Advanced preferences restore defaults row description",
+            comment: "Advanced preferences restore defaults row description"
         )
         static let exportButton = string(
             "preferences-advanced.export-button",
             defaultValue: "Export",
-            comment: "Export config button",
+            comment: "Export config button"
         )
         static let importButton = string(
             "preferences-advanced.import-button",
             defaultValue: "Import",
-            comment: "Import config button",
+            comment: "Import config button"
         )
         static let restoreDefaultsButton = string(
             "preferences-advanced.restore-defaults-button",
             defaultValue: "Restore",
-            comment: "Restore default config button",
+            comment: "Restore default config button"
         )
         static let restoreDefaultsConfirmButton = string(
             "preferences-advanced.restore-defaults-confirm-button",
             defaultValue: "Restore Defaults",
-            comment: "Destructive confirmation button for restoring default settings",
+            comment: "Destructive confirmation button for restoring default settings"
         )
         static let openConfigButton = string(
             "preferences-advanced.open-config-button",
             defaultValue: "Open config.toml",
-            comment: "Open TOML config file button",
+            comment: "Open TOML config file button"
         )
         static let configSyncStatusTitle = string(
             "preferences-advanced.config-sync-status-title",
             defaultValue: "config.toml sync",
-            comment: "Settings row title for config.toml background sync status",
+            comment: "Settings row title for config.toml background sync status"
         )
         static let syncNowButton = string(
             "preferences-advanced.sync-now-button",
             defaultValue: "Sync Now",
-            comment: "Button title for manually syncing current settings into config.toml",
+            comment: "Button title for manually syncing current settings into config.toml"
         )
         static let configSyncBadgeSynced = string(
             "preferences-advanced.config-sync-badge-synced",
             defaultValue: "Synced",
-            comment: "Badge label when config.toml matches current settings",
+            comment: "Badge label when config.toml matches current settings"
         )
         static let configSyncBadgeQueued = string(
             "preferences-advanced.config-sync-badge-queued",
             defaultValue: "Queued",
-            comment: "Badge label when config.toml sync is queued",
+            comment: "Badge label when config.toml sync is queued"
         )
         static let configSyncBadgeSyncing = string(
             "preferences-advanced.config-sync-badge-syncing",
             defaultValue: "Syncing",
-            comment: "Badge label while config.toml is syncing",
+            comment: "Badge label while config.toml is syncing"
         )
         static let configSyncBadgeAccessNeeded = string(
             "preferences-advanced.config-sync-badge-access-needed",
             defaultValue: "Access Needed",
-            comment: "Badge label when config folder access is required before syncing config.toml",
+            comment: "Badge label when config folder access is required before syncing config.toml"
         )
         static let configSyncBadgeReviewNeeded = string(
             "preferences-advanced.config-sync-badge-review-needed",
             defaultValue: "Review Needed",
-            comment: "Badge label when config.toml has external changes that need user review",
+            comment: "Badge label when config.toml has external changes that need user review"
         )
         static let configSyncBadgeFailed = string(
             "preferences-advanced.config-sync-badge-failed",
             defaultValue: "Failed",
-            comment: "Badge label when config.toml sync failed",
+            comment: "Badge label when config.toml sync failed"
         )
         static let configSyncIdleDescription = string(
             "preferences-advanced.config-sync-idle-description",
             defaultValue: "Current settings will sync to config.toml automatically.",
-            comment: "Config sync row description before the first sync result is available",
+            comment: "Config sync row description before the first sync result is available"
         )
         static let configSyncQueuedDescription = string(
             "preferences-advanced.config-sync-queued-description",
             defaultValue: "Sync queued. Cue will update config.toml shortly.",
-            comment: "Config sync row description when sync is queued",
+            comment: "Config sync row description when sync is queued"
         )
         static let configSyncWritingDescription = string(
             "preferences-advanced.config-sync-writing-description",
             defaultValue: "Writing current settings to config.toml.",
-            comment: "Config sync row description while sync is writing config.toml",
+            comment: "Config sync row description while sync is writing config.toml"
         )
         static func configSyncUpToDateDescription(_ time: String) -> String {
             format(
                 "preferences-advanced.config-sync-up-to-date-description",
                 defaultValue: "config.toml already matches current settings. Last checked at %@.",
                 comment: "Config sync row description when config.toml was already current. %@ is a localized time.",
-                time,
+                time
             )
         }
 
@@ -536,139 +536,139 @@ nonisolated enum L10n {
                 "preferences-advanced.config-sync-synced-description",
                 defaultValue: "config.toml updated from current settings at %@.",
                 comment: "Config sync row description after config.toml is written. %@ is a localized time.",
-                time,
+                time
             )
         }
 
         static let configAccessWarningTitle = string(
             "preferences-advanced.config-access-warning-title",
             defaultValue: "Config folder access needed",
-            comment: "Warning title when Cue has not been granted config folder access",
+            comment: "Warning title when Cue has not been granted config folder access"
         )
         static func configAccessWarningDescription(_ path: String) -> String {
             format(
                 "preferences-advanced.config-access-warning-description",
                 defaultValue: "Grant access to %@ once so Cue can create config.toml and apply direct edits on launch.",
                 comment: "Warning description when config folder access is missing. %@ is the expected config directory path.",
-                path,
+                path
             )
         }
 
         static let grantConfigAccessButton = string(
             "preferences-advanced.grant-config-access-button",
             defaultValue: "Grant Access",
-            comment: "Button title to grant config folder access",
+            comment: "Button title to grant config folder access"
         )
         static let configAccessRequiredToast = string(
             "preferences-advanced.config-access-required-toast",
             defaultValue: "Grant config folder access first.",
-            comment: "Toast shown when a config backup action requires folder access first",
+            comment: "Toast shown when a config backup action requires folder access first"
         )
         static let configAccessReady = string(
             "preferences-advanced.config-access-ready",
             defaultValue: "config.toml is ready.",
-            comment: "Toast shown after config folder access is granted",
+            comment: "Toast shown after config folder access is granted"
         )
         static let exportSucceeded = string(
             "preferences-advanced.export-succeeded",
             defaultValue: "Config backup exported.",
-            comment: "Toast shown after config export succeeds",
+            comment: "Toast shown after config export succeeds"
         )
         static let openConfigSucceeded = string(
             "preferences-advanced.open-config-succeeded",
             defaultValue: "config.toml opened.",
-            comment: "Toast shown after config.toml is opened",
+            comment: "Toast shown after config.toml is opened"
         )
         static let configSyncing = string(
             "preferences-advanced.config-syncing",
             defaultValue: "Syncing config.toml...",
-            comment: "Toast shown while Cue syncs current settings into config.toml",
+            comment: "Toast shown while Cue syncs current settings into config.toml"
         )
         static let configSynced = string(
             "preferences-advanced.config-synced",
             defaultValue: "config.toml synced.",
-            comment: "Toast shown after Cue syncs current settings into config.toml",
+            comment: "Toast shown after Cue syncs current settings into config.toml"
         )
         static let configSyncNeedsConfirmation = string(
             "preferences-advanced.config-sync-needs-confirmation",
             defaultValue: "config.toml has external changes.",
-            comment: "Toast shown when Cue needs confirmation before replacing externally changed config.toml",
+            comment: "Toast shown when Cue needs confirmation before replacing externally changed config.toml"
         )
         static let configSyncConfirmationTitle = string(
             "preferences-advanced.config-sync-confirmation-title",
             defaultValue: "Sync config.toml?",
-            comment: "Confirmation alert title before replacing a config file with external changes",
+            comment: "Confirmation alert title before replacing a config file with external changes"
         )
         static let configSyncConfirmationMessage = string(
             "preferences-advanced.config-sync-confirmation-message",
             defaultValue: "config.toml no longer matches Cue settings and may have edits from outside the app. Syncing will replace it with current settings.",
-            comment: "Confirmation alert message before replacing a config file with external changes",
+            comment: "Confirmation alert message before replacing a config file with external changes"
         )
         static let syncConfigConfirmButton = string(
             "preferences-advanced.sync-config-confirm-button",
             defaultValue: "Sync & Open",
-            comment: "Confirmation button that replaces config.toml with current settings and opens it",
+            comment: "Confirmation button that replaces config.toml with current settings and opens it"
         )
         static let openExistingConfigButton = string(
             "preferences-advanced.open-existing-config-button",
             defaultValue: "Open Existing",
-            comment: "Confirmation button that opens config.toml without syncing current settings",
+            comment: "Confirmation button that opens config.toml without syncing current settings"
         )
         static let importSucceeded = string(
             "preferences-advanced.import-succeeded",
             defaultValue: "Backup imported and config.toml replaced.",
-            comment: "Toast shown after a backup import replaces the managed config file",
+            comment: "Toast shown after a backup import replaces the managed config file"
         )
         static let restoreDefaultsSucceeded = string(
             "preferences-advanced.restore-defaults-succeeded",
             defaultValue: "Defaults restored.",
-            comment: "Toast shown after settings are restored to defaults",
+            comment: "Toast shown after settings are restored to defaults"
         )
         static let operationFinished = string(
             "preferences-advanced.operation-finished",
             defaultValue: "Done.",
-            comment: "Fallback toast when a config backup operation completes",
+            comment: "Fallback toast when a config backup operation completes"
         )
         static let openConfigUnavailable = string(
             "preferences-advanced.open-config-unavailable",
             defaultValue: "Could not open config.toml.",
-            comment: "Open config file unavailable result message",
+            comment: "Open config file unavailable result message"
         )
         static let exportPanelTitle = string(
             "preferences-advanced.export-panel-title",
             defaultValue: "Export Cue Config",
-            comment: "Config export save panel title",
+            comment: "Config export save panel title"
         )
         static let importPanelTitle = string(
             "preferences-advanced.import-panel-title",
             defaultValue: "Import Cue Config",
-            comment: "Config import open panel title",
+            comment: "Config import open panel title"
         )
         static let configDirectoryPanelTitle = string(
             "preferences-advanced.config-directory-panel-title",
             defaultValue: "Grant Config Folder Access",
-            comment: "Config directory access panel title",
+            comment: "Config directory access panel title"
         )
         static func configDirectoryPanelMessage(_ path: String) -> String {
             format(
                 "preferences-advanced.config-directory-panel-message",
                 defaultValue: "Grant access for %@. If the folder is missing, Cue will create it automatically.",
                 comment: "Config directory access panel message. %@ is the suggested directory path.",
-                path,
+                path
             )
         }
 
         static let configDirectoryPanelPrompt = string(
             "preferences-advanced.config-directory-panel-prompt",
             defaultValue: "Grant Access",
-            comment: "Config directory access panel confirmation button",
+            comment: "Config directory access panel confirmation button"
         )
         static func configDirectoryPanelOnboardingMessage(_ path: String) -> String {
             format(
                 "preferences-advanced.config-directory-panel-onboarding-message",
                 defaultValue: "Grant access for %@. Cue will create config.toml there if it is missing.",
                 comment: "Config directory access panel message from onboarding. %@ is the suggested directory path.",
-                path,
+                path
             )
         }
 
@@ -677,7 +677,7 @@ nonisolated enum L10n {
                 "preferences-advanced.config-directory-mismatch",
                 defaultValue: "Choose %@ to keep Cue config in the default dotfiles location.",
                 comment: "Config directory mismatch validation message. %@ is the expected directory path.",
-                path,
+                path
             )
         }
 
@@ -686,7 +686,7 @@ nonisolated enum L10n {
                 "preferences-advanced.exported",
                 defaultValue: "Exported config to %@",
                 comment: "Config export success message",
-                path,
+                path
             )
         }
 
@@ -695,7 +695,7 @@ nonisolated enum L10n {
                 "preferences-advanced.opened-config",
                 defaultValue: "Opened config.toml from %@",
                 comment: "Config file opened success message",
-                path,
+                path
             )
         }
 
@@ -704,7 +704,7 @@ nonisolated enum L10n {
                 "preferences-advanced.config-access-granted",
                 defaultValue: "Config folder access granted. config.toml is ready at %@",
                 comment: "Config folder access success message. %@ is the config file path.",
-                path,
+                path
             )
         }
 
@@ -713,7 +713,7 @@ nonisolated enum L10n {
                 "preferences-advanced.open-config-missing",
                 defaultValue: "No config file exists at %@. Export a backup first, then open it here.",
                 comment: "Config file missing warning message",
-                path,
+                path
             )
         }
 
@@ -722,41 +722,41 @@ nonisolated enum L10n {
                 "preferences-advanced.open-config-failed",
                 defaultValue: "macOS could not open %@.",
                 comment: "Config file open failure message",
-                path,
+                path
             )
         }
 
         static let exportFailed = string(
             "preferences-advanced.export-failed",
             defaultValue: "Config export failed.",
-            comment: "Config export failure message",
+            comment: "Config export failure message"
         )
         static let importFailed = string(
             "preferences-advanced.import-failed",
             defaultValue: "Config import failed.",
-            comment: "Config import failure message",
+            comment: "Config import failure message"
         )
         static let restoreDefaultsFailed = string(
             "preferences-advanced.restore-defaults-failed",
             defaultValue: "Could not restore defaults.",
-            comment: "Config restore defaults failure message",
+            comment: "Config restore defaults failure message"
         )
         static let restoreDefaultsConfirmationTitle = string(
             "preferences-advanced.restore-defaults-confirmation-title",
             defaultValue: "Restore default settings?",
-            comment: "Restore defaults confirmation alert title",
+            comment: "Restore defaults confirmation alert title"
         )
         static let restoreDefaultsConfirmationMessage = string(
             "preferences-advanced.restore-defaults-confirmation-message",
             defaultValue: "If you confirm, Cue will replace config.toml with default values and reset app settings. Saved captures and Keychain entries are not deleted.",
-            comment: "Restore defaults confirmation alert message",
+            comment: "Restore defaults confirmation alert message"
         )
         static func importFailedWithErrors(_ count: Int) -> String {
             format(
                 "preferences-advanced.import-failed-with-errors",
                 defaultValue: "Config import failed with %d error(s).",
                 comment: "Config import validation error summary",
-                count,
+                count
             )
         }
 
@@ -765,7 +765,7 @@ nonisolated enum L10n {
                 "preferences-advanced.imported",
                 defaultValue: "Imported %d config setting(s).",
                 comment: "Config import success summary",
-                count,
+                count
             )
         }
 
@@ -775,7 +775,7 @@ nonisolated enum L10n {
                 defaultValue: "Imported %d config setting(s) with %d warning(s).",
                 comment: "Config import success with warnings summary",
                 count,
-                warningCount,
+                warningCount
             )
         }
     }
@@ -784,97 +784,97 @@ nonisolated enum L10n {
         static let captureArea = string(
             "action.capture-area",
             defaultValue: "Capture Area",
-            comment: "Action title for area screenshot capture",
+            comment: "Action title for area screenshot capture"
         )
         static let captureAllInOne = string(
             "action.capture-all-in-one",
             defaultValue: "All-In-One Capture",
-            comment: "Action title for the All-In-One capture session",
+            comment: "Action title for the All-In-One capture session"
         )
         static let captureAreaAnnotate = string(
             "action.capture-area-annotate",
             defaultValue: "Capture Markup",
-            comment: "Action title for the inline capture markup flow",
+            comment: "Action title for the inline capture markup flow"
         )
         static let captureFullscreen = string(
             "action.capture-fullscreen",
             defaultValue: "Capture Fullscreen",
-            comment: "Action title for fullscreen screenshot capture",
+            comment: "Action title for fullscreen screenshot capture"
         )
         static let captureActiveWindow = string(
             "action.capture-active-window",
             defaultValue: "Capture Active Window",
-            comment: "Action title for instant active-window screenshot capture",
+            comment: "Action title for instant active-window screenshot capture"
         )
         static let scrollingCapture = string(
             "action.scrolling-capture",
             defaultValue: "Scrolling Capture",
-            comment: "Action title for scrolling screenshot capture",
+            comment: "Action title for scrolling screenshot capture"
         )
         static let captureTextOCR = string(
             "action.capture-text-ocr",
             defaultValue: "Capture Text (OCR)",
-            comment: "Action title for OCR capture",
+            comment: "Action title for OCR capture"
         )
         static let captureSmartElement = string(
             "action.capture-smart-element",
             defaultValue: "Smart Element Capture",
-            comment: "Action title for smart element capture",
+            comment: "Action title for smart element capture"
         )
         static let captureSubject = string(
             "action.capture-subject",
             defaultValue: "Capture Subject",
-            comment: "Action title for subject cutout capture",
+            comment: "Action title for subject cutout capture"
         )
         static let recordVideo = string(
             "action.record-video",
             defaultValue: "Record Video",
-            comment: "Action title for video recording shortcut",
+            comment: "Action title for video recording shortcut"
         )
         static let pauseResumeRecording = string(
             "action.pause-resume-recording",
             defaultValue: "Pause/Resume Recording",
-            comment: "Action title for the optional pause/resume recording shortcut",
+            comment: "Action title for the optional pause/resume recording shortcut"
         )
         static let togglePenRecording = string(
             "action.toggle-pen-recording",
             defaultValue: "Toggle Pen/Annotations",
-            comment: "Action title for toggling drawing/annotations overlay",
+            comment: "Action title for toggling drawing/annotations overlay"
         )
         static let restartRecording = string(
             "action.restart-recording",
             defaultValue: "Re-record / Restart",
-            comment: "Action title for restarting the recording session",
+            comment: "Action title for restarting the recording session"
         )
         static let deleteRecording = string(
             "action.delete-recording",
             defaultValue: "Delete / Cancel",
-            comment: "Action title for cancelling and deleting the active recording",
+            comment: "Action title for cancelling and deleting the active recording"
         )
         static let openAnnotate = string(
             "action.open-annotate",
             defaultValue: "Open Annotate",
-            comment: "Action title for opening annotate",
+            comment: "Action title for opening annotate"
         )
         static let openVideoEditor = string(
             "action.open-video-editor",
             defaultValue: "Open Video Editor",
-            comment: "Action title for opening the video editor",
+            comment: "Action title for opening the video editor"
         )
         static let showShortcutList = string(
             "action.show-shortcut-list",
             defaultValue: "Show Shortcut List",
-            comment: "Action title for showing shortcut list",
+            comment: "Action title for showing shortcut list"
         )
         static let showQuickAccessOverlay = string(
             "action.show-quick-access-overlay",
             defaultValue: "Show Quick Access Overlay",
-            comment: "Action title for showing the quick access overlay",
+            comment: "Action title for showing the quick access overlay"
         )
         static let openHistory = string(
             "action.open-history",
             defaultValue: "Open History",
-            comment: "Action title for opening capture history",
+            comment: "Action title for opening capture history"
         )
     }
 
@@ -884,49 +884,49 @@ nonisolated enum L10n {
                 "menu.stop-recording",
                 defaultValue: "Stop Recording (%@)",
                 comment: "Status bar menu item title while recording. %@ is the formatted recording duration.",
-                duration,
+                duration
             )
         }
 
         static let recordScreen = string(
             "menu.record-screen",
             defaultValue: "Record Area",
-            comment: "Status bar menu item title for area recording",
+            comment: "Status bar menu item title for area recording"
         )
         static let recordApplication = string(
             "menu.record-application",
             defaultValue: "Record Application",
-            comment: "Status bar menu item title for application-window recording",
+            comment: "Status bar menu item title for application-window recording"
         )
         static let editVideo = string(
             "menu.edit-video",
             defaultValue: "Video Editor",
-            comment: "Status bar menu item title for opening the video editor",
+            comment: "Status bar menu item title for opening the video editor"
         )
         static let chooseApplicationWindow = string(
             "menu.choose-application-window",
             defaultValue: "Capture Window",
-            comment: "Status bar menu item title for application-window screenshot capture",
+            comment: "Status bar menu item title for application-window screenshot capture"
         )
         static let keyboardShortcuts = string(
             "menu.keyboard-shortcuts",
             defaultValue: "Keyboard Shortcuts",
-            comment: "Status bar menu item title for shortcut list",
+            comment: "Status bar menu item title for shortcut list"
         )
         static let grantPermission = string(
             "menu.grant-permission",
             defaultValue: "Grant Permission...",
-            comment: "Status bar menu item title to request missing permissions",
+            comment: "Status bar menu item title to request missing permissions"
         )
         static let preferences = string(
             "menu.preferences",
             defaultValue: "Settings",
-            comment: "Status bar menu item title for opening settings",
+            comment: "Status bar menu item title for opening settings"
         )
         static let quitCue = string(
             "menu.quit-notinhas",
             defaultValue: "Quit Cue",
-            comment: "Status bar menu item title for quitting the app",
+            comment: "Status bar menu item title for quitting the app"
         )
     }
 
@@ -935,27 +935,27 @@ nonisolated enum L10n {
         static let autoStitch = string(
             "combine.auto-stitch",
             defaultValue: "Auto Stitch",
-            comment: "Automatic image stitching mode",
+            comment: "Automatic image stitching mode"
         )
         static let freeCanvas = string(
             "combine.free-canvas",
             defaultValue: "Free Canvas",
-            comment: "Free image arrangement mode",
+            comment: "Free image arrangement mode"
         )
         static let arrangement = string(
             "combine.arrangement",
             defaultValue: "Arrangement",
-            comment: "Combine arrangement section title",
+            comment: "Combine arrangement section title"
         )
         static let spacing = string(
             "combine.spacing",
             defaultValue: "Spacing",
-            comment: "Combine spacing section title",
+            comment: "Combine spacing section title"
         )
         static let imageGap = string(
             "combine.image-gap",
             defaultValue: "Image Gap",
-            comment: "Gap between combined images",
+            comment: "Gap between combined images"
         )
         static let images = string("combine.images", defaultValue: "Images", comment: "Combined image list title")
         static func image(_ index: Int) -> String {
@@ -965,59 +965,59 @@ nonisolated enum L10n {
         static let moveEarlier = string(
             "combine.move-earlier",
             defaultValue: "Move Earlier",
-            comment: "Move combined image earlier",
+            comment: "Move combined image earlier"
         )
         static let moveLater = string(
             "combine.move-later",
             defaultValue: "Move Later",
-            comment: "Move combined image later",
+            comment: "Move combined image later"
         )
         static let smart = string("combine.smart", defaultValue: "Smart", comment: "Smart combine direction")
         static let horizontal = string(
             "combine.horizontal",
             defaultValue: "Horizontal",
-            comment: "Horizontal combine direction",
+            comment: "Horizontal combine direction"
         )
         static let vertical = string(
             "combine.vertical",
             defaultValue: "Vertical",
-            comment: "Vertical combine direction",
+            comment: "Vertical combine direction"
         )
         static let open = string("combine.open", defaultValue: "Combine Images", comment: "Open combine images action")
         static let pickerTitle = string(
             "combine.picker-title",
             defaultValue: "Choose Images to Combine",
-            comment: "Combine image picker title",
+            comment: "Combine image picker title"
         )
         static let pickerMessage = string(
             "combine.picker-message",
             defaultValue: "Select two or more images.",
-            comment: "Combine image picker message",
+            comment: "Combine image picker message"
         )
         static let pickerConfirm = string(
             "combine.picker-confirm",
             defaultValue: "Combine",
-            comment: "Combine image picker confirmation",
+            comment: "Combine image picker confirmation"
         )
         static let saveTitle = string(
             "combine.save-title",
             defaultValue: "Save Combined Image",
-            comment: "Combine save dialog title",
+            comment: "Combine save dialog title"
         )
         static let saveMessage = string(
             "combine.save-message",
             defaultValue: "Choose how to export the stitched result.",
-            comment: "Combine save dialog message",
+            comment: "Combine save dialog message"
         )
         static let saveToFile = string(
             "combine.save-to-file",
             defaultValue: "Save to File…",
-            comment: "Save combined image to file",
+            comment: "Save combined image to file"
         )
         static let copyToClipboard = string(
             "combine.copy-to-clipboard",
             defaultValue: "Copy to Clipboard",
-            comment: "Copy combined image to clipboard",
+            comment: "Copy combined image to clipboard"
         )
     }
 
@@ -1025,471 +1025,471 @@ nonisolated enum L10n {
         static let tryItOut = string(
             "common.try-it-out",
             defaultValue: "Try It Out",
-            comment: "Try it out button title",
+            comment: "Try it out button title"
         )
         static let next = string(
             "common.next",
             defaultValue: "Next",
-            comment: "Primary next action button title",
+            comment: "Primary next action button title"
         )
         static let continueAction = string(
             "common.continue",
             defaultValue: "Continue",
-            comment: "Generic continue button title",
+            comment: "Generic continue button title"
         )
         static let close = string(
             "common.close",
             defaultValue: "Close",
-            comment: "Generic close button title",
+            comment: "Generic close button title"
         )
         static let decrease = string(
             "common.decrease",
             defaultValue: "Decrease",
-            comment: "Accessibility label for a control that decreases a numeric value",
+            comment: "Accessibility label for a control that decreases a numeric value"
         )
         static let increase = string(
             "common.increase",
             defaultValue: "Increase",
-            comment: "Accessibility label for a control that increases a numeric value",
+            comment: "Accessibility label for a control that increases a numeric value"
         )
         static let off = string(
             "common.off",
             defaultValue: "Off",
-            comment: "Label shown when a shortcut or feature is turned off",
+            comment: "Label shown when a shortcut or feature is turned off"
         )
         static let preferences = string(
             "common.preferences",
             defaultValue: "Preferences",
-            comment: "Generic label for preferences without an ellipsis",
+            comment: "Generic label for preferences without an ellipsis"
         )
         static let width = string(
             "common.width",
             defaultValue: "Width",
-            comment: "Generic label for width",
+            comment: "Generic label for width"
         )
         static let height = string(
             "common.height",
             defaultValue: "Height",
-            comment: "Generic label for height",
+            comment: "Generic label for height"
         )
         static let on = string(
             "common.on",
             defaultValue: "On",
-            comment: "Label shown when a shortcut or feature is turned on",
+            comment: "Label shown when a shortcut or feature is turned on"
         )
         static let display = string(
             "common.display",
             defaultValue: "Display",
-            comment: "Generic label for display settings or options",
+            comment: "Generic label for display settings or options"
         )
         static let cancel = string(
             "common.cancel",
             defaultValue: "Cancel",
-            comment: "Generic cancel button title",
+            comment: "Generic cancel button title"
         )
         static let ok = string(
             "common.ok",
             defaultValue: "OK",
-            comment: "Generic confirmation button title",
+            comment: "Generic confirmation button title"
         )
         static let notGranted = string(
             "common.not-granted",
             defaultValue: "Not Granted",
-            comment: "Status label shown when a permission or access has not been granted",
+            comment: "Status label shown when a permission or access has not been granted"
         )
         static let openSettings = string(
             "common.open-settings",
             defaultValue: "Open Settings",
-            comment: "Generic button title to open System Settings",
+            comment: "Generic button title to open System Settings"
         )
         static let refresh = string(
             "common.refresh",
             defaultValue: "Refresh",
-            comment: "Generic refresh button title",
+            comment: "Generic refresh button title"
         )
         static let disable = string(
             "common.disable",
             defaultValue: "Disable",
-            comment: "Generic destructive disable button title",
+            comment: "Generic destructive disable button title"
         )
         static let openSystemSettings = string(
             "common.open-system-settings",
             defaultValue: "Open System Settings",
-            comment: "Generic button title to open System Settings",
+            comment: "Generic button title to open System Settings"
         )
         static let resetToDefault = string(
             "common.reset-to-default",
             defaultValue: "Reset to Default",
-            comment: "Generic button title to reset a setting to its default value",
+            comment: "Generic button title to reset a setting to its default value"
         )
         static let importAction = string(
             "common.import",
             defaultValue: "Import",
-            comment: "Generic import button title",
+            comment: "Generic import button title"
         )
         static let exportAction = string(
             "common.export",
             defaultValue: "Export",
-            comment: "Generic export button title",
+            comment: "Generic export button title"
         )
         static let share = string(
             "common.share",
             defaultValue: "Share",
-            comment: "Generic share button title",
+            comment: "Generic share button title"
         )
         static let saveAs = string(
             "common.save-as",
             defaultValue: "Save as...",
-            comment: "Generic save as button title",
+            comment: "Generic save as button title"
         )
         static let save = string(
             "common.save",
             defaultValue: "Save",
-            comment: "Generic save button title",
+            comment: "Generic save button title"
         )
         static let none = string(
             "common.none",
             defaultValue: "None",
-            comment: "Generic none option label",
+            comment: "Generic none option label"
         )
         static let more = string(
             "common.more",
             defaultValue: "More",
-            comment: "Generic more button title",
+            comment: "Generic more button title"
         )
         static let reset = string(
             "common.reset",
             defaultValue: "Reset",
-            comment: "Generic reset button title",
+            comment: "Generic reset button title"
         )
         static let done = string(
             "common.done",
             defaultValue: "Done",
-            comment: "Generic done button title",
+            comment: "Generic done button title"
         )
         static let apply = string(
             "common.apply",
             defaultValue: "Apply",
-            comment: "Generic apply button title",
+            comment: "Generic apply button title"
         )
         static let deleteAction = string(
             "common.delete",
             defaultValue: "Delete",
-            comment: "Generic delete button title",
+            comment: "Generic delete button title"
         )
         static let overwrite = string(
             "common.overwrite",
             defaultValue: "Overwrite",
-            comment: "Generic overwrite button title",
+            comment: "Generic overwrite button title"
         )
         static let undo = string(
             "common.undo",
             defaultValue: "Undo",
-            comment: "Generic undo button title",
+            comment: "Generic undo button title"
         )
         static let redo = string(
             "common.redo",
             defaultValue: "Redo",
-            comment: "Generic redo button title",
+            comment: "Generic redo button title"
         )
         static let copyToClipboard = string(
             "common.copy-to-clipboard",
             defaultValue: "Copy to Clipboard",
-            comment: "Generic copy to clipboard button title",
+            comment: "Generic copy to clipboard button title"
         )
         static let copiedToClipboard = string(
             "common.copied-to-clipboard",
             defaultValue: "Copied to clipboard",
-            comment: "Generic toast shown after copying content to the clipboard",
+            comment: "Generic toast shown after copying content to the clipboard"
         )
         static let copy = string(
             "common.copy",
             defaultValue: "Copy",
-            comment: "Generic copy button title",
+            comment: "Generic copy button title"
         )
         static let open = string(
             "common.open",
             defaultValue: "Open",
-            comment: "Generic open button title",
+            comment: "Generic open button title"
         )
         static let restore = string(
             "common.restore",
             defaultValue: "Restore",
-            comment: "Generic restore button title",
+            comment: "Generic restore button title"
         )
         static let openInFinder = string(
             "common.open-in-finder",
             defaultValue: "Open in Finder",
-            comment: "Generic button or tooltip title for opening a file in Finder",
+            comment: "Generic button or tooltip title for opening a file in Finder"
         )
         static let moveToTrash = string(
             "common.move-to-trash",
             defaultValue: "Move to Trash",
-            comment: "Generic destructive action title for moving a file to the system Trash",
+            comment: "Generic destructive action title for moving a file to the system Trash"
         )
         static let renameFile = string(
             "common.rename-file",
             defaultValue: "Rename file",
-            comment: "Generic tooltip or label for renaming a file",
+            comment: "Generic tooltip or label for renaming a file"
         )
         static let preview = string(
             "common.preview",
             defaultValue: "Preview",
-            comment: "Generic preview section title",
+            comment: "Generic preview section title"
         )
         static let file = string(
             "common.file",
             defaultValue: "File",
-            comment: "Generic file section title",
+            comment: "Generic file section title"
         )
         static let name = string(
             "common.name",
             defaultValue: "Name",
-            comment: "Generic name field label",
+            comment: "Generic name field label"
         )
         static let path = string(
             "common.path",
             defaultValue: "Path",
-            comment: "Generic path field label",
+            comment: "Generic path field label"
         )
         static let size = string(
             "common.size",
             defaultValue: "Size",
-            comment: "Generic size field label",
+            comment: "Generic size field label"
         )
         static let format = string(
             "common.format",
             defaultValue: "Format",
-            comment: "Generic format field label",
+            comment: "Generic format field label"
         )
         static let resolution = string(
             "common.resolution",
             defaultValue: "Resolution",
-            comment: "Generic resolution field label",
+            comment: "Generic resolution field label"
         )
         static let aspectRatio = string(
             "common.aspect-ratio",
             defaultValue: "Aspect Ratio",
-            comment: "Generic aspect ratio field label",
+            comment: "Generic aspect ratio field label"
         )
         static let duration = string(
             "common.duration",
             defaultValue: "Duration",
-            comment: "Generic duration field label",
+            comment: "Generic duration field label"
         )
         static let created = string(
             "common.created",
             defaultValue: "Created",
-            comment: "Generic created date field label",
+            comment: "Generic created date field label"
         )
         static let modified = string(
             "common.modified",
             defaultValue: "Modified",
-            comment: "Generic modified date field label",
+            comment: "Generic modified date field label"
         )
         static let status = string(
             "common.status",
             defaultValue: "Status",
-            comment: "Generic status field label",
+            comment: "Generic status field label"
         )
         static let currentSize = string(
             "common.current-size",
             defaultValue: "Current Size",
-            comment: "Generic current file size label",
+            comment: "Generic current file size label"
         )
         static let estimated = string(
             "common.estimated",
             defaultValue: "Estimated",
-            comment: "Generic estimated value label",
+            comment: "Generic estimated value label"
         )
         static let estimatedSize = string(
             "common.estimated-size",
             defaultValue: "Estimated Size",
-            comment: "Generic estimated file size label",
+            comment: "Generic estimated file size label"
         )
         static let quality = string(
             "common.quality",
             defaultValue: "Quality",
-            comment: "Generic quality section title",
+            comment: "Generic quality section title"
         )
         static let dimensions = string(
             "common.dimensions",
             defaultValue: "Dimensions",
-            comment: "Generic dimensions section title",
+            comment: "Generic dimensions section title"
         )
         static let audio = string(
             "common.audio",
             defaultValue: "Audio",
-            comment: "Generic audio section title",
+            comment: "Generic audio section title"
         )
         static let video = string(
             "common.video",
             defaultValue: "Video",
-            comment: "Generic video section title",
+            comment: "Generic video section title"
         )
         static let background = string(
             "common.background",
             defaultValue: "Background",
-            comment: "Generic background section title",
+            comment: "Generic background section title"
         )
         static let colors = string(
             "common.colors",
             defaultValue: "Colors",
-            comment: "Generic colors section title",
+            comment: "Generic colors section title"
         )
         static let gradients = string(
             "common.gradients",
             defaultValue: "Gradients",
-            comment: "Generic gradients section title",
+            comment: "Generic gradients section title"
         )
         static let wallpapers = string(
             "common.wallpapers",
             defaultValue: "Wallpapers",
-            comment: "Generic wallpapers section title",
+            comment: "Generic wallpapers section title"
         )
         static let padding = string(
             "common.padding",
             defaultValue: "Padding",
-            comment: "Generic padding setting label",
+            comment: "Generic padding setting label"
         )
         static let inset = string(
             "common.inset",
             defaultValue: "Inset",
-            comment: "Generic inset setting label",
+            comment: "Generic inset setting label"
         )
         static let shadow = string(
             "common.shadow",
             defaultValue: "Shadow",
-            comment: "Generic shadow setting label",
+            comment: "Generic shadow setting label"
         )
         static let corners = string(
             "common.corners",
             defaultValue: "Corners",
-            comment: "Generic corners setting label",
+            comment: "Generic corners setting label"
         )
         static let rotation = string(
             "common.rotation",
             defaultValue: "Rotation",
-            comment: "Generic rotation section title",
+            comment: "Generic rotation section title"
         )
         static let perspective = string(
             "common.perspective",
             defaultValue: "Perspective",
-            comment: "Generic perspective section title",
+            comment: "Generic perspective section title"
         )
         static let style = string(
             "common.style",
             defaultValue: "Style",
-            comment: "Generic style setting label",
+            comment: "Generic style setting label"
         )
         static let fill = string(
             "common.fill",
             defaultValue: "Fill",
-            comment: "Generic fill setting label",
+            comment: "Generic fill setting label"
         )
         static let text = string(
             "common.text",
             defaultValue: "Text",
-            comment: "Generic text label",
+            comment: "Generic text label"
         )
         static let color = string(
             "common.color",
             defaultValue: "Color",
-            comment: "Generic color label",
+            comment: "Generic color label"
         )
         static let stroke = string(
             "common.stroke",
             defaultValue: "Stroke",
-            comment: "Generic stroke setting label",
+            comment: "Generic stroke setting label"
         )
         static func strokeWidthOption(_ points: Int) -> String {
             L10n.format(
                 "common.stroke-width-option",
                 defaultValue: "%d pt",
                 comment: "Accessibility and tooltip label for a discrete stroke-width preset. %d is the width in points.",
-                points,
+                points
             )
         }
 
         static let solid = string(
             "common.solid",
             defaultValue: "Solid",
-            comment: "Generic solid color label",
+            comment: "Generic solid color label"
         )
         static let free = string(
             "common.free",
             defaultValue: "Free",
-            comment: "Generic free-form option label",
+            comment: "Generic free-form option label"
         )
         static let dates = string(
             "common.dates",
             defaultValue: "Dates",
-            comment: "Generic dates section title",
+            comment: "Generic dates section title"
         )
         static let low = string(
             "common.low",
             defaultValue: "Low",
-            comment: "Generic low option label",
+            comment: "Generic low option label"
         )
         static let medium = string(
             "common.medium",
             defaultValue: "Medium",
-            comment: "Generic medium option label",
+            comment: "Generic medium option label"
         )
         static let high = string(
             "common.high",
             defaultValue: "High",
-            comment: "Generic high option label",
+            comment: "Generic high option label"
         )
         static let original = string(
             "common.original",
             defaultValue: "Original",
-            comment: "Generic original option label",
+            comment: "Generic original option label"
         )
         static let favorite = string(
             "common.favorite",
             defaultValue: "Favorite",
-            comment: "Generic favorite section title",
+            comment: "Generic favorite section title"
         )
         static let dragColorsHere = string(
             "common.drag-colors-here",
             defaultValue: "Drag colors here",
-            comment: "Instruction shown in color favorite drop zones",
+            comment: "Instruction shown in color favorite drop zones"
         )
         static let custom = string(
             "common.custom",
             defaultValue: "Custom",
-            comment: "Generic custom option label",
+            comment: "Generic custom option label"
         )
         static let unlimited = string(
             "common.unlimited",
             defaultValue: "Unlimited",
-            comment: "Generic option label for an unbounded numeric setting",
+            comment: "Generic option label for an unbounded numeric setting"
         )
         static let unsaved = string(
             "common.unsaved",
             defaultValue: "Unsaved",
-            comment: "Generic unsaved status label",
+            comment: "Generic unsaved status label"
         )
         static let active = string(
             "common.active",
             defaultValue: "Active",
-            comment: "Generic active status label",
+            comment: "Generic active status label"
         )
         static let ready = string(
             "common.ready",
             defaultValue: "Ready",
-            comment: "Generic ready status label",
+            comment: "Generic ready status label"
         )
         static let enabled = string(
             "common.enabled",
             defaultValue: "Enabled",
-            comment: "Generic enabled state label",
+            comment: "Generic enabled state label"
         )
         static let disabled = string(
             "common.disabled",
             defaultValue: "Disabled",
-            comment: "Generic disabled state label",
+            comment: "Generic disabled state label"
         )
         static func withShortcut(_ title: String, _ shortcut: String) -> String {
             L10n.format(
@@ -1497,7 +1497,7 @@ nonisolated enum L10n {
                 defaultValue: "%@ (%@)",
                 comment: "Generic label that appends a keyboard shortcut hint to a title. First %@ is the title, second %@ is the shortcut.",
                 title,
-                shortcut,
+                shortcut
             )
         }
     }
@@ -1506,12 +1506,12 @@ nonisolated enum L10n {
         static let screenshot = string(
             "capture-kind.screenshot",
             defaultValue: "Screenshot",
-            comment: "Generic label for screenshot capture type",
+            comment: "Generic label for screenshot capture type"
         )
         static let recording = string(
             "capture-kind.recording",
             defaultValue: "Recording",
-            comment: "Generic label for recording capture type",
+            comment: "Generic label for recording capture type"
         )
     }
 
@@ -1519,137 +1519,137 @@ nonisolated enum L10n {
         static let windowMode = string(
             "all-in-one.mode.window",
             defaultValue: "Window",
-            comment: "All-In-One mode label for application window capture",
+            comment: "All-In-One mode label for application window capture"
         )
         static let modeActiveWindow = string(
             "all-in-one.mode.active-window",
             defaultValue: "Active",
-            comment: "Compact All-In-One toolbar label for active window capture",
+            comment: "Compact All-In-One toolbar label for active window capture"
         )
         static let modeArea = string(
             "all-in-one.mode.area",
             defaultValue: "Area",
-            comment: "Compact All-In-One toolbar label for area capture",
+            comment: "Compact All-In-One toolbar label for area capture"
         )
         static let modeFullscreen = string(
             "all-in-one.mode.fullscreen",
             defaultValue: "Screen",
-            comment: "Compact All-In-One toolbar label for fullscreen capture",
+            comment: "Compact All-In-One toolbar label for fullscreen capture"
         )
         static let modeAnnotate = string(
             "all-in-one.mode.annotate",
             defaultValue: "Annotate",
-            comment: "Compact All-In-One toolbar label for capture and annotate",
+            comment: "Compact All-In-One toolbar label for capture and annotate"
         )
         static let modeScrolling = string(
             "all-in-one.mode.scrolling",
             defaultValue: "Scroll",
-            comment: "Compact All-In-One toolbar label for scrolling capture",
+            comment: "Compact All-In-One toolbar label for scrolling capture"
         )
         static let modeTimer = string(
             "all-in-one.mode.timer",
             defaultValue: "Timer",
-            comment: "Compact All-In-One toolbar label for delayed area capture",
+            comment: "Compact All-In-One toolbar label for delayed area capture"
         )
         static let modeOCR = string(
             "all-in-one.mode.ocr",
             defaultValue: "OCR",
-            comment: "Compact All-In-One toolbar label for OCR capture",
+            comment: "Compact All-In-One toolbar label for OCR capture"
         )
         static let modeObjectCutout = string(
             "all-in-one.mode.object-cutout",
             defaultValue: "Cutout",
-            comment: "Compact All-In-One toolbar label for object cutout capture",
+            comment: "Compact All-In-One toolbar label for object cutout capture"
         )
         static let modeRecording = string(
             "all-in-one.mode.recording",
             defaultValue: "Record",
-            comment: "Compact All-In-One toolbar label for screen recording",
+            comment: "Compact All-In-One toolbar label for screen recording"
         )
         static let modeSmartElement = string(
             "all-in-one.mode.smart-element",
             defaultValue: "Element",
-            comment: "Compact All-In-One toolbar label for smart element capture",
+            comment: "Compact All-In-One toolbar label for smart element capture"
         )
         static let modeSelectedAccessibilityValue = string(
             "all-in-one.mode.selected.accessibility",
             defaultValue: "Selected",
-            comment: "Accessibility value when an All-In-One mode is selected",
+            comment: "Accessibility value when an All-In-One mode is selected"
         )
         static let modeAreaAccessibility = string(
             "all-in-one.mode.area.accessibility",
             defaultValue: "Capture area",
-            comment: "Accessibility label for the All-In-One area capture action",
+            comment: "Accessibility label for the All-In-One area capture action"
         )
         static let modeFullscreenAccessibility = string(
             "all-in-one.mode.fullscreen.accessibility",
             defaultValue: "Capture full screen",
-            comment: "Accessibility label for the All-In-One fullscreen capture action",
+            comment: "Accessibility label for the All-In-One fullscreen capture action"
         )
         static let modeWindowAccessibility = string(
             "all-in-one.mode.window.accessibility",
             defaultValue: "Select a window to capture",
-            comment: "Accessibility label for the All-In-One window capture action",
+            comment: "Accessibility label for the All-In-One window capture action"
         )
         static let modeActiveWindowAccessibility = string(
             "all-in-one.mode.active-window.accessibility",
             defaultValue: "Capture active window",
-            comment: "Accessibility label for the All-In-One active window capture action",
+            comment: "Accessibility label for the All-In-One active window capture action"
         )
         static let modeAnnotateAccessibility = string(
             "all-in-one.mode.annotate.accessibility",
             defaultValue: "Capture area and annotate",
-            comment: "Accessibility label for the All-In-One annotate capture action",
+            comment: "Accessibility label for the All-In-One annotate capture action"
         )
         static let modeScrollingAccessibility = string(
             "all-in-one.mode.scrolling.accessibility",
             defaultValue: "Capture scrolling area",
-            comment: "Accessibility label for the All-In-One scrolling capture action",
+            comment: "Accessibility label for the All-In-One scrolling capture action"
         )
         static let modeOCRAccessibility = string(
             "all-in-one.mode.ocr.accessibility",
             defaultValue: "Capture text from area",
-            comment: "Accessibility label for the All-In-One OCR capture action",
+            comment: "Accessibility label for the All-In-One OCR capture action"
         )
         static let modeObjectCutoutAccessibility = string(
             "all-in-one.mode.object-cutout.accessibility",
             defaultValue: "Capture object cutout",
-            comment: "Accessibility label for the All-In-One object cutout capture action",
+            comment: "Accessibility label for the All-In-One object cutout capture action"
         )
         static let modeRecordingAccessibility = string(
             "all-in-one.mode.recording.accessibility",
             defaultValue: "Start screen recording",
-            comment: "Accessibility label for the All-In-One recording action",
+            comment: "Accessibility label for the All-In-One recording action"
         )
         static let modeSmartElementAccessibility = string(
             "all-in-one.mode.smart-element.accessibility",
             defaultValue: "Capture smart element",
-            comment: "Accessibility label for the All-In-One smart element capture action",
+            comment: "Accessibility label for the All-In-One smart element capture action"
         )
         static let modeTimerAccessibility = string(
             "all-in-one.mode.timer.accessibility",
             defaultValue: "Capture area after three seconds",
-            comment: "Accessibility label for the All-In-One timer capture action",
+            comment: "Accessibility label for the All-In-One timer capture action"
         )
         static let widthFieldAccessibility = string(
             "all-in-one.dimensions.width.accessibility",
             defaultValue: "Width",
-            comment: "Accessibility label for the All-In-One width field",
+            comment: "Accessibility label for the All-In-One width field"
         )
         static let heightFieldAccessibility = string(
             "all-in-one.dimensions.height.accessibility",
             defaultValue: "Height",
-            comment: "Accessibility label for the All-In-One height field",
+            comment: "Accessibility label for the All-In-One height field"
         )
         static let lockAspectRatioAccessibility = string(
             "all-in-one.dimensions.lock-aspect-ratio.accessibility",
             defaultValue: "Lock aspect ratio",
-            comment: "Accessibility label for locking aspect ratio in All-In-One dimensions bar",
+            comment: "Accessibility label for locking aspect ratio in All-In-One dimensions bar"
         )
         static let unlockAspectRatioAccessibility = string(
             "all-in-one.dimensions.unlock-aspect-ratio.accessibility",
             defaultValue: "Unlock aspect ratio",
-            comment: "Accessibility label for unlocking aspect ratio in All-In-One dimensions bar",
+            comment: "Accessibility label for unlocking aspect ratio in All-In-One dimensions bar"
         )
     }
 
@@ -1657,17 +1657,17 @@ nonisolated enum L10n {
         static let system = string(
             "appearance.system",
             defaultValue: "System",
-            comment: "Appearance mode label",
+            comment: "Appearance mode label"
         )
         static let light = string(
             "appearance.light",
             defaultValue: "Light",
-            comment: "Appearance mode label",
+            comment: "Appearance mode label"
         )
         static let dark = string(
             "appearance.dark",
             defaultValue: "Dark",
-            comment: "Appearance mode label",
+            comment: "Appearance mode label"
         )
     }
 
@@ -1675,22 +1675,22 @@ nonisolated enum L10n {
         static let welcomeTitle = string(
             "splash.welcome-title",
             defaultValue: "Welcome to Cue",
-            comment: "Splash screen welcome title",
+            comment: "Splash screen welcome title"
         )
         static let welcomeSubtitle = string(
             "splash.welcome-subtitle",
             defaultValue: "Screenshot & recording, simplified.",
-            comment: "Splash screen welcome subtitle",
+            comment: "Splash screen welcome subtitle"
         )
         static let pressEnter = string(
             "splash.press-enter",
             defaultValue: "Press Enter ↵",
-            comment: "Hint shown on splash and onboarding completion to press Enter",
+            comment: "Hint shown on splash and onboarding completion to press Enter"
         )
         static let doNotShowAgain = string(
             "splash.do-not-show-again",
             defaultValue: "Do not show again",
-            comment: "Checkbox label on splash screen",
+            comment: "Checkbox label on splash screen"
         )
     }
 
@@ -1698,17 +1698,17 @@ nonisolated enum L10n {
         static let required = string(
             "permission-row.required",
             defaultValue: "Required",
-            comment: "Badge shown for required permissions",
+            comment: "Badge shown for required permissions"
         )
         static let optional = string(
             "permission-row.optional",
             defaultValue: "Optional",
-            comment: "Badge shown for optional permissions",
+            comment: "Badge shown for optional permissions"
         )
         static let granted = string(
             "permission-row.granted",
             defaultValue: "Granted",
-            comment: "Status badge shown when a permission is granted",
+            comment: "Status badge shown when a permission is granted"
         )
     }
 
@@ -1716,347 +1716,347 @@ nonisolated enum L10n {
         static let welcomeSubtitle = string(
             "onboarding.welcome.subtitle",
             defaultValue: "A powerful screenshot & screen recording app for macOS",
-            comment: "Welcome onboarding subtitle",
+            comment: "Welcome onboarding subtitle"
         )
         static let welcomeFeatureCapture = string(
             "onboarding.welcome.feature-capture",
             defaultValue: "Capture area or fullscreen screenshots",
-            comment: "Welcome onboarding feature highlight",
+            comment: "Welcome onboarding feature highlight"
         )
         static let welcomeFeatureRecord = string(
             "onboarding.welcome.feature-record",
             defaultValue: "Record screen with audio",
-            comment: "Welcome onboarding feature highlight",
+            comment: "Welcome onboarding feature highlight"
         )
         static let welcomeFeatureAnnotate = string(
             "onboarding.welcome.feature-annotate",
             defaultValue: "Annotate and edit captures",
-            comment: "Welcome onboarding feature highlight",
+            comment: "Welcome onboarding feature highlight"
         )
         static let letsDoIt = string(
             "onboarding.welcome.cta",
             defaultValue: "Let's do it!",
-            comment: "Primary call to action on onboarding welcome screen",
+            comment: "Primary call to action on onboarding welcome screen"
         )
         static let languageTitle = string(
             "onboarding.language.title",
             defaultValue: "Choose your language",
-            comment: "Onboarding language step title",
+            comment: "Onboarding language step title"
         )
         static let languageSubtitle = string(
             "onboarding.language.subtitle",
             defaultValue: "Cue can follow your Mac or preview a specific app language during setup.",
-            comment: "Onboarding language step subtitle",
+            comment: "Onboarding language step subtitle"
         )
         static let languageAutoTitle = string(
             "onboarding.language.auto-title",
             defaultValue: "Auto",
-            comment: "Auto language option title shown during onboarding",
+            comment: "Auto language option title shown during onboarding"
         )
         static func languageAutoDescription(_ languageName: String) -> String {
             format(
                 "onboarding.language.auto-description",
                 defaultValue: "Follow macOS. Currently %@.",
                 comment: "Description for the onboarding auto language option. %@ is the resolved language display name.",
-                languageName,
+                languageName
             )
         }
 
         static let languageApplyLater = string(
             "onboarding.language.apply-later",
             defaultValue: "Continue and Apply on Finish",
-            comment: "Primary button title when onboarding language changes will be applied after completing onboarding",
+            comment: "Primary button title when onboarding language changes will be applied after completing onboarding"
         )
         static let languagePreferencesHint = string(
             "onboarding.language.preferences-hint",
             defaultValue: "You can change this anytime in Preferences -> General.",
-            comment: "Hint shown below the onboarding language picker",
+            comment: "Hint shown below the onboarding language picker"
         )
 
         static let permissionsTitle = string(
             "onboarding.permissions.title",
             defaultValue: "Grant Permissions",
-            comment: "Onboarding permissions step title",
+            comment: "Onboarding permissions step title"
         )
         static let permissionsSubtitle = string(
             "onboarding.permissions.subtitle",
             defaultValue: "Cue needs permissions for capture, audio, and save location.",
-            comment: "Onboarding permissions step subtitle",
+            comment: "Onboarding permissions step subtitle"
         )
         static let screenRecording = string(
             "onboarding.permissions.screen-recording",
             defaultValue: "Screen Recording",
-            comment: "Screen recording permission label",
+            comment: "Screen recording permission label"
         )
         static let saveFolder = string(
             "onboarding.permissions.save-folder",
             defaultValue: "Save Folder",
-            comment: "Save folder permission label",
+            comment: "Save folder permission label"
         )
         static let microphone = string(
             "onboarding.permissions.microphone",
             defaultValue: "Microphone",
-            comment: "Microphone permission label",
+            comment: "Microphone permission label"
         )
         static let accessibility = string(
             "onboarding.permissions.accessibility",
             defaultValue: "Accessibility",
-            comment: "Accessibility permission label",
+            comment: "Accessibility permission label"
         )
         static let requiredForCaptures = string(
             "onboarding.permissions.required-for-captures",
             defaultValue: "Required for screenshots and recordings",
-            comment: "Permission description for required capture-related permissions",
+            comment: "Permission description for required capture-related permissions"
         )
         static let requiredForScreenshots = string(
             "onboarding.permissions.required-for-screenshots",
             defaultValue: "Required for screenshots",
-            comment: "Permission description for screen recording when video module is disabled",
+            comment: "Permission description for screen recording when video module is disabled"
         )
         static let optionalForVoiceRecording = string(
             "onboarding.permissions.optional-voice-recording",
             defaultValue: "Optional for voice recording",
-            comment: "Permission description for microphone access",
+            comment: "Permission description for microphone access"
         )
         static let optionalForGlobalShortcuts = string(
             "onboarding.permissions.optional-global-shortcuts",
             defaultValue: "Optional for global shortcuts",
-            comment: "Permission description for accessibility access",
+            comment: "Permission description for accessibility access"
         )
         static let grantAccess = string(
             "onboarding.permissions.grant-access",
             defaultValue: "Grant Access",
-            comment: "Button title to grant permission or folder access",
+            comment: "Button title to grant permission or folder access"
         )
         static let refreshStatus = string(
             "onboarding.permissions.refresh-status",
             defaultValue: "Refresh Status",
-            comment: "Button title to refresh permission or identity status",
+            comment: "Button title to refresh permission or identity status"
         )
         static let unavailable = string(
             "onboarding.permissions.unavailable",
             defaultValue: "Unavailable",
-            comment: "Badge shown when permission is unavailable due to app identity state",
+            comment: "Badge shown when permission is unavailable due to app identity state"
         )
         static let buildIdentityNeedsAttention = string(
             "onboarding.permissions.identity-attention",
             defaultValue: "Build Identity Needs Attention",
-            comment: "Warning title when app identity health issues block permission usage",
+            comment: "Warning title when app identity health issues block permission usage"
         )
         static let quit = string(
             "onboarding.permissions.quit",
             defaultValue: "Quit",
-            comment: "Quit button title in onboarding permissions step",
+            comment: "Quit button title in onboarding permissions step"
         )
         static let chooseFolderMessage = string(
             "onboarding.permissions.choose-folder-message",
             defaultValue: "Choose a folder for Cue captures (default: Desktop/Cue)",
-            comment: "Open panel message for selecting export directory during onboarding",
+            comment: "Open panel message for selecting export directory during onboarding"
         )
         static let screenRecordingIdentityBlocked = string(
             "onboarding.permissions.identity-blocked-description",
             defaultValue: "Granted in System Settings, but this build cannot use the permission until the identity issues below are fixed.",
-            comment: "Description shown when screen recording permission exists but app identity prevents using it",
+            comment: "Description shown when screen recording permission exists but app identity prevents using it"
         )
 
         static let configAccessTitle = string(
             "onboarding.config-access.title",
             defaultValue: "Set Up config.toml",
-            comment: "Onboarding config access step title",
+            comment: "Onboarding config access step title"
         )
         static let configAccessSubtitle = string(
             "onboarding.config-access.subtitle",
             defaultValue: "Cue uses a TOML file for portable settings, backups, and dotfile workflows.",
-            comment: "Onboarding config access step subtitle",
+            comment: "Onboarding config access step subtitle"
         )
         static let configAccessFolderTitle = string(
             "onboarding.config-access.folder-title",
             defaultValue: "Config Folder",
-            comment: "Onboarding config access permission row title",
+            comment: "Onboarding config access permission row title"
         )
         static let configAccessFolderCardDescription = string(
             "onboarding.config-access.folder-card-description",
             defaultValue: "Required for config.toml",
-            comment: "Short permission row description for config folder access",
+            comment: "Short permission row description for config folder access"
         )
         static let configAccessFolderDescription = string(
             "onboarding.config-access.folder-description",
             defaultValue: "Grant access once. Cue will create config.toml if needed and apply valid direct edits on launch.",
-            comment: "Onboarding config access description",
+            comment: "Onboarding config access description"
         )
         static let configAccessPrivacyNote = string(
             "onboarding.config-access.privacy-note",
             defaultValue: "This only grants Cue access to its config folder. It does not import secrets or scan your files.",
-            comment: "Privacy note on onboarding config access step",
+            comment: "Privacy note on onboarding config access step"
         )
         static let configAccessReady = string(
             "onboarding.config-access.ready",
             defaultValue: "config.toml is ready.",
-            comment: "Success message after config folder access is granted",
+            comment: "Success message after config folder access is granted"
         )
         static let configAccessLater = string(
             "onboarding.config-access.later",
             defaultValue: "Later",
-            comment: "Secondary action to skip config access setup for now",
+            comment: "Secondary action to skip config access setup for now"
         )
 
         static let shortcutsTitle = string(
             "onboarding.shortcuts.title",
             defaultValue: "Set as default screenshot tool?",
-            comment: "Onboarding shortcuts step title",
+            comment: "Onboarding shortcuts step title"
         )
         static let shortcutsSubtitle = string(
             "onboarding.shortcuts.subtitle",
             defaultValue: "Assign system shortcuts to Cue for quick access.",
-            comment: "Onboarding shortcuts step subtitle",
+            comment: "Onboarding shortcuts step subtitle"
         )
         static let recordingSection = string(
             "onboarding.shortcuts.section-recording",
             defaultValue: "Recording",
-            comment: "Shortcut group title in onboarding",
+            comment: "Shortcut group title in onboarding"
         )
         static let toolsSection = string(
             "onboarding.shortcuts.section-tools",
             defaultValue: "Tools",
-            comment: "Shortcut group title in onboarding",
+            comment: "Shortcut group title in onboarding"
         )
         static let resolveShortcutOverlap = string(
             "onboarding.shortcuts.resolve-overlap",
             defaultValue: "Resolve macOS shortcut overlap",
-            comment: "Warning title when system screenshot shortcuts overlap with Cue shortcuts",
+            comment: "Warning title when system screenshot shortcuts overlap with Cue shortcuts"
         )
         static let openSettings = string(
             "onboarding.shortcuts.open-settings",
             defaultValue: "Open Settings →",
-            comment: "Action hint to open system settings",
+            comment: "Action hint to open system settings"
         )
         static let guideStep1 = string(
             "onboarding.shortcuts.guide-step-1",
             defaultValue: "Open System Settings → Keyboard → Keyboard Shortcuts",
-            comment: "Step 1 in onboarding shortcut conflict resolution guide",
+            comment: "Step 1 in onboarding shortcut conflict resolution guide"
         )
         static let guideStep2 = string(
             "onboarding.shortcuts.guide-step-2",
             defaultValue: "Select Screenshots from the sidebar",
-            comment: "Step 2 in onboarding shortcut conflict resolution guide",
+            comment: "Step 2 in onboarding shortcut conflict resolution guide"
         )
         static let guideStep3 = string(
             "onboarding.shortcuts.guide-step-3",
             defaultValue: "Uncheck the macOS screenshot shortcuts that overlap with the Cue shortcuts you want to keep on",
-            comment: "Step 3 in onboarding shortcut conflict resolution guide",
+            comment: "Step 3 in onboarding shortcut conflict resolution guide"
         )
         static let noConflictDetected = string(
             "onboarding.shortcuts.no-conflict",
             defaultValue: "No overlapping macOS screenshot shortcuts detected — ready to go!",
-            comment: "Success message when no system shortcut conflict exists",
+            comment: "Success message when no system shortcut conflict exists"
         )
         static let customizeHint = string(
             "onboarding.shortcuts.customize-hint",
             defaultValue: "You can customize or turn off shortcuts anytime in Preferences → Shortcuts.",
-            comment: "Hint text below shortcut setup card",
+            comment: "Hint text below shortcut setup card"
         )
         static let noThanks = string(
             "onboarding.shortcuts.no-thanks",
             defaultValue: "No, thanks",
-            comment: "Secondary decline button on shortcut setup screen",
+            comment: "Secondary decline button on shortcut setup screen"
         )
         static let enableShortcuts = string(
             "onboarding.shortcuts.enable",
             defaultValue: "Yes, enable shortcuts",
-            comment: "Primary accept button on shortcut setup screen",
+            comment: "Primary accept button on shortcut setup screen"
         )
 
         static let diagnosticsTitle = string(
             "onboarding.diagnostics.title",
             defaultValue: "Help Us Improve",
-            comment: "Diagnostics opt-in title",
+            comment: "Diagnostics opt-in title"
         )
         static let diagnosticsDescription = string(
             "onboarding.diagnostics.description",
             defaultValue: "Cue can collect anonymous diagnostic logs when something goes wrong. These logs help us find and fix bugs faster.",
-            comment: "Diagnostics opt-in description",
+            comment: "Diagnostics opt-in description"
         )
         static let enableDiagnosticLogging = string(
             "onboarding.diagnostics.enable-crash-logging",
             defaultValue: "Enable Diagnostic Logging",
-            comment: "Diagnostics toggle title",
+            comment: "Diagnostics toggle title"
         )
         static let logsStoredLocally = string(
             "onboarding.diagnostics.logs-stored-locally",
             defaultValue: "Logs are stored locally on your device",
-            comment: "Diagnostics toggle description",
+            comment: "Diagnostics toggle description"
         )
         static let diagnosticsPrivacyNote = string(
             "onboarding.diagnostics.privacy-note",
             defaultValue: "No personal data is collected. Nothing is sent without your action.",
-            comment: "Diagnostics opt-in privacy note",
+            comment: "Diagnostics opt-in privacy note"
         )
 
         static let skipTitle = string(
             "onboarding.skip.title",
             defaultValue: "Skip remaining setup?",
-            comment: "Skip onboarding confirmation title",
+            comment: "Skip onboarding confirmation title"
         )
         static let skipDescription = string(
             "onboarding.skip.description",
             defaultValue: "All remaining settings will use their defaults. You can always change them later in Preferences.",
-            comment: "Skip onboarding confirmation description",
+            comment: "Skip onboarding confirmation description"
         )
         static let skipShortcutDefaults = string(
             "onboarding.skip.shortcut-defaults",
             defaultValue: "Keyboard shortcuts — system defaults",
-            comment: "List item describing what will be skipped during onboarding",
+            comment: "List item describing what will be skipped during onboarding"
         )
         static let goBack = string(
             "onboarding.skip.go-back",
             defaultValue: "Go Back",
-            comment: "Button title to return from skip onboarding confirmation",
+            comment: "Button title to return from skip onboarding confirmation"
         )
         static let skipSetup = string(
             "onboarding.skip.skip-setup",
             defaultValue: "Skip Setup",
-            comment: "Button title to confirm skipping onboarding setup",
+            comment: "Button title to confirm skipping onboarding setup"
         )
 
         static let completionTitle = string(
             "onboarding.completion.title",
             defaultValue: "You're all set!",
-            comment: "Onboarding completion title",
+            comment: "Onboarding completion title"
         )
         static let completionDescription = string(
             "onboarding.completion.description",
             defaultValue: "Cue is ready. Access it from the menu bar or use your keyboard shortcuts.",
-            comment: "Onboarding completion description",
+            comment: "Onboarding completion description"
         )
         static let menuBar = string(
             "onboarding.completion.menu-bar",
             defaultValue: "Menu Bar",
-            comment: "Completion card title",
+            comment: "Completion card title"
         )
         static let menuBarHint = string(
             "onboarding.completion.menu-bar-hint",
             defaultValue: "Look for the camera icon in your menu bar",
-            comment: "Completion card description",
+            comment: "Completion card description"
         )
         static let shortcutsHint = string(
             "onboarding.completion.shortcuts-hint",
             defaultValue: "Use ⇧⌘3, ⇧⌘4, ⇧⌘5 to capture anytime",
-            comment: "Completion card description",
+            comment: "Completion card description"
         )
         static let preferencesHint = string(
             "onboarding.completion.preferences-hint",
             defaultValue: "Customize shortcuts, output format, and more",
-            comment: "Completion card description",
+            comment: "Completion card description"
         )
         static let openPreferences = string(
             "onboarding.completion.open-preferences",
             defaultValue: "Open Preferences",
-            comment: "Secondary action on onboarding completion screen",
+            comment: "Secondary action on onboarding completion screen"
         )
         static let getStarted = string(
             "onboarding.completion.get-started",
             defaultValue: "Get Started",
-            comment: "Primary action on onboarding completion screen",
+            comment: "Primary action on onboarding completion screen"
         )
     }
 
@@ -2064,59 +2064,59 @@ nonisolated enum L10n {
         static let title = string(
             "shortcut-overlay.title",
             defaultValue: "Keyboard Shortcuts",
-            comment: "Shortcut overlay title",
+            comment: "Shortcut overlay title"
         )
         static let subtitle = string(
             "shortcut-overlay.subtitle",
             defaultValue: "Press Esc or click outside to close",
-            comment: "Shortcut overlay subtitle",
+            comment: "Shortcut overlay subtitle"
         )
         static let closeHelp = string(
             "shortcut-overlay.close-help",
             defaultValue: "Close",
-            comment: "Tooltip on close button in shortcut overlay",
+            comment: "Tooltip on close button in shortcut overlay"
         )
         static let customizeInSettings = string(
             "shortcut-overlay.customize-in-settings",
             defaultValue: "Customize in Settings…",
-            comment: "Button title to open settings from shortcut overlay",
+            comment: "Button title to open settings from shortcut overlay"
         )
         static let captureSection = string(
             "shortcut-overlay.section-capture",
             defaultValue: "Capture",
-            comment: "Shortcut overlay section title",
+            comment: "Shortcut overlay section title"
         )
         static let toolsSection = string(
             "shortcut-overlay.section-tools",
             defaultValue: "Tools",
-            comment: "Shortcut overlay section title",
+            comment: "Shortcut overlay section title"
         )
         static let annotateActions = string(
             "shortcut-overlay.annotate-actions",
             defaultValue: "Annotate Actions",
-            comment: "Shortcut overlay section title",
+            comment: "Shortcut overlay section title"
         )
         static let annotateToolKeys = string(
             "shortcut-overlay.annotate-tool-keys",
             defaultValue: "Annotate Tool Keys",
-            comment: "Shortcut overlay section title",
+            comment: "Shortcut overlay section title"
         )
         static let annotateReference = string(
             "shortcut-overlay.annotate-reference",
             defaultValue: "Annotate Reference",
-            comment: "Shortcut overlay section title",
+            comment: "Shortcut overlay section title"
         )
         static let insideAnnotateEditor = string(
             "shortcut-overlay.inside-annotate-editor",
             defaultValue: "Inside annotate editor",
-            comment: "Subtitle for annotate action shortcuts in overlay",
+            comment: "Subtitle for annotate action shortcuts in overlay"
         )
         static func allInOneModeShortcuts(_ summary: String) -> String {
             format(
                 "shortcut-overlay.all-in-one-mode-shortcuts",
                 defaultValue: "HUD modes: %@",
                 comment: "Subtitle for All-In-One listing compact mode key bindings. %@ is a short summary like R F A …",
-                summary,
+                summary
             )
         }
 
@@ -2125,84 +2125,84 @@ nonisolated enum L10n {
                 "shortcut-overlay.application-recording",
                 defaultValue: "Application Recording: %@",
                 comment: "Subtitle for the Record Video shortcut row in the overlay. %@ is the current single-key toggle used inside the recording selection and pre-record toolbar.",
-                shortcut,
+                shortcut
             )
         }
 
         static let saveDone = string(
             "shortcut-overlay.save-done",
             defaultValue: "Save (Done)",
-            comment: "Annotate reference item title",
+            comment: "Annotate reference item title"
         )
         static let saveAs = string(
             "shortcut-overlay.save-as",
             defaultValue: "Save As…",
-            comment: "Annotate reference item title",
+            comment: "Annotate reference item title"
         )
         static let undo = string(
             "shortcut-overlay.undo",
             defaultValue: "Undo",
-            comment: "Annotate reference item title",
+            comment: "Annotate reference item title"
         )
         static let redo = string(
             "shortcut-overlay.redo",
             defaultValue: "Redo",
-            comment: "Annotate reference item title",
+            comment: "Annotate reference item title"
         )
         static let deleteAnnotation = string(
             "shortcut-overlay.delete-annotation",
             defaultValue: "Delete Annotation",
-            comment: "Annotate reference item title",
+            comment: "Annotate reference item title"
         )
         static let cancelDeselect = string(
             "shortcut-overlay.cancel-deselect",
             defaultValue: "Cancel / Deselect",
-            comment: "Annotate reference item title",
+            comment: "Annotate reference item title"
         )
         static let confirmCrop = string(
             "shortcut-overlay.confirm-crop",
             defaultValue: "Confirm Crop",
-            comment: "Annotate reference item title",
+            comment: "Annotate reference item title"
         )
         static let nudgeAnnotation = string(
             "shortcut-overlay.nudge-annotation",
             defaultValue: "Nudge Annotation",
-            comment: "Annotate reference item title",
+            comment: "Annotate reference item title"
         )
         static let nudgeTenPixels = string(
             "shortcut-overlay.nudge-10px",
             defaultValue: "Nudge 10px",
-            comment: "Annotate reference item title",
+            comment: "Annotate reference item title"
         )
         static let screenshotAndRecording = string(
             "shortcut-overlay.screenshot-and-recording",
             defaultValue: "Screenshot + Recording",
-            comment: "Subtitle for annotate tools available in both screenshot and recording contexts",
+            comment: "Subtitle for annotate tools available in both screenshot and recording contexts"
         )
         static let recordingOnly = string(
             "shortcut-overlay.recording-only",
             defaultValue: "Recording only",
-            comment: "Subtitle for annotate tools available only in recording context",
+            comment: "Subtitle for annotate tools available only in recording context"
         )
         static let screenshotOnly = string(
             "shortcut-overlay.screenshot-only",
             defaultValue: "Screenshot only",
-            comment: "Subtitle for annotate tools available only in screenshot context",
+            comment: "Subtitle for annotate tools available only in screenshot context"
         )
         static let copyAndClose = string(
             "shortcut-overlay.copy-and-close",
             defaultValue: "Copy & Close",
-            comment: "Annotate action shortcut title",
+            comment: "Annotate action shortcut title"
         )
         static let togglePin = string(
             "shortcut-overlay.toggle-pin",
             defaultValue: "Toggle Pin",
-            comment: "Annotate action shortcut title",
+            comment: "Annotate action shortcut title"
         )
         static let autoRedactSensitiveData = string(
             "shortcut-overlay.auto-redact-sensitive-data",
             defaultValue: "Auto Redact Sensitive Data",
-            comment: "Annotate action shortcut title",
+            comment: "Annotate action shortcut title"
         )
     }
 
@@ -2210,24 +2210,24 @@ nonisolated enum L10n {
         static let pressKeys = string(
             "shortcut-recorder.press-keys",
             defaultValue: "Press keys...",
-            comment: "Placeholder text shown while recording a shortcut",
+            comment: "Placeholder text shown while recording a shortcut"
         )
         static let clickToRecord = string(
             "shortcut-recorder.click-to-record",
             defaultValue: "Click to record a shortcut.",
-            comment: "Help text for shortcut recorder button",
+            comment: "Help text for shortcut recorder button"
         )
         static let turnOnToEdit = string(
             "shortcut-recorder.turn-on-to-edit",
             defaultValue: "Turn this shortcut on to edit it.",
-            comment: "Help text shown when shortcut recorder is disabled",
+            comment: "Help text shown when shortcut recorder is disabled"
         )
         static func usedBy(_ displayName: String) -> String {
             format(
                 "shortcut-recorder.used-by",
                 defaultValue: "Used by %@",
                 comment: "Conflict label for a shortcut already used by another action or tool. %@ is the conflicting action name.",
-                displayName,
+                displayName
             )
         }
     }
@@ -2238,7 +2238,7 @@ nonisolated enum L10n {
                 "shortcut-validation.already-used-by",
                 defaultValue: "Already used by %@.",
                 comment: "Validation error for duplicate shortcut. %@ is the conflicting action name.",
-                displayName,
+                displayName
             )
         }
 
@@ -2247,7 +2247,7 @@ nonisolated enum L10n {
                 "shortcut-validation.already-used-by-annotate",
                 defaultValue: "Already used by %@ in Annotate Editor.",
                 comment: "Validation error for duplicate shortcut in annotate editor. %@ is the conflicting action name.",
-                displayName,
+                displayName
             )
         }
 
@@ -2256,14 +2256,14 @@ nonisolated enum L10n {
                 "shortcut-validation.matches-system-conflict",
                 defaultValue: "Matches %@. macOS may win.",
                 comment: "Validation warning when shortcut overlaps with a macOS system shortcut. %@ is the system shortcut description.",
-                displayName,
+                displayName
             )
         }
 
         static let allInOneModeRequiresSingleKey = string(
             "shortcut-validation.all-in-one-mode-requires-single-key",
             defaultValue: "All-In-One mode shortcuts must be a single key (no modifiers).",
-            comment: "Validation error when an AIO HUD mode shortcut includes modifiers",
+            comment: "Validation error when an AIO HUD mode shortcut includes modifiers"
         )
     }
 
@@ -2271,261 +2271,261 @@ nonisolated enum L10n {
         static let appSection = string(
             "preferences-general.section-app",
             defaultValue: "App",
-            comment: "General preferences section title",
+            comment: "General preferences section title"
         )
         static let captureSection = string(
             "preferences-general.section-capture",
             defaultValue: "Capture",
-            comment: "General preferences section title",
+            comment: "General preferences section title"
         )
         static let annotateSection = string(
             "preferences-general.section-annotate",
             defaultValue: "Annotate",
-            comment: "General preferences section title for Annotate behavior and chrome customization",
+            comment: "General preferences section title for Annotate behavior and chrome customization"
         )
         static let customizeButton = string(
             "preferences-general.customize-button",
             defaultValue: "Customize…",
-            comment: "General preferences button that opens a customization sheet",
+            comment: "General preferences button that opens a customization sheet"
         )
         static let soundsSection = string(
             "preferences-general.section-sounds",
             defaultValue: "Sounds",
-            comment: "General preferences section title",
+            comment: "General preferences section title"
         )
         static let exportSection = string(
             "preferences-general.section-export",
             defaultValue: "Export",
-            comment: "General preferences section title",
+            comment: "General preferences section title"
         )
         static let afterCaptureSection = string(
             "preferences-general.section-after-capture",
             defaultValue: "After Capture",
-            comment: "General preferences section title",
+            comment: "General preferences section title"
         )
         static let afterCaptureDescription = string(
             "preferences-general.after-capture-description",
             defaultValue: "Decide what should happen after taking a screenshot or recording a video.",
-            comment: "General preferences section description",
+            comment: "General preferences section description"
         )
         static let exportLocationTitle = string(
             "preferences-general.export-location-title",
             defaultValue: "Export location",
-            comment: "General preferences setting title",
+            comment: "General preferences setting title"
         )
         static let exportLocationDescription = string(
             "preferences-general.export-location-description",
             defaultValue:
             "Set the default save location used when saving from the Quick Access Overlay, After Capture, and other Save actions across the app.",
-            comment: "General preferences setting description",
+            comment: "General preferences setting description"
         )
         static let hideDesktopIconsHint = string(
             "preferences-general.hide-desktop-icons-hint",
             defaultValue: "You can set a custom wallpaper to hide desktop icons in wallpaper settings.",
-            comment: "General preferences helper text shown below the hide desktop icons setting",
+            comment: "General preferences helper text shown below the hide desktop icons setting"
         )
         static let startupSection = string(
             "preferences-general.section-startup",
             defaultValue: "Startup",
-            comment: "General preferences section title",
+            comment: "General preferences section title"
         )
         static let appearanceSection = string(
             "preferences-general.section-appearance",
             defaultValue: "Appearance",
-            comment: "General preferences section title",
+            comment: "General preferences section title"
         )
         static let storageSection = string(
             "preferences-general.section-storage",
             defaultValue: "Storage",
-            comment: "General preferences section title",
+            comment: "General preferences section title"
         )
         static let diagnosticsSection = string(
             "preferences-general.section-diagnostics",
             defaultValue: "Diagnostics",
-            comment: "General preferences section title",
+            comment: "General preferences section title"
         )
         static let helpSection = string(
             "preferences-general.section-help",
             defaultValue: "Help",
-            comment: "General preferences section title",
+            comment: "General preferences section title"
         )
         static let startAtLoginTitle = string(
             "preferences-general.start-at-login-title",
             defaultValue: "Start at login",
-            comment: "General preferences setting title",
+            comment: "General preferences setting title"
         )
         static let startAtLoginDescription = string(
             "preferences-general.start-at-login-description",
             defaultValue: "Launch Cue when you log in",
-            comment: "General preferences setting description",
+            comment: "General preferences setting description"
         )
         static let playSoundsTitle = string(
             "preferences-general.play-sounds-title",
             defaultValue: "Play sounds",
-            comment: "General preferences setting title",
+            comment: "General preferences setting title"
         )
         static let playSoundsDescription = string(
             "preferences-general.play-sounds-description",
             defaultValue: "Audio feedback for captures",
-            comment: "General preferences setting description",
+            comment: "General preferences setting description"
         )
         static let menuBarIconTitle = string(
             "preferences-general.menu-bar-icon-title",
             defaultValue: "Show menu bar icon",
-            comment: "General preferences setting title",
+            comment: "General preferences setting title"
         )
         static let menuBarIconDescription = string(
             "preferences-general.menu-bar-icon-description",
             defaultValue: "Access Cue from the menu bar. When hidden, open Cue again to show settings.",
-            comment: "General preferences setting description",
+            comment: "General preferences setting description"
         )
         static let themeTitle = string(
             "preferences-general.theme-title",
             defaultValue: "Theme",
-            comment: "General preferences setting title",
+            comment: "General preferences setting title"
         )
         static let themeDescription = string(
             "preferences-general.theme-description",
             defaultValue: "Choose your preferred appearance",
-            comment: "General preferences setting description",
+            comment: "General preferences setting description"
         )
         static let languageTitle = string(
             "preferences-general.language-title",
             defaultValue: "App Language",
-            comment: "General preferences setting title",
+            comment: "General preferences setting title"
         )
         static let languageDescription = string(
             "preferences-general.language-description",
             defaultValue: "Choose the language used across Cue",
-            comment: "General preferences setting description",
+            comment: "General preferences setting description"
         )
         static let languageSystem = string(
             "preferences-general.language-system",
             defaultValue: "System Default",
-            comment: "General preferences picker option that follows the macOS app language",
+            comment: "General preferences picker option that follows the macOS app language"
         )
         static let languageRestartHint = string(
             "preferences-general.language-restart-hint",
             defaultValue: "Language changes apply after relaunch",
-            comment: "General preferences helper text shown when a language change is pending",
+            comment: "General preferences helper text shown when a language change is pending"
         )
         static let languageRelaunchConfirmationTitle = string(
             "preferences-general.language-relaunch-confirmation-title",
             defaultValue: "Relaunch Cue?",
-            comment: "Alert title shown before the app relaunches to apply a language change",
+            comment: "Alert title shown before the app relaunches to apply a language change"
         )
         static let languageRelaunchConfirmationMessage = string(
             "preferences-general.language-relaunch-confirmation-message",
             defaultValue: "Cue needs to quit and reopen to apply this language change everywhere.",
-            comment: "Alert message shown before the app relaunches to apply a language change",
+            comment: "Alert message shown before the app relaunches to apply a language change"
         )
         static let languageRelaunchConfirmationAction = string(
             "preferences-general.language-relaunch-confirmation-action",
             defaultValue: "Relaunch Cue",
-            comment: "Alert button title that confirms relaunching the app after changing language",
+            comment: "Alert button title that confirms relaunching the app after changing language"
         )
         static let languageRelaunchErrorTitle = string(
             "preferences-general.language-relaunch-error-title",
             defaultValue: "Could Not Relaunch Cue",
-            comment: "Alert title shown when the app cannot relaunch after changing language",
+            comment: "Alert title shown when the app cannot relaunch after changing language"
         )
         static let saveLocationTitle = string(
             "preferences-general.save-location-title",
             defaultValue: "Save location",
-            comment: "General preferences setting title",
+            comment: "General preferences setting title"
         )
         static let saveLocationDescription = string(
             "preferences-general.save-location-description",
             defaultValue: "Where Cue stores captures",
-            comment: "General preferences setting description",
+            comment: "General preferences setting description"
         )
         static let chooseButton = string(
             "preferences-general.choose-button",
             defaultValue: "Choose...",
-            comment: "General preferences button title",
+            comment: "General preferences button title"
         )
         static let diagnosticLoggingTitle = string(
             "preferences-general.crash-logging-title",
             defaultValue: "Diagnostic Logging",
-            comment: "General preferences setting title",
+            comment: "General preferences setting title"
         )
         static let diagnosticLoggingDescription = string(
             "preferences-general.crash-logging-description",
             defaultValue: "Save local logs for app, capture, recording, and crash diagnostics",
-            comment: "General preferences setting description",
+            comment: "General preferences setting description"
         )
         static let logFilesTitle = string(
             "preferences-general.log-files-title",
             defaultValue: "Log Files",
-            comment: "General preferences setting title",
+            comment: "General preferences setting title"
         )
         static let logRetentionTitle = string(
             "preferences-general.log-retention-title",
             defaultValue: "Keep Logs For",
-            comment: "General preferences setting title",
+            comment: "General preferences setting title"
         )
         static func logRetentionDescription(_ days: Int) -> String {
             format(
                 "preferences-general.log-retention-description",
                 defaultValue: "Keep one diagnostic log file per day for %d days",
                 comment: "General preferences setting description. %d is the number of days.",
-                days,
+                days
             )
         }
 
         static let openFolderButton = string(
             "preferences-general.open-folder-button",
             defaultValue: "Open Folder",
-            comment: "General preferences button title",
+            comment: "General preferences button title"
         )
         static let restartOnboardingTitle = string(
             "preferences-general.restart-onboarding-title",
             defaultValue: "Restart Onboarding",
-            comment: "General preferences setting title",
+            comment: "General preferences setting title"
         )
         static let restartOnboardingDescription = string(
             "preferences-general.restart-onboarding-description",
             defaultValue: "Show the welcome tutorial again",
-            comment: "General preferences setting description",
+            comment: "General preferences setting description"
         )
         static let restartButton = string(
             "preferences-general.restart-button",
             defaultValue: "Restart",
-            comment: "General preferences button title",
+            comment: "General preferences button title"
         )
         static let calculating = string(
             "preferences-general.calculating",
             defaultValue: "Calculating...",
-            comment: "Placeholder while a storage value is being calculated",
+            comment: "Placeholder while a storage value is being calculated"
         )
         static let noLogs = string(
             "preferences-general.no-logs",
             defaultValue: "No logs",
-            comment: "Label shown when there are no diagnostic log files",
+            comment: "Label shown when there are no diagnostic log files"
         )
         static let defaultSaveLocation = string(
             "preferences-general.default-save-location",
             defaultValue: "Desktop/Cue",
-            comment: "Default export location display label",
+            comment: "Default export location display label"
         )
         static func accessNotGranted(_ folderName: String) -> String {
             format(
                 "preferences-general.access-not-granted",
                 defaultValue: "%@ (Access not granted)",
                 comment: "Export folder display when bookmark access is missing. %@ is the folder name.",
-                folderName,
+                folderName
             )
         }
 
         static let chooseSaveLocationMessage = string(
             "preferences-general.choose-save-location-message",
             defaultValue: "Choose where Cue saves captures",
-            comment: "Open panel message for selecting the default export location",
+            comment: "Open panel message for selecting the default export location"
         )
         static let saveHereButton = string(
             "preferences-general.save-here-button",
             defaultValue: "Save Here",
-            comment: "Open panel prompt for choosing export location",
+            comment: "Open panel prompt for choosing export location"
         )
     }
 
@@ -2533,7 +2533,7 @@ nonisolated enum L10n {
         static let intro = string(
             "preferences-permissions.intro",
             defaultValue: "Cue requires certain permissions to capture your screen and audio.",
-            comment: "Introductory text for the permissions preferences tab",
+            comment: "Introductory text for the permissions preferences tab"
         )
     }
 
@@ -2541,302 +2541,302 @@ nonisolated enum L10n {
         static let positionSection = string(
             "preferences-quick-access.section-position",
             defaultValue: "Position",
-            comment: "Quick access preferences section title",
+            comment: "Quick access preferences section title"
         )
         static let appearanceSection = string(
             "preferences-quick-access.section-appearance",
             defaultValue: "Appearance",
-            comment: "Quick access preferences section title",
+            comment: "Quick access preferences section title"
         )
         static let hideCardWhenWindowOpenTitle = string(
             "preferences-quick-access.hide-card-when-window-open-title",
             defaultValue: "Auto-hide Opened Items",
-            comment: "Quick access preferences setting title",
+            comment: "Quick access preferences setting title"
         )
         static let hideCardWhenWindowOpenDescription = string(
             "preferences-quick-access.hide-card-when-window-open-description",
             defaultValue: "Temporarily hide the item from the stack when its window is open.",
-            comment: "Quick access preferences setting description",
+            comment: "Quick access preferences setting description"
         )
         static let animationStyleTitle = string(
             "preferences-quick-access.animation-style-title",
             defaultValue: "Animation Style",
-            comment: "Quick access preferences setting title",
+            comment: "Quick access preferences setting title"
         )
         static let animationStyleDescription = string(
             "preferences-quick-access.animation-style-description",
             defaultValue: "Choose how cards animate in and out of the stack.",
-            comment: "Quick access preferences setting description",
+            comment: "Quick access preferences setting description"
         )
         static let animationStyleSlide = string(
             "preferences-quick-access.animation-style-slide",
             defaultValue: "Slide",
-            comment: "Quick access animation style option",
+            comment: "Quick access animation style option"
         )
         static let animationStyleScale = string(
             "preferences-quick-access.animation-style-scale",
             defaultValue: "Scale & Fade",
-            comment: "Quick access animation style option",
+            comment: "Quick access animation style option"
         )
 
         static let behaviorsSection = string(
             "preferences-quick-access.section-behaviors",
             defaultValue: "Behaviors",
-            comment: "Quick access preferences section title",
+            comment: "Quick access preferences section title"
         )
         static let screenEdgeTitle = string(
             "preferences-quick-access.screen-edge-title",
             defaultValue: "Screen Edge",
-            comment: "Quick access preferences setting title",
+            comment: "Quick access preferences setting title"
         )
         static let screenEdgeDescription = string(
             "preferences-quick-access.screen-edge-description",
             defaultValue: "Where the overlay appears",
-            comment: "Quick access preferences setting description",
+            comment: "Quick access preferences setting description"
         )
         static let left = string(
             "preferences-quick-access.left",
             defaultValue: "Left",
-            comment: "Quick access side label",
+            comment: "Quick access side label"
         )
         static let right = string(
             "preferences-quick-access.right",
             defaultValue: "Right",
-            comment: "Quick access side label",
+            comment: "Quick access side label"
         )
         static let overlaySizeTitle = string(
             "preferences-quick-access.overlay-size-title",
             defaultValue: "Overlay Size",
-            comment: "Quick access preferences setting title",
+            comment: "Quick access preferences setting title"
         )
         static let overlaySizeDescription = string(
             "preferences-quick-access.overlay-size-description",
             defaultValue: "Adjust the floating preview size",
-            comment: "Quick access preferences setting description",
+            comment: "Quick access preferences setting description"
         )
         static let cornerButtonSizeTitle = string(
             "preferences-quick-access.corner-button-size-title",
             defaultValue: "Corner Button Size",
-            comment: "Quick access preferences setting title for corner action buttons",
+            comment: "Quick access preferences setting title for corner action buttons"
         )
         static let cornerButtonSizeDescription = string(
             "preferences-quick-access.corner-button-size-description",
             defaultValue: "Icon and tap target size for buttons in each corner",
-            comment: "Quick access preferences setting description for corner action buttons",
+            comment: "Quick access preferences setting description for corner action buttons"
         )
         static let floatingOverlayTitle = string(
             "preferences-quick-access.floating-overlay-title",
             defaultValue: "Floating Overlay",
-            comment: "Quick access preferences setting title",
+            comment: "Quick access preferences setting title"
         )
         static let floatingOverlayDescription = string(
             "preferences-quick-access.floating-overlay-description",
             defaultValue: "Show preview after capture",
-            comment: "Quick access preferences setting description",
+            comment: "Quick access preferences setting description"
         )
         static let autoCloseTitle = string(
             "preferences-quick-access.auto-close-title",
             defaultValue: "Auto-close",
-            comment: "Quick access preferences setting title",
+            comment: "Quick access preferences setting title"
         )
         static let closeAfter = string(
             "preferences-quick-access.close-after",
             defaultValue: "Close after",
-            comment: "Quick access slider label",
+            comment: "Quick access slider label"
         )
         static let pauseOnHoverTitle = string(
             "preferences-quick-access.pause-on-hover-title",
             defaultValue: "Pause on Hover",
-            comment: "Quick access preferences setting title",
+            comment: "Quick access preferences setting title"
         )
         static let pauseOnHoverDescription = string(
             "preferences-quick-access.pause-on-hover-description",
             defaultValue: "Pause countdown when hovering over the card",
-            comment: "Quick access preferences setting description",
+            comment: "Quick access preferences setting description"
         )
         static let dragAndDropTitle = string(
             "preferences-quick-access.drag-and-drop-title",
             defaultValue: "Drag & Drop",
-            comment: "Quick access preferences setting title",
+            comment: "Quick access preferences setting title"
         )
         static let dragAndDropDescription = string(
             "preferences-quick-access.drag-and-drop-description",
             defaultValue: "Drag captures to other apps",
-            comment: "Quick access preferences setting description",
+            comment: "Quick access preferences setting description"
         )
         static let twoFingerSwipeTitle = string(
             "preferences-quick-access.two-finger-swipe-title",
             defaultValue: "Two-finger Swipe",
-            comment: "Quick access preferences setting title",
+            comment: "Quick access preferences setting title"
         )
         static let twoFingerSwipeDescription = string(
             "preferences-quick-access.two-finger-swipe-description",
             defaultValue: "Swipe horizontally on the preview to close it",
-            comment: "Quick access preferences setting description",
+            comment: "Quick access preferences setting description"
         )
         static let swipeSensitivityTitle = string(
             "preferences-quick-access.swipe-sensitivity-title",
             defaultValue: "Swipe Sensitivity",
-            comment: "Quick access preferences setting title",
+            comment: "Quick access preferences setting title"
         )
         static let swipeSensitivityDescription = string(
             "preferences-quick-access.swipe-sensitivity-description",
             defaultValue: "Adjust how fast the card follows your trackpad swipe",
-            comment: "Quick access preferences setting description",
+            comment: "Quick access preferences setting description"
         )
         static let trackpadSwipeModeTitle = string(
             "preferences-quick-access.trackpad-swipe-mode-title",
             defaultValue: "Trackpad Swipe Direction",
-            comment: "Quick access trackpad swipe mode setting title",
+            comment: "Quick access trackpad swipe mode setting title"
         )
         static let trackpadSwipeModeDescription = string(
             "preferences-quick-access.trackpad-swipe-mode-description",
             defaultValue: "Choose whether the card follows your finger or moves in the opposite direction",
-            comment: "Quick access trackpad swipe mode setting description",
+            comment: "Quick access trackpad swipe mode setting description"
         )
         static let trackpadSwipeModeNatural = string(
             "preferences-quick-access.trackpad-swipe-mode-natural",
             defaultValue: "Natural (follow finger)",
-            comment: "Quick access trackpad swipe mode option",
+            comment: "Quick access trackpad swipe mode option"
         )
         static let trackpadSwipeModeInverted = string(
             "preferences-quick-access.trackpad-swipe-mode-inverted",
             defaultValue: "Inverted (follow scroll)",
-            comment: "Quick access trackpad swipe mode option",
+            comment: "Quick access trackpad swipe mode option"
         )
         static func closesAfter(_ seconds: Int) -> String {
             format(
                 "preferences-quick-access.closes-after",
                 defaultValue: "Closes after %d seconds",
                 comment: "Quick access auto-close description. %d is the number of seconds.",
-                seconds,
+                seconds
             )
         }
 
         static let keepOpenUntilDismissed = string(
             "preferences-quick-access.keep-open",
             defaultValue: "Keep overlay open until dismissed",
-            comment: "Quick access description when auto-close is disabled",
+            comment: "Quick access description when auto-close is disabled"
         )
         static let previewSection = string(
             "preferences-quick-access.section-preview",
             defaultValue: "Preview",
-            comment: "Quick access preferences section title",
+            comment: "Quick access preferences section title"
         )
         static let quickActionsSection = string(
             "preferences-quick-access.section-quick-actions",
             defaultValue: "Quick Actions",
-            comment: "Quick access preferences section title",
+            comment: "Quick access preferences section title"
         )
         static let quickActionsDescription = string(
             "preferences-quick-access.quick-actions-description",
             defaultValue: "Drag list rows to reorder the context menu. Drag actions onto the preview to set card positions.",
-            comment: "Quick access preferences quick actions helper text",
+            comment: "Quick access preferences quick actions helper text"
         )
         static let resetActions = string(
             "preferences-quick-access.reset-actions",
             defaultValue: "Reset Actions",
-            comment: "Quick access preferences reset button title",
+            comment: "Quick access preferences reset button title"
         )
         static let saveOrOpenAction = string(
             "preferences-quick-access.action-save-or-open",
             defaultValue: "Save / Open",
-            comment: "Quick access configurable action title",
+            comment: "Quick access configurable action title"
         )
         static let editAction = string(
             "preferences-quick-access.action-edit",
             defaultValue: "Edit",
-            comment: "Quick access configurable action title",
+            comment: "Quick access configurable action title"
         )
         static let pinToScreenAction = string(
             "preferences-quick-access.action-pin-to-screen",
             defaultValue: "Pin to Screen",
-            comment: "Quick access configurable action title",
+            comment: "Quick access configurable action title"
         )
         static let unpinAction = string(
             "preferences-quick-access.action-unpin",
             defaultValue: "Unpin",
-            comment: "Quick access configurable action title",
+            comment: "Quick access configurable action title"
         )
         static let primaryActionBadge = string(
             "preferences-quick-access.badge-primary",
             defaultValue: "Primary",
-            comment: "Quick access configurable action placement badge",
+            comment: "Quick access configurable action placement badge"
         )
         static let cornerActionBadge = string(
             "preferences-quick-access.badge-corner",
             defaultValue: "Corner",
-            comment: "Quick access configurable action placement badge",
+            comment: "Quick access configurable action placement badge"
         )
         static let notOnCard = string(
             "preferences-quick-access.not-on-card",
             defaultValue: "Not on card",
-            comment: "Quick access configurable action placement badge when action is not assigned to the preview card",
+            comment: "Quick access configurable action placement badge when action is not assigned to the preview card"
         )
         static let slotCenterTop = string(
             "preferences-quick-access.slot-center-top",
             defaultValue: "Center top",
-            comment: "Quick access preview placement slot title",
+            comment: "Quick access preview placement slot title"
         )
         static let slotCenterBottom = string(
             "preferences-quick-access.slot-center-bottom",
             defaultValue: "Center bottom",
-            comment: "Quick access preview placement slot title",
+            comment: "Quick access preview placement slot title"
         )
         static let slotTopRight = string(
             "preferences-quick-access.slot-top-right",
             defaultValue: "Top right",
-            comment: "Quick access preview placement slot title",
+            comment: "Quick access preview placement slot title"
         )
         static let slotTopLeft = string(
             "preferences-quick-access.slot-top-left",
             defaultValue: "Top left",
-            comment: "Quick access preview placement slot title",
+            comment: "Quick access preview placement slot title"
         )
         static let slotBottomLeft = string(
             "preferences-quick-access.slot-bottom-left",
             defaultValue: "Bottom left",
-            comment: "Quick access preview placement slot title",
+            comment: "Quick access preview placement slot title"
         )
         static let slotBottomRight = string(
             "preferences-quick-access.slot-bottom-right",
             defaultValue: "Bottom right",
-            comment: "Quick access preview placement slot title",
+            comment: "Quick access preview placement slot title"
         )
         static let swipeActionsSection = string(
             "preferences-quick-access.section-swipe-actions",
             defaultValue: "Swipe Actions",
-            comment: "Quick access preferences section title for swipe action zones",
+            comment: "Quick access preferences section title for swipe action zones"
         )
         static let swipeLeftAction = string(
             "preferences-quick-access.swipe-left-action",
             defaultValue: "Swipe Left",
-            comment: "Quick access swipe direction label",
+            comment: "Quick access swipe direction label"
         )
         static let swipeRightAction = string(
             "preferences-quick-access.swipe-right-action",
             defaultValue: "Swipe Right",
-            comment: "Quick access swipe direction label",
+            comment: "Quick access swipe direction label"
         )
         static let swipeActionDismiss = string(
             "preferences-quick-access.swipe-action-dismiss",
             defaultValue: "Dismiss",
-            comment: "Quick access swipe action label for dismiss behavior",
+            comment: "Quick access swipe action label for dismiss behavior"
         )
         static let swipeActionsDescription = string(
             "preferences-quick-access.swipe-actions-description",
             defaultValue: "Drag actions onto the circular swipe targets to choose what runs after a two-finger swipe.",
-            comment: "Quick access swipe actions helper text",
+            comment: "Quick access swipe actions helper text"
         )
         static let swipeZoneResetToDismiss = string(
             "preferences-quick-access.swipe-zone-reset-to-dismiss",
             defaultValue: "Reset to Dismiss",
-            comment: "Quick access swipe zone context menu reset action",
+            comment: "Quick access swipe zone context menu reset action"
         )
         static let swipeZoneClearAction = string(
             "preferences-quick-access.swipe-zone-clear-action",
             defaultValue: "Clear Action",
-            comment: "Quick access swipe zone context menu clear action",
+            comment: "Quick access swipe zone context menu clear action"
         )
     }
 
@@ -2844,233 +2844,233 @@ nonisolated enum L10n {
         static let captureEnvironmentSection = string(
             "preferences-capture.section-capture-environment",
             defaultValue: "Capture Environment",
-            comment: "Capture preferences section title",
+            comment: "Capture preferences section title"
         )
         static let selectionSection = string(
             "preferences-capture.section-selection",
             defaultValue: "Selection",
-            comment: "Capture preferences section title",
+            comment: "Capture preferences section title"
         )
         static let allInOneModesSection = string(
             "preferences-capture.section-all-in-one-modes",
             defaultValue: "All-In-One Modes",
-            comment: "Capture preferences section title",
+            comment: "Capture preferences section title"
         )
         static let allInOneModesDescription = string(
             "preferences-capture.all-in-one-modes-description",
             defaultValue: "Choose which modes appear in the All-In-One toolbar and drag to change their order.",
-            comment: "All-In-One mode customization description",
+            comment: "All-In-One mode customization description"
         )
         static let resetAllInOneModes = string(
             "preferences-capture.reset-all-in-one-modes",
             defaultValue: "Reset All-In-One Modes",
-            comment: "All-In-One mode customization reset action",
+            comment: "All-In-One mode customization reset action"
         )
         static let allInOneModesMinimumFootnote = string(
             "preferences-capture.all-in-one-modes-minimum-footnote",
             defaultValue: "At least one non-Video mode must remain enabled.",
-            comment: "All-In-One mode customization invariant",
+            comment: "All-In-One mode customization invariant"
         )
         static let screenshotBehaviorSection = string(
             "preferences-capture.section-screenshot-behavior",
             defaultValue: "Screenshot Behavior",
-            comment: "Capture preferences section title",
+            comment: "Capture preferences section title"
         )
         static let specializedCaptureSection = string(
             "preferences-capture.section-specialized-capture",
             defaultValue: "Specialized Capture",
-            comment: "Capture preferences section title",
+            comment: "Capture preferences section title"
         )
         static let outputSection = string(
             "preferences-capture.section-output",
             defaultValue: "Output",
-            comment: "Capture preferences section title",
+            comment: "Capture preferences section title"
         )
         static let captureSection = string(
             "preferences-capture.section-capture",
             defaultValue: "Capture",
-            comment: "Capture preferences section title",
+            comment: "Capture preferences section title"
         )
         static let windowScreenshotsSection = string(
             "preferences-capture.section-window-screenshots",
             defaultValue: "Window Screenshots",
-            comment: "Capture preferences section title",
+            comment: "Capture preferences section title"
         )
         static let postProcessingSection = string(
             "preferences-capture.section-post-processing",
             defaultValue: "Post-Processing",
-            comment: "Capture preferences section title",
+            comment: "Capture preferences section title"
         )
         static let recordingFormatSection = string(
             "preferences-capture.section-recording-format",
             defaultValue: "Recording Format",
-            comment: "Capture preferences section title",
+            comment: "Capture preferences section title"
         )
         static let recordingQualitySection = string(
             "preferences-capture.section-recording-quality",
             defaultValue: "Recording Quality",
-            comment: "Capture preferences section title",
+            comment: "Capture preferences section title"
         )
         static let recordingBehaviorSection = string(
             "preferences-capture.section-recording-behavior",
             defaultValue: "Recording Behavior",
-            comment: "Capture preferences section title",
+            comment: "Capture preferences section title"
         )
         static let recordingControlsSection = string(
             "preferences-capture.section-recording-controls",
             defaultValue: "Recording Controls",
-            comment: "Capture preferences section title",
+            comment: "Capture preferences section title"
         )
         static let mouseHighlightSection = string(
             "preferences-capture.section-mouse-highlight",
             defaultValue: "Mouse Highlight",
-            comment: "Capture preferences section title",
+            comment: "Capture preferences section title"
         )
         static let keystrokeOverlaySection = string(
             "preferences-capture.section-keystroke-overlay",
             defaultValue: "Keystroke Overlay",
-            comment: "Capture preferences section title",
+            comment: "Capture preferences section title"
         )
         static let audioSection = string(
             "preferences-capture.section-audio",
             defaultValue: "Audio",
-            comment: "Capture preferences section title",
+            comment: "Capture preferences section title"
         )
         static let afterCaptureSection = string(
             "preferences-capture.section-after-capture",
             defaultValue: "After Capture",
-            comment: "Capture preferences section title",
+            comment: "Capture preferences section title"
         )
 
         static let includeInScreenshotsTitle = string(
             "preferences-capture.include-in-screenshots-title",
             defaultValue: "Include in Screenshots",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let includeInScreenshotsDescription = string(
             "preferences-capture.include-in-screenshots-description",
             defaultValue: "Show Cue windows such as Annotate in captured images",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let includeInRecordingsTitle = string(
             "preferences-capture.include-in-recordings-title",
             defaultValue: "Include in Recordings",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let includeInRecordingsDescription = string(
             "preferences-capture.include-in-recordings-description",
             defaultValue: "Show Cue windows such as Annotate in recorded videos",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let hideDesktopIconsTitle = string(
             "preferences-capture.hide-desktop-icons-title",
             defaultValue: "Hide desktop icons",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let hideDesktopIconsDescription = string(
             "preferences-capture.hide-desktop-icons-description",
             defaultValue: "Temporarily hide icons during capture",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let hideDesktopWidgetsTitle = string(
             "preferences-capture.hide-desktop-widgets-title",
             defaultValue: "Hide desktop widgets",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let hideDesktopWidgetsDescription = string(
             "preferences-capture.hide-desktop-widgets-description",
             defaultValue: "Temporarily hide widgets during capture",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let showSelectionAreaOverlayTitle = string(
             "preferences-capture.show-selection-area-overlay-title",
             defaultValue: "Show selection area overlay",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let showSelectionAreaOverlayDescription = string(
             "preferences-capture.show-selection-area-overlay-description",
             defaultValue: "Dim the background outside the selection area during capture",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let reverseMagnifierZoomDirectionTitle = string(
             "preferences-capture.reverse-magnifier-zoom-direction-title",
             defaultValue: "Reverse magnifier zoom direction",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let reverseMagnifierZoomDirectionDescription = string(
             "preferences-capture.reverse-magnifier-zoom-direction-description",
             defaultValue: "Invert the scroll wheel zoom direction (scroll down to zoom in)",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let selectionSnapDistanceTitle = string(
             "preferences-capture.selection-snap-distance-title",
             defaultValue: "Snap distance",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let selectionSnapDistanceDescription = string(
             "preferences-capture.selection-snap-distance-description",
             defaultValue: "How close a resize edge must be before it snaps while refining an All-In-One area. Applies to resizing only.",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let selectionColorSensitivityTitle = string(
             "preferences-capture.selection-color-sensitivity-title",
             defaultValue: "Color edge sensitivity",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let selectionColorSensitivityDescription = string(
             "preferences-capture.selection-color-sensitivity-description",
             defaultValue: "How strongly color and visual edges attract a resize handle. Semantic snapping uses Accessibility when permission is granted; image fallback works without it.",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let selectionSnapGuidesTitle = string(
             "preferences-capture.selection-snap-guides-title",
             defaultValue: "Show snap guides",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let selectionSnapGuidesDescription = string(
             "preferences-capture.selection-snap-guides-description",
             defaultValue: "Show guide lines when a selection edge snaps to a detected boundary",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let windowShadowTitle = string(
             "preferences-capture.window-shadow-title",
             defaultValue: "Capture window shadow",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let windowShadowDescription = string(
             "preferences-capture.window-shadow-description",
             defaultValue: "Include the window's drop shadow when capturing a window",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let snappingTitle = string(
             "preferences-capture.snapping-title",
             defaultValue: "Magnetic edge snapping",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let snappingDescription = string(
             "preferences-capture.snapping-description",
             defaultValue: "Automatically align selection edges to windows, elements, and visual boundaries",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let snappingAdvancedSettings = string(
             "preferences-capture.snapping-advanced-settings",
             defaultValue: "Advanced snapping options",
-            comment: "Capture preferences section label",
+            comment: "Capture preferences section label"
         )
         static let jpegQualityTitle = string(
             "preferences-capture.jpeg-quality-title",
             defaultValue: "Compression quality",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let jpegQualityDescription = string(
             "preferences-capture.jpeg-quality-description",
             defaultValue: "Adjust image quality and file size for JPEG captures",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let afterCaptureShowQuickAccessTitle = string(
             "preferences-capture.after-capture-show-quick-access-title",
             defaultValue: "Show floating preview",
-            comment: "After capture action title",
+            comment: "After capture action title"
         )
 
         static func selectionColorSensitivityLabel(_ value: Int) -> String {
@@ -3079,31 +3079,31 @@ nonisolated enum L10n {
                 string(
                     "preferences-capture.selection-color-sensitivity-strict",
                     defaultValue: "Strict",
-                    comment: "Capture selection color sensitivity option",
+                    comment: "Capture selection color sensitivity option"
                 )
             case 2:
                 string(
                     "preferences-capture.selection-color-sensitivity-firm",
                     defaultValue: "Firm",
-                    comment: "Capture selection color sensitivity option",
+                    comment: "Capture selection color sensitivity option"
                 )
             case 3:
                 string(
                     "preferences-capture.selection-color-sensitivity-balanced",
                     defaultValue: "Balanced",
-                    comment: "Capture selection color sensitivity option",
+                    comment: "Capture selection color sensitivity option"
                 )
             case 4:
                 string(
                     "preferences-capture.selection-color-sensitivity-relaxed",
                     defaultValue: "Relaxed",
-                    comment: "Capture selection color sensitivity option",
+                    comment: "Capture selection color sensitivity option"
                 )
             default:
                 string(
                     "preferences-capture.selection-color-sensitivity-loose",
                     defaultValue: "Loose",
-                    comment: "Capture selection color sensitivity option",
+                    comment: "Capture selection color sensitivity option"
                 )
             }
         }
@@ -3111,120 +3111,120 @@ nonisolated enum L10n {
         static let showCursorTitle = string(
             "preferences-capture.show-cursor-title",
             defaultValue: "Show cursor",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let showCursorDescription = string(
             "preferences-capture.show-cursor-description",
             defaultValue: "Include mouse pointer in captured screenshots",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let showCursorFootnote = string(
             "preferences-capture.show-cursor-footnote",
             defaultValue: "This works in Fullscreen or Self-Timer modes only.",
-            comment: "Footnote for the screenshot cursor setting",
+            comment: "Footnote for the screenshot cursor setting"
         )
         static let freezeAreaTitle = string(
             "preferences-capture.freeze-area-title",
             defaultValue: "Freeze screen",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let freezeAreaDescription = string(
             "preferences-capture.freeze-area-description",
             defaultValue: "Freeze all connected displays while selecting. Enable to hold still snapshots across your monitors.",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let recordingShowCursorDescription = string(
             "preferences-capture.recording-show-cursor-description",
             defaultValue: "Include mouse pointer in recorded videos and GIFs",
-            comment: "Recording preferences setting description",
+            comment: "Recording preferences setting description"
         )
         static let recordingSmartPointerTitle = string(
             "preferences-capture.recording-smart-pointer-title",
             defaultValue: "Smart pointer (post-processed)",
-            comment: "Recording preferences setting title for synthetic pointer capture",
+            comment: "Recording preferences setting title for synthetic pointer capture"
         )
         static let recordingSmartPointerDescription = string(
             "preferences-capture.recording-smart-pointer-description",
             defaultValue: "Hide the baked cursor and reconstruct a polished pointer in the video editor and export",
-            comment: "Recording preferences setting description for synthetic pointer capture",
+            comment: "Recording preferences setting description for synthetic pointer capture"
         )
         static let imageFormatTitle = string(
             "preferences-capture.image-format-title",
             defaultValue: "Image Format",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let imageFormatDescription = string(
             "preferences-capture.image-format-description",
             defaultValue: "Output format for captured screenshots",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let webpWarning = string(
             "preferences-capture.webp-warning",
             defaultValue: "WebP encoding is slower than other formats. For faster capture speed, consider using PNG or JPEG.",
-            comment: "Warning shown when WebP screenshot format is selected",
+            comment: "Warning shown when WebP screenshot format is selected"
         )
         static let jpegCutoutNote = string(
             "preferences-capture.jpeg-cutout-note",
             defaultValue: "Object cutout captures require transparency. Cue will save them as PNG even when JPEG is selected.",
-            comment: "Informational note shown when JPEG screenshot format is selected",
+            comment: "Informational note shown when JPEG screenshot format is selected"
         )
         static let defaultPresetTitle = string(
             "preferences-capture.default-preset-title",
             defaultValue: "Default Preset",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let defaultPresetDescription = string(
             "preferences-capture.default-preset-description",
             defaultValue: "Apply an Annotate preset right after each screenshot capture",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
 
         static let showSessionHintsTitle = string(
             "preferences-capture.show-session-hints-title",
             defaultValue: "Show Session Hints",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let showSessionHintsDescription = string(
             "preferences-capture.show-session-hints-description",
             defaultValue: "Keep guidance visible when starting a scrolling capture session",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let scrollingCaptureInfo = string(
             "preferences-capture.scrolling-capture-info",
             defaultValue: "Best results come from selecting only the moving content, then scrolling in one direction at a steady pace.",
-            comment: "Informational note for scrolling capture preferences",
+            comment: "Informational note for scrolling capture preferences"
         )
         static let screenshotTemplateTitle = string(
             "preferences-capture.screenshot-template-title",
             defaultValue: "Screenshot Template",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let screenshotTemplateDescription = string(
             "preferences-capture.screenshot-template-description",
             defaultValue: "Pattern for auto-saved screenshot filename or subfolder path",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let recordingTemplateTitle = string(
             "preferences-capture.recording-template-title",
             defaultValue: "Recording Template",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let recordingTemplateDescription = string(
             "preferences-capture.recording-template-description",
             defaultValue: "Pattern for auto-saved recording filename or subfolder path",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let availableTokens = string(
             "preferences-capture.available-tokens",
             defaultValue: "Available tokens: {datetime}, {date}, {year}, {yearShort}, {month}, {monthName}, {monthShort}, {day}, {time}, {ms}, {timestamp}, {type}, {appName}. Use / to create subfolders.",
-            comment: "Informational text listing available filename template tokens",
+            comment: "Informational text listing available filename template tokens"
         )
         static func screenshotPreview(_ preview: String) -> String {
             format(
                 "preferences-capture.screenshot-preview",
                 defaultValue: "Screenshot preview: %@",
                 comment: "Filename template preview label. %@ is the preview filename.",
-                preview,
+                preview
             )
         }
 
@@ -3233,254 +3233,254 @@ nonisolated enum L10n {
                 "preferences-capture.recording-preview",
                 defaultValue: "Recording preview: %@",
                 comment: "Filename template preview label. %@ is the preview filename.",
-                preview,
+                preview
             )
         }
 
         static let resetNamingDefaults = string(
             "preferences-capture.reset-naming-defaults",
             defaultValue: "Reset Naming Defaults",
-            comment: "Button title to reset filename templates",
+            comment: "Button title to reset filename templates"
         )
         static let resetScreenshotDefaults = string(
             "preferences-capture.reset-screenshot-defaults",
             defaultValue: "Reset Screenshot Defaults",
-            comment: "Button title to reset only the displayed screenshot settings",
+            comment: "Button title to reset only the displayed screenshot settings"
         )
         static let resetScreenshotDefaultsConfirmationTitle = string(
             "preferences-capture.reset-screenshot-defaults-confirmation-title",
             defaultValue: "Reset screenshot defaults?",
-            comment: "Screenshot settings reset confirmation alert title",
+            comment: "Screenshot settings reset confirmation alert title"
         )
         static let resetScreenshotDefaultsConfirmationMessage = string(
             "preferences-capture.reset-screenshot-defaults-confirmation-message",
             defaultValue: "This resets only the displayed screenshot settings. Filename templates and other preferences stay unchanged.",
-            comment: "Screenshot settings reset confirmation alert message",
+            comment: "Screenshot settings reset confirmation alert message"
         )
         static let resetScreenshotDefaultsConfirmButton = string(
             "preferences-capture.reset-screenshot-defaults-confirm-button",
             defaultValue: "Reset Defaults",
-            comment: "Destructive confirmation button for screenshot settings reset",
+            comment: "Destructive confirmation button for screenshot settings reset"
         )
         static let videoFormatTitle = string(
             "preferences-capture.video-format-title",
             defaultValue: "Video Format",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let videoFormatDescription = string(
             "preferences-capture.video-format-description",
             defaultValue: "MOV offers better quality. MP4 provides wider compatibility.",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let frameRateTitle = string(
             "preferences-capture.frame-rate-title",
             defaultValue: "Frame Rate",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let frameRateDescription = string(
             "preferences-capture.frame-rate-description",
             defaultValue: "Higher FPS for smoother motion",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let qualityTitle = string(
             "preferences-capture.quality-title",
             defaultValue: "Quality",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let qualityDescription = string(
             "preferences-capture.quality-description",
             defaultValue: "Higher quality = larger file size",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let rememberLastAreaTitle = string(
             "preferences-capture.remember-last-area-title",
             defaultValue: "Remember Last Area",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let rememberLastAreaDescription = string(
             "preferences-capture.remember-last-area-description",
             defaultValue: "Restore previous recording area on next capture",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let hoverBarVisibleTitle = string(
             "preferences-capture.hover-bar-visible-title",
             defaultValue: "Show Floating Controls",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let hoverBarVisibleDescription = string(
             "preferences-capture.hover-bar-visible-description",
             defaultValue: "Display controls on screen during recording. When hidden, use the menu bar icon to stop.",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let menuBarTimeTitle = string(
             "preferences-capture.menu-bar-time-title",
             defaultValue: "Show Timer in Menu Bar",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let menuBarTimeDescription = string(
             "preferences-capture.menu-bar-time-description",
             defaultValue: "Display elapsed duration next to the status icon.",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let highlightSizeTitle = string(
             "preferences-capture.highlight-size-title",
             defaultValue: "Highlight Size",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static func highlightSizeDescription(_ pixels: Int) -> String {
             format(
                 "preferences-capture.highlight-size-description",
                 defaultValue: "Diameter of ripple effect (%dpx)",
                 comment: "Mouse highlight size description. %d is the pixel size.",
-                pixels,
+                pixels
             )
         }
 
         static let animationDurationTitle = string(
             "preferences-capture.animation-duration-title",
             defaultValue: "Animation Duration",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static func animationDurationDescription(_ seconds: String) -> String {
             format(
                 "preferences-capture.animation-duration-description",
                 defaultValue: "Ripple expand speed (%@s)",
                 comment: "Mouse highlight animation duration description. %@ is the formatted seconds value.",
-                seconds,
+                seconds
             )
         }
 
         static let rippleCountTitle = string(
             "preferences-capture.ripple-count-title",
             defaultValue: "Ripple Count",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let rippleCountDescription = string(
             "preferences-capture.ripple-count-description",
             defaultValue: "Number of expanding rings",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let highlightColorTitle = string(
             "preferences-capture.highlight-color-title",
             defaultValue: "Highlight Color",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let highlightColorDescription = string(
             "preferences-capture.highlight-color-description",
             defaultValue: "Color of click rings",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let opacityTitle = string(
             "preferences-capture.opacity-title",
             defaultValue: "Opacity",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static func opacityDescription(_ percent: Int) -> String {
             format(
                 "preferences-capture.opacity-description",
                 defaultValue: "Ring transparency (%d%%)",
                 comment: "Mouse highlight opacity description. %d is the percentage.",
-                percent,
+                percent
             )
         }
 
         static let fontSizeTitle = string(
             "preferences-capture.font-size-title",
             defaultValue: "Font Size",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static func fontSizeDescription(_ points: Int) -> String {
             format(
                 "preferences-capture.font-size-description",
                 defaultValue: "Badge text size (%dpt)",
                 comment: "Keystroke overlay font size description. %d is the font size in points.",
-                points,
+                points
             )
         }
 
         static let positionTitle = string(
             "preferences-capture.position-title",
             defaultValue: "Position",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let positionDescription = string(
             "preferences-capture.position-description",
             defaultValue: "Badge placement in recording area",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let displayDurationTitle = string(
             "preferences-capture.display-duration-title",
             defaultValue: "Display Duration",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static func displayDurationDescription(_ seconds: String) -> String {
             format(
                 "preferences-capture.display-duration-description",
                 defaultValue: "Time before badge fades (%@s)",
                 comment: "Keystroke overlay display duration description. %@ is the formatted seconds value.",
-                seconds,
+                seconds
             )
         }
 
         static let systemAudioTitle = string(
             "preferences-capture.system-audio-title",
             defaultValue: "System Audio",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let systemAudioDescription = string(
             "preferences-capture.system-audio-description",
             defaultValue: "Capture sounds from apps",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let microphoneDescription = string(
             "preferences-capture.microphone-description",
             defaultValue: "Capture your voice",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let microphoneInputTitle = string(
             "preferences-capture.microphone-input-title",
             defaultValue: "Microphone Input",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let microphoneInputDescription = string(
             "preferences-capture.microphone-input-description",
             defaultValue: "Choose the built-in or external microphone used for recordings",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let removeBackground = string(
             "preferences-capture.remove-background",
             defaultValue: "Remove Background",
-            comment: "Caption label for background removal settings",
+            comment: "Caption label for background removal settings"
         )
         static let autoCropSubjectTitle = string(
             "preferences-capture.auto-crop-subject-title",
             defaultValue: "Auto-Crop Subject",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let autoCropSubjectDescription = string(
             "preferences-capture.auto-crop-subject-description",
             defaultValue: "Applies to background removal in capture and Annotate",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let ocrSuccessNotificationTitle = string(
             "preferences-capture.ocr-success-notification-title",
             defaultValue: "Success Notification",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let ocrSuccessNotificationDescription = string(
             "preferences-capture.ocr-success-notification-description",
             defaultValue: "Show a toast when text is copied to clipboard",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
         static let ocrLinkDetectionTitle = string(
             "preferences-capture.ocr-link-detection-title",
             defaultValue: "Detect Links",
-            comment: "Capture preferences setting title",
+            comment: "Capture preferences setting title"
         )
         static let ocrLinkDetectionDescription = string(
             "preferences-capture.ocr-link-detection-description",
             defaultValue: "Offer to open web links found in captured text",
-            comment: "Capture preferences setting description",
+            comment: "Capture preferences setting description"
         )
     }
 
@@ -3488,172 +3488,172 @@ nonisolated enum L10n {
         static let generalSection = string(
             "preferences-recording.section-general",
             defaultValue: "General",
-            comment: "Screen recording preferences section title",
+            comment: "Screen recording preferences section title"
         )
         static let showControlsTitle = string(
             "preferences-recording.show-controls-title",
             defaultValue: "Show controls while recording",
-            comment: "Screen recording setting title",
+            comment: "Screen recording setting title"
         )
         static let rememberLastSelectionTitle = string(
             "preferences-recording.remember-last-selection-title",
             defaultValue: "Remember last selection",
-            comment: "Screen recording setting title",
+            comment: "Screen recording setting title"
         )
         static let displayTimeInMenuBarTitle = string(
             "preferences-recording.display-time-in-menu-bar-title",
             defaultValue: "Display recording time in menu bar",
-            comment: "Screen recording setting title",
+            comment: "Screen recording setting title"
         )
         static let dimScreenTitle = string(
             "preferences-recording.dim-screen-title",
             defaultValue: "Dim screen while recording",
-            comment: "Screen recording setting title",
+            comment: "Screen recording setting title"
         )
         static let showCountdownTitle = string(
             "preferences-recording.show-countdown-title",
             defaultValue: "Show countdown",
-            comment: "Screen recording setting title",
+            comment: "Screen recording setting title"
         )
         static let cursorSection = string(
             "preferences-recording.section-cursor",
             defaultValue: "Cursor",
-            comment: "Screen recording preferences section title",
+            comment: "Screen recording preferences section title"
         )
         static let highlightClicksTitle = string(
             "preferences-recording.highlight-clicks-title",
             defaultValue: "Highlight clicks",
-            comment: "Screen recording setting title",
+            comment: "Screen recording setting title"
         )
         static let optionsButton = string(
             "preferences-recording.options-button",
             defaultValue: "Options…",
-            comment: "Button opening detail options popover",
+            comment: "Button opening detail options popover"
         )
         static let clickOptionsTitle = string(
             "preferences-recording.click-options-title",
             defaultValue: "Click highlight options",
-            comment: "Popover title for click highlight customization",
+            comment: "Popover title for click highlight customization"
         )
         static let keystrokesSection = string(
             "preferences-recording.section-keystrokes",
             defaultValue: "Keystrokes",
-            comment: "Screen recording preferences section title",
+            comment: "Screen recording preferences section title"
         )
         static let showKeystrokesTitle = string(
             "preferences-recording.show-keystrokes-title",
             defaultValue: "Show keystrokes",
-            comment: "Screen recording setting title",
+            comment: "Screen recording setting title"
         )
         static let keystrokeOptionsTitle = string(
             "preferences-recording.keystroke-options-title",
             defaultValue: "Keystroke options",
-            comment: "Popover title for keystroke overlay customization",
+            comment: "Popover title for keystroke overlay customization"
         )
         static let videoSection = string(
             "preferences-recording.section-video",
             defaultValue: "Video",
-            comment: "Screen recording preferences section title",
+            comment: "Screen recording preferences section title"
         )
         static let videoFormatTitle = string(
             "preferences-recording.video-format-title",
             defaultValue: "Format",
-            comment: "Screen recording setting title",
+            comment: "Screen recording setting title"
         )
         static let frameRateTitle = string(
             "preferences-recording.frame-rate-title",
             defaultValue: "Frame rate",
-            comment: "Screen recording setting title",
+            comment: "Screen recording setting title"
         )
         static let maxResolutionTitle = string(
             "preferences-recording.max-resolution-title",
             defaultValue: "Max resolution",
-            comment: "Screen recording setting title",
+            comment: "Screen recording setting title"
         )
         static let maxResolutionDescription = string(
             "preferences-recording.max-resolution-description",
             defaultValue: "Set maximum resolution to reduce file size and upload time.",
-            comment: "Screen recording setting description",
+            comment: "Screen recording setting description"
         )
         static let scaleRetinaTitle = string(
             "preferences-recording.scale-retina-title",
             defaultValue: "Scale Retina videos to 1x",
-            comment: "Screen recording setting title",
+            comment: "Screen recording setting title"
         )
         static let audioSection = string(
             "preferences-recording.section-audio",
             defaultValue: "Audio",
-            comment: "Screen recording preferences section title",
+            comment: "Screen recording preferences section title"
         )
         static let recordMonoTitle = string(
             "preferences-recording.record-mono-title",
             defaultValue: "Record audio in mono",
-            comment: "Screen recording setting title",
+            comment: "Screen recording setting title"
         )
         static let recordSystemAudioTitle = string(
             "preferences-recording.record-system-audio-title",
             defaultValue: "Record system audio",
-            comment: "Screen recording setting title",
+            comment: "Screen recording setting title"
         )
         static let recordSystemAudioDescription = string(
             "preferences-recording.record-system-audio-description",
             defaultValue: "Enable this option to record sound that comes from other applications.",
-            comment: "Screen recording setting description",
+            comment: "Screen recording setting description"
         )
         static let audioTracksTitle = string(
             "preferences-recording.audio-tracks-title",
             defaultValue: "Audio tracks",
-            comment: "Screen recording setting title",
+            comment: "Screen recording setting title"
         )
         static let audioTracksDescription = string(
             "preferences-recording.audio-tracks-description",
             defaultValue: "Choose separate tracks to edit the microphone and system audio independently in video editing software.",
-            comment: "Screen recording setting description",
+            comment: "Screen recording setting description"
         )
         static let singleTrack = string(
             "preferences-recording.audio-tracks-single",
             defaultValue: "Single track",
-            comment: "Audio tracks option",
+            comment: "Audio tracks option"
         )
         static let separateTracks = string(
             "preferences-recording.audio-tracks-separate",
             defaultValue: "Separate tracks",
-            comment: "Audio tracks option",
+            comment: "Audio tracks option"
         )
         static let gifSection = string(
             "preferences-recording.section-gif",
             defaultValue: "GIF",
-            comment: "Screen recording preferences section title",
+            comment: "Screen recording preferences section title"
         )
         static let resolutionTitle = string(
             "preferences-recording.resolution-title",
             defaultValue: "Resolution",
-            comment: "Screen recording setting title",
+            comment: "Screen recording setting title"
         )
         static let optimizeGIFsTitle = string(
             "preferences-recording.optimize-gifs-title",
             defaultValue: "Optimize GIFs",
-            comment: "Screen recording setting title",
+            comment: "Screen recording setting title"
         )
         static let qualityTitle = string(
             "preferences-recording.quality-title",
             defaultValue: "Quality",
-            comment: "Screen recording setting title",
+            comment: "Screen recording setting title"
         )
         static let low = string(
             "preferences-recording.quality-low",
             defaultValue: "Low",
-            comment: "Quality slider minimum label",
+            comment: "Quality slider minimum label"
         )
         static let high = string(
             "preferences-recording.quality-high",
             defaultValue: "High",
-            comment: "Quality slider maximum label",
+            comment: "Quality slider maximum label"
         )
         static let originalResolution = string(
             "preferences-recording.resolution-original",
             defaultValue: "Original",
-            comment: "Resolution option keeping source size",
+            comment: "Resolution option keeping source size"
         )
 
         static func fpsLabel(_ fps: Int) -> String {
@@ -3661,7 +3661,7 @@ nonisolated enum L10n {
                 "preferences-recording.fps-label",
                 defaultValue: "%d fps",
                 comment: "Frame rate picker label. %d is frames per second.",
-                fps,
+                fps
             )
         }
 
@@ -3670,7 +3670,7 @@ nonisolated enum L10n {
                 "preferences-recording.gif-resolution-label",
                 defaultValue: "%d x auto",
                 comment: "GIF resolution picker label. %d is the max width in pixels.",
-                width,
+                width
             )
         }
 
@@ -3679,7 +3679,7 @@ nonisolated enum L10n {
                 "preferences-recording.gif-resolution-default-label",
                 defaultValue: "%d x auto (default)",
                 comment: "GIF resolution picker label for the default width. %d is the max width in pixels.",
-                width,
+                width
             )
         }
     }
@@ -3688,102 +3688,102 @@ nonisolated enum L10n {
         static let behaviorSection = string(
             "preferences-capture.section-annotate",
             defaultValue: "Behavior",
-            comment: "Annotate preferences section title",
+            comment: "Annotate preferences section title"
         )
         static let quickPropertiesSyncTitle = string(
             "preferences-capture.annotate-quick-properties-sync-title",
             defaultValue: "Sync tool defaults",
-            comment: "Annotate preferences setting title for synchronizing quick annotation properties",
+            comment: "Annotate preferences setting title for synchronizing quick annotation properties"
         )
         static let quickPropertiesSyncDescription = string(
             "preferences-capture.annotate-quick-properties-sync-description",
             defaultValue: "Use one set of defaults for compatible annotation tools. Turn off to keep each tool's color, stroke, radius, text size, and watermark values separate.",
-            comment: "Annotate preferences setting description for synchronizing quick annotation properties",
+            comment: "Annotate preferences setting description for synchronizing quick annotation properties"
         )
         static let combineSaveAsEditTitle = string(
             "preferences-capture.combine-save-as-edit-title",
             defaultValue: "Save combined result as part of current edit",
-            comment: "Annotate preferences toggle title for saving stitched images silently into the current edit",
+            comment: "Annotate preferences toggle title for saving stitched images silently into the current edit"
         )
         static let combineSaveAsEditDescription = string(
             "preferences-capture.combine-save-as-edit-description",
             defaultValue: "When stitching images in the editor, saving updates the current screenshot instead of asking to export a new combined image.",
-            comment: "Annotate preferences toggle description for combine save-as-edit behavior",
+            comment: "Annotate preferences toggle description for combine save-as-edit behavior"
         )
         static let clipboardTitle = string(
             "preferences-capture.annotate-clipboard-title",
             defaultValue: "Clipboard image on Open Annotate",
-            comment: "Annotate preferences setting title for clipboard image behavior",
+            comment: "Annotate preferences setting title for clipboard image behavior"
         )
         static let clipboardDescription = string(
             "preferences-capture.annotate-clipboard-description",
             defaultValue: "Choose what happens when a clipboard image is available while opening Annotate",
-            comment: "Annotate preferences setting description for clipboard image behavior",
+            comment: "Annotate preferences setting description for clipboard image behavior"
         )
         static let clipboardAsk = string(
             "preferences-capture.annotate-clipboard-ask",
             defaultValue: "Ask every time",
-            comment: "Picker option for asking before loading a clipboard image into Annotate",
+            comment: "Picker option for asking before loading a clipboard image into Annotate"
         )
         static let clipboardLoadAutomatically = string(
             "preferences-capture.annotate-clipboard-load-automatically",
             defaultValue: "Load automatically",
-            comment: "Picker option for automatically loading a clipboard image into Annotate",
+            comment: "Picker option for automatically loading a clipboard image into Annotate"
         )
         static let clipboardDoNothing = string(
             "preferences-capture.annotate-clipboard-do-nothing",
             defaultValue: "Do nothing",
-            comment: "Picker option for not loading a clipboard image into Annotate",
+            comment: "Picker option for not loading a clipboard image into Annotate"
         )
         static let closeAfterDragTitle = string(
             "preferences-capture.annotate-close-after-drag-title",
             defaultValue: "Close after drop",
-            comment: "Annotate preferences setting title for closing Annotate after drag-to-app",
+            comment: "Annotate preferences setting title for closing Annotate after drag-to-app"
         )
         static let closeAfterDragDescription = string(
             "preferences-capture.annotate-close-after-drag-description",
             defaultValue: "Automatically close the Annotate editor after a successful drag-to-app drop",
-            comment: "Annotate preferences setting description for closing Annotate after drag-to-app",
+            comment: "Annotate preferences setting description for closing Annotate after drag-to-app"
         )
         static let bringForwardAfterDragTitle = string(
             "preferences-capture.annotate-bring-forward-after-drag-title",
             defaultValue: "Reactivate after drop",
-            comment: "Annotate preferences setting title for activating Annotate after drag-to-app",
+            comment: "Annotate preferences setting title for activating Annotate after drag-to-app"
         )
         static let bringForwardAfterDragDescription = string(
             "preferences-capture.annotate-bring-forward-after-drag-description",
             defaultValue: "When the editor stays open, bring Cue to the front and focus Annotate after the drop completes",
-            comment: "Annotate preferences setting description for activating Annotate after drag-to-app",
+            comment: "Annotate preferences setting description for activating Annotate after drag-to-app"
         )
         static let chromeSection = string(
             "preferences-capture.section-chrome",
             defaultValue: "Editor chrome",
-            comment: "Annotate preferences section title for toolbar and bottom-bar customization",
+            comment: "Annotate preferences section title for toolbar and bottom-bar customization"
         )
         static let chromeToolbarSection = string(
             "preferences-capture.section-chrome-toolbar",
             defaultValue: "Toolbar",
-            comment: "Annotate preferences section title for toolbar customization",
+            comment: "Annotate preferences section title for toolbar customization"
         )
         static let chromeBottomSection = string(
             "preferences-capture.section-chrome-bottom",
             defaultValue: "Bottom bar",
-            comment: "Annotate preferences section title for bottom-bar customization",
+            comment: "Annotate preferences section title for bottom-bar customization"
         )
         static let chromeDescription = string(
             "preferences-capture.chrome-description",
             defaultValue: "Reorder and show or hide Annotate tools and actions. Sidebar, Selection, Undo, Redo, and Done always stay visible.",
-            comment: "Annotate preferences description for chrome customization",
+            comment: "Annotate preferences description for chrome customization"
         )
         static let chromeAlwaysOnFootnote = string(
             "preferences-capture.chrome-always-on-footnote",
             defaultValue: "Always visible: Sidebar, Selection, Undo, Redo, Done. Zoom, pan, mode tabs, and Drag to app cannot be customized.",
-            comment: "Annotate preferences footnote for non-customizable chrome",
+            comment: "Annotate preferences footnote for non-customizable chrome"
         )
         static let resetChrome = string(
             "preferences-capture.reset-chrome",
             defaultValue: "Reset chrome",
-            comment: "Annotate preferences button to reset toolbar and bottom-bar customization",
+            comment: "Annotate preferences button to reset toolbar and bottom-bar customization"
         )
     }
 
@@ -3792,7 +3792,7 @@ nonisolated enum L10n {
         static let noteToolGestureHint = string(
             "annotate.notinhas.note-tool-gesture-hint",
             defaultValue: "Click to pin · Drag for area",
-            comment: "Tooltip hint explaining the Cue note tool: a click places a numbered pin, a drag creates an area rectangle",
+            comment: "Tooltip hint explaining the Cue note tool: a click places a numbered pin, a drag creates an area rectangle"
         )
         static func noteToolTooltip(title: String, gestureHint: String) -> String {
             L10n.format(
@@ -3800,65 +3800,65 @@ nonisolated enum L10n {
                 defaultValue: "%@ · %@",
                 comment: "Cue note tool tooltip. First %@ is the tool title (optionally with shortcut), second %@ is the click/drag gesture hint.",
                 title,
-                gestureHint,
+                gestureHint
             )
         }
 
         static let noteEditorTitle = string(
             "annotate.notinhas.note-editor-title",
             defaultValue: "Note",
-            comment: "Cue note editor title",
+            comment: "Cue note editor title"
         )
         static let noteEditorPlaceholder = string(
             "annotate.notinhas.note-editor-placeholder",
             defaultValue: "Describe the change...",
-            comment: "Cue note editor placeholder",
+            comment: "Cue note editor placeholder"
         )
         static let save = string("annotate.notinhas.save", defaultValue: "Save", comment: "Save Cue note")
         static let cancel = string(
             "annotate.notinhas.cancel",
             defaultValue: "Cancel",
-            comment: "Cancel Cue note editing",
+            comment: "Cancel Cue note editing"
         )
         static let sidePanelTitle = string(
             "annotate.notinhas.side-panel-title",
             defaultValue: "Notes",
-            comment: "Cue notes panel title",
+            comment: "Cue notes panel title"
         )
         static let sidePanelEmpty = string(
             "annotate.notinhas.side-panel-empty",
             defaultValue: "No notes yet",
-            comment: "Empty Cue notes panel",
+            comment: "Empty Cue notes panel"
         )
         static let emptyNoteLabel = string(
             "annotate.notinhas.empty-note",
             defaultValue: "Empty note",
-            comment: "Empty Cue note",
+            comment: "Empty Cue note"
         )
         static let deleteNote = string(
             "annotate.notinhas.delete-note",
             defaultValue: "Delete note",
-            comment: "Delete Cue note",
+            comment: "Delete Cue note"
         )
         static let noteEditorColorButton = string(
             "annotate.notinhas.note-editor-color-button",
             defaultValue: "Note color",
-            comment: "Cue note editor color button accessibility label",
+            comment: "Cue note editor color button accessibility label"
         )
         static let noteEditorDragHint = string(
             "annotate.notinhas.note-editor-drag-hint",
             defaultValue: "Drag to move this note editor",
-            comment: "VoiceOver hint for draggable regions of the contextual Cue note editor",
+            comment: "VoiceOver hint for draggable regions of the contextual Cue note editor"
         )
         static let pointTargetLabel = string(
             "annotate.notinhas.point-target",
             defaultValue: "Point",
-            comment: "Cue point target",
+            comment: "Cue point target"
         )
         static let areaTargetLabel = string(
             "annotate.notinhas.area-target",
             defaultValue: "Area",
-            comment: "Cue area target",
+            comment: "Cue area target"
         )
         static func noteRowLabel(number: Int, text: String, target: String) -> String {
             format(
@@ -3867,152 +3867,152 @@ nonisolated enum L10n {
                 comment: "Accessibility label for a Cue side-panel row. The placeholders are the note number, note text, and target type.",
                 number,
                 text,
-                target,
+                target
             )
         }
 
         static let areaStyleOutline = string(
             "annotate.notinhas.area-style-outline",
             defaultValue: "Outline",
-            comment: "Cue area outline style",
+            comment: "Cue area outline style"
         )
         static let areaStyleTinted = string(
             "annotate.notinhas.area-style-tinted",
             defaultValue: "Tinted",
-            comment: "Cue area tinted style",
+            comment: "Cue area tinted style"
         )
         static let areaStyleHatched = string(
             "annotate.notinhas.area-style-hatched",
             defaultValue: "Hatched",
-            comment: "Cue area hatched style",
+            comment: "Cue area hatched style"
         )
         static let areaStylePicker = string(
             "annotate.notinhas.area-style-picker",
             defaultValue: "Style",
-            comment: "Cue area style picker",
+            comment: "Cue area style picker"
         )
         static let settingsSection = string(
             "annotate.notinhas.settings-section",
             defaultValue: "Cue",
-            comment: "Cue settings section",
+            comment: "Cue settings section"
         )
         static let panelSideTitle = string(
             "annotate.notinhas.panel-side-title",
             defaultValue: "Notes panel side",
-            comment: "Cue export panel side setting",
+            comment: "Cue export panel side setting"
         )
         static let panelSideDescription = string(
             "annotate.notinhas.panel-side-description",
             defaultValue: "Choose where the exported notes panel appears.",
-            comment: "Cue export panel side setting description",
+            comment: "Cue export panel side setting description"
         )
         static let left = string("annotate.notinhas.left", defaultValue: "Left", comment: "Cue left panel side")
         static let right = string(
             "annotate.notinhas.right",
             defaultValue: "Right",
-            comment: "Cue right panel side",
+            comment: "Cue right panel side"
         )
         static let imgbbMissingAPIKey = string(
             "annotate.notinhas.imgbb-missing-api-key",
             defaultValue: "Add an ImgBB API key in Preferences → Uploads before uploading.",
-            comment: "ImgBB missing API key error",
+            comment: "ImgBB missing API key error"
         )
         static let imgbbInvalidImageData = string(
             "annotate.notinhas.imgbb-invalid-image-data",
             defaultValue: "Could not prepare the image for upload.",
-            comment: "ImgBB invalid image error",
+            comment: "ImgBB invalid image error"
         )
         static let invalidImageData = string(
             "annotate.notinhas.invalid-image-data",
             defaultValue: "Could not prepare the image for upload.",
-            comment: "Invalid image data error shared by upload providers",
+            comment: "Invalid image data error shared by upload providers"
         )
         static let imgbbInvalidResponse = string(
             "annotate.notinhas.imgbb-invalid-response",
             defaultValue: "ImgBB returned an unexpected response.",
-            comment: "ImgBB invalid response error",
+            comment: "ImgBB invalid response error"
         )
         static let uploadToImgBB = string(
             "annotate.notinhas.upload-to-imgbb",
             defaultValue: "Upload to ImgBB",
-            comment: "Upload image to ImgBB",
+            comment: "Upload image to ImgBB"
         )
         static let imgbbUploadFailed = string(
             "annotate.notinhas.imgbb-upload-failed",
             defaultValue: "ImgBB upload failed",
-            comment: "ImgBB upload failure toast message",
+            comment: "ImgBB upload failure toast message"
         )
         static let imgbbUploading = string(
             "annotate.notinhas.imgbb-uploading",
             defaultValue: "Uploading to ImgBB…",
-            comment: "Progress toast shown while an image uploads to ImgBB",
+            comment: "Progress toast shown while an image uploads to ImgBB"
         )
         static let imgbbUploadedAndCopied = string(
             "annotate.notinhas.imgbb-uploaded-and-copied",
             defaultValue: "Uploaded to ImgBB and copied link",
-            comment: "Success toast shown after an ImgBB upload copies the link to the clipboard",
+            comment: "Success toast shown after an ImgBB upload copies the link to the clipboard"
         )
         static let imageKitMissingPrivateKey = string(
             "annotate.notinhas.imagekit-missing-private-key",
             defaultValue: "Add an ImageKit private key in Preferences → Uploads before uploading.",
-            comment: "ImageKit missing private key error",
+            comment: "ImageKit missing private key error"
         )
         static let imageKitUnauthorized = string(
             "annotate.notinhas.imagekit-unauthorized",
             defaultValue: "ImageKit rejected the private key.",
-            comment: "ImageKit authorization error",
+            comment: "ImageKit authorization error"
         )
         static let imageKitRateLimited = string(
             "annotate.notinhas.imagekit-rate-limited",
             defaultValue: "ImageKit upload limits were reached. Try again later.",
-            comment: "ImageKit rate limit error",
+            comment: "ImageKit rate limit error"
         )
         static let imageKitUploadFailed = string(
             "annotate.notinhas.imagekit-upload-failed",
             defaultValue: "ImageKit upload failed.",
-            comment: "ImageKit upload failure",
+            comment: "ImageKit upload failure"
         )
         static let imageKitOffline = string(
             "annotate.notinhas.imagekit-offline",
             defaultValue: "ImageKit could not be reached. Check your connection.",
-            comment: "ImageKit transport error",
+            comment: "ImageKit transport error"
         )
         static let imageKitInvalidResponse = string(
             "annotate.notinhas.imagekit-invalid-response",
             defaultValue: "ImageKit returned an unexpected response.",
-            comment: "ImageKit response error",
+            comment: "ImageKit response error"
         )
         static let cloudflareMissingWorkerURL = string(
             "annotate.notinhas.cloudflare-missing-worker-url",
             defaultValue: "Add a Cloudflare Worker URL in Preferences → Uploads before uploading.",
-            comment: "Cloudflare Worker missing URL error",
+            comment: "Cloudflare Worker missing URL error"
         )
         static let cloudflareMissingToken = string(
             "annotate.notinhas.cloudflare-missing-token",
             defaultValue: "Generate or add an UPLOAD_TOKEN in Preferences → Uploads before uploading.",
-            comment: "Cloudflare Worker missing token error",
+            comment: "Cloudflare Worker missing token error"
         )
         static let cloudflareInvalidResponse = string(
             "annotate.notinhas.cloudflare-invalid-response",
             defaultValue: "Cloudflare Worker returned an unexpected response.",
-            comment: "Cloudflare Worker response error",
+            comment: "Cloudflare Worker response error"
         )
         static let cloudflareUploadFailed = string(
             "annotate.notinhas.cloudflare-upload-failed",
             defaultValue: "Cloudflare Worker upload failed.",
-            comment: "Cloudflare Worker upload failure",
+            comment: "Cloudflare Worker upload failure"
         )
         static let cloudflareOffline = string(
             "annotate.notinhas.cloudflare-offline",
             defaultValue: "Cloudflare Worker could not be reached. Check your connection.",
-            comment: "Cloudflare Worker transport error",
+            comment: "Cloudflare Worker transport error"
         )
         static func uploadTo(provider: String) -> String {
             format(
                 "annotate.notinhas.upload-to-provider",
                 defaultValue: "Upload to %@",
                 comment: "Upload action for a selected image provider",
-                provider,
+                provider
             )
         }
 
@@ -4021,7 +4021,7 @@ nonisolated enum L10n {
                 "annotate.notinhas.uploading-to-provider",
                 defaultValue: "Uploading to %@…",
                 comment: "Upload progress for a selected image provider",
-                provider,
+                provider
             )
         }
 
@@ -4030,7 +4030,7 @@ nonisolated enum L10n {
                 "annotate.notinhas.uploaded-to-provider-and-copied",
                 defaultValue: "Uploaded to %@ and copied link",
                 comment: "Upload success for a selected image provider",
-                provider,
+                provider
             )
         }
 
@@ -4039,94 +4039,94 @@ nonisolated enum L10n {
                 "annotate.notinhas.upload-failed-for-provider",
                 defaultValue: "%@ upload failed",
                 comment: "Upload failure for a selected image provider",
-                provider,
+                provider
             )
         }
 
         static let selected = string(
             "annotate.notinhas.selected",
             defaultValue: "Selected",
-            comment: "Selected color swatch accessibility value",
+            comment: "Selected color swatch accessibility value"
         )
         static let colorRed = string(
             "annotate.notinhas.color-red",
             defaultValue: "Red",
-            comment: "Cue palette color name",
+            comment: "Cue palette color name"
         )
         static let colorOrange = string(
             "annotate.notinhas.color-orange",
             defaultValue: "Orange",
-            comment: "Cue palette color name",
+            comment: "Cue palette color name"
         )
         static let colorBlue = string(
             "annotate.notinhas.color-blue",
             defaultValue: "Blue",
-            comment: "Cue palette color name",
+            comment: "Cue palette color name"
         )
         static let colorGreen = string(
             "annotate.notinhas.color-green",
             defaultValue: "Green",
-            comment: "Cue palette color name",
+            comment: "Cue palette color name"
         )
         static let colorPurple = string(
             "annotate.notinhas.color-purple",
             defaultValue: "Purple",
-            comment: "Cue palette color name",
+            comment: "Cue palette color name"
         )
         static let colorMagenta = string(
             "annotate.notinhas.color-magenta",
             defaultValue: "Magenta",
-            comment: "Cue palette color name",
+            comment: "Cue palette color name"
         )
         static let colorBlack = string(
             "annotate.notinhas.color-black",
             defaultValue: "Black",
-            comment: "Cue palette color name",
+            comment: "Cue palette color name"
         )
         static let colorYellow = string(
             "annotate.notinhas.color-yellow",
             defaultValue: "Yellow",
-            comment: "Annotate palette color name",
+            comment: "Annotate palette color name"
         )
         static let colorGray = string(
             "annotate.notinhas.color-gray",
             defaultValue: "Gray",
-            comment: "Annotate palette color name",
+            comment: "Annotate palette color name"
         )
         static let colorWhite = string(
             "annotate.notinhas.color-white",
             defaultValue: "White",
-            comment: "Annotate palette color name",
+            comment: "Annotate palette color name"
         )
         static let colorDarkGray = string(
             "annotate.notinhas.color-dark-gray",
             defaultValue: "Dark gray",
-            comment: "Annotate palette color name",
+            comment: "Annotate palette color name"
         )
         static let colorMediumGray = string(
             "annotate.notinhas.color-medium-gray",
             defaultValue: "Medium gray",
-            comment: "Annotate palette color name",
+            comment: "Annotate palette color name"
         )
         static let colorLightGray = string(
             "annotate.notinhas.color-light-gray",
             defaultValue: "Light gray",
-            comment: "Annotate palette color name",
+            comment: "Annotate palette color name"
         )
         static let colorPink = string(
             "annotate.notinhas.color-pink",
             defaultValue: "Pink",
-            comment: "Annotate palette color name",
+            comment: "Annotate palette color name"
         )
         static let colorNearWhite = string(
             "annotate.notinhas.color-near-white",
             defaultValue: "Near white",
-            comment: "Annotate palette color name",
+            comment: "Annotate palette color name"
         )
         static let areaStrokeWidthLabel = string(
             "annotate.notinhas.area-stroke-width",
             defaultValue: "Stroke",
-            comment: "Cue area stroke width control label",
+            comment: "Cue area stroke width control label"
         )
     }
 
@@ -4134,287 +4134,287 @@ nonisolated enum L10n {
         static let actionRequired = string(
             "preferences-shortcuts.action-required",
             defaultValue: "Action Required",
-            comment: "Shortcuts preferences section header",
+            comment: "Shortcuts preferences section header"
         )
         static let systemShortcuts = string(
             "preferences-shortcuts.system-shortcuts",
             defaultValue: "System Shortcuts",
-            comment: "Shortcuts preferences section header",
+            comment: "Shortcuts preferences section header"
         )
         static let systemConflictTitle = string(
             "preferences-shortcuts.system-conflict-title",
             defaultValue: "macOS screenshot shortcuts overlap with Cue",
-            comment: "Title for system shortcut conflict warning",
+            comment: "Title for system shortcut conflict warning"
         )
         static let systemConflictDescription = string(
             "preferences-shortcuts.system-conflict-description",
             defaultValue: "Turn off the overlapping macOS shortcuts to avoid conflicts with the Cue shortcuts you keep enabled.",
-            comment: "Description for system shortcut conflict warning",
+            comment: "Description for system shortcut conflict warning"
         )
         static let howToDisable = string(
             "preferences-shortcuts.how-to-disable",
             defaultValue: "HOW TO DISABLE",
-            comment: "Caption heading for shortcut conflict resolution steps",
+            comment: "Caption heading for shortcut conflict resolution steps"
         )
         static let openKeyboardShortcutsSettings = string(
             "preferences-shortcuts.open-keyboard-shortcuts-settings",
             defaultValue: "Open Keyboard Shortcuts Settings",
-            comment: "Button title to open macOS keyboard shortcut settings",
+            comment: "Button title to open macOS keyboard shortcut settings"
         )
         static let noConflictsDetected = string(
             "preferences-shortcuts.no-conflicts-detected",
             defaultValue: "No conflicts detected",
-            comment: "Title for success state when there are no system shortcut conflicts",
+            comment: "Title for success state when there are no system shortcut conflicts"
         )
         static let noConflictsDescription = string(
             "preferences-shortcuts.no-conflicts-description",
             defaultValue: "No overlapping macOS screenshot shortcuts were found for the Cue shortcuts you currently have enabled.",
-            comment: "Description for success state when there are no system shortcut conflicts",
+            comment: "Description for success state when there are no system shortcut conflicts"
         )
         static let globalSection = string(
             "preferences-shortcuts.global-section",
             defaultValue: "Global Shortcuts",
-            comment: "Shortcuts preferences section title",
+            comment: "Shortcuts preferences section title"
         )
         static let globalSectionDescription = string(
             "preferences-shortcuts.global-section-description",
             defaultValue: "Use keyboard shortcuts to capture from anywhere.",
-            comment: "Shortcuts preferences section description",
+            comment: "Shortcuts preferences section description"
         )
         static let fnAccessibilityHint = string(
             "preferences-shortcuts.fn-accessibility-hint",
             defaultValue: "Shortcuts that use the Fn key need Accessibility permission to work from other apps.",
-            comment: "Warning shown when an Fn-based shortcut is configured but Accessibility permission is missing",
+            comment: "Warning shown when an Fn-based shortcut is configured but Accessibility permission is missing"
         )
         static let enableShortcutsTitle = string(
             "preferences-shortcuts.enable-shortcuts-title",
             defaultValue: "Enable Shortcuts",
-            comment: "Shortcuts preferences setting title",
+            comment: "Shortcuts preferences setting title"
         )
         static let enableShortcutsDescription = string(
             "preferences-shortcuts.enable-shortcuts-description",
             defaultValue: "Capture from any app",
-            comment: "Shortcuts preferences setting description",
+            comment: "Shortcuts preferences setting description"
         )
         static let disableShortcutsTitle = string(
             "preferences-shortcuts.disable-shortcuts-title",
             defaultValue: "Disable Keyboard Shortcuts?",
-            comment: "Alert title for disabling global shortcuts",
+            comment: "Alert title for disabling global shortcuts"
         )
         static let disableShortcutsMessage = string(
             "preferences-shortcuts.disable-shortcuts-message",
             defaultValue: "You won't be able to capture screenshots or recordings using keyboard shortcuts from any app. You'll need to open Cue manually to use capture features.",
-            comment: "Alert message for disabling global shortcuts",
+            comment: "Alert message for disabling global shortcuts"
         )
         static let captureSection = string(
             "preferences-shortcuts.capture-section",
             defaultValue: "Capture Shortcuts",
-            comment: "Shortcuts preferences section title",
+            comment: "Shortcuts preferences section title"
         )
         static let captureFullscreenDescription = string(
             "preferences-shortcuts.capture-fullscreen-description",
             defaultValue: "Capture entire screen instantly",
-            comment: "Description for fullscreen capture shortcut",
+            comment: "Description for fullscreen capture shortcut"
         )
         static let captureAllInOneDescription = string(
             "preferences-shortcuts.capture-all-in-one-description",
             defaultValue: "Open the All-In-One HUD to pick mode, area, and dimensions",
-            comment: "Description for the All-In-One capture shortcut",
+            comment: "Description for the All-In-One capture shortcut"
         )
         static let allInOneModeShortcutDescription = string(
             "preferences-shortcuts.all-in-one-mode-shortcut-description",
             defaultValue: "Single key while the All-In-One HUD is open.",
-            comment: "Description for child shortcuts that activate AIO toolbar modes",
+            comment: "Description for child shortcuts that activate AIO toolbar modes"
         )
         static let captureAreaDescription = string(
             "preferences-shortcuts.capture-area-description",
             defaultValue: "Select a region to capture",
-            comment: "Description for area capture shortcut",
+            comment: "Description for area capture shortcut"
         )
         static let captureAreaAnnotateDescription = string(
             "preferences-shortcuts.capture-area-annotate-description",
             defaultValue: "Select a region, annotate in place, then finish with ⌘S or Enter",
-            comment: "Description for inline area annotate capture shortcut",
+            comment: "Description for inline area annotate capture shortcut"
         )
         static let captureActiveWindowDescription = string(
             "preferences-shortcuts.capture-active-window-description",
             defaultValue: "Instantly captures the focused window, no selection step",
-            comment: "Description for instant active-window capture shortcut",
+            comment: "Description for instant active-window capture shortcut"
         )
         static let applicationCaptureTitle = string(
             "preferences-shortcuts.application-capture-title",
             defaultValue: "Application Capture",
-            comment: "Title for the single-key shortcut that toggles application capture inside the area capture overlay",
+            comment: "Title for the single-key shortcut that toggles application capture inside the area capture overlay"
         )
         static let applicationCaptureDescription = string(
             "preferences-shortcuts.application-capture-description",
             defaultValue: "Single key (A) pairs with Capture Area; modifier combo (⇧⌘A)\nworks independently.",
-            comment: "Description for the shortcut that toggles or starts application capture",
+            comment: "Description for the shortcut that toggles or starts application capture"
         )
         static let applicationRecordingTitle = string(
             "preferences-shortcuts.application-recording-title",
             defaultValue: "Application Recording",
-            comment: "Title for the single-key shortcut that toggles application window recording inside the recording selection flow",
+            comment: "Title for the single-key shortcut that toggles application window recording inside the recording selection flow"
         )
         static let applicationRecordingDescription = string(
             "preferences-shortcuts.application-recording-description",
             defaultValue: "Single key (Space) pairs with Record Screen; modifier combo (⇧⌘Space)\nworks independently.",
-            comment: "Description for the shortcut that toggles or starts application recording",
+            comment: "Description for the shortcut that toggles or starts application recording"
         )
         static let captureTextDescription = string(
             "preferences-shortcuts.capture-text-description",
             defaultValue: "Extract text from screen region",
-            comment: "Description for OCR capture shortcut",
+            comment: "Description for OCR capture shortcut"
         )
         static let smartElementCaptureDescription = string(
             "preferences-shortcuts.smart-element-capture-description",
             defaultValue: "Live-highlight an accessible UI element, then click to capture it",
-            comment: "Description for smart element capture shortcut",
+            comment: "Description for smart element capture shortcut"
         )
         static let recordingSection = string(
             "preferences-shortcuts.recording-section",
             defaultValue: "Recording Shortcuts",
-            comment: "Shortcuts preferences section title",
+            comment: "Shortcuts preferences section title"
         )
         static let recordVideoDescription = string(
             "preferences-shortcuts.record-video-description",
             defaultValue: "Start or stop screen recording",
-            comment: "Description for recording shortcut",
+            comment: "Description for recording shortcut"
         )
         static let pauseResumeRecordingDescription = string(
             "preferences-shortcuts.pause-resume-recording-description",
             defaultValue: "Pause or resume an active recording. Optional. Recommended: ⌘⇧Space.",
-            comment: "Description for the optional pause/resume recording shortcut",
+            comment: "Description for the optional pause/resume recording shortcut"
         )
         static let togglePenRecordingDescription = string(
             "preferences-shortcuts.toggle-pen-recording-description",
             defaultValue: "Toggle drawing toolbar and overlays. Optional.",
-            comment: "Description for the optional toggle pen recording shortcut",
+            comment: "Description for the optional toggle pen recording shortcut"
         )
         static let restartRecordingDescription = string(
             "preferences-shortcuts.restart-recording-description",
             defaultValue: "Restart/Re-record from scratch. Optional.",
-            comment: "Description for the optional restart recording shortcut",
+            comment: "Description for the optional restart recording shortcut"
         )
         static let deleteRecordingDescription = string(
             "preferences-shortcuts.delete-recording-description",
             defaultValue: "Delete active recording and cancel. Optional.",
-            comment: "Description for the optional delete/cancel recording shortcut",
+            comment: "Description for the optional delete/cancel recording shortcut"
         )
         static let toolsSection = string(
             "preferences-shortcuts.tools-section",
             defaultValue: "Tools Shortcuts",
-            comment: "Shortcuts preferences section title",
+            comment: "Shortcuts preferences section title"
         )
         static let openAnnotateDescription = string(
             "preferences-shortcuts.open-annotate-description",
             defaultValue: "Open image annotation editor",
-            comment: "Description for annotate shortcut",
+            comment: "Description for annotate shortcut"
         )
         static let openVideoEditorDescription = string(
             "preferences-shortcuts.open-video-editor-description",
             defaultValue: "Open video editing tools",
-            comment: "Description for video editor shortcut",
+            comment: "Description for video editor shortcut"
         )
         static let shortcutListDescription = string(
             "preferences-shortcuts.shortcut-list-description",
             defaultValue: "Open keyboard shortcuts overlay",
-            comment: "Description for shortcut list shortcut",
+            comment: "Description for shortcut list shortcut"
         )
         static let historySection = string(
             "preferences-shortcuts.history-section",
             defaultValue: "History Shortcuts",
-            comment: "Shortcuts preferences section title for history browser and panels",
+            comment: "Shortcuts preferences section title for history browser and panels"
         )
         static let historySectionDescription = string(
             "preferences-shortcuts.history-section-description",
             defaultValue: "Manage keyboard shortcuts for capture history browser and floating mode toggle.",
-            comment: "Description for the History shortcuts section",
+            comment: "Description for the History shortcuts section"
         )
         static let openHistoryDescription = string(
             "preferences-shortcuts.open-history-description",
             defaultValue: "Open the capture history browser",
-            comment: "Description for open history shortcut",
+            comment: "Description for open history shortcut"
         )
         static let quickAccessSection = string(
             "preferences-shortcuts.quick-access-section",
             defaultValue: "Quick Access",
-            comment: "Shortcuts preferences section title for Quick Access preview actions",
+            comment: "Shortcuts preferences section title for Quick Access preview actions"
         )
         static let quickAccessSectionDescription = string(
             "preferences-shortcuts.quick-access-section-description",
             defaultValue: "Shortcuts active while a Quick Access preview is on screen.",
-            comment: "Description for the Quick Access shortcuts section",
+            comment: "Description for the Quick Access shortcuts section"
         )
         static let editLatestCapture = string(
             "preferences-shortcuts.edit-latest-capture",
             defaultValue: "Edit latest capture",
-            comment: "Label for the shortcut that opens the editor for the most recent capture",
+            comment: "Label for the shortcut that opens the editor for the most recent capture"
         )
         static let editLatestCaptureDescription = string(
             "preferences-shortcuts.edit-latest-capture-description",
             defaultValue: "Open the editor for the most recent capture while its preview is showing",
-            comment: "Description for the edit latest capture shortcut",
+            comment: "Description for the edit latest capture shortcut"
         )
         static let recorderHint = string(
             "preferences-shortcuts.recorder-hint",
             defaultValue: "Click a shortcut button to record new keys. Use Backspace/Delete while recording to clear keys. Use the row toggle to turn a shortcut off. Press Esc to cancel.",
-            comment: "Hint text below editable shortcut recorder rows",
+            comment: "Hint text below editable shortcut recorder rows"
         )
         static let setShortcut = string(
             "preferences-shortcuts.set-shortcut",
             defaultValue: "Set shortcut",
-            comment: "CTA shown on an empty shortcut recorder button",
+            comment: "CTA shown on an empty shortcut recorder button"
         )
         static let setKey = string(
             "preferences-shortcuts.set-key",
             defaultValue: "Set key",
-            comment: "CTA shown on an empty single-key shortcut recorder button",
+            comment: "CTA shown on an empty single-key shortcut recorder button"
         )
         static let annotateActionsDescription = string(
             "preferences-shortcuts.annotate-actions-description",
             defaultValue: "Shortcuts for common actions inside the annotation editor.",
-            comment: "Description for annotate action shortcuts section",
+            comment: "Description for annotate action shortcuts section"
         )
         static let copyAndCloseDescription = string(
             "preferences-shortcuts.copy-and-close-description",
             defaultValue: "Copy annotated image to clipboard and close",
-            comment: "Description for annotate copy and close shortcut",
+            comment: "Description for annotate copy and close shortcut"
         )
         static let togglePinDescription = string(
             "preferences-shortcuts.toggle-pin-description",
             defaultValue: "Pin or unpin the annotation window",
-            comment: "Description for annotate pin shortcut",
+            comment: "Description for annotate pin shortcut"
         )
         static let autoRedactSensitiveDataDescription = string(
             "preferences-shortcuts.auto-redact-sensitive-data-description",
             defaultValue: "Find sensitive text locally and add editable blur annotations",
-            comment: "Description for annotate auto redaction shortcut",
+            comment: "Description for annotate auto redaction shortcut"
         )
         static let annotationToolDescription = string(
             "preferences-shortcuts.annotation-tool-description",
             defaultValue: "Single-key shortcuts for switching tools in the annotation editor.",
-            comment: "Description for annotation tool shortcut section",
+            comment: "Description for annotation tool shortcut section"
         )
         static let moreRecordingShortcuts = string(
             "preferences-shortcuts.more-recording-shortcuts",
             defaultValue: "More recording shortcuts",
-            comment: "Disclosure label for optional recording shortcut rows",
+            comment: "Disclosure label for optional recording shortcut rows"
         )
         static let singleKeyHint = string(
             "preferences-shortcuts.single-key-hint",
             defaultValue: "Click to record. Use Backspace/Delete while recording to clear keys. Use the row toggle to turn a shortcut off. Esc to cancel.",
-            comment: "Hint text below single-key shortcut rows",
+            comment: "Hint text below single-key shortcut rows"
         )
         static let referenceDescription = string(
             "preferences-shortcuts.reference-description",
             defaultValue: "Standard macOS shortcuts used in the annotation editor.",
-            comment: "Description for read-only annotate shortcut reference section",
+            comment: "Description for read-only annotate shortcut reference section"
         )
         static let resetToDefaults = string(
             "preferences-shortcuts.reset-to-defaults",
             defaultValue: "Reset to Defaults",
-            comment: "Button title for resetting shortcut settings",
+            comment: "Button title for resetting shortcut settings"
         )
     }
 
@@ -4422,77 +4422,77 @@ nonisolated enum L10n {
         static let accessRequiredTitle = string(
             "microphone.access-required-title",
             defaultValue: "Microphone Access Required",
-            comment: "Alert title when microphone permission is missing",
+            comment: "Alert title when microphone permission is missing"
         )
         static let preferencesMessage = string(
             "microphone.preferences-message",
             defaultValue: "Cue needs microphone permission. Please enable it in System Settings > Privacy & Security > Microphone.",
-            comment: "Alert message when microphone permission is missing from preferences or toolbar",
+            comment: "Alert message when microphone permission is missing from preferences or toolbar"
         )
         static let recordingMessage = string(
             "microphone.recording-message",
             defaultValue: "Cue needs microphone permission to record audio. Please grant access in System Settings.",
-            comment: "Alert message when microphone permission is missing while starting a recording",
+            comment: "Alert message when microphone permission is missing while starting a recording"
         )
         static let continueWithoutMic = string(
             "microphone.continue-without-mic",
             defaultValue: "Continue Without Mic",
-            comment: "Alert button title to continue recording without microphone access",
+            comment: "Alert button title to continue recording without microphone access"
         )
         static let doNotUse = string(
             "microphone.do-not-use",
             defaultValue: "Do Not Use Microphone",
-            comment: "Microphone menu option to disable microphone capture",
+            comment: "Microphone menu option to disable microphone capture"
         )
         static let unavailableVersion = string(
             "microphone.unavailable-version",
             defaultValue: "Microphone unavailable on this macOS version",
-            comment: "Accessibility label when microphone capture is unavailable on current macOS version",
+            comment: "Accessibility label when microphone capture is unavailable on current macOS version"
         )
         static let mute = string(
             "microphone.mute",
             defaultValue: "Mute microphone",
-            comment: "Accessibility label for muting the microphone",
+            comment: "Accessibility label for muting the microphone"
         )
         static let unmute = string(
             "microphone.unmute",
             defaultValue: "Unmute microphone",
-            comment: "Accessibility label for unmuting the microphone",
+            comment: "Accessibility label for unmuting the microphone"
         )
         static let on = string(
             "microphone.on",
             defaultValue: "Microphone on",
-            comment: "Tooltip when microphone capture is enabled",
+            comment: "Tooltip when microphone capture is enabled"
         )
         static let off = string(
             "microphone.off",
             defaultValue: "Microphone off",
-            comment: "Tooltip when microphone capture is disabled",
+            comment: "Tooltip when microphone capture is disabled"
         )
         static let options = string(
             "microphone.options",
             defaultValue: "Microphone options",
-            comment: "Accessibility label for the microphone options menu button",
+            comment: "Accessibility label for the microphone options menu button"
         )
         static let chooseInput = string(
             "microphone.choose-input",
             defaultValue: "Choose a microphone input",
-            comment: "Accessibility hint for the microphone options menu button",
+            comment: "Accessibility hint for the microphone options menu button"
         )
         static let doubleTapToToggle = string(
             "microphone.double-tap-toggle",
             defaultValue: "Double-tap to toggle",
-            comment: "Accessibility hint for toggling microphone capture",
+            comment: "Accessibility hint for toggling microphone capture"
         )
         static let systemDefault = string(
             "microphone.system-default",
             defaultValue: "System Default Microphone",
-            comment: "Microphone picker option for the current macOS default input device",
+            comment: "Microphone picker option for the current macOS default input device"
         )
         static let unavailable = string(
             "microphone.unavailable",
             defaultValue: "Unavailable",
-            comment: "Microphone picker suffix for a stored input device that is not currently connected",
+            comment: "Microphone picker suffix for a stored input device that is not currently connected"
         )
     }
 
@@ -4500,39 +4500,39 @@ nonisolated enum L10n {
         static let options = string(
             "camera.options",
             defaultValue: "Camera options",
-            comment: "Accessibility label for camera options",
+            comment: "Accessibility label for camera options"
         )
         static let on = string("camera.on", defaultValue: "Camera on", comment: "Camera enabled tooltip")
         static let off = string("camera.off", defaultValue: "Camera off", comment: "Camera disabled tooltip")
         static let preview = string(
             "camera.preview",
             defaultValue: "Camera preview",
-            comment: "Accessibility label for the live camera preview",
+            comment: "Accessibility label for the live camera preview"
         )
         static let previewDragHint = string(
             "camera.preview-drag-hint",
             defaultValue: "Drag to reposition within the recording area.",
-            comment: "Accessibility hint for moving the live camera preview",
+            comment: "Accessibility hint for moving the live camera preview"
         )
         static let previewSize = string(
             "camera.preview-size",
             defaultValue: "Preview size",
-            comment: "Camera preview size section label",
+            comment: "Camera preview size section label"
         )
         static let previewShape = string(
             "camera.preview-shape",
             defaultValue: "Preview shape",
-            comment: "Camera preview shape section label",
+            comment: "Camera preview shape section label"
         )
         static let showDuringRecording = string(
             "camera.show-during-recording",
             defaultValue: "Show preview while recording",
-            comment: "Camera preview visibility setting title",
+            comment: "Camera preview visibility setting title"
         )
         static let showDuringRecordingDescription = string(
             "camera.show-during-recording-description",
             defaultValue: "Keep the live camera preview visible on screen during recording.",
-            comment: "Camera preview visibility setting description",
+            comment: "Camera preview visibility setting description"
         )
         static let small = string("camera.small", defaultValue: "Small", comment: "Small camera preview size")
         static let medium = string("camera.medium", defaultValue: "Medium", comment: "Medium camera preview size")
@@ -4543,62 +4543,62 @@ nonisolated enum L10n {
         static let rectangle = string(
             "camera.rectangle",
             defaultValue: "Rectangle",
-            comment: "Rectangle camera preview shape",
+            comment: "Rectangle camera preview shape"
         )
         static let vertical = string(
             "camera.vertical",
             defaultValue: "Vertical",
-            comment: "Vertical camera preview shape",
+            comment: "Vertical camera preview shape"
         )
         static let moveLeft = string(
             "camera.move-left",
             defaultValue: "Move left",
-            comment: "Move camera preview left",
+            comment: "Move camera preview left"
         )
         static let moveRight = string(
             "camera.move-right",
             defaultValue: "Move right",
-            comment: "Move camera preview right",
+            comment: "Move camera preview right"
         )
         static let moveUp = string(
             "camera.move-up",
             defaultValue: "Move up",
-            comment: "Move camera preview up",
+            comment: "Move camera preview up"
         )
         static let moveDown = string(
             "camera.move-down",
             defaultValue: "Move down",
-            comment: "Move camera preview down",
+            comment: "Move camera preview down"
         )
         static let doNotUse = string(
             "camera.do-not-use",
             defaultValue: "Do Not Use Camera",
-            comment: "Camera menu option",
+            comment: "Camera menu option"
         )
         static let accessRequiredTitle = string(
             "camera.access-required-title",
             defaultValue: "Camera Access Required",
-            comment: "Camera permission alert title",
+            comment: "Camera permission alert title"
         )
         static let permissionMessage = string(
             "camera.permission-message",
             defaultValue: "Cue needs camera permission to record a camera track.",
-            comment: "Camera permission alert message",
+            comment: "Camera permission alert message"
         )
         static let unavailableTitle = string(
             "camera.unavailable-title",
             defaultValue: "Camera unavailable",
-            comment: "Camera fallback alert title",
+            comment: "Camera fallback alert title"
         )
         static let unavailableMessage = string(
             "camera.unavailable-message",
             defaultValue: "The screen recording will continue without the camera.",
-            comment: "Camera fallback alert message",
+            comment: "Camera fallback alert message"
         )
         static let continueWithoutCamera = string(
             "camera.continue-without-camera",
             defaultValue: "Continue Without Camera",
-            comment: "Camera fallback alert action",
+            comment: "Camera fallback alert action"
         )
     }
 
@@ -4608,14 +4608,14 @@ nonisolated enum L10n {
                 "cloud-operation.keychain-error",
                 defaultValue: "Keychain error: %@",
                 comment: "Error shown when an ImgBB Keychain operation fails. %@ is the lower-level reason.",
-                reason,
+                reason
             )
         }
 
         static let failedToEncodeKeychainValue = string(
             "cloud-operation.failed-to-encode-keychain-value",
             defaultValue: "Failed to encode keychain value",
-            comment: "Reason shown when a value cannot be encoded for the Keychain",
+            comment: "Reason shown when a value cannot be encoded for the Keychain"
         )
 
         static func secItemUpdateFailed(_ status: Int) -> String {
@@ -4623,7 +4623,7 @@ nonisolated enum L10n {
                 "cloud-operation.sec-item-update-failed",
                 defaultValue: "SecItemUpdate failed: %d",
                 comment: "Reason shown when a Keychain item update fails. %d is the OSStatus code.",
-                status,
+                status
             )
         }
 
@@ -4632,7 +4632,7 @@ nonisolated enum L10n {
                 "cloud-operation.sec-item-add-failed",
                 defaultValue: "SecItemAdd failed: %d",
                 comment: "Reason shown when adding a Keychain item fails. %d is the OSStatus code.",
-                status,
+                status
             )
         }
     }
@@ -4641,220 +4641,220 @@ nonisolated enum L10n {
         static let transferAlertTitle = string(
             "cloud-settings.transfer-alert-title",
             defaultValue: "Image Sharing",
-            comment: "Alert title for ImgBB image sharing errors",
+            comment: "Alert title for ImgBB image sharing errors"
         )
 
         static let providerSection = string(
             "cloud-settings.provider-section",
             defaultValue: "Image Sharing",
-            comment: "Section title for ImgBB image sharing preferences",
+            comment: "Section title for ImgBB image sharing preferences"
         )
 
         static let edit = string(
             "cloud-settings.edit",
             defaultValue: "Edit",
-            comment: "Button title for editing the saved ImgBB API key",
+            comment: "Button title for editing the saved ImgBB API key"
         )
 
         static let reset = string(
             "cloud-settings.reset",
             defaultValue: "Reset",
-            comment: "Button title for removing the saved ImgBB API key",
+            comment: "Button title for removing the saved ImgBB API key"
         )
 
         static let storedSecurelyInKeychain = string(
             "cloud-settings.stored-securely-in-keychain",
             defaultValue: "Stored securely in Keychain",
-            comment: "Status text shown when the ImgBB API key is stored in the Keychain",
+            comment: "Status text shown when the ImgBB API key is stored in the Keychain"
         )
 
         static let imgbbDescription = string(
             "cloud-settings.imgbb-description",
             defaultValue: "External ImgBB image sharing for manual uploads from Annotate and Quick Access.",
-            comment: "Description for ImgBB image sharing preferences",
+            comment: "Description for ImgBB image sharing preferences"
         )
 
         static let imgbbAPIKeyTitle = string(
             "cloud-settings.imgbb-api-key-title",
             defaultValue: "ImgBB API Key",
-            comment: "ImgBB API key setting title",
+            comment: "ImgBB API key setting title"
         )
 
         static let imgbbAPIKeyEmpty = string(
             "cloud-settings.imgbb-api-key-empty",
             defaultValue: "Enter an ImgBB API key before saving.",
-            comment: "Validation message shown when an ImgBB API key is empty",
+            comment: "Validation message shown when an ImgBB API key is empty"
         )
         static let imageKitDescription = string(
             "cloud-settings.imagekit-description",
             defaultValue: "Direct ImageKit image and video sharing for manual uploads from Annotate and Quick Access. The private key stays in Keychain.",
-            comment: "Description for ImageKit image and video sharing preferences",
+            comment: "Description for ImageKit image and video sharing preferences"
         )
         static let cloudflareDescription = string(
             "cloud-settings.cloudflare-description",
             defaultValue: "Direct sharing through your Cloudflare Worker. Generate a token, paste it as UPLOAD_TOKEN when deploying the Worker, enter the Worker URL above, then Verify. The token stays in Keychain.",
-            comment: "Description for Cloudflare Worker sharing preferences",
+            comment: "Description for Cloudflare Worker sharing preferences"
         )
         static let cloudflareWorkerURL = string(
             "cloud-settings.cloudflare-worker-url",
             defaultValue: "Worker URL",
-            comment: "Cloudflare Worker URL setting label",
+            comment: "Cloudflare Worker URL setting label"
         )
         static let cloudflareToken = string(
             "cloud-settings.cloudflare-token",
             defaultValue: "UPLOAD_TOKEN",
-            comment: "Cloudflare Worker upload token setting label",
+            comment: "Cloudflare Worker upload token setting label"
         )
         static let cloudflareSection = string(
             "cloud-settings.cloudflare-section",
             defaultValue: "Cloudflare Worker",
-            comment: "Cloudflare Worker settings section",
+            comment: "Cloudflare Worker settings section"
         )
         static let cloudflareGenerateToken = string(
             "cloud-settings.cloudflare-generate-token",
             defaultValue: "Generate token",
-            comment: "Generate Cloudflare upload token",
+            comment: "Generate Cloudflare upload token"
         )
         static let cloudflareRevealToken = string(
             "cloud-settings.cloudflare-reveal-token",
             defaultValue: "Reveal token",
-            comment: "Reveal Cloudflare upload token",
+            comment: "Reveal Cloudflare upload token"
         )
         static let cloudflareHideToken = string(
             "cloud-settings.cloudflare-hide-token",
             defaultValue: "Hide token",
-            comment: "Hide Cloudflare upload token",
+            comment: "Hide Cloudflare upload token"
         )
         static let cloudflareCopyToken = string(
             "cloud-settings.cloudflare-copy-token",
             defaultValue: "Copy token",
-            comment: "Copy Cloudflare upload token",
+            comment: "Copy Cloudflare upload token"
         )
         static let cloudflareDocs = string(
             "cloud-settings.cloudflare-docs",
             defaultValue: "Open Worker docs",
-            comment: "Open the official Cloudflare Worker documentation",
+            comment: "Open the official Cloudflare Worker documentation"
         )
         static let cloudflareVerify = string(
             "cloud-settings.cloudflare-verify",
             defaultValue: "Verify connection",
-            comment: "Verify the Cloudflare Worker connection",
+            comment: "Verify the Cloudflare Worker connection"
         )
         static let cloudflareNotConfigured = string(
             "cloud-settings.cloudflare-not-configured",
             defaultValue: "Not configured",
-            comment: "Cloudflare connection status",
+            comment: "Cloudflare connection status"
         )
         static let cloudflareVerifying = string(
             "cloud-settings.cloudflare-verifying",
             defaultValue: "Verifying…",
-            comment: "Cloudflare connection status",
+            comment: "Cloudflare connection status"
         )
         static let cloudflareConnected = string(
             "cloud-settings.cloudflare-connected",
             defaultValue: "Connected",
-            comment: "Cloudflare connection status",
+            comment: "Cloudflare connection status"
         )
         static let cloudflareConnectionError = string(
             "cloud-settings.cloudflare-connection-error",
             defaultValue: "Connection failed",
-            comment: "Cloudflare connection status",
+            comment: "Cloudflare connection status"
         )
         static let imageKitPrivateKeyTitle = string(
             "cloud-settings.imagekit-private-key-title",
             defaultValue: "ImageKit Private Key",
-            comment: "ImageKit private key setting title",
+            comment: "ImageKit private key setting title"
         )
         static let imageKitPrivateKeyEmpty = string(
             "cloud-settings.imagekit-private-key-empty",
             defaultValue: "Enter an ImageKit private key before saving.",
-            comment: "Validation message shown when an ImageKit private key is empty",
+            comment: "Validation message shown when an ImageKit private key is empty"
         )
         static let provider = string(
             "cloud-settings.provider",
             defaultValue: "Provider",
-            comment: "Image upload provider picker label",
+            comment: "Image upload provider picker label"
         )
         static let imageKitVideoUploadSection = string(
             "cloud-settings.imagekit-video-upload-section",
             defaultValue: "ImageKit video uploads",
-            comment: "Section title for ImageKit video upload limit preferences",
+            comment: "Section title for ImageKit video upload limit preferences"
         )
         static let imageKitVideoUploadPlan = string(
             "cloud-settings.imagekit-video-upload-plan",
             defaultValue: "ImageKit plan",
-            comment: "Picker label for the ImageKit plan used to determine the video upload limit",
+            comment: "Picker label for the ImageKit plan used to determine the video upload limit"
         )
         static let imageKitPlanFree = string(
             "cloud-settings.imagekit-plan-free",
             defaultValue: "Free (100 MB)",
-            comment: "ImageKit Free plan video upload limit",
+            comment: "ImageKit Free plan video upload limit"
         )
         static let imageKitPlanLite = string(
             "cloud-settings.imagekit-plan-lite",
             defaultValue: "Lite (300 MB)",
-            comment: "ImageKit Lite plan video upload limit",
+            comment: "ImageKit Lite plan video upload limit"
         )
         static let imageKitPlanPro = string(
             "cloud-settings.imagekit-plan-pro",
             defaultValue: "Pro (2 GB)",
-            comment: "ImageKit Pro plan video upload limit",
+            comment: "ImageKit Pro plan video upload limit"
         )
         static let imageKitPlanCustom = string(
             "cloud-settings.imagekit-plan-custom",
             defaultValue: "Custom",
-            comment: "Custom ImageKit plan option",
+            comment: "Custom ImageKit plan option"
         )
         static let imageKitCustomVideoUploadLimit = string(
             "cloud-settings.imagekit-custom-video-upload-limit",
             defaultValue: "Maximum video size (MB)",
-            comment: "Custom ImageKit video upload limit field label",
+            comment: "Custom ImageKit video upload limit field label"
         )
         static let imageKitVideoUploadLimitDescription = string(
             "cloud-settings.imagekit-video-upload-limit-description",
             defaultValue: "Used to decide when Quick Access should optimize a video before uploading. ImageKit plan limits are not exposed by its API.",
-            comment: "Description for the ImageKit video upload limit setting",
+            comment: "Description for the ImageKit video upload limit setting"
         )
 
         static let imageEncodingSection = string(
             "cloud-settings.image-encoding-section",
             defaultValue: "Image Upload Encoding",
-            comment: "Uploads preferences section for image derivative encoding",
+            comment: "Uploads preferences section for image derivative encoding"
         )
         static let optimizeImagesTitle = string(
             "cloud-settings.optimize-images-title",
             defaultValue: "Optimize image uploads",
-            comment: "Toggle title for creating smaller upload derivatives",
+            comment: "Toggle title for creating smaller upload derivatives"
         )
         static let optimizeImagesDescription = string(
             "cloud-settings.optimize-images-description",
             defaultValue: "Creates a temporary smaller derivative for ImgBB and ImageKit. Local captures stay unchanged.",
-            comment: "Description for optimize image uploads toggle",
+            comment: "Description for optimize image uploads toggle"
         )
         static let uploadImageFormatTitle = string(
             "cloud-settings.upload-image-format-title",
             defaultValue: "Derivative format",
-            comment: "Picker title for upload image format",
+            comment: "Picker title for upload image format"
         )
         static let uploadMaximumDimensionTitle = string(
             "cloud-settings.upload-maximum-dimension-title",
             defaultValue: "Maximum dimension",
-            comment: "Numeric control title for upload longest-edge limit",
+            comment: "Numeric control title for upload longest-edge limit"
         )
         static let uploadMaximumDimensionDescription = string(
             "cloud-settings.upload-maximum-dimension-description",
             defaultValue: "Longest edge in physical pixels for optimized uploads",
-            comment: "Description for upload maximum dimension",
+            comment: "Description for upload maximum dimension"
         )
         static let uploadQualityTitle = string(
             "cloud-settings.upload-quality-title",
             defaultValue: "Compression quality",
-            comment: "Slider title for JPEG/WebP upload quality",
+            comment: "Slider title for JPEG/WebP upload quality"
         )
         static let imageEncodingFooter = string(
             "cloud-settings.image-encoding-footer",
             defaultValue: "GIFs and videos pass through unchanged. Transparent JPEG sources upload as WebP.",
-            comment: "Footer explaining upload encoding exceptions",
+            comment: "Footer explaining upload encoding exceptions"
         )
     }
 
@@ -4862,811 +4862,811 @@ nonisolated enum L10n {
         static let shapeStyleSolid = string(
             "annotate.shape-style-solid",
             defaultValue: "Solid fill",
-            comment: "Shape fill style: opaque fill with outline",
+            comment: "Shape fill style: opaque fill with outline"
         )
         static let shapeStyle = string(
             "annotate.shape-style",
             defaultValue: "Style",
-            comment: "Quick-properties label for rectangle/circle fill style",
+            comment: "Quick-properties label for rectangle/circle fill style"
         )
         static let moveSelection = string(
             "annotate.move-selection",
             defaultValue: "Move selected area (Space + mouse drag)",
-            comment: "Tooltip for dragging the inline area annotate selected region",
+            comment: "Tooltip for dragging the inline area annotate selected region"
         )
         static func fitWithShortcut(_ shortcut: String) -> String {
             format(
                 "annotate.fit-with-shortcut",
                 defaultValue: "Fit (%@)",
                 comment: "Zoom menu item for fitting the annotated image to the canvas. %@ is the keyboard shortcut.",
-                shortcut,
+                shortcut
             )
         }
 
         static let modeAnnotate = string(
             "annotate.mode-annotate",
             defaultValue: "Annotate",
-            comment: "Annotate editor mode label",
+            comment: "Annotate editor mode label"
         )
         static let modeMockup = string(
             "annotate.mode-mockup",
             defaultValue: "Mockup",
-            comment: "Annotate editor mode label",
+            comment: "Annotate editor mode label"
         )
         static let modePreview = string(
             "annotate.mode-preview",
             defaultValue: "Preview",
-            comment: "Annotate editor mode label",
+            comment: "Annotate editor mode label"
         )
         static let dragToApp = string(
             "annotate.drag-to-app",
             defaultValue: "Drag to app",
-            comment: "Annotate drag handle label",
+            comment: "Annotate drag handle label"
         )
         static let dragToAppHelp = string(
             "annotate.drag-to-app-help",
             defaultValue: "Drag this to another app to share the annotated image",
-            comment: "Tooltip shown for the annotate drag handle",
+            comment: "Tooltip shown for the annotate drag handle"
         )
         static let newWindow = string(
             "annotate.new-window",
             defaultValue: "New Annotate Window",
-            comment: "Tooltip shown for opening another independent annotate window",
+            comment: "Tooltip shown for opening another independent annotate window"
         )
         static let clipboardImagePromptTitle = string(
             "annotate.clipboard-image-prompt-title",
             defaultValue: "Load Clipboard Image?",
-            comment: "Alert title shown when opening Annotate with an image in the clipboard",
+            comment: "Alert title shown when opening Annotate with an image in the clipboard"
         )
         static let clipboardImagePromptMessage = string(
             "annotate.clipboard-image-prompt-message",
             defaultValue: "Annotate found an image in your clipboard. Load it onto the canvas?",
-            comment: "Alert message shown when opening Annotate with an image in the clipboard",
+            comment: "Alert message shown when opening Annotate with an image in the clipboard"
         )
         static let loadImageButton = string(
             "annotate.load-image-button",
             defaultValue: "Load Image",
-            comment: "Button title for loading a clipboard image into Annotate",
+            comment: "Button title for loading a clipboard image into Annotate"
         )
         static let notNowButton = string(
             "annotate.not-now-button",
             defaultValue: "Not Now",
-            comment: "Button title for skipping clipboard image loading",
+            comment: "Button title for skipping clipboard image loading"
         )
         static let dontAskAgain = string(
             "annotate.dont-ask-again",
             defaultValue: "Don't ask again",
-            comment: "Checkbox label for remembering the clipboard image prompt choice",
+            comment: "Checkbox label for remembering the clipboard image prompt choice"
         )
         static let pinWindow = string(
             "annotate.pin-window",
             defaultValue: "Pin window",
-            comment: "Tooltip shown for pinning the annotate window",
+            comment: "Tooltip shown for pinning the annotate window"
         )
         static let unpinWindow = string(
             "annotate.unpin-window",
             defaultValue: "Unpin window",
-            comment: "Tooltip shown for unpinning the annotate window",
+            comment: "Tooltip shown for unpinning the annotate window"
         )
         static let copyToClipboard = string(
             "annotate.copy-to-clipboard",
             defaultValue: "Copy to clipboard",
-            comment: "Tooltip shown for copying the annotated image to the clipboard",
+            comment: "Tooltip shown for copying the annotated image to the clipboard"
         )
         static let deleteScreenshotTitle = string(
             "annotate.delete-screenshot-title",
             defaultValue: "Delete Screenshot",
-            comment: "Alert title shown before deleting the source screenshot from annotate",
+            comment: "Alert title shown before deleting the source screenshot from annotate"
         )
         static func deleteScreenshotMessage(_ filename: String) -> String {
             format(
                 "annotate.delete-screenshot-message",
                 defaultValue: "This will move \"%@\" to Trash.",
                 comment: "Alert message shown before deleting the source screenshot from annotate. %@ is the file name.",
-                filename,
+                filename
             )
         }
 
         static let backgroundCutoutTitle = string(
             "annotate.background-cutout-title",
             defaultValue: "Background Cutout",
-            comment: "Alert title for annotate background cutout errors",
+            comment: "Alert title for annotate background cutout errors"
         )
         static let unableToRemoveBackground = string(
             "annotate.unable-to-remove-background",
             defaultValue: "Unable to remove background.",
-            comment: "Fallback error shown when background removal fails without a specific localized message",
+            comment: "Fallback error shown when background removal fails without a specific localized message"
         )
         static let crop = string(
             "annotate.crop",
             defaultValue: "Crop",
-            comment: "Tooltip for entering crop mode in annotate",
+            comment: "Tooltip for entering crop mode in annotate"
         )
         static let rotateLeft = string(
             "annotate.rotate-left",
             defaultValue: "Rotate left 90°",
-            comment: "Tooltip for rotating the source image 90° counter-clockwise",
+            comment: "Tooltip for rotating the source image 90° counter-clockwise"
         )
         static let rotateRight = string(
             "annotate.rotate-right",
             defaultValue: "Rotate right 90°",
-            comment: "Tooltip for rotating the source image 90° clockwise",
+            comment: "Tooltip for rotating the source image 90° clockwise"
         )
         static let addWallpaper = string(
             "annotate.add-wallpaper",
             defaultValue: "Add wallpaper",
-            comment: "Accessibility label for adding a custom annotate wallpaper",
+            comment: "Accessibility label for adding a custom annotate wallpaper"
         )
         static let moveCanvas = string(
             "annotate.move-canvas",
             defaultValue: "Move canvas",
-            comment: "Accessibility label for toggling interactive canvas panning",
+            comment: "Accessibility label for toggling interactive canvas panning"
         )
         static let annotationCanvas = string(
             "annotate.annotation-canvas",
             defaultValue: "Annotation canvas",
-            comment: "Accessibility label for the main annotate editing canvas",
+            comment: "Accessibility label for the main annotate editing canvas"
         )
         static let canvasAccessibilityHint = string(
             "annotate.canvas-accessibility-hint",
             defaultValue: "Use the toolbar to choose a tool. Arrow keys move a selected annotation.",
-            comment: "Accessibility hint for the annotate canvas",
+            comment: "Accessibility hint for the annotate canvas"
         )
         static func canvasZoom(_ percent: Int) -> String {
             format(
                 "annotate.canvas-zoom",
                 defaultValue: "Zoom %d%%",
                 comment: "Accessibility value for the annotate canvas zoom level",
-                percent,
+                percent
             )
         }
 
         static let imageDataLoadFailed = string(
             "annotate.image-data-load-failed",
             defaultValue: "Couldn't read that image. Try dropping it again.",
-            comment: "Error shown when a dropped image cannot be read",
+            comment: "Error shown when a dropped image cannot be read"
         )
         static let imageImportFailed = string(
             "annotate.image-import-failed",
             defaultValue: "Couldn't import that image. Try another file.",
-            comment: "Error shown when a dropped image cannot be imported",
+            comment: "Error shown when a dropped image cannot be imported"
         )
         static let unsupportedImageType = string(
             "annotate.unsupported-image-type",
             defaultValue: "That file type isn't supported. Drop a PNG, JPG, GIF, TIFF, BMP, or HEIC image.",
-            comment: "Error shown when a dropped file is not a supported image type",
+            comment: "Error shown when a dropped file is not a supported image type"
         )
         static let gradientPinkOrange = string(
             "annotate.gradient-pink-orange",
             defaultValue: "Pink and orange gradient",
-            comment: "Accessibility label for the pink and orange annotate gradient preset",
+            comment: "Accessibility label for the pink and orange annotate gradient preset"
         )
         static let gradientBluePurple = string(
             "annotate.gradient-blue-purple",
             defaultValue: "Blue and purple gradient",
-            comment: "Accessibility label for the blue and purple annotate gradient preset",
+            comment: "Accessibility label for the blue and purple annotate gradient preset"
         )
         static let gradientGreenBlue = string(
             "annotate.gradient-green-blue",
             defaultValue: "Green and blue gradient",
-            comment: "Accessibility label for the green and blue annotate gradient preset",
+            comment: "Accessibility label for the green and blue annotate gradient preset"
         )
         static let gradientOrangeRed = string(
             "annotate.gradient-orange-red",
             defaultValue: "Orange and red gradient",
-            comment: "Accessibility label for the orange and red annotate gradient preset",
+            comment: "Accessibility label for the orange and red annotate gradient preset"
         )
         static let gradientPurplePink = string(
             "annotate.gradient-purple-pink",
             defaultValue: "Purple and pink gradient",
-            comment: "Accessibility label for the purple and pink annotate gradient preset",
+            comment: "Accessibility label for the purple and pink annotate gradient preset"
         )
         static let gradientBlueGreen = string(
             "annotate.gradient-blue-green",
             defaultValue: "Blue and green gradient",
-            comment: "Accessibility label for the blue and green annotate gradient preset",
+            comment: "Accessibility label for the blue and green annotate gradient preset"
         )
         static let gradientYellowOrange = string(
             "annotate.gradient-yellow-orange",
             defaultValue: "Yellow and orange gradient",
-            comment: "Accessibility label for the yellow and orange annotate gradient preset",
+            comment: "Accessibility label for the yellow and orange annotate gradient preset"
         )
         static let gradientCyanBlue = string(
             "annotate.gradient-cyan-blue",
             defaultValue: "Cyan and blue gradient",
-            comment: "Accessibility label for the cyan and blue annotate gradient preset",
+            comment: "Accessibility label for the cyan and blue annotate gradient preset"
         )
         static let alignmentTopLeft = string(
             "annotate.alignment-top-left",
             defaultValue: "Top left",
-            comment: "Annotate image alignment option",
+            comment: "Annotate image alignment option"
         )
         static let alignmentTop = string(
             "annotate.alignment-top",
             defaultValue: "Top",
-            comment: "Annotate image alignment option",
+            comment: "Annotate image alignment option"
         )
         static let alignmentTopRight = string(
             "annotate.alignment-top-right",
             defaultValue: "Top right",
-            comment: "Annotate image alignment option",
+            comment: "Annotate image alignment option"
         )
         static let alignmentLeft = string(
             "annotate.alignment-left",
             defaultValue: "Left",
-            comment: "Annotate image alignment option",
+            comment: "Annotate image alignment option"
         )
         static let alignmentCenter = string(
             "annotate.alignment-center",
             defaultValue: "Center",
-            comment: "Annotate image alignment option",
+            comment: "Annotate image alignment option"
         )
         static let alignmentRight = string(
             "annotate.alignment-right",
             defaultValue: "Right",
-            comment: "Annotate image alignment option",
+            comment: "Annotate image alignment option"
         )
         static let alignmentBottomLeft = string(
             "annotate.alignment-bottom-left",
             defaultValue: "Bottom left",
-            comment: "Annotate image alignment option",
+            comment: "Annotate image alignment option"
         )
         static let alignmentBottom = string(
             "annotate.alignment-bottom",
             defaultValue: "Bottom",
-            comment: "Annotate image alignment option",
+            comment: "Annotate image alignment option"
         )
         static let alignmentBottomRight = string(
             "annotate.alignment-bottom-right",
             defaultValue: "Bottom right",
-            comment: "Annotate image alignment option",
+            comment: "Annotate image alignment option"
         )
         static let toggleSidebar = string(
             "annotate.toggle-sidebar",
             defaultValue: "Add background",
-            comment: "Tooltip for opening background customization in the annotate editor left dock",
+            comment: "Tooltip for opening background customization in the annotate editor left dock"
         )
         static let autoRedactSensitiveData = string(
             "annotate.auto-redact-sensitive-data",
             defaultValue: "Auto Redact Sensitive Data",
-            comment: "Tooltip for triggering automatic sensitive-data redaction in annotate",
+            comment: "Tooltip for triggering automatic sensitive-data redaction in annotate"
         )
         static let autoRedact = string(
             "annotate.auto-redact",
             defaultValue: "Auto Redact",
-            comment: "Label for auto redaction button",
+            comment: "Label for auto redaction button"
         )
         static let autoRedactionScanning = string(
             "annotate.auto-redaction-scanning",
             defaultValue: "Scanning for sensitive data...",
-            comment: "Toast and tooltip shown while annotate scans locally for sensitive data",
+            comment: "Toast and tooltip shown while annotate scans locally for sensitive data"
         )
         static let autoRedactionNoMatches = string(
             "annotate.auto-redaction-no-matches",
             defaultValue: "No sensitive data found.",
-            comment: "Toast shown when automatic sensitive-data redaction finds no matches",
+            comment: "Toast shown when automatic sensitive-data redaction finds no matches"
         )
         static let autoRedactionImageUnavailable = string(
             "annotate.auto-redaction-image-unavailable",
             defaultValue: "No image available to scan.",
-            comment: "Toast shown when automatic sensitive-data redaction cannot run because no image is loaded",
+            comment: "Toast shown when automatic sensitive-data redaction cannot run because no image is loaded"
         )
         static func autoRedactionComplete(_ count: Int) -> String {
             format(
                 "annotate.auto-redaction-complete",
                 defaultValue: "Added %d redactions.",
                 comment: "Toast shown after automatic sensitive-data redaction completes. %d is the number of blur annotations added.",
-                count,
+                count
             )
         }
 
         static let backgroundRemovedClickToRestore = string(
             "annotate.background-removed-click-to-restore",
             defaultValue: "Background Removed (Click to restore)",
-            comment: "Tooltip shown when background cutout is active and can be restored",
+            comment: "Tooltip shown when background cutout is active and can be restored"
         )
         static let removeBackgroundAutoCropsWhenSafe = string(
             "annotate.remove-background-auto-crops-when-safe",
             defaultValue: "Remove Background (Auto-crops when safe)",
-            comment: "Tooltip shown when background cutout will auto-crop after removing the background",
+            comment: "Tooltip shown when background cutout will auto-crop after removing the background"
         )
         static let removeBackgroundAutoCropDisabledInSettings = string(
             "annotate.remove-background-auto-crop-disabled",
             defaultValue: "Remove Background (Auto-crop disabled in Settings)",
-            comment: "Tooltip shown when background cutout is available but auto-crop is disabled in settings",
+            comment: "Tooltip shown when background cutout is available but auto-crop is disabled in settings"
         )
         static let dropImageHere = string(
             "annotate.drop-image-here",
             defaultValue: "Drop an image here",
-            comment: "Empty state title for annotate when no image is loaded",
+            comment: "Empty state title for annotate when no image is loaded"
         )
         static let captureScreenshotToAnnotate = string(
             "annotate.capture-screenshot-to-annotate",
             defaultValue: "or capture a screenshot to annotate",
-            comment: "Empty state subtitle for annotate when no image is loaded",
+            comment: "Empty state subtitle for annotate when no image is loaded"
         )
         static let backgroundRatio = string(
             "annotate.background-ratio",
             defaultValue: "Background Ratio",
-            comment: "Section label for choosing the annotation background canvas aspect ratio",
+            comment: "Section label for choosing the annotation background canvas aspect ratio"
         )
         static let toggleRuleOfThirdsGrid = string(
             "annotate.toggle-rule-of-thirds-grid",
             defaultValue: "Toggle rule of thirds grid",
-            comment: "Tooltip for showing or hiding the crop grid",
+            comment: "Tooltip for showing or hiding the crop grid"
         )
         static let toggleCropOrientation = string(
             "annotate.toggle-crop-orientation",
             defaultValue: "Switch crop orientation",
-            comment: "Tooltip for switching crop aspect ratio between landscape and portrait",
+            comment: "Tooltip for switching crop aspect ratio between landscape and portrait"
         )
         static let toggleAspectRatioOrientation = string(
             "annotate.toggle-aspect-ratio-orientation",
             defaultValue: "Switch aspect ratio orientation",
-            comment: "Tooltip for switching annotate background aspect ratio between horizontal and vertical",
+            comment: "Tooltip for switching annotate background aspect ratio between horizontal and vertical"
         )
         static let unsavedChangesTitle = string(
             "annotate.unsaved-changes-title",
             defaultValue: "Unsaved Changes",
-            comment: "Alert title shown when closing annotate with unsaved changes",
+            comment: "Alert title shown when closing annotate with unsaved changes"
         )
         static let unsavedChangesMessage = string(
             "annotate.unsaved-changes-message",
             defaultValue: "You have unsaved changes. Do you want to save before closing?",
-            comment: "Alert message shown when closing annotate with unsaved changes",
+            comment: "Alert message shown when closing annotate with unsaved changes"
         )
         static let dontSave = string(
             "annotate.dont-save",
             defaultValue: "Don't Save",
-            comment: "Button title for discarding annotate changes",
+            comment: "Button title for discarding annotate changes"
         )
         static let saveFailedTitle = string(
             "annotate.save-failed-title",
             defaultValue: "Save Failed",
-            comment: "Alert title shown when annotate save fails",
+            comment: "Alert title shown when annotate save fails"
         )
         static let saveFailedMessage = string(
             "annotate.save-failed-message",
             defaultValue: "Cue couldn't write to the selected location. Please choose another folder.",
-            comment: "Alert message shown when annotate save fails",
+            comment: "Alert message shown when annotate save fails"
         )
         static let defaultAnnotatedFileName = string(
             "annotate.default-annotated-file-name",
             defaultValue: "annotated_image",
-            comment: "Default file name for a new annotated image without a source URL",
+            comment: "Default file name for a new annotated image without a source URL"
         )
         static let jpegRemovesTransparencyTitle = string(
             "annotate.jpeg-removes-transparency-title",
             defaultValue: "JPEG Removes Transparency",
-            comment: "Alert title shown before saving a transparent cutout image as JPEG",
+            comment: "Alert title shown before saving a transparent cutout image as JPEG"
         )
         static let jpegRemovesTransparencyMessage = string(
             "annotate.jpeg-removes-transparency-message",
             defaultValue: "This image uses a transparent background cutout. Saving as JPEG will flatten transparency to an opaque background. Use PNG or WebP to keep transparency.",
-            comment: "Alert message shown before saving a transparent cutout image as JPEG",
+            comment: "Alert message shown before saving a transparent cutout image as JPEG"
         )
         static let saveAsJPEG = string(
             "annotate.save-as-jpeg",
             defaultValue: "Save as JPEG",
-            comment: "Button title for confirming JPEG export without transparency",
+            comment: "Button title for confirming JPEG export without transparency"
         )
         static let presets = string(
             "annotate.presets",
             defaultValue: "Presets",
-            comment: "Section title for annotate canvas presets",
+            comment: "Section title for annotate canvas presets"
         )
         static let selectPreset = string(
             "annotate.select-preset",
             defaultValue: "Select preset",
-            comment: "Placeholder label for choosing an annotate canvas preset",
+            comment: "Placeholder label for choosing an annotate canvas preset"
         )
         static let resetCanvasEffectsHelp = string(
             "annotate.reset-canvas-effects-help",
             defaultValue: "Reset background, padding, shadow, and corners",
-            comment: "Tooltip for resetting annotate canvas effects",
+            comment: "Tooltip for resetting annotate canvas effects"
         )
         static let applySavedStylePreset = string(
             "annotate.apply-saved-style-preset",
             defaultValue: "Apply a saved style preset",
-            comment: "Tooltip for opening the annotate saved preset picker",
+            comment: "Tooltip for opening the annotate saved preset picker"
         )
         static let addNewPreset = string(
             "annotate.add-new-preset",
             defaultValue: "Add new preset",
-            comment: "Button title for creating a new annotate preset",
+            comment: "Button title for creating a new annotate preset"
         )
         static let noPresetsYet = string(
             "annotate.no-presets-yet",
             defaultValue: "No presets yet",
-            comment: "Empty state label when no annotate presets have been saved",
+            comment: "Empty state label when no annotate presets have been saved"
         )
         static let deletePresetHelp = string(
             "annotate.delete-preset-help",
             defaultValue: "Delete preset",
-            comment: "Tooltip for deleting an annotate preset",
+            comment: "Tooltip for deleting an annotate preset"
         )
         static let setDefaultPresetHelp = string(
             "annotate.set-default-preset-help",
             defaultValue: "Use as default preset",
-            comment: "Tooltip for setting an annotate preset as the default",
+            comment: "Tooltip for setting an annotate preset as the default"
         )
         static let clearDefaultPresetHelp = string(
             "annotate.clear-default-preset-help",
             defaultValue: "Clear default preset",
-            comment: "Tooltip for clearing the default annotate preset",
+            comment: "Tooltip for clearing the default annotate preset"
         )
         static let updatePreset = string(
             "annotate.update-preset",
             defaultValue: "Update preset",
-            comment: "Button title for updating the selected annotate preset",
+            comment: "Button title for updating the selected annotate preset"
         )
         static let updateSelectedPresetHelp = string(
             "annotate.update-selected-preset-help",
             defaultValue: "Update selected preset with current values",
-            comment: "Tooltip for updating the selected annotate preset",
+            comment: "Tooltip for updating the selected annotate preset"
         )
         static let savePresetTitle = string(
             "annotate.save-preset-title",
             defaultValue: "Save Preset",
-            comment: "Alert title for saving a new annotate preset",
+            comment: "Alert title for saving a new annotate preset"
         )
         static let savePresetMessage = string(
             "annotate.save-preset-message",
             defaultValue: "Enter a name for this canvas preset.",
-            comment: "Alert message for saving a new annotate preset",
+            comment: "Alert message for saving a new annotate preset"
         )
         static let updatePresetTitle = string(
             "annotate.update-preset-title",
             defaultValue: "Update Preset",
-            comment: "Alert title for updating an annotate preset",
+            comment: "Alert title for updating an annotate preset"
         )
         static func updatePresetMessage(_ presetName: String) -> String {
             format(
                 "annotate.update-preset-message",
                 defaultValue: "Replace \"%@\" with current settings?",
                 comment: "Alert message for updating an annotate preset. %@ is the preset name.",
-                presetName,
+                presetName
             )
         }
 
         static let deletePresetTitle = string(
             "annotate.delete-preset-title",
             defaultValue: "Delete Preset",
-            comment: "Alert title for deleting an annotate preset",
+            comment: "Alert title for deleting an annotate preset"
         )
         static func deletePresetMessage(_ presetName: String) -> String {
             format(
                 "annotate.delete-preset-message",
                 defaultValue: "Delete \"%@\"?",
                 comment: "Alert message for deleting an annotate preset. %@ is the preset name.",
-                presetName,
+                presetName
             )
         }
 
         static let presetNamePlaceholder = string(
             "annotate.preset-name-placeholder",
             defaultValue: "Preset name",
-            comment: "Placeholder text for the annotate preset name field",
+            comment: "Placeholder text for the annotate preset name field"
         )
         static let presetLimitReachedTitle = string(
             "annotate.preset-limit-reached-title",
             defaultValue: "Preset Limit Reached",
-            comment: "Alert title shown when the annotate preset limit is reached",
+            comment: "Alert title shown when the annotate preset limit is reached"
         )
         static let presetLimitReachedMessage = string(
             "annotate.preset-limit-reached-message",
             defaultValue: "You can save up to 20 presets. Delete one to add a new preset.",
-            comment: "Alert message shown when the annotate preset limit is reached",
+            comment: "Alert message shown when the annotate preset limit is reached"
         )
         static let unableToSavePresetTitle = string(
             "annotate.unable-to-save-preset-title",
             defaultValue: "Unable to Save Preset",
-            comment: "Alert title shown when the current annotate canvas style cannot be saved as a preset",
+            comment: "Alert title shown when the current annotate canvas style cannot be saved as a preset"
         )
         static let unableToSavePresetMessage = string(
             "annotate.unable-to-save-preset-message",
             defaultValue: "Current canvas style cannot be stored as a preset right now.",
-            comment: "Alert message shown when the current annotate canvas style cannot be saved as a preset",
+            comment: "Alert message shown when the current annotate canvas style cannot be saved as a preset"
         )
         static let loadingWallpapers = string(
             "annotate.loading-wallpapers",
             defaultValue: "Loading wallpapers...",
-            comment: "Loading label shown while annotate wallpapers are being loaded",
+            comment: "Loading label shown while annotate wallpapers are being loaded"
         )
         static let removeCustomWallpaper = string(
             "annotate.remove-custom-wallpaper",
             defaultValue: "Remove custom wallpaper",
-            comment: "Tooltip for removing a custom annotate wallpaper",
+            comment: "Tooltip for removing a custom annotate wallpaper"
         )
         static let textStyle = string(
             "annotate.text-style",
             defaultValue: "Text Style",
-            comment: "Section title for annotate text styling controls",
+            comment: "Section title for annotate text styling controls"
         )
         static let textColor = string(
             "annotate.text-color",
             defaultValue: "Text Color",
-            comment: "Label for annotate text color controls",
+            comment: "Label for annotate text color controls"
         )
         static let annotation = string(
             "annotate.annotation",
             defaultValue: "Annotation",
-            comment: "Section title for annotate item properties",
+            comment: "Section title for annotate item properties"
         )
         static let alignment = string(
             "annotate.alignment",
             defaultValue: "Alignment",
-            comment: "Section title for annotate image alignment controls",
+            comment: "Section title for annotate image alignment controls"
         )
         static let blurType = string(
             "annotate.blur-type",
             defaultValue: "Blur Type",
-            comment: "Section title for annotate blur type controls",
+            comment: "Section title for annotate blur type controls"
         )
         static let pixelated = string(
             "annotate.pixelated",
             defaultValue: "Pixelated",
-            comment: "Label for pixelated blur style",
+            comment: "Label for pixelated blur style"
         )
         static let gaussian = string(
             "annotate.gaussian",
             defaultValue: "Gaussian",
-            comment: "Label for gaussian blur style",
+            comment: "Label for gaussian blur style"
         )
         static let pixelatedBlurDescription = string(
             "annotate.pixelated-blur-description",
             defaultValue: "Pixelated blur for redacting sensitive content",
-            comment: "Description shown for the pixelated blur style",
+            comment: "Description shown for the pixelated blur style"
         )
         static let gaussianBlurDescription = string(
             "annotate.gaussian-blur-description",
             defaultValue: "Smooth Gaussian blur similar to CSS filter",
-            comment: "Description shown for the gaussian blur style",
+            comment: "Description shown for the gaussian blur style"
         )
         static let hexagonal = string(
             "annotate.hexagonal",
             defaultValue: "Hexagonal",
-            comment: "Label for hexagonal blur style",
+            comment: "Label for hexagonal blur style"
         )
         static let crystallized = string(
             "annotate.crystallized",
             defaultValue: "Starry",
-            comment: "Label for starry tape cover style",
+            comment: "Label for starry tape cover style"
         )
         static let pointillism = string(
             "annotate.pointillism",
             defaultValue: "Grid",
-            comment: "Label for grid tape cover style",
+            comment: "Label for grid tape cover style"
         )
         static let halftone = string(
             "annotate.halftone",
             defaultValue: "Gingham",
-            comment: "Label for gingham tape cover style",
+            comment: "Label for gingham tape cover style"
         )
         static let tape = string(
             "annotate.tape",
             defaultValue: "Tape",
-            comment: "Label for tape cover style",
+            comment: "Label for tape cover style"
         )
         static let washi = string(
             "annotate.washi",
             defaultValue: "Washi",
-            comment: "Label for washi cover style",
+            comment: "Label for washi cover style"
         )
         static let hexagonalBlurDescription = string(
             "annotate.hexagonal-blur-description",
             defaultValue: "Artistic hexagonal pixelation effect",
-            comment: "Description shown for the hexagonal blur style",
+            comment: "Description shown for the hexagonal blur style"
         )
         static let crystallizedBlurDescription = string(
             "annotate.crystallized-blur-description",
             defaultValue: "Lavender paper tape with a starry pattern",
-            comment: "Description shown for the starry tape style",
+            comment: "Description shown for the starry tape style"
         )
         static let pointillismBlurDescription = string(
             "annotate.pointillism-blur-description",
             defaultValue: "Peach paper tape with a grid line pattern",
-            comment: "Description shown for the grid tape style",
+            comment: "Description shown for the grid tape style"
         )
         static let halftoneBlurDescription = string(
             "annotate.halftone-blur-description",
             defaultValue: "Cream paper tape with a gingham check pattern",
-            comment: "Description shown for the gingham tape style",
+            comment: "Description shown for the gingham tape style"
         )
         static let tapeBlurDescription = string(
             "annotate.tape-blur-description",
             defaultValue: "Off-white paper tape with diagonal patterns",
-            comment: "Description shown for the tape cover style",
+            comment: "Description shown for the tape cover style"
         )
         static let washiBlurDescription = string(
             "annotate.washi-blur-description",
             defaultValue: "Pastel teal paper tape with grid dot patterns",
-            comment: "Description shown for the washi cover style",
+            comment: "Description shown for the washi cover style"
         )
         static let blurredBackground = string(
             "annotate.blurred-background",
             defaultValue: "Blurred",
-            comment: "Section title for annotate blurred background controls",
+            comment: "Section title for annotate blurred background controls"
         )
         static let blurredBackgroundSoft = string(
             "annotate.blurred-background-soft",
             defaultValue: "Soft",
-            comment: "Label for the soft blurred background preset",
+            comment: "Label for the soft blurred background preset"
         )
         static let blurredBackgroundFrosted = string(
             "annotate.blurred-background-frosted",
             defaultValue: "Frosted",
-            comment: "Label for the frosted blurred background preset",
+            comment: "Label for the frosted blurred background preset"
         )
         static let blurredBackgroundVivid = string(
             "annotate.blurred-background-vivid",
             defaultValue: "Vivid",
-            comment: "Label for the vivid blurred background preset",
+            comment: "Label for the vivid blurred background preset"
         )
         static let blurredBackgroundDim = string(
             "annotate.blurred-background-dim",
             defaultValue: "Dim",
-            comment: "Label for the dim blurred background preset",
+            comment: "Label for the dim blurred background preset"
         )
         static let watermarkSingle = string(
             "annotate.watermark-single",
             defaultValue: "Single",
-            comment: "Label for a single watermark style",
+            comment: "Label for a single watermark style"
         )
         static let watermarkDiagonal = string(
             "annotate.watermark-diagonal",
             defaultValue: "Diagonal",
-            comment: "Label for a centered diagonal watermark style",
+            comment: "Label for a centered diagonal watermark style"
         )
         static let watermarkTiled = string(
             "annotate.watermark-tiled",
             defaultValue: "Tiled",
-            comment: "Label for a repeated tiled watermark style",
+            comment: "Label for a repeated tiled watermark style"
         )
         static let watermarkOpacity = string(
             "annotate.watermark-opacity",
             defaultValue: "Opacity",
-            comment: "Label for watermark opacity controls",
+            comment: "Label for watermark opacity controls"
         )
         static let spotlightOpacity = string(
             "annotate.spotlight-opacity",
             defaultValue: "Darkness",
-            comment: "Label for spotlight darkness controls",
+            comment: "Label for spotlight darkness controls"
         )
         static let magnifyZoom = string(
             "annotate.magnify-zoom",
             defaultValue: "Zoom",
-            comment: "Label for magnification controls",
+            comment: "Label for magnification controls"
         )
         static let straight = string(
             "annotate.straight",
             defaultValue: "Straight",
-            comment: "Label for the straight arrow style",
+            comment: "Label for the straight arrow style"
         )
         static let curvedRight = string(
             "annotate.curvedRight",
             defaultValue: "Curved Right",
-            comment: "Label for the curved right arrow style",
+            comment: "Label for the curved right arrow style"
         )
         static let curvedLeft = string(
             "annotate.curvedLeft",
             defaultValue: "Curved Left",
-            comment: "Label for the curved left arrow style",
+            comment: "Label for the curved left arrow style"
         )
         static let straightArrowHelp = string(
             "annotate.straight-arrow-help",
             defaultValue: "Direct line from start to end",
-            comment: "Helper text for the straight arrow style",
+            comment: "Helper text for the straight arrow style"
         )
         static let curvedRightArrowHelp = string(
             "annotate.curved-right-arrow-help",
             defaultValue: "Arrow curving to the right",
-            comment: "Helper text for the curved right arrow style",
+            comment: "Helper text for the curved right arrow style"
         )
         static let curvedLeftArrowHelp = string(
             "annotate.curved-left-arrow-help",
             defaultValue: "Arrow curving to the left",
-            comment: "Helper text for the curved left arrow style",
+            comment: "Helper text for the curved left arrow style"
         )
         static let arrowBend = string(
             "annotate.arrow-bend",
             defaultValue: "Bend",
-            comment: "Label for arrow bend direction controls",
+            comment: "Label for arrow bend direction controls"
         )
         static let arrowBendNormal = string(
             "annotate.arrow-bend-normal",
             defaultValue: "Normal",
-            comment: "Label for the default arrow bend direction",
+            comment: "Label for the default arrow bend direction"
         )
         static let arrowBendReversed = string(
             "annotate.arrow-bend-reversed",
             defaultValue: "Reversed",
-            comment: "Label for the reversed arrow bend direction",
+            comment: "Label for the reversed arrow bend direction"
         )
         static let flipArrowBend = string(
             "annotate.flip-arrow-bend",
             defaultValue: "Flip bend",
-            comment: "Tooltip and accessibility label for flipping arrow bend direction",
+            comment: "Tooltip and accessibility label for flipping arrow bend direction"
         )
         static let arrowTypeClassic = string(
             "annotate.arrow-type-classic",
             defaultValue: "Classic",
-            comment: "Label for the classic line-based arrow type",
+            comment: "Label for the classic line-based arrow type"
         )
         static let arrowTypeTapered = string(
             "annotate.arrow-type-tapered",
             defaultValue: "Tapered",
-            comment: "Label for the tapered arrow type",
+            comment: "Label for the tapered arrow type"
         )
         static let arrowTypeOutlined = string(
             "annotate.arrow-type-outlined",
             defaultValue: "Outlined",
-            comment: "Label for the outlined tapered arrow type",
+            comment: "Label for the outlined tapered arrow type"
         )
         static let arrowStartHead = string(
             "annotate.arrow-start-head",
             defaultValue: "Start",
-            comment: "Label for the arrow start endpoint style picker",
+            comment: "Label for the arrow start endpoint style picker"
         )
         static let arrowEndHead = string(
             "annotate.arrow-end-head",
             defaultValue: "End",
-            comment: "Label for the arrow end endpoint style picker",
+            comment: "Label for the arrow end endpoint style picker"
         )
         static let arrowHeadNone = string(
             "annotate.arrow-head-none",
             defaultValue: "None",
-            comment: "Arrow endpoint style with no decoration",
+            comment: "Arrow endpoint style with no decoration"
         )
         static let arrowHeadArrow = string(
             "annotate.arrow-head-arrow",
             defaultValue: "Arrow",
-            comment: "Arrow endpoint style drawn as an arrowhead",
+            comment: "Arrow endpoint style drawn as an arrowhead"
         )
         static let arrowHeadCircle = string(
             "annotate.arrow-head-circle",
             defaultValue: "Circle",
-            comment: "Arrow endpoint style drawn as a filled circle",
+            comment: "Arrow endpoint style drawn as a filled circle"
         )
         static let xAxis = string(
             "annotate.x-axis",
             defaultValue: "X Axis",
-            comment: "Label for the X axis rotation slider in mockup controls",
+            comment: "Label for the X axis rotation slider in mockup controls"
         )
         static let yAxis = string(
             "annotate.y-axis",
             defaultValue: "Y Axis",
-            comment: "Label for the Y axis rotation slider in mockup controls",
+            comment: "Label for the Y axis rotation slider in mockup controls"
         )
         static let zAxis = string(
             "annotate.z-axis",
             defaultValue: "Z Axis",
-            comment: "Label for the Z axis rotation slider in mockup controls",
+            comment: "Label for the Z axis rotation slider in mockup controls"
         )
         static let depth = string(
             "annotate.depth",
             defaultValue: "Depth",
-            comment: "Label for the perspective depth slider in mockup controls",
+            comment: "Label for the perspective depth slider in mockup controls"
         )
         static let resetMockup = string(
             "annotate.reset-mockup",
             defaultValue: "Reset Mockup",
-            comment: "Button title for resetting mockup controls",
+            comment: "Button title for resetting mockup controls"
         )
         static let autoBalance = string(
             "annotate.auto-balance",
             defaultValue: "Auto-balance",
-            comment: "Toggle label for automatically balancing canvas effects in annotate",
+            comment: "Toggle label for automatically balancing canvas effects in annotate"
         )
         static let openSidebarForMoreControls = string(
             "annotate.open-sidebar-for-more-controls",
             defaultValue: "Open sidebar for more annotate controls",
-            comment: "Tooltip for opening the full annotate sidebar from the quick properties bar",
+            comment: "Tooltip for opening the full annotate sidebar from the quick properties bar"
         )
         static let resetToDefaults = string(
             "annotate.reset-to-defaults",
             defaultValue: "Reset to Defaults",
-            comment: "Tooltip for resetting mockup values to defaults",
+            comment: "Tooltip for resetting mockup values to defaults"
         )
     }
 
@@ -5674,565 +5674,565 @@ nonisolated enum L10n {
         static let invalidFileTitle = string(
             "video-editor.invalid-file-title",
             defaultValue: "Invalid File",
-            comment: "Alert title shown when an invalid file is dropped or selected in the video editor",
+            comment: "Alert title shown when an invalid file is dropped or selected in the video editor"
         )
         static let dropVideoHereToEdit = string(
             "video-editor.drop-video-here-to-edit",
             defaultValue: "Drop a video here to edit",
-            comment: "Empty state title for the video editor",
+            comment: "Empty state title for the video editor"
         )
         static let supportsVideoFormats = string(
             "video-editor.supports-video-formats",
             defaultValue: "Supports MOV, MP4, GIF, and other video formats",
-            comment: "Empty state subtitle for the video editor",
+            comment: "Empty state subtitle for the video editor"
         )
         static let browseFiles = string(
             "video-editor.browse-files",
             defaultValue: "Browse Files...",
-            comment: "Button title for browsing for a video file",
+            comment: "Button title for browsing for a video file"
         )
         static let unsupportedFileType = string(
             "video-editor.unsupported-file-type",
             defaultValue: "Unsupported file type",
-            comment: "Error shown when the dropped file type is not supported by the video editor",
+            comment: "Error shown when the dropped file type is not supported by the video editor"
         )
         static func failedToLoadFile(_ message: String) -> String {
             format(
                 "video-editor.failed-to-load-file",
                 defaultValue: "Failed to load file: %@",
                 comment: "Error shown when the video editor cannot load a selected file. %@ is the lower-level error message.",
-                message,
+                message
             )
         }
 
         static let couldNotReadFile = string(
             "video-editor.could-not-read-file",
             defaultValue: "Could not read file",
-            comment: "Error shown when the video editor cannot read a dropped file",
+            comment: "Error shown when the video editor cannot read a dropped file"
         )
         static func failedToPrepareFile(_ message: String) -> String {
             format(
                 "video-editor.failed-to-prepare-file",
                 defaultValue: "Failed to prepare file: %@",
                 comment: "Error shown when the video editor cannot prepare a dropped file for editing. %@ is the lower-level error message.",
-                message,
+                message
             )
         }
 
         static let fileNotFound = string(
             "video-editor.file-not-found",
             defaultValue: "File not found",
-            comment: "Error shown when the selected video file no longer exists",
+            comment: "Error shown when the selected video file no longer exists"
         )
         static let selectValidVideoOrGIFFile = string(
             "video-editor.select-valid-video-or-gif-file",
             defaultValue: "Please select a valid video or GIF file",
-            comment: "Error shown when the selected file is not a supported video or GIF",
+            comment: "Error shown when the selected file is not a supported video or GIF"
         )
         static let exportingVideo = string(
             "video-editor.exporting-video",
             defaultValue: "Exporting Video",
-            comment: "Title shown in the video editor export progress overlay",
+            comment: "Title shown in the video editor export progress overlay"
         )
         static let zoomSettings = string(
             "video-editor.zoom-settings",
             defaultValue: "Zoom Settings",
-            comment: "Title shown in the zoom settings popover",
+            comment: "Title shown in the zoom settings popover"
         )
         static let zoomLevel = string(
             "video-editor.zoom-level",
             defaultValue: "Zoom Level",
-            comment: "Label for zoom level controls in the video editor",
+            comment: "Label for zoom level controls in the video editor"
         )
         static let zoomCenter = string(
             "video-editor.zoom-center",
             defaultValue: "Zoom Center",
-            comment: "Label for zoom center controls in the video editor",
+            comment: "Label for zoom center controls in the video editor"
         )
         static let topLeft = string(
             "video-editor.top-left",
             defaultValue: "Top Left",
-            comment: "Label for the top-left zoom center preset",
+            comment: "Label for the top-left zoom center preset"
         )
         static let topRight = string(
             "video-editor.top-right",
             defaultValue: "Top Right",
-            comment: "Label for the top-right zoom center preset",
+            comment: "Label for the top-right zoom center preset"
         )
         static let center = string(
             "video-editor.center",
             defaultValue: "Center",
-            comment: "Label for the center zoom preset",
+            comment: "Label for the center zoom preset"
         )
         static let bottomLeft = string(
             "video-editor.bottom-left",
             defaultValue: "Bottom Left",
-            comment: "Label for the bottom-left zoom center preset",
+            comment: "Label for the bottom-left zoom center preset"
         )
         static let bottomRight = string(
             "video-editor.bottom-right",
             defaultValue: "Bottom Right",
-            comment: "Label for the bottom-right zoom center preset",
+            comment: "Label for the bottom-right zoom center preset"
         )
         static let zooms = string(
             "video-editor.zooms",
             defaultValue: "Zooms",
-            comment: "Label for the zoom track in the video editor timeline",
+            comment: "Label for the zoom track in the video editor timeline"
         )
         static let addZoomHere = string(
             "video-editor.add-zoom-here",
             defaultValue: "Add Zoom Here",
-            comment: "Context menu label for adding a zoom segment at the hovered location",
+            comment: "Context menu label for adding a zoom segment at the hovered location"
         )
         static let addZoomAtPlayhead = string(
             "video-editor.add-zoom-at-playhead",
             defaultValue: "Add Zoom at Playhead",
-            comment: "Context menu label for adding a zoom segment at the playhead",
+            comment: "Context menu label for adding a zoom segment at the playhead"
         )
         static let disableZoom = string(
             "video-editor.disable-zoom",
             defaultValue: "Disable Zoom",
-            comment: "Context menu label for disabling a zoom segment",
+            comment: "Context menu label for disabling a zoom segment"
         )
         static let enableZoom = string(
             "video-editor.enable-zoom",
             defaultValue: "Enable Zoom",
-            comment: "Context menu label for enabling a zoom segment",
+            comment: "Context menu label for enabling a zoom segment"
         )
         static let editZoom = string(
             "video-editor.edit-zoom",
             defaultValue: "Edit Zoom",
-            comment: "Context menu label for editing a zoom segment",
+            comment: "Context menu label for editing a zoom segment"
         )
         static let deleteZoom = string(
             "video-editor.delete-zoom",
             defaultValue: "Delete Zoom",
-            comment: "Context menu label for deleting a zoom segment",
+            comment: "Context menu label for deleting a zoom segment"
         )
         static let removeAllZooms = string(
             "video-editor.remove-all-zooms",
             defaultValue: "Remove All Zooms",
-            comment: "Context menu label for removing every zoom segment",
+            comment: "Context menu label for removing every zoom segment"
         )
         static let clickToAdd = string(
             "video-editor.click-to-add",
             defaultValue: "Click to add",
-            comment: "Placeholder label shown on the zoom track",
+            comment: "Placeholder label shown on the zoom track"
         )
         static let speeds = string(
             "video-editor.speeds",
             defaultValue: "Speed Regions",
-            comment: "Label for the playback-speed regions track in the video editor timeline",
+            comment: "Label for the playback-speed regions track in the video editor timeline"
         )
         static let addSpeedHere = string(
             "video-editor.add-speed-here",
             defaultValue: "Add Speed Here",
-            comment: "Context menu label for adding a speed segment at the hovered location",
+            comment: "Context menu label for adding a speed segment at the hovered location"
         )
         static let addSpeedAtPlayhead = string(
             "video-editor.add-speed-at-playhead",
             defaultValue: "Add Speed at Playhead",
-            comment: "Context menu label for adding a speed segment at the playhead",
+            comment: "Context menu label for adding a speed segment at the playhead"
         )
         static let disableSpeed = string(
             "video-editor.disable-speed",
             defaultValue: "Disable Speed",
-            comment: "Context menu label for disabling a speed segment",
+            comment: "Context menu label for disabling a speed segment"
         )
         static let enableSpeed = string(
             "video-editor.enable-speed",
             defaultValue: "Enable Speed",
-            comment: "Context menu label for enabling a speed segment",
+            comment: "Context menu label for enabling a speed segment"
         )
         static let deleteSpeed = string(
             "video-editor.delete-speed",
             defaultValue: "Delete Speed",
-            comment: "Context menu label for deleting a speed segment",
+            comment: "Context menu label for deleting a speed segment"
         )
         static let removeAllSpeeds = string(
             "video-editor.remove-all-speeds",
             defaultValue: "Remove All Speeds",
-            comment: "Context menu label for removing every speed segment",
+            comment: "Context menu label for removing every speed segment"
         )
         static let speedClickToAdd = string(
             "video-editor.speed-click-to-add",
             defaultValue: "Drag to set speed",
-            comment: "Placeholder label shown on the speed track",
+            comment: "Placeholder label shown on the speed track"
         )
         static let speedTrackTooltip = string(
             "video-editor.speed-track-tooltip",
             defaultValue: "Change playback speed for a region",
-            comment: "Tooltip describing the speed track",
+            comment: "Tooltip describing the speed track"
         )
         static let clips = string(
             "video-editor.clips",
             defaultValue: "Clips",
-            comment: "Label for the multi-clip track in the video editor timeline",
+            comment: "Label for the multi-clip track in the video editor timeline"
         )
         static let splitClipAtPlayhead = string(
             "video-editor.split-clip-at-playhead",
             defaultValue: "Split at Playhead",
-            comment: "Context menu action to split the clip at the current playhead",
+            comment: "Context menu action to split the clip at the current playhead"
         )
         static let deleteClip = string(
             "video-editor.delete-clip",
             defaultValue: "Delete Clip",
-            comment: "Context menu action to delete the selected clip",
+            comment: "Context menu action to delete the selected clip"
         )
         static let clipSpeed = string(
             "video-editor.clip-speed",
             defaultValue: "Clip Playback Speed",
-            comment: "Menu title for per-clip speed presets",
+            comment: "Menu title for per-clip speed presets"
         )
         static let resetClips = string(
             "video-editor.reset-clips",
             defaultValue: "Reset Clips",
-            comment: "Action to restore a single full-span clip timeline",
+            comment: "Action to restore a single full-span clip timeline"
         )
         static let exportContentModeFill = string(
             "video-editor.export-content-mode-fill",
             defaultValue: "Fill",
-            comment: "Export content mode that crops to follow the pointer",
+            comment: "Export content mode that crops to follow the pointer"
         )
         static let exportContentModeFit = string(
             "video-editor.export-content-mode-fit",
             defaultValue: "Fit",
-            comment: "Export content mode that fits the full recording on the canvas",
+            comment: "Export content mode that fits the full recording on the canvas"
         )
         static let exportContentMode = string(
             "video-editor.export-content-mode",
             defaultValue: "Content",
-            comment: "Label for export fill/fit content mode control",
+            comment: "Label for export fill/fit content mode control"
         )
         static let stylePresets = string(
             "video-editor.style-presets",
             defaultValue: "Video Presets",
-            comment: "Section title for named video appearance presets",
+            comment: "Section title for named video appearance presets"
         )
         static let cursorScale = string(
             "video-editor.cursor-scale",
             defaultValue: "Cursor Size",
-            comment: "Slider label for synthetic cursor scale",
+            comment: "Slider label for synthetic cursor scale"
         )
         static let cursor = string(
             "video-editor.cursor",
             defaultValue: "Cursor",
-            comment: "Section title for cursor controls in the video editor",
+            comment: "Section title for cursor controls in the video editor"
         )
         static let cursorBakedDescription = string(
             "video-editor.cursor-baked-description",
             defaultValue: "This cursor is part of the video. Record again with Smart Pointer to edit it.",
-            comment: "Explanation shown when the source video contains a baked cursor",
+            comment: "Explanation shown when the source video contains a baked cursor"
         )
         static let cursorDataUnavailable = string(
             "video-editor.cursor-data-unavailable",
             defaultValue: "Editable cursor data is unavailable for this recording.",
-            comment: "Explanation shown when synthetic cursor metadata has no usable samples",
+            comment: "Explanation shown when synthetic cursor metadata has no usable samples"
         )
         static let cursorSmoothing = string(
             "video-editor.cursor-smoothing",
             defaultValue: "Cursor Smoothing",
-            comment: "Picker label for synthetic cursor movement smoothing",
+            comment: "Picker label for synthetic cursor movement smoothing"
         )
         static let cursorSmoothingOriginal = string(
             "video-editor.cursor-smoothing-original",
             defaultValue: "Original",
-            comment: "Cursor smoothing preset that follows the existing recorded motion",
+            comment: "Cursor smoothing preset that follows the existing recorded motion"
         )
         static let cursorSmoothingSmooth = string(
             "video-editor.cursor-smoothing-smooth",
             defaultValue: "Smooth",
-            comment: "Cursor smoothing preset with slower, softer motion",
+            comment: "Cursor smoothing preset with slower, softer motion"
         )
         static let cursorSmoothingFast = string(
             "video-editor.cursor-smoothing-fast",
             defaultValue: "Fast",
-            comment: "Cursor smoothing preset with more responsive motion",
+            comment: "Cursor smoothing preset with more responsive motion"
         )
         static let cursorSmoothingHelp = string(
             "video-editor.cursor-smoothing-help",
             defaultValue: "Choose how closely the reconstructed pointer follows the recorded path.",
-            comment: "Help text for synthetic cursor smoothing presets",
+            comment: "Help text for synthetic cursor smoothing presets"
         )
         static let speedZoomOverlapHint = string(
             "video-editor.speed-zoom-overlap-hint",
             defaultValue: "This speed region overlaps a zoom; the zoom follows the adjusted playback speed.",
-            comment: "Informational hint when a speed segment overlaps a zoom segment",
+            comment: "Informational hint when a speed segment overlaps a zoom segment"
         )
         static let backgroundTab = string(
             "video-editor.background-tab",
             defaultValue: "Background",
-            comment: "Title for the video editor background sidebar tab",
+            comment: "Title for the video editor background sidebar tab"
         )
         static let zoomTab = string(
             "video-editor.zoom-tab",
             defaultValue: "Zoom",
-            comment: "Title for the video editor zoom sidebar tab",
+            comment: "Title for the video editor zoom sidebar tab"
         )
         static let unknownTab = string(
             "video-editor.unknown-tab",
             defaultValue: "Unknown",
-            comment: "Fallback title for an unknown video editor sidebar tab",
+            comment: "Fallback title for an unknown video editor sidebar tab"
         )
         static let zoomItem = string(
             "video-editor.zoom-item",
             defaultValue: "Selected Zoom",
-            comment: "Header title for the selected zoom in the video editor sidebar",
+            comment: "Header title for the selected zoom in the video editor sidebar"
         )
         static let followMouse = string(
             "video-editor.follow-mouse",
             defaultValue: "Follow Mouse",
-            comment: "Label for the automatic zoom mode that follows the cursor",
+            comment: "Label for the automatic zoom mode that follows the cursor"
         )
         static let manual = string(
             "video-editor.manual",
             defaultValue: "Fixed",
-            comment: "Label for the fixed camera behavior",
+            comment: "Label for the fixed camera behavior"
         )
         static let auto = string(
             "video-editor.auto",
             defaultValue: "Automatic",
-            comment: "Label for the automatic camera behavior",
+            comment: "Label for the automatic camera behavior"
         )
         static let mouseTrackingDataUnavailable = string(
             "video-editor.mouse-tracking-data-unavailable",
             defaultValue: "Mouse tracking data unavailable",
-            comment: "Warning title shown when mouse tracking data is not available for follow-mouse zooms",
+            comment: "Warning title shown when mouse tracking data is not available for follow-mouse zooms"
         )
         static let followMouseOnlyWorksWithCue = string(
             "video-editor.follow-mouse-only-works-with-notinhas",
             defaultValue: "Pointer tracking only works with Cue recordings that include mouse tracking data.",
-            comment: "Warning message shown when follow-mouse zoom mode is unavailable",
+            comment: "Warning message shown when follow-mouse zoom mode is unavailable"
         )
         static let followMouseActiveDescription = string(
             "video-editor.follow-mouse-active-description",
             defaultValue: "Camera follows the pointer or click activity while this zoom is active.",
-            comment: "Description shown when a zoom follows recorded pointer activity",
+            comment: "Description shown when a zoom follows recorded pointer activity"
         )
         static let manualModeDescription = string(
             "video-editor.manual-mode-description",
             defaultValue: "Camera stays fixed on the selected position.",
-            comment: "Description shown when a zoom uses a fixed camera position",
+            comment: "Description shown when a zoom uses a fixed camera position"
         )
         static let noZoomSelected = string(
             "video-editor.no-zoom-selected",
             defaultValue: "No Zoom Selected",
-            comment: "Empty state title shown when no zoom segment is selected",
+            comment: "Empty state title shown when no zoom segment is selected"
         )
         static let pressZToAddZoom = string(
             "video-editor.press-z-to-add-zoom",
             defaultValue: "Press Z to add a zoom at the playhead, or click a zoom item in the timeline.",
-            comment: "Empty state description shown when no zoom segment is selected",
+            comment: "Empty state description shown when no zoom segment is selected"
         )
         static let followSpeed = string(
             "video-editor.follow-speed",
             defaultValue: "Follow Speed",
-            comment: "Label for the follow speed control",
+            comment: "Label for the follow speed control"
         )
         static let followSpeedDescription = string(
             "video-editor.follow-speed-description",
             defaultValue: "Lower values feel calmer. Higher values react faster when the cursor changes direction.",
-            comment: "Description shown for the follow speed control",
+            comment: "Description shown for the follow speed control"
         )
         static let fast = string(
             "video-editor.fast",
             defaultValue: "Fast",
-            comment: "Preset label for a fast zoom transition",
+            comment: "Preset label for a fast zoom transition"
         )
         static let balanced = string(
             "video-editor.balanced",
             defaultValue: "Balanced",
-            comment: "Preset label for a balanced zoom transition",
+            comment: "Preset label for a balanced zoom transition"
         )
         static let smooth = string(
             "video-editor.smooth",
             defaultValue: "Smooth",
-            comment: "Preset label for a smooth zoom transition",
+            comment: "Preset label for a smooth zoom transition"
         )
         static let transitionSmoothness = string(
             "video-editor.transition-smoothness",
             defaultValue: "Transition Smoothness",
-            comment: "Label for the zoom transition smoothness control",
+            comment: "Label for the zoom transition smoothness control"
         )
         static let transitionAppliesDescription = string(
             "video-editor.transition-applies-description",
             defaultValue: "Applies to all zoom items in this editor. Higher values feel calmer when entering or leaving zoom.",
-            comment: "Description shown for the zoom transition smoothness control",
+            comment: "Description shown for the zoom transition smoothness control"
         )
         static let focusMargin = string(
             "video-editor.focus-margin",
             defaultValue: "Focus Margin",
-            comment: "Label for the focus margin control",
+            comment: "Label for the focus margin control"
         )
         static let focusMarginDescription = string(
             "video-editor.focus-margin-description",
             defaultValue: "Adds a stability zone so tiny cursor motion does not keep nudging the camera.",
-            comment: "Description shown for the focus margin control",
+            comment: "Description shown for the focus margin control"
         )
         static let manualCameraControlOnlyInManualMode = string(
             "video-editor.manual-camera-control-only-in-manual-mode",
             defaultValue: "Fixed position lets you choose the camera center.",
-            comment: "Description shown below zoom center controls",
+            comment: "Description shown below zoom center controls"
         )
         static let save = string(
             "video-editor.save",
             defaultValue: "Save",
-            comment: "Primary action title for saving a temp-capture video editor session",
+            comment: "Primary action title for saving a temp-capture video editor session"
         )
         static let convert = string(
             "video-editor.convert",
             defaultValue: "Convert",
-            comment: "Primary action title for converting an existing video editor session",
+            comment: "Primary action title for converting an existing video editor session"
         )
         static let annotateCurrentFrame = string(
             "video-editor.annotate-current-frame",
             defaultValue: "Annotate Current Frame",
-            comment: "Toolbar action that extracts the current raw video frame into Annotate",
+            comment: "Toolbar action that extracts the current raw video frame into Annotate"
         )
         static let annotateCurrentFrameHint = string(
             "video-editor.annotate-current-frame-hint",
             defaultValue: "Extract the current frame as an image for annotation.",
-            comment: "Accessibility hint for the annotate current frame action",
+            comment: "Accessibility hint for the annotate current frame action"
         )
         static let frameExtractionFailed = string(
             "video-editor.frame-extraction-failed",
             defaultValue: "Could not extract the current video frame.",
-            comment: "Alert title shown when current video frame extraction fails",
+            comment: "Alert title shown when current video frame extraction fails"
         )
         static let invalidFrameTime = string(
             "video-editor.invalid-frame-time",
             defaultValue: "The video has no valid frame time.",
-            comment: "Error shown when a video has no valid frame time",
+            comment: "Error shown when a video has no valid frame time"
         )
         static let frameSaveFailed = string(
             "video-editor.frame-save-failed",
             defaultValue: "Could not save the extracted video frame.",
-            comment: "Error shown when the extracted video frame cannot be saved",
+            comment: "Error shown when the extracted video frame cannot be saved"
         )
         static let unsavedChangesTitle = string(
             "video-editor.unsaved-changes-title",
             defaultValue: "Unsaved Changes",
-            comment: "Alert title shown when closing the video editor with unsaved changes",
+            comment: "Alert title shown when closing the video editor with unsaved changes"
         )
         static let unsavedChangesMessage = string(
             "video-editor.unsaved-changes-message",
             defaultValue: "You have unsaved video edits. Do you want to save before closing?",
-            comment: "Alert message shown when closing the video editor with unsaved changes",
+            comment: "Alert message shown when closing the video editor with unsaved changes"
         )
         static let dontSave = string(
             "video-editor.dont-save",
             defaultValue: "Don't Save",
-            comment: "Button title for discarding video editor changes",
+            comment: "Button title for discarding video editor changes"
         )
         static let saveEditedVideoTitle = string(
             "video-editor.save-edited-video-title",
             defaultValue: "Save Edited Video",
-            comment: "Alert title for choosing how to save an edited video",
+            comment: "Alert title for choosing how to save an edited video"
         )
         static func saveEditedVideoMessage(_ filename: String) -> String {
             format(
                 "video-editor.save-edited-video-message",
                 defaultValue: "How would you like to save the edited video \"%@\"?",
                 comment: "Alert message for choosing how to save an edited video. %@ is the file name.",
-                filename,
+                filename
             )
         }
 
         static let replaceOriginal = string(
             "video-editor.replace-original",
             defaultValue: "Replace Original",
-            comment: "Button title for replacing the original edited video file",
+            comment: "Button title for replacing the original edited video file"
         )
         static let saveAsCopy = string(
             "video-editor.save-as-copy",
             defaultValue: "Save as Copy",
-            comment: "Button title for saving an edited video as a copy",
+            comment: "Button title for saving an edited video as a copy"
         )
         static let fileAlreadyExistsTitle = string(
             "video-editor.file-already-exists-title",
             defaultValue: "File Already Exists",
-            comment: "Alert title shown when a destination file already exists",
+            comment: "Alert title shown when a destination file already exists"
         )
         static func fileAlreadyExistsMessage(_ filename: String) -> String {
             format(
                 "video-editor.file-already-exists-message",
                 defaultValue: "A file named \"%@\" already exists in the destination folder.",
                 comment: "Alert message shown when a destination file already exists. %@ is the file name.",
-                filename,
+                filename
             )
         }
 
         static let saveGIFTitle = string(
             "video-editor.save-gif-title",
             defaultValue: "Save GIF",
-            comment: "Save panel title for GIF export",
+            comment: "Save panel title for GIF export"
         )
         static let saveVideoTitle = string(
             "video-editor.save-video-title",
             defaultValue: "Save Video",
-            comment: "Save panel title for video export",
+            comment: "Save panel title for video export"
         )
         static let chooseWhereToSaveFile = string(
             "video-editor.choose-where-to-save-file",
             defaultValue: "Choose where to save the file",
-            comment: "Save panel message for video editor export",
+            comment: "Save panel message for video editor export"
         )
         static let chooseWhereToSaveEditedVideo = string(
             "video-editor.choose-where-to-save-edited-video",
             defaultValue: "Choose where to save the edited video",
-            comment: "Save panel message for saving an edited video copy",
+            comment: "Save panel message for saving an edited video copy"
         )
         static let fileNameLabel = string(
             "video-editor.file-name-label",
             defaultValue: "File Name:",
-            comment: "Save panel name field label for video editor export",
+            comment: "Save panel name field label for video editor export"
         )
         static let preparingSave = string(
             "video-editor.preparing-save",
             defaultValue: "Preparing save...",
-            comment: "Progress message shown while preparing to save an edited file",
+            comment: "Progress message shown while preparing to save an edited file"
         )
         static let preparingExport = string(
             "video-editor.preparing-export",
             defaultValue: "Preparing export...",
-            comment: "Progress message shown while preparing to export a video",
+            comment: "Progress message shown while preparing to export a video"
         )
         static let exporting = string(
             "video-editor.exporting",
             defaultValue: "Exporting...",
-            comment: "Generic progress message shown while exporting a video",
+            comment: "Generic progress message shown while exporting a video"
         )
         static let resizingFrames = string(
             "video-editor.resizing-frames",
             defaultValue: "Resizing frames...",
-            comment: "Progress message shown while resizing GIF frames",
+            comment: "Progress message shown while resizing GIF frames"
         )
         static let finalizing = string(
             "video-editor.finalizing",
             defaultValue: "Finalizing...",
-            comment: "Progress message shown while finalizing an export",
+            comment: "Progress message shown while finalizing an export"
         )
         static let noChangesTitle = string(
             "video-editor.no-changes-title",
             defaultValue: "No Changes",
-            comment: "Alert title shown when no video resize changes were made",
+            comment: "Alert title shown when no video resize changes were made"
         )
         static let gifDimensionsNotChanged = string(
             "video-editor.gif-dimensions-not-changed",
             defaultValue: "The GIF dimensions haven't changed. Select a different size preset to resize.",
-            comment: "Alert message shown when no GIF resize changes were made",
+            comment: "Alert message shown when no GIF resize changes were made"
         )
         static let saveResizedGIFTitle = string(
             "video-editor.save-resized-gif-title",
             defaultValue: "Save Resized GIF",
-            comment: "Alert and save panel title for resized GIF export",
+            comment: "Alert and save panel title for resized GIF export"
         )
         static func resizeGifMessage(
             _ filename: String,
             _ sourceWidth: Int,
             _ sourceHeight: Int,
             _ targetWidth: Int,
-            _ targetHeight: Int,
+            _ targetHeight: Int
         ) -> String {
             format(
                 "video-editor.resize-gif-message",
@@ -6242,56 +6242,56 @@ nonisolated enum L10n {
                 sourceWidth,
                 sourceHeight,
                 targetWidth,
-                targetHeight,
+                targetHeight
             )
         }
 
         static let resizingGIF = string(
             "video-editor.resizing-gif",
             defaultValue: "Resizing GIF...",
-            comment: "Progress message shown while resizing a GIF",
+            comment: "Progress message shown while resizing a GIF"
         )
         static let saveVideoCopyTitle = string(
             "video-editor.save-video-copy-title",
             defaultValue: "Save Video Copy",
-            comment: "Save panel title for saving an edited video copy",
+            comment: "Save panel title for saving an edited video copy"
         )
         static let processingVideo = string(
             "video-editor.processing-video",
             defaultValue: "Processing video...",
-            comment: "Progress message shown while processing video frames",
+            comment: "Progress message shown while processing video frames"
         )
         static let applyingEffects = string(
             "video-editor.applying-effects",
             defaultValue: "Applying effects...",
-            comment: "Progress message shown while applying video effects",
+            comment: "Progress message shown while applying video effects"
         )
         static let encodingFrames = string(
             "video-editor.encoding-frames",
             defaultValue: "Encoding frames...",
-            comment: "Progress message shown while encoding frames",
+            comment: "Progress message shown while encoding frames"
         )
         static let completing = string(
             "video-editor.completing",
             defaultValue: "Completing...",
-            comment: "Progress message shown at the end of a video export",
+            comment: "Progress message shown at the end of a video export"
         )
         static let exportFailedTitle = string(
             "video-editor.export-failed-title",
             defaultValue: "Export Failed",
-            comment: "Alert title shown when video export fails",
+            comment: "Alert title shown when video export fails"
         )
         static let cannotReplaceOriginalTitle = string(
             "video-editor.cannot-replace-original-title",
             defaultValue: "Cannot Replace Original",
-            comment: "Alert title shown when replacing the original video file is not allowed",
+            comment: "Alert title shown when replacing the original video file is not allowed"
         )
         static func cannotReplaceOriginalMessage(_ details: String) -> String {
             format(
                 "video-editor.cannot-replace-original-message",
                 defaultValue: "Cue doesn't have write access to this file location. Save as a copy instead.\n\n%@",
                 comment: "Alert message shown when replacing the original video file is not allowed. %@ is the lower-level error message.",
-                details,
+                details
             )
         }
 
@@ -6300,70 +6300,70 @@ nonisolated enum L10n {
                 "video-editor.smaller-file-size-hint",
                 defaultValue: "~%d%% smaller file size",
                 comment: "Hint shown for the approximate file size reduction after resizing. %d is the percentage reduction.",
-                reduction,
+                reduction
             )
         }
 
         static let gifInfo = string(
             "video-editor.gif-info",
             defaultValue: "GIF Info",
-            comment: "Section title for GIF metadata in the video editor",
+            comment: "Section title for GIF metadata in the video editor"
         )
         static func framesCount(_ count: Int) -> String {
             format(
                 "video-editor.frames-count",
                 defaultValue: "%d frames",
                 comment: "Label showing the number of GIF frames. %d is the frame count.",
-                count,
+                count
             )
         }
 
         static let keepOriginal = string(
             "video-editor.keep-original",
             defaultValue: "Keep Original",
-            comment: "Label for keeping the original audio while exporting video",
+            comment: "Label for keeping the original audio while exporting video"
         )
         static let mute = string(
             "video-editor.mute",
             defaultValue: "Mute",
-            comment: "Label for muting audio while exporting video",
+            comment: "Label for muting audio while exporting video"
         )
         static let customVolume = string(
             "video-editor.custom-volume",
             defaultValue: "Custom Volume",
-            comment: "Label for using a custom audio volume while exporting video",
+            comment: "Label for using a custom audio volume while exporting video"
         )
         static let audioVolume = string(
             "video-editor.audio-volume",
             defaultValue: "Volume",
-            comment: "Label for a single mixed audio volume control in the video editor",
+            comment: "Label for a single mixed audio volume control in the video editor"
         )
         static let systemAudio = string(
             "video-editor.system-audio",
             defaultValue: "System Audio",
-            comment: "Label for the system audio volume control in the video editor",
+            comment: "Label for the system audio volume control in the video editor"
         )
         static let systemAudioShort = string(
             "video-editor.system-audio-short",
             defaultValue: "Sys",
-            comment: "Short label for system audio in the video editor audio summary",
+            comment: "Short label for system audio in the video editor audio summary"
         )
         static let microphoneAudio = string(
             "video-editor.microphone-audio",
             defaultValue: "Microphone",
-            comment: "Label for the microphone volume control in the video editor",
+            comment: "Label for the microphone volume control in the video editor"
         )
         static let microphoneAudioShort = string(
             "video-editor.microphone-audio-short",
             defaultValue: "Mic",
-            comment: "Short label for microphone audio in the video editor audio summary",
+            comment: "Short label for microphone audio in the video editor audio summary"
         )
         static func additionalAudioTrack(_ index: Int) -> String {
             format(
                 "video-editor.additional-audio-track",
                 defaultValue: "Audio Track %d",
                 comment: "Label for an additional audio track in the video editor. %d is the 1-based track index.",
-                index,
+                index
             )
         }
 
@@ -6372,189 +6372,189 @@ nonisolated enum L10n {
                 "video-editor.additional-audio-track-short",
                 defaultValue: "A%d",
                 comment: "Short label for an additional audio track in the video editor. %d is the 1-based track index.",
-                index,
+                index
             )
         }
 
         static let videoDetails = string(
             "video-editor.video-details",
             defaultValue: "Video Details",
-            comment: "Title for the video editor metadata sidebar",
+            comment: "Title for the video editor metadata sidebar"
         )
         static let zoomEffects = string(
             "video-editor.zoom-effects",
             defaultValue: "Automatic Zooms",
-            comment: "Section title for automatic zoom metadata and generation controls",
+            comment: "Section title for automatic zoom metadata and generation controls"
         )
         static let smartCamera = string(
             "video-editor.smart-camera",
             defaultValue: "Mouse Tracking",
-            comment: "Section title for recorded mouse tracking metadata in the video editor",
+            comment: "Section title for recorded mouse tracking metadata in the video editor"
         )
         static let cameraOverlay = string(
             "video-editor.camera-overlay",
             defaultValue: "Camera overlay",
-            comment: "Section title for the recorded camera picture-in-picture overlay",
+            comment: "Section title for the recorded camera picture-in-picture overlay"
         )
         static let cameraMetadataInvalid = string(
             "video-editor.camera-metadata-invalid",
             defaultValue: "Camera data is unavailable. The screen track will be used.",
-            comment: "Warning shown when camera metadata does not match the source video tracks",
+            comment: "Warning shown when camera metadata does not match the source video tracks"
         )
         static let showCamera = string(
             "video-editor.show-camera",
             defaultValue: "Show camera",
-            comment: "Toggle label for showing the recorded camera overlay",
+            comment: "Toggle label for showing the recorded camera overlay"
         )
         static let cameraReactsToZoom = string(
             "video-editor.camera-reacts-to-zoom",
             defaultValue: "Scale webcam with zoom",
-            comment: "Toggle label for shrinking the webcam overlay during screen zoom",
+            comment: "Toggle label for shrinking the webcam overlay during screen zoom"
         )
         static let cameraPosition = string(
             "video-editor.camera-position",
             defaultValue: "Position",
-            comment: "Label for the camera overlay position picker",
+            comment: "Label for the camera overlay position picker"
         )
         static let cameraSize = string(
             "video-editor.camera-size",
             defaultValue: "Size",
-            comment: "Label for the camera overlay size picker",
+            comment: "Label for the camera overlay size picker"
         )
         static let topLeading = string(
             "video-editor.camera-top-leading",
             defaultValue: "Top left",
-            comment: "Top-left camera overlay position",
+            comment: "Top-left camera overlay position"
         )
         static let topTrailing = string(
             "video-editor.camera-top-trailing",
             defaultValue: "Top right",
-            comment: "Top-right camera overlay position",
+            comment: "Top-right camera overlay position"
         )
         static let bottomLeading = string(
             "video-editor.camera-bottom-leading",
             defaultValue: "Bottom left",
-            comment: "Bottom-left camera overlay position",
+            comment: "Bottom-left camera overlay position"
         )
         static let bottomTrailing = string(
             "video-editor.camera-bottom-trailing",
             defaultValue: "Bottom right",
-            comment: "Bottom-right camera overlay position",
+            comment: "Bottom-right camera overlay position"
         )
         static let small = string(
             "video-editor.camera-small",
             defaultValue: "Small",
-            comment: "Small camera overlay size",
+            comment: "Small camera overlay size"
         )
         static let medium = string(
             "video-editor.camera-medium",
             defaultValue: "Medium",
-            comment: "Medium camera overlay size",
+            comment: "Medium camera overlay size"
         )
         static let large = string(
             "video-editor.camera-large",
             defaultValue: "Large",
-            comment: "Large camera overlay size",
+            comment: "Large camera overlay size"
         )
         static let segments = string(
             "video-editor.segments",
             defaultValue: "Segments",
-            comment: "Label for the number of zoom segments in the video editor",
+            comment: "Label for the number of zoom segments in the video editor"
         )
         static let mouseSamples = string(
             "video-editor.mouse-samples",
             defaultValue: "Mouse Samples",
-            comment: "Label for the number of mouse tracking samples in the video editor",
+            comment: "Label for the number of mouse tracking samples in the video editor"
         )
         static let sampleRate = string(
             "video-editor.sample-rate",
             defaultValue: "Sample Rate",
-            comment: "Label for the mouse sample rate in the video editor",
+            comment: "Label for the mouse sample rate in the video editor"
         )
         static let coordSpace = string(
             "video-editor.coord-space",
             defaultValue: "Coord Space",
-            comment: "Label for the coordinate space in the video editor metadata sidebar",
+            comment: "Label for the coordinate space in the video editor metadata sidebar"
         )
         static let autoSegments = string(
             "video-editor.auto-segments",
             defaultValue: "Auto Segments",
-            comment: "Label for the number of auto-generated zoom segments in the video editor",
+            comment: "Label for the number of auto-generated zoom segments in the video editor"
         )
         static let recordedClicks = string(
             "video-editor.recorded-clicks",
             defaultValue: "Recorded Clicks",
-            comment: "Label for the number of click events stored in recording metadata",
+            comment: "Label for the number of click events stored in recording metadata"
         )
         static let resynthesizeImplicitZooms = string(
             "video-editor.resynthesize-implicit-zooms",
             defaultValue: "Regenerate Automatic Zooms",
-            comment: "Button title to rebuild implicit zoom segments from recorded clicks",
+            comment: "Button title to rebuild implicit zoom segments from recorded clicks"
         )
         static let resynthesizeImplicitZoomsHelp = string(
             "video-editor.resynthesize-implicit-zooms-help",
             defaultValue: "Rebuilds zoom segments from recorded clicks. Manual zoom segments are kept.",
-            comment: "Help text for the regenerate automatic zooms button",
+            comment: "Help text for the regenerate automatic zooms button"
         )
         static let autoGenerateZoomOnOpen = string(
             "video-editor.auto-generate-zoom-on-open",
             defaultValue: "Generate zooms when opening recordings",
-            comment: "Preference toggle label for automatic zoom generation on editor open",
+            comment: "Preference toggle label for automatic zoom generation on editor open"
         )
         static let autoGenerateZoomOnOpenHelp = string(
             "video-editor.auto-generate-zoom-on-open-help",
             defaultValue: "Creates camera-follow zoom segments from clicks recorded in the capture area.",
-            comment: "Help text for automatic zoom generation preference",
+            comment: "Help text for automatic zoom generation preference"
         )
         static let implicitZoomSegments = string(
             "video-editor.implicit-zoom-segments",
             defaultValue: "Automatic Zoom Segments",
-            comment: "Label for implicit zoom segment count in the video editor",
+            comment: "Label for implicit zoom segment count in the video editor"
         )
         static let anchorMode = string(
             "video-editor.anchor-mode",
             defaultValue: "Camera Behavior",
-            comment: "Label for the selected zoom camera behavior picker",
+            comment: "Label for the selected zoom camera behavior picker"
         )
         static let anchorPointer = string(
             "video-editor.anchor-pointer",
             defaultValue: "Follow pointer",
-            comment: "Zoom anchor mode that follows the recorded pointer path",
+            comment: "Zoom anchor mode that follows the recorded pointer path"
         )
         static let anchorSmart = string(
             "video-editor.anchor-smart",
             defaultValue: "Follow activity",
-            comment: "Zoom anchor mode that clusters click activity within the segment",
+            comment: "Zoom anchor mode that clusters click activity within the segment"
         )
         static let anchorPinned = string(
             "video-editor.anchor-pinned",
             defaultValue: "Fixed position",
-            comment: "Zoom anchor mode that keeps a fixed center point",
+            comment: "Zoom anchor mode that keeps a fixed center point"
         )
         static let syntheticOverlays = string(
             "video-editor.synthetic-overlays",
             defaultValue: "Click & Shortcut Overlays",
-            comment: "Section label for post-processed pointer and keystroke overlays",
+            comment: "Section label for post-processed pointer and keystroke overlays"
         )
         static let showsSyntheticCursor = string(
             "video-editor.shows-synthetic-cursor",
             defaultValue: "Reconstructed pointer",
-            comment: "Toggle label for synthetic cursor overlay in the video editor",
+            comment: "Toggle label for synthetic cursor overlay in the video editor"
         )
         static let showsClickEffects = string(
             "video-editor.shows-click-effects",
             defaultValue: "Click pulses",
-            comment: "Toggle label for synthetic click pulse overlay in the video editor",
+            comment: "Toggle label for synthetic click pulse overlay in the video editor"
         )
         static let showsKeystrokes = string(
             "video-editor.shows-keystrokes",
             defaultValue: "Shortcut captions",
-            comment: "Toggle label for synthetic keystroke captions in the video editor",
+            comment: "Toggle label for synthetic keystroke captions in the video editor"
         )
         static let showsSyntheticCursorHelp = string(
             "video-editor.shows-synthetic-cursor-help",
             defaultValue: "Draws a smoothed pointer from recorded mouse metadata instead of the baked cursor.",
-            comment: "Help text for reconstructed pointer toggle",
+            comment: "Help text for reconstructed pointer toggle"
         )
         static func originalDimensionsLabel(_ width: Int, _ height: Int) -> String {
             format(
@@ -6562,59 +6562,59 @@ nonisolated enum L10n {
                 defaultValue: "Original (%d×%d)",
                 comment: "Label for the original export dimension preset. The two %d values are width and height.",
                 width,
-                height,
+                height
             )
         }
 
         static let showVideoInfoHint = string(
             "video-editor.show-video-info-hint",
             defaultValue: "Show Video Info (I)",
-            comment: "Tooltip for showing the video info sidebar in the video editor",
+            comment: "Tooltip for showing the video info sidebar in the video editor"
         )
         static let hideVideoInfoHint = string(
             "video-editor.hide-video-info-hint",
             defaultValue: "Hide Video Info (I)",
-            comment: "Tooltip for hiding the video info sidebar in the video editor",
+            comment: "Tooltip for hiding the video info sidebar in the video editor"
         )
         static let filenamePlaceholder = string(
             "video-editor.filename-placeholder",
             defaultValue: "Filename",
-            comment: "Placeholder for the rename field in the video editor toolbar",
+            comment: "Placeholder for the rename field in the video editor toolbar"
         )
         static let showLeftSidebarHint = string(
             "video-editor.show-left-sidebar-hint",
             defaultValue: "Show Left Sidebar (⌘B)",
-            comment: "Tooltip for showing the left background sidebar in the video editor",
+            comment: "Tooltip for showing the left background sidebar in the video editor"
         )
         static let hideLeftSidebarHint = string(
             "video-editor.hide-left-sidebar-hint",
             defaultValue: "Hide Left Sidebar (⌘B)",
-            comment: "Tooltip for hiding the left background sidebar in the video editor",
+            comment: "Tooltip for hiding the left background sidebar in the video editor"
         )
         static let showRightSidebarHint = string(
             "video-editor.show-right-sidebar-hint",
             defaultValue: "Show Right Sidebar (⌘⇧B)",
-            comment: "Tooltip for showing the right zoom configuration sidebar in the video editor",
+            comment: "Tooltip for showing the right zoom configuration sidebar in the video editor"
         )
         static let hideRightSidebarHint = string(
             "video-editor.hide-right-sidebar-hint",
             defaultValue: "Hide Right Sidebar (⌘⇧B)",
-            comment: "Tooltip for hiding the right zoom configuration sidebar in the video editor",
+            comment: "Tooltip for hiding the right zoom configuration sidebar in the video editor"
         )
         static let undoShortcutHint = string(
             "video-editor.undo-shortcut-hint",
             defaultValue: "Undo (⌘Z)",
-            comment: "Tooltip for undo in the video editor toolbar",
+            comment: "Tooltip for undo in the video editor toolbar"
         )
         static let redoShortcutHint = string(
             "video-editor.redo-shortcut-hint",
             defaultValue: "Redo (⌘⇧Z)",
-            comment: "Tooltip for redo in the video editor toolbar",
+            comment: "Tooltip for redo in the video editor toolbar"
         )
         static let aspectRatio = string(
             "video-editor.aspect-ratio",
             defaultValue: "Aspect Ratio",
-            comment: "Field label for aspect ratio in the video editor metadata sidebar",
+            comment: "Field label for aspect ratio in the video editor metadata sidebar"
         )
     }
 
@@ -6622,338 +6622,338 @@ nonisolated enum L10n {
         static let autoScroll = string(
             "scrolling-capture.auto-scroll",
             defaultValue: "Auto Scroll",
-            comment: "Scrolling capture HUD button title for starting automatic scrolling",
+            comment: "Scrolling capture HUD button title for starting automatic scrolling"
         )
         static let runtimeReady = string(
             "scrolling-capture.runtime-ready",
             defaultValue: "Ready",
-            comment: "Runtime state label for scrolling capture before starting",
+            comment: "Runtime state label for scrolling capture before starting"
         )
         static let runtimeCapturing = string(
             "scrolling-capture.runtime-capturing",
             defaultValue: "Capturing",
-            comment: "Runtime state label for active scrolling capture",
+            comment: "Runtime state label for active scrolling capture"
         )
         static let runtimeLive = string(
             "scrolling-capture.runtime-live",
             defaultValue: "Live",
-            comment: "Runtime state label for live scrolling capture preview",
+            comment: "Runtime state label for live scrolling capture preview"
         )
         static let runtimeProcessing = string(
             "scrolling-capture.runtime-processing",
             defaultValue: "Processing",
-            comment: "Runtime state label for processing scrolling capture frames",
+            comment: "Runtime state label for processing scrolling capture frames"
         )
         static let runtimePaused = string(
             "scrolling-capture.runtime-paused",
             defaultValue: "Paused",
-            comment: "Runtime state label for paused scrolling capture recovery",
+            comment: "Runtime state label for paused scrolling capture recovery"
         )
         static let runtimeFinishing = string(
             "scrolling-capture.runtime-finishing",
             defaultValue: "Finishing",
-            comment: "Runtime state label for finalizing scrolling capture",
+            comment: "Runtime state label for finalizing scrolling capture"
         )
         static let runtimeSaving = string(
             "scrolling-capture.runtime-saving",
             defaultValue: "Saving",
-            comment: "Runtime state label for saving scrolling capture output",
+            comment: "Runtime state label for saving scrolling capture output"
         )
         static let badgeCaptured = string(
             "scrolling-capture.badge-captured",
             defaultValue: "Captured",
-            comment: "Badge label for committed scrolling capture preview",
+            comment: "Badge label for committed scrolling capture preview"
         )
         static let badgeLive = string(
             "scrolling-capture.badge-live",
             defaultValue: "Live",
-            comment: "Badge label for live scrolling capture preview",
+            comment: "Badge label for live scrolling capture preview"
         )
         static let badgeSyncing = string(
             "scrolling-capture.badge-syncing",
             defaultValue: "Syncing",
-            comment: "Badge label for scrolling capture preview while syncing",
+            comment: "Badge label for scrolling capture preview while syncing"
         )
         static let badgePaused = string(
             "scrolling-capture.badge-paused",
             defaultValue: "Paused",
-            comment: "Badge label for paused scrolling capture preview",
+            comment: "Badge label for paused scrolling capture preview"
         )
         static let badgeFinishing = string(
             "scrolling-capture.badge-finishing",
             defaultValue: "Finishing",
-            comment: "Badge label for finalizing scrolling capture preview",
+            comment: "Badge label for finalizing scrolling capture preview"
         )
         static let badgeSaving = string(
             "scrolling-capture.badge-saving",
             defaultValue: "Saving",
-            comment: "Badge label for saving scrolling capture preview",
+            comment: "Badge label for saving scrolling capture preview"
         )
         static let previewPressStartToBegin = string(
             "scrolling-capture.preview-press-start-to-begin",
             defaultValue: "Scroll to begin capturing.",
-            comment: "Preview description shown before the first stitched frame is ready",
+            comment: "Preview description shown before the first stitched frame is ready"
         )
         static let previewShowingLatestStitchedCapture = string(
             "scrolling-capture.preview-showing-latest-stitched-capture",
             defaultValue: "Showing the latest stitched capture.",
-            comment: "Preview description shown when the committed stitched capture is displayed",
+            comment: "Preview description shown when the committed stitched capture is displayed"
         )
         static let previewMatchesStitchedCapture = string(
             "scrolling-capture.preview-matches-stitched-capture",
             defaultValue: "Preview matches the stitched capture.",
-            comment: "Preview description shown when the live preview matches the stitched output",
+            comment: "Preview description shown when the live preview matches the stitched output"
         )
         static let previewShowingLatestWhileLockingNewerContent = string(
             "scrolling-capture.preview-showing-latest-while-locking-newer-content",
             defaultValue: "Showing the latest stitched result while Cue locks newer content.",
-            comment: "Preview description shown while scrolling capture syncs newer content",
+            comment: "Preview description shown while scrolling capture syncs newer content"
         )
         static let previewPausedScrollSlowly = string(
             "scrolling-capture.preview-paused-scroll-slowly",
             defaultValue: "Preview paused - scroll slowly so Cue can re-align.",
-            comment: "Preview description shown when scrolling capture needs recovery",
+            comment: "Preview description shown when scrolling capture needs recovery"
         )
         static let previewFinishingSavingCapture = string(
             "scrolling-capture.preview-finishing-saving-capture",
             defaultValue: "Finishing up - saving your capture.",
-            comment: "Preview description shown when scrolling capture is finalizing",
+            comment: "Preview description shown when scrolling capture is finalizing"
         )
         static let previewSavingCapture = string(
             "scrolling-capture.preview-saving-capture",
             defaultValue: "Saving your capture...",
-            comment: "Preview description shown while scrolling capture is saving",
+            comment: "Preview description shown while scrolling capture is saving"
         )
         static let guidanceReleaseToLockArea = string(
             "scrolling-capture.guidance-release-to-lock-area",
             defaultValue: "Release to lock area",
-            comment: "Selection guidance title shown after moving or resizing the scrolling capture region",
+            comment: "Selection guidance title shown after moving or resizing the scrolling capture region"
         )
         static let guidanceKeepOnlyScrollingContent = string(
             "scrolling-capture.guidance-keep-only-scrolling-content",
             defaultValue: "Keep only the scrolling content",
-            comment: "Selection guidance detail reminding users to frame only scrolling content",
+            comment: "Selection guidance detail reminding users to frame only scrolling content"
         )
         static let guidanceAreaUpdated = string(
             "scrolling-capture.guidance-area-updated",
             defaultValue: "Area updated",
-            comment: "Selection guidance title shown after the scrolling capture region is updated",
+            comment: "Selection guidance title shown after the scrolling capture region is updated"
         )
         static let guidancePlaceMouseInsideSelection = string(
             "scrolling-capture.guidance-place-mouse-inside-selection",
             defaultValue: "Place mouse inside the capture area",
-            comment: "Selection guidance title shown when auto-scroll pauses because the pointer left the capture region",
+            comment: "Selection guidance title shown when auto-scroll pauses because the pointer left the capture region"
         )
         static let guidanceReturnMouseInsideSelection = string(
             "scrolling-capture.guidance-return-mouse-inside-selection",
             defaultValue: "Move the pointer back into the selection to continue auto-scrolling",
-            comment: "Selection guidance detail shown when auto-scroll pauses because the pointer left the capture region",
+            comment: "Selection guidance detail shown when auto-scroll pauses because the pointer left the capture region"
         )
         static let guidanceFrameOnlyScrollingContent = string(
             "scrolling-capture.guidance-frame-only-scrolling-content",
             defaultValue: "Frame only the scrolling content",
-            comment: "Selection guidance title shown before starting scrolling capture",
+            comment: "Selection guidance title shown before starting scrolling capture"
         )
         static let guidanceThenPressStartCapture = string(
             "scrolling-capture.guidance-then-press-start-capture",
             defaultValue: "Scroll in one direction at a steady pace",
-            comment: "Selection guidance detail shown after scrolling capture begins",
+            comment: "Selection guidance detail shown after scrolling capture begins"
         )
         static let guidanceKeepOneDirection = string(
             "scrolling-capture.guidance-keep-one-direction",
             defaultValue: "Keep one direction",
-            comment: "Selection guidance title shown when scrolling direction changes",
+            comment: "Selection guidance title shown when scrolling direction changes"
         )
         static let guidanceReverseScrollingCanBreakStitch = string(
             "scrolling-capture.guidance-reverse-scrolling-can-break-stitch",
             defaultValue: "Reverse scrolling can break the stitch",
-            comment: "Selection guidance detail shown when scrolling direction changes",
+            comment: "Selection guidance detail shown when scrolling direction changes"
         )
         static let guidanceKeepCapturing = string(
             "scrolling-capture.guidance-keep-capturing",
             defaultValue: "Keep capturing",
-            comment: "Selection guidance title shown when scrolling capture has no savable result yet",
+            comment: "Selection guidance title shown when scrolling capture has no savable result yet"
         )
         static let guidanceThenTryDoneAgain = string(
             "scrolling-capture.guidance-then-try-done-again",
             defaultValue: "Then try Done again",
-            comment: "Selection guidance detail shown when scrolling capture has no savable result yet",
+            comment: "Selection guidance detail shown when scrolling capture has no savable result yet"
         )
         static let guidanceTryDoneAgain = string(
             "scrolling-capture.guidance-try-done-again",
             defaultValue: "Try Done again",
-            comment: "Selection guidance title shown when scrolling capture save failed but current result remains available",
+            comment: "Selection guidance title shown when scrolling capture save failed but current result remains available"
         )
         static let guidanceCurrentResultStillReady = string(
             "scrolling-capture.guidance-current-result-still-ready",
             defaultValue: "Current result is still ready",
-            comment: "Selection guidance detail shown when scrolling capture save failed but current result remains available",
+            comment: "Selection guidance detail shown when scrolling capture save failed but current result remains available"
         )
         static let guidanceHeightLimitReached = string(
             "scrolling-capture.guidance-height-limit-reached",
             defaultValue: "Height limit reached",
-            comment: "Selection guidance title shown when scrolling capture reaches the output height limit",
+            comment: "Selection guidance title shown when scrolling capture reaches the output height limit"
         )
         static let guidancePressDoneToSave = string(
             "scrolling-capture.guidance-press-done-to-save",
             defaultValue: "Press Done to save",
-            comment: "Selection guidance detail shown when the current scrolling capture result can be saved",
+            comment: "Selection guidance detail shown when the current scrolling capture result can be saved"
         )
         static let guidanceNoNewContentDetected = string(
             "scrolling-capture.guidance-no-new-content-detected",
             defaultValue: "No new content was detected",
-            comment: "Selection guidance detail shown when scrolling capture reaches the end of content",
+            comment: "Selection guidance detail shown when scrolling capture reaches the end of content"
         )
         static let guidanceCurrentStitchedResultReady = string(
             "scrolling-capture.guidance-current-stitched-result-ready",
             defaultValue: "Current stitched result is ready",
-            comment: "Selection guidance detail shown when scrolling capture can be saved",
+            comment: "Selection guidance detail shown when scrolling capture can be saved"
         )
         static let guidanceContinueManually = string(
             "scrolling-capture.guidance-continue-manually",
             defaultValue: "Continue manually",
-            comment: "Selection guidance title shown when users should keep scrolling manually",
+            comment: "Selection guidance title shown when users should keep scrolling manually"
         )
         static let guidancePressDoneWhenReady = string(
             "scrolling-capture.guidance-press-done-when-ready",
             defaultValue: "Press Done when you're ready",
-            comment: "Selection guidance detail shown when users should continue scrolling manually",
+            comment: "Selection guidance detail shown when users should continue scrolling manually"
         )
         static let guidanceHoldSteady = string(
             "scrolling-capture.guidance-hold-steady",
             defaultValue: "Hold steady",
-            comment: "Selection guidance title shown while the first scrolling capture frame is locking",
+            comment: "Selection guidance title shown while the first scrolling capture frame is locking"
         )
         static let guidanceLockingFirstFrame = string(
             "scrolling-capture.guidance-locking-first-frame",
             defaultValue: "Cue is locking the first frame",
-            comment: "Selection guidance detail shown while the first scrolling capture frame is locking",
+            comment: "Selection guidance detail shown while the first scrolling capture frame is locking"
         )
         static let guidanceSlowDown = string(
             "scrolling-capture.guidance-slow-down",
             defaultValue: "Slow down",
-            comment: "Selection guidance title shown when scrolling capture needs slower scrolling",
+            comment: "Selection guidance title shown when scrolling capture needs slower scrolling"
         )
         static let guidanceKeepOneDirectionForRealignment = string(
             "scrolling-capture.guidance-keep-one-direction-for-realignment",
             defaultValue: "Keep one direction so Cue can re-align",
-            comment: "Selection guidance detail shown when scrolling capture needs recovery",
+            comment: "Selection guidance detail shown when scrolling capture needs recovery"
         )
         static let guidanceKeepSteadierPace = string(
             "scrolling-capture.guidance-keep-steadier-pace",
             defaultValue: "Keep a steadier pace",
-            comment: "Selection guidance title shown when scrolling capture cannot align a frame",
+            comment: "Selection guidance title shown when scrolling capture cannot align a frame"
         )
         static let guidanceStayOnOneDirection = string(
             "scrolling-capture.guidance-stay-on-one-direction",
             defaultValue: "Stay on one direction",
-            comment: "Selection guidance detail shown when scrolling capture cannot align a frame",
+            comment: "Selection guidance detail shown when scrolling capture cannot align a frame"
         )
         static let guidancePreviewNeedsRecovery = string(
             "scrolling-capture.guidance-preview-needs-recovery",
             defaultValue: "Preview needs recovery",
-            comment: "Selection guidance title shown when scrolling capture preview refresh fails",
+            comment: "Selection guidance title shown when scrolling capture preview refresh fails"
         )
         static let guidanceKeepOneDirectionOrRestart = string(
             "scrolling-capture.guidance-keep-one-direction-or-restart",
             defaultValue: "Keep one direction or restart",
-            comment: "Selection guidance detail shown when scrolling capture preview refresh fails",
+            comment: "Selection guidance detail shown when scrolling capture preview refresh fails"
         )
         static let guidanceKeepScrollingDown = string(
             "scrolling-capture.guidance-keep-scrolling-down",
             defaultValue: "Keep scrolling down",
-            comment: "Selection guidance title shown while scrolling capture waits for new content",
+            comment: "Selection guidance title shown while scrolling capture waits for new content"
         )
         static let guidanceOneDirectionSteadyPace = string(
             "scrolling-capture.guidance-one-direction-steady-pace",
             defaultValue: "One direction, steady pace",
-            comment: "Selection guidance detail shown while scrolling capture waits for new content",
+            comment: "Selection guidance detail shown while scrolling capture waits for new content"
         )
         static let guidanceScrollDownSteadily = string(
             "scrolling-capture.guidance-scroll-down-steadily",
             defaultValue: "Scroll down steadily",
-            comment: "Selection guidance title shown during active scrolling capture",
+            comment: "Selection guidance title shown during active scrolling capture"
         )
         static let guidanceKeepOneDirectionForCleanStitch = string(
             "scrolling-capture.guidance-keep-one-direction-for-clean-stitch",
             defaultValue: "Keep one direction for a clean stitch",
-            comment: "Selection guidance detail shown during active scrolling capture",
+            comment: "Selection guidance detail shown during active scrolling capture"
         )
         static let guidanceSavingCurrentResult = string(
             "scrolling-capture.guidance-saving-current-result",
             defaultValue: "Saving current result",
-            comment: "Selection guidance title shown while scrolling capture saves after reaching a limit",
+            comment: "Selection guidance title shown while scrolling capture saves after reaching a limit"
         )
         static let guidanceLockingCurrentCapture = string(
             "scrolling-capture.guidance-locking-current-capture",
             defaultValue: "Locking current capture",
-            comment: "Selection guidance title shown while scrolling capture finalizes",
+            comment: "Selection guidance title shown while scrolling capture finalizes"
         )
         static let guidanceSealingStitchedResult = string(
             "scrolling-capture.guidance-sealing-stitched-result",
             defaultValue: "Cue is sealing the stitched result",
-            comment: "Selection guidance detail shown while scrolling capture finalizes",
+            comment: "Selection guidance detail shown while scrolling capture finalizes"
         )
         static let guidanceSavingLongScreenshot = string(
             "scrolling-capture.guidance-saving-long-screenshot",
             defaultValue: "Saving long screenshot",
-            comment: "Selection guidance title shown while scrolling capture saves the final image",
+            comment: "Selection guidance title shown while scrolling capture saves the final image"
         )
         static let guidancePleaseWait = string(
             "scrolling-capture.guidance-please-wait",
             defaultValue: "Please wait",
-            comment: "Selection guidance detail shown while scrolling capture saves the final image",
+            comment: "Selection guidance detail shown while scrolling capture saves the final image"
         )
         static let startCapture = string(
             "scrolling-capture.start-capture",
             defaultValue: "Start Capture",
-            comment: "Primary button title for starting scrolling capture",
+            comment: "Primary button title for starting scrolling capture"
         )
         static let stopAutoScroll = string(
             "scrolling-capture.stop-auto-scroll",
             defaultValue: "Stop",
-            comment: "Scrolling capture HUD button title for stopping automatic scrolling",
+            comment: "Scrolling capture HUD button title for stopping automatic scrolling"
         )
         static func sectionsCaptured(_ count: Int) -> String {
             format(
                 "scrolling-capture.sections-captured",
                 defaultValue: "%d section(s) captured",
                 comment: "Summary shown in the scrolling capture HUD. %d is the number of captured sections.",
-                count,
+                count
             )
         }
 
         static let captionLockingFirstFrame = string(
             "scrolling-capture.caption-locking-first-frame",
             defaultValue: "Locking the first frame",
-            comment: "Preview caption shown while scrolling capture locks the first frame",
+            comment: "Preview caption shown while scrolling capture locks the first frame"
         )
         static let captionStartCaptureToLockFirstFrame = string(
             "scrolling-capture.caption-start-capture-to-lock-first-frame",
             defaultValue: "Start Capture to lock the first frame",
-            comment: "Legacy preview caption retained for configuration import compatibility",
+            comment: "Legacy preview caption retained for configuration import compatibility"
         )
         static let captionNoSavableResultReady = string(
             "scrolling-capture.caption-no-savable-result-ready",
             defaultValue: "No savable stitched result is ready yet",
-            comment: "Preview caption shown when scrolling capture has no savable result yet",
+            comment: "Preview caption shown when scrolling capture has no savable result yet"
         )
         static let captionSavingStitchedResult = string(
             "scrolling-capture.caption-saving-stitched-result",
             defaultValue: "Saving stitched result...",
-            comment: "Preview caption shown while scrolling capture saves the stitched output",
+            comment: "Preview caption shown while scrolling capture saves the stitched output"
         )
         static let captionSaveFailedResultStillReady = string(
             "scrolling-capture.caption-save-failed-result-still-ready",
             defaultValue: "Save failed • stitched result is still ready",
-            comment: "Preview caption shown when scrolling capture save fails but the result remains ready",
+            comment: "Preview caption shown when scrolling capture save fails but the result remains ready"
         )
         static func framesStitchedNoNewContent(_ count: Int) -> String {
             format(
                 "scrolling-capture.caption-frames-stitched-no-new-content",
                 defaultValue: "%d frames stitched • no new content",
                 comment: "Preview caption shown when scrolling capture reaches the end of new content. %d is the stitched frame count.",
-                count,
+                count
             )
         }
 
@@ -6962,24 +6962,24 @@ nonisolated enum L10n {
                 "scrolling-capture.caption-frames-stitched-height-limit-reached",
                 defaultValue: "%d frames stitched • height limit reached",
                 comment: "Preview caption shown when scrolling capture reaches the height limit. %d is the stitched frame count.",
-                count,
+                count
             )
         }
 
         static let captionLivePreviewRunning = string(
             "scrolling-capture.caption-live-preview-running",
             defaultValue: "Live preview running while Cue locks the stitched frame.",
-            comment: "Preview caption shown while the scrolling capture live preview stream is active",
+            comment: "Preview caption shown while the scrolling capture live preview stream is active"
         )
         static let captionFinalizingStitchedResult = string(
             "scrolling-capture.caption-finalizing-stitched-result",
             defaultValue: "Finalizing stitched result...",
-            comment: "Preview caption shown while scrolling capture finalizes",
+            comment: "Preview caption shown while scrolling capture finalizes"
         )
         static let captionFirstFrameLocked = string(
             "scrolling-capture.caption-first-frame-locked",
             defaultValue: "First frame locked",
-            comment: "Preview caption shown after the first scrolling capture frame is locked",
+            comment: "Preview caption shown after the first scrolling capture frame is locked"
         )
         static func framesStitchedDelta(_ count: Int, _ delta: Int) -> String {
             format(
@@ -6987,7 +6987,7 @@ nonisolated enum L10n {
                 defaultValue: "%d frames stitched • +%d px",
                 comment: "Preview caption shown after appending a scrolling capture frame. %d values are stitched frame count and appended pixel delta.",
                 count,
-                delta,
+                delta
             )
         }
 
@@ -6996,7 +6996,7 @@ nonisolated enum L10n {
                 "scrolling-capture.caption-finalizing-frames-locked",
                 defaultValue: "Finalizing stitched result • %d frames locked",
                 comment: "Preview caption shown while finalizing a scrolling capture with locked frames. %d is the stitched frame count.",
-                count,
+                count
             )
         }
 
@@ -7006,34 +7006,34 @@ nonisolated enum L10n {
                 defaultValue: "Final frame locked • %d frames • +%d px",
                 comment: "Preview caption shown when the final scrolling capture frame is locked. %d values are stitched frame count and appended pixel delta.",
                 count,
-                delta,
+                delta
             )
         }
 
         static let captionFinalizingCurrentResultNoNewContent = string(
             "scrolling-capture.caption-finalizing-current-result-no-new-content",
             defaultValue: "Finalizing current result • no new content",
-            comment: "Preview caption shown when finalizing scrolling capture with no new content",
+            comment: "Preview caption shown when finalizing scrolling capture with no new content"
         )
         static let captionFinalizingCurrentResultLastFrameSkipped = string(
             "scrolling-capture.caption-finalizing-current-result-last-frame-skipped",
             defaultValue: "Finalizing current stitched result • last frame skipped",
-            comment: "Preview caption shown when the last scrolling capture frame could not be aligned cleanly",
+            comment: "Preview caption shown when the last scrolling capture frame could not be aligned cleanly"
         )
         static let toastNoStitchedFrameReady = string(
             "scrolling-capture.toast-no-stitched-frame-ready",
             defaultValue: "No stitched frame is ready yet.",
-            comment: "Toast shown when scrolling capture cannot save because no stitched frame is ready",
+            comment: "Toast shown when scrolling capture cannot save because no stitched frame is ready"
         )
         static let toastSavedStitchedImage = string(
             "scrolling-capture.toast-saved-stitched-image",
             defaultValue: "Scrolling Capture saved the stitched image.",
-            comment: "Toast shown after scrolling capture saves successfully",
+            comment: "Toast shown after scrolling capture saves successfully"
         )
         static let toastSessionAlreadyActive = string(
             "scrolling-capture.toast-session-already-active",
             defaultValue: "A scrolling capture session is already active.",
-            comment: "Toast shown when the user tries to start a second scrolling capture session while one is already active",
+            comment: "Toast shown when the user tries to start a second scrolling capture session while one is already active"
         )
     }
 
@@ -7041,224 +7041,224 @@ nonisolated enum L10n {
         static let options = string(
             "recording-toolbar.options",
             defaultValue: "Options",
-            comment: "Button title for recording toolbar options",
+            comment: "Button title for recording toolbar options"
         )
         static let recordingOptionsAccessibility = string(
             "recording-toolbar.options-accessibility",
             defaultValue: "Recording options",
-            comment: "Accessibility label for recording toolbar options button",
+            comment: "Accessibility label for recording toolbar options button"
         )
         static let recordingOptionsHint = string(
             "recording-toolbar.options-hint",
             defaultValue: "Opens settings for format, quality, and overlays",
-            comment: "Accessibility hint for recording toolbar options button",
+            comment: "Accessibility hint for recording toolbar options button"
         )
         static let settingsTitle = string(
             "recording-toolbar.settings-title",
             defaultValue: "Recording Settings",
-            comment: "Popover title for recording toolbar settings",
+            comment: "Popover title for recording toolbar settings"
         )
         static let formatSection = string(
             "recording-toolbar.format-section",
             defaultValue: "Format",
-            comment: "Recording toolbar settings section title",
+            comment: "Recording toolbar settings section title"
         )
         static let qualitySection = string(
             "recording-toolbar.quality-section",
             defaultValue: "Quality",
-            comment: "Recording toolbar settings section title",
+            comment: "Recording toolbar settings section title"
         )
         static let audioSection = string(
             "recording-toolbar.audio-section",
             defaultValue: "Audio",
-            comment: "Recording toolbar settings section title",
+            comment: "Recording toolbar settings section title"
         )
         static let overlaysSection = string(
             "recording-toolbar.overlays-section",
             defaultValue: "Overlays",
-            comment: "Recording toolbar settings section title",
+            comment: "Recording toolbar settings section title"
         )
         static let systemAudio = string(
             "recording-toolbar.system-audio",
             defaultValue: "System Audio",
-            comment: "Recording toolbar setting label",
+            comment: "Recording toolbar setting label"
         )
         static let microphoneInput = string(
             "recording-toolbar.microphone-input",
             defaultValue: "Microphone",
-            comment: "Recording toolbar microphone input picker label",
+            comment: "Recording toolbar microphone input picker label"
         )
         static let highlightClicks = string(
             "recording-toolbar.highlight-clicks",
             defaultValue: "Highlight Clicks",
-            comment: "Recording toolbar setting label",
+            comment: "Recording toolbar setting label"
         )
         static let showKeystrokes = string(
             "recording-toolbar.show-keystrokes",
             defaultValue: "Show Keystrokes",
-            comment: "Recording toolbar setting label",
+            comment: "Recording toolbar setting label"
         )
         static let showCursor = string(
             "recording-toolbar.show-cursor",
             defaultValue: "Show Cursor",
-            comment: "Recording toolbar setting label",
+            comment: "Recording toolbar setting label"
         )
         static let outputModeAccessibilityPrefix = string(
             "recording-toolbar.output-mode-accessibility-prefix",
             defaultValue: "Output mode",
-            comment: "Accessibility label prefix for current output mode",
+            comment: "Accessibility label prefix for current output mode"
         )
         static let outputModeHint = string(
             "recording-toolbar.output-mode-hint",
             defaultValue: "Opens output format selection",
-            comment: "Accessibility hint for output mode selector",
+            comment: "Accessibility hint for output mode selector"
         )
         static let record = string(
             "recording-toolbar.record",
             defaultValue: "Record",
-            comment: "Recording toolbar primary action button title",
+            comment: "Recording toolbar primary action button title"
         )
         static func startRecordingAs(_ mode: String) -> String {
             format(
                 "recording-toolbar.start-recording-as",
                 defaultValue: "Start recording as %@",
                 comment: "Accessibility label for recording button. %@ is the output mode name.",
-                mode,
+                mode
             )
         }
 
         static let startRecordingHint = string(
             "recording-toolbar.start-recording-hint",
             defaultValue: "Begins screen recording with current settings",
-            comment: "Accessibility hint for recording button",
+            comment: "Accessibility hint for recording button"
         )
         static let stop = string(
             "recording-toolbar.stop",
             defaultValue: "Stop",
-            comment: "Recording status bar stop button title",
+            comment: "Recording status bar stop button title"
         )
         static func stopRecordingAccessibility(_ duration: String) -> String {
             format(
                 "recording-toolbar.stop-recording-accessibility",
                 defaultValue: "Stop recording - Duration: %@",
                 comment: "Accessibility label for stop recording button. %@ is the formatted duration.",
-                duration,
+                duration
             )
         }
 
         static let stopRecordingHint = string(
             "recording-toolbar.stop-recording-hint",
             defaultValue: "Stops and saves the recording",
-            comment: "Accessibility hint for stop recording button",
+            comment: "Accessibility hint for stop recording button"
         )
         static func clickToStop(_ duration: String) -> String {
             format(
                 "recording-toolbar.click-to-stop",
                 defaultValue: "Click to stop recording (%@)",
                 comment: "Menu bar tooltip when the recording controls bar is hidden. %@ is the formatted duration.",
-                duration,
+                duration
             )
         }
 
         static let statusBarAccessibility = string(
             "recording-toolbar.status-bar-accessibility",
             defaultValue: "Recording status bar",
-            comment: "Accessibility label for recording status bar container",
+            comment: "Accessibility label for recording status bar container"
         )
         static let recordingInProgress = string(
             "recording-toolbar.recording-in-progress",
             defaultValue: "Recording in progress",
-            comment: "Accessibility label for recording status indicator while active",
+            comment: "Accessibility label for recording status indicator while active"
         )
         static let recordingPaused = string(
             "recording-toolbar.recording-paused",
             defaultValue: "Recording paused",
-            comment: "Accessibility label for recording status indicator while paused",
+            comment: "Accessibility label for recording status indicator while paused"
         )
         static let resumeRecording = string(
             "recording-toolbar.resume-recording",
             defaultValue: "Resume recording",
-            comment: "Accessibility label for resume recording button",
+            comment: "Accessibility label for resume recording button"
         )
         static let pauseRecording = string(
             "recording-toolbar.pause-recording",
             defaultValue: "Pause recording",
-            comment: "Accessibility label for pause recording button",
+            comment: "Accessibility label for pause recording button"
         )
         static let enableAnnotations = string(
             "recording-toolbar.enable-annotations",
             defaultValue: "Enable annotations",
-            comment: "Accessibility label for enabling live annotations during recording",
+            comment: "Accessibility label for enabling live annotations during recording"
         )
         static let disableAnnotations = string(
             "recording-toolbar.disable-annotations",
             defaultValue: "Disable annotations",
-            comment: "Accessibility label for disabling live annotations during recording",
+            comment: "Accessibility label for disabling live annotations during recording"
         )
         static let restartRecording = string(
             "recording-toolbar.restart-recording",
             defaultValue: "Restart recording",
-            comment: "Accessibility label for restarting a recording",
+            comment: "Accessibility label for restarting a recording"
         )
         static let deleteRecording = string(
             "recording-toolbar.delete-recording",
             defaultValue: "Delete recording",
-            comment: "Accessibility label for deleting a recording",
+            comment: "Accessibility label for deleting a recording"
         )
         static let outputVideo = string(
             "recording-toolbar.output-video",
             defaultValue: "Video",
-            comment: "Recording output mode label",
+            comment: "Recording output mode label"
         )
         static let outputGIF = string(
             "recording-toolbar.output-gif",
             defaultValue: "GIF",
-            comment: "Recording output mode label",
+            comment: "Recording output mode label"
         )
         static let qualityHigh = string(
             "recording-toolbar.quality-high",
             defaultValue: "High",
-            comment: "Recording quality preset label",
+            comment: "Recording quality preset label"
         )
         static let qualityMedium = string(
             "recording-toolbar.quality-medium",
             defaultValue: "Medium",
-            comment: "Recording quality preset label",
+            comment: "Recording quality preset label"
         )
         static let qualityLow = string(
             "recording-toolbar.quality-low",
             defaultValue: "Low",
-            comment: "Recording quality preset label",
+            comment: "Recording quality preset label"
         )
         static let fullscreenCapture = string(
             "recording-toolbar.fullscreen-capture",
             defaultValue: "Fullscreen capture",
-            comment: "Tooltip and accessibility label for fullscreen capture mode",
+            comment: "Tooltip and accessibility label for fullscreen capture mode"
         )
         static let areaSelection = string(
             "recording-toolbar.area-selection",
             defaultValue: "Area selection",
-            comment: "Tooltip for area selection capture mode",
+            comment: "Tooltip for area selection capture mode"
         )
         static let areaSelectionCapture = string(
             "recording-toolbar.area-selection-capture",
             defaultValue: "Area selection capture",
-            comment: "Accessibility label for area selection capture mode",
+            comment: "Accessibility label for area selection capture mode"
         )
         static let cancelRecording = string(
             "recording-toolbar.cancel-recording",
             defaultValue: "Cancel recording",
-            comment: "Accessibility label for cancelling recording before it starts",
+            comment: "Accessibility label for cancelling recording before it starts"
         )
         static let captureScreenshot = string(
             "recording-toolbar.capture-screenshot",
             defaultValue: "Capture screenshot",
-            comment: "Accessibility label for capturing a screenshot from the recording toolbar",
+            comment: "Accessibility label for capturing a screenshot from the recording toolbar"
         )
         static let toolbarAccessibility = string(
             "recording-toolbar.toolbar-accessibility",
             defaultValue: "Recording toolbar",
-            comment: "Accessibility label for the recording toolbar container",
+            comment: "Accessibility label for the recording toolbar container"
         )
     }
 
@@ -7266,32 +7266,32 @@ nonisolated enum L10n {
         static let bottomCenter = string(
             "keystroke-position.bottom-center",
             defaultValue: "Bottom Center",
-            comment: "Keystroke overlay position label",
+            comment: "Keystroke overlay position label"
         )
         static let bottomLeft = string(
             "keystroke-position.bottom-left",
             defaultValue: "Bottom Left",
-            comment: "Keystroke overlay position label",
+            comment: "Keystroke overlay position label"
         )
         static let bottomRight = string(
             "keystroke-position.bottom-right",
             defaultValue: "Bottom Right",
-            comment: "Keystroke overlay position label",
+            comment: "Keystroke overlay position label"
         )
         static let topCenter = string(
             "keystroke-position.top-center",
             defaultValue: "Top Center",
-            comment: "Keystroke overlay position label",
+            comment: "Keystroke overlay position label"
         )
         static let topLeft = string(
             "keystroke-position.top-left",
             defaultValue: "Top Left",
-            comment: "Keystroke overlay position label",
+            comment: "Keystroke overlay position label"
         )
         static let topRight = string(
             "keystroke-position.top-right",
             defaultValue: "Top Right",
-            comment: "Keystroke overlay position label",
+            comment: "Keystroke overlay position label"
         )
     }
 
@@ -7299,49 +7299,49 @@ nonisolated enum L10n {
         static let failedTitle = string(
             "recording.failed-title",
             defaultValue: "Recording Failed",
-            comment: "Alert title shown when starting or running a recording fails",
+            comment: "Alert title shown when starting or running a recording fails"
         )
         static let screenshotFailedTitle = string(
             "recording.screenshot-failed-title",
             defaultValue: "Screenshot Failed",
-            comment: "Alert title shown when taking a screenshot during recording fails",
+            comment: "Alert title shown when taking a screenshot during recording fails"
         )
         static let saveLocationAccessRequiredTitle = string(
             "recording.save-location-access-required-title",
             defaultValue: "Save Location Access Required",
-            comment: "Alert title shown when save location access is missing",
+            comment: "Alert title shown when save location access is missing"
         )
         static let saveLocationAccessRequiredMessage = string(
             "recording.save-location-access-required-message",
             defaultValue: "Cue needs a save folder permission to continue. Please choose a folder in onboarding or grant it now.",
-            comment: "Alert message shown when save location access is missing",
+            comment: "Alert message shown when save location access is missing"
         )
         static let chooseSaveLocationMessage = string(
             "recording.choose-save-location-message",
             defaultValue: "Choose where Cue should save screenshots and recordings",
-            comment: "Prompt shown when asking for an export directory during recording flows",
+            comment: "Prompt shown when asking for an export directory during recording flows"
         )
         static let screenPermissionDenied = string(
             "recording.error.screen-permission-denied",
             defaultValue: "Screen recording permission denied",
-            comment: "Error description when screen recording permission is denied",
+            comment: "Error description when screen recording permission is denied"
         )
         static let microphonePermissionDenied = string(
             "recording.error.microphone-permission-denied",
             defaultValue: "Microphone permission denied",
-            comment: "Error description when microphone permission is denied",
+            comment: "Error description when microphone permission is denied"
         )
         static let noDisplayFound = string(
             "recording.error.no-display-found",
             defaultValue: "No display found",
-            comment: "Error description when no display matches the selected recording area",
+            comment: "Error description when no display matches the selected recording area"
         )
         static func shareableContentLoadFailed(_ message: String) -> String {
             format(
                 "recording.error.shareable-content-load-failed",
                 defaultValue: "ScreenCaptureKit could not load shareable content: %@",
                 comment: "Error description when ScreenCaptureKit cannot load shareable content. %@ is the underlying error message.",
-                message,
+                message
             )
         }
 
@@ -7350,63 +7350,63 @@ nonisolated enum L10n {
                 "recording.error.setup-failed",
                 defaultValue: "Setup failed: %@",
                 comment: "Error description when recording setup fails. %@ is the lower-level error message.",
-                message,
+                message
             )
         }
 
         static let failedToStartWriting = string(
             "recording.error.failed-to-start-writing",
             defaultValue: "Failed to start writing",
-            comment: "Error description when the asset writer fails to start",
+            comment: "Error description when the asset writer fails to start"
         )
         static let noOutputURL = string(
             "recording.error.no-output-url",
             defaultValue: "No output URL",
-            comment: "Error description when the recording output URL is missing",
+            comment: "Error description when the recording output URL is missing"
         )
         static let cannotAddVideoWriterInput = string(
             "recording.error.cannot-add-video-writer-input",
             defaultValue: "Cannot add video writer input",
-            comment: "Error description when the video writer input cannot be added",
+            comment: "Error description when the video writer input cannot be added"
         )
         static let cannotAddSystemAudioWriterInput = string(
             "recording.error.cannot-add-system-audio-writer-input",
             defaultValue: "Cannot add system audio writer input",
-            comment: "Error description when the system audio writer input cannot be added",
+            comment: "Error description when the system audio writer input cannot be added"
         )
         static let cannotAddMicrophoneWriterInput = string(
             "recording.error.cannot-add-microphone-writer-input",
             defaultValue: "Cannot add microphone writer input",
-            comment: "Error description when the microphone writer input cannot be added",
+            comment: "Error description when the microphone writer input cannot be added"
         )
         static let selectionOutsideDisplayBounds = string(
             "recording.error.selection-outside-display-bounds",
             defaultValue: "Selection area is outside display bounds",
-            comment: "Error description when the selected recording area is outside the display bounds",
+            comment: "Error description when the selected recording area is outside the display bounds"
         )
         static func writeFailed(_ message: String) -> String {
             format(
                 "recording.error.write-failed",
                 defaultValue: "Write failed: %@",
                 comment: "Error description when writing recording output fails. %@ is the lower-level error message.",
-                message,
+                message
             )
         }
 
         static let cancelled = string(
             "recording.error.cancelled",
             defaultValue: "Recording cancelled",
-            comment: "Error description when recording is cancelled",
+            comment: "Error description when recording is cancelled"
         )
         static let partialPreserved = string(
             "recording.error.partial-preserved",
             defaultValue: "The recording could not be finalized. The partial capture was preserved for recovery.",
-            comment: "Actionable message when a partial recording is preserved",
+            comment: "Actionable message when a partial recording is preserved"
         )
         static let failedPreserved = string(
             "recording.error.failed-preserved",
             defaultValue: "Recording could not be finalized. The capture was preserved and was not added to History.",
-            comment: "Actionable message when a recording fails without a normal output",
+            comment: "Actionable message when a recording fails without a normal output"
         )
     }
 
@@ -7414,32 +7414,32 @@ nonisolated enum L10n {
         nonisolated static let chooseCapturesFolderMessage = string(
             "file-access.choose-captures-folder-message",
             defaultValue: "Choose where Cue should save screenshots and recordings",
-            comment: "Open panel message shown when Cue asks the user to grant access to a save folder",
+            comment: "Open panel message shown when Cue asks the user to grant access to a save folder"
         )
         nonisolated static let grantAccessPrompt = string(
             "file-access.grant-access-prompt",
             defaultValue: "Grant Access",
-            comment: "Open panel prompt shown when Cue asks the user to grant folder access",
+            comment: "Open panel prompt shown when Cue asks the user to grant folder access"
         )
         nonisolated static let chooseFolderPrompt = string(
             "file-access.choose-folder-prompt",
             defaultValue: "Choose Folder",
-            comment: "Open panel prompt shown when Cue asks the user to choose a folder",
+            comment: "Open panel prompt shown when Cue asks the user to choose a folder"
         )
         nonisolated static let desktopPicturesAccessMessage = string(
             "file-access.desktop-pictures-access-message",
             defaultValue: "Select the Desktop Pictures folder to grant access",
-            comment: "Open panel message shown when Cue asks for access to the system Desktop Pictures folder",
+            comment: "Open panel message shown when Cue asks for access to the system Desktop Pictures folder"
         )
         static let bookmarkSaveFailedTitle = string(
             "file-access.bookmark-save-failed-title",
             defaultValue: "Folder Access Not Granted",
-            comment: "Alert title when security-scoped bookmark persistence fails",
+            comment: "Alert title when security-scoped bookmark persistence fails"
         )
         static let bookmarkSaveFailedMessage = string(
             "file-access.bookmark-save-failed-message",
             defaultValue: "Cue could not persist access to this folder. Please choose the folder again and confirm permission.",
-            comment: "Alert message when security-scoped bookmark persistence fails",
+            comment: "Alert message when security-scoped bookmark persistence fails"
         )
     }
 
@@ -7447,74 +7447,74 @@ nonisolated enum L10n {
         static let copyFileAction = string(
             "after-capture.copy-file-action",
             defaultValue: "Copy File",
-            comment: "After capture action title",
+            comment: "After capture action title"
         )
         static let saveAction = string(
             "after-capture.save-action",
             defaultValue: "Save",
-            comment: "After capture action title",
+            comment: "After capture action title"
         )
         static let openAnnotateAction = string(
             "after-capture.open-annotate-action",
             defaultValue: "Open Annotate Editor",
-            comment: "After capture action title",
+            comment: "After capture action title"
         )
         static let uploadToCloudAction = string(
             "after-capture.upload-to-cloud-action",
             defaultValue: "Upload to Cloud & copy link",
-            comment: "After capture action title",
+            comment: "After capture action title"
         )
         static let pinToScreenAction = string(
             "after-capture.pin-to-screen-action",
             defaultValue: "Pin to the screen",
-            comment: "After capture action title",
+            comment: "After capture action title"
         )
         static let openVideoEditorAction = string(
             "after-capture.open-video-editor-action",
             defaultValue: "Open Video Editor",
-            comment: "After capture action title",
+            comment: "After capture action title"
         )
 
         static let showQuickAccessDescription = string(
             "after-capture.show-quick-access-description",
             defaultValue: "Display overlay with quick actions",
-            comment: "After capture action description",
+            comment: "After capture action description"
         )
         static let copyFileDescription = string(
             "after-capture.copy-file-description",
             defaultValue: "Copy to clipboard automatically",
-            comment: "After capture action description",
+            comment: "After capture action description"
         )
         static let saveDescription = string(
             "after-capture.save-description",
             defaultValue: "Save to export location",
-            comment: "After capture action description",
+            comment: "After capture action description"
         )
         static let openAnnotateDescription = string(
             "after-capture.open-annotate-description",
             defaultValue: "Open annotate editor after capture",
-            comment: "After capture action description",
+            comment: "After capture action description"
         )
         static let uploadToCloudDescription = string(
             "after-capture.upload-to-cloud-description",
             defaultValue: "Upload to the configured cloud provider and copy the link",
-            comment: "After capture action description",
+            comment: "After capture action description"
         )
         static let pinToScreenDescription = string(
             "after-capture.pin-to-screen-description",
             defaultValue: "Keep the screenshot floating above other windows",
-            comment: "After capture action description",
+            comment: "After capture action description"
         )
         static let openVideoEditorDescription = string(
             "after-capture.open-video-editor-description",
             defaultValue: "Open the recording in the video editor",
-            comment: "After capture action description",
+            comment: "After capture action description"
         )
 
         static let notApplicable = string(
             "after-capture.not-applicable",
             defaultValue: "Not applicable",
-            comment: "Accessibility value for an after-capture action that does not apply to a capture kind",
+            comment: "Accessibility value for an after-capture action that does not apply to a capture kind"
         )
 
         static func accessibilityLabel(_ action: String, captureKind: String) -> String {
@@ -7523,7 +7523,7 @@ nonisolated enum L10n {
                 defaultValue: "%@ for %@",
                 comment: "Accessibility label for after-capture action toggle. First %@ is the action label, second %@ is the capture kind.",
                 action,
-                captureKind,
+                captureKind
             )
         }
     }
@@ -7532,77 +7532,77 @@ nonisolated enum L10n {
         static let selectionTool = string(
             "annotate.tool.selection",
             defaultValue: "Selection",
-            comment: "Annotation tool display name",
+            comment: "Annotation tool display name"
         )
         static let cropTool = string(
             "annotate.tool.crop",
             defaultValue: "Crop",
-            comment: "Annotation tool display name",
+            comment: "Annotation tool display name"
         )
         static let rectangleTool = string(
             "annotate.tool.rectangle",
             defaultValue: "Rectangle",
-            comment: "Annotation tool display name",
+            comment: "Annotation tool display name"
         )
         static let circleTool = string(
             "annotate.tool.circle",
             defaultValue: "Circle",
-            comment: "Annotation tool display name for ellipse/circle shape",
+            comment: "Annotation tool display name for ellipse/circle shape"
         )
         static let arrowTool = string(
             "annotate.tool.arrow",
             defaultValue: "Arrow",
-            comment: "Annotation tool display name",
+            comment: "Annotation tool display name"
         )
         static let lineTool = string(
             "annotate.tool.line",
             defaultValue: "Line",
-            comment: "Annotation tool display name",
+            comment: "Annotation tool display name"
         )
         static let magnifyTool = string(
             "annotate.tool.magnify",
             defaultValue: "Magnify",
-            comment: "Annotation tool display name",
+            comment: "Annotation tool display name"
         )
         static let textTool = string(
             "annotate.tool.text",
             defaultValue: "Text",
-            comment: "Annotation tool display name",
+            comment: "Annotation tool display name"
         )
         static let highlighterTool = string(
             "annotate.tool.highlighter",
             defaultValue: "Highlighter",
-            comment: "Annotation tool display name",
+            comment: "Annotation tool display name"
         )
         static let blurTool = string(
             "annotate.tool.blur",
             defaultValue: "Blur",
-            comment: "Annotation tool display name",
+            comment: "Annotation tool display name"
         )
         static let spotlightTool = string(
             "annotate.tool.spotlight",
             defaultValue: "Spotlight",
-            comment: "Annotation tool display name",
+            comment: "Annotation tool display name"
         )
         static let counterTool = string(
             "annotate.tool.counter",
             defaultValue: "Counter",
-            comment: "Annotation tool display name",
+            comment: "Annotation tool display name"
         )
         static let watermarkTool = string(
             "annotate.tool.watermark",
             defaultValue: "Watermark",
-            comment: "Annotation tool display name",
+            comment: "Annotation tool display name"
         )
         static let pencilTool = string(
             "annotate.tool.pencil",
             defaultValue: "Pencil",
-            comment: "Annotation tool display name",
+            comment: "Annotation tool display name"
         )
         static let mockupTool = string(
             "annotate.tool.mockup",
             defaultValue: "Mockup",
-            comment: "Annotation tool display name",
+            comment: "Annotation tool display name"
         )
     }
 
@@ -7610,22 +7610,22 @@ nonisolated enum L10n {
         static let editVideo = string(
             "quick-access.edit-video",
             defaultValue: "Edit Video",
-            comment: "Quick Access tooltip for opening the video editor",
+            comment: "Quick Access tooltip for opening the video editor"
         )
         static let videoUploadRequiresProvider = string(
             "quick-access.video-upload-requires-provider",
             defaultValue: "Video uploads require a provider that supports video. Choose one in Preferences → Uploads.",
-            comment: "Quick Access hint shown when the selected provider cannot upload a video",
+            comment: "Quick Access hint shown when the selected provider cannot upload a video"
         )
         static let uploadFileTooLarge = string(
             "quick-access.upload-file-too-large",
             defaultValue: "This video is larger than the selected provider’s upload limit. Optimize it before uploading.",
-            comment: "Error shown when a video exceeds the selected provider's upload target",
+            comment: "Error shown when a video exceeds the selected provider's upload target"
         )
         static let videoUploadTooLargeTitle = string(
             "quick-access.video-upload-too-large-title",
             defaultValue: "Optimize video for upload",
-            comment: "Quick Access title shown when a video reaches the selected provider's upload target",
+            comment: "Quick Access title shown when a video reaches the selected provider's upload target"
         )
         static func videoUploadTooLargeMessage(sourceSize: String, uploadLimit: String) -> String {
             format(
@@ -7633,84 +7633,84 @@ nonisolated enum L10n {
                 defaultValue: "This video is %@. The safe upload target is %@.",
                 comment: "Quick Access message for an oversized video. The placeholders are source size and safe upload target.",
                 sourceSize,
-                uploadLimit,
+                uploadLimit
             )
         }
 
         static let videoUploadFormat = string(
             "quick-access.video-upload-format",
             defaultValue: "Format",
-            comment: "Video upload optimization format label",
+            comment: "Video upload optimization format label"
         )
         static let videoUploadDimensions = string(
             "quick-access.video-upload-dimensions",
             defaultValue: "Maximum dimensions",
-            comment: "Video upload optimization dimensions picker label",
+            comment: "Video upload optimization dimensions picker label"
         )
         static let videoUploadQuality = string(
             "quick-access.video-upload-quality",
             defaultValue: "Quality",
-            comment: "Video upload optimization quality picker label",
+            comment: "Video upload optimization quality picker label"
         )
         static let videoUploadFrameRate = string(
             "quick-access.video-upload-frame-rate",
             defaultValue: "Frame rate",
-            comment: "Video upload optimization frame rate picker label",
+            comment: "Video upload optimization frame rate picker label"
         )
         static let videoUploadAudio = string(
             "quick-access.video-upload-audio",
             defaultValue: "Include audio",
-            comment: "Video upload optimization audio toggle label",
+            comment: "Video upload optimization audio toggle label"
         )
         static let videoUploadMP4H264 = string(
             "quick-access.video-upload-mp4-h264",
             defaultValue: "MP4 / H.264",
-            comment: "Video upload optimization output format value",
+            comment: "Video upload optimization output format value"
         )
         static let videoUploadQualityHigh = string(
             "quick-access.video-upload-quality-high",
             defaultValue: "High",
-            comment: "High video upload quality option",
+            comment: "High video upload quality option"
         )
         static let videoUploadQualityBalanced = string(
             "quick-access.video-upload-quality-balanced",
             defaultValue: "Balanced",
-            comment: "Balanced video upload quality option",
+            comment: "Balanced video upload quality option"
         )
         static let videoUploadQualityCompact = string(
             "quick-access.video-upload-quality-compact",
             defaultValue: "Compact",
-            comment: "Compact video upload quality option",
+            comment: "Compact video upload quality option"
         )
         static let videoUploadOptimize = string(
             "quick-access.video-upload-optimize",
             defaultValue: "Optimize and upload",
-            comment: "Quick Access action for optimizing an oversized video and uploading it",
+            comment: "Quick Access action for optimizing an oversized video and uploading it"
         )
         static let videoUploadOptimizationFailed = string(
             "quick-access.video-upload-optimization-failed",
             defaultValue: "Couldn’t optimize this video enough to fit the selected provider’s upload target.",
-            comment: "Error shown when all native video optimization attempts remain over the upload target",
+            comment: "Error shown when all native video optimization attempts remain over the upload target"
         )
         static let lockPinnedWindow = string(
             "quick-access.pin-window.lock",
             defaultValue: "Lock and hide on mouse over",
-            comment: "Pinned screenshot window tooltip for enabling click-through lock mode",
+            comment: "Pinned screenshot window tooltip for enabling click-through lock mode"
         )
         static let unlockPinnedWindow = string(
             "quick-access.pin-window.unlock",
             defaultValue: "Unlock pinned window",
-            comment: "Pinned screenshot window tooltip for disabling click-through lock mode",
+            comment: "Pinned screenshot window tooltip for disabling click-through lock mode"
         )
         static let zoomPinnedWindow = string(
             "quick-access.pin-window.zoom",
             defaultValue: "Zoom pinned window",
-            comment: "Pinned screenshot window tooltip for the zoom menu",
+            comment: "Pinned screenshot window tooltip for the zoom menu"
         )
         static let fitPinnedWindow = string(
             "quick-access.pin-window.fit",
             defaultValue: "Fit",
-            comment: "Pinned screenshot window zoom menu item that returns to fitted size",
+            comment: "Pinned screenshot window zoom menu item that returns to fitted size"
         )
     }
 
@@ -7720,7 +7720,7 @@ nonisolated enum L10n {
                 "annotate-context.selected",
                 defaultValue: "Selected %@",
                 comment: "Quick properties title for a selected annotation. %@ is the localized tool name.",
-                toolName,
+                toolName
             )
         }
 
@@ -7729,24 +7729,24 @@ nonisolated enum L10n {
                 "annotate-context.defaults",
                 defaultValue: "%@ Defaults",
                 comment: "Quick properties title for annotation tool defaults. %@ is the localized tool name.",
-                toolName,
+                toolName
             )
         }
 
         static let wallpaperOcean = string(
             "annotate-context.wallpaper-ocean",
             defaultValue: "Ocean",
-            comment: "Wallpaper preset name in annotate and video editor",
+            comment: "Wallpaper preset name in annotate and video editor"
         )
         static let wallpaperSunset = string(
             "annotate-context.wallpaper-sunset",
             defaultValue: "Sunset",
-            comment: "Wallpaper preset name in annotate and video editor",
+            comment: "Wallpaper preset name in annotate and video editor"
         )
         static let wallpaperForest = string(
             "annotate-context.wallpaper-forest",
             defaultValue: "Forest",
-            comment: "Wallpaper preset name in annotate and video editor",
+            comment: "Wallpaper preset name in annotate and video editor"
         )
     }
 
@@ -7756,38 +7756,38 @@ nonisolated enum L10n {
                 "recording-annotation.auto-clear",
                 defaultValue: "Auto-clear: %@",
                 comment: "Menu header for annotation auto-clear settings during recording. %@ is the localized tool name.",
-                toolName,
+                toolName
             )
         }
 
         static let persist = string(
             "recording-annotation.persist",
             defaultValue: "Persist",
-            comment: "Annotation auto-clear option that keeps annotations until manually cleared",
+            comment: "Annotation auto-clear option that keeps annotations until manually cleared"
         )
         static func lastCount(_ count: Int) -> String {
             format(
                 "recording-annotation.last-count",
                 defaultValue: "Last %d",
                 comment: "Annotation auto-clear option that keeps the last N annotations. %d is the number of annotations to keep.",
-                count,
+                count
             )
         }
 
         static let modifierShift = string(
             "recording-annotation.modifier-shift",
             defaultValue: "Shift (⇧)",
-            comment: "Modifier key option for recording annotation shortcuts",
+            comment: "Modifier key option for recording annotation shortcuts"
         )
         static let modifierControl = string(
             "recording-annotation.modifier-control",
             defaultValue: "Control (⌃)",
-            comment: "Modifier key option for recording annotation shortcuts",
+            comment: "Modifier key option for recording annotation shortcuts"
         )
         static let modifierOption = string(
             "recording-annotation.modifier-option",
             defaultValue: "Option (⌥)",
-            comment: "Modifier key option for recording annotation shortcuts",
+            comment: "Modifier key option for recording annotation shortcuts"
         )
     }
 
@@ -7795,27 +7795,27 @@ nonisolated enum L10n {
         static let macOSCaptureArea = string(
             "system-shortcuts.macos-capture-area",
             defaultValue: "macOS Capture Area",
-            comment: "Human-readable label for the macOS system shortcut that captures a selected area",
+            comment: "Human-readable label for the macOS system shortcut that captures a selected area"
         )
         static let macOSCopyArea = string(
             "system-shortcuts.macos-copy-area",
             defaultValue: "macOS Copy Area",
-            comment: "Human-readable label for the macOS system shortcut that copies a selected area to the clipboard",
+            comment: "Human-readable label for the macOS system shortcut that copies a selected area to the clipboard"
         )
         static let macOSCaptureFullscreen = string(
             "system-shortcuts.macos-capture-fullscreen",
             defaultValue: "macOS Capture Fullscreen",
-            comment: "Human-readable label for the macOS system shortcut that captures the full screen",
+            comment: "Human-readable label for the macOS system shortcut that captures the full screen"
         )
         static let macOSCopyFullscreen = string(
             "system-shortcuts.macos-copy-fullscreen",
             defaultValue: "macOS Copy Fullscreen",
-            comment: "Human-readable label for the macOS system shortcut that copies the full screen to the clipboard",
+            comment: "Human-readable label for the macOS system shortcut that copies the full screen to the clipboard"
         )
         static let macOSScreenshotOptions = string(
             "system-shortcuts.macos-screenshot-options",
             defaultValue: "macOS Screenshot & Recording Options",
-            comment: "Human-readable label for the macOS system shortcut that opens the screenshot and recording options",
+            comment: "Human-readable label for the macOS system shortcut that opens the screenshot and recording options"
         )
     }
 
@@ -7823,87 +7823,87 @@ nonisolated enum L10n {
         static let permissionDenied = string(
             "screen-capture.permission-denied",
             defaultValue: "Screen capture permission denied",
-            comment: "Error shown when screenshot capture is attempted without screen recording permission",
+            comment: "Error shown when screenshot capture is attempted without screen recording permission"
         )
         static let noDisplayFound = string(
             "screen-capture.no-display-found",
             defaultValue: "No display found to capture",
-            comment: "Error shown when no display matches the selected screenshot target",
+            comment: "Error shown when no display matches the selected screenshot target"
         )
         nonisolated static let saveLocationPermissionRequired = string(
             "screen-capture.save-location-permission-required",
             defaultValue: "Save location permission is required.",
-            comment: "Error shown when Cue cannot save a screenshot because folder access has not been granted",
+            comment: "Error shown when Cue cannot save a screenshot because folder access has not been granted"
         )
         nonisolated static let unableToCaptureSelectedArea = string(
             "screen-capture.unable-to-capture-selected-area",
             defaultValue: "Unable to capture the selected area.",
-            comment: "Error shown when Cue cannot capture the selected screenshot area",
+            comment: "Error shown when Cue cannot capture the selected screenshot area"
         )
         nonisolated static let failedToCropCapturedImage = string(
             "screen-capture.failed-to-crop-captured-image",
             defaultValue: "Failed to crop the captured image",
-            comment: "Error shown when Cue captures an image but fails to crop it to the selected area",
+            comment: "Error shown when Cue captures an image but fails to crop it to the selected area"
         )
         nonisolated static func couldNotCreateDirectory(_ message: String) -> String {
             format(
                 "screen-capture.could-not-create-directory",
                 defaultValue: "Could not create the save folder: %@",
                 comment: "Error shown when Cue cannot create the selected save folder. %@ is the underlying filesystem error.",
-                message,
+                message
             )
         }
 
         nonisolated static let webpEncodingFailed = string(
             "screen-capture.webp-encoding-failed",
             defaultValue: "WebP encoding failed",
-            comment: "Error shown when Cue cannot encode a screenshot as WebP",
+            comment: "Error shown when Cue cannot encode a screenshot as WebP"
         )
         nonisolated static let couldNotCreateImageDestination = string(
             "screen-capture.could-not-create-image-destination",
             defaultValue: "Could not create the image destination",
-            comment: "Error shown when Cue cannot create an image writer for the screenshot",
+            comment: "Error shown when Cue cannot create an image writer for the screenshot"
         )
         nonisolated static let failedToWriteImageToDisk = string(
             "screen-capture.failed-to-write-image-to-disk",
             defaultValue: "Failed to write the image to disk",
-            comment: "Error shown when Cue fails while writing a screenshot to disk",
+            comment: "Error shown when Cue fails while writing a screenshot to disk"
         )
         nonisolated static func fileWriteVerificationFailed(_ fileName: String) -> String {
             format(
                 "screen-capture.file-write-verification-failed",
                 defaultValue: "File write verification failed for %@",
                 comment: "Error shown when Cue writes a screenshot file but cannot verify it afterward. %@ is the file name.",
-                fileName,
+                fileName
             )
         }
 
         nonisolated static let selectionOutsideDisplayBounds = string(
             "screen-capture.selection-outside-display-bounds",
             defaultValue: "The selected area is outside the display bounds",
-            comment: "Error shown when the screenshot selection falls outside the active display bounds",
+            comment: "Error shown when the screenshot selection falls outside the active display bounds"
         )
         nonisolated static let failedToCreateImageFromFrame = string(
             "screen-capture.failed-to-create-image-from-frame",
             defaultValue: "Failed to create an image from the captured frame",
-            comment: "Error shown when Cue cannot convert a captured stream frame into an image",
+            comment: "Error shown when Cue cannot convert a captured stream frame into an image"
         )
         nonisolated static let captureTimedOut = string(
             "screen-capture.capture-timed-out",
             defaultValue: "Capture timed out. Please try again.",
-            comment: "Error shown when the capture stream does not deliver a frame within the time limit",
+            comment: "Error shown when the capture stream does not deliver a frame within the time limit"
         )
         nonisolated static let selectedWindowUnavailable = string(
             "screen-capture.selected-window-unavailable",
             defaultValue: "The selected window is no longer available",
-            comment: "Error shown when application mode resolves a window target that disappeared before capture",
+            comment: "Error shown when application mode resolves a window target that disappeared before capture"
         )
         static func applicationModeHint(_ shortcut: String) -> String {
             format(
                 "screen-capture.application-mode-hint",
                 defaultValue: "Press %@ to select an app window",
                 comment: "Hint shown in screenshot area selection when manual mode is active and application mode can be toggled on. %@ is the current single-key shortcut.",
-                shortcut,
+                shortcut
             )
         }
 
@@ -7912,7 +7912,7 @@ nonisolated enum L10n {
                 "screen-capture.manual-mode-hint",
                 defaultValue: "Press %@ for manual area selection",
                 comment: "Hint shown in screenshot area selection when application mode is active and manual mode can be toggled on. %@ is the current single-key shortcut.",
-                shortcut,
+                shortcut
             )
         }
 
@@ -7921,7 +7921,7 @@ nonisolated enum L10n {
                 "screen-capture.capture-failed",
                 defaultValue: "Capture failed: %@",
                 comment: "Error shown when screenshot capture fails. %@ is the lower-level reason.",
-                reason,
+                reason
             )
         }
 
@@ -7930,14 +7930,14 @@ nonisolated enum L10n {
                 "screen-capture.save-failed",
                 defaultValue: "Failed to save screenshot: %@",
                 comment: "Error shown when saving a screenshot fails. %@ is the lower-level reason.",
-                reason,
+                reason
             )
         }
 
         static let cancelled = string(
             "screen-capture.cancelled",
             defaultValue: "Capture was cancelled",
-            comment: "Error shown when screenshot capture is cancelled",
+            comment: "Error shown when screenshot capture is cancelled"
         )
     }
 
@@ -7945,48 +7945,48 @@ nonisolated enum L10n {
         static let extractingContent = string(
             "ocr.extracting-content",
             defaultValue: "Extracting content...",
-            comment: "Progress toast shown while OCR is extracting text or QR content from the selected area",
+            comment: "Progress toast shown while OCR is extracting text or QR content from the selected area"
         )
         static let imageConversionFailed = string(
             "ocr.image-conversion-failed",
             defaultValue: "Failed to convert image for OCR processing",
-            comment: "Error shown when OCR cannot convert an image into a processable format",
+            comment: "Error shown when OCR cannot convert an image into a processable format"
         )
         static let noTextFound = string(
             "ocr.no-text-found",
             defaultValue: "No text found in the selected area",
-            comment: "Error shown when OCR cannot detect text in the selected area",
+            comment: "Error shown when OCR cannot detect text in the selected area"
         )
         static let qrCodesLabel = string(
             "ocr.qr-codes-label",
             defaultValue: "QR Codes",
-            comment: "Clipboard section title shown before multiple QR code payloads copied from OCR capture",
+            comment: "Clipboard section title shown before multiple QR code payloads copied from OCR capture"
         )
         static let qrTextOnlyUnsupported = string(
             "ocr.qr-text-only-unsupported",
             defaultValue: "QR code detected, but Cue can only copy text-based QR content.",
-            comment: "Warning shown when OCR capture detects a QR code whose content cannot be represented as text",
+            comment: "Warning shown when OCR capture detects a QR code whose content cannot be represented as text"
         )
         static func recognitionFailed(_ message: String) -> String {
             format(
                 "ocr.recognition-failed",
                 defaultValue: "OCR recognition failed: %@",
                 comment: "Error shown when OCR recognition fails. %@ is the underlying error message.",
-                message,
+                message
             )
         }
 
         static let linkDetectedTitle = string(
             "ocr.link-detected-title",
             defaultValue: "Link detected",
-            comment: "Title of the prompt shown when OCR capture finds one web link in the recognized text",
+            comment: "Title of the prompt shown when OCR capture finds one web link in the recognized text"
         )
         static func linksDetectedTitle(_ count: Int) -> String {
             format(
                 "ocr.links-detected-title",
                 defaultValue: "%d links detected",
                 comment: "Title of the prompt shown when OCR capture finds multiple web links. %d is the link count.",
-                count,
+                count
             )
         }
 
@@ -7995,7 +7995,7 @@ nonisolated enum L10n {
                 "ocr.open-link-accessibility",
                 defaultValue: "Open %@",
                 comment: "Accessibility label for a button that opens a web link detected in OCR text. %@ is the link.",
-                link,
+                link
             )
         }
     }
@@ -8004,37 +8004,37 @@ nonisolated enum L10n {
         static let invalidVideo = string(
             "gif.invalid-video",
             defaultValue: "Invalid or empty video file",
-            comment: "Error shown when converting an invalid video to GIF",
+            comment: "Error shown when converting an invalid video to GIF"
         )
         static let noFramesFromVideo = string(
             "gif.no-frames-from-video",
             defaultValue: "Could not extract any frames from video",
-            comment: "Error shown when converting a video to GIF but no frames can be extracted",
+            comment: "Error shown when converting a video to GIF but no frames can be extracted"
         )
         static let cannotReadSource = string(
             "gif.cannot-read-source",
             defaultValue: "Cannot read GIF file",
-            comment: "Error shown when a GIF source file cannot be read",
+            comment: "Error shown when a GIF source file cannot be read"
         )
         static let noFramesInGIF = string(
             "gif.no-frames-in-gif",
             defaultValue: "GIF contains no frames",
-            comment: "Error shown when a GIF file contains no frames",
+            comment: "Error shown when a GIF file contains no frames"
         )
         static let cannotCreateOutputFile = string(
             "gif.cannot-create-output-file",
             defaultValue: "Failed to create GIF output file",
-            comment: "Error shown when a GIF destination file cannot be created",
+            comment: "Error shown when a GIF destination file cannot be created"
         )
         static let finalizeFailed = string(
             "gif.finalize-failed",
             defaultValue: "Failed to finalize GIF file",
-            comment: "Error shown when GIF generation or resizing cannot be finalized",
+            comment: "Error shown when GIF generation or resizing cannot be finalized"
         )
         static let finalizeResizedFailed = string(
             "gif.finalize-resized-failed",
             defaultValue: "Failed to finalize resized GIF",
-            comment: "Error shown when a resized GIF cannot be finalized",
+            comment: "Error shown when a resized GIF cannot be finalized"
         )
     }
 
@@ -8042,36 +8042,36 @@ nonisolated enum L10n {
         static let noSubjectDetected = string(
             "foreground-cutout.no-subject-detected",
             defaultValue: "No foreground subject was detected in the selected area.",
-            comment: "Error shown when no foreground subject can be detected for background removal",
+            comment: "Error shown when no foreground subject can be detected for background removal"
         )
         static let noSubjectDetectedTryTighterArea = string(
             "foreground-cutout.no-subject-detected-try-tighter-area",
             defaultValue: "No subject detected. Try selecting a tighter area around the subject.",
-            comment: "Toast shown when background removal cannot find a subject and the user should tighten the selection",
+            comment: "Toast shown when background removal cannot find a subject and the user should tighten the selection"
         )
         static func cutoutFailed(_ message: String) -> String {
             format(
                 "foreground-cutout.cutout-failed",
                 defaultValue: "Background cutout failed: %@",
                 comment: "Error shown when background removal fails. %@ is the lower-level error message.",
-                message,
+                message
             )
         }
 
         static let imageConversionFailed = string(
             "foreground-cutout.image-conversion-failed",
             defaultValue: "Unable to convert cutout result to image.",
-            comment: "Error shown when the cutout result cannot be converted back to an image",
+            comment: "Error shown when the cutout result cannot be converted back to an image"
         )
         static let unableToProcessImageTryAgain = string(
             "foreground-cutout.unable-to-process-image-try-again",
             defaultValue: "Unable to process the cutout image. Please try again.",
-            comment: "Toast shown when background removal fails while processing the cutout image",
+            comment: "Toast shown when background removal fails while processing the cutout image"
         )
         static let genericFailure = string(
             "foreground-cutout.generic-failure",
             defaultValue: "Background cutout failed. Please try again.",
-            comment: "Generic toast shown when background removal fails for an unknown reason",
+            comment: "Generic toast shown when background removal fails for an unknown reason"
         )
     }
 
@@ -8079,12 +8079,12 @@ nonisolated enum L10n {
         static let empty = string(
             "capture-storage.empty",
             defaultValue: "Empty",
-            comment: "Label shown when the capture cache is empty",
+            comment: "Label shown when the capture cache is empty"
         )
         static let operationInProgress = string(
             "capture-storage.operation-in-progress",
             defaultValue: "Cannot clear cache while a capture or recording is in progress.",
-            comment: "Error shown when cache cleanup is attempted while a capture or recording is active",
+            comment: "Error shown when cache cleanup is attempted while a capture or recording is active"
         )
     }
 
@@ -8092,7 +8092,7 @@ nonisolated enum L10n {
         static let extractingFrames = string(
             "video-editor-timeline.extracting-frames",
             defaultValue: "Extracting frames...",
-            comment: "Loading label shown while the video timeline frame strip is extracting thumbnails",
+            comment: "Loading label shown while the video timeline frame strip is extracting thumbnails"
         )
     }
 
@@ -8100,12 +8100,12 @@ nonisolated enum L10n {
         nonisolated static let sessionCreationFailed = string(
             "video-export.session-creation-failed",
             defaultValue: "Failed to create export session",
-            comment: "Error shown when the video editor cannot create an export session",
+            comment: "Error shown when the video editor cannot create an export session"
         )
         nonisolated static let exportFailed = string(
             "video-export.export-failed",
             defaultValue: "Video export failed",
-            comment: "Error shown when exporting a video fails",
+            comment: "Error shown when exporting a video fails"
         )
     }
 
@@ -8113,12 +8113,12 @@ nonisolated enum L10n {
         static let noVideoTrack = string(
             "zoom-compositor.no-video-track",
             defaultValue: "Video file format is incompatible or corrupted. Please try re-recording.",
-            comment: "Error shown when the video editor export cannot find a usable video track",
+            comment: "Error shown when the video editor export cannot find a usable video track"
         )
         static let compositionFailed = string(
             "zoom-compositor.composition-failed",
             defaultValue: "Failed to apply zoom effects. The video may be corrupted or in an unsupported format.",
-            comment: "Error shown when applying zoom effects during video export fails",
+            comment: "Error shown when applying zoom effects during video export fails"
         )
         static func trackMismatch(_ expected: String, _ available: String) -> String {
             format(
@@ -8126,7 +8126,7 @@ nonisolated enum L10n {
                 defaultValue: "Track ID mismatch: expected %@, available: %@. Please try re-exporting.",
                 comment: "Error shown when the compositor cannot find the expected track. First %@ is the expected track id, second %@ is the list of available track ids.",
                 expected,
-                available,
+                available
             )
         }
     }
@@ -8135,92 +8135,92 @@ nonisolated enum L10n {
         static let adjustRegion = string(
             "scrolling-capture-status.adjust-region",
             defaultValue: "Adjust the region so only the moving content stays inside, then press Start Capture. Press Esc to cancel.",
-            comment: "Status shown before a scrolling capture starts",
+            comment: "Status shown before a scrolling capture starts"
         )
         static let releaseToLockUpdatedRegion = string(
             "scrolling-capture-status.release-to-lock-updated-region",
             defaultValue: "Release to lock the updated scrolling region.",
-            comment: "Status shown while dragging or resizing the scrolling capture region",
+            comment: "Status shown while dragging or resizing the scrolling capture region"
         )
         static let regionUpdated = string(
             "scrolling-capture-status.region-updated",
             defaultValue: "Region updated. Keep only the moving content inside, then press Start Capture. Press Esc to cancel.",
-            comment: "Status shown after updating the scrolling capture region",
+            comment: "Status shown after updating the scrolling capture region"
         )
         static let capturingFirstFrame = string(
             "scrolling-capture-status.capturing-first-frame",
             defaultValue: "Capturing the first frame. After that, keep scrolling downward at a steady pace.",
-            comment: "Status shown when the scrolling capture session starts",
+            comment: "Status shown when the scrolling capture session starts"
         )
         static let noSavableResultReady = string(
             "scrolling-capture-status.no-savable-result-ready",
             defaultValue: "Cue couldn't lock a savable stitched image yet. You can keep capturing, try Done again, or Cancel.",
-            comment: "Status shown when Done is pressed before a savable stitched result exists",
+            comment: "Status shown when Done is pressed before a savable stitched result exists"
         )
         static let savingStitchedImage = string(
             "scrolling-capture-status.saving-stitched-image",
             defaultValue: "Saving the stitched long image.",
-            comment: "Status shown while saving a scrolling capture result",
+            comment: "Status shown while saving a scrolling capture result"
         )
         static let saveFailedResultStillReady = string(
             "scrolling-capture-status.save-failed-result-still-ready",
             defaultValue: "Save failed. The stitched result is frozen, so you can try Done again or Cancel.",
-            comment: "Status shown when saving a scrolling capture result fails but the stitched image is still available",
+            comment: "Status shown when saving a scrolling capture result fails but the stitched image is still available"
         )
         static let directionChanged = string(
             "scrolling-capture-status.direction-changed",
             defaultValue: "Direction changed. Keep scrolling the same way or restart the session.",
-            comment: "Status shown when the user reverses scrolling direction during scrolling capture",
+            comment: "Status shown when the user reverses scrolling direction during scrolling capture"
         )
         static let aligningLatestContent = string(
             "scrolling-capture-status.aligning-latest-content",
             defaultValue: "Capturing and aligning the latest visible content...",
-            comment: "Status shown while the live preview is being aligned into the stitched result",
+            comment: "Status shown while the live preview is being aligned into the stitched result"
         )
         static let autoScrollNeedsAccessibility = string(
             "scrolling-capture-status.auto-scroll-needs-accessibility",
             defaultValue: "Auto Scroll needs Accessibility permission. Enable Cue in System Settings > Privacy & Security > Accessibility.",
-            comment: "Status shown when auto-scroll cannot start because Accessibility permission is missing",
+            comment: "Status shown when auto-scroll cannot start because Accessibility permission is missing"
         )
         static let autoScrollPausedMoveMouseInside = string(
             "scrolling-capture-status.auto-scroll-paused-move-mouse-inside",
             defaultValue: "Auto-scroll paused. Move the pointer back into the selected region to continue.",
-            comment: "Status shown when auto-scroll pauses because the pointer left the selected region",
+            comment: "Status shown when auto-scroll pauses because the pointer left the selected region"
         )
         static let mixedDirectionsFinalizing = string(
             "scrolling-capture-status.mixed-directions-finalizing",
             defaultValue: "Finalizing the current stitched result after mixed scroll directions.",
-            comment: "Status shown when finalizing after mixed scroll directions were detected",
+            comment: "Status shown when finalizing after mixed scroll directions were detected"
         )
         static let mixedDirectionsDetected = string(
             "scrolling-capture-status.mixed-directions-detected",
             defaultValue: "Mixed scroll directions detected. Keep one direction so Cue can align.",
-            comment: "Status shown when mixed scroll directions are detected during scrolling capture",
+            comment: "Status shown when mixed scroll directions are detected during scrolling capture"
         )
         static let couldntCaptureLastFrame = string(
             "scrolling-capture-status.couldnt-capture-last-frame",
             defaultValue: "Couldn't capture the last frame. Cue will save the current stitched result.",
-            comment: "Status shown when the final scrolling capture frame cannot be captured",
+            comment: "Status shown when the final scrolling capture frame cannot be captured"
         )
         static let unableToCaptureArea = string(
             "scrolling-capture-status.unable-to-capture-area",
             defaultValue: "Unable to capture the selected area.",
-            comment: "Status shown when the selected scrolling capture area cannot be captured",
+            comment: "Status shown when the selected scrolling capture area cannot be captured"
         )
         static let couldntRefreshLastFrame = string(
             "scrolling-capture-status.couldnt-refresh-last-frame",
             defaultValue: "Couldn't refresh the last frame. Cue will save the current stitched result.",
-            comment: "Status shown when the final scrolling capture refresh fails",
+            comment: "Status shown when the final scrolling capture refresh fails"
         )
         static let unableToRenderPreview = string(
             "scrolling-capture-status.unable-to-render-preview",
             defaultValue: "Unable to render the stitched preview.",
-            comment: "Status shown when the scrolling capture preview cannot be rendered",
+            comment: "Status shown when the scrolling capture preview cannot be rendered"
         )
         static let firstFrameLocked = string(
             "scrolling-capture-status.first-frame-locked",
             defaultValue: "First frame locked. Keep the pointer over the highlighted region and scroll downward steadily.",
-            comment: "Status shown after the first scrolling capture frame is locked",
+            comment: "Status shown after the first scrolling capture frame is locked"
         )
         static func sessionActive(_ frameCount: Int, _ outputHeight: Int) -> String {
             format(
@@ -8228,77 +8228,77 @@ nonisolated enum L10n {
                 defaultValue: "Session active. %d frames stitched into %d px.",
                 comment: "Status shown while a scrolling capture session is actively stitching frames. First %d is the frame count, second %d is the output height in pixels.",
                 frameCount,
-                outputHeight,
+                outputHeight
             )
         }
 
         static let endReachedNoNewContent = string(
             "scrolling-capture-status.end-reached-no-new-content",
             defaultValue: "No new content detected. You're probably at the end of the scrollable content. Press Done to save.",
-            comment: "Status shown when the end of scrollable content is likely reached",
+            comment: "Status shown when the end of scrollable content is likely reached"
         )
         static let waitingForNewContent = string(
             "scrolling-capture-status.waiting-for-new-content",
             defaultValue: "Waiting for new content. Keep the scroll moving in one direction.",
-            comment: "Status shown while waiting for the next scrollable content to appear",
+            comment: "Status shown while waiting for the next scrollable content to appear"
         )
         static let alignmentPaused = string(
             "scrolling-capture-status.alignment-paused",
             defaultValue: "Alignment paused. Slow down and keep one direction so Cue can recover.",
-            comment: "Status shown when scrolling capture pauses to recover alignment",
+            comment: "Status shown when scrolling capture pauses to recover alignment"
         )
         static let couldntAlignFrame = string(
             "scrolling-capture-status.couldnt-align-frame",
             defaultValue: "Couldn't align that frame. Keep the same direction and a steadier pace.",
-            comment: "Status shown when a scrolling capture frame cannot be aligned",
+            comment: "Status shown when a scrolling capture frame cannot be aligned"
         )
         static func heightLimitReached(_ maxHeight: Int) -> String {
             format(
                 "scrolling-capture-status.height-limit-reached",
                 defaultValue: "Reached the %d px output limit. Press Done to save the current result.",
                 comment: "Status shown when a scrolling capture reaches the output height limit. %d is the maximum output height in pixels.",
-                maxHeight,
+                maxHeight
             )
         }
 
         static let previewRefreshFailed = string(
             "scrolling-capture-status.preview-refresh-failed",
             defaultValue: "Preview refresh failed. You can Cancel and try again.",
-            comment: "Status shown when a scrolling capture preview refresh fails",
+            comment: "Status shown when a scrolling capture preview refresh fails"
         )
         static let finalizingCurrentCapture = string(
             "scrolling-capture-status.finalizing-current-capture",
             defaultValue: "Finalizing the current capture. Cue is locking the latest stitched result before saving.",
-            comment: "Status shown when the scrolling capture result is being finalized",
+            comment: "Status shown when the scrolling capture result is being finalized"
         )
         static func finalizingFrames(_ count: Int) -> String {
             format(
                 "scrolling-capture-status.finalizing-frames",
                 defaultValue: "Locking the current capture. Cue is sealing %d stitched frames before saving.",
                 comment: "Status shown while finalizing a scrolling capture with stitched frames. %d is the number of stitched frames.",
-                count,
+                count
             )
         }
 
         static let finalizingNoNewContent = string(
             "scrolling-capture-status.finalizing-no-new-content",
             defaultValue: "No new content was detected. Cue is saving the current stitched result.",
-            comment: "Status shown while finalizing a scrolling capture after reaching the end of content",
+            comment: "Status shown while finalizing a scrolling capture after reaching the end of content"
         )
         static let finalizingCouldntAlignLastFrame = string(
             "scrolling-capture-status.finalizing-couldnt-align-last-frame",
             defaultValue: "Couldn't align the last frame cleanly. Cue will save the current stitched result.",
-            comment: "Status shown while finalizing when the last frame could not be aligned",
+            comment: "Status shown while finalizing when the last frame could not be aligned"
         )
         static let finalizingHeightLimitReached = string(
             "scrolling-capture-status.finalizing-height-limit-reached",
             defaultValue: "Height limit reached. Cue is saving the current stitched result.",
-            comment: "Status shown while finalizing after the scrolling capture reaches the height limit",
+            comment: "Status shown while finalizing after the scrolling capture reaches the height limit"
         )
         static let readyHintToast = string(
             "scrolling-capture-status.ready-hint-toast",
             defaultValue: "Frame only the scrolling content, then scroll in one direction at a steady pace.",
-            comment: "Toast shown when a scrolling capture session begins",
+            comment: "Toast shown when a scrolling capture session begins"
         )
     }
 
@@ -8309,14 +8309,14 @@ nonisolated enum L10n {
                 defaultValue: "Expected bundle ID %@, found %@.",
                 comment: "Identity issue message. First %@ is expected bundle identifier. Second %@ is current bundle identifier.",
                 AppBundleIdentity.expected,
-                currentIdentifier,
+                currentIdentifier
             )
         }
 
         static let invalidSignature = string(
             "app-identity.invalid-signature",
             defaultValue: "This app bundle does not pass macOS code-signature validation.",
-            comment: "Identity issue message when bundle signature validation fails",
+            comment: "Identity issue message when bundle signature validation fails"
         )
 
         static func outsideApplications(_ bundlePath: String) -> String {
@@ -8324,20 +8324,20 @@ nonisolated enum L10n {
                 "app-identity.outside-applications",
                 defaultValue: "Install Cue in /Applications before granting permissions. Current path: %@",
                 comment: "Identity issue message. %@ is the current app bundle path.",
-                bundlePath,
+                bundlePath
             )
         }
 
         static let quarantined = string(
             "app-identity.quarantined",
             defaultValue: "This app still has the macOS quarantine flag. Reinstall with the installer script or remove quarantine before granting permissions.",
-            comment: "Identity issue message when app is quarantined",
+            comment: "Identity issue message when app is quarantined"
         )
 
         static let healthy = string(
             "app-identity.healthy",
             defaultValue: "App identity is healthy.",
-            comment: "Identity summary when no issues exist",
+            comment: "Identity summary when no issues exist"
         )
     }
 
@@ -8345,192 +8345,192 @@ nonisolated enum L10n {
         static let floatingPanelSection = string(
             "preferences-history.floating-panel-section",
             defaultValue: "Floating Panel",
-            comment: "History settings section title for floating panel",
+            comment: "History settings section title for floating panel"
         )
         static let floatingPanelTitle = string(
             "preferences-history.floating-panel-title",
             defaultValue: "Enable Floating Panel",
-            comment: "History settings toggle for floating panel",
+            comment: "History settings toggle for floating panel"
         )
         static let floatingPanelDescription = string(
             "preferences-history.floating-panel-description",
             defaultValue: "Show a floating panel for quick access to recent captures",
-            comment: "History settings description for floating panel",
+            comment: "History settings description for floating panel"
         )
         static let panelPositionTitle = string(
             "preferences-history.panel-position-title",
             defaultValue: "Panel Position",
-            comment: "History settings title for panel position",
+            comment: "History settings title for panel position"
         )
         static let panelPositionDescription = string(
             "preferences-history.panel-position-description",
             defaultValue: "Choose where the floating panel appears on screen",
-            comment: "History settings description for panel position",
+            comment: "History settings description for panel position"
         )
         static let displaySection = string(
             "preferences-history.display-section",
             defaultValue: "Display",
-            comment: "History settings section title for display options",
+            comment: "History settings section title for display options"
         )
         static let backgroundStyleTitle = string(
             "preferences-history.background-style-title",
             defaultValue: "Background Style",
-            comment: "History settings title for choosing the History background style",
+            comment: "History settings title for choosing the History background style"
         )
         static let backgroundStyleDescription = string(
             "preferences-history.background-style-description",
             defaultValue: "Applies to the History window and floating panel",
-            comment: "History settings description for choosing the History background style",
+            comment: "History settings description for choosing the History background style"
         )
         static let defaultFilterTitle = string(
             "preferences-history.default-filter-title",
             defaultValue: "Default Filter",
-            comment: "History settings title for default filter",
+            comment: "History settings title for default filter"
         )
         static let defaultFilterDescription = string(
             "preferences-history.default-filter-description",
             defaultValue: "Filter shown when opening the floating panel",
-            comment: "History settings description for default filter",
+            comment: "History settings description for default filter"
         )
         static let defaultFilterAll = string(
             "preferences-history.default-filter-all",
             defaultValue: "All",
-            comment: "History settings default filter option for all capture types",
+            comment: "History settings default filter option for all capture types"
         )
         static let defaultFilterScreenshots = string(
             "preferences-history.default-filter-screenshots",
             defaultValue: "Screenshots",
-            comment: "History settings default filter option for screenshots",
+            comment: "History settings default filter option for screenshots"
         )
         static let defaultFilterVideos = string(
             "preferences-history.default-filter-videos",
             defaultValue: "Videos",
-            comment: "History settings default filter option for videos",
+            comment: "History settings default filter option for videos"
         )
         static let defaultFilterGifs = string(
             "preferences-history.default-filter-gifs",
             defaultValue: "GIFs",
-            comment: "History settings default filter option for GIFs",
+            comment: "History settings default filter option for GIFs"
         )
         static let retentionSection = string(
             "preferences-history.retention-section",
             defaultValue: "Retention",
-            comment: "History settings section title for retention",
+            comment: "History settings section title for retention"
         )
         static let enableHistoryTitle = string(
             "preferences-history.enable-history-title",
             defaultValue: "Keep history",
-            comment: "History settings master enable title",
+            comment: "History settings master enable title"
         )
         static let enableHistoryDescription = string(
             "preferences-history.enable-history-description",
             defaultValue: "You can restore old files with the Capture History option from the menu bar.",
-            comment: "History settings master enable description",
+            comment: "History settings master enable description"
         )
         static let retentionDaysTitle = string(
             "preferences-history.retention-days-title",
             defaultValue: "Auto-Clear After",
-            comment: "History settings title for retention days",
+            comment: "History settings title for retention days"
         )
         static func deleteAfterDays(_ days: Int) -> String {
             format(
                 "preferences-history.delete-after-days",
                 defaultValue: "Delete captures older than %d days",
                 comment: "History settings description for retention days. %d is the number of days.",
-                days,
+                days
             )
         }
 
         static let keepForever = string(
             "preferences-history.keep-forever",
             defaultValue: "Keep captures forever",
-            comment: "History settings description when retention is disabled",
+            comment: "History settings description when retention is disabled"
         )
         static let maxCountTitle = string(
             "preferences-history.max-count-title",
             defaultValue: "Max Stored Items",
-            comment: "History settings title for max stored items",
+            comment: "History settings title for max stored items"
         )
         static let maxCountDescription = string(
             "preferences-history.max-count-description",
             defaultValue: "Maximum number of captures stored in history",
-            comment: "History settings description for max stored items",
+            comment: "History settings description for max stored items"
         )
         static let storageSection = string(
             "preferences-history.storage-section",
             defaultValue: "Storage",
-            comment: "History settings section title for storage",
+            comment: "History settings section title for storage"
         )
         static let captureStorageTitle = string(
             "preferences-history.capture-storage-title",
             defaultValue: "Capture Storage",
-            comment: "History settings title for local capture storage",
+            comment: "History settings title for local capture storage"
         )
         static let openCaptureStorageButton = string(
             "preferences-history.open-capture-storage-button",
             defaultValue: "Open Folder",
-            comment: "History settings button for opening local capture storage in Finder",
+            comment: "History settings button for opening local capture storage in Finder"
         )
         static let clearHistoryTitle = string(
             "preferences-history.clear-history-title",
             defaultValue: "Clear All History",
-            comment: "History settings title for clearing history",
+            comment: "History settings title for clearing history"
         )
         static let clearHistoryDescription = string(
             "preferences-history.clear-history-description",
             defaultValue: "Move all captures to Trash and clear History",
-            comment: "History settings description for clearing history",
+            comment: "History settings description for clearing history"
         )
         static let clearHistoryButton = string(
             "preferences-history.clear-history-button",
             defaultValue: "Clear History",
-            comment: "History settings button for clearing history",
+            comment: "History settings button for clearing history"
         )
         static let clearHistoryAlertTitle = string(
             "preferences-history.clear-history-alert-title",
             defaultValue: "Clear All History?",
-            comment: "Alert title when clearing history",
+            comment: "Alert title when clearing history"
         )
         static let clearHistoryAlertMessage = string(
             "preferences-history.clear-history-alert-message",
             defaultValue: "This will move all capture files to Trash and remove them from History. This action cannot be undone in Cue.",
-            comment: "Alert message when clearing history",
+            comment: "Alert message when clearing history"
         )
         static let clearHistoryConfirm = string(
             "preferences-history.clear-history-confirm",
             defaultValue: "Clear",
-            comment: "Confirm button for clearing history",
+            comment: "Confirm button for clearing history"
         )
         static func selectedCaptures(_ count: Int) -> String {
             format(
                 "preferences-history.selected-captures",
                 defaultValue: "%d selected",
                 comment: "History browser selection count label. %d is the number of selected captures.",
-                count,
+                count
             )
         }
 
         static let selectAll = string(
             "preferences-history.select-all",
             defaultValue: "Select All",
-            comment: "Button title for selecting all visible history captures",
+            comment: "Button title for selecting all visible history captures"
         )
         static let clearSelection = string(
             "preferences-history.clear-selection",
             defaultValue: "Clear",
-            comment: "Button title for clearing selected history captures",
+            comment: "Button title for clearing selected history captures"
         )
         static let deleteSelectedAlertTitle = string(
             "preferences-history.delete-selected-alert-title",
             defaultValue: "Delete Selected Captures?",
-            comment: "Alert title when deleting selected capture history items",
+            comment: "Alert title when deleting selected capture history items"
         )
         static func deleteSelectedAlertMessage(_ count: Int) -> String {
             format(
                 "preferences-history.delete-selected-alert-message",
                 defaultValue: "Move %d selected capture item(s) to Trash and remove them from History.",
                 comment: "Alert message when deleting selected capture history items. %d is the number of selected captures.",
-                count,
+                count
             )
         }
 
@@ -8539,7 +8539,7 @@ nonisolated enum L10n {
                 "preferences-history.deleted-captures",
                 defaultValue: "Deleted %d capture item(s)",
                 comment: "Toast shown after deleting capture history items. %d is the number of deleted captures.",
-                count,
+                count
             )
         }
     }
@@ -8548,17 +8548,17 @@ nonisolated enum L10n {
         static let topCenter = string(
             "history-panel-position.top-center",
             defaultValue: "Top Center",
-            comment: "History panel position option",
+            comment: "History panel position option"
         )
         static let bottomCenter = string(
             "history-panel-position.bottom-center",
             defaultValue: "Bottom Center",
-            comment: "History panel position option",
+            comment: "History panel position option"
         )
         static let center = string(
             "history-panel-position.center",
             defaultValue: "Center",
-            comment: "History panel position option",
+            comment: "History panel position option"
         )
     }
 
@@ -8566,22 +8566,22 @@ nonisolated enum L10n {
         static let hud = string(
             "history-background-style.hud",
             defaultValue: "HUD",
-            comment: "History background style option",
+            comment: "History background style option"
         )
         static let solid = string(
             "history-background-style.solid",
             defaultValue: "Solid",
-            comment: "History background style option",
+            comment: "History background style option"
         )
         static let glass = string(
             "history-background-style.glass",
             defaultValue: "Glass",
-            comment: "History background style option",
+            comment: "History background style option"
         )
         static let gradient = string(
             "history-background-style.gradient",
             defaultValue: "Gradient",
-            comment: "History background style option",
+            comment: "History background style option"
         )
     }
 }

@@ -12,11 +12,11 @@ final class VideoModuleMediaRoutingTests: XCTestCase {
     func testHistoryOpenDestinationScreenshotsAlwaysAnnotate() {
         XCTAssertEqual(
             VideoModuleMediaRouting.historyOpenDestination(for: .screenshot, videoModuleEnabled: false),
-            .annotate,
+            .annotate
         )
         XCTAssertEqual(
             VideoModuleMediaRouting.historyOpenDestination(for: .screenshot, videoModuleEnabled: true),
-            .annotate,
+            .annotate
         )
     }
 
@@ -25,7 +25,7 @@ final class VideoModuleMediaRoutingTests: XCTestCase {
             XCTAssertEqual(
                 VideoModuleMediaRouting.historyOpenDestination(for: type, videoModuleEnabled: false),
                 .revealInFinder,
-                "\(type) should reveal in Finder when Video module is off",
+                "\(type) should reveal in Finder when Video module is off"
             )
         }
     }
@@ -35,7 +35,7 @@ final class VideoModuleMediaRoutingTests: XCTestCase {
             XCTAssertEqual(
                 VideoModuleMediaRouting.historyOpenDestination(for: type, videoModuleEnabled: true),
                 .videoEditor,
-                "\(type) should open Video Editor when Video module is on",
+                "\(type) should open Video Editor when Video module is on"
             )
         }
     }
@@ -43,11 +43,11 @@ final class VideoModuleMediaRoutingTests: XCTestCase {
     func testQuickAccessVideoOpenDestination() {
         XCTAssertEqual(
             VideoModuleMediaRouting.quickAccessVideoOpenDestination(videoModuleEnabled: false),
-            .revealInFinder,
+            .revealInFinder
         )
         XCTAssertEqual(
             VideoModuleMediaRouting.quickAccessVideoOpenDestination(videoModuleEnabled: true),
-            .videoEditor,
+            .videoEditor
         )
     }
 

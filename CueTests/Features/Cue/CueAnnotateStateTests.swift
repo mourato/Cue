@@ -13,7 +13,7 @@ final class CueAnnotateStateTests: XCTestCase {
             text: text,
             target: .point(.zero),
             color: RGBAColor(red: 1, green: 0, blue: 0, alpha: 1),
-            creationOrder: 1,
+            creationOrder: 1
         )
     }
 
@@ -62,13 +62,13 @@ final class CueAnnotateStateTests: XCTestCase {
         state.notinhasUpdateMovingNote(
             to: CGPoint(x: 30, y: 0),
             imageBounds: bounds,
-            from: .zero,
+            from: .zero
         )
         XCTAssertEqual(state.cueNotes[0].target, note.target)
         XCTAssertNotNil(state.cueMovePreviewTarget)
         state.notinhasCommitMovingNote()
 
-        guard case .point(let movedPoint) = state.cueNotes[0].target else {
+        guard case let .point(movedPoint) = state.cueNotes[0].target else {
             return XCTFail("Expected point target")
         }
         XCTAssertEqual(movedPoint.x, 30, accuracy: 0.001)
@@ -82,7 +82,7 @@ final class CueAnnotateStateTests: XCTestCase {
         let note = CueVisualNote(
             target: .rect(CGRect(x: 20, y: 30, width: 80, height: 60)),
             color: RGBAColor(red: 1, green: 0, blue: 0, alpha: 1),
-            creationOrder: 1,
+            creationOrder: 1
         )
         state.cueNotes = [note]
         let bounds = CGRect(x: 0, y: 0, width: 200, height: 200)
@@ -91,7 +91,7 @@ final class CueAnnotateStateTests: XCTestCase {
         state.notinhasUpdateResizingNote(
             to: CGPoint(x: 70, y: 50),
             imageBounds: bounds,
-            handle: .bottomRight,
+            handle: .bottomRight
         )
         state.notinhasCommitMovingNote()
 
@@ -109,7 +109,7 @@ final class CueAnnotateStateTests: XCTestCase {
         state.notinhasUpdateDrawing(to: CGPoint(x: 180, y: 120), imageBounds: bounds)
 
         XCTAssertEqual(state.cueDraftNote?.target.pinCorner, .topLeft)
-        guard case .rect(let rect, let pinCorner) = state.cueDraftNote?.target else {
+        guard case let .rect(rect, pinCorner) = state.cueDraftNote?.target else {
             return XCTFail("Expected rect draft")
         }
         XCTAssertEqual(pinCorner, .topLeft)
@@ -127,7 +127,7 @@ final class CueAnnotateStateTests: XCTestCase {
         state.notinhasUpdateMovingNote(
             to: CGPoint(x: 12, y: 8),
             imageBounds: bounds,
-            from: .zero,
+            from: .zero
         )
 
         XCTAssertEqual(state.cueNotes[0].target, note.target)
@@ -145,7 +145,7 @@ final class CueAnnotateStateTests: XCTestCase {
         state.notinhasUpdateMovingNote(
             to: CGPoint(x: 30, y: 0),
             imageBounds: bounds,
-            from: .zero,
+            from: .zero
         )
         state.notinhasCancelMovingNote()
 
@@ -166,7 +166,7 @@ final class CueAnnotateStateTests: XCTestCase {
         state.notinhasUpdateMovingNote(
             to: CGPoint(x: 40, y: 10),
             imageBounds: bounds,
-            from: .zero,
+            from: .zero
         )
         state.activateTool(.selection)
 
@@ -215,7 +215,7 @@ final class CueAnnotateStateTests: XCTestCase {
         XCTAssertEqual(
             state.cueNotes[0].areaStrokeWidth,
             AnnotationStrokeWidth.maxPoints,
-            accuracy: 0.001,
+            accuracy: 0.001
         )
     }
 
@@ -231,7 +231,7 @@ final class CueAnnotateStateTests: XCTestCase {
         XCTAssertEqual(
             state.cueNotes[0].areaStrokeWidth,
             AnnotationStrokeWidth.minPoints,
-            accuracy: 0.001,
+            accuracy: 0.001
         )
     }
 
@@ -323,7 +323,7 @@ final class CueAnnotateStateTests: XCTestCase {
         reloadedState.activateTool(.rectangle)
         XCTAssertEqual(
             RGBAColor(color: reloadedState.quickStrokeColorBinding.wrappedValue),
-            CuePaletteColor.green.rgba,
+            CuePaletteColor.green.rgba
         )
     }
 }

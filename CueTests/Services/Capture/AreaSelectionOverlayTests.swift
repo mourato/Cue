@@ -82,7 +82,7 @@ final class AreaSelectionOverlayTests: AreaSelectionOverlayTestCase {
             context: nil,
             eventNumber: 0,
             clickCount: 1,
-            pressure: 1,
+            pressure: 1
         ) else {
             XCTFail("Failed to synthesize mouse-down event")
             return
@@ -93,11 +93,11 @@ final class AreaSelectionOverlayTests: AreaSelectionOverlayTestCase {
         // THEN: the coordinate indicator stays visible
         XCTAssertFalse(
             overlayView.testSizeIndicatorTextLayer.isHidden,
-            "Coordinate indicator must stay visible between mouseDown and first drag",
+            "Coordinate indicator must stay visible between mouseDown and first drag"
         )
         XCTAssertFalse(
             overlayView.testSizeIndicatorBackgroundLayer.isHidden,
-            "Background layer must stay visible between mouseDown and first drag",
+            "Background layer must stay visible between mouseDown and first drag"
         )
     }
 
@@ -111,7 +111,7 @@ final class AreaSelectionOverlayTests: AreaSelectionOverlayTestCase {
         overlayView.resetSelection()
         overlayView.renderManualSelection(
             screenRect: CGRect(x: 10, y: 10, width: 200, height: 100),
-            currentScreenPoint: nil,
+            currentScreenPoint: nil
         )
 
         // WHEN: a passive re-evaluation happens (layout pass on the overlay)
@@ -120,7 +120,7 @@ final class AreaSelectionOverlayTests: AreaSelectionOverlayTestCase {
         // THEN: the coordinate indicator is not restored over the active selection
         XCTAssertTrue(
             overlayView.testSizeIndicatorTextLayer.isHidden,
-            "Coordinate indicator must not reappear while a sized selection rect is visible",
+            "Coordinate indicator must not reappear while a sized selection rect is visible"
         )
     }
 
@@ -139,7 +139,7 @@ final class AreaSelectionOverlayTests: AreaSelectionOverlayTestCase {
             context: nil,
             eventNumber: 0,
             clickCount: 1,
-            pressure: 1,
+            pressure: 1
         ) else {
             XCTFail("Failed to synthesize mouse-down event")
             return
@@ -149,7 +149,7 @@ final class AreaSelectionOverlayTests: AreaSelectionOverlayTestCase {
         // THEN: window mode is not a manual drag, so re-assertion stays a no-op
         XCTAssertFalse(
             overlayView.isManualSelectionInProgress,
-            "Application-window mode must not report a drag in progress",
+            "Application-window mode must not report a drag in progress"
         )
         overlayView.reassertCursorDuringDrag()
         XCTAssertFalse(overlayView.isManualSelectionInProgress)

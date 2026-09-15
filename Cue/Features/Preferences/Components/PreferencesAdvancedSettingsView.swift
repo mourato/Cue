@@ -37,7 +37,7 @@ struct AdvancedSettingsView: View {
             Section(L10n.PreferencesAdvanced.integrationSection) {
                 SettingRow(
                     title: L10n.PreferencesAdvanced.urlSchemeAPITitle,
-                    description: L10n.PreferencesAdvanced.urlSchemeAPIDescription,
+                    description: L10n.PreferencesAdvanced.urlSchemeAPIDescription
                 ) {
                     Text("\(CueURLScheme.current)://")
                         .font(.body.monospaced())
@@ -47,7 +47,7 @@ struct AdvancedSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesAdvanced.urlSchemeTitle,
-                    description: L10n.PreferencesAdvanced.urlSchemeDescription,
+                    description: L10n.PreferencesAdvanced.urlSchemeDescription
                 ) {
                     Toggle("", isOn: $urlSchemeEnabled)
                         .labelsHidden()
@@ -64,7 +64,7 @@ struct AdvancedSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesAdvanced.importTitle,
-                    description: L10n.PreferencesAdvanced.importDescription,
+                    description: L10n.PreferencesAdvanced.importDescription
                 ) {
                     Button(L10n.PreferencesAdvanced.importButton) {
                         importConfig()
@@ -77,7 +77,7 @@ struct AdvancedSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesAdvanced.exportTitle,
-                    description: L10n.PreferencesAdvanced.exportDescription,
+                    description: L10n.PreferencesAdvanced.exportDescription
                 ) {
                     Button(L10n.PreferencesAdvanced.exportButton) {
                         exportConfig()
@@ -89,7 +89,7 @@ struct AdvancedSettingsView: View {
                 }
 
                 SettingRow(
-                    title: L10n.PreferencesAdvanced.restoreDefaultsTitle,
+                    title: L10n.PreferencesAdvanced.restoreDefaultsTitle
                 ) {
                     Button(L10n.PreferencesAdvanced.restoreDefaultsButton, role: .destructive) {
                         requestRestoreDefaults()
@@ -102,7 +102,7 @@ struct AdvancedSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesAdvanced.configSyncStatusTitle,
-                    description: configSyncStatusDescription,
+                    description: configSyncStatusDescription
                 ) {
                     HStack(spacing: 10) {
                         StatusBadge(configuration: configSyncBadgeConfiguration)
@@ -133,7 +133,7 @@ struct AdvancedSettingsView: View {
             Section(L10n.PreferencesAdvanced.diagnosticsSection) {
                 SettingRow(
                     title: L10n.PreferencesAdvanced.diagnosticLoggingTitle,
-                    description: L10n.PreferencesAdvanced.diagnosticLoggingDescription,
+                    description: L10n.PreferencesAdvanced.diagnosticLoggingDescription
                 ) {
                     Toggle("", isOn: $diagnosticsEnabled)
                         .labelsHidden()
@@ -142,12 +142,12 @@ struct AdvancedSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesAdvanced.logRetentionTitle,
-                    description: L10n.PreferencesAdvanced.logRetentionDescription(diagnosticsRetentionDays),
+                    description: L10n.PreferencesAdvanced.logRetentionDescription(diagnosticsRetentionDays)
                 ) {
                     PreferencesNumericPicker(
                         value: Binding(
                             get: { Double(diagnosticsRetentionDays) },
-                            set: { diagnosticsRetentionDays = Int($0.rounded()) },
+                            set: { diagnosticsRetentionDays = Int($0.rounded()) }
                         ),
                         range: Double(LogCleanupScheduler.retentionDaysRange.lowerBound)
                             ... Double(LogCleanupScheduler.retentionDaysRange.upperBound),
@@ -155,7 +155,7 @@ struct AdvancedSettingsView: View {
                         step: 1,
                         accessibilityTitle: L10n.PreferencesAdvanced.logRetentionTitle,
                         unit: "days",
-                        valueLabel: { "\(Int($0)) days" },
+                        valueLabel: { "\(Int($0)) days" }
                     )
                 }
 
@@ -179,7 +179,7 @@ struct AdvancedSettingsView: View {
         }
         .alert(
             L10n.PreferencesAdvanced.restoreDefaultsConfirmationTitle,
-            isPresented: $isRestoreConfirmationPresented,
+            isPresented: $isRestoreConfirmationPresented
         ) {
             Button(L10n.Common.cancel, role: .cancel) {}
             Button(L10n.PreferencesAdvanced.restoreDefaultsConfirmButton, role: .destructive) {
@@ -190,7 +190,7 @@ struct AdvancedSettingsView: View {
         }
         .alert(
             L10n.PreferencesAdvanced.configSyncConfirmationTitle,
-            isPresented: $isConfigSyncConfirmationPresented,
+            isPresented: $isConfigSyncConfirmationPresented
         ) {
             Button(L10n.Common.cancel, role: .cancel) {
                 pendingConfigSyncURL = nil
@@ -230,15 +230,15 @@ struct AdvancedSettingsView: View {
             L10n.PreferencesAdvanced.configSyncQueuedDescription
         case .syncing:
             L10n.PreferencesAdvanced.configSyncWritingDescription
-        case .upToDate(let date):
+        case let .upToDate(date):
             L10n.PreferencesAdvanced.configSyncUpToDateDescription(configSyncTimeText(date))
-        case .synced(let date):
+        case let .synced(date):
             L10n.PreferencesAdvanced.configSyncSyncedDescription(configSyncTimeText(date))
         case .needsPermission:
             L10n.PreferencesAdvanced.configAccessRequiredToast
         case .conflict:
             L10n.PreferencesAdvanced.configSyncNeedsConfirmation
-        case .failed(let message):
+        case let .failed(message):
             message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
                 ? L10n.PreferencesAdvanced.openConfigUnavailable
                 : message
@@ -251,37 +251,37 @@ struct AdvancedSettingsView: View {
             StatusBadge.Configuration(
                 label: L10n.PreferencesAdvanced.configSyncBadgeSynced,
                 systemImage: "checkmark.circle.fill",
-                tint: FeedbackStyle(tone: .success).iconColor,
+                tint: FeedbackStyle(tone: .success).iconColor
             )
         case .scheduled:
             StatusBadge.Configuration(
                 label: L10n.PreferencesAdvanced.configSyncBadgeQueued,
                 systemImage: "clock.fill",
-                tint: FeedbackStyle(tone: .info).iconColor,
+                tint: FeedbackStyle(tone: .info).iconColor
             )
         case .syncing:
             StatusBadge.Configuration(
                 label: L10n.PreferencesAdvanced.configSyncBadgeSyncing,
                 tint: FeedbackStyle(tone: .info).iconColor,
-                showsProgress: true,
+                showsProgress: true
             )
         case .needsPermission:
             StatusBadge.Configuration(
                 label: L10n.PreferencesAdvanced.configSyncBadgeAccessNeeded,
                 systemImage: "lock.fill",
-                tint: FeedbackStyle(tone: .warning).iconColor,
+                tint: FeedbackStyle(tone: .warning).iconColor
             )
         case .conflict:
             StatusBadge.Configuration(
                 label: L10n.PreferencesAdvanced.configSyncBadgeReviewNeeded,
                 systemImage: "exclamationmark.triangle.fill",
-                tint: FeedbackStyle(tone: .warning).iconColor,
+                tint: FeedbackStyle(tone: .warning).iconColor
             )
         case .failed:
             StatusBadge.Configuration(
                 label: L10n.PreferencesAdvanced.configSyncBadgeFailed,
                 systemImage: "xmark.octagon.fill",
-                tint: FeedbackStyle(tone: .error).iconColor,
+                tint: FeedbackStyle(tone: .error).iconColor
             )
         }
     }
@@ -348,7 +348,7 @@ struct AdvancedSettingsView: View {
             showNotice(
                 error.localizedDescription,
                 fallback: L10n.PreferencesAdvanced.restoreDefaultsFailed,
-                style: .error,
+                style: .error
             )
         }
     }
@@ -405,7 +405,7 @@ struct AdvancedSettingsView: View {
                     showNotice(
                         error.localizedDescription,
                         fallback: L10n.PreferencesAdvanced.openConfigUnavailable,
-                        style: .error,
+                        style: .error
                     )
                     return
                 }
@@ -431,7 +431,7 @@ struct AdvancedSettingsView: View {
         do {
             let syncedURL = try configSyncCoordinator.syncCurrentSettingsAfterConfirmation(
                 at: url,
-                expectedFileSignature: expectedSignature,
+                expectedFileSignature: expectedSignature
             )
             openConfigFile(at: syncedURL)
         } catch {
@@ -456,7 +456,7 @@ struct AdvancedSettingsView: View {
             showNotice(
                 error.localizedDescription,
                 fallback: L10n.PreferencesAdvanced.openConfigUnavailable,
-                style: .error,
+                style: .error
             )
         }
     }
@@ -487,7 +487,7 @@ struct AdvancedSettingsView: View {
                 showNotice(
                     error.localizedDescription,
                     fallback: L10n.PreferencesAdvanced.openConfigUnavailable,
-                    style: .error,
+                    style: .error
                 )
             }
             return nil
@@ -552,7 +552,7 @@ struct AdvancedSettingsView: View {
     private func showImportNotice(for result: CueConfigurationImportResult) {
         showNotice(
             noticeSummary(for: result, successMessage: L10n.PreferencesAdvanced.importSucceeded),
-            style: noticeStyle(for: result.issues),
+            style: noticeStyle(for: result.issues)
         )
     }
 
@@ -571,11 +571,11 @@ struct AdvancedSettingsView: View {
 
     private func noticeSummary(
         for result: CueConfigurationImportResult,
-        successMessage: String,
+        successMessage: String
     ) -> String {
         if result.hasErrors {
             return L10n.PreferencesAdvanced.importFailedWithErrors(
-                result.issues.filter { $0.severity == .error }.count,
+                result.issues.filter { $0.severity == .error }.count
             )
         }
 
@@ -583,7 +583,7 @@ struct AdvancedSettingsView: View {
         if warningCount > 0 {
             return L10n.PreferencesAdvanced.importedWithWarnings(
                 result.appliedChangeCount,
-                warningCount,
+                warningCount
             )
         }
 
@@ -605,7 +605,7 @@ struct AdvancedSettingsView: View {
     private func showNotice(
         _ message: String,
         fallback: String? = nil,
-        style: AppToastStyle,
+        style: AppToastStyle
     ) {
         let resolvedMessage = message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             ? fallback ?? L10n.PreferencesAdvanced.operationFinished
@@ -614,7 +614,7 @@ struct AdvancedSettingsView: View {
         AppToastManager.shared.show(
             message: resolvedMessage,
             style: style,
-            duration: AppToastManager.defaultDuration,
+            duration: AppToastManager.defaultDuration
         )
     }
 }
@@ -634,7 +634,7 @@ private struct AdvancedConfigAccessWarningRow: View {
                     .font(.subheadline)
                     .fontWeight(.semibold)
                 Text(L10n.PreferencesAdvanced.configAccessWarningDescription(
-                    CueConfigurationService.shared.suggestedConfigDirectoryURL.path,
+                    CueConfigurationService.shared.suggestedConfigDirectoryURL.path
                 ))
                 .font(.caption)
                 .foregroundStyle(.secondary)

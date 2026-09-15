@@ -31,7 +31,7 @@ final class SimpleTOMLParserTests: XCTestCase {
         XCTAssertEqual(document.value(at: "general", "play_sounds")?.boolValue, true)
         XCTAssertEqual(
             document.value(at: "shortcuts", "global", "fullscreen", "modifiers")?.stringArrayValue,
-            ["command", "shift"],
+            ["command", "shift"]
         )
     }
 

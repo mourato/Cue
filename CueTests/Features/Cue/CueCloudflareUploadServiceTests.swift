@@ -19,7 +19,7 @@ final class CueCloudflareUploadServiceTests: XCTestCase {
             XCTAssertEqual(Self.body(for: request), Data("payload".utf8))
             return Self.response(
                 status: 201,
-                body: #"{"id":"abc123","url":"https://worker.example/abc123","filename":"capture.mp4","size":7}"#,
+                body: #"{"id":"abc123","url":"https://worker.example/abc123","filename":"capture.mp4","size":7}"#
             )
         }
 
@@ -30,7 +30,7 @@ final class CueCloudflareUploadServiceTests: XCTestCase {
         let result = try await makeService().upload(
             fileURL: fileURL,
             workerURL: " https://worker.example/ ",
-            token: " fixture-token ",
+            token: " fixture-token "
         )
 
         XCTAssertEqual(result.url, "https://worker.example/abc123")
@@ -42,7 +42,7 @@ final class CueCloudflareUploadServiceTests: XCTestCase {
             XCTAssertEqual(request.value(forHTTPHeaderField: "X-Media-Type"), "image")
             return Self.response(
                 status: 201,
-                body: #"{"id":"abc123","url":"https://worker.example/abc123","filename":"capture.png","size":7}"#,
+                body: #"{"id":"abc123","url":"https://worker.example/abc123","filename":"capture.png","size":7}"#
             )
         }
 
@@ -53,7 +53,7 @@ final class CueCloudflareUploadServiceTests: XCTestCase {
         _ = try await makeService().upload(
             fileURL: fileURL,
             workerURL: "https://worker.example",
-            token: "fixture-token",
+            token: "fixture-token"
         )
     }
 
@@ -62,7 +62,7 @@ final class CueCloudflareUploadServiceTests: XCTestCase {
             _ = try await makeService().upload(
                 fileURL: temporaryFile(),
                 workerURL: "http://worker.example",
-                token: "fixture-token",
+                token: "fixture-token"
             )
             XCTFail("Expected HTTPS validation")
         } catch let error as CueCloudflareUploadError {
@@ -76,7 +76,7 @@ final class CueCloudflareUploadServiceTests: XCTestCase {
         MockCloudflareURLProtocol.requestHandler = { _ in
             Self.response(
                 status: 201,
-                body: #"{"id":"abc123","url":"http://worker.example/abc123","filename":"fixture.mp4","size":7}"#,
+                body: #"{"id":"abc123","url":"http://worker.example/abc123","filename":"fixture.mp4","size":7}"#
             )
         }
 
@@ -84,7 +84,7 @@ final class CueCloudflareUploadServiceTests: XCTestCase {
             _ = try await makeService().upload(
                 fileURL: temporaryFile(),
                 workerURL: "https://worker.example",
-                token: "fixture-token",
+                token: "fixture-token"
             )
             XCTFail("Expected public HTTPS URL validation")
         } catch let error as CueCloudflareUploadError {
@@ -107,7 +107,7 @@ final class CueCloudflareUploadServiceTests: XCTestCase {
             _ = try await makeService().upload(
                 fileURL: fileURL,
                 workerURL: "https://worker.example",
-                token: "fixture-token",
+                token: "fixture-token"
             )
             XCTFail("Expected the client size limit")
         } catch let error as CueCloudflareUploadError {
@@ -122,7 +122,7 @@ final class CueCloudflareUploadServiceTests: XCTestCase {
             _ = try await makeService().upload(
                 fileURL: temporaryFile(),
                 workerURL: "https://worker.example",
-                token: "fixture-token",
+                token: "fixture-token"
             )
             XCTFail("Expected cancellation")
         } catch is CancellationError {
@@ -162,7 +162,7 @@ final class CueCloudflareUploadServiceTests: XCTestCase {
         try await makeService().verify(workerURL: "https://worker.example", token: "fixture-token")
         XCTAssertEqual(calls, [
             "POST https://worker.example/api/setup",
-            "GET https://worker.example/api/ping",
+            "GET https://worker.example/api/ping"
         ])
     }
 
@@ -206,7 +206,7 @@ final class CueCloudflareUploadServiceTests: XCTestCase {
             _ = try await makeService().upload(
                 fileURL: temporaryFile(),
                 workerURL: "https://worker.example",
-                token: "fixture-token",
+                token: "fixture-token"
             )
             XCTFail("Expected rejection")
         } catch let error as CueCloudflareUploadError {
@@ -245,9 +245,13 @@ final class CueCloudflareUploadServiceTests: XCTestCase {
 
     private static func response(status: Int, body: String) -> (HTTPURLResponse, Data) {
         (
-            HTTPURLResponse(url: URL(string: "https://worker.example")!, statusCode: status, httpVersion: nil,
-                            headerFields: nil)!,
-            Data(body.utf8),
+            HTTPURLResponse(
+                url: URL(string: "https://worker.example")!,
+                statusCode: status,
+                httpVersion: nil,
+                headerFields: nil
+            )!,
+            Data(body.utf8)
         )
     }
 }

@@ -33,7 +33,7 @@ final class CaptureSelectionGeometryTests: XCTestCase {
             handle: .bottomRight,
             translation: CGPoint(x: 40, y: -30),
             aspectLocked: false,
-            aspectRatio: nil,
+            aspectRatio: nil
         )
 
         XCTAssertEqual(resized.origin, CGPoint(x: 100, y: 70))
@@ -49,7 +49,7 @@ final class CaptureSelectionGeometryTests: XCTestCase {
             handle: .bottomRight,
             translation: CGPoint(x: 40, y: -30),
             aspectLocked: true,
-            aspectRatio: ratio,
+            aspectRatio: ratio
         )
 
         XCTAssertEqual(resized.width / resized.height, ratio, accuracy: 0.001)
@@ -65,7 +65,7 @@ final class CaptureSelectionGeometryTests: XCTestCase {
             rect,
             width: 300,
             aspectLocked: true,
-            aspectRatio: ratio,
+            aspectRatio: ratio
         )
 
         XCTAssertEqual(updated.width, 300)
@@ -82,7 +82,7 @@ final class CaptureSelectionGeometryTests: XCTestCase {
             rect,
             height: 50,
             aspectLocked: true,
-            aspectRatio: ratio,
+            aspectRatio: ratio
         )
 
         XCTAssertEqual(updated.height, 50)
@@ -98,7 +98,7 @@ final class CaptureSelectionGeometryTests: XCTestCase {
             rect,
             width: 320,
             aspectLocked: false,
-            aspectRatio: nil,
+            aspectRatio: nil
         )
 
         XCTAssertEqual(updated.width, 320)
@@ -113,7 +113,7 @@ final class CaptureSelectionGeometryTests: XCTestCase {
             handle: .top,
             translation: CGPoint(x: 0, y: 40),
             aspectLocked: true,
-            aspectRatio: 2,
+            aspectRatio: 2
         )
 
         XCTAssertEqual(resized.minY, original.minY, accuracy: 0.001)
@@ -128,7 +128,7 @@ final class CaptureSelectionGeometryTests: XCTestCase {
             handle: .bottom,
             translation: CGPoint(x: 0, y: -40),
             aspectLocked: true,
-            aspectRatio: 2,
+            aspectRatio: 2
         )
 
         XCTAssertEqual(resized.maxY, original.maxY, accuracy: 0.001)

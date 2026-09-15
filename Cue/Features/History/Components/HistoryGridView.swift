@@ -17,7 +17,7 @@ struct HistoryGridView: View {
     @State private var lastSelectedId: UUID?
 
     private let columns = [
-        GridItem(.adaptive(minimum: 170, maximum: 230), spacing: 12),
+        GridItem(.adaptive(minimum: 170, maximum: 230), spacing: 12)
     ]
 
     var body: some View {
@@ -31,7 +31,7 @@ struct HistoryGridView: View {
                         onTap: {
                             handleTap(record: record)
                         },
-                        thumbnailOverride: thumbnailOverrides[record.id],
+                        thumbnailOverride: thumbnailOverrides[record.id]
                     )
                     .equatable()
                     .contextMenu {
@@ -50,7 +50,8 @@ struct HistoryGridView: View {
 
         if flags.contains(.shift), let lastSelectedId,
            let startIndex = records.firstIndex(where: { $0.id == lastSelectedId }),
-           let endIndex = records.firstIndex(where: { $0.id == record.id }) {
+           let endIndex = records.firstIndex(where: { $0.id == record.id })
+        {
             let range = min(startIndex, endIndex) ... max(startIndex, endIndex)
             selectedIds.formUnion(records[range].map(\.id))
         } else if flags.contains(.command) {

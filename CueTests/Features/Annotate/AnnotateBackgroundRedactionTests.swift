@@ -55,8 +55,8 @@ final class AnnotateBackgroundRedactionTests: XCTestCase {
             AnnotateSensitiveRedactionRegion(
                 kind: .email,
                 bounds: CGRect(x: 10, y: 10, width: 1, height: 1),
-                confidence: 0.9,
-            ),
+                confidence: 0.9
+            )
         ])
 
         XCTAssertEqual(inserted, 0)
@@ -73,8 +73,8 @@ final class AnnotateBackgroundRedactionTests: XCTestCase {
             AnnotateSensitiveRedactionRegion(
                 kind: .creditCard,
                 bounds: CGRect(x: 150, y: 60, width: 500, height: 500),
-                confidence: 0.95,
-            ),
+                confidence: 0.95
+            )
         ])
 
         XCTAssertEqual(inserted, 1)
@@ -94,8 +94,8 @@ final class AnnotateBackgroundRedactionTests: XCTestCase {
             AnnotateSensitiveRedactionRegion(
                 kind: .email,
                 bounds: CGRect(x: 500, y: 500, width: 40, height: 20),
-                confidence: 0.9,
-            ),
+                confidence: 0.9
+            )
         ])
 
         XCTAssertEqual(inserted, 0)
@@ -110,18 +110,18 @@ final class AnnotateBackgroundRedactionTests: XCTestCase {
             AnnotateSensitiveRedactionRegion(
                 kind: .email,
                 bounds: CGRect(x: 10, y: 10, width: 60, height: 20),
-                confidence: 0.9,
+                confidence: 0.9
             ),
             AnnotateSensitiveRedactionRegion(
                 kind: .accessToken,
                 bounds: CGRect(x: 120, y: 80, width: 80, height: 24),
-                confidence: 0.9,
+                confidence: 0.9
             ),
             AnnotateSensitiveRedactionRegion(
                 kind: .creditCard,
                 bounds: CGRect(x: 40, y: 140, width: 150, height: 22),
-                confidence: 0.98,
-            ),
+                confidence: 0.98
+            )
         ])
 
         XCTAssertEqual(inserted, 3)

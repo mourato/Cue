@@ -15,7 +15,7 @@ enum CueConfigurationDefaultDocument {
         writer.root("schema_version", 1)
         writer.root(
             "cue_min_version",
-            Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.20.0",
+            Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.20.0"
         )
 
         writeGeneral(&writer)
@@ -114,7 +114,7 @@ enum CueConfigurationDefaultDocument {
             writer.value("animation_duration", 0.7)
             writer.value(
                 "color",
-                CueConfigurationColor.hexString(from: MouseHighlightConfiguration.defaultHighlightColor),
+                CueConfigurationColor.hexString(from: MouseHighlightConfiguration.defaultHighlightColor)
             )
             writer.value("opacity", 0.5)
             writer.value("ripple_count", 3)
@@ -196,7 +196,7 @@ enum CueConfigurationDefaultDocument {
         writer.stringArray("chrome_bottom_order", AnnotateChromeItem.defaultBottomOrder.map(\.rawValue))
         writer.stringArray(
             "chrome_enabled",
-            AnnotateChromeItem.defaultEnabledItems.map(\.rawValue).sorted(),
+            AnnotateChromeItem.defaultEnabledItems.map(\.rawValue).sorted()
         )
     }
 
@@ -212,13 +212,13 @@ enum CueConfigurationDefaultDocument {
             writeOverlayShortcut(
                 &writer,
                 section: "shortcuts.overlay.all_in_one.\(mode.rawValue)",
-                shortcut: AllInOneModeShortcutSettings.defaultShortcut(for: mode),
+                shortcut: AllInOneModeShortcutSettings.defaultShortcut(for: mode)
             )
         }
         writeOverlayShortcut(
             &writer,
             section: "shortcuts.overlay.recording_application_capture",
-            shortcut: CaptureOverlayShortcutSettings.defaultRecordingApplicationCaptureShortcut,
+            shortcut: CaptureOverlayShortcutSettings.defaultRecordingApplicationCaptureShortcut
         )
 
         writer.section("shortcuts.quick_access.edit_latest_capture")
@@ -262,7 +262,7 @@ enum CueConfigurationDefaultDocument {
     private static func writeOverlayShortcut(
         _ writer: inout SimpleTOMLWriter,
         section: String,
-        shortcut: CaptureOverlayShortcut,
+        shortcut: CaptureOverlayShortcut
     ) {
         writer.section(section)
         writer.value("enabled", true)

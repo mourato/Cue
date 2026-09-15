@@ -32,7 +32,7 @@ struct AnnotateExportPreviewView: View {
             NSColor.labelColor.setFill()
             NSBezierPath(ovalIn: NSRect(x: 100, y: 155, width: 96, height: 96)).fill()
             return true
-        },
+        }
     )
 
     AnnotateExportPreviewView(image: image)

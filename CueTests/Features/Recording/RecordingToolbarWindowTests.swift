@@ -23,7 +23,7 @@
 
         func testClampedOrigin_offRightAndTop_isPulledInsideSoWindowFits() {
             let result = RecordingToolbarWindow.clampedOrigin(
-                CGPoint(x: 5000, y: 5000), size: size, within: union,
+                CGPoint(x: 5000, y: 5000), size: size, within: union
             )
             XCTAssertEqual(result.x, union.maxX - size.width, accuracy: 0.001) // 800
             XCTAssertEqual(result.y, union.maxY - size.height, accuracy: 0.001) // 750
@@ -31,7 +31,7 @@
 
         func testClampedOrigin_offLeftAndBottom_isPulledToMinCorner() {
             let result = RecordingToolbarWindow.clampedOrigin(
-                CGPoint(x: -500, y: -500), size: size, within: union,
+                CGPoint(x: -500, y: -500), size: size, within: union
             )
             XCTAssertEqual(result.x, union.minX, accuracy: 0.001)
             XCTAssertEqual(result.y, union.minY, accuracy: 0.001)
@@ -40,7 +40,7 @@
         func testClampedOrigin_withOffsetUnion_respectsMinOrigin() {
             let offsetUnion = CGRect(x: -200, y: -100, width: 1200, height: 900)
             let result = RecordingToolbarWindow.clampedOrigin(
-                CGPoint(x: -9999, y: -9999), size: size, within: offsetUnion,
+                CGPoint(x: -9999, y: -9999), size: size, within: offsetUnion
             )
             XCTAssertEqual(result.x, offsetUnion.minX, accuracy: 0.001)
             XCTAssertEqual(result.y, offsetUnion.minY, accuracy: 0.001)
@@ -56,7 +56,7 @@
             // A window wider/taller than the visible area should pin to the min corner (never negative maxX/maxY).
             let big = CGSize(width: 2000, height: 2000)
             let result = RecordingToolbarWindow.clampedOrigin(
-                CGPoint(x: 500, y: 500), size: big, within: union,
+                CGPoint(x: 500, y: 500), size: big, within: union
             )
             XCTAssertEqual(result.x, union.minX, accuracy: 0.001)
             XCTAssertEqual(result.y, union.minY, accuracy: 0.001)
@@ -66,7 +66,7 @@
             let result = RecordingToolbarWindow.centeredSelectionRect(
                 around: CGPoint(x: 500, y: 400),
                 size: CGSize(width: 300, height: 200),
-                within: union,
+                within: union
             )
 
             XCTAssertEqual(result, CGRect(x: 350, y: 300, width: 300, height: 200))
@@ -75,8 +75,8 @@
         func testCenteredSelectionRect_clampsSizeAndOriginToScreen() {
             let result = RecordingToolbarWindow.centeredSelectionRect(
                 around: CGPoint(x: 20, y: 30),
-                size: CGSize(width: 2_000, height: 1_000),
-                within: union,
+                size: CGSize(width: 2000, height: 1000),
+                within: union
             )
 
             XCTAssertEqual(result, union)

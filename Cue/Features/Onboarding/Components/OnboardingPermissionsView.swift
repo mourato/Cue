@@ -70,7 +70,7 @@ struct PermissionsView: View {
                                 _ = await screenCaptureManager.requestPermission()
                             }
                         }
-                    },
+                    }
                 )
 
                 // Save Folder - Required
@@ -82,7 +82,7 @@ struct PermissionsView: View {
                     isRequired: true,
                     onGrant: {
                         requestExportFolderPermission()
-                    },
+                    }
                 )
 
                 if videoModuleEnabled {
@@ -95,7 +95,7 @@ struct PermissionsView: View {
                         isRequired: false,
                         onGrant: {
                             requestMicrophonePermission()
-                        },
+                        }
                     )
                 }
 
@@ -108,7 +108,7 @@ struct PermissionsView: View {
                     isRequired: false,
                     onGrant: {
                         requestAccessibilityPermission()
-                    },
+                    }
                 )
             }
             .frame(maxWidth: 420)
@@ -130,11 +130,11 @@ struct PermissionsView: View {
                 .padding(14)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(identityWarningColor.opacity(0.12)),
+                        .fill(identityWarningColor.opacity(0.12))
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(identityWarningColor.opacity(0.35), lineWidth: 1),
+                        .stroke(identityWarningColor.opacity(0.35), lineWidth: 1)
                 )
                 .padding(.top, 16)
             }
@@ -215,7 +215,7 @@ struct PermissionsView: View {
         _ = fileAccessManager.chooseExportDirectory(
             message: chooseFolderMessageTitle,
             prompt: grantAccessTitle,
-            directoryURL: fileAccessManager.defaultExportDirectory,
+            directoryURL: fileAccessManager.defaultExportDirectory
         )
         checkExportFolderPermission()
     }
@@ -250,31 +250,31 @@ struct PermissionsView: View {
 
     private func localizedIdentityIssue(_ issue: AppIdentityIssue) -> String {
         switch issue {
-        case .unexpectedBundleIdentifier(let bundleIdentifier):
+        case let .unexpectedBundleIdentifier(bundleIdentifier):
             onboardingLocalization.format(
                 "app-identity.unexpected-bundle-id",
                 defaultValue: "Expected bundle ID %@, found %@.",
                 comment: "Identity issue message. First %@ is expected bundle identifier. Second %@ is current bundle identifier.",
-                arguments: [AppBundleIdentity.expected, bundleIdentifier ?? "missing"],
+                arguments: [AppBundleIdentity.expected, bundleIdentifier ?? "missing"]
             )
         case .invalidBundleSignature:
             onboardingLocalization.string(
                 "app-identity.invalid-signature",
                 defaultValue: "This app bundle does not pass macOS code-signature validation.",
-                comment: "Identity issue message when bundle signature validation fails",
+                comment: "Identity issue message when bundle signature validation fails"
             )
-        case .outsideApplications(let bundleURL):
+        case let .outsideApplications(bundleURL):
             onboardingLocalization.format(
                 "app-identity.outside-applications",
                 defaultValue: "Install Cue in /Applications before granting permissions. Current path: %@",
                 comment: "Identity issue message. %@ is the current app bundle path.",
-                arguments: [bundleURL.path],
+                arguments: [bundleURL.path]
             )
         case .quarantined:
             onboardingLocalization.string(
                 "app-identity.quarantined",
                 defaultValue: "This app still has the macOS quarantine flag. Reinstall with the installer script or remove quarantine before granting permissions.",
-                comment: "Identity issue message when app is quarantined",
+                comment: "Identity issue message when app is quarantined"
             )
         }
     }
@@ -283,7 +283,7 @@ struct PermissionsView: View {
         onboardingLocalization.string(
             "onboarding.permissions.title",
             defaultValue: "Grant Permissions",
-            comment: "Onboarding permissions step title",
+            comment: "Onboarding permissions step title"
         )
     }
 
@@ -291,7 +291,7 @@ struct PermissionsView: View {
         onboardingLocalization.string(
             "onboarding.permissions.subtitle",
             defaultValue: "Cue needs permissions for capture, audio, and save location.",
-            comment: "Onboarding permissions step subtitle",
+            comment: "Onboarding permissions step subtitle"
         )
     }
 
@@ -299,7 +299,7 @@ struct PermissionsView: View {
         onboardingLocalization.string(
             "onboarding.permissions.screen-recording",
             defaultValue: "Screen Recording",
-            comment: "Screen recording permission label",
+            comment: "Screen recording permission label"
         )
     }
 
@@ -307,7 +307,7 @@ struct PermissionsView: View {
         onboardingLocalization.string(
             "onboarding.permissions.save-folder",
             defaultValue: "Save Folder",
-            comment: "Save folder permission label",
+            comment: "Save folder permission label"
         )
     }
 
@@ -315,7 +315,7 @@ struct PermissionsView: View {
         onboardingLocalization.string(
             "onboarding.permissions.microphone",
             defaultValue: "Microphone",
-            comment: "Microphone permission label",
+            comment: "Microphone permission label"
         )
     }
 
@@ -323,7 +323,7 @@ struct PermissionsView: View {
         onboardingLocalization.string(
             "onboarding.permissions.accessibility",
             defaultValue: "Accessibility",
-            comment: "Accessibility permission label",
+            comment: "Accessibility permission label"
         )
     }
 
@@ -331,7 +331,7 @@ struct PermissionsView: View {
         onboardingLocalization.string(
             "onboarding.permissions.required-for-captures",
             defaultValue: "Required for screenshots and recordings",
-            comment: "Permission description for required capture-related permissions",
+            comment: "Permission description for required capture-related permissions"
         )
     }
 
@@ -343,7 +343,7 @@ struct PermissionsView: View {
         onboardingLocalization.string(
             "onboarding.permissions.optional-voice-recording",
             defaultValue: "Optional for voice recording",
-            comment: "Permission description for microphone access",
+            comment: "Permission description for microphone access"
         )
     }
 
@@ -351,7 +351,7 @@ struct PermissionsView: View {
         onboardingLocalization.string(
             "onboarding.permissions.optional-global-shortcuts",
             defaultValue: "Optional for global shortcuts",
-            comment: "Permission description for accessibility access",
+            comment: "Permission description for accessibility access"
         )
     }
 
@@ -359,7 +359,7 @@ struct PermissionsView: View {
         onboardingLocalization.string(
             "onboarding.permissions.grant-access",
             defaultValue: "Grant Access",
-            comment: "Button title to grant permission or folder access",
+            comment: "Button title to grant permission or folder access"
         )
     }
 
@@ -367,7 +367,7 @@ struct PermissionsView: View {
         onboardingLocalization.string(
             "onboarding.permissions.refresh-status",
             defaultValue: "Refresh Status",
-            comment: "Button title to refresh permission or identity status",
+            comment: "Button title to refresh permission or identity status"
         )
     }
 
@@ -375,7 +375,7 @@ struct PermissionsView: View {
         onboardingLocalization.string(
             "onboarding.permissions.unavailable",
             defaultValue: "Unavailable",
-            comment: "Badge shown when permission is unavailable due to app identity state",
+            comment: "Badge shown when permission is unavailable due to app identity state"
         )
     }
 
@@ -383,7 +383,7 @@ struct PermissionsView: View {
         onboardingLocalization.string(
             "onboarding.permissions.identity-attention",
             defaultValue: "Build Identity Needs Attention",
-            comment: "Warning title when app identity health issues block permission usage",
+            comment: "Warning title when app identity health issues block permission usage"
         )
     }
 
@@ -391,7 +391,7 @@ struct PermissionsView: View {
         onboardingLocalization.string(
             "onboarding.permissions.choose-folder-message",
             defaultValue: "Choose a folder for Cue captures (default: Desktop/Cue)",
-            comment: "Open panel message for selecting export directory during onboarding",
+            comment: "Open panel message for selecting export directory during onboarding"
         )
     }
 
@@ -399,7 +399,7 @@ struct PermissionsView: View {
         onboardingLocalization.string(
             "onboarding.permissions.identity-blocked-description",
             defaultValue: "Granted in System Settings, but this build cannot use the permission until the identity issues below are fixed.",
-            comment: "Description shown when screen recording permission exists but app identity prevents using it",
+            comment: "Description shown when screen recording permission exists but app identity prevents using it"
         )
     }
 
@@ -407,7 +407,7 @@ struct PermissionsView: View {
         onboardingLocalization.string(
             "common.next",
             defaultValue: "Next",
-            comment: "Primary next action button title",
+            comment: "Primary next action button title"
         )
     }
 }
@@ -415,7 +415,7 @@ struct PermissionsView: View {
 #Preview {
     PermissionsView(
         screenCaptureManager: ScreenCaptureManager.shared,
-        onNext: {},
+        onNext: {}
     )
     .frame(width: 500, height: 500)
     .background(OnboardingSurfaceBackground())

@@ -37,7 +37,7 @@ struct AllInOneDimensionsBarView: View {
                 action: toggleAspectLock,
                 accessibilityLabel: aspectRatioLocked
                     ? L10n.AllInOne.unlockAspectRatioAccessibility
-                    : L10n.AllInOne.lockAspectRatioAccessibility,
+                    : L10n.AllInOne.lockAspectRatioAccessibility
             )
         }
         // Match mode-strip button content height before shared padding (outer ≈ 58).
@@ -56,7 +56,7 @@ struct AllInOneDimensionsBarView: View {
         HStack(spacing: 6) {
             dimensionField(
                 accessibilityLabel: L10n.AllInOne.widthFieldAccessibility,
-                text: $widthText,
+                text: $widthText
             ) {
                 commitWidth()
             }
@@ -68,7 +68,7 @@ struct AllInOneDimensionsBarView: View {
 
             dimensionField(
                 accessibilityLabel: L10n.AllInOne.heightFieldAccessibility,
-                text: $heightText,
+                text: $heightText
             ) {
                 commitHeight()
             }
@@ -78,7 +78,7 @@ struct AllInOneDimensionsBarView: View {
     private func dimensionField(
         accessibilityLabel: String,
         text: Binding<String>,
-        onCommit: @escaping () -> Void,
+        onCommit: @escaping () -> Void
     ) -> some View {
         TextField("", text: text)
             .textFieldStyle(.plain)
@@ -99,7 +99,7 @@ struct AllInOneDimensionsBarView: View {
             rect,
             width: width,
             aspectLocked: aspectRatioLocked,
-            aspectRatio: activeAspectRatio(),
+            aspectRatio: activeAspectRatio()
         )
         if aspectRatioLocked {
             lockedAspectRatio = CaptureSelectionGeometry.aspectRatio(of: updated)
@@ -118,7 +118,7 @@ struct AllInOneDimensionsBarView: View {
             rect,
             height: height,
             aspectLocked: aspectRatioLocked,
-            aspectRatio: activeAspectRatio(),
+            aspectRatio: activeAspectRatio()
         )
         if aspectRatioLocked {
             lockedAspectRatio = CaptureSelectionGeometry.aspectRatio(of: updated)

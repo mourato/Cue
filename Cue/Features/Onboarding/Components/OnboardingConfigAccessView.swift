@@ -49,7 +49,7 @@ struct ConfigAccessView: View {
                 description: configFolderCardDescription,
                 status: isGranted ? .granted : .needsAction(buttonTitle: grantAccessTitle),
                 isRequired: true,
-                onGrant: grantAccess,
+                onGrant: grantAccess
             )
             .frame(maxWidth: 430)
             .padding(.top, 22)
@@ -57,7 +57,7 @@ struct ConfigAccessView: View {
             ConfigAccessDetailsView(
                 directoryPath: service.suggestedConfigDirectoryURL.path,
                 description: configFolderDescription,
-                privacyNote: configAccessPrivacyNote,
+                privacyNote: configAccessPrivacyNote
             )
             .padding(.top, 10)
 
@@ -109,8 +109,8 @@ struct ConfigAccessView: View {
             guard let result = try CueConfigurationAccessGranting.grantSuggestedConfigAccess(
                 service: service,
                 message: L10n.PreferencesAdvanced.configDirectoryPanelOnboardingMessage(
-                    service.suggestedConfigDirectoryURL.path,
-                ),
+                    service.suggestedConfigDirectoryURL.path
+                )
             ) else {
                 return
             }
@@ -143,7 +143,7 @@ struct ConfigAccessView: View {
         onboardingLocalization.string(
             "onboarding.config-access.title",
             defaultValue: "Set Up config.toml",
-            comment: "Onboarding config access step title",
+            comment: "Onboarding config access step title"
         )
     }
 
@@ -151,7 +151,7 @@ struct ConfigAccessView: View {
         onboardingLocalization.string(
             "onboarding.config-access.subtitle",
             defaultValue: "Cue uses a TOML file for portable settings, backups, and dotfile workflows.",
-            comment: "Onboarding config access step subtitle",
+            comment: "Onboarding config access step subtitle"
         )
     }
 
@@ -159,7 +159,7 @@ struct ConfigAccessView: View {
         onboardingLocalization.string(
             "onboarding.config-access.folder-title",
             defaultValue: "Config Folder",
-            comment: "Onboarding config access permission row title",
+            comment: "Onboarding config access permission row title"
         )
     }
 
@@ -167,7 +167,7 @@ struct ConfigAccessView: View {
         onboardingLocalization.string(
             "onboarding.config-access.folder-card-description",
             defaultValue: "Required for config.toml",
-            comment: "Short permission row description for config folder access",
+            comment: "Short permission row description for config folder access"
         )
     }
 
@@ -175,7 +175,7 @@ struct ConfigAccessView: View {
         onboardingLocalization.string(
             "onboarding.config-access.folder-description",
             defaultValue: "Grant access once. Cue will create config.toml if needed and apply valid direct edits on launch.",
-            comment: "Onboarding config access description.",
+            comment: "Onboarding config access description."
         )
     }
 
@@ -183,7 +183,7 @@ struct ConfigAccessView: View {
         onboardingLocalization.string(
             "onboarding.config-access.privacy-note",
             defaultValue: "This only grants Cue access to its config folder. It does not import secrets or scan your files.",
-            comment: "Privacy note on onboarding config access step",
+            comment: "Privacy note on onboarding config access step"
         )
     }
 
@@ -191,7 +191,7 @@ struct ConfigAccessView: View {
         onboardingLocalization.string(
             "onboarding.config-access.ready",
             defaultValue: "config.toml is ready.",
-            comment: "Success message after config folder access is granted",
+            comment: "Success message after config folder access is granted"
         )
     }
 
@@ -199,7 +199,7 @@ struct ConfigAccessView: View {
         onboardingLocalization.string(
             "onboarding.config-access.later",
             defaultValue: "Later",
-            comment: "Secondary action to skip config access setup for now",
+            comment: "Secondary action to skip config access setup for now"
         )
     }
 
@@ -207,7 +207,7 @@ struct ConfigAccessView: View {
         onboardingLocalization.string(
             "onboarding.permissions.grant-access",
             defaultValue: "Grant Access",
-            comment: "Button title to grant permission or folder access",
+            comment: "Button title to grant permission or folder access"
         )
     }
 
@@ -215,7 +215,7 @@ struct ConfigAccessView: View {
         onboardingLocalization.string(
             "common.continue",
             defaultValue: "Continue",
-            comment: "Continue button title",
+            comment: "Continue button title"
         )
     }
 }

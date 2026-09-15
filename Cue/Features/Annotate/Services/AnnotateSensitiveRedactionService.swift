@@ -64,22 +64,22 @@ enum AnnotateSensitiveRedactionError: LocalizedError {
 struct AnnotateSensitiveDataDetector {
     private static let linkAndPhoneDetector = try? NSDataDetector(
         types: NSTextCheckingResult.CheckingType.link.rawValue
-            | NSTextCheckingResult.CheckingType.phoneNumber.rawValue,
+            | NSTextCheckingResult.CheckingType.phoneNumber.rawValue
     )
 
     private static let emailRegex = makeRegex(
         #"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b"#,
-        options: [.caseInsensitive],
+        options: [.caseInsensitive]
     )
     private static let creditCardRegex = makeRegex(#"\b(?:\d[ -]?){13,19}\b"#)
     private static let groupedCardRegex = makeRegex(#"^\d{4}(?:[ -]\d{4}){2,4}$"#)
     private static let credentialValueRegex = makeRegex(
         #"\b(?:api[_-]?key|api[_-]?secret|access[_-]?token|auth[_-]?token|password|passwd|secret|client[_-]?secret|private[_-]?key)\b\s*[:=]\s*["']?([A-Za-z0-9_./+=:-]{6,})"#,
-        options: [.caseInsensitive],
+        options: [.caseInsensitive]
     )
     private static let bearerTokenRegex = makeRegex(
         #"\bAuthorization\s*:\s*Bearer\s+([A-Za-z0-9._~+/=-]{10,})"#,
-        options: [.caseInsensitive],
+        options: [.caseInsensitive]
     )
     private static let accessTokenRegexes: [NSRegularExpression] = [
         makeRegex(#"\b(?:AKIA|ASIA)[0-9A-Z]{16}\b"#),
@@ -87,7 +87,7 @@ struct AnnotateSensitiveDataDetector {
         makeRegex(#"\bxox[baprs]-[A-Za-z0-9-]{10,}\b"#),
         makeRegex(#"\b(?:sk|pk)_(?:live|test)_[A-Za-z0-9]{16,}\b"#),
         makeRegex(#"\bsk-[A-Za-z0-9]{20,}\b"#),
-        makeRegex(#"\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b"#),
+        makeRegex(#"\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b"#)
     ]
 
     func detect(in text: String) -> [AnnotateSensitiveTextMatch] {
@@ -102,7 +102,7 @@ struct AnnotateSensitiveDataDetector {
             confidence: 0.94,
             in: text,
             fullRange: fullRange,
-            to: &matches,
+            to: &matches
         )
         appendCreditCardMatches(in: text, fullRange: fullRange, to: &matches)
         appendCapturedRegexMatches(
@@ -111,7 +111,7 @@ struct AnnotateSensitiveDataDetector {
             confidence: 0.96,
             in: text,
             fullRange: fullRange,
-            to: &matches,
+            to: &matches
         )
         appendCapturedRegexMatches(
             Self.bearerTokenRegex,
@@ -119,7 +119,7 @@ struct AnnotateSensitiveDataDetector {
             confidence: 0.97,
             in: text,
             fullRange: fullRange,
-            to: &matches,
+            to: &matches
         )
 
         for regex in Self.accessTokenRegexes {
@@ -129,7 +129,7 @@ struct AnnotateSensitiveDataDetector {
                 confidence: 0.98,
                 in: text,
                 fullRange: fullRange,
-                to: &matches,
+                to: &matches
             )
         }
 
@@ -144,7 +144,7 @@ struct AnnotateSensitiveDataDetector {
     private func appendNSDataDetectorMatches(
         in text: String,
         fullRange: NSRange,
-        to matches: inout [AnnotateSensitiveTextMatch],
+        to matches: inout [AnnotateSensitiveTextMatch]
     ) {
         guard let detector = Self.linkAndPhoneDetector else { return }
 
@@ -171,7 +171,7 @@ struct AnnotateSensitiveDataDetector {
         confidence: Float,
         in text: String,
         fullRange: NSRange,
-        to matches: inout [AnnotateSensitiveTextMatch],
+        to matches: inout [AnnotateSensitiveTextMatch]
     ) {
         regex.enumerateMatches(in: text, options: [], range: fullRange) { result, _, _ in
             guard let result else { return }
@@ -185,7 +185,7 @@ struct AnnotateSensitiveDataDetector {
         confidence: Float,
         in text: String,
         fullRange: NSRange,
-        to matches: inout [AnnotateSensitiveTextMatch],
+        to matches: inout [AnnotateSensitiveTextMatch]
     ) {
         regex.enumerateMatches(in: text, options: [], range: fullRange) { result, _, _ in
             guard let result, result.numberOfRanges > 1 else { return }
@@ -198,7 +198,7 @@ struct AnnotateSensitiveDataDetector {
     private func appendCreditCardMatches(
         in text: String,
         fullRange: NSRange,
-        to matches: inout [AnnotateSensitiveTextMatch],
+        to matches: inout [AnnotateSensitiveTextMatch]
     ) {
         Self.creditCardRegex.enumerateMatches(in: text, options: [], range: fullRange) { result, _, _ in
             guard let result else { return }
@@ -213,7 +213,7 @@ struct AnnotateSensitiveDataDetector {
 
     private func appendUnique(
         _ candidate: AnnotateSensitiveTextMatch,
-        to matches: inout [AnnotateSensitiveTextMatch],
+        to matches: inout [AnnotateSensitiveTextMatch]
     ) {
         if let overlappingIndex = matches.firstIndex(where: { $0.range.intersects(candidate.range) }) {
             let existing = matches[overlappingIndex]
@@ -227,7 +227,7 @@ struct AnnotateSensitiveDataDetector {
 
     private static func makeRegex(
         _ pattern: String,
-        options: NSRegularExpression.Options = [],
+        options: NSRegularExpression.Options = []
     ) -> NSRegularExpression {
         do {
             return try NSRegularExpression(pattern: pattern, options: options)
@@ -324,7 +324,7 @@ final class AnnotateSensitiveRedactionService {
                     let regions = Self.extractRegions(
                         from: observations,
                         imageSize: imageSize,
-                        detector: detector,
+                        detector: detector
                     )
                     continuation.resume(returning: AnnotateSensitiveRedactionResult(regions: regions))
                 }
@@ -348,13 +348,13 @@ final class AnnotateSensitiveRedactionService {
             x: boundingBox.minX * imageSize.width,
             y: (1 - boundingBox.maxY) * imageSize.height,
             width: boundingBox.width * imageSize.width,
-            height: boundingBox.height * imageSize.height,
+            height: boundingBox.height * imageSize.height
         ).standardized
     }
 
     static func contextualRegions(
         from lines: [AnnotateSensitiveOCRLine],
-        imageSize: CGSize,
+        imageSize: CGSize
     ) -> [AnnotateSensitiveRedactionRegion] {
         let rows = groupedRows(from: lines)
         let cardRegions = rows.flatMap { paymentCardNumberRegions(in: $0, imageSize: imageSize) }
@@ -368,14 +368,14 @@ final class AnnotateSensitiveRedactionService {
     private static func extractRegions(
         from observations: [VNRecognizedTextObservation],
         imageSize: CGSize,
-        detector: AnnotateSensitiveDataDetector,
+        detector: AnnotateSensitiveDataDetector
     ) -> [AnnotateSensitiveRedactionRegion] {
         let lines = observations.compactMap { observation -> AnnotateSensitiveOCRLine? in
             guard let candidate = observation.topCandidates(1).first else { return nil }
             return AnnotateSensitiveOCRLine(
                 text: candidate.string,
                 bounds: imageRect(fromVisionBoundingBox: observation.boundingBox, imageSize: imageSize),
-                confidence: observation.confidence,
+                confidence: observation.confidence
             )
         }
 
@@ -391,7 +391,8 @@ final class AnnotateSensitiveRedactionService {
             for match in matches {
                 let matchRect: CGRect
                 if let range = Range(match.range, in: text),
-                   let box = try? candidate.boundingBox(for: range) {
+                   let box = try? candidate.boundingBox(for: range)
+                {
                     matchRect = imageRect(fromVisionBoundingBox: box.boundingBox, imageSize: imageSize)
                 } else {
                     guard matchCoversMostLine(match.range, in: text) else { continue }
@@ -404,7 +405,7 @@ final class AnnotateSensitiveRedactionService {
                     matchRange: match.range,
                     text: text,
                     kind: match.kind,
-                    imageSize: imageSize,
+                    imageSize: imageSize
                 )
                 guard paddedRect.width > 0, paddedRect.height > 0 else { continue }
 
@@ -412,8 +413,8 @@ final class AnnotateSensitiveRedactionService {
                     AnnotateSensitiveRedactionRegion(
                         kind: match.kind,
                         bounds: paddedRect,
-                        confidence: min(observation.confidence, match.confidence),
-                    ),
+                        confidence: min(observation.confidence, match.confidence)
+                    )
                 )
             }
         }
@@ -445,7 +446,7 @@ final class AnnotateSensitiveRedactionService {
 
     private static func paymentCardNumberRegions(
         in row: [AnnotateSensitiveOCRLine],
-        imageSize: CGSize,
+        imageSize: CGSize
     ) -> [AnnotateSensitiveRedactionRegion] {
         var regions: [AnnotateSensitiveRedactionRegion] = []
         var sequence: [AnnotateSensitiveOCRLine] = []
@@ -466,8 +467,8 @@ final class AnnotateSensitiveRedactionService {
                 AnnotateSensitiveRedactionRegion(
                     kind: .creditCard,
                     bounds: paddedClampedRect(bounds, kind: .creditCard, imageSize: imageSize),
-                    confidence: min(sequence.map(\.confidence).min() ?? 0.95, 0.97),
-                ),
+                    confidence: min(sequence.map(\.confidence).min() ?? 0.95, 0.97)
+                )
             )
         }
 
@@ -485,7 +486,7 @@ final class AnnotateSensitiveRedactionService {
 
     private static func paymentCardExpirationRegions(
         in lines: [AnnotateSensitiveOCRLine],
-        imageSize: CGSize,
+        imageSize: CGSize
     ) -> [AnnotateSensitiveRedactionRegion] {
         let labels = lines.filter { isExpirationLabel($0.text) }
         guard !labels.isEmpty else { return [] }
@@ -497,7 +498,7 @@ final class AnnotateSensitiveRedactionService {
             return AnnotateSensitiveRedactionRegion(
                 kind: .paymentCardExpiration,
                 bounds: paddedClampedRect(line.bounds, imageSize: imageSize),
-                confidence: min(line.confidence, 0.94),
+                confidence: min(line.confidence, 0.94)
             )
         }
     }
@@ -505,7 +506,7 @@ final class AnnotateSensitiveRedactionService {
     private static func paymentCardholderRegions(
         in lines: [AnnotateSensitiveOCRLine],
         cardRegions: [AnnotateSensitiveRedactionRegion],
-        imageSize: CGSize,
+        imageSize: CGSize
     ) -> [AnnotateSensitiveRedactionRegion] {
         guard let lowestCardNumberY = cardRegions.map(\.bounds.maxY).max() else { return [] }
         let cardNumberMinX = cardRegions.map(\.bounds.minX).min() ?? 0
@@ -520,7 +521,7 @@ final class AnnotateSensitiveRedactionService {
             return AnnotateSensitiveRedactionRegion(
                 kind: .paymentCardholderName,
                 bounds: paddedClampedRect(line.bounds, imageSize: imageSize),
-                confidence: min(line.confidence, 0.92),
+                confidence: min(line.confidence, 0.92)
             )
         }
     }
@@ -549,7 +550,7 @@ final class AnnotateSensitiveRedactionService {
 
     private static func isNearbyExpirationLabel(
         _ label: AnnotateSensitiveOCRLine,
-        value: AnnotateSensitiveOCRLine,
+        value: AnnotateSensitiveOCRLine
     ) -> Bool {
         let verticalTolerance = max(label.bounds.height, value.bounds.height) * 2.4
         let sameBand = abs(label.bounds.midY - value.bounds.midY) <= verticalTolerance
@@ -601,7 +602,7 @@ final class AnnotateSensitiveRedactionService {
         matchRange: NSRange,
         text: String,
         kind: AnnotateSensitiveDataKind,
-        imageSize: CGSize,
+        imageSize: CGSize
     ) -> CGRect {
         let normalizedMatchRect = clampedRect(matchRect, imageSize: imageSize)
         let normalizedLineRect = clampedRect(lineRect, imageSize: imageSize)
@@ -630,7 +631,7 @@ final class AnnotateSensitiveRedactionService {
     private static func paddedClampedRect(
         _ rect: CGRect,
         kind: AnnotateSensitiveDataKind,
-        imageSize: CGSize,
+        imageSize: CGSize
     ) -> CGRect {
         guard kind == .creditCard else {
             return paddedClampedRect(rect, imageSize: imageSize)
@@ -643,7 +644,7 @@ final class AnnotateSensitiveRedactionService {
     }
 
     private static func mergeOverlappingRegions(
-        _ regions: [AnnotateSensitiveRedactionRegion],
+        _ regions: [AnnotateSensitiveRedactionRegion]
     ) -> [AnnotateSensitiveRedactionRegion] {
         regions.reduce(into: []) { merged, region in
             if let index = merged.firstIndex(where: { $0.bounds.insetBy(dx: -2, dy: -4).intersects(region.bounds) }) {
@@ -651,7 +652,7 @@ final class AnnotateSensitiveRedactionService {
                 merged[index] = AnnotateSensitiveRedactionRegion(
                     kind: existing.kind,
                     bounds: existing.bounds.union(region.bounds).standardized,
-                    confidence: max(existing.confidence, region.confidence),
+                    confidence: max(existing.confidence, region.confidence)
                 )
             } else {
                 merged.append(region)

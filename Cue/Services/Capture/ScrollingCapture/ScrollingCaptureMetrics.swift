@@ -101,13 +101,13 @@ nonisolated struct ScrollingCaptureSessionMetrics {
 
     mutating func recordLivePreviewFramePublished(
         at timestamp: TimeInterval,
-        publishDurationMs: Int,
+        publishDurationMs: Int
     ) {
         livePreviewFrameCount += 1
         livePreviewPublishDurationTotalMs += publishDurationMs
 
         if let lastLivePreviewFrameAt {
-            let gapMs = Int(((timestamp - lastLivePreviewFrameAt) * 1_000).rounded())
+            let gapMs = Int(((timestamp - lastLivePreviewFrameAt) * 1000).rounded())
             livePreviewGapTotalMs += gapMs
             livePreviewGapMaxMs = max(livePreviewGapMaxMs, gapMs)
         }
@@ -131,7 +131,7 @@ nonisolated struct ScrollingCaptureSessionMetrics {
     mutating func recordCommitFrameSelected(
         source: ScrollingCaptureCommitFrameSource,
         frameAgeMs: Int?,
-        isDuplicateFrame: Bool,
+        isDuplicateFrame: Bool
     ) {
         switch source {
         case .onDemand:
@@ -158,7 +158,7 @@ nonisolated struct ScrollingCaptureSessionMetrics {
         totalDurationMs: Int,
         outcome: ScrollingCaptureStitchOutcome,
         alignmentDebug: ScrollingCaptureAlignmentDebugInfo?,
-        safety: ScrollingCaptureStitchSafety = .confirmed,
+        safety: ScrollingCaptureStitchSafety = .confirmed
     ) {
         refreshAttemptCount += 1
         refreshSuccessCount += 1
@@ -228,7 +228,7 @@ nonisolated struct ScrollingCaptureSessionMetrics {
         reason: String,
         captureDurationMs: Int,
         stitchDurationMs: Int,
-        totalDurationMs: Int,
+        totalDurationMs: Int
     ) {
         refreshAttemptCount += 1
         refreshFailureCount += 1
@@ -245,7 +245,7 @@ nonisolated struct ScrollingCaptureSessionMetrics {
 
     mutating func recordFinalizingCompleted(at timestamp: TimeInterval) {
         guard let finalizingStartedAt else { return }
-        finalizingDurationTotalMs += Int(((timestamp - finalizingStartedAt) * 1_000).rounded())
+        finalizingDurationTotalMs += Int(((timestamp - finalizingStartedAt) * 1000).rounded())
         self.finalizingStartedAt = nil
     }
 
@@ -276,15 +276,15 @@ nonisolated struct ScrollingCaptureSessionMetrics {
             "refreshAvgMs": Self.averageString(total: refreshDurationTotalMs, count: refreshAttemptCount),
             "captureAvgMs": Self.averageString(
                 total: refreshCaptureDurationTotalMs,
-                count: refreshAttemptCount,
+                count: refreshAttemptCount
             ),
             "stitchAvgMs": Self.averageString(
                 total: refreshStitchDurationTotalMs,
-                count: refreshAttemptCount,
+                count: refreshAttemptCount
             ),
             "previewPublishAvgMs": Self.averageString(
                 total: refreshPreviewPublishDurationTotalMs,
-                count: refreshSuccessCount,
+                count: refreshSuccessCount
             ),
             "refreshReasons": Self.compactDescription(refreshReasonCounts),
             "initialized": "\(initializedCount)",
@@ -315,7 +315,7 @@ nonisolated struct ScrollingCaptureSessionMetrics {
             "commitFrameAgeMaxMs": "\(commitFrameAgeMaxMs)",
             "livePreviewPublishAvgMs": Self.averageString(
                 total: livePreviewPublishDurationTotalMs,
-                count: livePreviewFrameCount,
+                count: livePreviewFrameCount
             ),
             "livePreviewGapAvgMs": Self.averageString(total: livePreviewGapTotalMs, count: livePreviewGapCount),
             "livePreviewGapMaxMs": "\(livePreviewGapMaxMs)",
@@ -327,7 +327,7 @@ nonisolated struct ScrollingCaptureSessionMetrics {
             "finalizingAvgMs": Self.averageString(total: finalizingDurationTotalMs, count: finalizingStartCount),
             "finalizingBlockedInput": "\(finalizingBlockedInputCount)",
             "preStartEscapeCancels": "\(preStartEscapeCancelCount)",
-            "mouseMoveSuppressionActive": String(mouseMoveSuppressionActive),
+            "mouseMoveSuppressionActive": String(mouseMoveSuppressionActive)
         ]
     }
 

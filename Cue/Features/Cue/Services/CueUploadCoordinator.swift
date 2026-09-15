@@ -18,7 +18,7 @@ final class CueUploadCoordinator: ObservableObject {
         configuration: CueUploadConfigurationStore = .shared,
         imgbbService: CueImgBBUploadService = .shared,
         imageKitService: CueImageKitUploadService = .shared,
-        cloudflareService: CueCloudflareUploadService = .shared,
+        cloudflareService: CueCloudflareUploadService = .shared
     ) {
         self.configuration = configuration
         self.imgbbService = imgbbService
@@ -80,7 +80,7 @@ final class CueUploadCoordinator: ObservableObject {
                     sourceURL: fileURL,
                     maximumBytes: provider == .cloudflare ? CueCloudflareConfiguration
                         .maximumUploadBytes : configuration.imageKitVideoUploadTargetBytes,
-                    settings: settings,
+                    settings: settings
                 )
             } else {
                 let fileSize = try fileURL.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
@@ -103,7 +103,7 @@ final class CueUploadCoordinator: ObservableObject {
                     token: credential,
                     progress: { [weak self] value in
                         Task { @MainActor in self?.uploadProgress = value }
-                    },
+                    }
                 ).url
             case .imgbb:
                 throw CueCloudflareUploadError.rejected
@@ -130,7 +130,7 @@ final class CueUploadCoordinator: ObservableObject {
 
     private func performUpload(
         mediaKind: CueUploadMediaKind,
-        encoding: @escaping @Sendable () async throws -> CueEncodedImage,
+        encoding: @escaping @Sendable () async throws -> CueEncodedImage
     ) async -> String? {
         let provider = configuration.provider
         guard provider.supports(mediaKind) else {
@@ -180,13 +180,16 @@ final class CueUploadCoordinator: ObservableObject {
         }
     }
 
-    private func uploadCloudflareImage(_ image: CueEncodedImage,
-                                       token: String,
-                                       progress: (@Sendable (Double) -> Void)? = nil) async throws
-        -> CueCloudflareUploadResult {
+    private func uploadCloudflareImage(
+        _ image: CueEncodedImage,
+        token: String,
+        progress: (@Sendable (Double) -> Void)? = nil
+    ) async throws
+        -> CueCloudflareUploadResult
+    {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(
             "CueCloudflareUpload-\(UUID().uuidString)",
-            isDirectory: true,
+            isDirectory: true
         )
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let fileURL = directory.appendingPathComponent("upload.\(image.fileExtension)")
@@ -196,7 +199,7 @@ final class CueUploadCoordinator: ObservableObject {
             fileURL: fileURL,
             workerURL: configuration.cloudflareWorkerURL,
             token: token,
-            progress: progress,
+            progress: progress
         )
     }
 

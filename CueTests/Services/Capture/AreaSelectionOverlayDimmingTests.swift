@@ -27,7 +27,8 @@ final class AreaSelectionOverlayDimmingTests: AreaSelectionOverlayTestCase {
         // - dimLayer mask should be set to the reusableDimMaskLayer
         // - insideSelectionOverlayLayer should be hidden
         guard let dimLayer = overlayView.dimLayer,
-              let insideLayer = overlayView.insideSelectionOverlayLayer else {
+              let insideLayer = overlayView.insideSelectionOverlayLayer
+        else {
             XCTFail("Layers not found")
             return
         }
@@ -56,7 +57,8 @@ final class AreaSelectionOverlayDimmingTests: AreaSelectionOverlayTestCase {
         // - insideSelectionOverlayLayer must be visible
         // - insideSelectionOverlayLayer should use dark colors (black fill/stroke) because backdrop is light
         guard let dimLayer = overlayView.dimLayer,
-              let insideLayer = overlayView.insideSelectionOverlayLayer else {
+              let insideLayer = overlayView.insideSelectionOverlayLayer
+        else {
             XCTFail("Layers not found")
             return
         }
@@ -68,12 +70,12 @@ final class AreaSelectionOverlayDimmingTests: AreaSelectionOverlayTestCase {
         XCTAssertEqual(
             insideLayer.fillColor,
             NSColor.black.withAlphaComponent(0.12).cgColor,
-            "Inside overlay layer must have dark fill color on light background",
+            "Inside overlay layer must have dark fill color on light background"
         )
         XCTAssertEqual(
             insideLayer.strokeColor,
             NSColor.black.withAlphaComponent(0.3).cgColor,
-            "Inside overlay layer must have dark stroke color on light background",
+            "Inside overlay layer must have dark stroke color on light background"
         )
         XCTAssertEqual(insideLayer.lineWidth, 4.0, "Inside overlay layer must have a 4.0 stroke width")
     }
@@ -107,12 +109,12 @@ final class AreaSelectionOverlayDimmingTests: AreaSelectionOverlayTestCase {
         XCTAssertEqual(
             insideLayer.fillColor,
             NSColor.white.withAlphaComponent(0.15).cgColor,
-            "Inside overlay layer must transition to light fill color on dark background",
+            "Inside overlay layer must transition to light fill color on dark background"
         )
         XCTAssertEqual(
             insideLayer.strokeColor,
             NSColor.white.withAlphaComponent(0.35).cgColor,
-            "Inside overlay layer must transition to light stroke color on dark background",
+            "Inside overlay layer must transition to light stroke color on dark background"
         )
     }
 
@@ -153,7 +155,7 @@ final class AreaSelectionOverlayDimmingTests: AreaSelectionOverlayTestCase {
         XCTAssertEqual(
             insideLayer.fillColor,
             NSColor.black.withAlphaComponent(0.12).cgColor,
-            "Should start and stay dark overlay on mid-tone",
+            "Should start and stay dark overlay on mid-tone"
         )
 
         // 2. Change backdrop to dark (luma = 0.25 < 0.4) -> should transition to light overlay
@@ -164,7 +166,7 @@ final class AreaSelectionOverlayDimmingTests: AreaSelectionOverlayTestCase {
         XCTAssertEqual(
             insideLayer.fillColor,
             NSColor.white.withAlphaComponent(0.15).cgColor,
-            "Should switch to light overlay on dark background",
+            "Should switch to light overlay on dark background"
         )
 
         // 3. Change backdrop back to mid-tone (luma = 0.55) -> should stay light overlay (hysteresis)
@@ -174,7 +176,7 @@ final class AreaSelectionOverlayDimmingTests: AreaSelectionOverlayTestCase {
         XCTAssertEqual(
             insideLayer.fillColor,
             NSColor.white.withAlphaComponent(0.15).cgColor,
-            "Should maintain light overlay on mid-tone due to hysteresis",
+            "Should maintain light overlay on mid-tone due to hysteresis"
         )
 
         // 4. Change backdrop to light (luma = 0.75 > 0.6) -> should transition back to dark overlay
@@ -185,7 +187,7 @@ final class AreaSelectionOverlayDimmingTests: AreaSelectionOverlayTestCase {
         XCTAssertEqual(
             insideLayer.fillColor,
             NSColor.black.withAlphaComponent(0.12).cgColor,
-            "Should switch back to dark overlay on light background",
+            "Should switch back to dark overlay on light background"
         )
     }
 
@@ -207,13 +209,13 @@ final class AreaSelectionOverlayDimmingTests: AreaSelectionOverlayTestCase {
         // - snapshotLayer must be hidden because backdrop.isVisible is false
         XCTAssertTrue(
             overlayView.testSnapshotLayer.isHidden,
-            "Snapshot layer must remain hidden when backdrop is invisible",
+            "Snapshot layer must remain hidden when backdrop is invisible"
         )
 
         // - backdropPixelDataArray must be cached
         XCTAssertNotNil(
             overlayView.testBackdropPixelDataArray,
-            "Backdrop pixels must be cached even when backdrop is invisible",
+            "Backdrop pixels must be cached even when backdrop is invisible"
         )
 
         // - When selection is made, it should correctly sample pixels and use light overlay
@@ -229,7 +231,7 @@ final class AreaSelectionOverlayDimmingTests: AreaSelectionOverlayTestCase {
         XCTAssertEqual(
             insideLayer.fillColor,
             NSColor.white.withAlphaComponent(0.15).cgColor,
-            "Inside overlay layer must transition to light fill color on dark background",
+            "Inside overlay layer must transition to light fill color on dark background"
         )
     }
 }

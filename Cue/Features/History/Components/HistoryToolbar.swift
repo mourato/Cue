@@ -56,7 +56,7 @@ struct HistoryToolbar: View {
         .background(chromeSurfaceFill, in: Capsule())
         .overlay(
             Capsule()
-                .stroke(chromeSurfaceBorder, lineWidth: 1),
+                .stroke(chromeSurfaceBorder, lineWidth: 1)
         )
         .shadow(color: chromeSurfaceShadow, radius: 7, x: 0, y: 3)
     }
@@ -65,7 +65,7 @@ struct HistoryToolbar: View {
         HStack(spacing: 10) {
             Label(
                 L10n.PreferencesHistory.selectedCaptures(selectedCount),
-                systemImage: "checkmark.circle.fill",
+                systemImage: "checkmark.circle.fill"
             )
             .font(.system(size: 11, weight: .semibold))
             .foregroundColor(.primary.opacity(0.84))
@@ -74,21 +74,21 @@ struct HistoryToolbar: View {
                 selectionButton(
                     title: L10n.PreferencesHistory.selectAll,
                     systemName: "checkmark.circle",
-                    action: onSelectAll,
+                    action: onSelectAll
                 )
             }
 
             selectionButton(
                 title: L10n.PreferencesHistory.clearSelection,
                 systemName: "xmark.circle",
-                action: onClearSelection,
+                action: onClearSelection
             )
 
             selectionButton(
                 title: L10n.Common.deleteAction,
                 systemName: "trash",
                 isDestructive: true,
-                action: onDeleteSelection,
+                action: onDeleteSelection
             )
         }
         .padding(.horizontal, 14)
@@ -97,7 +97,7 @@ struct HistoryToolbar: View {
         .background(selectionBarTint, in: Capsule())
         .overlay(
             Capsule()
-                .stroke(selectionBarBorder, lineWidth: 1),
+                .stroke(selectionBarBorder, lineWidth: 1)
         )
         .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.32 : 0.14), radius: 18, x: 0, y: 8)
         .fixedSize(horizontal: true, vertical: false)
@@ -107,7 +107,7 @@ struct HistoryToolbar: View {
         title: String,
         systemName: String,
         isDestructive: Bool = false,
-        action: @escaping () -> Void,
+        action: @escaping () -> Void
     ) -> some View {
         Button(role: isDestructive ? .destructive : nil, action: action) {
             Label(title, systemImage: systemName)
@@ -157,7 +157,7 @@ struct HistoryToolbar: View {
         canSelectAll: true,
         onSelectAll: {},
         onClearSelection: {},
-        onDeleteSelection: {},
+        onDeleteSelection: {}
     )
     .frame(width: 620)
     .padding()

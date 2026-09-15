@@ -33,13 +33,20 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
             screenFrame: screenFrame,
             logicalSourceRect: logicalSourceRect,
             logicalCropSize: logicalCropSize,
-            fallbackScale: 2.0,
+            fallbackScale: 2.0
         )
 
-        XCTAssertEqual(result.actualScale, 1.0, accuracy: 0.001,
-                       "actualScale must derive from real image, not the inflated assumption")
-        XCTAssertEqual(result.pixelCrop, CGRect(x: 600, y: 200, width: 300, height: 200),
-                       "crop must rebuild at 1× from the actual image (not clamped to upper-left)")
+        XCTAssertEqual(
+            result.actualScale,
+            1.0,
+            accuracy: 0.001,
+            "actualScale must derive from real image, not the inflated assumption"
+        )
+        XCTAssertEqual(
+            result.pixelCrop,
+            CGRect(x: 600, y: 200, width: 300, height: 200),
+            "crop must rebuild at 1× from the actual image (not clamped to upper-left)"
+        )
     }
 
     /// The pre-fix smoking-gun: if we DID trust the assumed 2× crop against a 1×
@@ -57,12 +64,16 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
             screenFrame: screenFrame,
             logicalSourceRect: logicalSourceRect,
             logicalCropSize: logicalCropSize,
-            fallbackScale: 2.0,
+            fallbackScale: 2.0
         )
 
         XCTAssertFalse(result.pixelCrop.isEmpty, "rebuilt crop must not be empty")
-        XCTAssertEqual(result.pixelCrop.origin.x, 700, accuracy: 1,
-                       "crop origin must follow the actual scale (1×), not stay anchored upper-left")
+        XCTAssertEqual(
+            result.pixelCrop.origin.x,
+            700,
+            accuracy: 1,
+            "crop origin must follow the actual scale (1×), not stay anchored upper-left"
+        )
         XCTAssertEqual(result.pixelCrop.origin.y, 400, accuracy: 1)
         XCTAssertEqual(result.pixelCrop.width, 250, accuracy: 1)
         XCTAssertEqual(result.pixelCrop.height, 150, accuracy: 1)
@@ -76,8 +87,13 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
     func test_reconcile_correctRegionByPixelSampling_rightHalfIsBright() throws {
         // 400 × 200 pixel edge image (left=black, right=white at x=200).
         let fullImage = try XCTUnwrap(
-            TestImageFactory.verticalEdge(width: 400, height: 200, edgeX: 200,
-                                          leftGray: 0, rightGray: 255),
+            TestImageFactory.verticalEdge(
+                width: 400,
+                height: 200,
+                edgeX: 200,
+                leftGray: 0,
+                rightGray: 255
+            )
         )
 
         // Logical screen treated as 400×200 pts (actual scale 1.0). Select right half.
@@ -91,14 +107,18 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
             screenFrame: screenFrame,
             logicalSourceRect: logicalSourceRect,
             logicalCropSize: logicalCropSize,
-            fallbackScale: 2.0,
+            fallbackScale: 2.0
         )
 
         let cropped = try XCTUnwrap(fullImage.cropping(to: result.pixelCrop))
         XCTAssertEqual(cropped.width, 200)
         XCTAssertEqual(cropped.height, 200)
-        XCTAssertEqual(averageGray(cropped), 255, accuracy: 1,
-                       "crop of the right (bright) half must be bright; if it were clamped to upper-left, it would be dark")
+        XCTAssertEqual(
+            averageGray(cropped),
+            255,
+            accuracy: 1,
+            "crop of the right (bright) half must be bright; if it were clamped to upper-left, it would be dark"
+        )
     }
 
     // MARK: - reconciledPixelCrop: rotated display (portrait dims)
@@ -115,7 +135,7 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
             screenFrame: screenFrame,
             logicalSourceRect: logicalSourceRect,
             logicalCropSize: logicalCropSize,
-            fallbackScale: 2.0,
+            fallbackScale: 2.0
         )
 
         XCTAssertEqual(result.actualScale, 2.0, accuracy: 0.001)
@@ -136,7 +156,7 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
             screenFrame: screenFrame,
             logicalSourceRect: logicalSourceRect,
             logicalCropSize: logicalCropSize,
-            fallbackScale: 2.0,
+            fallbackScale: 2.0
         )
 
         XCTAssertEqual(result.actualScale, 2.0, accuracy: 0.001)
@@ -157,7 +177,7 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
             screenFrame: screenFrame,
             logicalSourceRect: logicalSourceRect,
             logicalCropSize: logicalCropSize,
-            fallbackScale: 2.0,
+            fallbackScale: 2.0
         )
 
         XCTAssertLessThanOrEqual(result.pixelCrop.maxX, 1000)
@@ -170,32 +190,36 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
     func test_promotion_mixed1xPromotedTo2x() throws {
         // After reconciliation, suppose actualScale = 1.0 and a 200×150 cropped image.
         let cropped = try XCTUnwrap(
-            TestImageFactory.solidColor(width: 200, height: 150, red: 50, green: 100, blue: 200),
+            TestImageFactory.solidColor(width: 200, height: 150, red: 50, green: 100, blue: 200)
         )
         let promoted = FrozenAreaCaptureSession.imageByPromotingScaleIfNeeded(
             cropped,
             logicalSize: CGSize(width: 200, height: 150),
             sourceScaleFactor: 1.0,
             minimumOutputScaleFactor: 2.0,
-            colorSpaceName: nil,
+            colorSpaceName: nil
         )
 
-        XCTAssertEqual(promoted.scaleFactor, 2.0, accuracy: 0.001,
-                       "low-density input must be promoted up to the min 2× output baseline")
+        XCTAssertEqual(
+            promoted.scaleFactor,
+            2.0,
+            accuracy: 0.001,
+            "low-density input must be promoted up to the min 2× output baseline"
+        )
         XCTAssertEqual(promoted.image.width, 400)
         XCTAssertEqual(promoted.image.height, 300)
     }
 
     func test_promotion_nativeRetinaNotResampled() throws {
         let native = try XCTUnwrap(
-            TestImageFactory.solidColor(width: 400, height: 300, red: 50, green: 100, blue: 200),
+            TestImageFactory.solidColor(width: 400, height: 300, red: 50, green: 100, blue: 200)
         )
         let promoted = FrozenAreaCaptureSession.imageByPromotingScaleIfNeeded(
             native,
             logicalSize: CGSize(width: 200, height: 150),
             sourceScaleFactor: 2.0,
             minimumOutputScaleFactor: 2.0,
-            colorSpaceName: nil,
+            colorSpaceName: nil
         )
 
         XCTAssertEqual(promoted.scaleFactor, 2.0, accuracy: 0.001)
@@ -209,14 +233,14 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
         // Display A at (0,0,1000,600); Display B at (1000,0,1000,600).
         let displays: [CGRect] = [
             CGRect(x: 0, y: 0, width: 1000, height: 600),
-            CGRect(x: 1000, y: 0, width: 1000, height: 600),
+            CGRect(x: 1000, y: 0, width: 1000, height: 600)
         ]
         // Selection: 800–1600 wide, 100–500 tall. 200 px on A, 600 px on B.
         let selection = CGRect(x: 800, y: 100, width: 800, height: 400)
 
         let bestIndex = ScreenCaptureManager.indexOfLargestIntersectingFrame(
             frames: displays,
-            rect: selection,
+            rect: selection
         )
         XCTAssertEqual(bestIndex, 1, "B has the larger overlap (600×400) and must win")
     }
@@ -224,25 +248,25 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
     func test_straddle_singleDisplayContainment_picksThatDisplay() {
         let displays: [CGRect] = [
             CGRect(x: 0, y: 0, width: 1000, height: 600),
-            CGRect(x: 1000, y: 0, width: 1000, height: 600),
+            CGRect(x: 1000, y: 0, width: 1000, height: 600)
         ]
         let selection = CGRect(x: 1200, y: 100, width: 400, height: 400)
 
         XCTAssertEqual(
             ScreenCaptureManager.indexOfLargestIntersectingFrame(frames: displays, rect: selection),
-            1,
+            1
         )
     }
 
     func test_straddle_noIntersection_returnsNil() {
         let displays: [CGRect] = [
-            CGRect(x: 0, y: 0, width: 1000, height: 600),
+            CGRect(x: 0, y: 0, width: 1000, height: 600)
         ]
         // Selection off-screen
         let selection = CGRect(x: 2000, y: 2000, width: 100, height: 100)
 
         XCTAssertNil(
-            ScreenCaptureManager.indexOfLargestIntersectingFrame(frames: displays, rect: selection),
+            ScreenCaptureManager.indexOfLargestIntersectingFrame(frames: displays, rect: selection)
         )
     }
 
@@ -251,7 +275,7 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
         // not the first intersecting one (the pre-fix behaviour at #308).
         let displays: [CGRect] = [
             CGRect(x: 1000, y: 0, width: 1000, height: 600), // B first now
-            CGRect(x: 0, y: 0, width: 1000, height: 600), // A second
+            CGRect(x: 0, y: 0, width: 1000, height: 600) // A second
         ]
         // Selection x: 800–1600.
         //   displays[0] (B) x: 1000–2000.   ∩ = 1000–1600 ⇒ width 600 (overlap area = 600 × 400).
@@ -261,7 +285,7 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
 
         let bestIndex = ScreenCaptureManager.indexOfLargestIntersectingFrame(
             frames: displays,
-            rect: selection,
+            rect: selection
         )
         XCTAssertEqual(bestIndex, 0)
     }
@@ -282,7 +306,7 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
             screenFrame: screenFrame,
             logicalSourceRect: logicalSourceRect,
             logicalCropSize: logicalCropSize,
-            fallbackScale: 1.0,
+            fallbackScale: 1.0
         )
 
         XCTAssertEqual(result.actualScale, 1.0, accuracy: 0.001)
@@ -292,7 +316,7 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
     func test_reconcile_nativeScaleConfig_promotesToOutputScale() throws {
         // Cropped native image at 1x: 800 × 600 pixels.
         let cropped = try XCTUnwrap(
-            TestImageFactory.solidColor(width: 800, height: 600, red: 50, green: 100, blue: 200),
+            TestImageFactory.solidColor(width: 800, height: 600, red: 50, green: 100, blue: 200)
         )
 
         // Promote to minimum output scale 2.0.
@@ -301,7 +325,7 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
             logicalSize: CGSize(width: 800, height: 600),
             sourceScaleFactor: 1.0,
             minimumOutputScaleFactor: 2.0,
-            colorSpaceName: nil,
+            colorSpaceName: nil
         )
 
         XCTAssertEqual(promoted.scaleFactor, 2.0, accuracy: 0.001)
@@ -326,7 +350,7 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
             bitsPerComponent: 8,
             bytesPerRow: bytesPerRow,
             space: CGColorSpaceCreateDeviceRGB(),
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
         ) else {
             return -1
         }
@@ -352,7 +376,7 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
         // rect fully inside display A → only 1 display intersects.
         let displays: [CGRect] = [
             CGRect(x: 0, y: 0, width: 1440, height: 900), // A
-            CGRect(x: 1440, y: 0, width: 2560, height: 1440), // B
+            CGRect(x: 1440, y: 0, width: 2560, height: 1440) // B
         ]
         let selection = CGRect(x: 100, y: 100, width: 400, height: 300)
 
@@ -364,7 +388,7 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
         // rect spanning A and B → 2 displays intersect.
         let displays: [CGRect] = [
             CGRect(x: 0, y: 0, width: 1440, height: 900), // A
-            CGRect(x: 1440, y: 0, width: 2560, height: 1440), // B
+            CGRect(x: 1440, y: 0, width: 2560, height: 1440) // B
         ]
         let selection = CGRect(x: 1200, y: 100, width: 500, height: 300)
 
@@ -374,7 +398,7 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
 
     func test_straddle_multiDisplayDetection_noIntersectionReturnsEmpty() {
         let displays: [CGRect] = [
-            CGRect(x: 0, y: 0, width: 1440, height: 900),
+            CGRect(x: 0, y: 0, width: 1440, height: 900)
         ]
         let selection = CGRect(x: 5000, y: 5000, width: 100, height: 100)
 
@@ -392,7 +416,7 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
             target: .rect(rect),
             displayID: primaryDisplayID,
             mode: .screenshot,
-            displayIDs: displayIDs,
+            displayIDs: displayIDs
         )
 
         XCTAssertEqual(result.rect, rect)
@@ -409,7 +433,7 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
             target: .rect(rect),
             displayID: 1,
             mode: .screenshot,
-            displayIDs: displayIDs,
+            displayIDs: displayIDs
         )
 
         XCTAssertFalse(result.spansMultipleDisplays, "Single display → does not span")
@@ -419,14 +443,14 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
         // For composite path, primary display must be the one with largest overlap.
         let displays: [CGRect] = [
             CGRect(x: 0, y: 0, width: 1440, height: 900), // A
-            CGRect(x: 1440, y: 0, width: 2560, height: 1440), // B
+            CGRect(x: 1440, y: 0, width: 2560, height: 1440) // B
         ]
         // Selection: x 1200–1700. A intersection: 1200–1440 = 240px. B intersection: 1440–1700 = 260px.
         let selection = CGRect(x: 1200, y: 100, width: 500, height: 300)
 
         let bestIndex = ScreenCaptureManager.indexOfLargestIntersectingFrame(
             frames: displays,
-            rect: selection,
+            rect: selection
         )
         XCTAssertEqual(bestIndex, 1, "B has larger overlap (260×300 vs 240×300)")
     }
@@ -436,7 +460,7 @@ final class ScreenCaptureAreaCropTests: XCTestCase {
         let displays: [CGRect] = [
             CGRect(x: 0, y: 0, width: 1440, height: 900),
             CGRect(x: 1440, y: 0, width: 2560, height: 1440),
-            CGRect(x: 4000, y: 0, width: 1920, height: 1080),
+            CGRect(x: 4000, y: 0, width: 1920, height: 1080)
         ]
         let selection = CGRect(x: 1200, y: 100, width: 500, height: 300)
 

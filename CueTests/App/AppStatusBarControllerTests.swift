@@ -62,14 +62,14 @@ final class AppStatusBarControllerTests: XCTestCase {
         func testMenuBarTitle_showsDurationWhileRecording() {
             XCTAssertEqual(
                 AppStatusBarController.menuBarTitleString(for: .recording, duration: "01:23", showTime: true),
-                "01:23",
+                "01:23"
             )
         }
 
         func testMenuBarTitle_prefixesPauseMarkerWhilePaused() {
             XCTAssertEqual(
                 AppStatusBarController.menuBarTitleString(for: .paused, duration: "01:23", showTime: true),
-                "|| 01:23",
+                "|| 01:23"
             )
         }
 
@@ -78,7 +78,7 @@ final class AppStatusBarControllerTests: XCTestCase {
                 XCTAssertEqual(
                     AppStatusBarController.menuBarTitleString(for: state, duration: "01:23", showTime: true),
                     "",
-                    "expected empty title for non-active state \(state)",
+                    "expected empty title for non-active state \(state)"
                 )
             }
         }
@@ -95,7 +95,7 @@ final class AppStatusBarControllerTests: XCTestCase {
             contentRect: NSRect(x: 0, y: 0, width: 100, height: 100),
             styleMask: .borderless,
             backing: .buffered,
-            defer: false,
+            defer: false
         )
         closingWindow.title = "Settings"
         controller.trackedPreferencesWindowForTesting = closingWindow
@@ -103,7 +103,7 @@ final class AppStatusBarControllerTests: XCTestCase {
         // 3. Post notification/Simulate close
         let notification = Notification(
             name: NSWindow.willCloseNotification,
-            object: closingWindow,
+            object: closingWindow
         )
         controller.simulateWindowDidClose(notification: notification)
 

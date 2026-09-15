@@ -25,12 +25,12 @@ enum AppIdentityIssue: Equatable, Hashable {
 
     var description: String {
         switch self {
-        case .unexpectedBundleIdentifier(let bundleIdentifier):
+        case let .unexpectedBundleIdentifier(bundleIdentifier):
             let currentIdentifier = bundleIdentifier ?? "missing"
             return L10n.AppIdentity.unexpectedBundleIdentifier(currentIdentifier)
         case .invalidBundleSignature:
             return L10n.AppIdentity.invalidSignature
-        case .outsideApplications(let bundleURL):
+        case let .outsideApplications(bundleURL):
             return L10n.AppIdentity.outsideApplications(bundleURL.path)
         case .quarantined:
             return L10n.AppIdentity.quarantined
@@ -61,7 +61,7 @@ final class AppIdentityManager: ObservableObject {
 
     @Published private(set) var health = AppIdentityHealth(
         bundleURL: Bundle.main.bundleURL,
-        issues: [],
+        issues: []
     )
 
     private init() {

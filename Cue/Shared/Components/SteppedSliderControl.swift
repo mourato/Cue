@@ -19,7 +19,7 @@ struct SteppedSliderControl<Value: BinaryFloatingPoint>: View {
         step: Value,
         in range: ClosedRange<Value>,
         sliderWidth: CGFloat? = nil,
-        onEditingChanged: @escaping (Bool) -> Void = { _ in },
+        onEditingChanged: @escaping (Bool) -> Void = { _ in }
     ) {
         _value = value
         self.step = step
@@ -44,7 +44,7 @@ struct SteppedSliderControl<Value: BinaryFloatingPoint>: View {
             Slider(
                 value: sliderBinding,
                 in: Double(range.lowerBound) ... Double(range.upperBound),
-                onEditingChanged: onEditingChanged,
+                onEditingChanged: onEditingChanged
             )
             .controlSize(.small)
             .frame(width: sliderWidth)
@@ -60,7 +60,7 @@ struct SteppedSliderControl<Value: BinaryFloatingPoint>: View {
             get: { Double(value) },
             set: { newValue in
                 value = SteppedValue.snapped(Value(newValue), by: step, in: range)
-            },
+            }
         )
     }
 
@@ -92,7 +92,7 @@ struct SteppedSliderControl<Value: BinaryFloatingPoint>: View {
                     value: $value,
                     step: 0.5,
                     in: 1 ... 8,
-                    sliderWidth: 96,
+                    sliderWidth: 96
                 )
                 .padding()
             }

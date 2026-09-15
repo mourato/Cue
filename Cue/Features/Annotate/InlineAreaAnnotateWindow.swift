@@ -23,7 +23,7 @@ final class InlineAreaAnnotateCoordinator {
         outputFormat: ImageFormat,
         context: CaptureContext = .empty,
         initialScreenRect: CGRect? = nil,
-        onComplete: @escaping (CaptureResult) -> Void,
+        onComplete: @escaping (CaptureResult) -> Void
     ) {
         closeActiveWindows()
         let availableScreens = screens.filter { screen in
@@ -57,7 +57,7 @@ final class InlineAreaAnnotateCoordinator {
                 screenFrame: screen.frame,
                 localFrame: InlineAreaAnnotateSession.localFrame(for: screen.frame, in: desktopFrame),
                 controlInsets: InlineAreaControlInsets(screen: screen),
-                backdropImage: NSImage(cgImage: backdrop.image, size: screen.frame.size),
+                backdropImage: NSImage(cgImage: backdrop.image, size: screen.frame.size)
             )
         }
         guard !displays.isEmpty else {
@@ -73,7 +73,7 @@ final class InlineAreaAnnotateCoordinator {
             saveDirectory: saveDirectory,
             outputFormat: outputFormat,
             context: context,
-            onComplete: wrappedOnComplete,
+            onComplete: wrappedOnComplete
         )
 
         let windows = displays.map { display in
@@ -127,7 +127,7 @@ final class InlineAreaAnnotatePanel: NSPanel {
             contentRect: display.screenFrame,
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
-            defer: false,
+            defer: false
         )
 
         isFloatingPanel = true
@@ -156,7 +156,7 @@ final class InlineAreaAnnotatePanel: NSPanel {
 
         let rootView = InlineAreaAnnotateRootView(
             session: session,
-            display: display,
+            display: display
         )
         .preferredColorScheme(ThemeManager.shared.systemAppearance)
         let hostingView = InlineAreaHostingView(rootView: rootView)
@@ -256,7 +256,7 @@ private struct InlineAreaAnnotateRootView: View {
                         .frame(width: backdropDisplay.localFrame.width, height: backdropDisplay.localFrame.height)
                         .position(
                             x: backdropDisplay.localFrame.midX - display.localFrame.minX,
-                            y: backdropDisplay.localFrame.midY - display.localFrame.minY,
+                            y: backdropDisplay.localFrame.midY - display.localFrame.minY
                         )
                 }
 
@@ -334,7 +334,7 @@ private struct InlineAreaAnnotateRootView: View {
     private func desktopPoint(for viewportPoint: CGPoint) -> CGPoint {
         CGPoint(
             x: viewportPoint.x + display.localFrame.minX,
-            y: viewportPoint.y + display.localFrame.minY,
+            y: viewportPoint.y + display.localFrame.minY
         )
     }
 
@@ -363,7 +363,7 @@ private struct InlineAreaAnnotateRootView: View {
             CanvasDrawingView(
                 state: session.state,
                 displayScale: displayScale,
-                canvasBounds: CGRect(origin: .zero, size: imageSize),
+                canvasBounds: CGRect(origin: .zero, size: imageSize)
             )
             .frame(width: rect.width, height: rect.height)
 
@@ -371,7 +371,7 @@ private struct InlineAreaAnnotateRootView: View {
                 TextEditOverlay(
                     state: session.state,
                     scale: displayScale,
-                    canvasBounds: CGRect(origin: .zero, size: imageSize),
+                    canvasBounds: CGRect(origin: .zero, size: imageSize)
                 )
                 .frame(width: rect.width, height: rect.height)
                 .clipped()
@@ -403,13 +403,13 @@ private struct InlineAreaAnnotateRootView: View {
             containerSize: containerSize,
             showsProperties: session.state.showsQuickPropertiesBar,
             propertiesContentWidth: propertiesContentWidth,
-            controlInsets: display.controlInsets,
+            controlInsets: display.controlInsets
         )
 
         InlineAreaControlDeck(
             session: session,
             maxWidth: placement.toolbarWidth,
-            moveGesture: moveGesture(for: desktopRect),
+            moveGesture: moveGesture(for: desktopRect)
         )
         .frame(width: placement.toolbarWidth, height: InlineAreaLayout.toolbarHeight)
         .position(placement.toolbarCenter)
@@ -425,7 +425,7 @@ private struct InlineAreaAnnotateRootView: View {
                 let roundedWidth = ceil(width)
                 guard abs(propertiesContentWidth - roundedWidth) > 0.5 else { return }
                 propertiesContentWidth = roundedWidth
-            },
+            }
         )
         .frame(width: placement.propertiesWidth, height: InlineAreaLayout.propertiesHeight)
         .opacity(session.state.showsQuickPropertiesBar ? 1 : 0)
@@ -452,7 +452,7 @@ private struct InlineAreaAnnotateRootView: View {
                 }
                 guard let start = movingStartRect else { return }
                 let previewRect = session.clampedSelectionPreview(
-                    for: start.offsetBy(dx: value.translation.width, dy: value.translation.height),
+                    for: start.offsetBy(dx: value.translation.width, dy: value.translation.height)
                 )
                 var transaction = Transaction()
                 transaction.animation = nil
@@ -465,7 +465,7 @@ private struct InlineAreaAnnotateRootView: View {
             .onEnded { value in
                 let start = movingStartRect ?? desktopRect
                 let finalRect = session.clampedSelectionPreview(
-                    for: start.offsetBy(dx: value.translation.width, dy: value.translation.height),
+                    for: start.offsetBy(dx: value.translation.width, dy: value.translation.height)
                 )
                 var transaction = Transaction()
                 transaction.animation = nil
@@ -487,12 +487,14 @@ private struct InlineAreaAnnotateRootView: View {
             .allowsHitTesting(false)
 
         let layout = CaptureSelectionChromeLayout.layout(for: rect)
-        ForEach(CaptureSelectionHandleGeometry.allHandles.filter { layout.availableHandles.contains($0) },
-                id: \.self) { handle in
+        ForEach(
+            CaptureSelectionHandleGeometry.allHandles.filter { layout.availableHandles.contains($0) },
+            id: \.self
+        ) { handle in
             let hitRect = CaptureSelectionHandleGeometry.hitRect(
                 for: handle,
                 in: rect,
-                coordinateSpace: .topLeftOrigin,
+                coordinateSpace: .topLeftOrigin
             )
             InlineAreaResizeHandleHitTarget(handle: handle)
                 .frame(width: hitRect.width, height: hitRect.height)
@@ -500,7 +502,7 @@ private struct InlineAreaAnnotateRootView: View {
                 .gesture(resizeGesture(
                     for: handle,
                     desktopRect: desktopRect,
-                    containerSize: session.desktopFrame.size,
+                    containerSize: session.desktopFrame.size
                 ))
         }
     }
@@ -508,7 +510,7 @@ private struct InlineAreaAnnotateRootView: View {
     private func resizeGesture(
         for handle: CaptureSelectionResizeHandle,
         desktopRect: CGRect,
-        containerSize: CGSize,
+        containerSize: CGSize
     ) -> some Gesture {
         DragGesture(minimumDistance: 1, coordinateSpace: .global)
             .onChanged { value in
@@ -520,7 +522,7 @@ private struct InlineAreaAnnotateRootView: View {
                     from: start,
                     handle: handle,
                     translation: value.translation,
-                    containerSize: containerSize,
+                    containerSize: containerSize
                 )
                 var transaction = Transaction()
                 transaction.animation = nil
@@ -536,7 +538,7 @@ private struct InlineAreaAnnotateRootView: View {
                     from: start,
                     handle: handle,
                     translation: value.translation,
-                    containerSize: containerSize,
+                    containerSize: containerSize
                 )
                 var transaction = Transaction()
                 transaction.animation = nil
@@ -553,7 +555,7 @@ private struct InlineAreaAnnotateRootView: View {
         from start: CGRect,
         handle: CaptureSelectionResizeHandle,
         translation: CGSize,
-        containerSize: CGSize,
+        containerSize: CGSize
     ) -> CGRect {
         let proposedRect = CaptureSelectionResizeAdapter.resizedRect(
             original: start.standardized,
@@ -561,7 +563,7 @@ private struct InlineAreaAnnotateRootView: View {
             translation: CGPoint(x: translation.width, y: translation.height),
             coordinateSpace: .topLeftOrigin,
             containerSize: containerSize,
-            minSize: CaptureSelectionChromeMetrics.confirmedMinimumSize,
+            minSize: CaptureSelectionChromeMetrics.confirmedMinimumSize
         )
         let desktopBounds = CGRect(origin: .zero, size: containerSize)
         return CaptureSelectionSnapping.resolve(
@@ -570,7 +572,7 @@ private struct InlineAreaAnnotateRootView: View {
             candidates: CaptureSelectionSnapping.screenBoundaryCandidates(for: desktopBounds),
             configuration: CaptureSelectionSnappingConfiguration.fromPreferences(),
             desktopBounds: desktopBounds,
-            minSize: CaptureSelectionChromeMetrics.confirmedMinimumSize,
+            minSize: CaptureSelectionChromeMetrics.confirmedMinimumSize
         ).rect
     }
 
@@ -579,14 +581,14 @@ private struct InlineAreaAnnotateRootView: View {
         containerSize: CGSize,
         showsProperties: Bool,
         propertiesContentWidth: CGFloat,
-        controlInsets: InlineAreaControlInsets,
+        controlInsets: InlineAreaControlInsets
     ) -> InlineAreaControlPlacement {
         InlineAreaControlGeometry.placement(
             for: rect,
             containerSize: containerSize,
             showsProperties: showsProperties,
             propertiesContentWidth: propertiesContentWidth,
-            controlInsets: controlInsets,
+            controlInsets: controlInsets
         )
     }
 
@@ -648,7 +650,7 @@ private enum InlineAreaNativeCursor {
             isPlanar: false,
             colorSpaceName: .deviceRGB,
             bytesPerRow: 4,
-            bitsPerPixel: 32,
+            bitsPerPixel: 32
         )
         if let rep {
             if let bitmapData = rep.bitmapData {
@@ -692,11 +694,11 @@ private struct InlineAreaSelectionGestureModifier<SelectionGesture: Gesture>: Vi
 private extension View {
     func inlineAreaSelectionGesture(
         _ selectionGesture: some Gesture,
-        isEnabled: Bool,
+        isEnabled: Bool
     ) -> some View {
         modifier(InlineAreaSelectionGestureModifier(
             selectionGesture: selectionGesture,
-            isEnabled: isEnabled,
+            isEnabled: isEnabled
         ))
     }
 }
@@ -713,7 +715,7 @@ struct InlineAreaControlInsets: Equatable {
         top: CGFloat = 0,
         leading: CGFloat = 0,
         bottom: CGFloat = 0,
-        trailing: CGFloat = 0,
+        trailing: CGFloat = 0
     ) {
         self.top = max(0, top)
         self.leading = max(0, leading)
@@ -725,14 +727,14 @@ struct InlineAreaControlInsets: Equatable {
         self.init(
             screenFrame: screen.frame,
             visibleFrame: screen.visibleFrame,
-            safeAreaInsets: screen.safeAreaInsets,
+            safeAreaInsets: screen.safeAreaInsets
         )
     }
 
     init(
         screenFrame: CGRect,
         visibleFrame: CGRect,
-        safeAreaInsets: NSEdgeInsets = NSEdgeInsets(top: 0, left: 0, bottom: 0, right: 0),
+        safeAreaInsets: NSEdgeInsets = NSEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     ) {
         let visibleTop = max(0, screenFrame.maxY - visibleFrame.maxY)
         let visibleLeading = max(0, visibleFrame.minX - screenFrame.minX)
@@ -743,7 +745,7 @@ struct InlineAreaControlInsets: Equatable {
             top: max(visibleTop, safeAreaInsets.top),
             leading: max(visibleLeading, safeAreaInsets.left),
             bottom: max(visibleBottom, safeAreaInsets.bottom),
-            trailing: max(visibleTrailing, safeAreaInsets.right),
+            trailing: max(visibleTrailing, safeAreaInsets.right)
         )
     }
 
@@ -814,7 +816,7 @@ private struct InlineAreaSelectionPreviewOverlay: View {
 
     var body: some View {
         let colors = CaptureSelectionChromeAppearance.colors(
-            for: CaptureSelectionChromeAppearanceContext(backdropLuma: nil),
+            for: CaptureSelectionChromeAppearanceContext(backdropLuma: nil)
         )
         Rectangle()
             .strokeBorder(
@@ -822,9 +824,9 @@ private struct InlineAreaSelectionPreviewOverlay: View {
                     red: colors.strokeRed,
                     green: colors.strokeGreen,
                     blue: colors.strokeBlue,
-                    opacity: colors.strokeAlpha,
+                    opacity: colors.strokeAlpha
                 ),
-                lineWidth: colors.borderWidth,
+                lineWidth: colors.borderWidth
             )
             .frame(width: rect.width, height: rect.height)
             .position(x: rect.midX, y: rect.midY)
@@ -837,12 +839,12 @@ private struct InlineAreaResizeHandlesOverlay: View {
         Canvas { context, size in
             let rect = CGRect(origin: .zero, size: size)
             let colors = CaptureSelectionChromeAppearance.colors(
-                for: CaptureSelectionChromeAppearanceContext(backdropLuma: nil),
+                for: CaptureSelectionChromeAppearanceContext(backdropLuma: nil)
             )
 
             for bar in CaptureSelectionHandleGeometry.handleBars(
                 in: rect,
-                coordinateSpace: .topLeftOrigin,
+                coordinateSpace: .topLeftOrigin
             ) {
                 drawHandleBar(bar, colors: colors, coordinateSpace: .topLeftOrigin, context: &context)
             }
@@ -853,16 +855,16 @@ private struct InlineAreaResizeHandlesOverlay: View {
         _ rect: CGRect,
         colors: CaptureSelectionChromeColors,
         coordinateSpace: CaptureSelectionCoordinateSpace,
-        context: inout GraphicsContext,
+        context: inout GraphicsContext
     ) {
         let cornerRadius = CaptureSelectionChromeMetrics.handleCornerRadius
         let shadowOffset = CaptureSelectionChromeMetrics.handleShadowOffset(for: coordinateSpace)
         context.fill(
             Path(
                 roundedRect: rect.offsetBy(dx: shadowOffset.width, dy: shadowOffset.height),
-                cornerRadius: cornerRadius,
+                cornerRadius: cornerRadius
             ),
-            with: .color(.black.opacity(colors.shadowOpacity)),
+            with: .color(.black.opacity(colors.shadowOpacity))
         )
         context.fill(
             Path(roundedRect: rect, cornerRadius: cornerRadius),
@@ -871,9 +873,9 @@ private struct InlineAreaResizeHandlesOverlay: View {
                     red: colors.strokeRed,
                     green: colors.strokeGreen,
                     blue: colors.strokeBlue,
-                    opacity: colors.strokeAlpha,
-                ),
-            ),
+                    opacity: colors.strokeAlpha
+                )
+            )
         )
     }
 }
@@ -952,50 +954,50 @@ enum InlineAreaControlGeometry {
         containerSize: CGSize,
         showsProperties: Bool,
         propertiesContentWidth: CGFloat,
-        controlInsets: InlineAreaControlInsets,
+        controlInsets: InlineAreaControlInsets
     ) -> InlineAreaControlPlacement {
         let toolbarWidth = controlDeckWidth(
             for: containerSize,
-            controlInsets: controlInsets,
+            controlInsets: controlInsets
         )
         let propertiesWidth = propertiesBarWidth(
             for: containerSize,
             toolbarWidth: toolbarWidth,
             showsProperties: showsProperties,
             contentWidth: propertiesContentWidth,
-            controlInsets: controlInsets,
+            controlInsets: controlInsets
         )
         let toolbarX = clampedControlCenterX(
             rect.midX,
             width: toolbarWidth,
             containerSize: containerSize,
-            controlInsets: controlInsets,
+            controlInsets: controlInsets
         )
         let propertiesX = clampedControlCenterX(
             rect.midX,
             width: propertiesWidth,
             containerSize: containerSize,
-            controlInsets: controlInsets,
+            controlInsets: controlInsets
         )
         let verticalSide = preferredVerticalSide(
             for: rect,
             containerSize: containerSize,
             showsProperties: showsProperties,
-            controlInsets: controlInsets,
+            controlInsets: controlInsets
         )
         let centers = controlCenters(
             for: rect,
             side: verticalSide,
             containerSize: containerSize,
             showsProperties: showsProperties,
-            controlInsets: controlInsets,
+            controlInsets: controlInsets
         )
         let splitSides = splitControlSides(
             for: rect,
             preferredSide: verticalSide,
             containerSize: containerSize,
             showsProperties: showsProperties,
-            controlInsets: controlInsets,
+            controlInsets: controlInsets
         )
         let toolbarCenterY = splitSides == nil
             ? centers.toolbar
@@ -1004,7 +1006,7 @@ enum InlineAreaControlGeometry {
                 height: InlineAreaLayout.toolbarHeight,
                 side: splitSides?.toolbar ?? verticalSide,
                 containerSize: containerSize,
-                controlInsets: controlInsets,
+                controlInsets: controlInsets
             )
         let propertiesCenterY = splitSides == nil
             ? centers.properties
@@ -1013,7 +1015,7 @@ enum InlineAreaControlGeometry {
                 height: InlineAreaLayout.propertiesHeight,
                 side: splitSides?.properties ?? verticalSide,
                 containerSize: containerSize,
-                controlInsets: controlInsets,
+                controlInsets: controlInsets
             )
         let propertiesSide = splitSides?.properties ?? verticalSide
 
@@ -1026,14 +1028,14 @@ enum InlineAreaControlGeometry {
             actionRailCenter: actionRailPosition(
                 for: rect,
                 containerSize: containerSize,
-                controlInsets: controlInsets,
-            ),
+                controlInsets: controlInsets
+            )
         )
     }
 
     private static func controlDeckWidth(
         for containerSize: CGSize,
-        controlInsets: InlineAreaControlInsets,
+        controlInsets: InlineAreaControlInsets
     ) -> CGFloat {
         min(664, availableControlWidth(for: containerSize, controlInsets: controlInsets))
     }
@@ -1043,7 +1045,7 @@ enum InlineAreaControlGeometry {
         toolbarWidth: CGFloat,
         showsProperties: Bool,
         contentWidth: CGFloat,
-        controlInsets: InlineAreaControlInsets,
+        controlInsets: InlineAreaControlInsets
     ) -> CGFloat {
         let availableWidth = availableControlWidth(for: containerSize, controlInsets: controlInsets)
         guard showsProperties else {
@@ -1057,11 +1059,11 @@ enum InlineAreaControlGeometry {
 
     private static func availableControlWidth(
         for containerSize: CGSize,
-        controlInsets: InlineAreaControlInsets,
+        controlInsets: InlineAreaControlInsets
     ) -> CGFloat {
         max(
             0,
-            containerSize.width - controlInsets.controlLeadingPadding - controlInsets.controlTrailingPadding,
+            containerSize.width - controlInsets.controlLeadingPadding - controlInsets.controlTrailingPadding
         )
     }
 
@@ -1069,7 +1071,7 @@ enum InlineAreaControlGeometry {
         _ preferredX: CGFloat,
         width: CGFloat,
         containerSize: CGSize,
-        controlInsets: InlineAreaControlInsets,
+        controlInsets: InlineAreaControlInsets
     ) -> CGFloat {
         let minX = width / 2 + controlInsets.controlLeadingPadding
         let maxX = containerSize.width - width / 2 - controlInsets.controlTrailingPadding
@@ -1083,7 +1085,7 @@ enum InlineAreaControlGeometry {
         for rect: CGRect,
         containerSize: CGSize,
         showsProperties: Bool,
-        controlInsets: InlineAreaControlInsets,
+        controlInsets: InlineAreaControlInsets
     ) -> InlineAreaVerticalSide {
         let reservedHeight = InlineAreaLayout.reservedControlHeight(showsProperties: showsProperties)
         let aboveSpace = spaceAbove(rect, controlInsets: controlInsets)
@@ -1106,7 +1108,7 @@ enum InlineAreaControlGeometry {
         preferredSide: InlineAreaVerticalSide,
         containerSize: CGSize,
         showsProperties: Bool,
-        controlInsets: InlineAreaControlInsets,
+        controlInsets: InlineAreaControlInsets
     ) -> (toolbar: InlineAreaVerticalSide, properties: InlineAreaVerticalSide)? {
         guard showsProperties else { return nil }
 
@@ -1114,27 +1116,32 @@ enum InlineAreaControlGeometry {
         let belowSpace = spaceBelow(rect, containerSize: containerSize, controlInsets: controlInsets)
 
         if aboveSpace >= InlineAreaLayout.reservedControlHeight(showsProperties: true)
-            || belowSpace >= InlineAreaLayout.reservedControlHeight(showsProperties: true) {
+            || belowSpace >= InlineAreaLayout.reservedControlHeight(showsProperties: true)
+        {
             return nil
         }
 
         switch preferredSide {
         case .above:
             if aboveSpace >= InlineAreaLayout.toolbarHeight,
-               belowSpace >= InlineAreaLayout.propertiesHeight {
+               belowSpace >= InlineAreaLayout.propertiesHeight
+            {
                 return (.above, .below)
             }
             if aboveSpace >= InlineAreaLayout.propertiesHeight,
-               belowSpace >= InlineAreaLayout.toolbarHeight {
+               belowSpace >= InlineAreaLayout.toolbarHeight
+            {
                 return (.below, .above)
             }
         case .below:
             if belowSpace >= InlineAreaLayout.toolbarHeight,
-               aboveSpace >= InlineAreaLayout.propertiesHeight {
+               aboveSpace >= InlineAreaLayout.propertiesHeight
+            {
                 return (.below, .above)
             }
             if belowSpace >= InlineAreaLayout.propertiesHeight,
-               aboveSpace >= InlineAreaLayout.toolbarHeight {
+               aboveSpace >= InlineAreaLayout.toolbarHeight
+            {
                 return (.above, .below)
             }
         }
@@ -1147,7 +1154,7 @@ enum InlineAreaControlGeometry {
         side: InlineAreaVerticalSide,
         containerSize: CGSize,
         showsProperties: Bool,
-        controlInsets: InlineAreaControlInsets,
+        controlInsets: InlineAreaControlInsets
     ) -> (toolbar: CGFloat, properties: CGFloat) {
         let reservedHeight = InlineAreaLayout.reservedControlHeight(showsProperties: showsProperties)
         let minGroupCenter = controlInsets.controlTopPadding + reservedHeight / 2
@@ -1175,7 +1182,7 @@ enum InlineAreaControlGeometry {
         height: CGFloat,
         side: InlineAreaVerticalSide,
         containerSize: CGSize,
-        controlInsets: InlineAreaControlInsets,
+        controlInsets: InlineAreaControlInsets
     ) -> CGFloat {
         let rawCenter: CGFloat = switch side {
         case .above:
@@ -1187,14 +1194,14 @@ enum InlineAreaControlGeometry {
         return clamped(
             rawCenter,
             min: controlInsets.controlTopPadding + height / 2,
-            max: containerSize.height - controlInsets.controlBottomPadding - height / 2,
+            max: containerSize.height - controlInsets.controlBottomPadding - height / 2
         )
     }
 
     private static func actionRailPosition(
         for rect: CGRect,
         containerSize: CGSize,
-        controlInsets: InlineAreaControlInsets,
+        controlInsets: InlineAreaControlInsets
     ) -> CGPoint {
         let rightX = rect.maxX + InlineAreaLayout.actionRailWidth / 2 + InlineAreaLayout.selectionGap
         let leftX = rect.minX - InlineAreaLayout.actionRailWidth / 2 - InlineAreaLayout.selectionGap
@@ -1208,20 +1215,20 @@ enum InlineAreaControlGeometry {
             clamped(
                 rect.maxX - InlineAreaLayout.actionRailWidth / 2 - InlineAreaLayout.selectionGap,
                 min: minimumX,
-                max: maximumX,
+                max: maximumX
             )
         }
         let y = clamped(
             rect.midY,
             min: InlineAreaLayout.actionRailHeight / 2 + controlInsets.controlTopPadding,
-            max: containerSize.height - InlineAreaLayout.actionRailHeight / 2 - controlInsets.controlBottomPadding,
+            max: containerSize.height - InlineAreaLayout.actionRailHeight / 2 - controlInsets.controlBottomPadding
         )
         return CGPoint(x: x, y: y)
     }
 
     private static func spaceAbove(
         _ rect: CGRect,
-        controlInsets: InlineAreaControlInsets,
+        controlInsets: InlineAreaControlInsets
     ) -> CGFloat {
         rect.minY - controlInsets.controlTopPadding - InlineAreaLayout.selectionGap
     }
@@ -1229,7 +1236,7 @@ enum InlineAreaControlGeometry {
     private static func spaceBelow(
         _ rect: CGRect,
         containerSize: CGSize,
-        controlInsets: InlineAreaControlInsets,
+        controlInsets: InlineAreaControlInsets
     ) -> CGFloat {
         containerSize.height - rect.maxY - controlInsets.controlBottomPadding - InlineAreaLayout.selectionGap
     }
@@ -1267,7 +1274,7 @@ private struct InlineAreaPanelBorder: View {
         RoundedRectangle(cornerRadius: InlineAreaChrome.cornerRadius, style: .continuous)
             .strokeBorder(
                 colorScheme == .dark ? Color.white.opacity(0.18) : Color.black.opacity(0.12),
-                lineWidth: 1.0,
+                lineWidth: 1.0
             )
     }
 }
@@ -1351,7 +1358,7 @@ private struct InlineAreaControlDeck<MoveGesture: Gesture>: View {
                 InlineAreaIconButton(
                     icon: "arrow.uturn.backward",
                     tooltip: L10n.Common.undo,
-                    isEnabled: session.state.canUndo,
+                    isEnabled: session.state.canUndo
                 ) {
                     session.state.undo()
                 }
@@ -1359,7 +1366,7 @@ private struct InlineAreaControlDeck<MoveGesture: Gesture>: View {
                 InlineAreaIconButton(
                     icon: "arrow.uturn.forward",
                     tooltip: L10n.Common.redo,
-                    isEnabled: session.state.canRedo,
+                    isEnabled: session.state.canRedo
                 ) {
                     session.state.redo()
                 }
@@ -1446,7 +1453,7 @@ private struct InlineAreaMoveHandle: View {
         .frame(width: InlineAreaChrome.moveControlWidth, height: InlineAreaChrome.controlSize)
         .background(
             RoundedRectangle(cornerRadius: InlineAreaChrome.controlCornerRadius, style: .continuous)
-                .fill(isHovering ? Color.primary.opacity(0.10) : Color.clear),
+                .fill(isHovering ? Color.primary.opacity(0.10) : Color.clear)
         )
         .contentShape(RoundedRectangle(cornerRadius: InlineAreaChrome.controlCornerRadius, style: .continuous))
         .help(L10n.AnnotateUI.moveSelection)
@@ -1519,7 +1526,7 @@ private struct InlineAreaPropertiesBar: View {
                             selectedColor: state.quickStrokeColorBinding,
                             colors: strokeColors,
                             role: .annotationStroke,
-                            popoverEdge: popoverEdge,
+                            popoverEdge: popoverEdge
                         )
                     }
 
@@ -1530,7 +1537,7 @@ private struct InlineAreaPropertiesBar: View {
                                     style: style,
                                     isSelected: state.quickShapeFillStyleBinding.wrappedValue == style,
                                     color: state.quickStrokeColorBinding.wrappedValue,
-                                    action: { state.quickShapeFillStyleBinding.wrappedValue = style },
+                                    action: { state.quickShapeFillStyleBinding.wrappedValue = style }
                                 )
                             }
                         }
@@ -1544,7 +1551,7 @@ private struct InlineAreaPropertiesBar: View {
                             selectedColor: state.quickFillColorBinding,
                             colors: fillColors,
                             role: .annotationFill,
-                            popoverEdge: popoverEdge,
+                            popoverEdge: popoverEdge
                         )
                     }
 
@@ -1554,7 +1561,7 @@ private struct InlineAreaPropertiesBar: View {
                             selectedColor: state.quickTextBackgroundBinding,
                             colors: textBackgroundColors,
                             role: .textBackground,
-                            popoverEdge: popoverEdge,
+                            popoverEdge: popoverEdge
                         )
                     }
 
@@ -1564,7 +1571,7 @@ private struct InlineAreaPropertiesBar: View {
                             items: BlurType.allCases,
                             selection: state.quickBlurTypeBinding,
                             icon: { $0.icon },
-                            tooltip: \.displayName,
+                            tooltip: \.displayName
                         )
                     }
 
@@ -1575,7 +1582,7 @@ private struct InlineAreaPropertiesBar: View {
                             selection: state.quickArrowStyleBinding,
                             icon: { $0.icon },
                             isFlipped: { $0 == .curvedRight },
-                            tooltip: \.displayName,
+                            tooltip: \.displayName
                         )
 
                         InlineAreaSegmentedPicker(
@@ -1584,12 +1591,12 @@ private struct InlineAreaPropertiesBar: View {
                             selection: state.quickArrowTypeBinding,
                             icon: { $0.icon },
                             isFlipped: { _ in state.arrowStyle == .curvedRight },
-                            tooltip: \.displayName,
+                            tooltip: \.displayName
                         )
 
                         if state.quickPropertiesSupportsArrowBendDirection {
                             InlineAreaArrowBendControl(
-                                bendDirection: state.quickArrowBendDirectionBinding,
+                                bendDirection: state.quickArrowBendDirectionBinding
                             )
                         }
 
@@ -1599,7 +1606,7 @@ private struct InlineAreaPropertiesBar: View {
                                 items: ArrowEndpointStyle.allCases,
                                 selection: state.quickArrowStartHeadBinding,
                                 icon: { $0.icon },
-                                tooltip: \.displayName,
+                                tooltip: \.displayName
                             )
 
                             InlineAreaSegmentedPicker(
@@ -1607,7 +1614,7 @@ private struct InlineAreaPropertiesBar: View {
                                 items: ArrowEndpointStyle.allCases,
                                 selection: state.quickArrowEndHeadBinding,
                                 icon: { $0.icon },
-                                tooltip: \.displayName,
+                                tooltip: \.displayName
                             )
                         }
                     }
@@ -1620,14 +1627,14 @@ private struct InlineAreaPropertiesBar: View {
                             items: WatermarkStyle.allCases,
                             selection: state.quickWatermarkStyleBinding,
                             icon: { $0.icon },
-                            tooltip: \.displayName,
+                            tooltip: \.displayName
                         )
                     }
 
                     if state.quickPropertiesSupportsStrokeWidth {
                         InlineAreaStrokeWidthControl(
                             title: state.quickStrokeWidthLabel,
-                            value: state.quickStrokeWidthBinding,
+                            value: state.quickStrokeWidthBinding
                         )
                     }
 
@@ -1639,7 +1646,7 @@ private struct InlineAreaPropertiesBar: View {
                             range: 12 ... 72,
                             step: 1,
                             displayText: "\(Int(state.quickTextFontSizeBinding.wrappedValue.rounded()))",
-                            onEditingChanged: state.setQuickPropertiesControlEditing,
+                            onEditingChanged: state.setQuickPropertiesControlEditing
                         )
                     }
 
@@ -1651,7 +1658,7 @@ private struct InlineAreaPropertiesBar: View {
                             range: 0 ... 60,
                             step: 1,
                             displayText: "\(Int(state.quickCornerRadiusBinding.wrappedValue.rounded()))",
-                            onEditingChanged: state.setQuickPropertiesControlEditing,
+                            onEditingChanged: state.setQuickPropertiesControlEditing
                         )
                     }
 
@@ -1663,7 +1670,7 @@ private struct InlineAreaPropertiesBar: View {
                             range: 0.05 ... 0.65,
                             step: 0.01,
                             displayText: "\(Int((state.quickWatermarkOpacityBinding.wrappedValue * 100).rounded()))%",
-                            onEditingChanged: state.setQuickPropertiesControlEditing,
+                            onEditingChanged: state.setQuickPropertiesControlEditing
                         )
 
                         InlineAreaSliderControl(
@@ -1673,7 +1680,7 @@ private struct InlineAreaPropertiesBar: View {
                             range: -45 ... 45,
                             step: 1,
                             displayText: "\(Int(state.quickWatermarkRotationBinding.wrappedValue.rounded()))deg",
-                            onEditingChanged: state.setQuickPropertiesControlEditing,
+                            onEditingChanged: state.setQuickPropertiesControlEditing
                         )
                     }
                 }
@@ -1684,9 +1691,9 @@ private struct InlineAreaPropertiesBar: View {
                     GeometryReader { proxy in
                         Color.clear.preference(
                             key: InlineAreaPropertiesContentWidthKey.self,
-                            value: proxy.size.width,
+                            value: proxy.size.width
                         )
-                    },
+                    }
                 )
             }
             .frame(maxWidth: max(0, maxWidth - InlineAreaLayout.controlPanelOuterHorizontalInset))
@@ -1718,7 +1725,7 @@ private struct InlineAreaPropertiesBar: View {
         .frame(maxWidth: 142)
         .background(
             Capsule()
-                .fill(InlineAreaChrome.itemBackground),
+                .fill(InlineAreaChrome.itemBackground)
         )
     }
 }
@@ -1756,7 +1763,7 @@ private struct InlineAreaColorControl: View {
                     .frame(width: 40, height: InlineAreaChrome.propertyControlHeight)
                     .background(
                         RoundedRectangle(cornerRadius: InlineAreaChrome.controlCornerRadius, style: .continuous)
-                            .fill(InlineAreaChrome.itemBackground),
+                            .fill(InlineAreaChrome.itemBackground)
                     )
                 }
                 .buttonStyle(.plain)
@@ -1766,7 +1773,7 @@ private struct InlineAreaColorControl: View {
                         title: title,
                         selectedColor: $selectedColor,
                         colors: colors,
-                        role: role,
+                        role: role
                     ) {
                         showsPopover = false
                     }
@@ -1779,7 +1786,7 @@ private struct InlineAreaColorControl: View {
                         InlineAreaColorSwatch(
                             color: color,
                             isSelected: AnnotateColorPaletteStore.colorsMatch(selectedColor, color),
-                            size: 15,
+                            size: 15
                         )
                         .frame(width: 20, height: InlineAreaChrome.propertyControlHeight)
                     }
@@ -1812,7 +1819,7 @@ private struct InlineAreaColorPopover: View {
 
     private let columns = Array(
         repeating: GridItem(.fixed(PopoverTokens.colorGridCellSize), spacing: PopoverTokens.colorGridSpacing),
-        count: 5,
+        count: 5
     )
 
     var body: some View {
@@ -1862,7 +1869,7 @@ private struct InlineAreaColorPopover: View {
                         overlayAction: {
                             paletteStore.removeColor(color)
                         },
-                        overlayHelp: L10n.Common.deleteAction,
+                        overlayHelp: L10n.Common.deleteAction
                     )
                 }
 
@@ -1931,7 +1938,7 @@ private struct InlineAreaColorPopover: View {
 
     private var favoriteDropSlot: some View {
         InlineAreaFavoriteDropSlot(
-            onTap: showFavoriteSelectionPopover,
+            onTap: showFavoriteSelectionPopover
         ) { payload in
             handleFavoriteDrop(payload)
         }
@@ -1942,7 +1949,7 @@ private struct InlineAreaColorPopover: View {
 
     private var favoriteEmptyDropTarget: some View {
         InlineAreaFavoriteEmptyDropTarget(
-            onTap: showFavoriteSelectionPopover,
+            onTap: showFavoriteSelectionPopover
         ) { payload in
             handleFavoriteDrop(payload)
         }
@@ -1996,7 +2003,7 @@ private struct InlineAreaColorPopover: View {
         InlineAreaColorSwatch(
             color: draftCustomColor,
             isSelected: true,
-            size: PopoverTokens.colorSwatchSize,
+            size: PopoverTokens.colorSwatchSize
         )
         .contentShape(Circle())
         .onTapGesture {
@@ -2010,7 +2017,7 @@ private struct InlineAreaColorPopover: View {
         InlineAreaColorSwatch(
             color: draftCustomColor,
             isSelected: AnnotateColorPaletteStore.colorsMatch(selectedColor, draftCustomColor),
-            size: PopoverTokens.colorSwatchSize,
+            size: PopoverTokens.colorSwatchSize
         )
         .contentShape(Circle())
         .onTapGesture {
@@ -2027,7 +2034,7 @@ private struct InlineAreaColorPopover: View {
             onCancel: {
                 cancelColorDraft()
             },
-            onApply: applyColorDraft,
+            onApply: applyColorDraft
         )
     }
 
@@ -2041,7 +2048,7 @@ private struct InlineAreaColorPopover: View {
             overlayHelp: "",
             onSelect: {
                 addVaultColorToFavorites(color)
-            },
+            }
         )
     }
 
@@ -2185,14 +2192,14 @@ private struct InlineAreaColorPopover: View {
             },
             onSelect: {
                 selectColorAndDismiss(color)
-            },
+            }
         )
     }
 
     private func paletteColorButton(
         _ color: Color,
         overlayAction: (() -> Void)?,
-        overlayHelp: String,
+        overlayHelp: String
     ) -> some View {
         InlineAreaPaletteColorButton(
             color: color,
@@ -2203,7 +2210,7 @@ private struct InlineAreaColorPopover: View {
             overlayHelp: overlayHelp,
             onSelect: {
                 selectColorAndDismiss(color)
-            },
+            }
         )
     }
 
@@ -2212,7 +2219,7 @@ private struct InlineAreaColorPopover: View {
 
         paletteStore.acceptFavoriteDrop(
             payload,
-            for: role,
+            for: role
         )
         if !canAddFavorite {
             closeFavoriteSelectionPopover()
@@ -2221,14 +2228,14 @@ private struct InlineAreaColorPopover: View {
 
     private func handleFavoriteDrop(
         _ payload: AnnotateColorDragPayload,
-        targetColor: Color,
+        targetColor: Color
     ) {
         guard canAcceptFavoriteDrop(payload) else { return }
 
         paletteStore.acceptFavoriteDrop(
             payload,
             for: role,
-            targetColor: targetColor,
+            targetColor: targetColor
         )
         if !canAddFavorite {
             closeFavoriteSelectionPopover()
@@ -2271,7 +2278,7 @@ private struct InlineAreaPaletteColorButton: View {
             InlineAreaColorSwatch(
                 color: color,
                 isSelected: isSelected,
-                size: PopoverTokens.colorSwatchSize,
+                size: PopoverTokens.colorSwatchSize
             )
             .contentShape(Circle())
             .onTapGesture(perform: onSelect)
@@ -2287,7 +2294,7 @@ private struct InlineAreaPaletteColorButton: View {
                         .background(
                             Circle()
                                 .fill(InlineAreaChrome.itemBackground)
-                                .frame(width: 8, height: 8),
+                                .frame(width: 8, height: 8)
                         )
                 }
                 .buttonStyle(.plain)
@@ -2323,8 +2330,8 @@ private struct InlineAreaFavoriteEmptyDropTarget: View {
                     Circle()
                         .stroke(
                             isTargeted ? Color.accentColor.opacity(0.65) : Color.secondary.opacity(0.35),
-                            style: StrokeStyle(lineWidth: 1, dash: [3, 2]),
-                        ),
+                            style: StrokeStyle(lineWidth: 1, dash: [3, 2])
+                        )
                 )
 
             Text(L10n.Common.dragColorsHere)
@@ -2363,8 +2370,8 @@ private struct InlineAreaFavoriteDropSlot: View {
                 Circle()
                     .stroke(
                         isTargeted ? Color.accentColor.opacity(0.65) : Color.secondary.opacity(0.35),
-                        style: StrokeStyle(lineWidth: 1, dash: [3, 2]),
-                    ),
+                        style: StrokeStyle(lineWidth: 1, dash: [3, 2])
+                    )
             )
             .frame(width: 24, height: 24)
             .help(L10n.Common.custom)
@@ -2395,8 +2402,8 @@ private struct InlineAreaColorSwatch: View {
                     Circle()
                         .strokeBorder(
                             isSelected ? Color.accentColor : Color.primary.opacity(0.32),
-                            lineWidth: isSelected ? 2 : 1,
-                        ),
+                            lineWidth: isSelected ? 2 : 1
+                        )
                 )
 
             if AnnotateColorPaletteStore.isClear(color) {
@@ -2433,15 +2440,15 @@ private struct InlineAreaSegmentedPicker<Item: Identifiable & Equatable>: View {
                             .background(
                                 RoundedRectangle(cornerRadius: InlineAreaChrome.controlCornerRadius, style: .continuous)
                                     .fill(selection == item ? InlineAreaChrome.itemSelectedBackground : InlineAreaChrome
-                                        .itemBackground),
+                                        .itemBackground)
                             )
                             .overlay(
                                 RoundedRectangle(cornerRadius: InlineAreaChrome.controlCornerRadius, style: .continuous)
                                     .stroke(
                                         selection == item ? InlineAreaChrome.itemSelectedBorder : InlineAreaChrome
                                             .itemBorder,
-                                        lineWidth: 1,
-                                    ),
+                                        lineWidth: 1
+                                    )
                             )
                     }
                     .buttonStyle(.plain)
@@ -2470,15 +2477,15 @@ private struct InlineAreaArrowBendControl: View {
                         RoundedRectangle(cornerRadius: InlineAreaChrome.controlCornerRadius, style: .continuous)
                             .fill(bendDirection == .alternate ? InlineAreaChrome
                                 .itemSelectedBackground : InlineAreaChrome
-                                .itemBackground),
+                                .itemBackground)
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: InlineAreaChrome.controlCornerRadius, style: .continuous)
                             .stroke(
                                 bendDirection == .alternate ? InlineAreaChrome.itemSelectedBorder : InlineAreaChrome
                                     .itemBorder,
-                                lineWidth: 1,
-                            ),
+                                lineWidth: 1
+                            )
                     )
             }
             .buttonStyle(.plain)
@@ -2496,7 +2503,7 @@ private struct InlineAreaStrokeWidthControl: View {
         InlineAreaPropertyGroup(title: title) {
             AnnotationStrokeWidthPicker(
                 value: $value,
-                controlHeight: InlineAreaChrome.propertyControlHeight,
+                controlHeight: InlineAreaChrome.propertyControlHeight
             )
         }
     }
@@ -2521,7 +2528,7 @@ private struct InlineAreaSliderControl: View {
                 Slider(
                     value: $value.stepped(by: step, in: range),
                     in: range,
-                    onEditingChanged: onEditingChanged,
+                    onEditingChanged: onEditingChanged
                 )
                 .frame(width: 58)
                 .controlSize(.small)
@@ -2552,7 +2559,7 @@ private struct InlineAreaTextFieldControl: View {
                 .frame(width: 112, height: InlineAreaChrome.propertyControlHeight)
                 .background(
                     RoundedRectangle(cornerRadius: InlineAreaChrome.controlCornerRadius, style: .continuous)
-                        .fill(InlineAreaChrome.itemBackground),
+                        .fill(InlineAreaChrome.itemBackground)
                 )
         }
     }
@@ -2592,7 +2599,7 @@ private struct InlineAreaActionRail: View {
             InlineAreaIconButton(
                 icon: "checkmark",
                 tooltip: L10n.Common.withShortcut(L10n.Common.done, "⌘S"),
-                isProminent: true,
+                isProminent: true
             ) {
                 Task { await session.finish() }
             }
@@ -2602,7 +2609,7 @@ private struct InlineAreaActionRail: View {
 
             InlineAreaIconButton(
                 icon: "doc.on.doc",
-                tooltip: L10n.Common.withShortcut(L10n.AnnotateUI.copyToClipboard, "⌘C"),
+                tooltip: L10n.Common.withShortcut(L10n.AnnotateUI.copyToClipboard, "⌘C")
             ) {
                 session.copyCurrentImage()
             }
@@ -2618,7 +2625,7 @@ private struct InlineAreaRailDivider: View {
             .fill(InlineAreaChrome.divider)
             .frame(
                 width: InlineAreaToolbarMetrics.actionRailDividerWidth,
-                height: InlineAreaToolbarMetrics.actionRailDividerHeight,
+                height: InlineAreaToolbarMetrics.actionRailDividerHeight
             )
     }
 }

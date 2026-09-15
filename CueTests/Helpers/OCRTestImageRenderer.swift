@@ -17,7 +17,7 @@ enum OCRTestImageRenderer {
         let font = NSFont.systemFont(ofSize: 48, weight: .regular)
         let attributes: [NSAttributedString.Key: Any] = [
             .font: font,
-            .foregroundColor: NSColor.black,
+            .foregroundColor: NSColor.black
         ]
         let textSizes = textChunks.map {
             ($0 as NSString).size(withAttributes: attributes)
@@ -28,7 +28,7 @@ enum OCRTestImageRenderer {
         let padding: CGFloat = 40
         let imageSize = NSSize(
             width: ceil(textWidth + padding * 2),
-            height: ceil(textHeight + padding * 2),
+            height: ceil(textHeight + padding * 2)
         )
         let image = NSImage(size: imageSize)
 
@@ -39,7 +39,7 @@ enum OCRTestImageRenderer {
         for (index, text) in textChunks.enumerated() {
             (text as NSString).draw(
                 at: NSPoint(x: x, y: padding),
-                withAttributes: attributes,
+                withAttributes: attributes
             )
             x += textSizes[index].width + horizontalGap
         }
@@ -55,7 +55,7 @@ enum OCRTestImageRenderer {
         let font = NSFont.systemFont(ofSize: 58, weight: .semibold)
         let attributes: [NSAttributedString.Key: Any] = [
             .font: font,
-            .foregroundColor: NSColor(calibratedRed: 0.76, green: 0.22, blue: 0.14, alpha: 1),
+            .foregroundColor: NSColor(calibratedRed: 0.76, green: 0.22, blue: 0.14, alpha: 1)
         ]
         let characters = text.map(String.init)
         let glyphSizes = characters.map {
@@ -71,8 +71,8 @@ enum OCRTestImageRenderer {
             height: ceil(
                 (maxGlyphHeight * CGFloat(characters.count))
                     + (lineGap * CGFloat(max(characters.count - 1, 0)))
-                    + verticalPadding * 2,
-            ),
+                    + verticalPadding * 2
+            )
         )
         let image = NSImage(size: imageSize)
 
@@ -86,7 +86,7 @@ enum OCRTestImageRenderer {
             let x = (imageSize.width - glyphSize.width) / 2
             (character as NSString).draw(
                 at: NSPoint(x: x, y: y),
-                withAttributes: attributes,
+                withAttributes: attributes
             )
             y -= maxGlyphHeight + lineGap
         }

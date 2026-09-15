@@ -42,7 +42,7 @@
 
             // Mouse-down monitors
             globalDownMonitor = NSEvent.addGlobalMonitorForEvents(
-                matching: [.leftMouseDown, .rightMouseDown],
+                matching: [.leftMouseDown, .rightMouseDown]
             ) { [weak self] event in
                 MainActor.assumeIsolated {
                     self?.handleMouseDown(event)
@@ -50,7 +50,7 @@
             }
 
             localDownMonitor = NSEvent.addLocalMonitorForEvents(
-                matching: [.leftMouseDown, .rightMouseDown],
+                matching: [.leftMouseDown, .rightMouseDown]
             ) { [weak self] event in
                 MainActor.assumeIsolated {
                     self?.handleMouseDown(event)
@@ -60,7 +60,7 @@
 
             // Mouse-up monitors
             globalUpMonitor = NSEvent.addGlobalMonitorForEvents(
-                matching: [.leftMouseUp, .rightMouseUp],
+                matching: [.leftMouseUp, .rightMouseUp]
             ) { [weak self] _ in
                 MainActor.assumeIsolated {
                     self?.handleMouseUp()
@@ -68,7 +68,7 @@
             }
 
             localUpMonitor = NSEvent.addLocalMonitorForEvents(
-                matching: [.leftMouseUp, .rightMouseUp],
+                matching: [.leftMouseUp, .rightMouseUp]
             ) { [weak self] event in
                 MainActor.assumeIsolated {
                     self?.handleMouseUp()
@@ -78,7 +78,7 @@
 
             // Mouse-dragged monitors (cursor movement while held)
             globalDragMonitor = NSEvent.addGlobalMonitorForEvents(
-                matching: [.leftMouseDragged, .rightMouseDragged],
+                matching: [.leftMouseDragged, .rightMouseDragged]
             ) { [weak self] _ in
                 MainActor.assumeIsolated {
                     self?.handleMouseDragged()
@@ -86,7 +86,7 @@
             }
 
             localDragMonitor = NSEvent.addLocalMonitorForEvents(
-                matching: [.leftMouseDragged, .rightMouseDragged],
+                matching: [.leftMouseDragged, .rightMouseDragged]
             ) { [weak self] event in
                 MainActor.assumeIsolated {
                     self?.handleMouseDragged()
@@ -99,9 +99,14 @@
             isRunning = false
             isMouseDown = false
 
-            let monitors = [globalDownMonitor, localDownMonitor,
-                            globalUpMonitor, localUpMonitor,
-                            globalDragMonitor, localDragMonitor]
+            let monitors = [
+                globalDownMonitor,
+                localDownMonitor,
+                globalUpMonitor,
+                localUpMonitor,
+                globalDragMonitor,
+                localDragMonitor
+            ]
             for monitor in monitors {
                 if let m = monitor {
                     NSEvent.removeMonitor(m)

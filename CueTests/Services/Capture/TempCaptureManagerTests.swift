@@ -27,7 +27,7 @@ final class TempCaptureManagerTests: XCTestCase {
             SandboxFileAccessManager.ScopedAccess(
                 url: targetURL,
                 accessURL: targetURL,
-                didStartAccessing: false,
+                didStartAccessing: false
             )
         }
     }
@@ -49,7 +49,7 @@ final class TempCaptureManagerTests: XCTestCase {
         manager = TempCaptureManager(
             preferences: fakePreferences,
             fileAccess: fakeFileAccess,
-            defaults: defaults,
+            defaults: defaults
         )
         testFiles.append(exportDirectory)
     }
@@ -65,12 +65,12 @@ final class TempCaptureManagerTests: XCTestCase {
 
     /// Create a test file in the temp capture directory.
     private func createTempTestFile(
-        name: String = "test_\(UUID().uuidString).png",
+        name: String = "test_\(UUID().uuidString).png"
     ) throws -> URL {
         let url = manager.tempCaptureDirectory.appendingPathComponent(name)
         try FileManager.default.createDirectory(
             at: url.deletingLastPathComponent(),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         try Data("test".utf8).write(to: url)
         testFiles.append(url)
@@ -131,8 +131,8 @@ final class TempCaptureManagerTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: tempURL.path))
         XCTAssertFalse(
             FileManager.default.fileExists(
-                atPath: manager.tempCaptureDirectory.appendingPathComponent("Shots").path,
-            ),
+                atPath: manager.tempCaptureDirectory.appendingPathComponent("Shots").path
+            )
         )
     }
 
@@ -184,7 +184,7 @@ final class TempCaptureManagerTests: XCTestCase {
 
         XCTAssertTrue(
             manager.isTempFile(recoveredURL),
-            "Recovered URL should be in temp capture directory",
+            "Recovered URL should be in temp capture directory"
         )
         XCTAssertEqual(recoveredURL.pathExtension, "mov")
     }
@@ -227,7 +227,7 @@ final class TempCaptureManagerTests: XCTestCase {
 
         let result = manager.resolveSaveDirectory(
             for: .screenshot,
-            exportDirectory: exportDir,
+            exportDirectory: exportDir
         )
 
         XCTAssertEqual(result, exportDir)
@@ -242,7 +242,7 @@ final class TempCaptureManagerTests: XCTestCase {
 
         let result = manager.resolveSaveDirectory(
             for: .screenshot,
-            exportDirectory: exportDir,
+            exportDirectory: exportDir
         )
 
         XCTAssertEqual(result, manager.tempCaptureDirectory)
@@ -259,7 +259,7 @@ final class TempCaptureManagerTests: XCTestCase {
         XCTAssertTrue(
             path.contains("Application Support/Cue/Captures")
                 || path.contains("Cue_Captures"),
-            "Temp directory should be in App Support or fallback: \(path)",
+            "Temp directory should be in App Support or fallback: \(path)"
         )
     }
 
@@ -344,7 +344,7 @@ final class TempCaptureManagerTests: XCTestCase {
             _ = manager.updateRecordingManifest(for: plan.processingDirectory, writerURL: writerURL, state: "abandoned")
             let results = await manager.recoverRecordingSessions()
 
-            guard case .promoted(let recoveredURL) = try XCTUnwrap(results.first) else {
+            guard case let .promoted(recoveredURL) = try XCTUnwrap(results.first) else {
                 return XCTFail("Expected valid session promotion")
             }
             XCTAssertTrue(manager.isTempFile(recoveredURL))
@@ -362,7 +362,7 @@ final class TempCaptureManagerTests: XCTestCase {
         XCTAssertFalse(manager.updateRecordingManifest(
             for: plan.processingDirectory,
             writerURL: outside,
-            state: "recording",
+            state: "recording"
         ))
         try? FileManager.default.removeItem(at: plan.processingDirectory)
     }
@@ -374,8 +374,8 @@ final class TempCaptureManagerTests: XCTestCase {
             outputSettings: [
                 AVVideoCodecKey: AVVideoCodecType.h264,
                 AVVideoWidthKey: 16,
-                AVVideoHeightKey: 16,
-            ],
+                AVVideoHeightKey: 16
+            ]
         )
         XCTAssertTrue(writer.canAdd(input))
         writer.add(input)
@@ -384,8 +384,8 @@ final class TempCaptureManagerTests: XCTestCase {
             sourcePixelBufferAttributes: [
                 kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
                 kCVPixelBufferWidthKey as String: 16,
-                kCVPixelBufferHeightKey as String: 16,
-            ],
+                kCVPixelBufferHeightKey as String: 16
+            ]
         )
         writer.startWriting()
         writer.startSession(atSourceTime: .zero)

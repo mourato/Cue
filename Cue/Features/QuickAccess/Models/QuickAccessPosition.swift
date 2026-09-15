@@ -67,22 +67,22 @@ enum QuickAccessPosition: String, CaseIterable, Codable {
         case .topLeft:
             return CGPoint(
                 x: frame.minX - size.width - offscreenMargin,
-                y: frame.maxY - size.height - padding,
+                y: frame.maxY - size.height - padding
             )
         case .topRight:
             return CGPoint(
                 x: frame.maxX + offscreenMargin,
-                y: frame.maxY - size.height - padding,
+                y: frame.maxY - size.height - padding
             )
         case .bottomLeft:
             return CGPoint(
                 x: frame.minX - size.width - offscreenMargin,
-                y: frame.minY + padding,
+                y: frame.minY + padding
             )
         case .bottomRight:
             return CGPoint(
                 x: frame.maxX + offscreenMargin,
-                y: frame.minY + padding,
+                y: frame.minY + padding
             )
         }
     }

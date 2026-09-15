@@ -41,7 +41,7 @@
             } label: {
                 ToolbarIconButtonLabel(
                     systemName: state.captureMode.iconName,
-                    isHovered: isHovered || showPopover,
+                    isHovered: isHovered || showPopover
                 )
             }
             .buttonStyle(.plain)

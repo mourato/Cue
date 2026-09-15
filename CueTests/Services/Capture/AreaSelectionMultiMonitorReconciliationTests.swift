@@ -61,7 +61,8 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
         guard let windowPool = mirror.children.first(where: { $0.label == "windowPool" })?.value
             as? [CGDirectDisplayID: AreaSelectionWindow],
             let realDisplayID = windowPool.keys.first,
-            let realWindow = windowPool[realDisplayID] else {
+            let realWindow = windowPool[realDisplayID]
+        else {
             XCTFail("Expected at least one pooled window for the current display")
             controller.cancelSelection()
             return
@@ -71,7 +72,7 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
         // backdrops" authoritative answer (true).
         XCTAssertTrue(
             selectionEnabledFlag(of: realWindow.overlayView),
-            "Cached selectionEnabled must start true when selectionBackdrops is empty",
+            "Cached selectionEnabled must start true when selectionBackdrops is empty"
         )
 
         // Simulate this real window belonging to a "secondary" display that has NOT yet received its
@@ -108,7 +109,7 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
             "A pooled window whose own display never received a backdrop must have its cached "
                 + "selectionEnabled reconciled to false as soon as ANY other display gets one -- "
                 + "otherwise its mouseDown skips the live-fallback path and the drag silently drops "
-                + "(the multi-monitor freeze bug)",
+                + "(the multi-monitor freeze bug)"
         )
     }
 
@@ -127,7 +128,8 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
         guard let windowPool = mirror.children.first(where: { $0.label == "windowPool" })?.value
             as? [CGDirectDisplayID: AreaSelectionWindow],
             let realDisplayID = windowPool.keys.first,
-            let realWindow = windowPool[realDisplayID] else {
+            let realWindow = windowPool[realDisplayID]
+        else {
             XCTFail("Expected at least one pooled window for the current display")
             return
         }
@@ -146,8 +148,8 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
                 context: nil,
                 eventNumber: 1,
                 clickCount: 1,
-                pressure: 1,
-            ),
+                pressure: 1
+            )
         )
         realWindow.overlayView.mouseDown(with: mouseDown)
         XCTAssertTrue(realWindow.overlayView.isManualSelectionInProgress)
@@ -163,11 +165,11 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
         XCTAssertTrue(
             selectionEnabledFlag(of: realWindow.overlayView),
             "Source display of an active manual drag must stay selection-enabled when another "
-                + "display's freeze backdrop arrives first",
+                + "display's freeze backdrop arrives first"
         )
         XCTAssertTrue(
             realWindow.overlayView.isManualSelectionInProgress,
-            "Rubber-band drag must survive the first foreign-display applyBackdrop",
+            "Rubber-band drag must survive the first foreign-display applyBackdrop"
         )
     }
 
@@ -203,7 +205,7 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
         XCTAssertNotNil(
             pointerTrackingTimer(of: controller),
             "A live (backdrop-less) session must install the pointer-tracking timer so the crosshair "
-                + "can follow the pointer across displays while the app is inactive",
+                + "can follow the pointer across displays while the app is inactive"
         )
 
         controller.cancelSelection()
@@ -214,7 +216,7 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
 
         XCTAssertNil(
             pointerTrackingTimer(of: controller),
-            "Cancelling the session must invalidate and clear the pointer-tracking timer (no leak)",
+            "Cancelling the session must invalidate and clear the pointer-tracking timer (no leak)"
         )
     }
 
@@ -229,11 +231,11 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
         let windowPool = try XCTUnwrap(
             Mirror(reflecting: controller).children
                 .first(where: { $0.label == "windowPool" })?.value
-                as? [CGDirectDisplayID: AreaSelectionWindow],
+                as? [CGDirectDisplayID: AreaSelectionWindow]
         )
         let mouseLocation = NSEvent.mouseLocation
         let pointerWindow = try XCTUnwrap(
-            windowPool.values.first(where: { $0.frame.contains(mouseLocation) }),
+            windowPool.values.first(where: { $0.frame.contains(mouseLocation) })
         )
         let overlayView = pointerWindow.overlayView
         overlayView.setSelectionEnabled(true)
@@ -250,14 +252,14 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
                 context: nil,
                 eventNumber: 1,
                 clickCount: 1,
-                pressure: 1,
-            ),
+                pressure: 1
+            )
         )
         overlayView.mouseDown(with: mouseDown)
 
         XCTAssertTrue(
             overlayView.isManualSelectionInProgress,
-            "Pointer promotion must not reserve and swallow the user's first real mouse-down",
+            "Pointer promotion must not reserve and swallow the user's first real mouse-down"
         )
     }
 
@@ -280,11 +282,11 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
         let windowPool = try XCTUnwrap(
             Mirror(reflecting: controller).children
                 .first(where: { $0.label == "windowPool" })?.value
-                as? [CGDirectDisplayID: AreaSelectionWindow],
+                as? [CGDirectDisplayID: AreaSelectionWindow]
         )
         let mouseLocation = NSEvent.mouseLocation
         let pointerWindow = try XCTUnwrap(
-            windowPool.values.first(where: { $0.frame.contains(mouseLocation) }),
+            windowPool.values.first(where: { $0.frame.contains(mouseLocation) })
         )
         let overlayView = pointerWindow.overlayView
         overlayView.setSelectionEnabled(true)
@@ -301,8 +303,8 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
                 context: nil,
                 eventNumber: 1,
                 clickCount: 1,
-                pressure: 1,
-            ),
+                pressure: 1
+            )
         )
         overlayView.mouseDown(with: mouseDown)
 
@@ -328,7 +330,7 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
         XCTAssertGreaterThan(
             overlayView.testCursorReassertionCount,
             reassertionCountBeforeTick,
-            "Pointer-tracking tick must re-assert the crosshair during a stationary manual selection",
+            "Pointer-tracking tick must re-assert the crosshair during a stationary manual selection"
         )
     }
 
@@ -349,7 +351,7 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
 
         XCTAssertNil(
             pointerTrackingTimer(of: controller),
-            "A frozen (backdrop) session activates the app and must not start the pointer-tracking timer",
+            "A frozen (backdrop) session activates the app and must not start the pointer-tracking timer"
         )
 
         controller.cancelSelection()
@@ -382,7 +384,7 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
         XCTAssertTrue(overlayView.testSizeIndicatorTextLayer.isHidden, "Size indicator should be hidden on mouse exit")
         XCTAssertTrue(
             overlayView.testSizeIndicatorBackgroundLayer.isHidden,
-            "Background layer should be hidden on mouse exit",
+            "Background layer should be hidden on mouse exit"
         )
         XCTAssertNil(overlayView.testMagnifierContainerLayer, "Magnifier container should be removed on mouse exit")
     }
@@ -390,12 +392,12 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
     /// Verifies isMouseOver frame checks when a window is present
     func testIsMouseOver_evaluatesFrameAndVisibility() throws {
         try skipIfRunningInCI(
-            "Requires real window coordinates and mouse location which can fail on headless CI runners",
+            "Requires real window coordinates and mouse location which can fail on headless CI runners"
         )
 
         overlayView.setSelectionEnabled(true)
         overlayView.setInteractionMode(.manualRegion, resetSelection: false)
-        let mouseLoc = CGPoint(x: 1_000, y: 1_000)
+        let mouseLoc = CGPoint(x: 1000, y: 1000)
         overlayView.testMouseLocationOverride = mouseLoc
         defer {
             overlayView.testMouseLocationOverride = nil
@@ -415,7 +417,7 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
         overlayView.resetSelection()
         XCTAssertTrue(
             overlayView.testSizeIndicatorTextLayer.isHidden,
-            "Should be hidden when window does not contain mouse",
+            "Should be hidden when window does not contain mouse"
         )
 
         // GIVEN: window contains the mouse location

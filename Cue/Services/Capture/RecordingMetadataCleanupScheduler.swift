@@ -11,7 +11,7 @@
 
     private let recordingMetadataCleanupLogger = Logger(
         subsystem: "Cue",
-        category: "RecordingMetadataCleanup",
+        category: "RecordingMetadataCleanup"
     )
 
     @MainActor
@@ -46,7 +46,7 @@
                         try RecordingMetadataStore.performOrphanCleanup()
                     } catch {
                         recordingMetadataCleanupLogger.error(
-                            "Failed to prune orphaned recording metadata: \(error.localizedDescription, privacy: .public)",
+                            "Failed to prune orphaned recording metadata: \(error.localizedDescription, privacy: .public)"
                         )
                     }
                 }

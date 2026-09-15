@@ -31,14 +31,14 @@ enum QuickAccessActionSlot: String, CaseIterable, Codable, Hashable, Identifiabl
 
     static let centerSlots: [QuickAccessActionSlot] = [
         .centerTop,
-        .centerBottom,
+        .centerBottom
     ]
 
     static let cornerSlots: [QuickAccessActionSlot] = [
         .topTrailing,
         .topLeading,
         .bottomLeading,
-        .bottomTrailing,
+        .bottomTrailing
     ]
 
     static let defaultAssignments: [QuickAccessActionSlot: QuickAccessActionKind] = [
@@ -47,7 +47,7 @@ enum QuickAccessActionSlot: String, CaseIterable, Codable, Hashable, Identifiabl
         .topTrailing: .dismiss,
         .topLeading: .delete,
         .bottomLeading: .edit,
-        .bottomTrailing: .uploadToImgBB,
+        .bottomTrailing: .uploadToImgBB
     ]
 
     var isCenterSlot: Bool {
@@ -92,7 +92,7 @@ enum QuickAccessActionKind: String, CaseIterable, Codable, Hashable, Identifiabl
         .delete,
         .edit,
         .uploadToImgBB,
-        .pinToScreen,
+        .pinToScreen
     ]
 
     static let defaultEnabledActions = Set(defaultOrder)

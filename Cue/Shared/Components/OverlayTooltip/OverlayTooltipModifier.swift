@@ -8,12 +8,12 @@ extension View {
         keys: [String] = [],
         secondary: String? = nil,
         edge: OverlayTooltipEdge = .below,
-        delay: TimeInterval = 0.35,
+        delay: TimeInterval = 0.35
     ) -> some View {
         modifier(OverlayTooltipModifier(
             content: OverlayTooltipContent(title: title, keys: keys, secondary: secondary),
             edge: edge,
-            delay: delay,
+            delay: delay
         ))
     }
 }
@@ -30,7 +30,7 @@ enum OverlayTooltipScreenCoordinates {
                 x: global.minX,
                 y: contentHeight - global.maxY,
                 width: global.width,
-                height: global.height,
+                height: global.height
             )
             let center = CGPoint(x: windowRect.midX, y: windowRect.midY)
             guard contentView.bounds.contains(center) else { continue }
@@ -42,7 +42,7 @@ enum OverlayTooltipScreenCoordinates {
             x: global.minX,
             y: screen.frame.maxY - global.maxY,
             width: global.width,
-            height: global.height,
+            height: global.height
         )
     }
 }
@@ -90,7 +90,7 @@ private struct OverlayTooltipModifier: ViewModifier {
                 content,
                 anchorScreenFrame: frame,
                 preferred: edge,
-                owner: owner,
+                owner: owner
             )
         }
         showWorkItem = work

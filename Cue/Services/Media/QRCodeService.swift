@@ -49,14 +49,14 @@ final nonisolated class QRCodeService: Sendable {
                     return QRCodeDetection(
                         payload: payload,
                         boundingBox: observation.boundingBox,
-                        classification: QRPayloadClassifier.classify(payload),
+                        classification: QRPayloadClassifier.classify(payload)
                     )
                 }
 
                 let orderedDetections = Self.sortInReadingOrder(Self.deduplicate(detections))
                 let result = QRCodeDetectionResult(
                     detections: orderedDetections,
-                    unsupportedPayloadCount: unsupportedPayloadCount,
+                    unsupportedPayloadCount: unsupportedPayloadCount
                 )
 
                 resumeOnce(with: .success(result))

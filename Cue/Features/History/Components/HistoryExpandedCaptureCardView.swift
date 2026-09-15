@@ -19,7 +19,7 @@ struct HistoryExpandedCaptureCardView: View, Equatable {
         isSelected: Bool,
         backgroundStyle: HistoryBackgroundStyle,
         onTap: @escaping () -> Void,
-        thumbnailOverride: NSImage? = nil,
+        thumbnailOverride: NSImage? = nil
     ) {
         self.record = record
         self.isSelected = isSelected
@@ -65,7 +65,7 @@ struct HistoryExpandedCaptureCardView: View, Equatable {
         .background(cardBackground, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(cardBorderColor, lineWidth: isSelected ? 1.8 : 1),
+                .stroke(cardBorderColor, lineWidth: isSelected ? 1.8 : 1)
         )
         .shadow(color: cardShadowColor, radius: isSelected ? 14 : 3, x: 0, y: isSelected ? 8 : 2)
         .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
@@ -80,7 +80,7 @@ struct HistoryExpandedCaptureCardView: View, Equatable {
         .simultaneousGesture(
             TapGesture(count: 2).onEnded {
                 openDefaultEditor()
-            },
+            }
         )
         .onAppear {
             isVisible = true
@@ -117,7 +117,7 @@ struct HistoryExpandedCaptureCardView: View, Equatable {
                     .scaledToFill()
                     .frame(
                         width: HistoryFloatingLayout.cardContentWidth,
-                        height: HistoryFloatingLayout.cardPreviewHeight,
+                        height: HistoryFloatingLayout.cardPreviewHeight
                     )
                     .clipped()
             } else {
@@ -157,12 +157,12 @@ struct HistoryExpandedCaptureCardView: View, Equatable {
         }
         .frame(
             width: HistoryFloatingLayout.cardContentWidth,
-            height: HistoryFloatingLayout.cardPreviewHeight,
+            height: HistoryFloatingLayout.cardPreviewHeight
         )
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(previewBorderColor, lineWidth: 1),
+                .stroke(previewBorderColor, lineWidth: 1)
         )
     }
 
@@ -214,7 +214,7 @@ struct HistoryExpandedCaptureCardView: View, Equatable {
             .background(.regularMaterial, in: Circle())
             .overlay(
                 Circle()
-                    .stroke(Color.white.opacity(colorScheme == .dark ? 0.1 : 0.55), lineWidth: 1),
+                    .stroke(Color.white.opacity(colorScheme == .dark ? 0.1 : 0.55), lineWidth: 1)
             )
     }
 
@@ -241,7 +241,8 @@ struct HistoryExpandedCaptureCardView: View, Equatable {
 
     private func matchesHistoryFileChange(_ notification: Notification) -> Bool {
         if let recordIDs = notification.userInfo?["recordIDs"] as? [UUID],
-           recordIDs.contains(record.id) {
+           recordIDs.contains(record.id)
+        {
             return true
         }
 
@@ -275,20 +276,20 @@ struct HistoryExpandedCaptureCardView: View, Equatable {
             fileName: "design-handoff.png",
             captureType: .screenshot,
             fileSize: 1_572_864,
-            capturedAt: Date().addingTimeInterval(-3_600),
+            capturedAt: Date().addingTimeInterval(-3600),
             width: 1440,
             height: 900,
             duration: nil,
             thumbnailPath: nil,
-            isDeleted: false,
+            isDeleted: false
         ),
         isSelected: true,
         backgroundStyle: .hud,
         onTap: {},
         thumbnailOverride: NSImage(
             systemSymbolName: "photo.fill",
-            accessibilityDescription: "Screenshot preview",
-        ),
+            accessibilityDescription: "Screenshot preview"
+        )
     )
     .frame(width: 320)
     .padding()

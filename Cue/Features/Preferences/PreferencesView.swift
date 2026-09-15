@@ -53,7 +53,7 @@ struct PreferencesView: View {
             minWidth: PreferencesWindowChrome.defaultWidth,
             idealWidth: PreferencesWindowChrome.defaultWidth,
             minHeight: PreferencesWindowChrome.defaultHeight,
-            idealHeight: PreferencesWindowChrome.defaultHeight,
+            idealHeight: PreferencesWindowChrome.defaultHeight
         )
         .onAppear {
             NotificationCenter.default.post(name: .cuePreferencesContentDidAppear, object: nil)
@@ -67,7 +67,7 @@ struct PreferencesView: View {
                 if let newValue {
                     navigationState.selectedTab = newValue
                 }
-            },
+            }
         )
     }
 

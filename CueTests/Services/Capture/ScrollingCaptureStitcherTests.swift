@@ -49,7 +49,7 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
         let stitcher = ScrollingCaptureStitcher()
         guard let image = TestImageFactory.solidColor(
             width: 200, height: 100,
-            red: 80, green: 80, blue: 80,
+            red: 80, green: 80, blue: 80
         ) else {
             XCTFail("Failed to create test image")
             return
@@ -76,7 +76,8 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
     func testAppend_mismatchedDimensions_ignoredAlignmentFailed() {
         let stitcher = ScrollingCaptureStitcher()
         guard let image1 = TestImageFactory.solidColor(width: 200, height: 100),
-              let image2 = TestImageFactory.solidColor(width: 300, height: 100) else {
+              let image2 = TestImageFactory.solidColor(width: 300, height: 100)
+        else {
             XCTFail("Failed to create test images")
             return
         }
@@ -93,7 +94,8 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
     func testAppend_mismatchedHeight_ignoredAlignmentFailed() {
         let stitcher = ScrollingCaptureStitcher()
         guard let image1 = TestImageFactory.solidColor(width: 200, height: 100),
-              let image2 = TestImageFactory.solidColor(width: 200, height: 150) else {
+              let image2 = TestImageFactory.solidColor(width: 200, height: 150)
+        else {
             XCTFail("Failed to create test images")
             return
         }
@@ -166,7 +168,7 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
             return
         }
 
-        let update = stitcher.append(image, maxOutputHeight: 10_000)
+        let update = stitcher.append(image, maxOutputHeight: 10000)
         XCTAssertEqual(update?.acceptedFrameCount, 1)
         XCTAssertEqual(update?.outputHeight, 100)
         XCTAssertTrue(firstPreview === stitcher.previewImage(maxPixelWidth: 100, maxPixelHeight: 100))
@@ -175,7 +177,8 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
     func testPreviewImage_alignmentFailure_reusesPreviousPreview() {
         let stitcher = ScrollingCaptureStitcher()
         guard let image = TestImageFactory.solidColor(width: 200, height: 100),
-              let mismatchedImage = TestImageFactory.solidColor(width: 300, height: 100) else {
+              let mismatchedImage = TestImageFactory.solidColor(width: 300, height: 100)
+        else {
             XCTFail("Failed to create test images")
             return
         }
@@ -186,7 +189,7 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
             return
         }
 
-        let update = stitcher.append(mismatchedImage, maxOutputHeight: 10_000)
+        let update = stitcher.append(mismatchedImage, maxOutputHeight: 10000)
         if case .ignoredAlignmentFailed = update?.outcome {} else {
             XCTFail("Expected alignment failure")
         }
@@ -220,7 +223,7 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
         // so we accept either a successful append or an alignment failure,
         // but never "no movement" because the frames are objectively different.
         switch update?.outcome {
-        case .appended(let deltaY):
+        case let .appended(deltaY):
             XCTAssertGreaterThan(deltaY, 0, "Delta should be positive for downward scroll")
             XCTAssertGreaterThan(stitcher.outputHeight, height, "Output height should grow after append")
             XCTAssertEqual(stitcher.acceptedFrameCount, 2)
@@ -236,7 +239,8 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
     func testAppend_wrongExpectedDelta_usesVisionRecovery() {
         let stitcher = ScrollingCaptureStitcher()
         guard let image1 = TestImageFactory.scrollingFrame(width: 200, height: 160, logicalYOffset: 0),
-              let image2 = TestImageFactory.scrollingFrame(width: 200, height: 160, logicalYOffset: 20) else {
+              let image2 = TestImageFactory.scrollingFrame(width: 200, height: 160, logicalYOffset: 20)
+        else {
             XCTFail("Failed to create scrolling frames")
             return
         }
@@ -244,11 +248,11 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
         _ = stitcher.start(with: image1)
         let update = stitcher.append(
             image2,
-            maxOutputHeight: 10_000,
-            expectedSignedDeltaPixels: 70,
+            maxOutputHeight: 10000,
+            expectedSignedDeltaPixels: 70
         )
 
-        if case .appended(let deltaY) = update?.outcome {
+        if case let .appended(deltaY) = update?.outcome {
             XCTAssertEqual(deltaY, 20)
         } else {
             XCTFail("Expected Vision recovery to append 20 pixels, got: \(String(describing: update?.outcome))")
@@ -263,7 +267,8 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
         let stitcher = ScrollingCaptureStitcher()
         guard let image1 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 0),
               let image2 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 20),
-              let image3 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 40) else {
+              let image3 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 40)
+        else {
             XCTFail("Failed to create scrolling frames")
             return
         }
@@ -271,18 +276,19 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
         _ = stitcher.start(with: image1)
         let firstUpdate = stitcher.append(
             image2,
-            maxOutputHeight: 10_000,
-            expectedSignedDeltaPixels: 20,
+            maxOutputHeight: 10000,
+            expectedSignedDeltaPixels: 20
         )
         let secondUpdate = stitcher.append(
             image3,
-            maxOutputHeight: 10_000,
-            expectedSignedDeltaPixels: 20,
+            maxOutputHeight: 10000,
+            expectedSignedDeltaPixels: 20
         )
 
-        guard case .appended(let firstDeltaY) = firstUpdate?.outcome,
-              case .appended(let secondDeltaY) = secondUpdate?.outcome,
-              let merged = stitcher.mergedImage() else {
+        guard case let .appended(firstDeltaY) = firstUpdate?.outcome,
+              case let .appended(secondDeltaY) = secondUpdate?.outcome,
+              let merged = stitcher.mergedImage()
+        else {
             XCTFail("Expected two merged appends")
             return
         }
@@ -296,7 +302,7 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
             XCTAssertEqual(
                 pixelSignature(in: merged, row: row),
                 pixelSignature(forLogicalRow: row),
-                "Unexpected merged pixel at row \(row)",
+                "Unexpected merged pixel at row \(row)"
             )
         }
 
@@ -310,7 +316,7 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
             XCTAssertEqual(
                 pixelSignature(in: preview, row: row),
                 pixelSignature(forLogicalRow: row),
-                "Unexpected preview pixel at row \(row)",
+                "Unexpected preview pixel at row \(row)"
             )
         }
     }
@@ -318,7 +324,8 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
     func testAppend_clampsAcceptedDeltaToMaxOutputHeight() {
         let stitcher = ScrollingCaptureStitcher()
         guard let image1 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 0),
-              let image2 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 20) else {
+              let image2 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 20)
+        else {
             XCTFail("Failed to create scrolling frames")
             return
         }
@@ -327,11 +334,12 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
         let update = stitcher.append(
             image2,
             maxOutputHeight: 175,
-            expectedSignedDeltaPixels: 20,
+            expectedSignedDeltaPixels: 20
         )
 
         guard case .reachedHeightLimit = update?.outcome,
-              let merged = stitcher.mergedImage() else {
+              let merged = stitcher.mergedImage()
+        else {
             XCTFail("Expected a height-limited append")
             return
         }
@@ -342,7 +350,7 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
             XCTAssertEqual(
                 pixelSignature(in: merged, row: row),
                 pixelSignature(forLogicalRow: row),
-                "Unexpected clamped pixel at row \(row)",
+                "Unexpected clamped pixel at row \(row)"
             )
         }
     }
@@ -350,7 +358,8 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
     func testAppend_bootstrapHeightLimit_commitsCompactOutputAndPreview() {
         let stitcher = ScrollingCaptureStitcher()
         guard let image1 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 0),
-              let image2 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 20) else {
+              let image2 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 20)
+        else {
             XCTFail("Failed to create scrolling frames")
             return
         }
@@ -359,12 +368,13 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
         let update = stitcher.append(
             image2,
             maxOutputHeight: 100,
-            expectedSignedDeltaPixels: 20,
+            expectedSignedDeltaPixels: 20
         )
 
         guard case .reachedHeightLimit = update?.outcome,
               let merged = stitcher.mergedImage(),
-              let preview = stitcher.previewImage(maxPixelWidth: 80, maxPixelHeight: 100) else {
+              let preview = stitcher.previewImage(maxPixelWidth: 80, maxPixelHeight: 100)
+        else {
             XCTFail("Expected a committed bootstrap height-limit result")
             return
         }
@@ -375,7 +385,7 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
             XCTAssertEqual(
                 pixelSignature(in: merged, row: row),
                 pixelSignature(forLogicalRow: row),
-                "Unexpected merged pixel at row \(row)",
+                "Unexpected merged pixel at row \(row)"
             )
         }
     }
@@ -383,14 +393,16 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
     func testAppend_bootstrapRejected_preservesOutputAndPreview() {
         let stitcher = ScrollingCaptureStitcher()
         guard let image1 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 0),
-              let image2 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 20) else {
+              let image2 = TestImageFactory.scrollingFrame(width: 80, height: 160, logicalYOffset: 20)
+        else {
             XCTFail("Failed to create scrolling frames")
             return
         }
 
         _ = stitcher.start(with: image1)
         guard let previousMerged = stitcher.mergedImage(),
-              let previousPreview = stitcher.previewImage(maxPixelWidth: 80, maxPixelHeight: 200) else {
+              let previousPreview = stitcher.previewImage(maxPixelWidth: 80, maxPixelHeight: 200)
+        else {
             XCTFail("Expected initial output")
             return
         }
@@ -398,7 +410,7 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
         let update = stitcher.append(
             image2,
             maxOutputHeight: 10,
-            expectedSignedDeltaPixels: 200,
+            expectedSignedDeltaPixels: 200
         )
 
         guard case .ignoredAlignmentFailed = update?.outcome else {
@@ -418,31 +430,32 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
                 previousAcceptedFrameCount: 2,
                 previousOutputHeight: 200,
                 acceptedFrameCount: 2,
-                outputHeight: 200,
-            ),
+                outputHeight: 200
+            )
         )
         XCTAssertTrue(
             ScrollingCaptureSessionPolicy.previewOutputChanged(
                 previousAcceptedFrameCount: 2,
                 previousOutputHeight: 200,
                 acceptedFrameCount: 3,
-                outputHeight: 200,
-            ),
+                outputHeight: 200
+            )
         )
         XCTAssertTrue(
             ScrollingCaptureSessionPolicy.previewOutputChanged(
                 previousAcceptedFrameCount: 2,
                 previousOutputHeight: 200,
                 acceptedFrameCount: 2,
-                outputHeight: 240,
-            ),
+                outputHeight: 240
+            )
         )
     }
 
     func testAppend_highConfidenceGuidedMatch_skipsVisionEstimate() {
         let stitcher = ScrollingCaptureStitcher()
         guard let image1 = TestImageFactory.scrollingFrame(width: 200, height: 160, logicalYOffset: 0),
-              let image2 = TestImageFactory.scrollingFrame(width: 200, height: 160, logicalYOffset: 20) else {
+              let image2 = TestImageFactory.scrollingFrame(width: 200, height: 160, logicalYOffset: 20)
+        else {
             XCTFail("Failed to create scrolling frames")
             return
         }
@@ -450,8 +463,8 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
         _ = stitcher.start(with: image1)
         let update = stitcher.append(
             image2,
-            maxOutputHeight: 10_000,
-            expectedSignedDeltaPixels: 20,
+            maxOutputHeight: 10000,
+            expectedSignedDeltaPixels: 20
         )
 
         XCTAssertEqual(update?.alignmentDebug?.path, .fastGuided)
@@ -533,7 +546,7 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
         let stitcher = ScrollingCaptureStitcher()
         guard let image = TestImageFactory.solidColor(
             width: 200, height: 100,
-            red: 120, green: 120, blue: 120,
+            red: 120, green: 120, blue: 120
         ) else {
             XCTFail("Failed to create test image")
             return
@@ -577,7 +590,7 @@ final class ScrollingCaptureStitcherTests: XCTestCase {
         _ = stitcher.start(with: image1)
         let update = stitcher.append(image2, maxOutputHeight: 10000)
 
-        XCTAssertEqual(update?.safety, .unsafe (reason: "alignment-failed"))
+        XCTAssertEqual(update?.safety, .unsafe(reason: "alignment-failed"))
         XCTAssertEqual(update?.acceptedFrameCount, 1)
         XCTAssertEqual(update?.outputHeight, 100)
         XCTAssertEqual(update?.alignmentDebug?.path, .alignmentFailed)
@@ -595,7 +608,7 @@ private func pixelSignature(in image: CGImage, row: Int) -> [UInt8] {
             bitsPerComponent: 8,
             bytesPerRow: bytesPerRow,
             space: CGColorSpaceCreateDeviceRGB(),
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue
         ) else { return }
         context.interpolationQuality = .none
         context.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))

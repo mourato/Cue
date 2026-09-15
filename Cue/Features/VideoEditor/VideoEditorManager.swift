@@ -57,7 +57,7 @@
                     .debug,
                     .editor,
                     "Video editor reused",
-                    context: ["itemId": item.id.uuidString],
+                    context: ["itemId": item.id.uuidString]
                 )
                 existing.showWindow()
                 return
@@ -80,7 +80,7 @@
                 let observer = NotificationCenter.default.addObserver(
                     forName: NSWindow.willCloseNotification,
                     object: window,
-                    queue: .main,
+                    queue: .main
                 ) { [weak self] _ in
                     MainActor.assumeIsolated {
                         self?.cleanupWindow(for: itemId)
@@ -104,7 +104,8 @@
 
             // If Quick Access has this item, reuse it to link the video editor window
             if let existingItem = QuickAccessManager.shared.items
-                .first(where: { $0.url.standardizedFileURL.path == url.standardizedFileURL.path }) {
+                .first(where: { $0.url.standardizedFileURL.path == url.standardizedFileURL.path })
+            {
                 openEditor(for: existingItem)
                 return
             }
@@ -115,7 +116,7 @@
                     .debug,
                     .editor,
                     "Video editor reused",
-                    context: ["file": url.lastPathComponent],
+                    context: ["file": url.lastPathComponent]
                 )
                 existing.showWindow()
                 return
@@ -128,7 +129,7 @@
                 .info,
                 .editor,
                 "Opening video editor for URL",
-                context: ["file": url.lastPathComponent],
+                context: ["file": url.lastPathComponent]
             )
 
             let controller = VideoEditorWindowController(url: url, originalURL: originalURL)
@@ -139,7 +140,7 @@
                 let observer = NotificationCenter.default.addObserver(
                     forName: NSWindow.willCloseNotification,
                     object: window,
-                    queue: .main,
+                    queue: .main
                 ) { [weak self] _ in
                     MainActor.assumeIsolated {
                         self?.cleanupURLWindow(for: url)
@@ -176,7 +177,7 @@
                 NotificationCenter.default.addObserver(
                     forName: NSWindow.willCloseNotification,
                     object: window,
-                    queue: .main,
+                    queue: .main
                 ) { [weak self] _ in
                     MainActor.assumeIsolated {
                         self?.emptyWindowController = nil
@@ -253,7 +254,7 @@
                 .debug,
                 .editor,
                 "Video editor window closed",
-                context: ["itemId": itemId.uuidString],
+                context: ["itemId": itemId.uuidString]
             )
         }
     }

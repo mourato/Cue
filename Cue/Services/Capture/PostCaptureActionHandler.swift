@@ -20,7 +20,7 @@ final class PostCaptureActionHandler {
         preferences: PreferencesManager.shared,
         quickAccess: QuickAccessManager.shared,
         fileAccess: SandboxFileAccessManager.shared,
-        screenshotPresetAutoApplier: ScreenshotPresetAutoApplier.shared,
+        screenshotPresetAutoApplier: ScreenshotPresetAutoApplier.shared
     )
 
     private let preferences: PreferencesProviding
@@ -65,7 +65,7 @@ final class PostCaptureActionHandler {
         videoEditorAction: @escaping @MainActor (QuickAccessItem?, URL) -> Void = { item, url in
             PostCaptureActionHandler.openVideoEditor(item: item, url: url)
         },
-        historyAction: ((URL) async -> Void)? = nil,
+        historyAction: ((URL) async -> Void)? = nil
     ) {
         self.preferences = preferences
         self.quickAccess = quickAccess
@@ -89,7 +89,7 @@ final class PostCaptureActionHandler {
         let quickAccessItem = await executeActions(
             for: .screenshot,
             url: outputURL,
-            pinToScreen: pinToScreen,
+            pinToScreen: pinToScreen
         )
 
         // Add to capture history
@@ -104,12 +104,12 @@ final class PostCaptureActionHandler {
         url: URL,
         sourceURL: URL,
         requestedTime: TimeInterval,
-        actualTime: TimeInterval,
+        actualTime: TimeInterval
     ) async -> QuickAccessItem? {
         let quickAccessItem = await executeActions(
             for: .screenshot,
             url: url,
-            forceOpenAnnotate: true,
+            forceOpenAnnotate: true
         )
         await recordScreenshotHistory(url: url)
         DiagnosticLogger.shared.log(
@@ -119,8 +119,8 @@ final class PostCaptureActionHandler {
             context: [
                 "fileName": sourceURL.lastPathComponent,
                 "requestedTime": String(format: "%.3f", requestedTime),
-                "actualTime": String(format: "%.3f", actualTime),
-            ],
+                "actualTime": String(format: "%.3f", actualTime)
+            ]
         )
         return quickAccessItem
     }
@@ -134,7 +134,7 @@ final class PostCaptureActionHandler {
                 .warning,
                 .action,
                 "Screenshot batch post-capture skipped; no files",
-                context: ["requestedCount": "\(urls.count)"],
+                context: ["requestedCount": "\(urls.count)"]
             )
             return
         }
@@ -150,7 +150,7 @@ final class PostCaptureActionHandler {
             .info,
             .action,
             "Screenshot batch post-capture started",
-            context: ["count": "\(namedURLs.count)"],
+            context: ["count": "\(namedURLs.count)"]
         )
 
         var sessionDataByURL: [URL: AnnotationSessionData] = [:]
@@ -174,7 +174,7 @@ final class PostCaptureActionHandler {
                 .info,
                 .clipboard,
                 "Screenshot batch file URLs copied to clipboard",
-                context: ["count": "\(namedURLs.count)"],
+                context: ["count": "\(namedURLs.count)"]
             )
         }
 
@@ -195,8 +195,8 @@ final class PostCaptureActionHandler {
                 "Screenshot batch opened first capture in Annotate",
                 context: [
                     "fileName": firstURL.lastPathComponent,
-                    "skippedCount": "\(max(0, namedURLs.count - 1))",
-                ],
+                    "skippedCount": "\(max(0, namedURLs.count - 1))"
+                ]
             )
         }
 
@@ -219,13 +219,13 @@ final class PostCaptureActionHandler {
     }
 
     /// Add a screenshot to capture history
-    private func addScreenshotToHistory(url: URL) async {
+    private func addScreenshotToHistory(url: URL) {
         guard FileManager.default.fileExists(atPath: url.path) else {
             DiagnosticLogger.shared.log(
                 .warning,
                 .history,
                 "Screenshot history add skipped; file missing",
-                context: ["fileName": url.lastPathComponent],
+                context: ["fileName": url.lastPathComponent]
             )
             return
         }
@@ -248,7 +248,7 @@ final class PostCaptureActionHandler {
             url: url,
             captureType: .screenshot,
             width: width,
-            height: height,
+            height: height
         )
         DiagnosticLogger.shared.log(
             .debug,
@@ -257,8 +257,8 @@ final class PostCaptureActionHandler {
             context: [
                 "fileName": url.lastPathComponent,
                 "width": width.map { "\($0)" } ?? "unknown",
-                "height": height.map { "\($0)" } ?? "unknown",
-            ],
+                "height": height.map { "\($0)" } ?? "unknown"
+            ]
         )
     }
 
@@ -287,7 +287,7 @@ final class PostCaptureActionHandler {
                 .warning,
                 .history,
                 "Video history add skipped; file missing",
-                context: ["fileName": url.lastPathComponent],
+                context: ["fileName": url.lastPathComponent]
             )
             return
         }
@@ -320,7 +320,7 @@ final class PostCaptureActionHandler {
             captureType: captureType,
             duration: duration,
             width: width,
-            height: height,
+            height: height
         )
         DiagnosticLogger.shared.log(
             .debug,
@@ -331,8 +331,8 @@ final class PostCaptureActionHandler {
                 "type": captureType.rawValue,
                 "duration": duration.map { "\($0)" } ?? "unknown",
                 "width": width.map { "\($0)" } ?? "unknown",
-                "height": height.map { "\($0)" } ?? "unknown",
-            ],
+                "height": height.map { "\($0)" } ?? "unknown"
+            ]
         )
     }
 
@@ -346,7 +346,7 @@ final class PostCaptureActionHandler {
                 .debug,
                 .clipboard,
                 "Edited capture clipboard copy skipped by preference",
-                context: ["captureType": captureType.rawValue, "fileName": url.lastPathComponent],
+                context: ["captureType": captureType.rawValue, "fileName": url.lastPathComponent]
             )
             return
         }
@@ -367,7 +367,7 @@ final class PostCaptureActionHandler {
             .info,
             .clipboard,
             "Edited capture copied to clipboard",
-            context: ["captureType": label, "fileName": url.lastPathComponent],
+            context: ["captureType": label, "fileName": url.lastPathComponent]
         )
     }
 
@@ -378,7 +378,8 @@ final class PostCaptureActionHandler {
 
     private func promptForNameIfNeeded(_ url: URL, kind: CaptureOutputKind) -> URL {
         guard UserDefaults.standard.object(forKey: PreferencesKeys.captureAskForNameAfterCapture) as? Bool ?? false,
-              FileManager.default.fileExists(atPath: url.path) else {
+              FileManager.default.fileExists(atPath: url.path)
+        else {
             return url
         }
 
@@ -404,9 +405,10 @@ final class PostCaptureActionHandler {
         guard
             let destination = CaptureOutputNaming.makeRenamedFileURL(
                 for: url,
-                requestedName: field.stringValue,
+                requestedName: field.stringValue
             ),
-            destination != url else {
+            destination != url
+        else {
             return url
         }
 
@@ -418,7 +420,7 @@ final class PostCaptureActionHandler {
                 .capture,
                 error,
                 "Capture rename failed",
-                context: ["kind": kind.typeTokenValue, "fileName": url.lastPathComponent],
+                context: ["kind": kind.typeTokenValue, "fileName": url.lastPathComponent]
             )
             return url
         }
@@ -430,7 +432,7 @@ final class PostCaptureActionHandler {
         url: URL,
         skipQuickAccess: Bool = false,
         pinToScreen: Bool = false,
-        forceOpenAnnotate: Bool = false,
+        forceOpenAnnotate: Bool = false
     ) async -> QuickAccessItem? {
         let scopedAccess = fileAccess.beginAccessingURL(url)
         defer { scopedAccess.stop() }
@@ -442,14 +444,14 @@ final class PostCaptureActionHandler {
                 .error,
                 .action,
                 "Post-capture actions skipped; file missing",
-                context: ["captureType": captureType.rawValue, "fileName": url.lastPathComponent],
+                context: ["captureType": captureType.rawValue, "fileName": url.lastPathComponent]
             )
             return nil
         }
 
         logger
             .info(
-                "Executing post-capture actions for \(captureType == .screenshot ? "screenshot" : "recording"): \(url.lastPathComponent)",
+                "Executing post-capture actions for \(captureType == .screenshot ? "screenshot" : "recording"): \(url.lastPathComponent)"
             )
         let screenshotSessionData = captureType == .screenshot
             ? screenshotPresetAutoApplier.applyDefaultPresetIfNeeded(to: url)
@@ -468,8 +470,8 @@ final class PostCaptureActionHandler {
                 "captureType": typeLabel,
                 "fileName": url.lastPathComponent,
                 "location": locationLabel,
-                "skipQuickAccess": skipQuickAccess ? "true" : "false",
-            ],
+                "skipQuickAccess": skipQuickAccess ? "true" : "false"
+            ]
         )
 
         // Copy file to clipboard before slower UI actions. Auto-copy is expected
@@ -483,7 +485,7 @@ final class PostCaptureActionHandler {
                 .info,
                 .clipboard,
                 "Post-capture clipboard action executed",
-                context: ["captureType": label, "fileName": url.lastPathComponent],
+                context: ["captureType": label, "fileName": url.lastPathComponent]
             )
         }
 
@@ -504,7 +506,7 @@ final class PostCaptureActionHandler {
                 .info,
                 .action,
                 "Post-capture quick access action executed",
-                context: ["captureType": typeLabel, "fileName": url.lastPathComponent],
+                context: ["captureType": typeLabel, "fileName": url.lastPathComponent]
             )
         } else {
             DiagnosticLogger.shared.log(
@@ -514,8 +516,8 @@ final class PostCaptureActionHandler {
                 context: [
                     "captureType": typeLabel,
                     "fileName": url.lastPathComponent,
-                    "skipQuickAccess": skipQuickAccess ? "true" : "false",
-                ],
+                    "skipQuickAccess": skipQuickAccess ? "true" : "false"
+                ]
             )
         }
 
@@ -529,13 +531,14 @@ final class PostCaptureActionHandler {
                 .info,
                 .action,
                 "Post-capture pin action executed",
-                context: ["fileName": url.lastPathComponent],
+                context: ["fileName": url.lastPathComponent]
             )
         }
 
         // Open Annotate Editor (screenshots only)
         if captureType == .screenshot,
-           forceOpenAnnotate || preferences.isActionEnabled(.openAnnotate, for: captureType) {
+           forceOpenAnnotate || preferences.isActionEnabled(.openAnnotate, for: captureType)
+        {
             if let quickAccessItem {
                 annotateAction(quickAccessItem, url, screenshotSessionData)
             } else {
@@ -546,20 +549,21 @@ final class PostCaptureActionHandler {
                 .info,
                 .annotate,
                 "Post-capture annotate action executed",
-                context: ["fileName": url.lastPathComponent],
+                context: ["fileName": url.lastPathComponent]
             )
         }
 
         // Upload to Cloud & copy link (fire-and-forget; failures stay silent in toasts)
         if AfterCaptureAction.uploadToCloud.supports(captureType),
-           preferences.isActionEnabled(.uploadToCloud, for: captureType) {
+           preferences.isActionEnabled(.uploadToCloud, for: captureType)
+        {
             let uploadURL = url
             Task { @MainActor in uploadAction(uploadURL) }
             DiagnosticLogger.shared.log(
                 .info,
                 .action,
                 "Post-capture upload action started",
-                context: ["captureType": typeLabel, "fileName": url.lastPathComponent],
+                context: ["captureType": typeLabel, "fileName": url.lastPathComponent]
             )
         }
 
@@ -570,7 +574,7 @@ final class PostCaptureActionHandler {
                 .info,
                 .action,
                 "Post-capture video editor action executed",
-                context: ["fileName": url.lastPathComponent],
+                context: ["fileName": url.lastPathComponent]
             )
         }
 
@@ -588,7 +592,7 @@ final class PostCaptureActionHandler {
                 .debug,
                 .action,
                 "Post-capture upload skipped; provider not configured",
-                context: ["fileName": url.lastPathComponent],
+                context: ["fileName": url.lastPathComponent]
             )
             return
         }
@@ -634,7 +638,7 @@ final class PostCaptureActionHandler {
             .debug,
             .clipboard,
             isVideo ? "File URL written to clipboard" : "Image written to clipboard",
-            context: context,
+            context: context
         )
     }
 

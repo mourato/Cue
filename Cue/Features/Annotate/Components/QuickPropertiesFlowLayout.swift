@@ -24,7 +24,7 @@ enum QuickPropertiesFlowLayoutEngine {
         items: [QuickPropertiesFlowLayoutItem],
         maxWidth: CGFloat,
         horizontalSpacing: CGFloat,
-        verticalSpacing: CGFloat,
+        verticalSpacing: CGFloat
     ) -> QuickPropertiesFlowLayoutResult {
         guard !items.isEmpty else {
             return QuickPropertiesFlowLayoutResult(size: .zero, placements: [], skippedDividerIndices: [])
@@ -69,7 +69,7 @@ enum QuickPropertiesFlowLayoutEngine {
         return QuickPropertiesFlowLayoutResult(
             size: CGSize(width: contentWidth, height: totalHeight),
             placements: placements,
-            skippedDividerIndices: skippedDividerIndices,
+            skippedDividerIndices: skippedDividerIndices
         )
     }
 }
@@ -100,7 +100,7 @@ struct QuickPropertiesFlowLayout: Layout {
             items: items,
             maxWidth: maxWidth,
             horizontalSpacing: horizontalSpacing,
-            verticalSpacing: verticalSpacing,
+            verticalSpacing: verticalSpacing
         ).size
     }
 
@@ -116,7 +116,7 @@ struct QuickPropertiesFlowLayout: Layout {
             items: items,
             maxWidth: maxWidth,
             horizontalSpacing: horizontalSpacing,
-            verticalSpacing: verticalSpacing,
+            verticalSpacing: verticalSpacing
         )
         let skipped = Set(result.skippedDividerIndices)
 
@@ -127,7 +127,7 @@ struct QuickPropertiesFlowLayout: Layout {
             let origin = result.placements[index]
             subviews[index].place(
                 at: CGPoint(x: bounds.minX + origin.x, y: bounds.minY + origin.y),
-                proposal: ProposedViewSize(item.size),
+                proposal: ProposedViewSize(item.size)
             )
         }
     }

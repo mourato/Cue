@@ -27,7 +27,7 @@ final class CaptureStorageManager {
     var capturesDirectoryURL: URL? {
         guard
             let appSupportURL = fileManager.urls(
-                for: .applicationSupportDirectory, in: .userDomainMask,
+                for: .applicationSupportDirectory, in: .userDomainMask
             ).first
         else {
             return nil
@@ -45,7 +45,7 @@ final class CaptureStorageManager {
             DiagnosticLogger.shared.log(
                 .error,
                 .fileAccess,
-                "Captures directory unavailable; Application Support URL missing",
+                "Captures directory unavailable; Application Support URL missing"
             )
             return nil
         }
@@ -53,18 +53,18 @@ final class CaptureStorageManager {
         if !fileManager.fileExists(atPath: url.path) {
             do {
                 try fileManager.createDirectory(
-                    at: url, withIntermediateDirectories: true, attributes: nil,
+                    at: url, withIntermediateDirectories: true, attributes: nil
                 )
                 logger.info("Created captures directory at \(url.path, privacy: .public)")
                 DiagnosticLogger.shared.log(
                     .info,
                     .fileAccess,
                     "Captures directory created",
-                    context: ["directory": url.lastPathComponent],
+                    context: ["directory": url.lastPathComponent]
                 )
             } catch {
                 logger.error(
-                    "Failed to create captures directory: \(error.localizedDescription, privacy: .public)",
+                    "Failed to create captures directory: \(error.localizedDescription, privacy: .public)"
                 )
                 DiagnosticLogger.shared.logError(.fileAccess, error, "Captures directory creation failed")
                 return nil
@@ -92,7 +92,7 @@ final class CaptureStorageManager {
                     at: dirURL,
                     includingPropertiesForKeys: [.fileSizeKey, .isRegularFileKey],
                     options: [.skipsHiddenFiles],
-                    errorHandler: nil,
+                    errorHandler: nil
                 )
             else {
                 return Int64(0)
@@ -170,7 +170,7 @@ final class CaptureStorageManager {
             guard let contents = try? fm.contentsOfDirectory(
                 at: dirURL,
                 includingPropertiesForKeys: nil,
-                options: [.skipsHiddenFiles],
+                options: [.skipsHiddenFiles]
             ) else {
                 DiagnosticLogger.shared.log(.error, .fileAccess, "Cache cleanup failed to list captures directory")
                 return []
@@ -183,13 +183,13 @@ final class CaptureStorageManager {
                 } catch {
                     // Skip files that can't be deleted (in-use, locked, etc.)
                     backgroundLogger.warning(
-                        "Skipped deleting \(fileURL.lastPathComponent, privacy: .public): \(error.localizedDescription, privacy: .public)",
+                        "Skipped deleting \(fileURL.lastPathComponent, privacy: .public): \(error.localizedDescription, privacy: .public)"
                     )
                     DiagnosticLogger.shared.logError(
                         .fileAccess,
                         error,
                         "Cache cleanup skipped file",
-                        context: ["fileName": fileURL.lastPathComponent],
+                        context: ["fileName": fileURL.lastPathComponent]
                     )
                 }
             }
@@ -209,7 +209,7 @@ final class CaptureStorageManager {
             .info,
             .fileAccess,
             "Cache cleanup completed",
-            context: ["deletedCount": "\(deletedPaths.count)"],
+            context: ["deletedCount": "\(deletedPaths.count)"]
         )
         return deletedPaths.count
     }

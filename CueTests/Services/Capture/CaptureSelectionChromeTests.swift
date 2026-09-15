@@ -19,7 +19,7 @@ final class CaptureSelectionChromeTests: XCTestCase {
         let topLeft = CGPoint(x: rect.minX, y: rect.maxY)
         XCTAssertEqual(
             CaptureSelectionHandleGeometry.handle(at: topLeft, in: rect, hitSize: hitSize),
-            .topLeft,
+            .topLeft
         )
     }
 
@@ -34,7 +34,7 @@ final class CaptureSelectionChromeTests: XCTestCase {
         let topEdgePoint = CGPoint(x: rect.minX + 40, y: rect.maxY)
         XCTAssertEqual(
             CaptureSelectionHandleGeometry.handle(at: topEdgePoint, in: rect, hitSize: hitSize),
-            .top,
+            .top
         )
 
         let topHit = CaptureSelectionHandleGeometry.hitRect(for: .top, in: rect, hitSize: hitSize)
@@ -50,7 +50,7 @@ final class CaptureSelectionChromeTests: XCTestCase {
         let bars = CaptureSelectionHandleGeometry.cornerHandleBars(
             for: .topLeft,
             anchor: anchor,
-            metrics: (cornerLength: cornerLength, thickness: thickness),
+            metrics: (cornerLength: cornerLength, thickness: thickness)
         )
 
         let halfThickness = thickness / 2
@@ -60,8 +60,8 @@ final class CaptureSelectionChromeTests: XCTestCase {
                 x: anchor.x - halfThickness,
                 y: anchor.y - halfThickness,
                 width: cornerLength,
-                height: thickness,
-            ),
+                height: thickness
+            )
         )
         XCTAssertEqual(
             bars.vertical,
@@ -69,8 +69,8 @@ final class CaptureSelectionChromeTests: XCTestCase {
                 x: anchor.x - halfThickness,
                 y: anchor.y - cornerLength + halfThickness,
                 width: thickness,
-                height: cornerLength,
-            ),
+                height: cornerLength
+            )
         )
     }
 
@@ -79,7 +79,7 @@ final class CaptureSelectionChromeTests: XCTestCase {
         let bars = CaptureSelectionHandleGeometry.cornerHandleBars(
             for: .bottomRight,
             anchor: anchor,
-            metrics: (cornerLength: cornerLength, thickness: thickness),
+            metrics: (cornerLength: cornerLength, thickness: thickness)
         )
 
         let halfThickness = thickness / 2
@@ -89,8 +89,8 @@ final class CaptureSelectionChromeTests: XCTestCase {
                 x: anchor.x - cornerLength + halfThickness,
                 y: anchor.y - halfThickness,
                 width: cornerLength,
-                height: thickness,
-            ),
+                height: thickness
+            )
         )
         XCTAssertEqual(
             bars.vertical,
@@ -98,8 +98,8 @@ final class CaptureSelectionChromeTests: XCTestCase {
                 x: anchor.x - halfThickness,
                 y: anchor.y - halfThickness,
                 width: thickness,
-                height: cornerLength,
-            ),
+                height: cornerLength
+            )
         )
     }
 
@@ -110,7 +110,7 @@ final class CaptureSelectionChromeTests: XCTestCase {
         let bar = CaptureSelectionHandleGeometry.edgeHandleBar(
             for: .top,
             anchor: anchor,
-            metrics: (edgeLength: edgeLength, thickness: thickness),
+            metrics: (edgeLength: edgeLength, thickness: thickness)
         )
 
         let halfLength = edgeLength / 2
@@ -121,8 +121,8 @@ final class CaptureSelectionChromeTests: XCTestCase {
                 x: anchor.x - halfLength,
                 y: anchor.y - halfThickness,
                 width: edgeLength,
-                height: thickness,
-            ),
+                height: thickness
+            )
         )
     }
 
@@ -131,7 +131,7 @@ final class CaptureSelectionChromeTests: XCTestCase {
         let bar = CaptureSelectionHandleGeometry.edgeHandleBar(
             for: .left,
             anchor: anchor,
-            metrics: (edgeLength: edgeLength, thickness: thickness),
+            metrics: (edgeLength: edgeLength, thickness: thickness)
         )
 
         let halfLength = edgeLength / 2
@@ -142,8 +142,8 @@ final class CaptureSelectionChromeTests: XCTestCase {
                 x: anchor.x - halfThickness,
                 y: anchor.y - halfLength,
                 width: thickness,
-                height: edgeLength,
-            ),
+                height: edgeLength
+            )
         )
     }
 
@@ -157,9 +157,9 @@ final class CaptureSelectionChromeTests: XCTestCase {
                 at: topLeft,
                 in: localRect,
                 hitSize: hitSize,
-                coordinateSpace: .topLeftOrigin,
+                coordinateSpace: .topLeftOrigin
             ),
-            .topLeft,
+            .topLeft
         )
     }
 
@@ -169,50 +169,50 @@ final class CaptureSelectionChromeTests: XCTestCase {
             for: .topLeft,
             anchor: anchor,
             metrics: (cornerLength: cornerLength, thickness: thickness),
-            coordinateSpace: .topLeftOrigin,
+            coordinateSpace: .topLeftOrigin
         )
 
         let halfThickness = thickness / 2
         XCTAssertEqual(
             bars.horizontal,
-            CGRect(x: anchor.x - halfThickness, y: anchor.y - halfThickness, width: cornerLength, height: thickness),
+            CGRect(x: anchor.x - halfThickness, y: anchor.y - halfThickness, width: cornerLength, height: thickness)
         )
         XCTAssertEqual(
             bars.vertical,
-            CGRect(x: anchor.x - halfThickness, y: anchor.y - halfThickness, width: thickness, height: cornerLength),
+            CGRect(x: anchor.x - halfThickness, y: anchor.y - halfThickness, width: thickness, height: cornerLength)
         )
     }
 
     func testHandleBars_largeRectangleAreSharedAcrossCoordinateSpaces() {
         let bottomLeftBars = CaptureSelectionHandleGeometry.handleBars(
             in: rect,
-            coordinateSpace: .bottomLeftOrigin,
+            coordinateSpace: .bottomLeftOrigin
         )
         let topLeftBars = CaptureSelectionHandleGeometry.handleBars(
             in: CGRect(origin: .zero, size: rect.size),
-            coordinateSpace: .topLeftOrigin,
+            coordinateSpace: .topLeftOrigin
         )
 
         XCTAssertEqual(bottomLeftBars.count, 12)
         XCTAssertEqual(topLeftBars.count, 12)
         XCTAssertEqual(
             bottomLeftBars.map { CGSize(width: $0.width, height: $0.height) },
-            topLeftBars.map { CGSize(width: $0.width, height: $0.height) },
+            topLeftBars.map { CGSize(width: $0.width, height: $0.height) }
         )
     }
 
     func testHandleStyle_usesRoundedEndsAndCoordinateAwareShadow() {
         XCTAssertEqual(
             CaptureSelectionChromeMetrics.handleCornerRadius,
-            CaptureSelectionChromeMetrics.handleThickness / 2,
+            CaptureSelectionChromeMetrics.handleThickness / 2
         )
         XCTAssertEqual(
             CaptureSelectionChromeMetrics.handleShadowOffset(for: .bottomLeftOrigin),
-            CGSize(width: 0, height: -1),
+            CGSize(width: 0, height: -1)
         )
         XCTAssertEqual(
             CaptureSelectionChromeMetrics.handleShadowOffset(for: .topLeftOrigin),
-            CGSize(width: 0, height: 1),
+            CGSize(width: 0, height: 1)
         )
     }
 
@@ -222,41 +222,41 @@ final class CaptureSelectionChromeTests: XCTestCase {
         // Bottom-left origin (AppKit): Y increases upward
         XCTAssertEqual(
             CaptureSelectionHandleGeometry.anchor(for: .topLeft, in: sampleRect, coordinateSpace: .bottomLeftOrigin),
-            CGPoint(x: 10, y: 220),
+            CGPoint(x: 10, y: 220)
         )
         XCTAssertEqual(
             CaptureSelectionHandleGeometry.anchor(
                 for: .bottomRight,
                 in: sampleRect,
-                coordinateSpace: .bottomLeftOrigin,
+                coordinateSpace: .bottomLeftOrigin
             ),
-            CGPoint(x: 110, y: 20),
+            CGPoint(x: 110, y: 20)
         )
         XCTAssertEqual(
             CaptureSelectionHandleGeometry.anchor(for: .top, in: sampleRect, coordinateSpace: .bottomLeftOrigin),
-            CGPoint(x: 60, y: 220),
+            CGPoint(x: 60, y: 220)
         )
         XCTAssertEqual(
             CaptureSelectionHandleGeometry.anchor(for: .left, in: sampleRect, coordinateSpace: .bottomLeftOrigin),
-            CGPoint(x: 10, y: 120),
+            CGPoint(x: 10, y: 120)
         )
 
         // Top-left origin (SwiftUI): Y increases downward
         XCTAssertEqual(
             CaptureSelectionHandleGeometry.anchor(for: .topLeft, in: sampleRect, coordinateSpace: .topLeftOrigin),
-            CGPoint(x: 10, y: 20),
+            CGPoint(x: 10, y: 20)
         )
         XCTAssertEqual(
             CaptureSelectionHandleGeometry.anchor(for: .bottomRight, in: sampleRect, coordinateSpace: .topLeftOrigin),
-            CGPoint(x: 110, y: 220),
+            CGPoint(x: 110, y: 220)
         )
         XCTAssertEqual(
             CaptureSelectionHandleGeometry.anchor(for: .top, in: sampleRect, coordinateSpace: .topLeftOrigin),
-            CGPoint(x: 60, y: 20),
+            CGPoint(x: 60, y: 20)
         )
         XCTAssertEqual(
             CaptureSelectionHandleGeometry.anchor(for: .left, in: sampleRect, coordinateSpace: .topLeftOrigin),
-            CGPoint(x: 10, y: 120),
+            CGPoint(x: 10, y: 120)
         )
     }
 
@@ -291,9 +291,9 @@ final class CaptureSelectionChromeTests: XCTestCase {
                 in: rect,
                 hitSize: hitSize,
                 coordinateSpace: .topLeftOrigin,
-                layout: layout,
+                layout: layout
             ),
-            .topLeft,
+            .topLeft
         )
     }
 
@@ -305,7 +305,7 @@ final class CaptureSelectionChromeTests: XCTestCase {
             translation: CGPoint(x: -60, y: 0),
             aspectLocked: false,
             aspectRatio: nil,
-            minSize: CaptureSelectionChromeMetrics.confirmedMinimumSize,
+            minSize: CaptureSelectionChromeMetrics.confirmedMinimumSize
         )
 
         XCTAssertEqual(resized.width, CaptureSelectionChromeMetrics.confirmedMinimumSize, accuracy: 0.001)
@@ -314,7 +314,7 @@ final class CaptureSelectionChromeTests: XCTestCase {
     func testConfirmedArea_normalizesTinyInitialRectToSharedMinimum() {
         let confirmed = CaptureSelectionGeometry.normalized(
             CGRect(x: 10, y: 20, width: 6, height: 8),
-            minSize: CaptureSelectionChromeMetrics.confirmedMinimumSize,
+            minSize: CaptureSelectionChromeMetrics.confirmedMinimumSize
         )
 
         XCTAssertEqual(confirmed.width, CaptureSelectionChromeMetrics.confirmedMinimumSize)

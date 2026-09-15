@@ -63,7 +63,7 @@
                         }
                     }
                     .foregroundColor(.white)
-                    .padding(.horizontal, 4),
+                    .padding(.horizontal, 4)
                 )
                 .frame(width: width, height: 24)
                 .offset(x: x)

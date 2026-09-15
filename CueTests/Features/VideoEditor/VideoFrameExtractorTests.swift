@@ -37,9 +37,9 @@
                     sourceURL: sourceURL,
                     requestedTime: 0,
                     assetDuration: 1,
-                    baseName: "fixture",
+                    baseName: "fixture"
                 ),
-                outputRoot: root.appendingPathComponent("frames"),
+                outputRoot: root.appendingPathComponent("frames")
             )
 
             XCTAssertEqual(result.url.deletingPathExtension().lastPathComponent, "fixture-frame")
@@ -55,7 +55,7 @@
                 sourceURL: root.appendingPathComponent("missing.mov"),
                 requestedTime: 0,
                 assetDuration: 1,
-                baseName: "missing",
+                baseName: "missing"
             )
 
             await XCTAssertThrowsErrorAsync {
@@ -78,7 +78,7 @@
             let input = AVAssetWriterInput(mediaType: .video, outputSettings: [
                 AVVideoCodecKey: AVVideoCodecType.h264,
                 AVVideoWidthKey: 16,
-                AVVideoHeightKey: 16,
+                AVVideoHeightKey: 16
             ])
             writer.add(input)
             let adaptor = AVAssetWriterInputPixelBufferAdaptor(
@@ -86,8 +86,8 @@
                 sourcePixelBufferAttributes: [
                     kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
                     kCVPixelBufferWidthKey as String: 16,
-                    kCVPixelBufferHeightKey as String: 16,
-                ],
+                    kCVPixelBufferHeightKey as String: 16
+                ]
             )
             writer.startWriting()
             writer.startSession(atSourceTime: .zero)

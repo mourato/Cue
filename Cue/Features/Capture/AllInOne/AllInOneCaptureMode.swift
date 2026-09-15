@@ -26,7 +26,7 @@ enum AllInOneCaptureMode: String, CaseIterable, Identifiable, Equatable {
 
     static let defaultOrder: [AllInOneCaptureMode] = [
         .area, .fullscreen, .window, .activeWindow, .annotate, .scrolling, .timer, .ocr,
-        .objectCutout, .smartElement, .recording,
+        .objectCutout, .smartElement, .recording
     ]
 
     static let defaultEnabledModes: Set<AllInOneCaptureMode> = Set(defaultOrder)

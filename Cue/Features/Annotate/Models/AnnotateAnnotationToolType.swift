@@ -35,19 +35,19 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
     /// two surfaces stay in sync when tools are added.
     static let drawableTools: [AnnotationToolType] = [
         .rectangle, .circle, .arrow, .line, .magnify, .text, .highlighter,
-        .blur, .spotlight, .cueNote, .watermark, .pencil,
+        .blur, .spotlight, .cueNote, .watermark, .pencil
     ]
 
     static let inlineAnnotateTools: [AnnotationToolType] = [.selection] + drawableTools
 
     private static let inlineShapeToolSet: Set<AnnotationToolType> = [
-        .rectangle, .circle, .arrow, .line,
+        .rectangle, .circle, .arrow, .line
     ]
 
     static let inlineToolGroups: [[AnnotationToolType]] = [
         [.selection],
         drawableTools.filter { inlineShapeToolSet.contains($0) },
-        drawableTools.filter { !inlineShapeToolSet.contains($0) },
+        drawableTools.filter { !inlineShapeToolSet.contains($0) }
     ]
 
     /// Tools that use the shared shape fill-style control.

@@ -48,8 +48,12 @@ actor CueCloudflareUploadService {
         self.session = session ?? URLSession(configuration: .ephemeral, delegate: delegate, delegateQueue: nil)
     }
 
-    func upload(fileURL: URL, workerURL: String, token: String,
-                progress: (@Sendable (Double) -> Void)? = nil) async throws -> CueCloudflareUploadResult {
+    func upload(
+        fileURL: URL,
+        workerURL: String,
+        token: String,
+        progress: (@Sendable (Double) -> Void)? = nil
+    ) async throws -> CueCloudflareUploadResult {
         guard let endpoint = CueCloudflareConfiguration.validWorkerURL(workerURL)
         else { throw CueCloudflareUploadError.missingWorkerURL }
         let token = token.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -90,7 +94,8 @@ actor CueCloudflareUploadService {
         guard let result = try? JSONDecoder().decode(Response.self, from: data),
               !result.id.isEmpty, !result.filename.isEmpty, result.size >= 0,
               let url = URL(string: result.url), url.scheme?.lowercased() == "https",
-              url.host != nil else {
+              url.host != nil
+        else {
             throw CueCloudflareUploadError.invalidResponse
         }
         return CueCloudflareUploadResult(url: result.url)
@@ -171,7 +176,7 @@ actor CueCloudflareUploadService {
         let name = url.lastPathComponent.replacingOccurrences(
             of: "[^A-Za-z0-9._-]",
             with: "-",
-            options: .regularExpression,
+            options: .regularExpression
         )
         return name.isEmpty ? "upload.bin" : name
     }
@@ -194,7 +199,7 @@ private final class UploadProgressDelegate: NSObject, URLSessionTaskDelegate, @u
         task _: URLSessionTask,
         didSendBodyData _: Int64,
         totalBytesSent: Int64,
-        totalBytesExpectedToSend: Int64,
+        totalBytesExpectedToSend: Int64
     ) {
         guard totalBytesExpectedToSend > 0 else { return }
         lock.lock()

@@ -22,32 +22,32 @@ final class QuickAccessCoreTests: XCTestCase {
         XCTAssertTrue(
             QuickAccessHoverSeeding.shouldSeedHover(
                 mouseLocation: NSPoint(x: 150, y: 150),
-                cardFrame: frame,
-            ),
+                cardFrame: frame
+            )
         )
         XCTAssertTrue(
             QuickAccessHoverSeeding.shouldSeedHover(
                 mouseLocation: NSPoint(x: 100, y: 100),
-                cardFrame: frame,
-            ),
+                cardFrame: frame
+            )
         )
         XCTAssertFalse(
             QuickAccessHoverSeeding.shouldSeedHover(
                 mouseLocation: NSPoint(x: 50, y: 150),
-                cardFrame: frame,
-            ),
+                cardFrame: frame
+            )
         )
         XCTAssertFalse(
             QuickAccessHoverSeeding.shouldSeedHover(
                 mouseLocation: NSPoint(x: 150, y: 250),
-                cardFrame: frame,
-            ),
+                cardFrame: frame
+            )
         )
         XCTAssertFalse(
             QuickAccessHoverSeeding.shouldSeedHover(
                 mouseLocation: NSPoint(x: 150, y: 150),
-                cardFrame: .zero,
-            ),
+                cardFrame: .zero
+            )
         )
     }
 
@@ -62,7 +62,7 @@ final class QuickAccessCoreTests: XCTestCase {
                 + QuickAccessLayout.cardSpacing * 4
                 + QuickAccessLayout.containerPadding * 2
         let panel = QuickAccessPanel(
-            contentRect: NSRect(x: 100, y: 100, width: 204, height: panelHeight),
+            contentRect: NSRect(x: 100, y: 100, width: 204, height: panelHeight)
         )
         defer { panel.close() }
 
@@ -77,7 +77,7 @@ final class QuickAccessCoreTests: XCTestCase {
         let video = QuickAccessItem(
             url: URL(fileURLWithPath: "/tmp/demo.mov"),
             thumbnail: thumbnail,
-            duration: 90.9,
+            duration: 90.9
         )
         let invalidVideo = QuickAccessItem(
             id: UUID(),
@@ -85,11 +85,11 @@ final class QuickAccessCoreTests: XCTestCase {
             thumbnail: thumbnail,
             capturedAt: Date(),
             itemType: .video,
-            duration: -.infinity,
+            duration: -.infinity
         )
         let screenshot = QuickAccessItem(
             url: URL(fileURLWithPath: "/tmp/demo.png"),
-            thumbnail: thumbnail,
+            thumbnail: thumbnail
         )
 
         XCTAssertTrue(video.isVideo)
@@ -108,7 +108,7 @@ final class QuickAccessCoreTests: XCTestCase {
             thumbnail: NSImage(size: CGSize(width: 16, height: 16)),
             capturedAt: Date(),
             itemType: .video,
-            duration: 1,
+            duration: 1
         )
 
         XCTAssertTrue(gif.isVideo)
@@ -154,41 +154,41 @@ final class QuickAccessCoreTests: XCTestCase {
                 scrollingDeltaX: 12,
                 scrollingDeltaY: 2,
                 hasPreciseScrollingDeltas: true,
-                sensitivityMultiplier: 1.0,
+                sensitivityMultiplier: 1.0
             ),
-            12,
+            12
         )
         XCTAssertNil(
             QuickAccessTrackpadSwipeHelpers.horizontalDelta(
                 scrollingDeltaX: 12,
                 scrollingDeltaY: 10,
                 hasPreciseScrollingDeltas: true,
-                sensitivityMultiplier: 1.0,
-            ),
+                sensitivityMultiplier: 1.0
+            )
         )
         XCTAssertNil(
             QuickAccessTrackpadSwipeHelpers.horizontalDelta(
                 scrollingDeltaX: 0.25,
                 scrollingDeltaY: 0,
                 hasPreciseScrollingDeltas: true,
-                sensitivityMultiplier: 1.0,
-            ),
+                sensitivityMultiplier: 1.0
+            )
         )
         XCTAssertNil(
             QuickAccessTrackpadSwipeHelpers.horizontalDelta(
                 scrollingDeltaX: 12,
                 scrollingDeltaY: 0,
                 hasPreciseScrollingDeltas: false,
-                sensitivityMultiplier: 1.0,
-            ),
+                sensitivityMultiplier: 1.0
+            )
         )
         XCTAssertNil(
             QuickAccessTrackpadSwipeHelpers.horizontalDelta(
                 scrollingDeltaX: .nan,
                 scrollingDeltaY: 0,
                 hasPreciseScrollingDeltas: true,
-                sensitivityMultiplier: 1.0,
-            ),
+                sensitivityMultiplier: 1.0
+            )
         )
     }
 
@@ -198,26 +198,26 @@ final class QuickAccessCoreTests: XCTestCase {
                 scrollingDeltaX: 10,
                 scrollingDeltaY: 1,
                 hasPreciseScrollingDeltas: true,
-                sensitivityMultiplier: 0.5,
+                sensitivityMultiplier: 0.5
             ),
-            5,
+            5
         )
         XCTAssertEqual(
             QuickAccessTrackpadSwipeHelpers.horizontalDelta(
                 scrollingDeltaX: 10,
                 scrollingDeltaY: 1,
                 hasPreciseScrollingDeltas: true,
-                sensitivityMultiplier: 3.0,
+                sensitivityMultiplier: 3.0
             ),
-            30,
+            30
         )
         XCTAssertNil(
             QuickAccessTrackpadSwipeHelpers.horizontalDelta(
                 scrollingDeltaX: 10,
                 scrollingDeltaY: 1,
                 hasPreciseScrollingDeltas: false,
-                sensitivityMultiplier: 3.0,
-            ),
+                sensitivityMultiplier: 3.0
+            )
         )
     }
 
@@ -225,20 +225,20 @@ final class QuickAccessCoreTests: XCTestCase {
         XCTAssertFalse(
             QuickAccessTrackpadSwipeHelpers.shouldDismiss(
                 horizontalTranslation: 80,
-                horizontalVelocity: 300,
-            ),
+                horizontalVelocity: 300
+            )
         )
         XCTAssertTrue(
             QuickAccessTrackpadSwipeHelpers.shouldDismiss(
                 horizontalTranslation: 81,
-                horizontalVelocity: 0,
-            ),
+                horizontalVelocity: 0
+            )
         )
         XCTAssertTrue(
             QuickAccessTrackpadSwipeHelpers.shouldDismiss(
                 horizontalTranslation: 10,
-                horizontalVelocity: 301,
-            ),
+                horizontalVelocity: 301
+            )
         )
     }
 
@@ -295,7 +295,7 @@ final class QuickAccessCoreTests: XCTestCase {
             onDragStarted: {},
             onDragEnded: { _ in },
             onSwipeChanged: { _ in },
-            onSwipeEnded: { _, _ in },
+            onSwipeEnded: { _, _ in }
         )
         monitor.frame = NSRect(x: 0, y: 0, width: 180, height: 112)
 
@@ -316,7 +316,7 @@ final class QuickAccessCoreTests: XCTestCase {
             capturedAt: capturedAt,
             itemType: .screenshot,
             duration: nil,
-            thumbnailVersion: thumbnailVersion,
+            thumbnailVersion: thumbnailVersion
         )
         var uploaded = base
         uploaded.cloudURL = URL(string: "https://cdn.example.com/demo.png")
@@ -332,7 +332,7 @@ final class QuickAccessCoreTests: XCTestCase {
     func testQuickAccessPinWindowSizing_enforcesMinimumInteractiveSizeForTinyImages() {
         let sizes = QuickAccessPinWindowSizing.sizes(
             for: CGSize(width: 24, height: 16),
-            visibleSize: CGSize(width: 1440, height: 900),
+            visibleSize: CGSize(width: 1440, height: 900)
         )
         let minimumSize = QuickAccessPinWindowSizing.minimumInteractiveSize
 
@@ -351,7 +351,7 @@ final class QuickAccessCoreTests: XCTestCase {
             image: image,
             thumbnail: image,
             baseSize: minimumSize,
-            maxSize: CGSize(width: 1200, height: 900),
+            maxSize: CGSize(width: 1200, height: 900)
         )
         Self.retainedPinWindowStates.append(state)
 
@@ -371,7 +371,7 @@ final class QuickAccessCoreTests: XCTestCase {
             image: image,
             thumbnail: image,
             baseSize: CGSize(width: 400, height: 300),
-            maxSize: CGSize(width: 800, height: 600),
+            maxSize: CGSize(width: 800, height: 600)
         )
         Self.retainedPinWindowStates.append(state)
 
@@ -402,14 +402,14 @@ final class QuickAccessCoreTests: XCTestCase {
             image: image,
             thumbnail: image,
             baseSize: CGSize(width: 400, height: 300),
-            maxSize: CGSize(width: 800, height: 600),
+            maxSize: CGSize(width: 800, height: 600)
         )
         Self.retainedPinWindowStates.append(state)
 
         _ = state.applyZoomStep(1)
         let displaySize = state.updateSizing(
             baseSize: CGSize(width: 300, height: 225),
-            maxSize: CGSize(width: 300, height: 225),
+            maxSize: CGSize(width: 300, height: 225)
         )
 
         XCTAssertEqual(state.zoomPercent, 100)
@@ -423,7 +423,7 @@ final class QuickAccessCoreTests: XCTestCase {
 
         let constrainedFrame = QuickAccessPinWindowSizing.constrainedFrame(
             frame,
-            visibleFrame: visibleFrame,
+            visibleFrame: visibleFrame
         )
 
         XCTAssertEqual(constrainedFrame.minX, 24, accuracy: 0.001)
@@ -436,7 +436,7 @@ final class QuickAccessCoreTests: XCTestCase {
         let step = QuickAccessPinWindow.scrollZoomStep(
             scrollingDeltaY: 2,
             hasPreciseScrollingDeltas: false,
-            isLocked: false,
+            isLocked: false
         )
 
         let unwrappedStep = try XCTUnwrap(step)
@@ -445,21 +445,21 @@ final class QuickAccessCoreTests: XCTestCase {
             QuickAccessPinWindow.scrollZoomStep(
                 scrollingDeltaY: 2,
                 hasPreciseScrollingDeltas: false,
-                isLocked: true,
-            ),
+                isLocked: true
+            )
         )
         XCTAssertNil(
             QuickAccessPinWindow.scrollZoomStep(
                 scrollingDeltaY: .infinity,
                 hasPreciseScrollingDeltas: false,
-                isLocked: false,
-            ),
+                isLocked: false
+            )
         )
 
         let stepPrecise = QuickAccessPinWindow.scrollZoomStep(
             scrollingDeltaY: 2,
             hasPreciseScrollingDeltas: true,
-            isLocked: false,
+            isLocked: false
         )
         let unwrappedPrecise = try XCTUnwrap(stepPrecise)
         XCTAssertEqual(unwrappedPrecise, 2.0 * QuickAccessPinWindow.scrollZoomSensitivityPrecise, accuracy: 0.001)
@@ -468,7 +468,7 @@ final class QuickAccessCoreTests: XCTestCase {
             scrollingDeltaX: 3,
             scrollingDeltaY: 4,
             hasPreciseScrollingDeltas: true,
-            isLocked: false,
+            isLocked: false
         )
         let unwrappedDiagonal = try XCTUnwrap(stepDiagonal)
         XCTAssertEqual(unwrappedDiagonal, 5.0 * QuickAccessPinWindow.scrollZoomSensitivityPrecise, accuracy: 0.001)
@@ -477,7 +477,7 @@ final class QuickAccessCoreTests: XCTestCase {
             scrollingDeltaX: -5,
             scrollingDeltaY: 0,
             hasPreciseScrollingDeltas: true,
-            isLocked: false,
+            isLocked: false
         )
         let unwrappedHorizontal = try XCTUnwrap(stepHorizontal)
         XCTAssertEqual(unwrappedHorizontal, -5.0 * QuickAccessPinWindow.scrollZoomSensitivityPrecise, accuracy: 0.001)
@@ -486,13 +486,13 @@ final class QuickAccessCoreTests: XCTestCase {
     func testQuickAccessPinWindow_magnifyZoomStepRequiresUnlockedFiniteDelta() {
         XCTAssertEqual(
             QuickAccessPinWindow.magnifyZoomStep(magnification: 0.18, isLocked: false),
-            0.18 * QuickAccessPinWindow.magnificationZoomSensitivity,
+            0.18 * QuickAccessPinWindow.magnificationZoomSensitivity
         )
         XCTAssertNil(
-            QuickAccessPinWindow.magnifyZoomStep(magnification: 0.18, isLocked: true),
+            QuickAccessPinWindow.magnifyZoomStep(magnification: 0.18, isLocked: true)
         )
         XCTAssertNil(
-            QuickAccessPinWindow.magnifyZoomStep(magnification: .nan, isLocked: false),
+            QuickAccessPinWindow.magnifyZoomStep(magnification: .nan, isLocked: false)
         )
     }
 
@@ -504,13 +504,13 @@ final class QuickAccessCoreTests: XCTestCase {
             image: image,
             thumbnail: image,
             baseSize: CGSize(width: 320, height: 220),
-            maxSize: CGSize(width: 1200, height: 900),
+            maxSize: CGSize(width: 1200, height: 900)
         )
         Self.retainedPinWindowStates.append(state)
 
         let window = QuickAccessPinWindow(
             contentRect: NSRect(x: 0, y: 0, width: 320, height: 220),
-            state: state,
+            state: state
         )
         defer { window.close() }
 
@@ -535,13 +535,13 @@ final class QuickAccessCoreTests: XCTestCase {
             image: image,
             thumbnail: image,
             baseSize: CGSize(width: 320, height: 220),
-            maxSize: CGSize(width: 1200, height: 900),
+            maxSize: CGSize(width: 1200, height: 900)
         )
         Self.retainedPinWindowStates.append(state)
 
         let window = QuickAccessPinWindow(
             contentRect: NSRect(x: 0, y: 0, width: 320, height: 220),
-            state: state,
+            state: state
         )
         defer { window.close() }
 
@@ -558,7 +558,7 @@ final class QuickAccessCoreTests: XCTestCase {
                 deltaX: CGFloat = 0.0,
                 deltaY: CGFloat,
                 modifierFlags: NSEvent.ModifierFlags,
-                hasPreciseDeltas: Bool = false,
+                hasPreciseDeltas: Bool = false
             ) -> MockScrollWheelEvent {
                 let event = MockScrollWheelEvent()
                 event._deltaX = deltaX
@@ -608,7 +608,7 @@ final class QuickAccessCoreTests: XCTestCase {
             deltaX: 6.0,
             deltaY: 8.0,
             modifierFlags: [],
-            hasPreciseDeltas: true,
+            hasPreciseDeltas: true
         )
         window.sendEvent(eventDiagonal)
         XCTAssertEqual(steps.count, 4)
@@ -623,13 +623,13 @@ final class QuickAccessCoreTests: XCTestCase {
             image: image,
             thumbnail: image,
             baseSize: CGSize(width: 320, height: 220),
-            maxSize: CGSize(width: 1200, height: 900),
+            maxSize: CGSize(width: 1200, height: 900)
         )
         Self.retainedPinWindowStates.append(state)
 
         let window = QuickAccessPinWindow(
             contentRect: NSRect(x: 0, y: 0, width: 320, height: 220),
-            state: state,
+            state: state
         )
         defer { window.close() }
 
@@ -649,13 +649,13 @@ final class QuickAccessCoreTests: XCTestCase {
             image: image,
             thumbnail: image,
             baseSize: CGSize(width: 320, height: 220),
-            maxSize: CGSize(width: 1200, height: 900),
+            maxSize: CGSize(width: 1200, height: 900)
         )
         Self.retainedPinWindowStates.append(state)
 
         let window = QuickAccessPinWindow(
             contentRect: NSRect(x: 0, y: 0, width: 320, height: 220),
-            state: state,
+            state: state
         )
         defer { window.close() }
 
@@ -665,7 +665,7 @@ final class QuickAccessCoreTests: XCTestCase {
 
     func testQuickAccessWindowLevels_keepActiveEditorsAboveCardsAndBelowPins() {
         let panel = QuickAccessPanel(
-            contentRect: NSRect(x: 0, y: 0, width: 204, height: 520),
+            contentRect: NSRect(x: 0, y: 0, width: 204, height: 520)
         )
         defer { panel.close() }
 
@@ -673,13 +673,13 @@ final class QuickAccessCoreTests: XCTestCase {
         defer { pinWindow.close() }
 
         let annotateWindow = AnnotateWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 800, height: 600),
+            contentRect: NSRect(x: 0, y: 0, width: 800, height: 600)
         )
         defer { annotateWindow.close() }
 
         #if CUE_VIDEO_MODULE
             let videoEditorWindow = VideoEditorWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 800, height: 600),
+                contentRect: NSRect(x: 0, y: 0, width: 800, height: 600)
             )
             defer { videoEditorWindow.close() }
         #endif
@@ -705,7 +705,7 @@ final class QuickAccessCoreTests: XCTestCase {
                 + QuickAccessLayout.cardSpacing * 4
                 + QuickAccessLayout.containerPadding * 2
         let panel = QuickAccessPanel(
-            contentRect: NSRect(x: 100, y: 100, width: 204, height: panelHeight),
+            contentRect: NSRect(x: 100, y: 100, width: 204, height: panelHeight)
         )
         defer { panel.close() }
 
@@ -714,7 +714,7 @@ final class QuickAccessCoreTests: XCTestCase {
         XCTAssertEqual(
             QuickAccessPanel.interactiveContentHeight(itemCount: 1, scale: 1, panelHeight: panelHeight),
             QuickAccessLayout.cardHeight + QuickAccessLayout.containerPadding * 2,
-            accuracy: 0.001,
+            accuracy: 0.001
         )
         XCTAssertTrue(panel.containsInteractivePoint(NSPoint(x: 150, y: 120)))
         XCTAssertFalse(panel.containsInteractivePoint(NSPoint(x: 150, y: panel.frame.maxY - 10)))
@@ -724,21 +724,21 @@ final class QuickAccessCoreTests: XCTestCase {
         let overlayScale: CGFloat = 0.75
         let resolved = QuickAccessCornerButtonMetrics.resolvedScale(
             cornerButtonScale: 1.75,
-            overlayScale: overlayScale,
+            overlayScale: overlayScale
         )
         let cardHeight = QuickAccessLayout.scaledCardHeight(overlayScale)
         let totalExtent = 2 * QuickAccessCornerButtonMetrics.edgeExtent(forScale: resolved)
         XCTAssertLessThanOrEqual(totalExtent, cardHeight + 0.001)
         XCTAssertLessThanOrEqual(
             resolved,
-            QuickAccessCornerButtonMetrics.maximumScale(forOverlayScale: overlayScale) + 0.001,
+            QuickAccessCornerButtonMetrics.maximumScale(forOverlayScale: overlayScale) + 0.001
         )
     }
 
     func testCornerButtonMetrics_resolvedScaleKeepsPreferredWhenItFits() {
         let resolved = QuickAccessCornerButtonMetrics.resolvedScale(
             cornerButtonScale: 1.0,
-            overlayScale: 1.0,
+            overlayScale: 1.0
         )
         XCTAssertEqual(resolved, 1.0, accuracy: 0.001)
     }
@@ -765,12 +765,12 @@ final class QuickAccessCoreTests: XCTestCase {
             .delete,
             .edit,
             .uploadToImgBB,
-            .pinToScreen,
+            .pinToScreen
         ]
 
         XCTAssertEqual(
             QuickAccessActionKind.contextMenuOrder(from: configuredOrder),
-            [.copy, .saveOrOpen, .edit, .uploadToImgBB, .pinToScreen, .dismiss, .delete],
+            [.copy, .saveOrOpen, .edit, .uploadToImgBB, .pinToScreen, .dismiss, .delete]
         )
     }
 
@@ -781,23 +781,23 @@ final class QuickAccessCoreTests: XCTestCase {
                 QuickAccessActionKind.delete.rawValue,
                 "future-action",
                 QuickAccessActionKind.copy.rawValue,
-                QuickAccessActionKind.copy.rawValue,
+                QuickAccessActionKind.copy.rawValue
             ],
-            forKey: PreferencesKeys.quickAccessActionOrder,
+            forKey: PreferencesKeys.quickAccessActionOrder
         )
         defaults.set(
             [
                 QuickAccessActionKind.copy.rawValue,
-                "future-action",
+                "future-action"
             ],
-            forKey: PreferencesKeys.quickAccessEnabledActions,
+            forKey: PreferencesKeys.quickAccessEnabledActions
         )
 
         let store = makeActionConfigurationStore(defaults: defaults)
 
         XCTAssertEqual(
             store.actionOrder,
-            [.delete, .copy, .saveOrOpen, .dismiss, .edit, .uploadToImgBB, .pinToScreen],
+            [.delete, .copy, .saveOrOpen, .dismiss, .edit, .uploadToImgBB, .pinToScreen]
         )
         XCTAssertEqual(store.orderedActions(includeDisabled: false), [.copy])
     }
@@ -806,13 +806,13 @@ final class QuickAccessCoreTests: XCTestCase {
         let defaults = makeIsolatedDefaults()
         defaults.set(
             QuickAccessActionKind.defaultOrder.map(\.rawValue),
-            forKey: PreferencesKeys.quickAccessActionOrder,
+            forKey: PreferencesKeys.quickAccessActionOrder
         )
         defaults.set(
             QuickAccessActionKind.defaultOrder
                 .filter { $0 != .pinToScreen }
                 .map(\.rawValue),
-            forKey: PreferencesKeys.quickAccessEnabledActions,
+            forKey: PreferencesKeys.quickAccessEnabledActions
         )
 
         let store = makeActionConfigurationStore(defaults: defaults)
@@ -829,7 +829,7 @@ final class QuickAccessCoreTests: XCTestCase {
 
         XCTAssertEqual(
             store.actionOrder,
-            [.saveOrOpen, .dismiss, .copy, .delete, .edit, .uploadToImgBB, .pinToScreen],
+            [.saveOrOpen, .dismiss, .copy, .delete, .edit, .uploadToImgBB, .pinToScreen]
         )
         XCTAssertEqual(store.slotAssignments, QuickAccessActionSlot.defaultAssignments)
 
@@ -860,9 +860,9 @@ final class QuickAccessCoreTests: XCTestCase {
                 QuickAccessActionSlot.centerTop.rawValue: "future-action",
                 QuickAccessActionSlot.centerBottom.rawValue: "",
                 QuickAccessActionSlot.topTrailing.rawValue: QuickAccessActionKind.delete.rawValue,
-                QuickAccessActionSlot.topLeading.rawValue: QuickAccessActionKind.delete.rawValue,
+                QuickAccessActionSlot.topLeading.rawValue: QuickAccessActionKind.delete.rawValue
             ],
-            forKey: PreferencesKeys.quickAccessActionSlotAssignments,
+            forKey: PreferencesKeys.quickAccessActionSlotAssignments
         )
 
         let store = makeActionConfigurationStore(defaults: defaults)
@@ -885,9 +885,9 @@ final class QuickAccessCoreTests: XCTestCase {
         let defaults = makeIsolatedDefaults()
         defaults.set(
             [
-                QuickAccessActionSlot.bottomTrailing.rawValue: "uploadToImgur",
+                QuickAccessActionSlot.bottomTrailing.rawValue: "uploadToImgur"
             ],
-            forKey: PreferencesKeys.quickAccessActionSlotAssignments,
+            forKey: PreferencesKeys.quickAccessActionSlotAssignments
         )
 
         let store = makeActionConfigurationStore(defaults: defaults)
@@ -954,7 +954,7 @@ final class QuickAccessCoreTests: XCTestCase {
     }
 
     private func makeActionConfigurationStore(
-        defaults: UserDefaults,
+        defaults: UserDefaults
     ) -> QuickAccessActionConfigurationStore {
         let store = QuickAccessActionConfigurationStore(defaults: defaults)
         Self.retainedActionStores.append(store)
@@ -969,13 +969,13 @@ final class QuickAccessCoreTests: XCTestCase {
             image: image,
             thumbnail: image,
             baseSize: CGSize(width: 320, height: 220),
-            maxSize: CGSize(width: 1200, height: 900),
+            maxSize: CGSize(width: 1200, height: 900)
         )
         Self.retainedPinWindowStates.append(state)
 
         return QuickAccessPinWindow(
             contentRect: NSRect(x: 0, y: 0, width: 320, height: 220),
-            state: state,
+            state: state
         )
     }
 }

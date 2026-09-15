@@ -68,7 +68,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         .watermark,
         .pencil,
         .backgroundCutout,
-        .saveAs,
+        .saveAs
     ]
 
     static let defaultBottomOrder: [AnnotateChromeItem] = [
@@ -77,7 +77,7 @@ enum AnnotateChromeItem: String, CaseIterable, Identifiable, Codable, Hashable {
         .uploadToImgBB,
         .pin,
         .copy,
-        .delete,
+        .delete
     ]
 
     static let defaultEnabledItems: Set<AnnotateChromeItem> = Set(defaultToolbarOrder + defaultBottomOrder)

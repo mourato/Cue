@@ -12,15 +12,18 @@ enum SteppedValue {
     static func snapped<Value: BinaryFloatingPoint>(
         _ value: Value,
         by step: Value,
-        in range: ClosedRange<Value>,
+        in range: ClosedRange<Value>
     ) -> Value {
         precondition(step != 0, "SteppedValue.snapped requires a non-zero step")
         let snapped = (value / step).rounded() * step
         return Swift.min(Swift.max(snapped, range.lowerBound), range.upperBound)
     }
 
-    static func nudge<Value: BinaryFloatingPoint>(_ value: Value, by step: Value,
-                                                  in range: ClosedRange<Value>) -> Value {
+    static func nudge<Value: BinaryFloatingPoint>(
+        _ value: Value,
+        by step: Value,
+        in range: ClosedRange<Value>
+    ) -> Value {
         snapped(value + step, by: step, in: range)
     }
 
@@ -28,7 +31,7 @@ enum SteppedValue {
     static func canNudge<Value: BinaryFloatingPoint>(
         _ value: Value,
         by step: Value,
-        in range: ClosedRange<Value>,
+        in range: ClosedRange<Value>
     ) -> Bool {
         abs(nudge(value, by: step, in: range) - value) > 1e-9
     }
@@ -40,7 +43,7 @@ extension Binding where Value: BinaryFloatingPoint {
             get: { self.wrappedValue },
             set: { newValue in
                 self.wrappedValue = SteppedValue.snapped(newValue, by: step, in: range)
-            },
+            }
         )
     }
 }

@@ -16,7 +16,7 @@ enum CueImgBBCredentialError: LocalizedError {
         switch self {
         case .emptyKey:
             L10n.CloudSettings.imgbbAPIKeyEmpty
-        case .keychainWriteFailed(let message):
+        case let .keychainWriteFailed(message):
             L10n.CloudOperation.keychainError(message)
         }
     }
@@ -66,7 +66,7 @@ final class CueImgBBCredentialStore: ObservableObject {
 
     init(
         defaults: UserDefaults = .standard,
-        keychain: ImgBBKeychainBacking = CloudKeychainImgBBBacking(),
+        keychain: ImgBBKeychainBacking = CloudKeychainImgBBBacking()
     ) {
         self.defaults = defaults
         self.keychain = keychain
@@ -116,7 +116,7 @@ final class CueImgBBCredentialStore: ObservableObject {
 
     private func readAPIKey() -> String? {
         switch keychain.read(context: "imgbbCredential.read") {
-        case .success(let value):
+        case let .success(value):
             return normalizedKey(value)
         case .itemNotFound, .authRequired, .interactionNotAllowed, .error:
             break

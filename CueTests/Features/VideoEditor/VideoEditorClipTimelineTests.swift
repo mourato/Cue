@@ -40,7 +40,7 @@
         func testDelete_removesSelectedClip() {
             var timeline = VideoEditorClipTimeline(segments: [
                 VideoEditorClipSegment(sourceStart: 0, sourceEnd: 2),
-                VideoEditorClipSegment(sourceStart: 2, sourceEnd: 5),
+                VideoEditorClipSegment(sourceStart: 2, sourceEnd: 5)
             ])
             let deleteID = timeline.segments[0].id
             guard let next = timeline.deleting(segmentID: deleteID) else {
@@ -54,7 +54,7 @@
 
         func testPerClipSpeed_affectsEditorDuration() {
             let timeline = VideoEditorClipTimeline(segments: [
-                VideoEditorClipSegment(sourceStart: 0, sourceEnd: 4, speed: 2),
+                VideoEditorClipSegment(sourceStart: 0, sourceEnd: 4, speed: 2)
             ])
             XCTAssertEqual(timeline.duration, 2, accuracy: 0.001)
         }
@@ -62,7 +62,7 @@
         func testSourceTimeRoundTrip() throws {
             let timeline = VideoEditorClipTimeline(segments: [
                 VideoEditorClipSegment(sourceStart: 0, sourceEnd: 2, speed: 1),
-                VideoEditorClipSegment(sourceStart: 4, sourceEnd: 6, speed: 2),
+                VideoEditorClipSegment(sourceStart: 4, sourceEnd: 6, speed: 2)
             ])
             let editor = timeline.editorTime(forSourceTime: 5)
             XCTAssertNotNil(editor)

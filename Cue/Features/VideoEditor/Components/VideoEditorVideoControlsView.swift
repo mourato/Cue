@@ -151,7 +151,7 @@
 
         static func reduce(
             value: inout [VideoControlsSection: CGFloat],
-            nextValue: () -> [VideoControlsSection: CGFloat],
+            nextValue: () -> [VideoControlsSection: CGFloat]
         ) {
             value.merge(nextValue(), uniquingKeysWith: { _, next in next })
         }
@@ -171,9 +171,9 @@
                 GeometryReader { proxy in
                     Color.clear.preference(
                         key: VideoControlsSectionWidthKey.self,
-                        value: [section: proxy.size.width],
+                        value: [section: proxy.size.width]
                     )
-                },
+                }
             )
         }
     }
@@ -212,7 +212,7 @@
             .background(
                 GeometryReader { proxy in
                     Color.clear.preference(key: VideoControlsContainerWidthKey.self, value: proxy.size.width)
-                },
+                }
             )
             .onPreferenceChange(VideoControlsSectionWidthKey.self) { widths in
                 leftSectionWidth = widths[.left] ?? 0
@@ -246,7 +246,7 @@
                     .foregroundColor(state.isMuted ? .red : .secondary)
                     .frame(
                         width: controlsLayout.transportButtonSize,
-                        height: controlsLayout.transportButtonSize,
+                        height: controlsLayout.transportButtonSize
                     )
                     .contentShape(Rectangle())
             }
@@ -304,7 +304,7 @@
                     .foregroundColor(.secondary)
                     .frame(
                         width: controlsLayout.transportButtonSize,
-                        height: controlsLayout.transportButtonSize,
+                        height: controlsLayout.transportButtonSize
                     )
                     .contentShape(Rectangle())
             }

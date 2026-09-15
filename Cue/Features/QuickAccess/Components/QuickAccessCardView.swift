@@ -58,8 +58,8 @@ struct QuickAccessCardView: View {
                 QuickAccessCardHoverPrimeModifier(
                     cardScreenFrame: $cardScreenFrame,
                     onAppearReset: resetCardPresentationState,
-                    schedulePrime: scheduleHoverPrime,
-                ),
+                    schedulePrime: scheduleHoverPrime
+                )
             )
             .onReceive(manager.$items) { updatedItems in
                 guard let currentItem = updatedItems.first(where: { $0.id == item.id }) else { return }
@@ -76,11 +76,11 @@ struct QuickAccessCardView: View {
             }
             .popover(
                 isPresented: $isVideoUploadOptionsPresented,
-                arrowEdge: .bottom,
+                arrowEdge: .bottom
             ) {
                 CueVideoUploadOptionsView(
                     sourceSize: fileSize(for: item.url) ?? 0,
-                    uploadLimit: videoUploadLimit,
+                    uploadLimit: videoUploadLimit
                 ) { settings in
                     startUpload(videoSettings: settings)
                 }
@@ -142,18 +142,18 @@ struct QuickAccessCardView: View {
         .contentShape(cardShape)
         .background(
             cardShape
-                .fill(Color.black.opacity(0.1)),
+                .fill(Color.black.opacity(0.1))
         )
         // GPU-cached drop shadow (furthest back). Replaces per-frame SwiftUI `.shadow()`
         // blur that lagged when many stacked cards recomposited during capture-area mode.
         .background(QuickAccessCardShadowView(cornerRadius: cornerRadius))
         .overlay(
             cardShape
-                .stroke(Color.white.opacity(0.2), lineWidth: 1),
+                .stroke(Color.white.opacity(0.2), lineWidth: 1)
         )
         .overlay(
             cardShape
-                .stroke(isCardFocused ? Color.accentColor : .clear, lineWidth: 2),
+                .stroke(isCardFocused ? Color.accentColor : .clear, lineWidth: 2)
         )
         .opacity(cardOpacity)
         .offset(x: reduceMotion ? 0 : swipeOffset)
@@ -190,7 +190,7 @@ struct QuickAccessCardView: View {
                 if !isPresented {
                     imgbbUploadError = nil
                 }
-            },
+            }
         )
     }
 
@@ -235,7 +235,7 @@ struct QuickAccessCardView: View {
         let mouseLocation = NSEvent.mouseLocation
         guard QuickAccessHoverSeeding.shouldSeedHover(
             mouseLocation: mouseLocation,
-            cardFrame: cardScreenFrame,
+            cardFrame: cardScreenFrame
         ) else {
             return
         }
@@ -313,7 +313,8 @@ struct QuickAccessCardView: View {
     private func overlayAction(in slot: QuickAccessActionSlot) -> QuickAccessActionKind? {
         guard let action = actionConfiguration.action(in: slot),
               actionConfiguration.isEnabled(action),
-              isActionAvailable(action, on: .overlay) else {
+              isActionAvailable(action, on: .overlay)
+        else {
             return nil
         }
         return action
@@ -372,7 +373,7 @@ struct QuickAccessCardView: View {
 
                 handleSwipeEnded(translation: finalTranslation, velocity: finalVelocity)
             },
-            swipeSensitivity: CGFloat(manager.swipeSensitivity),
+            swipeSensitivity: CGFloat(manager.swipeSensitivity)
         )
     }
 
@@ -389,7 +390,8 @@ struct QuickAccessCardView: View {
 
         let direction: QuickAccessSwipeDirection = translation > 0 ? .right : .left
         guard let configuredAction = swipeActionStore.action(for: direction),
-              isActionEnabled(configuredAction) else {
+              isActionEnabled(configuredAction)
+        else {
             withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                 swipeOffset = 0
             }
@@ -453,7 +455,7 @@ struct QuickAccessCardView: View {
 
     private func isActionAvailable(
         _ action: QuickAccessActionKind,
-        on _: QuickAccessActionSurface,
+        on _: QuickAccessActionSurface
     ) -> Bool {
         switch action {
         case .edit:
@@ -588,7 +590,7 @@ struct QuickAccessCardView: View {
                     .padding(.vertical, 2)
                     .background(
                         RoundedRectangle(cornerRadius: 4)
-                            .fill(Color.black.opacity(0.7)),
+                            .fill(Color.black.opacity(0.7))
                     )
                     .padding(6)
             }
@@ -684,14 +686,14 @@ struct QuickAccessCardView: View {
         let metrics = QuickAccessCornerButtonMetrics(
             scale: QuickAccessCornerButtonMetrics.resolvedScale(
                 cornerButtonScale: CGFloat(manager.cornerButtonScale),
-                overlayScale: CGFloat(manager.overlayScale),
-            ),
+                overlayScale: CGFloat(manager.overlayScale)
+            )
         )
         return QuickAccessIconButton(
             icon: actionIcon(for: action),
             action: { performAction(action) },
             helpText: helpText(for: action),
-            sizeScale: metrics.scale,
+            sizeScale: metrics.scale
         )
         .transition(cornerButtonTransition(delay: delay))
         .padding(metrics.padding)
@@ -702,7 +704,8 @@ struct QuickAccessCardView: View {
     private func helpText(for action: QuickAccessActionKind) -> String {
         guard action == .uploadToImgBB,
               item.uploadMediaKind == .video,
-              !uploadConfiguration.provider.supports(.video) else {
+              !uploadConfiguration.provider.supports(.video)
+        else {
             return actionTitle(for: action)
         }
         return L10n.QuickAccess.videoUploadRequiresProvider
@@ -774,7 +777,8 @@ struct QuickAccessCardView: View {
 
         if item.isVideo,
            let fileSize = fileSize(for: item.url),
-           fileSize >= videoUploadLimit {
+           fileSize >= videoUploadLimit
+        {
             manager.pauseCountdownForActivity(item.id)
             isVideoUploadOptionsPresented = true
             return
@@ -848,7 +852,7 @@ private struct QuickAccessCardHoverPrimeModifier: ViewModifier {
             .background(
                 QuickAccessCardScreenBoundsReporter { screenFrame in
                     cardScreenFrame = screenFrame
-                },
+                }
             )
             .onAppear {
                 onAppearReset()
@@ -922,7 +926,7 @@ extension View {
     @ViewBuilder
     func `if`(
         _ condition: Bool,
-        transform: (Self) -> some View,
+        transform: (Self) -> some View
     ) -> some View {
         if condition {
             transform(self)

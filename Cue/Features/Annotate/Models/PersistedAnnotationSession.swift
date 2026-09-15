@@ -62,7 +62,7 @@ nonisolated struct PersistedAnnotationSession: Codable {
         createdAt: Date,
         updatedAt: Date,
         combineSession: PersistedCombineSession?,
-        cueNotesSession: PersistedCueNotesSession?,
+        cueNotesSession: PersistedCueNotesSession?
     ) {
         self.schemaVersion = schemaVersion
         self.sourceFilePath = sourceFilePath
@@ -107,12 +107,12 @@ nonisolated struct PersistedAnnotationSession: Codable {
         combineSession = try container.decodeIfPresent(PersistedCombineSession.self, forKey: .combineSession)
         cueNotesSession = try? container.decodeIfPresent(
             PersistedCueNotesSession.self,
-            forKey: .cueNotesSession,
+            forKey: .cueNotesSession
         )
         if cueNotesSession == nil {
             cueNotesSession = try? container.decodeIfPresent(
                 PersistedCueNotesSession.self,
-                forKey: .legacyNotinhasNotesSession,
+                forKey: .legacyNotinhasNotesSession
             )
         }
     }
@@ -197,7 +197,7 @@ struct PersistedCanvasEffects: Codable, Equatable {
             cornerRadius: cornerRadius,
             imageAlignment: ImageAlignment(rawValue: imageAlignment) ?? .center,
             aspectRatio: AspectRatioOption(rawValue: aspectRatio) ?? .auto,
-            aspectRatioOrientation: AspectRatioOrientation(rawValue: aspectRatioOrientation) ?? .horizontal,
+            aspectRatioOrientation: AspectRatioOrientation(rawValue: aspectRatioOrientation) ?? .horizontal
         )
     }
 }
@@ -225,7 +225,7 @@ struct PersistedAnnotationItem: Codable, Equatable {
             id: id,
             type: annotationType,
             bounds: bounds,
-            properties: props,
+            properties: props
         )
     }
 }
@@ -257,41 +257,41 @@ struct PersistedAnnotationType: Codable, Equatable {
 
     init(annotationType: AnnotationType) {
         switch annotationType {
-        case .path(let points):
+        case let .path(points):
             kind = .path
             self.points = points
         case .rectangle:
             kind = .rectangle
         case .circle:
             kind = .circle
-        case .arrow(let geometry):
+        case let .arrow(geometry):
             kind = .arrow
             arrow = PersistedArrowGeometry(geometry: geometry)
-        case .line(let start, let end):
+        case let .line(start, end):
             kind = .line
             lineStart = start
             lineEnd = end
-        case .text(let value):
+        case let .text(value):
             kind = .text
             text = value
-        case .highlight(let points):
+        case let .highlight(points):
             kind = .highlight
             self.points = points
-        case .blur(let type):
+        case let .blur(type):
             kind = .blur
             blurType = type.rawValue
-        case .counter(let value):
+        case let .counter(value):
             kind = .counter
             counterValue = value
-        case .watermark(let value):
+        case let .watermark(value):
             kind = .watermark
             text = value
-        case .embeddedImage(let assetId):
+        case let .embeddedImage(assetId):
             kind = .embeddedImage
             embeddedImageAssetId = assetId
         case .spotlight:
             kind = .spotlight
-        case .magnify(let sourceCenter, let showsSourceCircle):
+        case let .magnify(sourceCenter, showsSourceCircle):
             kind = .magnify
             magnifySourceCenter = sourceCenter
             magnifyShowsSourceCircle = showsSourceCircle
@@ -330,7 +330,7 @@ struct PersistedAnnotationType: Codable, Equatable {
             guard let magnifySourceCenter else { return nil }
             return .magnify(
                 sourceCenter: magnifySourceCenter,
-                showsSourceCircle: magnifyShowsSourceCircle ?? false,
+                showsSourceCircle: magnifyShowsSourceCircle ?? false
             )
         }
     }

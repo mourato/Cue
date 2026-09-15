@@ -18,7 +18,7 @@ final class ScrollingCaptureHUDWindow: NSPanel {
         model: ScrollingCaptureSessionModel,
         onDone: @escaping () -> Void,
         onCancel: @escaping () -> Void,
-        onToggleAutoScroll: @escaping () -> Void,
+        onToggleAutoScroll: @escaping () -> Void
     ) {
         self.anchorRect = anchorRect
 
@@ -26,7 +26,7 @@ final class ScrollingCaptureHUDWindow: NSPanel {
             contentRect: .zero,
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
-            defer: false,
+            defer: false
         )
 
         isFloatingPanel = true
@@ -41,7 +41,7 @@ final class ScrollingCaptureHUDWindow: NSPanel {
             model: model,
             onDone: onDone,
             onCancel: onCancel,
-            onToggleAutoScroll: onToggleAutoScroll,
+            onToggleAutoScroll: onToggleAutoScroll
         ))
 
         modelObservation = model.objectWillChange.sink { [weak self] _ in
@@ -70,7 +70,7 @@ final class ScrollingCaptureHUDWindow: NSPanel {
     nonisolated static func resolvedContentSize(for fittingSize: CGSize) -> CGSize {
         CGSize(
             width: max(300, fittingSize.width.rounded(.up)),
-            height: max(48, fittingSize.height.rounded(.up)),
+            height: max(48, fittingSize.height.rounded(.up))
         )
     }
 

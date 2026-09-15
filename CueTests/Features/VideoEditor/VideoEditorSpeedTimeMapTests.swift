@@ -99,7 +99,7 @@
             // total = 1 + 4 + 8 = 13s.
             let segs = [
                 SpeedSegment(startTime: 0, duration: 4, rate: 4),
-                SpeedSegment(startTime: 8, duration: 4, rate: 0.5),
+                SpeedSegment(startTime: 8, duration: 4, rate: 0.5)
             ]
             let map = SpeedTimeMap(speedSegments: segs, trimStart: 0, trimEnd: 12)
             XCTAssertEqual(map.scaledDuration, 13, accuracy: eps)
@@ -111,7 +111,7 @@
         func testSpansTileWholeTimelineContiguously() {
             let segs = [
                 SpeedSegment(startTime: 1, duration: 2, rate: 2),
-                SpeedSegment(startTime: 6, duration: 2, rate: 0.5),
+                SpeedSegment(startTime: 6, duration: 2, rate: 0.5)
             ]
             let map = SpeedTimeMap(speedSegments: segs, trimStart: 0, trimEnd: 10)
             // Contiguous: each span starts where the previous ends; covers [0,10].
@@ -129,7 +129,7 @@
         func testInverseOfForward_isIdentity() {
             let segs = [
                 SpeedSegment(startTime: 1, duration: 3, rate: 4),
-                SpeedSegment(startTime: 7, duration: 2, rate: 0.25),
+                SpeedSegment(startTime: 7, duration: 2, rate: 0.25)
             ]
             let map = SpeedTimeMap(speedSegments: segs, trimStart: 0, trimEnd: 10)
             for t in stride(from: 0.0, through: 10.0, by: 0.37) {
@@ -152,7 +152,7 @@
         func testRateAtOriginal() {
             let segs = [
                 SpeedSegment(startTime: 2, duration: 2, rate: 4),
-                SpeedSegment(startTime: 6, duration: 2, rate: 0.5),
+                SpeedSegment(startTime: 6, duration: 2, rate: 0.5)
             ]
             let map = SpeedTimeMap(speedSegments: segs, trimStart: 0, trimEnd: 10)
             XCTAssertEqual(map.rate(atOriginal: 0), 1.0, accuracy: eps)

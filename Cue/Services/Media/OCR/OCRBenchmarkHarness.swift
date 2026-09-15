@@ -19,7 +19,7 @@ enum OCRBenchmarkHarness {
 
     static func run(
         cases: [OCRBenchmarkCase],
-        recognizer: Recognizer,
+        recognizer: Recognizer
     ) async -> [OCRBenchmarkSummary] {
         var samples: [OCRBenchmarkSample] = []
 
@@ -35,8 +35,8 @@ enum OCRBenchmarkHarness {
                         expectedText: benchmarkCase.expectedText,
                         recognizedText: result.text,
                         confidence: result.averageConfidence,
-                        latencyMs: latencyMs,
-                    ),
+                        latencyMs: latencyMs
+                    )
                 )
             } catch {
                 let latencyMs = (CFAbsoluteTimeGetCurrent() - start) * 1000
@@ -46,8 +46,8 @@ enum OCRBenchmarkHarness {
                         expectedText: benchmarkCase.expectedText,
                         recognizedText: "",
                         confidence: 0,
-                        latencyMs: latencyMs,
-                    ),
+                        latencyMs: latencyMs
+                    )
                 )
             }
         }

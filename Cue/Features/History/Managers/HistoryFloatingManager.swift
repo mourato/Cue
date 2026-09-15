@@ -33,7 +33,7 @@ final class HistoryFloatingManager: ObservableObject {
         }
     }
 
-    @Published var defaultFilter: CaptureHistoryType? = nil {
+    @Published var defaultFilter: CaptureHistoryType? {
         didSet {
             if let filter = defaultFilter {
                 UserDefaults.standard.set(filter.rawValue, forKey: Keys.defaultFilter)
@@ -49,7 +49,7 @@ final class HistoryFloatingManager: ObservableObject {
         }
     }
 
-    @Published var expandedFilter: CaptureHistoryType? = nil
+    @Published var expandedFilter: CaptureHistoryType?
     @Published var expandedTimeFilter: HistoryFloatingTimeFilter = .all
     @Published var searchText: String = ""
 
@@ -86,12 +86,14 @@ final class HistoryFloatingManager: ObservableObject {
         isEnabled = UserDefaults.standard.object(forKey: Keys.enabled) as? Bool ?? true
 
         if let positionRaw = UserDefaults.standard.string(forKey: Keys.position),
-           let savedPosition = HistoryPanelPosition(rawValue: positionRaw) {
+           let savedPosition = HistoryPanelPosition(rawValue: positionRaw)
+        {
             position = savedPosition
         }
 
         if let filterRaw = UserDefaults.standard.string(forKey: Keys.defaultFilter),
-           let filter = CaptureHistoryType(rawValue: filterRaw) {
+           let filter = CaptureHistoryType(rawValue: filterRaw)
+        {
             defaultFilter = filter
         }
 
@@ -103,8 +105,8 @@ final class HistoryFloatingManager: ObservableObject {
             "Floating history settings loaded",
             context: [
                 "enabled": isEnabled ? "true" : "false",
-                "position": position.rawValue,
-            ],
+                "position": position.rawValue
+            ]
         )
     }
 
@@ -117,8 +119,8 @@ final class HistoryFloatingManager: ObservableObject {
             .history,
             "Floating history toggled",
             context: [
-                "isPresenting": panelController.isPresenting ? "true" : "false",
-            ],
+                "isPresenting": panelController.isPresenting ? "true" : "false"
+            ]
         )
         if panelController.isPresenting {
             hide()
@@ -140,7 +142,7 @@ final class HistoryFloatingManager: ObservableObject {
             .info,
             .history,
             "Floating history expanded",
-            context: ["filter": (initialFilter ?? expandedFilter ?? defaultFilter)?.rawValue ?? "all"],
+            context: ["filter": (initialFilter ?? expandedFilter ?? defaultFilter)?.rawValue ?? "all"]
         )
         presentPanel()
     }
@@ -168,7 +170,7 @@ final class HistoryFloatingManager: ObservableObject {
             .debug,
             .history,
             "Floating history modal interaction began",
-            context: ["depth": "\(modalInteractionSuppressionCount)"],
+            context: ["depth": "\(modalInteractionSuppressionCount)"]
         )
         let result = action()
 
@@ -180,7 +182,7 @@ final class HistoryFloatingManager: ObservableObject {
                     .debug,
                     .history,
                     "Floating history modal interaction ended",
-                    context: ["depth": "\(self.modalInteractionSuppressionCount)"],
+                    context: ["depth": "\(self.modalInteractionSuppressionCount)"]
                 )
                 if self.panelController.isPresenting {
                     self.focusPanel()
@@ -208,7 +210,7 @@ final class HistoryFloatingManager: ObservableObject {
             panelContentView,
             size: preferredPanelSize,
             position: preferredPosition,
-            cornerRadius: preferredCornerRadius,
+            cornerRadius: preferredCornerRadius
         )
         setupEscapeMonitors()
         DiagnosticLogger.shared.log(
@@ -218,8 +220,8 @@ final class HistoryFloatingManager: ObservableObject {
             context: [
                 "position": preferredPosition.rawValue,
                 "width": String(format: "%.1f", preferredPanelSize.width),
-                "height": String(format: "%.1f", preferredPanelSize.height),
-            ],
+                "height": String(format: "%.1f", preferredPanelSize.height)
+            ]
         )
     }
 
@@ -228,7 +230,7 @@ final class HistoryFloatingManager: ObservableObject {
             DiagnosticLogger.shared.log(
                 .debug,
                 .history,
-                "Floating history resign-key ignored during modal interaction",
+                "Floating history resign-key ignored during modal interaction"
             )
             return
         }
@@ -338,7 +340,7 @@ enum HistoryFloatingLayout {
         let safeFrame = screen.visibleFrame.insetBy(dx: 20, dy: 20)
         return CGSize(
             width: panelWidth(on: screen),
-            height: min(panelHeight, safeFrame.height),
+            height: min(panelHeight, safeFrame.height)
         )
     }
 }
@@ -367,7 +369,7 @@ enum HistoryFloatingTimeFilter: String, CaseIterable, Identifiable, Equatable {
         case .all:
             true
         case .last24Hours:
-            date >= now.addingTimeInterval(-86_400)
+            date >= now.addingTimeInterval(-86400)
         case .last7Days:
             date >= now.addingTimeInterval(-604_800)
         case .last30Days:

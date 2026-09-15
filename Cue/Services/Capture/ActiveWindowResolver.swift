@@ -15,12 +15,12 @@ enum ActiveWindowResolver {
     /// Intentionally never excludes Notinhas's own windows: if a Notinhas window is focused,
     /// capturing it is the whole point of triggering this action on it.
     static func resolveActiveWindowTarget(
-        prefetchedContentTask: ShareableContentPrefetchTask? = nil,
+        prefetchedContentTask: ShareableContentPrefetchTask? = nil
     ) async -> WindowCaptureTarget? {
         guard
             let snapshot = await WindowSelectionQueryService.prepareSnapshot(
                 prefetchedContentTask: prefetchedContentTask,
-                excludeOwnApplication: false,
+                excludeOwnApplication: false
             )
         else {
             return nil
@@ -34,7 +34,7 @@ enum ActiveWindowResolver {
     }
 
     private static func focusedWindowTarget(
-        in snapshot: WindowSelectionSnapshot,
+        in snapshot: WindowSelectionSnapshot
     ) -> WindowCaptureTarget? {
         guard AXIsProcessTrusted() else { return nil }
         guard let frontmostApplication = NSWorkspace.shared.frontmostApplication else { return nil }
@@ -58,7 +58,7 @@ enum ActiveWindowResolver {
         let focusedWindowResult = AXUIElementCopyAttributeValue(
             appElement,
             kAXFocusedWindowAttribute as CFString,
-            &focusedWindowRef,
+            &focusedWindowRef
         )
         guard
             focusedWindowResult == .success,
@@ -72,7 +72,7 @@ enum ActiveWindowResolver {
                 of: focusedWindow,
                 attribute: kAXPositionAttribute,
                 type: .cgPoint,
-                as: CGPoint.self,
+                as: CGPoint.self
             ),
             let size = axValue(of: focusedWindow, attribute: kAXSizeAttribute, type: .cgSize, as: CGSize.self)
         else {
@@ -90,7 +90,7 @@ enum ActiveWindowResolver {
             x: quartzFrame.origin.x,
             y: mainScreenHeight - quartzFrame.maxY,
             width: quartzFrame.width,
-            height: quartzFrame.height,
+            height: quartzFrame.height
         ).integral
     }
 
@@ -98,7 +98,7 @@ enum ActiveWindowResolver {
         of element: AXUIElement,
         attribute: String,
         type: AXValueType,
-        as _: T.Type,
+        as _: T.Type
     ) -> T? {
         var rawValue: CFTypeRef?
         guard AXUIElementCopyAttributeValue(element, attribute as CFString, &rawValue) == .success,

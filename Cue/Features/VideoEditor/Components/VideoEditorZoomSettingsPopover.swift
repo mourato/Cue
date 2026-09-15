@@ -96,9 +96,9 @@
                     Slider(
                         value: $localZoomLevel.stepped(
                             by: 0.1,
-                            in: ZoomSegment.minZoomLevel ... ZoomSegment.maxZoomLevel,
+                            in: ZoomSegment.minZoomLevel ... ZoomSegment.maxZoomLevel
                         ),
-                        in: ZoomSegment.minZoomLevel ... ZoomSegment.maxZoomLevel,
+                        in: ZoomSegment.minZoomLevel ... ZoomSegment.maxZoomLevel
                     ) { isEditing in
                         if !isEditing {
                             applyZoomLevel()
@@ -124,7 +124,7 @@
                                 .background(
                                     localZoomLevel == level
                                         ? ZoomColors.primary.opacity(0.3)
-                                        : Color.white.opacity(0.1),
+                                        : Color.white.opacity(0.1)
                                 )
                                 .cornerRadius(4)
                         }
@@ -142,7 +142,7 @@
 
                 ZoomCenterPicker(
                     center: $localCenter,
-                    previewImage: previewImage,
+                    previewImage: previewImage
                 )
                 .onChange(of: localCenter) { newValue in
                     applyCenter(newValue)
@@ -161,7 +161,7 @@
                                 .background(
                                     isNearPreset(localCenter, preset.point)
                                         ? ZoomColors.primary.opacity(0.3)
-                                        : Color.white.opacity(0.1),
+                                        : Color.white.opacity(0.1)
                                 )
                                 .cornerRadius(4)
                         }
@@ -227,13 +227,13 @@
                 CenterPreset(
                     name: L10n.VideoEditor.bottomLeft,
                     icon: "arrow.down.left",
-                    point: CGPoint(x: 0.25, y: 0.75),
+                    point: CGPoint(x: 0.25, y: 0.75)
                 ),
                 CenterPreset(
                     name: L10n.VideoEditor.bottomRight,
                     icon: "arrow.down.right",
-                    point: CGPoint(x: 0.75, y: 0.75),
-                ),
+                    point: CGPoint(x: 0.75, y: 0.75)
+                )
             ]
         }
 
@@ -266,7 +266,7 @@
     #Preview {
         ZoomSettingsPopover(
             state: VideoEditorState(url: URL(fileURLWithPath: "/tmp/test.mov")),
-            previewImage: nil,
+            previewImage: nil
         )
         .background(Color(NSColor.windowBackgroundColor))
     }

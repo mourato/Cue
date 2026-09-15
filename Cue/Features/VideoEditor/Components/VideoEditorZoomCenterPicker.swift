@@ -40,14 +40,14 @@
                 crosshairView
                     .position(
                         x: center.x * pickerSize,
-                        y: center.y * (pickerSize * 9 / 16),
+                        y: center.y * (pickerSize * 9 / 16)
                     )
             }
             .frame(width: pickerSize, height: pickerSize * 9 / 16)
             .cornerRadius(6)
             .overlay(
                 RoundedRectangle(cornerRadius: 6)
-                    .strokeBorder(Color.white.opacity(0.2), lineWidth: 1),
+                    .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
             )
             .contentShape(Rectangle())
             .gesture(dragGesture)
@@ -65,7 +65,7 @@
                 .frame(width: regionWidth, height: regionHeight)
                 .position(
                     x: center.x * pickerSize,
-                    y: center.y * (pickerSize * 9 / 16),
+                    y: center.y * (pickerSize * 9 / 16)
                 )
         }
 
@@ -124,7 +124,7 @@
     #Preview {
         ZoomCenterPicker(
             center: .constant(CGPoint(x: 0.5, y: 0.5)),
-            previewImage: nil,
+            previewImage: nil
         )
         .padding()
         .background(Color.black)

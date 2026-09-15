@@ -30,7 +30,7 @@ struct ShortcutRecorderView: View {
         defaultShortcut: ShortcutConfig? = nil,
         isEnabled: Binding<Bool>? = nil,
         validationIssue: ShortcutValidationIssue? = nil,
-        onShortcutChanged: @escaping (ShortcutConfig?) -> Bool,
+        onShortcutChanged: @escaping (ShortcutConfig?) -> Bool
     ) {
         self.label = label
         self.description = description
@@ -76,7 +76,7 @@ struct ShortcutRecorderView: View {
 
             ShortcutResetButton(
                 isDisabled: !isInteractionEnabled || isRecording || shortcut == defaultShortcut,
-                action: resetToDefault,
+                action: resetToDefault
             )
 
             if let toggleBinding {
@@ -106,7 +106,7 @@ struct ShortcutRecorderView: View {
         guard let isEnabled else { return nil }
         return Binding(
             get: { isEnabled.wrappedValue },
-            set: { isEnabled.wrappedValue = $0 },
+            set: { isEnabled.wrappedValue = $0 }
         )
     }
 
@@ -228,14 +228,14 @@ struct ShortcutKeycapButtonStyle: ButtonStyle {
             .padding(.vertical, verticalPadding)
             .background(
                 RoundedRectangle(cornerRadius: 7, style: .continuous)
-                    .fill(isRecording ? Color.accentColor.opacity(0.08) : Color.clear),
+                    .fill(isRecording ? Color.accentColor.opacity(0.08) : Color.clear)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 7, style: .continuous)
                     .strokeBorder(
                         isRecording ? Color.accentColor.opacity(0.5) : Color.clear,
-                        lineWidth: 1,
-                    ),
+                        lineWidth: 1
+                    )
             )
             .contentShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
@@ -316,8 +316,8 @@ struct ShortcutValidationHighlightModifier: ViewModifier {
                         FeedbackMotionPolicy.allowsMotion(reduceMotion: reduceMotion)
                             ? .easeOut(duration: 0.2)
                             : nil,
-                        value: issue,
-                    ),
+                        value: issue
+                    )
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 7, style: .continuous)
@@ -326,13 +326,13 @@ struct ShortcutValidationHighlightModifier: ViewModifier {
                         FeedbackMotionPolicy.allowsMotion(reduceMotion: reduceMotion)
                             ? .easeOut(duration: 0.2)
                             : nil,
-                        value: issue,
-                    ),
+                        value: issue
+                    )
             )
             .popover(
                 isPresented: $showPopover,
                 attachmentAnchor: .rect(.bounds),
-                arrowEdge: .bottom,
+                arrowEdge: .bottom
             ) {
                 if let issue {
                     ShortcutValidationPopoverContent(issue: issue)
@@ -402,14 +402,14 @@ struct ShortcutButtonStyle: ButtonStyle {
             .padding(.vertical, 4)
             .background(
                 RoundedRectangle(cornerRadius: 7, style: .continuous)
-                    .fill(isRecording ? Color.accentColor.opacity(0.08) : Color.clear),
+                    .fill(isRecording ? Color.accentColor.opacity(0.08) : Color.clear)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 7, style: .continuous)
                     .strokeBorder(
                         isRecording ? Color.accentColor.opacity(0.5) : Color.clear,
-                        lineWidth: 1,
-                    ),
+                        lineWidth: 1
+                    )
             )
             .contentShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)

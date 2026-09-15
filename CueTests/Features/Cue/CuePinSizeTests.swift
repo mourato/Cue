@@ -11,7 +11,7 @@ final class CuePinSizeTests: XCTestCase {
             text: "Legacy",
             target: .point(CGPoint(x: 10, y: 20)),
             color: red,
-            creationOrder: 1,
+            creationOrder: 1
         )
         var keyed = try XCTUnwrap(try JSONSerialization
             .jsonObject(with: JSONEncoder().encode(original)) as? [String: Any])
@@ -27,7 +27,7 @@ final class CuePinSizeTests: XCTestCase {
             target: .rect(CGRect(x: 0, y: 0, width: 40, height: 20)),
             color: red,
             areaStrokeWidth: 4,
-            creationOrder: 1,
+            creationOrder: 1
         )
         var keyed = try XCTUnwrap(try JSONSerialization
             .jsonObject(with: JSONEncoder().encode(original)) as? [String: Any])
@@ -42,7 +42,7 @@ final class CuePinSizeTests: XCTestCase {
             text: "Legacy",
             target: .rect(CGRect(x: 0, y: 0, width: 40, height: 20)),
             color: red,
-            creationOrder: 1,
+            creationOrder: 1
         )
         var keyed = try XCTUnwrap(try JSONSerialization
             .jsonObject(with: JSONEncoder().encode(original)) as? [String: Any])
@@ -59,12 +59,12 @@ final class CuePinSizeTests: XCTestCase {
             target: .point(.zero),
             color: red,
             pinControlValue: 8,
-            creationOrder: 1,
+            creationOrder: 1
         )
         XCTAssertEqual(
             note.pinDiameter,
             AnnotationProperties.counterDiameter(for: 8),
-            accuracy: 0.001,
+            accuracy: 0.001
         )
     }
 
@@ -74,14 +74,14 @@ final class CuePinSizeTests: XCTestCase {
             target: .point(CGPoint(x: 50, y: 50)),
             color: red,
             pinControlValue: 2,
-            creationOrder: 1,
+            creationOrder: 1
         )
         let large = CueVisualNote(
             text: "Large",
             target: .point(CGPoint(x: 50, y: 50)),
             color: red,
             pinControlValue: 10,
-            creationOrder: 2,
+            creationOrder: 2
         )
         let probe = CGPoint(x: 70, y: 50)
 
@@ -95,7 +95,7 @@ final class CuePinSizeTests: XCTestCase {
             target: .rect(CGRect(x: 100, y: 40, width: 80, height: 40)),
             color: red,
             pinControlValue: 10,
-            creationOrder: 1,
+            creationOrder: 1
         )
         // Default pin corner is topLeft; a large diameter extends left of minX at maxY.
         let probe = CGPoint(x: 100 - note.pinDiameter / 2 + 1, y: 80)
@@ -131,7 +131,7 @@ final class CuePinSizeAnnotateStateTests: XCTestCase {
             text: "Pin",
             target: .point(CGPoint(x: 20, y: 20)),
             color: RGBAColor(red: 1, green: 0, blue: 0, alpha: 1),
-            creationOrder: 1,
+            creationOrder: 1
         )
         state.notinhasAddNote(note)
         state.notinhasSelectNote(id: note.id)

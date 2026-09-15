@@ -154,7 +154,7 @@ final class ClipboardHelperTests: XCTestCase {
         XCTAssertEqual(item.string(forType: .string), fileURL.path)
         XCTAssertEqual(
             (pasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL])?.first?.standardizedFileURL,
-            fileURL.standardizedFileURL,
+            fileURL.standardizedFileURL
         )
     }
 

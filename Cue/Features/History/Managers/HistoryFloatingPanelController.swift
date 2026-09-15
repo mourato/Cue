@@ -43,15 +43,15 @@ final class HistoryFloatingPanelController {
         _ content: some View,
         size: CGSize,
         position: HistoryPanelPosition,
-        cornerRadius: CGFloat,
+        cornerRadius: CGFloat
     ) {
         requestShow(
             Presentation(
                 content: AnyView(content),
                 size: size,
                 position: position,
-                cornerRadius: cornerRadius,
-            ),
+                cornerRadius: cornerRadius
+            )
         )
     }
 
@@ -119,7 +119,7 @@ final class HistoryFloatingPanelController {
             presentation.content,
             on: panel,
             size: presentation.size,
-            cornerRadius: presentation.cornerRadius,
+            cornerRadius: presentation.cornerRadius
         )
 
         self.panel = panel
@@ -148,7 +148,7 @@ final class HistoryFloatingPanelController {
         NSAnimationContext.runAnimationGroup { context in
             context.duration = 0.22
             context.timingFunction = CAMediaTimingFunction(
-                controlPoints: 0.22, 1.0, 0.36, 1.0,
+                controlPoints: 0.22, 1.0, 0.36, 1.0
             )
             panel.animator().setFrame(targetFrame, display: true)
             panel.animator().alphaValue = 1
@@ -216,7 +216,7 @@ final class HistoryFloatingPanelController {
             NSAnimationContext.runAnimationGroup { context in
                 context.duration = 0.18
                 context.timingFunction = CAMediaTimingFunction(
-                    controlPoints: 0.2, 0.9, 0.3, 1.0,
+                    controlPoints: 0.2, 0.9, 0.3, 1.0
                 )
                 panel.animator().setFrame(targetFrame, display: true)
             }
@@ -229,7 +229,7 @@ final class HistoryFloatingPanelController {
         _ content: AnyView,
         on panel: HistoryFloatingPanel,
         size: CGSize,
-        cornerRadius: CGFloat,
+        cornerRadius: CGFloat
     ) {
         let hostingView = NSHostingView(rootView: content)
         // Frame-based hosting: AppKit panel size is authoritative. Avoid intrinsic
@@ -265,7 +265,7 @@ final class HistoryFloatingPanelController {
         let origin = position.calculateOrigin(
             for: size,
             on: screen,
-            padding: panelPadding(for: position),
+            padding: panelPadding(for: position)
         )
         return NSRect(origin: origin, size: size)
     }
@@ -308,7 +308,7 @@ final class HistoryFloatingPanelController {
         let origin = position.calculateOrigin(
             for: size,
             on: screen,
-            padding: panelPadding(for: position),
+            padding: panelPadding(for: position)
         )
 
         if reduceMotion {
@@ -360,7 +360,7 @@ private final class HistoryFloatingContainerView: NSVisualEffectView {
         defaultsObserver = NotificationCenter.default.addObserver(
             forName: UserDefaults.didChangeNotification,
             object: nil,
-            queue: .main,
+            queue: .main
         ) { [weak self] _ in
             Task { @MainActor [weak self] in
                 self?.applyStyle()
@@ -396,14 +396,14 @@ private final class HistoryFloatingContainerView: NSVisualEffectView {
                 srgbRed: 0.07,
                 green: 0.08,
                 blue: 0.11,
-                alpha: 0.12,
+                alpha: 0.12
             )
         default:
             NSColor(
                 srgbRed: 1.0,
                 green: 1.0,
                 blue: 1.0,
-                alpha: 0.14,
+                alpha: 0.14
             )
         }
     }

@@ -40,10 +40,10 @@ struct AnnotateDropZoneView: View {
         .background(
             RoundedRectangle(cornerRadius: 12)
                 .strokeBorder(
-                    style: StrokeStyle(lineWidth: 2, dash: [8, 4]),
+                    style: StrokeStyle(lineWidth: 2, dash: [8, 4])
                 )
                 .foregroundColor(isDragOver ? .accentColor : .secondary.opacity(0.5))
-                .padding(40),
+                .padding(40)
         )
         .animation(.easeInOut(duration: 0.2), value: isDragOver)
     }

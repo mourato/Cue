@@ -16,8 +16,8 @@ final class AllInOneCaptureModeTests: XCTestCase {
             modes,
             [
                 .area, .fullscreen, .window, .activeWindow, .annotate, .scrolling, .timer, .ocr,
-                .objectCutout, .smartElement,
-            ],
+                .objectCutout, .smartElement
+            ]
         )
         XCTAssertFalse(modes.contains(.recording))
     }

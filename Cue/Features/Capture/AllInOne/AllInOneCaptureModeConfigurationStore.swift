@@ -17,7 +17,7 @@ final class AllInOneCaptureModeConfigurationStore: ObservableObject {
 
     private let defaults: UserDefaults
     private static let modesAddedInThisVersion: Set<AllInOneCaptureMode> = [
-        .activeWindow, .objectCutout, .smartElement,
+        .activeWindow, .objectCutout, .smartElement
     ]
 
     init(defaults: UserDefaults = .standard) {
@@ -26,7 +26,7 @@ final class AllInOneCaptureModeConfigurationStore: ObservableObject {
         let storedEnabledModes = defaults.stringArray(forKey: PreferencesKeys.captureAllInOneEnabledModes)
         modeOrder = Self.normalizedOrder(from: storedOrder)
         enabledModes = Self.normalizedEnabledModes(
-            from: storedEnabledModes,
+            from: storedEnabledModes
         )
         if Self.shouldEnableNewModes(orderIDs: storedOrder, enabledIDs: storedEnabledModes) {
             enabledModes.formUnion(Self.modesAddedInThisVersion)

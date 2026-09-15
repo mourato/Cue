@@ -143,7 +143,7 @@ private extension SplashContentView {
                     .padding(.horizontal, 32)
                     .padding(.vertical, 10)
                     .background(
-                        Capsule().fill(VSDesignSystem.Colors.buttonFill),
+                        Capsule().fill(VSDesignSystem.Colors.buttonFill)
                     )
                     .overlay(Capsule().stroke(VSDesignSystem.Colors.buttonStroke, lineWidth: 1))
             }

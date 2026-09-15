@@ -27,7 +27,7 @@ nonisolated enum BackgroundStyle: Equatable, Sendable {
 
     var blurredEffectImageURL: URL? {
         switch self {
-        case .wallpaper(let url), .blurred(let url):
+        case let .wallpaper(url), let .blurred(url):
             url
         case .none, .gradient, .solidColor:
             nil
@@ -195,17 +195,17 @@ nonisolated enum WallpaperPreset: String, CaseIterable, Identifiable {
         case .oceanBreeze: [
                 Color(red: 0.1, green: 0.4, blue: 0.6),
                 Color(red: 0.2, green: 0.6, blue: 0.8),
-                Color(red: 0.4, green: 0.8, blue: 0.9),
+                Color(red: 0.4, green: 0.8, blue: 0.9)
             ]
         case .sunsetGlow: [
                 Color(red: 0.9, green: 0.3, blue: 0.2),
                 Color(red: 0.95, green: 0.5, blue: 0.3),
-                Color(red: 1.0, green: 0.7, blue: 0.4),
+                Color(red: 1.0, green: 0.7, blue: 0.4)
             ]
         case .forestMist: [
                 Color(red: 0.1, green: 0.3, blue: 0.2),
                 Color(red: 0.2, green: 0.5, blue: 0.3),
-                Color(red: 0.4, green: 0.7, blue: 0.5),
+                Color(red: 0.4, green: 0.7, blue: 0.5)
             ]
         }
     }
@@ -286,7 +286,7 @@ nonisolated enum AspectRatioOption: String, CaseIterable, Identifiable, Sendable
 
     func targetRatio(
         for foregroundSize: CGSize,
-        orientation: AspectRatioOrientation = .horizontal,
+        orientation: AspectRatioOrientation = .horizontal
     ) -> CGFloat? {
         let baseRatio: CGFloat?
         switch self {
@@ -316,7 +316,7 @@ nonisolated enum AspectRatioOption: String, CaseIterable, Identifiable, Sendable
         for foregroundSize: CGSize,
         padding: CGFloat,
         alignmentSpace: CGFloat,
-        orientation: AspectRatioOrientation = .horizontal,
+        orientation: AspectRatioOrientation = .horizontal
     ) -> CGSize {
         let normalizedWidth = max(foregroundSize.width, 1)
         let normalizedHeight = max(foregroundSize.height, 1)
@@ -325,9 +325,10 @@ nonisolated enum AspectRatioOption: String, CaseIterable, Identifiable, Sendable
 
         guard let targetRatio = targetRatio(
             for: CGSize(width: normalizedWidth, height: normalizedHeight),
-            orientation: orientation,
+            orientation: orientation
         ),
-            targetRatio > 0 else {
+            targetRatio > 0
+        else {
             return CGSize(width: minimumWidth, height: minimumHeight)
         }
 

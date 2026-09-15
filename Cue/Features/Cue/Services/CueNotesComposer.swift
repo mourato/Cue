@@ -12,7 +12,7 @@ enum CueNotesComposer {
         baseImage: NSImage,
         notes: [CueVisualNote],
         panelSide: CueNotesPanelSide,
-        displayScale _: CGFloat = 1,
+        displayScale _: CGFloat = 1
     ) -> NSImage {
         let ordered = CueNoteGeometry.orderedRenderableNotes(notes)
         guard !ordered.isEmpty else { return baseImage }
@@ -23,7 +23,7 @@ enum CueNotesComposer {
         let panelHeight = max(baseSize.height, panelContentHeight(for: ordered))
         let outputSize = CGSize(
             width: baseSize.width + panelWidth,
-            height: max(baseSize.height, panelHeight),
+            height: max(baseSize.height, panelHeight)
         )
 
         let output = NSImage(size: outputSize)
@@ -48,7 +48,7 @@ enum CueNotesComposer {
             notes: ordered,
             selectedNoteID: nil,
             in: context,
-            imageBounds: imageRect,
+            imageBounds: imageRect
         )
 
         drawPanel(notes: ordered, in: panelRect, context: context)
@@ -58,7 +58,7 @@ enum CueNotesComposer {
     static func addPanelOnly(
         to baseImage: NSImage,
         notes: [CueVisualNote],
-        panelSide: CueNotesPanelSide,
+        panelSide: CueNotesPanelSide
     ) -> NSImage {
         let ordered = CueNoteGeometry.orderedRenderableNotes(notes)
         guard !ordered.isEmpty else { return baseImage }
@@ -66,7 +66,7 @@ enum CueNotesComposer {
         let baseSize = baseImage.size
         let outputSize = CGSize(
             width: baseSize.width + panelWidth,
-            height: max(baseSize.height, panelContentHeight(for: ordered)),
+            height: max(baseSize.height, panelContentHeight(for: ordered))
         )
         let output = NSImage(size: outputSize)
         output.lockFocus()
@@ -104,12 +104,12 @@ enum CueNotesComposer {
 
     private static func rowHeight(for text: String) -> CGFloat {
         let attributes: [NSAttributedString.Key: Any] = [
-            .font: NSFont.systemFont(ofSize: 14),
+            .font: NSFont.systemFont(ofSize: 14)
         ]
         let attributed = NSAttributedString(string: text, attributes: attributes)
         let bounds = attributed.boundingRect(
             with: CGSize(width: textColumnWidth, height: .greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            options: [.usesLineFragmentOrigin, .usesFontLeading]
         )
         return max(circleDiameter, ceil(bounds.height))
     }
@@ -117,7 +117,7 @@ enum CueNotesComposer {
     private static func drawPanel(
         notes: [CueVisualNote],
         in panelRect: CGRect,
-        context: CGContext,
+        context: CGContext
     ) {
         context.saveGState()
         context.setFillColor(CueNotesPanelStyle.background.cgColor)
@@ -127,7 +127,7 @@ enum CueNotesComposer {
 
         let headerAttributes: [NSAttributedString.Key: Any] = [
             .font: NSFont.boldSystemFont(ofSize: 18),
-            .foregroundColor: CueNotesPanelStyle.primaryText,
+            .foregroundColor: CueNotesPanelStyle.primaryText
         ]
         let header = NSAttributedString(string: CueL10n.sidePanelTitle, attributes: headerAttributes)
         let headerSize = header.size()
@@ -135,13 +135,13 @@ enum CueNotesComposer {
         drawAttributedString(
             header,
             at: CGPoint(x: panelRect.minX + panelPadding, y: cursorY),
-            maxWidth: textColumnWidth,
+            maxWidth: textColumnWidth
         )
         cursorY -= 12
 
         let textAttributes: [NSAttributedString.Key: Any] = [
             .font: NSFont.systemFont(ofSize: 14),
-            .foregroundColor: CueNotesPanelStyle.primaryText,
+            .foregroundColor: CueNotesPanelStyle.primaryText
         ]
 
         for (index, note) in notes.enumerated() {
@@ -152,14 +152,14 @@ enum CueNotesComposer {
                 x: panelRect.minX + panelPadding,
                 y: cursorY + (rowHeight - circleDiameter) / 2,
                 width: circleDiameter,
-                height: circleDiameter,
+                height: circleDiameter
             )
             context.setFillColor(note.color.nsColor.cgColor)
             context.fillEllipse(in: circleRect)
 
             let numberAttributes: [NSAttributedString.Key: Any] = [
                 .font: NSFont.boldSystemFont(ofSize: 12),
-                .foregroundColor: NSColor.white,
+                .foregroundColor: NSColor.white
             ]
             let number = NSAttributedString(string: "\(index + 1)", attributes: numberAttributes)
             let numberSize = number.size()
@@ -167,9 +167,9 @@ enum CueNotesComposer {
                 number,
                 at: CGPoint(
                     x: circleRect.midX - numberSize.width / 2,
-                    y: circleRect.midY - numberSize.height / 2,
+                    y: circleRect.midY - numberSize.height / 2
                 ),
-                maxWidth: circleRect.width,
+                maxWidth: circleRect.width
             )
 
             let textX = circleRect.maxX + 12
@@ -185,15 +185,15 @@ enum CueNotesComposer {
     private static func drawAttributedString(
         _ attributed: NSAttributedString,
         at origin: CGPoint,
-        maxWidth: CGFloat? = nil,
+        maxWidth: CGFloat? = nil
     ) {
         let size = attributed.boundingRect(
             with: CGSize(width: maxWidth ?? .greatestFiniteMagnitude, height: .greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            options: [.usesLineFragmentOrigin, .usesFontLeading]
         ).integral.size
         attributed.draw(
             with: CGRect(origin: origin, size: size),
-            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            options: [.usesLineFragmentOrigin, .usesFontLeading]
         )
     }
 }

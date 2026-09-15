@@ -23,7 +23,7 @@ struct GeneralSettingsView: View {
         Form {
             Section(L10n.PreferencesGeneral.appSection) {
                 SettingRow(
-                    title: L10n.PreferencesGeneral.startAtLoginTitle,
+                    title: L10n.PreferencesGeneral.startAtLoginTitle
                 ) {
                     Toggle("", isOn: $startAtLogin)
                         .labelsHidden()
@@ -35,7 +35,7 @@ struct GeneralSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesGeneral.menuBarIconTitle,
-                    description: L10n.PreferencesGeneral.menuBarIconDescription,
+                    description: L10n.PreferencesGeneral.menuBarIconDescription
                 ) {
                     Toggle("", isOn: $showMenuBarIcon)
                         .labelsHidden()
@@ -48,7 +48,7 @@ struct GeneralSettingsView: View {
 
             Section(L10n.PreferencesGeneral.soundsSection) {
                 SettingRow(
-                    title: L10n.PreferencesGeneral.playSoundsTitle,
+                    title: L10n.PreferencesGeneral.playSoundsTitle
                 ) {
                     Toggle("", isOn: $playSounds)
                         .labelsHidden()
@@ -59,7 +59,7 @@ struct GeneralSettingsView: View {
             Section(L10n.PreferencesGeneral.exportSection) {
                 SettingRow(
                     title: L10n.PreferencesGeneral.exportLocationTitle,
-                    description: exportLocationDisplay,
+                    description: exportLocationDisplay
                 ) {
                     Button(L10n.PreferencesGeneral.chooseButton) {
                         chooseExportLocation()
@@ -76,7 +76,7 @@ struct GeneralSettingsView: View {
             Section(L10n.PreferencesAdvanced.clipboardSection) {
                 SettingRow(
                     title: L10n.PreferencesAdvanced.copyToClipboardTitle,
-                    description: L10n.PreferencesAdvanced.copyToClipboardDescription,
+                    description: L10n.PreferencesAdvanced.copyToClipboardDescription
                 ) {
                     Picker("", selection: $clipboardCopyMode) {
                         ForEach(ClipboardCopyMode.allCases) { mode in
@@ -102,7 +102,7 @@ struct GeneralSettingsView: View {
                 PreferencesLanguageSettingRow()
 
                 SettingRow(
-                    title: L10n.PreferencesGeneral.themeTitle,
+                    title: L10n.PreferencesGeneral.themeTitle
                 ) {
                     AppearanceModePicker(selection: $themeManager.preferredAppearance)
                 }
@@ -110,7 +110,7 @@ struct GeneralSettingsView: View {
 
             Section(L10n.PreferencesGeneral.helpSection) {
                 SettingRow(
-                    title: L10n.PreferencesGeneral.restartOnboardingTitle,
+                    title: L10n.PreferencesGeneral.restartOnboardingTitle
                 ) {
                     Button(L10n.PreferencesGeneral.restartButton) {
                         restartOnboarding()
@@ -151,7 +151,7 @@ struct GeneralSettingsView: View {
         if let url = fileAccessManager.chooseExportDirectory(
             message: L10n.PreferencesGeneral.chooseSaveLocationMessage,
             prompt: L10n.PreferencesGeneral.saveHereButton,
-            directoryURL: fileAccessManager.resolvedExportDirectoryURL(),
+            directoryURL: fileAccessManager.resolvedExportDirectoryURL()
         ) {
             exportLocation = url.path
         }

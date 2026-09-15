@@ -127,7 +127,7 @@ struct CustomWallpaperButton: View {
         let item = SystemWallpaperManager.WallpaperItem(
             fullImageURL: url,
             thumbnailURL: nil,
-            name: url.lastPathComponent,
+            name: url.lastPathComponent
         )
         SystemWallpaperManager.shared.loadThumbnail(for: item) { image in
             thumbnail = image
@@ -277,7 +277,7 @@ struct BlurredBackgroundEffectButton: View {
         LinearGradient(
             colors: [.secondary.opacity(0.25), .secondary.opacity(0.08)],
             startPoint: .topLeading,
-            endPoint: .bottomTrailing,
+            endPoint: .bottomTrailing
         )
         .blur(radius: min(effect.blurRadius / 4, 8))
     }
@@ -306,7 +306,7 @@ struct ColorSwatchGrid: View {
                         ColorSwatch(
                             color: entry.color,
                             name: entry.name,
-                            isSelected: AnnotateColorPaletteStore.colorsMatch(selectedColor, entry.color),
+                            isSelected: AnnotateColorPaletteStore.colorsMatch(selectedColor, entry.color)
                         ) {
                             selectedColor = entry.color
                         }
@@ -317,9 +317,9 @@ struct ColorSwatchGrid: View {
             LazyVGrid(
                 columns: Array(
                     repeating: GridItem(.flexible(), spacing: GridConfig.gap),
-                    count: GridConfig.colorColumns,
+                    count: GridConfig.colorColumns
                 ),
-                spacing: GridConfig.gap,
+                spacing: GridConfig.gap
             ) {
                 ForEach(paletteStore.customColors, id: \.self) { color in
                     AnnotateColorSwatchButton(
@@ -328,7 +328,7 @@ struct ColorSwatchGrid: View {
                         size: Size.colorSwatchSmall,
                         onDelete: {
                             paletteStore.removeColor(color)
-                        },
+                        }
                     ) {
                         selectedColor = color
                     }
@@ -337,7 +337,7 @@ struct ColorSwatchGrid: View {
                 AnnotateCustomColorPickerControl(
                     selectedColor: customColorBinding,
                     draftColor: $draftCustomColor,
-                    swatchSize: Size.colorSwatchSmall,
+                    swatchSize: Size.colorSwatchSmall
                 )
             }
         }
@@ -349,7 +349,7 @@ struct ColorSwatchGrid: View {
             set: { color in
                 draftCustomColor = color
                 selectedColor = color
-            },
+            }
         )
     }
 }
@@ -397,12 +397,12 @@ struct AnnotateColorSwatchButton: View {
             AnnotateColorSwatchCircle(
                 color: color,
                 isSelected: isSelected,
-                size: size,
+                size: size
             )
         } else {
             AnnotateFlexibleColorSwatchCircle(
                 color: color,
-                isSelected: isSelected,
+                isSelected: isSelected
             )
         }
     }
@@ -417,7 +417,7 @@ struct AnnotateColorSwatchButton: View {
                     .background(
                         Circle()
                             .fill(SidebarColors.itemDefault)
-                            .frame(width: deleteBackgroundSize, height: deleteBackgroundSize),
+                            .frame(width: deleteBackgroundSize, height: deleteBackgroundSize)
                     )
             }
             .buttonStyle(.plain)
@@ -452,8 +452,8 @@ struct AnnotateColorSwatchCircle: View {
                     Circle()
                         .strokeBorder(
                             isSelected ? SidebarColors.borderSelected : Color.secondary.opacity(0.35),
-                            lineWidth: isSelected ? Size.strokeSelected : Size.strokeDefault,
-                        ),
+                            lineWidth: isSelected ? Size.strokeSelected : Size.strokeDefault
+                        )
                 )
 
             if AnnotateColorPaletteStore.isClear(color) {
@@ -491,7 +491,7 @@ struct AnnotateCustomColorPickerControl: View {
                 selectedColor: $selectedColor,
                 draftColor: $draftColor,
                 onCancel: cancelCustomColorDraft,
-                onApply: applyCustomColorDraft,
+                onApply: applyCustomColorDraft
             )
             .padding(PopoverTokens.panelContentInset)
             .frame(width: PopoverTokens.propertyPanelWidth, alignment: .leading)
@@ -515,12 +515,12 @@ struct AnnotateCustomColorPickerControl: View {
                 AnnotateColorSwatchCircle(
                     color: draftColor,
                     isSelected: true,
-                    size: swatchSize,
+                    size: swatchSize
                 )
             } else {
                 AnnotateFlexibleColorSwatchCircle(
                     color: draftColor,
-                    isSelected: true,
+                    isSelected: true
                 )
             }
         } else if let swatchSize {
@@ -580,8 +580,8 @@ struct AnnotateAddColorSwatch: View {
                     Circle()
                         .stroke(
                             Color.secondary.opacity(0.45),
-                            style: StrokeStyle(lineWidth: Size.strokeDefault, dash: [3, 2]),
-                        ),
+                            style: StrokeStyle(lineWidth: Size.strokeDefault, dash: [3, 2])
+                        )
                 )
 
             Image(systemName: "plus")
@@ -622,8 +622,8 @@ struct AnnotateFlexibleAddColorSwatch: View {
                     Circle()
                         .stroke(
                             Color.secondary.opacity(0.45),
-                            style: StrokeStyle(lineWidth: Size.strokeDefault, dash: [3, 2]),
-                        ),
+                            style: StrokeStyle(lineWidth: Size.strokeDefault, dash: [3, 2])
+                        )
                 )
 
             Image(systemName: "plus")
@@ -712,8 +712,8 @@ private struct AnnotateColorSpectrumField: View {
                         LinearGradient(
                             colors: [.white, .white.opacity(0)],
                             startPoint: .leading,
-                            endPoint: .trailing,
-                        ),
+                            endPoint: .trailing
+                        )
                     )
 
                 Rectangle()
@@ -721,8 +721,8 @@ private struct AnnotateColorSpectrumField: View {
                         LinearGradient(
                             colors: [.black.opacity(0), .black],
                             startPoint: .top,
-                            endPoint: .bottom,
-                        ),
+                            endPoint: .bottom
+                        )
                     )
 
                 Circle()
@@ -731,7 +731,7 @@ private struct AnnotateColorSpectrumField: View {
                     .frame(width: 12, height: 12)
                     .position(
                         x: CGFloat(hsba.saturation) * proxy.size.width,
-                        y: CGFloat(1 - hsba.brightness) * proxy.size.height,
+                        y: CGFloat(1 - hsba.brightness) * proxy.size.height
                     )
             }
             .clipShape(RoundedRectangle(cornerRadius: Size.radiusSm, style: .continuous))
@@ -740,7 +740,7 @@ private struct AnnotateColorSpectrumField: View {
                 DragGesture(minimumDistance: 0)
                     .onChanged { value in
                         updateHSBA(location: value.location, size: proxy.size)
-                    },
+                    }
             )
         }
     }
@@ -783,7 +783,7 @@ private struct AnnotateHueSlider: View {
                     .onChanged { value in
                         hue = clamped(Double(value.location.x / max(proxy.size.width, 1)))
                         onChange()
-                    },
+                    }
             )
         }
     }
@@ -804,18 +804,18 @@ private struct AnnotateAlphaSlider: View {
                                     hue: hsba.hue,
                                     saturation: hsba.saturation,
                                     brightness: hsba.brightness,
-                                    opacity: 0,
+                                    opacity: 0
                                 ),
                                 Color(
                                     hue: hsba.hue,
                                     saturation: hsba.saturation,
                                     brightness: hsba.brightness,
-                                    opacity: 1,
-                                ),
+                                    opacity: 1
+                                )
                             ],
                             startPoint: .leading,
-                            endPoint: .trailing,
-                        ),
+                            endPoint: .trailing
+                        )
                     )
                     .overlay(Capsule().stroke(Color.secondary.opacity(0.25), lineWidth: 1))
 
@@ -834,7 +834,7 @@ private struct AnnotateAlphaSlider: View {
                         nextValue.alpha = clamped(Double(value.location.x / max(proxy.size.width, 1)))
                         hsba = nextValue
                         onChange()
-                    },
+                    }
             )
         }
     }
@@ -869,7 +869,7 @@ private struct HSBAColor: Equatable {
             hue: Double(hue),
             saturation: Double(saturation),
             brightness: Double(brightness),
-            alpha: Double(alpha),
+            alpha: Double(alpha)
         )
     }
 
@@ -909,7 +909,7 @@ struct SliderRow: View {
                         // Sync to binding only when drag ends
                         value = localValue
                     }
-                },
+                }
             )
             .controlSize(.small)
         }
@@ -932,7 +932,7 @@ struct AlignmentGrid: View {
     private let alignments: [[ImageAlignment]] = [
         [.topLeft, .top, .topRight],
         [.left, .center, .right],
-        [.bottomLeft, .bottom, .bottomRight],
+        [.bottomLeft, .bottom, .bottomRight]
     ]
 
     var body: some View {
@@ -942,7 +942,7 @@ struct AlignmentGrid: View {
                     ForEach(0 ..< 3, id: \.self) { col in
                         AlignmentCell(
                             alignment: alignments[row][col],
-                            isSelected: selected == alignments[row][col],
+                            isSelected: selected == alignments[row][col]
                         ) {
                             let newAlignment = alignments[row][col]
                             selected = newAlignment

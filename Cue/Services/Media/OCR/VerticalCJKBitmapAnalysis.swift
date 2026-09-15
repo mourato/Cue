@@ -38,7 +38,7 @@ struct VerticalCJKBitmap {
                     bitsPerComponent: 8,
                     bytesPerRow: imageBytesPerRow,
                     space: CGColorSpaceCreateDeviceRGB(),
-                    bitmapInfo: VerticalCJKBitmapFormat.rgbaBitmapInfo,
+                    bitmapInfo: VerticalCJKBitmapFormat.rgbaBitmapInfo
                 )
             else {
                 return false
@@ -80,7 +80,7 @@ struct VerticalCJKBitmap {
         return VerticalCJKRGBColor(
             red: redTotal / sampleCount,
             green: greenTotal / sampleCount,
-            blue: blueTotal / sampleCount,
+            blue: blueTotal / sampleCount
         )
     }
 
@@ -117,7 +117,7 @@ struct VerticalCJKBitmap {
         return VerticalCJKRGBColor(
             red: Int(pixels[offset]),
             green: Int(pixels[offset + 1]),
-            blue: Int(pixels[offset + 2]),
+            blue: Int(pixels[offset + 2])
         )
     }
 }
@@ -156,7 +156,7 @@ struct VerticalCJKGlyphBand {
             startY: min(startY, other.startY),
             endY: max(endY, other.endY),
             minX: min(minX, other.minX),
-            maxX: max(maxX, other.maxX),
+            maxX: max(maxX, other.maxX)
         )
     }
 
@@ -165,7 +165,7 @@ struct VerticalCJKGlyphBand {
             startY: max(0, startY - padding),
             endY: min(imageHeight - 1, endY + padding),
             minX: max(0, minX - padding),
-            maxX: min(imageWidth - 1, maxX + padding),
+            maxX: min(imageWidth - 1, maxX + padding)
         )
     }
 }
@@ -184,7 +184,7 @@ struct VerticalCJKRGBColor {
             red: CGFloat(red) / 255,
             green: CGFloat(green) / 255,
             blue: CGFloat(blue) / 255,
-            alpha: 1,
+            alpha: 1
         )
     }
 }

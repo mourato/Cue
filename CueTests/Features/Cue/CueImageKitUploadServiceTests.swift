@@ -21,8 +21,8 @@ final class CueImageKitUploadServiceTests: XCTestCase {
             XCTAssertNotNil(
                 body.range(
                     of: #"name="fileName"\r\n\r\n[0-9a-f-]{36}\.webp\r\n"#,
-                    options: .regularExpression,
-                ),
+                    options: .regularExpression
+                )
             )
             XCTAssertFalse(body.contains("notinhas"))
             let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
@@ -44,7 +44,7 @@ final class CueImageKitUploadServiceTests: XCTestCase {
 
         let result = try await makeService().upload(
             image: CueEncodedImage(data: Data("video-payload".utf8), fileExtension: "mp4", contentType: "video/mp4"),
-            privateKey: "fixture-private-key",
+            privateKey: "fixture-private-key"
         )
 
         XCTAssertEqual(result.url, "https://ik.imagekit.io/demo/video.mp4")

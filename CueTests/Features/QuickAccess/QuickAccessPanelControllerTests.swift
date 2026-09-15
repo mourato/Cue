@@ -38,7 +38,7 @@ final class QuickAccessPanelControllerTests: XCTestCase {
             Text("card"),
             size: CGSize(width: 200, height: 400),
             itemCount: 1,
-            scale: 1,
+            scale: 1
         )
     }
 

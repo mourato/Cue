@@ -32,7 +32,7 @@ struct CaptureFloatingToolbarIconButtonLabel: View {
             .foregroundStyle(.primary.opacity(isHovered ? 1.0 : 0.85))
             .background(
                 RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
-                    .fill(Color.primary.opacity(isHovered ? 0.1 : 0)),
+                    .fill(Color.primary.opacity(isHovered ? 0.1 : 0))
             )
             .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
             .animation(reduceMotion ? nil : ToolbarConstants.hoverAnimation, value: isHovered)
@@ -54,7 +54,7 @@ struct CaptureFloatingToolbarIconButtonLabel: View {
             icon
                 .frame(
                     width: ToolbarConstants.iconButtonSize,
-                    height: ToolbarConstants.iconButtonSize,
+                    height: ToolbarConstants.iconButtonSize
                 )
         }
     }
@@ -77,7 +77,7 @@ struct CaptureFloatingToolbarIconButton: View {
         systemName: String,
         title: String? = nil,
         action: @escaping () -> Void,
-        accessibilityLabel: String,
+        accessibilityLabel: String
     ) {
         self.systemName = systemName
         self.title = title
@@ -90,7 +90,7 @@ struct CaptureFloatingToolbarIconButton: View {
             CaptureFloatingToolbarIconButtonLabel(
                 systemName: systemName,
                 title: title,
-                isHovered: isHovered,
+                isHovered: isHovered
             )
         }
         .buttonStyle(.plain)
@@ -107,7 +107,7 @@ private struct CaptureFloatingToolbarMaterialBackground: ViewModifier {
             content
                 .glassEffect(
                     .regular,
-                    in: RoundedRectangle(cornerRadius: ToolbarConstants.toolbarCornerRadius, style: .continuous),
+                    in: RoundedRectangle(cornerRadius: ToolbarConstants.toolbarCornerRadius, style: .continuous)
                 )
         } else {
             content
@@ -115,7 +115,7 @@ private struct CaptureFloatingToolbarMaterialBackground: ViewModifier {
                 .clipShape(RoundedRectangle(cornerRadius: ToolbarConstants.toolbarCornerRadius))
                 .overlay(
                     RoundedRectangle(cornerRadius: ToolbarConstants.toolbarCornerRadius)
-                        .strokeBorder(Color.primary.opacity(0.2), lineWidth: 0.5),
+                        .strokeBorder(Color.primary.opacity(0.2), lineWidth: 0.5)
                 )
         }
     }

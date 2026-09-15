@@ -76,7 +76,7 @@
                             DetailRow(label: L10n.VideoEditor.segments, value: "\(state.zoomSegments.count)")
                             DetailRow(
                                 label: L10n.Common.enabled,
-                                value: "\(state.zoomSegments.filter(\.isEnabled).count)",
+                                value: "\(state.zoomSegments.filter(\.isEnabled).count)"
                             )
                         }
                     }
@@ -85,20 +85,20 @@
                         SidebarSection(title: L10n.VideoEditor.smartCamera) {
                             DetailRow(
                                 label: L10n.VideoEditor.mouseSamples,
-                                value: "\(state.recordingMetadata?.mouseSamples.count ?? 0)",
+                                value: "\(state.recordingMetadata?.mouseSamples.count ?? 0)"
                             )
                             DetailRow(
                                 label: L10n.VideoEditor.sampleRate,
-                                value: "\(state.recordingMetadata?.samplesPerSecond ?? 0) Hz",
+                                value: "\(state.recordingMetadata?.samplesPerSecond ?? 0) Hz"
                             )
                             DetailRow(
                                 label: L10n.VideoEditor.coordSpace,
-                                value: state.recordingMetadata?.coordinateSpace.rawValue ?? "—",
+                                value: state.recordingMetadata?.coordinateSpace.rawValue ?? "—"
                             )
                             DetailRow(label: L10n.VideoEditor.autoSegments, value: "\(state.autoZoomSegmentCount)")
                             DetailRow(
                                 label: L10n.Common.status,
-                                value: state.isAutoZoomActiveAtCurrentTime ? L10n.Common.active : L10n.Common.ready,
+                                value: state.isAutoZoomActiveAtCurrentTime ? L10n.Common.active : L10n.Common.ready
                             )
                         }
                     }

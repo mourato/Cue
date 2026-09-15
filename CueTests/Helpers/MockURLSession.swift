@@ -37,13 +37,13 @@ final class MockURLSession: URLSessionProtocol, @unchecked Sendable {
     static func makeResponse(
         statusCode: Int,
         data: Data = Data(),
-        url: URL = URL(string: "https://example.com")!,
+        url: URL = URL(string: "https://example.com")!
     ) -> (Data, URLResponse) {
         let response = HTTPURLResponse(
             url: url,
             statusCode: statusCode,
             httpVersion: nil,
-            headerFields: nil,
+            headerFields: nil
         )!
         return (data, response)
     }

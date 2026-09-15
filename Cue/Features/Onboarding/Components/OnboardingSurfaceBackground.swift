@@ -19,7 +19,7 @@ struct OnboardingSurfaceBackground: View {
                     appearance.bestMatch(from: [.darkAqua]) == .darkAqua
                         ? NSColor(srgbRed: 28 / 255, green: 28 / 255, blue: 30 / 255, alpha: 1) // #1C1C1E
                         : NSColor(srgbRed: 242 / 255, green: 242 / 255, blue: 247 / 255, alpha: 1) // #F2F2F7
-                },
+                }
             ))
 
             // 2. Subtle radial gradient accent — adds depth without revealing wallpaper
@@ -31,13 +31,13 @@ struct OnboardingSurfaceBackground: View {
                             appearance.bestMatch(from: [.darkAqua]) == .darkAqua
                                 ? NSColor.white.withAlphaComponent(0.04)
                                 : NSColor.black.withAlphaComponent(0.02)
-                        },
+                        }
                     )),
-                    Color.clear,
+                    Color.clear
                 ],
                 center: .top,
                 startRadius: 0,
-                endRadius: 500,
+                endRadius: 500
             )
 
             // 3. Noise texture overlay — fine grain for premium feel
@@ -67,7 +67,7 @@ private struct NoiseOverlay: View {
                     let alpha = value * 0.03 // Very subtle — 0–3% opacity per pixel
                     context.fill(
                         Path(CGRect(x: x, y: y, width: step, height: step)),
-                        with: .color(.white.opacity(alpha)),
+                        with: .color(.white.opacity(alpha))
                     )
                     y += step
                 }

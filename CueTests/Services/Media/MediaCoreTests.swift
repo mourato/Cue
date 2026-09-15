@@ -30,7 +30,7 @@ final class MediaCoreTests: XCTestCase {
 
         let result = QRCodeDetectionResult(
             detections: [makeDetection("https://example.com")],
-            unsupportedPayloadCount: 2,
+            unsupportedPayloadCount: 2
         )
 
         XCTAssertTrue(result.hasCopyablePayloads)
@@ -41,7 +41,7 @@ final class MediaCoreTests: XCTestCase {
         XCTAssertNil(OCRQRPayloadComposer.compose(
             recognizedText: " \n ",
             qrDetections: [],
-            qrSectionTitle: "QR Codes",
+            qrSectionTitle: "QR Codes"
         ))
     }
 
@@ -54,9 +54,9 @@ final class MediaCoreTests: XCTestCase {
                 makeDetection("WIFI:T:WPA;S:Office;P:secret;;"),
                 makeDetection("WIFI:T:WPA;S:Office;P:secret;;"),
                 makeDetection("   "),
-                makeDetection("mailto:team@example.com"),
+                makeDetection("mailto:team@example.com")
             ],
-            qrSectionTitle: "QR Codes",
+            qrSectionTitle: "QR Codes"
         )
 
         XCTAssertEqual(
@@ -67,7 +67,7 @@ final class MediaCoreTests: XCTestCase {
             QR Codes:
             WIFI:T:WPA;S:Office;P:secret;;
             mailto:team@example.com
-            """,
+            """
         )
     }
 
@@ -75,7 +75,7 @@ final class MediaCoreTests: XCTestCase {
         let output = OCRQRPayloadComposer.compose(
             recognizedText: nil,
             qrDetections: [makeDetection("https://example.com")],
-            qrSectionTitle: "QR Codes",
+            qrSectionTitle: "QR Codes"
         )
 
         XCTAssertEqual(output, "https://example.com")
@@ -84,7 +84,7 @@ final class MediaCoreTests: XCTestCase {
     func testOCRBenchmarkMetrics_normalizesLineEndingsAndWhitespace() {
         XCTAssertEqual(
             OCRBenchmarkMetrics.normalized(" \r\nHello\rWorld\n "),
-            "Hello\nWorld",
+            "Hello\nWorld"
         )
     }
 
@@ -100,22 +100,22 @@ final class MediaCoreTests: XCTestCase {
                 expectedText: "Xin chao",
                 recognizedText: "Xin chao",
                 confidence: 0.9,
-                latencyMs: 20,
+                latencyMs: 20
             ),
             OCRBenchmarkSample(
                 languageIdentifier: "en",
                 expectedText: "Hello",
                 recognizedText: "Hella",
                 confidence: 0.8,
-                latencyMs: 10,
+                latencyMs: 10
             ),
             OCRBenchmarkSample(
                 languageIdentifier: "en",
                 expectedText: "World",
                 recognizedText: "",
                 confidence: 0.2,
-                latencyMs: 30,
-            ),
+                latencyMs: 30
+            )
         ])
 
         XCTAssertEqual(summaries.map(\.languageIdentifier), ["en", "vi"])
@@ -138,7 +138,7 @@ final class MediaCoreTests: XCTestCase {
         QRCodeDetection(
             payload: payload,
             boundingBox: CGRect(x: 0.1, y: 0.2, width: 0.3, height: 0.4),
-            classification: QRPayloadClassifier.classify(payload),
+            classification: QRPayloadClassifier.classify(payload)
         )
     }
 }

@@ -15,7 +15,7 @@ enum OverlayTooltipPlacement {
         anchor: CGRect,
         tooltipSize: CGSize,
         visibleFrame: CGRect,
-        preferred: OverlayTooltipEdge,
+        preferred: OverlayTooltipEdge
     ) -> CGRect {
         // Horizontal: center on anchor, clamp within [minX+margin, maxX-margin-width]
         let rawX = anchor.midX - tooltipSize.width / 2

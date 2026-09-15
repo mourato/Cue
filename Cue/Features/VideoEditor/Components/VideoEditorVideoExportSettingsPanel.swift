@@ -104,11 +104,11 @@
             .padding(12)
             .background(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(Color.white.opacity(0.04)),
+                    .fill(Color.white.opacity(0.04))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .stroke(Color.white.opacity(0.08), lineWidth: 1),
+                    .stroke(Color.white.opacity(0.08), lineWidth: 1)
             )
             .animation(.spring(response: 0.24, dampingFraction: 0.9), value: expandedTab)
         }
@@ -148,11 +148,11 @@
                 .padding(.vertical, 9)
                 .background(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(isExpanded ? Color.accentColor.opacity(0.14) : Color.white.opacity(0.05)),
+                        .fill(isExpanded ? Color.accentColor.opacity(0.14) : Color.white.opacity(0.05))
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .stroke(isExpanded ? Color.accentColor.opacity(0.32) : Color.white.opacity(0.08), lineWidth: 1),
+                        .stroke(isExpanded ? Color.accentColor.opacity(0.32) : Color.white.opacity(0.08), lineWidth: 1)
                 )
             }
             .buttonStyle(.plain)
@@ -187,11 +187,11 @@
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(Color.white.opacity(0.03)),
+                    .fill(Color.white.opacity(0.03))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(Color.white.opacity(0.06), lineWidth: 1),
+                    .stroke(Color.white.opacity(0.06), lineWidth: 1)
             )
             .transition(.move(edge: .bottom).combined(with: .opacity))
         }
@@ -221,15 +221,15 @@
                             .fill(
                                 state.exportSettings.quality == quality
                                     ? Color.accentColor.opacity(0.22)
-                                    : Color.white.opacity(0.08),
-                            ),
+                                    : Color.white.opacity(0.08)
+                            )
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
                             .stroke(
                                 state.exportSettings.quality == quality ? Color.accentColor.opacity(0.36) : Color.clear,
-                                lineWidth: 1,
-                            ),
+                                lineWidth: 1
+                            )
                     )
             }
             .buttonStyle(.plain)
@@ -264,7 +264,8 @@
                 }
 
                 if state.exportSettings.dimensionPreset != .custom,
-                   state.exportSettings.dimensionPreset != .original {
+                   state.exportSettings.dimensionPreset != .original
+                {
                     fileSizeReductionHint
                 }
             }
@@ -280,7 +281,7 @@
                             .frame(width: 20, height: 20)
                             .background(
                                 RoundedRectangle(cornerRadius: 6, style: .continuous)
-                                    .fill(Color.accentColor.opacity(0.14)),
+                                    .fill(Color.accentColor.opacity(0.14))
                             )
 
                         Text(L10n.Common.aspectRatio)
@@ -299,7 +300,7 @@
                             .padding(.vertical, 4)
                             .background(
                                 Capsule(style: .continuous)
-                                    .fill(Color.white.opacity(0.06)),
+                                    .fill(Color.white.opacity(0.06))
                             )
                     }
                 }
@@ -344,14 +345,14 @@
                     .padding(.vertical, 6)
                     .background(
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .fill(isSelected ? Color.accentColor.opacity(0.18) : Color.white.opacity(0.06)),
+                            .fill(isSelected ? Color.accentColor.opacity(0.18) : Color.white.opacity(0.06))
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
                             .stroke(
                                 isSelected ? Color.accentColor.opacity(0.32) : Color.white.opacity(0.08),
-                                lineWidth: 1,
-                            ),
+                                lineWidth: 1
+                            )
                     )
             }
             .buttonStyle(.plain)
@@ -366,7 +367,7 @@
                 .padding(.vertical, 6)
                 .background(
                     Capsule(style: .continuous)
-                        .fill(Color.white.opacity(0.06)),
+                        .fill(Color.white.opacity(0.06))
                 )
         }
 
@@ -463,15 +464,15 @@
                         .fill(
                             state.exportSettings.audioMode == mode
                                 ? Color.accentColor.opacity(0.22)
-                                : Color.white.opacity(0.08),
-                        ),
+                                : Color.white.opacity(0.08)
+                        )
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 8, style: .continuous)
                         .stroke(
                             state.exportSettings.audioMode == mode ? Color.accentColor.opacity(0.36) : Color.clear,
-                            lineWidth: 1,
-                        ),
+                            lineWidth: 1
+                        )
                 )
             }
             .buttonStyle(.plain)
@@ -553,7 +554,7 @@
                         settings.customHeight = Int(state.naturalSize.height)
                     }
                     state.updateExportSettings(settings)
-                },
+                }
             )
         }
 
@@ -569,7 +570,7 @@
                         settings.customHeight = Int(CGFloat(settings.customWidth) * ratio)
                     }
                     state.updateExportSettings(settings)
-                },
+                }
             )
         }
 
@@ -585,7 +586,7 @@
                         settings.customWidth = Int(CGFloat(settings.customHeight) * ratio)
                     }
                     state.updateExportSettings(settings)
-                },
+                }
             )
         }
 
@@ -596,7 +597,7 @@
                     var settings = state.exportSettings
                     settings.setAudioVolume(newValue, for: role)
                     state.updateExportSettings(settings)
-                },
+                }
             )
         }
     }

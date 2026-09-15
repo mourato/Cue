@@ -12,7 +12,7 @@ enum VideoModuleMediaRouting {
     /// Where History should send a capture when the user opens it.
     static func historyOpenDestination(
         for captureType: CaptureHistoryType,
-        videoModuleEnabled: Bool = VideoModuleAvailability.isEnabled,
+        videoModuleEnabled: Bool = VideoModuleAvailability.isEnabled
     ) -> MediaOpenDestination {
         switch captureType {
         case .screenshot:
@@ -24,7 +24,7 @@ enum VideoModuleMediaRouting {
 
     /// Where Quick Access should send a video item on edit / double-click / shortcut.
     static func quickAccessVideoOpenDestination(
-        videoModuleEnabled: Bool = VideoModuleAvailability.isEnabled,
+        videoModuleEnabled: Bool = VideoModuleAvailability.isEnabled
     ) -> MediaOpenDestination {
         videoModuleEnabled ? .videoEditor : .revealInFinder
     }
@@ -32,14 +32,14 @@ enum VideoModuleMediaRouting {
     /// Whether the Quick Access Edit action should be offered for an item.
     static func isEditActionAvailable(
         isVideo: Bool,
-        videoModuleEnabled: Bool = VideoModuleAvailability.isEnabled,
+        videoModuleEnabled: Bool = VideoModuleAvailability.isEnabled
     ) -> Bool {
         !isVideo || videoModuleEnabled
     }
 
     /// Whether video deep links / recording shortcuts may dispatch into capture or the editor.
     static func shouldDispatchVideoAction(
-        videoModuleEnabled: Bool = VideoModuleAvailability.isEnabled,
+        videoModuleEnabled: Bool = VideoModuleAvailability.isEnabled
     ) -> Bool {
         videoModuleEnabled
     }

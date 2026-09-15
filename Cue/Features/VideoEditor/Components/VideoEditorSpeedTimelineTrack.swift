@@ -143,14 +143,14 @@
                         isDragging: dragSegmentId == segment.id,
                         overlapsZoom: overlapsEnabledZoom(displaySegment),
                         blockX: segmentLayout.visualStartX,
-                        blockWidth: segmentLayout.visualWidth,
+                        blockWidth: segmentLayout.visualWidth
                     )
                     .popover(isPresented: ratePickerBinding(for: segment.id), arrowEdge: .top) {
                         SpeedRatePicker(
                             rate: segment.rate,
                             onSelect: { newRate in
                                 state.updateSpeed(id: segment.id, rate: newRate)
-                            },
+                            }
                         )
                     }
                 }
@@ -170,7 +170,7 @@
             }
             .onContinuousHover { phase in
                 switch phase {
-                case .active(let location):
+                case let .active(location):
                     isHovering = true
                     hoverLocation = location
                 case .ended:
@@ -187,7 +187,7 @@
         private func ratePickerBinding(for id: UUID) -> Binding<Bool> {
             Binding(
                 get: { ratePickerSegmentId == id },
-                set: { newValue in ratePickerSegmentId = newValue ? id : nil },
+                set: { newValue in ratePickerSegmentId = newValue ? id : nil }
             )
         }
 
@@ -234,7 +234,8 @@
 
         private func continueDrag(translation: CGSize) {
             guard let segmentId = dragSegmentId,
-                  let segment = state.speedSegments.first(where: { $0.id == segmentId }) else {
+                  let segment = state.speedSegments.first(where: { $0.id == segmentId })
+            else {
                 return
             }
 
@@ -282,7 +283,7 @@
             state.updateSpeed(
                 id: segment.id,
                 startTime: segment.startTime,
-                duration: segment.duration,
+                duration: segment.duration
             )
             lastDragModelUpdateTime = now
         }
@@ -325,7 +326,7 @@
             } label: {
                 Label(
                     isHovering ? L10n.VideoEditor.addSpeedHere : L10n.VideoEditor.addSpeedAtPlayhead,
-                    systemImage: "gauge.with.dots.needle.67percent",
+                    systemImage: "gauge.with.dots.needle.67percent"
                 )
             }
 
@@ -349,7 +350,7 @@
                 } label: {
                     Label(
                         selected.isEnabled ? L10n.VideoEditor.disableSpeed : L10n.VideoEditor.enableSpeed,
-                        systemImage: selected.isEnabled ? "eye.slash" : "eye",
+                        systemImage: selected.isEnabled ? "eye.slash" : "eye"
                     )
                 }
 
@@ -390,7 +391,7 @@
             return SegmentLayout(
                 visualStartX: visualStartX,
                 visualEndX: visualStartX + visualWidth,
-                visualWidth: visualWidth,
+                visualWidth: visualWidth
             )
         }
 
@@ -407,7 +408,8 @@
             guard !containing.isEmpty else { return nil }
 
             if let selectedId = state.selectedSpeedId,
-               let selected = containing.first(where: { $0.segment.id == selectedId }) {
+               let selected = containing.first(where: { $0.segment.id == selectedId })
+            {
                 return selected
             }
 
@@ -449,12 +451,12 @@
                     .fill(blockFillColor)
                     .overlay(
                         RoundedRectangle(cornerRadius: 6)
-                            .strokeBorder(borderColor, style: borderStyle),
+                            .strokeBorder(borderColor, style: borderStyle)
                     )
                     .shadow(
                         color: isSelected ? SpeedColors.fill(for: segment.rate).opacity(0.4) : .clear,
                         radius: 4,
-                        y: 2,
+                        y: 2
                     )
 
                 HStack(spacing: 4) {
@@ -538,7 +540,7 @@
 
                 LazyVGrid(
                     columns: Array(repeating: GridItem(.flexible(), spacing: PopoverTokens.controlSpacing), count: 3),
-                    spacing: PopoverTokens.controlSpacing,
+                    spacing: PopoverTokens.controlSpacing
                 ) {
                     ForEach(SpeedSegment.presets, id: \.self) { preset in
                         Button {
@@ -551,7 +553,7 @@
                                 .background(
                                     RoundedRectangle(cornerRadius: PopoverTokens.controlCornerRadius)
                                         .fill(isCurrent(preset) ? SpeedColors.fill(for: preset).opacity(0.9) : Color
-                                            .gray.opacity(0.15)),
+                                            .gray.opacity(0.15))
                                 )
                                 .foregroundColor(isCurrent(preset) ? .white : .primary)
                         }
@@ -585,8 +587,8 @@
                     RoundedRectangle(cornerRadius: 6)
                         .strokeBorder(
                             SpeedColors.speedUp.opacity(0.5),
-                            style: StrokeStyle(lineWidth: 1.5, dash: [6, 4]),
-                        ),
+                            style: StrokeStyle(lineWidth: 1.5, dash: [6, 4])
+                        )
                 )
                 .overlay(
                     HStack(spacing: 4) {
@@ -595,7 +597,7 @@
                         Text(L10n.VideoEditor.speedClickToAdd)
                             .font(.system(size: 9, weight: .medium))
                     }
-                    .foregroundColor(SpeedColors.speedUp.opacity(0.9)),
+                    .foregroundColor(SpeedColors.speedUp.opacity(0.9))
                 )
                 .frame(width: width, height: 28)
                 .offset(x: xPosition)

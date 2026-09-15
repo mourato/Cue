@@ -21,7 +21,7 @@ enum OCRError: LocalizedError {
             L10n.OCR.imageConversionFailed
         case .noTextFound:
             L10n.OCR.noTextFound
-        case .recognitionFailed(let error):
+        case let .recognitionFailed(error):
             L10n.OCR.recognitionFailed(error.localizedDescription)
         }
     }
@@ -62,13 +62,13 @@ final class OCRService {
             bitsPerComponent: 8,
             bytesPerRow: 0,
             space: colorSpace,
-            bitmapInfo: bitmapInfo,
+            bitmapInfo: bitmapInfo
         ) else {
             DiagnosticLogger.shared.log(
                 .warning,
                 .ocr,
                 "OCR image normalization failed; using original image",
-                context: ["width": "\(width)", "height": "\(height)"],
+                context: ["width": "\(width)", "height": "\(height)"]
             )
             return image
         }
@@ -80,7 +80,7 @@ final class OCRService {
                 .warning,
                 .ocr,
                 "OCR image normalization produced no output; using original image",
-                context: ["width": "\(width)", "height": "\(height)"],
+                context: ["width": "\(width)", "height": "\(height)"]
             )
             return image
         }
@@ -99,19 +99,19 @@ final class OCRService {
             image: normalizedImage,
             preferredLanguageIdentifier: request.preferredLanguageIdentifier,
             contentType: request.contentType,
-            keepLineBreaks: request.keepLineBreaks,
+            keepLineBreaks: request.keepLineBreaks
         )
 
         let profile = VisionOCRProfile.resolve(for: request)
         let languageContext = request.preferredLanguageIdentifier ?? "auto"
         let primaryProfiles = uniqueProfiles([profile] + VisionOCRProfile.recoveryProfiles(
             for: request,
-            primary: profile,
+            primary: profile
         ))
         let primaryPass = await runRecognitionPass(
             for: request,
             profiles: primaryProfiles,
-            languageContext: languageContext,
+            languageContext: languageContext
         )
 
         if let acceptedResult = primaryPass.acceptedResult {
@@ -124,14 +124,14 @@ final class OCRService {
         if let enhancedImage = makeContrastEnhancedImage(from: request.image) {
             let enhancedProfiles = uniqueProfiles(VisionOCRProfile.enhancedRecoveryProfiles(
                 for: request,
-                primary: profile,
+                primary: profile
             ))
             if !enhancedProfiles.isEmpty {
                 let enhancedRequest = OCRRequest(
                     image: enhancedImage,
                     preferredLanguageIdentifier: request.preferredLanguageIdentifier,
                     contentType: request.contentType,
-                    keepLineBreaks: request.keepLineBreaks,
+                    keepLineBreaks: request.keepLineBreaks
                 )
 
                 DiagnosticLogger.shared.log(
@@ -140,14 +140,14 @@ final class OCRService {
                     "OCR contrast-enhanced recovery started",
                     context: [
                         "sourceProfile": profile.id,
-                        "profiles": enhancedProfiles.map(\.id).joined(separator: ","),
-                    ],
+                        "profiles": enhancedProfiles.map(\.id).joined(separator: ",")
+                    ]
                 )
 
                 let enhancedPass = await runRecognitionPass(
                     for: enhancedRequest,
                     profiles: enhancedProfiles,
-                    languageContext: "\(languageContext)+contrast",
+                    languageContext: "\(languageContext)+contrast"
                 )
 
                 bestCandidate = betterCandidate(bestCandidate, than: enhancedPass.bestCandidate)
@@ -159,17 +159,18 @@ final class OCRService {
         }
 
         if request.contentType != .code,
-           let verticalImage = VerticalCJKTextNormalizer.normalizedImage(from: request.image) {
+           let verticalImage = VerticalCJKTextNormalizer.normalizedImage(from: request.image)
+        {
             let verticalRequest = OCRRequest(
                 image: verticalImage,
                 preferredLanguageIdentifier: request.preferredLanguageIdentifier,
                 contentType: request.contentType,
-                keepLineBreaks: request.keepLineBreaks,
+                keepLineBreaks: request.keepLineBreaks
             )
             let verticalProfiles = uniqueProfiles(
                 [profile]
                     + VisionOCRProfile.recoveryProfiles(for: request, primary: profile)
-                    + VisionOCRProfile.enhancedRecoveryProfiles(for: request, primary: profile),
+                    + VisionOCRProfile.enhancedRecoveryProfiles(for: request, primary: profile)
             )
 
             DiagnosticLogger.shared.log(
@@ -180,14 +181,14 @@ final class OCRService {
                     "sourceProfile": profile.id,
                     "sourceSize": "\(request.image.width)x\(request.image.height)",
                     "normalizedSize": "\(verticalImage.width)x\(verticalImage.height)",
-                    "profiles": verticalProfiles.map(\.id).joined(separator: ","),
-                ],
+                    "profiles": verticalProfiles.map(\.id).joined(separator: ",")
+                ]
             )
 
             let verticalPass = await runRecognitionPass(
                 for: verticalRequest,
                 profiles: verticalProfiles,
-                languageContext: "\(languageContext)+vertical-cjk",
+                languageContext: "\(languageContext)+vertical-cjk"
             )
 
             bestCandidate = betterCandidate(bestCandidate, than: verticalPass.bestCandidate)
@@ -205,8 +206,8 @@ final class OCRService {
                 context: [
                     "profile": bestCandidate.result.profileID,
                     "confidence": String(format: "%.3f", bestCandidate.result.averageConfidence),
-                    "score": String(format: "%.3f", bestCandidate.score),
-                ],
+                    "score": String(format: "%.3f", bestCandidate.score)
+                ]
             )
             return bestCandidate.result
         }
@@ -221,15 +222,15 @@ final class OCRService {
         from image: CGImage,
         preferredLanguageIdentifier: String? = nil,
         contentType: OCRContentType = .interfaceText,
-        keepLineBreaks: Bool = true,
+        keepLineBreaks: Bool = true
     ) async throws -> String {
         let result = try await recognize(
             OCRRequest(
                 image: image,
                 preferredLanguageIdentifier: preferredLanguageIdentifier,
                 contentType: contentType,
-                keepLineBreaks: keepLineBreaks,
-            ),
+                keepLineBreaks: keepLineBreaks
+            )
         )
         return result.text
     }
@@ -241,7 +242,7 @@ final class OCRService {
         from image: NSImage,
         preferredLanguageIdentifier: String? = nil,
         contentType: OCRContentType = .interfaceText,
-        keepLineBreaks: Bool = true,
+        keepLineBreaks: Bool = true
     ) async throws -> String {
         guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
             DiagnosticLogger.shared.log(.error, .ocr, "NSImage to CGImage conversion failed")
@@ -251,7 +252,7 @@ final class OCRService {
             from: cgImage,
             preferredLanguageIdentifier: preferredLanguageIdentifier,
             contentType: contentType,
-            keepLineBreaks: keepLineBreaks,
+            keepLineBreaks: keepLineBreaks
         )
     }
 
@@ -260,7 +261,7 @@ final class OCRService {
     private func runRecognitionPass(
         for request: OCRRequest,
         profiles: [VisionOCRProfile],
-        languageContext: String,
+        languageContext: String
     ) async -> OCRPassSummary {
         var lastError: Error?
         var bestCandidate: OCRCandidate?
@@ -273,7 +274,7 @@ final class OCRService {
                     request,
                     using: profile,
                     languageContext: languageContext,
-                    isFallback: isFallback,
+                    isFallback: isFallback
                 )
                 let qualityScore = score(result, from: profile, request: request)
                 let candidate = (result: result, score: qualityScore)
@@ -292,8 +293,8 @@ final class OCRService {
                     context: [
                         "profile": profile.id,
                         "confidence": String(format: "%.3f", result.averageConfidence),
-                        "score": String(format: "%.3f", qualityScore),
-                    ],
+                        "score": String(format: "%.3f", qualityScore)
+                    ]
                 )
             } catch {
                 lastError = error
@@ -306,8 +307,8 @@ final class OCRService {
                     context: [
                         "failedProfile": profile.id,
                         "nextProfile": profiles[index + 1].id,
-                        "reason": error.localizedDescription,
-                    ],
+                        "reason": error.localizedDescription
+                    ]
                 )
             }
         }
@@ -319,7 +320,7 @@ final class OCRService {
         _ request: OCRRequest,
         using profile: VisionOCRProfile,
         languageContext: String,
-        isFallback: Bool,
+        isFallback: Bool
     ) async throws -> OCRResult {
         DiagnosticLogger.shared.log(
             .info,
@@ -330,8 +331,8 @@ final class OCRService {
                 "height": "\(request.image.height)",
                 "profile": profile.id,
                 "language": languageContext,
-                "contentType": request.contentType.rawValue,
-            ],
+                "contentType": request.contentType.rawValue
+            ]
         )
 
         return try await withCheckedThrowingContinuation { continuation in
@@ -348,7 +349,7 @@ final class OCRService {
                         .ocr,
                         error,
                         "OCR recognition failed",
-                        context: ["profile": profile.id],
+                        context: ["profile": profile.id]
                     )
                     resumeOnce(with: .failure(OCRError.recognitionFailed(error)))
                     return
@@ -364,7 +365,7 @@ final class OCRService {
                     return OCRTextLine(
                         text: candidate.string,
                         confidence: candidate.confidence,
-                        boundingBox: observation.boundingBox,
+                        boundingBox: observation.boundingBox
                     )
                 }
 
@@ -373,7 +374,7 @@ final class OCRService {
                         .warning,
                         .ocr,
                         "OCR completed: no text found",
-                        context: ["profile": profile.id],
+                        context: ["profile": profile.id]
                     )
                     resumeOnce(with: .failure(OCRError.noTextFound))
                     return
@@ -387,7 +388,7 @@ final class OCRService {
                     profileID: profile.id,
                     text: resultText,
                     lines: orderedLines,
-                    averageConfidence: averageConfidence,
+                    averageConfidence: averageConfidence
                 )
 
                 DiagnosticLogger.shared.log(
@@ -398,8 +399,8 @@ final class OCRService {
                         "profile": profile.id,
                         "lines": "\(lines.count)",
                         "chars": "\(resultText.count)",
-                        "confidence": String(format: "%.3f", averageConfidence),
-                    ],
+                        "confidence": String(format: "%.3f", averageConfidence)
+                    ]
                 )
                 resumeOnce(with: .success(result))
             }
@@ -419,7 +420,7 @@ final class OCRService {
 
     private func bestTextCandidate(
         for observation: VNRecognizedTextObservation,
-        request: OCRRequest,
+        request: OCRRequest
     ) -> VNRecognizedText? {
         let candidates = observation.topCandidates(5)
         guard let topCandidate = candidates.first else { return nil }
@@ -485,7 +486,7 @@ final class OCRService {
         text
             .folding(
                 options: [.diacriticInsensitive, .caseInsensitive, .widthInsensitive],
-                locale: Locale(identifier: "en_US_POSIX"),
+                locale: Locale(identifier: "en_US_POSIX")
             )
             .filter { !$0.isWhitespace }
     }
@@ -501,7 +502,7 @@ final class OCRService {
     private func containsVietnameseToneOrVowelMark(in text: String) -> Bool {
         text.range(
             of: "[ăâđêôơưĂÂĐÊÔƠƯàáảãạằắẳẵặầấẩẫậèéẻẽẹềếểễệìíỉĩịòóỏõọồốổỗộờớởỡợùúủũụừứửữựỳýỷỹỵ]",
-            options: .regularExpression,
+            options: .regularExpression
         ) != nil
     }
 
@@ -509,7 +510,7 @@ final class OCRService {
         _ result: OCRResult,
         from profile: VisionOCRProfile,
         request: OCRRequest,
-        qualityScore: Float,
+        qualityScore: Float
     ) -> Bool {
         let trimmedText = result.text.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmedText.isEmpty {
@@ -640,7 +641,7 @@ final class OCRService {
             let verticalGap = previousLine.boundingBox.minY - line.boundingBox.maxY
             let paragraphThreshold = max(
                 averageHeight * 0.75,
-                max(previousLine.boundingBox.height, line.boundingBox.height) * 0.68,
+                max(previousLine.boundingBox.height, line.boundingBox.height) * 0.68
             )
 
             if verticalGap > paragraphThreshold {
@@ -670,7 +671,7 @@ final class OCRService {
         let cjkWeight = cjkCharacterCount(in: paragraphText)
         let isLikelyCJK = (preferredLanguage.map(isCJKLanguage) ?? false) || cjkWeight >= max(
             6,
-            meaningfulCharacterCount(in: paragraphText) / 3,
+            meaningfulCharacterCount(in: paragraphText) / 3
         )
 
         if isLikelyCJK {
@@ -698,7 +699,7 @@ final class OCRService {
         let isLikelyCJK = (preferredLanguage.map(isCJKLanguage) ?? false) || cjkCharacterCount(in: paragraphText) >=
             max(
                 6,
-                meaningfulCharacterCount(in: paragraphText) / 3,
+                meaningfulCharacterCount(in: paragraphText) / 3
             )
         let separator = isLikelyCJK ? "" : " "
 
@@ -716,7 +717,8 @@ final class OCRService {
                 text.removeLast()
                 text += nextFragment
             } else if let firstScalar = nextFragment.unicodeScalars.first,
-                      leadingInlinePunctuation.contains(firstScalar) {
+                      leadingInlinePunctuation.contains(firstScalar)
+            {
                 text += nextFragment
             } else {
                 text += separator + nextFragment
@@ -761,7 +763,8 @@ final class OCRService {
         text.unicodeScalars.reduce(into: 0) { count, scalar in
             guard !CharacterSet.whitespacesAndNewlines.contains(scalar) else { return }
             if CharacterSet.alphanumerics
-                .contains(scalar) || isCJKScalar(scalar) || isKanaScalar(scalar) || isHangulScalar(scalar) {
+                .contains(scalar) || isCJKScalar(scalar) || isKanaScalar(scalar) || isHangulScalar(scalar)
+            {
                 count += 1
             }
         }

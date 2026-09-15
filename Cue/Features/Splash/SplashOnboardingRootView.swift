@@ -35,14 +35,14 @@ struct SplashOnboardingRootView: View {
     @ObservedObject private var screenCaptureManager = ScreenCaptureManager.shared
 
     private static let defaultOnboardingSteps: [SplashScreen] = [
-        .language, .permissions, .configAccess, .shortcuts, .diagnostics, .completion,
+        .language, .permissions, .configAccess, .shortcuts, .diagnostics, .completion
     ]
 
     init(
         needsOnboarding: Bool,
         initialScreen: SplashScreen = .splash,
         onboardingSteps: [SplashScreen]? = nil,
-        onDismiss: @escaping () -> Void,
+        onDismiss: @escaping () -> Void
     ) {
         self.needsOnboarding = needsOnboarding
         self.onboardingSteps = onboardingSteps ?? Self.defaultOnboardingSteps
@@ -73,7 +73,7 @@ struct SplashOnboardingRootView: View {
                 case .language:
                     OnboardingLanguageSelectionView(
                         onBack: { navigateBackward(to: .splash) },
-                        onContinue: handleLanguageContinue,
+                        onContinue: handleLanguageContinue
                     )
                     .transition(stepTransition)
 
@@ -81,7 +81,7 @@ struct SplashOnboardingRootView: View {
                     PermissionsView(
                         screenCaptureManager: screenCaptureManager,
                         onBack: { navigateBackward(to: .language) },
-                        onNext: { navigateForward(to: .configAccess) },
+                        onNext: { navigateForward(to: .configAccess) }
                     )
                     .transition(stepTransition)
 
@@ -89,7 +89,7 @@ struct SplashOnboardingRootView: View {
                     ConfigAccessView(
                         onBack: needsOnboarding ? { navigateBackward(to: .permissions) } : nil,
                         onComplete: handleConfigAccessContinue,
-                        onSkip: handleConfigAccessContinue,
+                        onSkip: handleConfigAccessContinue
                     )
                     .transition(stepTransition)
 
@@ -100,21 +100,21 @@ struct SplashOnboardingRootView: View {
                         onAccept: {
                             KeyboardShortcutManager.shared.enable()
                             navigateForward(to: .diagnostics)
-                        },
+                        }
                     )
                     .transition(stepTransition)
 
                 case .diagnostics:
                     DiagnosticsOptInView(
                         onBack: { navigateBackward(to: .shortcuts) },
-                        onNext: { navigateForward(to: .completion) },
+                        onNext: { navigateForward(to: .completion) }
                     )
                     .transition(stepTransition)
 
                 case .completion:
                     CompletionView(
                         onBack: { navigateBackward(to: .diagnostics) },
-                        onComplete: handleComplete,
+                        onComplete: handleComplete
                     )
                     .transition(stepTransition)
                 }
@@ -148,12 +148,12 @@ struct SplashOnboardingRootView: View {
         case .forward:
             .asymmetric(
                 insertion: .move(edge: .trailing).combined(with: .opacity),
-                removal: .move(edge: .leading).combined(with: .opacity),
+                removal: .move(edge: .leading).combined(with: .opacity)
             )
         case .backward:
             .asymmetric(
                 insertion: .move(edge: .leading).combined(with: .opacity),
-                removal: .move(edge: .trailing).combined(with: .opacity),
+                removal: .move(edge: .trailing).combined(with: .opacity)
             )
         }
     }
@@ -239,7 +239,7 @@ struct SplashOnboardingRootView: View {
 #Preview {
     SplashOnboardingRootView(
         needsOnboarding: true,
-        onDismiss: {},
+        onDismiss: {}
     )
     .frame(width: 800, height: 600)
 }

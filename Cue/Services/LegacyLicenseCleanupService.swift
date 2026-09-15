@@ -19,7 +19,7 @@ final class LegacyLicenseCleanupService {
         "com.snapzy.license.key",
         "com.snapzy.telemetry.events",
         "polar_org_id",
-        "device_limit",
+        "device_limit"
     ]
 
     private init() {}
@@ -37,7 +37,7 @@ final class LegacyLicenseCleanupService {
     private func deleteLegacyKeychainItems() {
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
-            kSecAttrService: keychainService,
+            kSecAttrService: keychainService
         ]
 
         let status = SecItemDelete(query as CFDictionary)
@@ -45,7 +45,7 @@ final class LegacyLicenseCleanupService {
             DiagnosticLogger.shared.log(
                 .warning,
                 .system,
-                "Legacy license keychain cleanup failed with status \(status)",
+                "Legacy license keychain cleanup failed with status \(status)"
             )
             return
         }

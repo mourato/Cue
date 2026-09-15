@@ -27,7 +27,7 @@ final class AreaSelectionMagnifier {
         "bounds": NSNull(),
         "position": NSNull(),
         "hidden": NSNull(),
-        "contentsRect": NSNull(),
+        "contentsRect": NSNull()
     ]
 
     private var overlayFont: NSFont {
@@ -37,7 +37,7 @@ final class AreaSelectionMagnifier {
     private var overlayTextAttributes: [NSAttributedString.Key: Any] {
         [
             .font: overlayFont,
-            .foregroundColor: NSColor.white,
+            .foregroundColor: NSColor.white
         ]
     }
 
@@ -140,7 +140,7 @@ final class AreaSelectionMagnifier {
         backdropHeight: Int,
         backdropScale: CGFloat,
         contentsScale: CGFloat,
-        in rootLayer: CALayer,
+        in rootLayer: CALayer
     ) {
         guard zoom > 1.0, let backdropImage else {
             removeLayers()
@@ -153,7 +153,8 @@ final class AreaSelectionMagnifier {
               let imgLayer = imageLayer,
               let centerIndicator = centerPixelLayer,
               let infoBg = infoBackgroundLayer,
-              let infoText = infoTextLayer else {
+              let infoText = infoTextLayer
+        else {
             return
         }
 
@@ -231,7 +232,7 @@ final class AreaSelectionMagnifier {
             x: pillX + textPadding * 2,
             y: pillY + textPadding / 2.0 - 0.5,
             width: textSize.width,
-            height: textSize.height,
+            height: textSize.height
         )
         infoText.isHidden = false
 

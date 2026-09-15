@@ -153,21 +153,21 @@
 
             XCTAssertEqual(
                 defaultParsed.value(at: "shortcuts", "global", "toggle_pen_recording", "key")?.stringValue,
-                "",
+                ""
             )
             XCTAssertEqual(
                 defaultParsed.value(at: "shortcuts", "global", "toggle_pen_recording", "enabled")?.boolValue,
-                true,
+                true
             )
             XCTAssertEqual(defaultParsed.value(at: "shortcuts", "global", "restart_recording", "key")?.stringValue, "")
             XCTAssertEqual(
                 defaultParsed.value(at: "shortcuts", "global", "restart_recording", "enabled")?.boolValue,
-                true,
+                true
             )
             XCTAssertEqual(defaultParsed.value(at: "shortcuts", "global", "delete_recording", "key")?.stringValue, "")
             XCTAssertEqual(
                 defaultParsed.value(at: "shortcuts", "global", "delete_recording", "enabled")?.boolValue,
-                true,
+                true
             )
 
             // Import test
@@ -233,7 +233,7 @@
             XCTAssertEqual(document.value(at: "shortcuts", "global", "toggle_pen_recording", "key")?.stringValue, "P")
             XCTAssertEqual(
                 document.value(at: "shortcuts", "global", "toggle_pen_recording", "enabled")?.boolValue,
-                true,
+                true
             )
 
             XCTAssertEqual(document.value(at: "shortcuts", "global", "restart_recording", "key")?.stringValue, "R")

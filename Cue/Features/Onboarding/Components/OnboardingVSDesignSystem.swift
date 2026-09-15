@@ -18,7 +18,7 @@ enum VSDesignSystem {
         /// Headings, titles, prominent icon tints
         static let primary = Color(nsColor: NSColor(
             name: nil,
-            dynamicProvider: { $0.bestMatch(from: [.darkAqua]) == .darkAqua ? .white : .black },
+            dynamicProvider: { $0.bestMatch(from: [.darkAqua]) == .darkAqua ? .white : .black }
         ))
 
         /// Success feedback tint
@@ -31,7 +31,7 @@ enum VSDesignSystem {
                 appearance.bestMatch(from: [.darkAqua]) == .darkAqua
                     ? NSColor.white.withAlphaComponent(0.85)
                     : NSColor.black.withAlphaComponent(0.7)
-            },
+            }
         ))
 
         /// Descriptions, supporting text
@@ -41,7 +41,7 @@ enum VSDesignSystem {
                 appearance.bestMatch(from: [.darkAqua]) == .darkAqua
                     ? NSColor.white.withAlphaComponent(0.65)
                     : NSColor.black.withAlphaComponent(0.5)
-            },
+            }
         ))
 
         /// Footnotes, dim labels, "Press Enter" hints
@@ -51,7 +51,7 @@ enum VSDesignSystem {
                 appearance.bestMatch(from: [.darkAqua]) == .darkAqua
                     ? NSColor.white.withAlphaComponent(0.5)
                     : NSColor.black.withAlphaComponent(0.35)
-            },
+            }
         ))
 
         /// Card / row background fill
@@ -61,7 +61,7 @@ enum VSDesignSystem {
                 appearance.bestMatch(from: [.darkAqua]) == .darkAqua
                     ? NSColor.white.withAlphaComponent(0.08)
                     : NSColor.black.withAlphaComponent(0.04)
-            },
+            }
         ))
 
         /// Card / row border stroke
@@ -71,7 +71,7 @@ enum VSDesignSystem {
                 appearance.bestMatch(from: [.darkAqua]) == .darkAqua
                     ? NSColor.white.withAlphaComponent(0.14)
                     : NSColor.black.withAlphaComponent(0.1)
-            },
+            }
         ))
 
         /// Subtle divider
@@ -81,7 +81,7 @@ enum VSDesignSystem {
                 appearance.bestMatch(from: [.darkAqua]) == .darkAqua
                     ? NSColor.white.withAlphaComponent(0.12)
                     : NSColor.black.withAlphaComponent(0.1)
-            },
+            }
         ))
 
         /// Primary button fill
@@ -91,7 +91,7 @@ enum VSDesignSystem {
                 appearance.bestMatch(from: [.darkAqua]) == .darkAqua
                     ? NSColor.white.withAlphaComponent(0.25)
                     : NSColor.black.withAlphaComponent(0.1)
-            },
+            }
         ))
 
         /// Primary button stroke
@@ -101,7 +101,7 @@ enum VSDesignSystem {
                 appearance.bestMatch(from: [.darkAqua]) == .darkAqua
                     ? NSColor.white.withAlphaComponent(0.35)
                     : NSColor.black.withAlphaComponent(0.2)
-            },
+            }
         ))
 
         /// Secondary / disabled button fill
@@ -111,7 +111,7 @@ enum VSDesignSystem {
                 appearance.bestMatch(from: [.darkAqua]) == .darkAqua
                     ? NSColor.white.withAlphaComponent(0.12)
                     : NSColor.black.withAlphaComponent(0.06)
-            },
+            }
         ))
 
         /// Secondary button stroke
@@ -121,7 +121,7 @@ enum VSDesignSystem {
                 appearance.bestMatch(from: [.darkAqua]) == .darkAqua
                     ? NSColor.white.withAlphaComponent(0.22)
                     : NSColor.black.withAlphaComponent(0.15)
-            },
+            }
         ))
     }
 
@@ -146,7 +146,7 @@ enum VSDesignSystem {
                 .padding(.horizontal, 20)
                 .background(
                     Capsule()
-                        .fill(isDisabled ? Colors.secondaryButtonFill : Colors.buttonFill),
+                        .fill(isDisabled ? Colors.secondaryButtonFill : Colors.buttonFill)
                 )
                 .overlay(Capsule().stroke(Colors.buttonStroke, lineWidth: 1))
                 .opacity(configuration.isPressed ? 0.8 : 1.0)
@@ -164,7 +164,7 @@ enum VSDesignSystem {
                 .padding(.horizontal, 20)
                 .background(
                     Capsule()
-                        .fill(Colors.secondaryButtonFill),
+                        .fill(Colors.secondaryButtonFill)
                 )
                 .overlay(Capsule().stroke(Colors.secondaryButtonStroke, lineWidth: 1))
                 .opacity(configuration.isPressed ? 0.7 : 1.0)
@@ -182,7 +182,7 @@ enum VSDesignSystem {
                 .padding(.horizontal, 20)
                 .background(
                     Capsule()
-                        .fill(Colors.success.opacity(0.3)),
+                        .fill(Colors.success.opacity(0.3))
                 )
                 .overlay(Capsule().stroke(Colors.success.opacity(0.5), lineWidth: 1))
                 .opacity(configuration.isPressed ? 0.8 : 1.0)

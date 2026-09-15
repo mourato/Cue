@@ -37,7 +37,7 @@ struct PersistedArrowGeometry: Codable, Equatable {
             arrowType: arrowType.flatMap(ArrowType.init(rawValue:)) ?? .outlined,
             // Older saves have no endpoint fields → keep the historical single-headed arrow.
             startHead: startHead.flatMap(ArrowEndpointStyle.init(rawValue:)) ?? .none,
-            endHead: endHead.flatMap(ArrowEndpointStyle.init(rawValue:)) ?? .arrow,
+            endHead: endHead.flatMap(ArrowEndpointStyle.init(rawValue:)) ?? .arrow
         )
     }
 }
@@ -90,7 +90,7 @@ struct PersistedAnnotationProperties: Codable, Equatable {
             textPresentation: TextPresentation(rawValue: textPresentation ?? "") ?? .plain,
             calloutTailTarget: calloutTailTarget,
             magnification: magnification ?? MagnifyGeometry.defaultMagnification,
-            shapeFillStyle: AnnotationShapeFillStyle(rawValue: shapeFillStyle ?? "") ?? .outline,
+            shapeFillStyle: AnnotationShapeFillStyle(rawValue: shapeFillStyle ?? "") ?? .outline
         )
     }
 }
@@ -103,7 +103,7 @@ extension PersistedAnnotationSession {
         sourceFilePathHash: String,
         sourceSignature: PersistedFileSignature,
         createdAt: Date,
-        updatedAt: Date = Date(),
+        updatedAt: Date = Date()
     ) {
         let embeddedAssetFileNames = Dictionary(uniqueKeysWithValues: sessionData.embeddedImageAssetsData.keys.map {
             ($0.uuidString, "\($0.uuidString).bin")
@@ -115,7 +115,7 @@ extension PersistedAnnotationSession {
                 directionRawValue: snapshot.direction.rawValue,
                 gap: Double(snapshot.gap),
                 freeBoundsByAnnotationID: Dictionary(uniqueKeysWithValues:
-                    snapshot.freeBoundsByAnnotationID.map { ($0.key.uuidString, $0.value) }),
+                    snapshot.freeBoundsByAnnotationID.map { ($0.key.uuidString, $0.value) })
             )
         }
 
@@ -138,7 +138,7 @@ extension PersistedAnnotationSession {
             createdAt: createdAt,
             updatedAt: updatedAt,
             combineSession: persistedCombineSession,
-            cueNotesSession: sessionData.cueNotes,
+            cueNotesSession: sessionData.cueNotes
         )
     }
 
@@ -146,7 +146,7 @@ extension PersistedAnnotationSession {
     func sessionData(
         originalImageData: Data,
         cutoutImageData: Data?,
-        embeddedImageAssetsData: [UUID: Data],
+        embeddedImageAssetsData: [UUID: Data]
     ) -> AnnotationSessionData {
         AnnotationSessionData(
             originalImageData: originalImageData,
@@ -161,7 +161,7 @@ extension PersistedAnnotationSession {
             cutoutAutoAppliedCropRect: cutoutAutoAppliedCropRect,
             embeddedImageAssetsData: embeddedImageAssetsData,
             combineSession: combineSession?.toSnapshot(),
-            cueNotes: cueNotesSession,
+            cueNotes: cueNotesSession
         )
     }
 }
@@ -179,7 +179,7 @@ extension PersistedCombineSession {
             mode: mode,
             direction: direction,
             gap: CGFloat(gap),
-            freeBoundsByAnnotationID: bounds,
+            freeBoundsByAnnotationID: bounds
         )
     }
 }

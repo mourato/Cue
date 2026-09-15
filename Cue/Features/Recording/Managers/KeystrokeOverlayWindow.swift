@@ -24,7 +24,7 @@
                 contentRect: recordingRect,
                 styleMask: [.borderless],
                 backing: .buffered,
-                defer: false,
+                defer: false
             )
 
             configureWindow()
@@ -59,32 +59,32 @@
             case .bottomCenter:
                 constraints = [
                     badge.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-                    badge.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -offset),
+                    badge.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -offset)
                 ]
             case .bottomLeft:
                 constraints = [
                     badge.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: offset),
-                    badge.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -offset),
+                    badge.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -offset)
                 ]
             case .bottomRight:
                 constraints = [
                     badge.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -offset),
-                    badge.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -offset),
+                    badge.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -offset)
                 ]
             case .topCenter:
                 constraints = [
                     badge.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-                    badge.topAnchor.constraint(equalTo: contentView.topAnchor, constant: offset),
+                    badge.topAnchor.constraint(equalTo: contentView.topAnchor, constant: offset)
                 ]
             case .topLeft:
                 constraints = [
                     badge.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: offset),
-                    badge.topAnchor.constraint(equalTo: contentView.topAnchor, constant: offset),
+                    badge.topAnchor.constraint(equalTo: contentView.topAnchor, constant: offset)
                 ]
             case .topRight:
                 constraints = [
                     badge.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -offset),
-                    badge.topAnchor.constraint(equalTo: contentView.topAnchor, constant: offset),
+                    badge.topAnchor.constraint(equalTo: contentView.topAnchor, constant: offset)
                 ]
             }
 
@@ -248,14 +248,14 @@
                 roundedRect: bounds,
                 cornerWidth: badgeCornerRadius,
                 cornerHeight: badgeCornerRadius,
-                transform: nil,
+                transform: nil
             )
 
             textLayer.frame = CGRect(
                 x: horizontalPadding,
                 y: verticalPadding - 1,
                 width: textSize.width,
-                height: textSize.height,
+                height: textSize.height
             )
 
             CATransaction.commit()

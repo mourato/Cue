@@ -39,7 +39,7 @@ struct FeedbackMaterialBackground: NSViewRepresentable {
             material: material,
             usesSolidFallback: usesSolidFallback,
             solidBackgroundColor: solidBackgroundColor,
-            overlayTint: overlayTint,
+            overlayTint: overlayTint
         )
     }
 }
@@ -82,7 +82,7 @@ private final class FeedbackMaterialContainerView: NSView {
             tintView.leadingAnchor.constraint(equalTo: leadingAnchor),
             tintView.trailingAnchor.constraint(equalTo: trailingAnchor),
             tintView.topAnchor.constraint(equalTo: topAnchor),
-            tintView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            tintView.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
     }
 
@@ -101,7 +101,7 @@ private final class FeedbackMaterialContainerView: NSView {
         material: NSVisualEffectView.Material,
         usesSolidFallback: Bool,
         solidBackgroundColor: NSColor,
-        overlayTint: Color,
+        overlayTint: Color
     ) {
         self.cornerRadius = cornerRadius
         self.usesSolidFallback = usesSolidFallback

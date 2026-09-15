@@ -90,13 +90,13 @@ final class BlurCacheManager {
         allowApproximateReuse: Bool = false,
         renderSynchronously: Bool = true,
         quality: BlurRenderQuality = .settled,
-        resolvedSourceCGImage: CGImage? = nil,
+        resolvedSourceCGImage: CGImage? = nil
     ) -> CGImage? {
         let normalizedBounds = bounds.standardized
         guard let sourceCGImage = resolvedSourceCGImage ?? sourceImage.cgImage(
             forProposedRect: nil,
             context: nil,
-            hints: nil,
+            hints: nil
         ) else { return nil }
 
         let sourceSignature = makeSourceSignature(for: sourceImage, cgImage: sourceCGImage)
@@ -107,20 +107,20 @@ final class BlurCacheManager {
             blurType: blurType,
             effectValue: effectValue,
             sourceSignature: sourceSignature,
-            cacheScale: cacheScale,
+            cacheScale: cacheScale
         )
         let request = RenderRequest(
             annotationId: annotationId,
             descriptor: descriptor,
             sourceCGImage: sourceCGImage,
             sourceSize: sourceImage.size,
-            quality: quality,
+            quality: quality
         )
 
         if let lookup = cachedImage(
             for: annotationId,
             descriptor: descriptor,
-            allowApproximateReuse: allowApproximateReuse,
+            allowApproximateReuse: allowApproximateReuse
         ) {
             if !lookup.isExact, !renderSynchronously {
                 scheduleAsyncRender(request)
@@ -136,13 +136,13 @@ final class BlurCacheManager {
                 blurType: descriptor.blurType,
                 effectValue: descriptor.effectValue,
                 cacheScale: descriptor.cacheScale,
-                quality: quality,
+                quality: quality
             ) else { return nil }
 
             store(
                 rendered,
                 for: annotationId,
-                descriptor: descriptor,
+                descriptor: descriptor
             )
             return rendered
         }
@@ -173,12 +173,13 @@ final class BlurCacheManager {
     private func cachedImage(
         for annotationId: UUID,
         descriptor: RenderDescriptor,
-        allowApproximateReuse: Bool,
+        allowApproximateReuse: Bool
     ) -> CachedLookup? {
         guard var entry = cache[annotationId],
               entry.blurType == descriptor.blurType,
               entry.effectValue == descriptor.effectValue,
-              entry.sourceSignature == descriptor.sourceSignature else {
+              entry.sourceSignature == descriptor.sourceSignature
+        else {
             return nil
         }
 
@@ -207,7 +208,7 @@ final class BlurCacheManager {
         let token = UUID()
         inFlightRenders[request.annotationId] = InFlightRender(
             token: token,
-            descriptor: request.descriptor,
+            descriptor: request.descriptor
         )
 
         DispatchQueue.global(qos: .userInitiated).async { [request] in
@@ -218,7 +219,7 @@ final class BlurCacheManager {
                 blurType: request.descriptor.blurType,
                 effectValue: request.descriptor.effectValue,
                 cacheScale: request.descriptor.cacheScale,
-                quality: request.quality,
+                quality: request.quality
             )
 
             DispatchQueue.main.async { [weak self] in
@@ -231,7 +232,7 @@ final class BlurCacheManager {
                     store(
                         rendered,
                         for: request.annotationId,
-                        descriptor: request.descriptor,
+                        descriptor: request.descriptor
                     )
                     onRenderCompleted?(request.annotationId, request.descriptor.bounds)
                 }
@@ -250,7 +251,7 @@ final class BlurCacheManager {
         blurType: BlurType,
         effectValue: CGFloat,
         cacheScale: CGFloat,
-        quality: BlurRenderQuality,
+        quality: BlurRenderQuality
     ) -> CGImage? {
         let width = Int(ceil(bounds.width * cacheScale))
         let height = Int(ceil(bounds.height * cacheScale))
@@ -263,7 +264,7 @@ final class BlurCacheManager {
             bitsPerComponent: 8,
             bytesPerRow: 0,
             space: CGColorSpaceCreateDeviceRGB(),
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
         ) else { return nil }
 
         context.scaleBy(x: cacheScale, y: cacheScale)
@@ -277,7 +278,7 @@ final class BlurCacheManager {
                 sourceSize: sourceSize,
                 sourceRegion: bounds,
                 destRegion: localRegion,
-                pixelSize: effectValue,
+                pixelSize: effectValue
             )
         case .gaussian:
             BlurEffectRenderer.drawGaussianRegion(
@@ -287,7 +288,7 @@ final class BlurCacheManager {
                 sourceRegion: bounds,
                 destRegion: localRegion,
                 radius: Double(effectValue),
-                quality: quality,
+                quality: quality
             )
         case .hexagonal:
             BlurEffectRenderer.drawHexagonalRegion(
@@ -297,7 +298,7 @@ final class BlurCacheManager {
                 sourceRegion: bounds,
                 destRegion: localRegion,
                 scale: Double(effectValue),
-                quality: quality,
+                quality: quality
             )
         case .crystallized:
             BlurEffectRenderer.drawCrystallizedRegion(
@@ -307,7 +308,7 @@ final class BlurCacheManager {
                 sourceRegion: bounds,
                 destRegion: localRegion,
                 radius: Double(effectValue),
-                quality: quality,
+                quality: quality
             )
         case .pointillism:
             BlurEffectRenderer.drawPointillismRegion(
@@ -317,7 +318,7 @@ final class BlurCacheManager {
                 sourceRegion: bounds,
                 destRegion: localRegion,
                 radius: Double(effectValue),
-                quality: quality,
+                quality: quality
             )
         case .halftone:
             BlurEffectRenderer.drawHalftoneRegion(
@@ -327,7 +328,7 @@ final class BlurCacheManager {
                 sourceRegion: bounds,
                 destRegion: localRegion,
                 width: Double(effectValue),
-                quality: quality,
+                quality: quality
             )
         case .tape:
             BlurEffectRenderer.drawTapeRegion(
@@ -337,7 +338,7 @@ final class BlurCacheManager {
                 sourceRegion: bounds,
                 destRegion: localRegion,
                 patternSpacing: Double(effectValue),
-                quality: quality,
+                quality: quality
             )
         case .washi:
             BlurEffectRenderer.drawWashiRegion(
@@ -347,7 +348,7 @@ final class BlurCacheManager {
                 sourceRegion: bounds,
                 destRegion: localRegion,
                 patternSpacing: Double(effectValue),
-                quality: quality,
+                quality: quality
             )
         }
 
@@ -357,7 +358,7 @@ final class BlurCacheManager {
     private func store(
         _ image: CGImage,
         for annotationId: UUID,
-        descriptor: RenderDescriptor,
+        descriptor: RenderDescriptor
     ) {
         accessCounter &+= 1
         let cost = max(1, image.width * image.height)
@@ -369,7 +370,7 @@ final class BlurCacheManager {
             sourceSignature: descriptor.sourceSignature,
             cacheScale: descriptor.cacheScale,
             cost: cost,
-            lastAccess: accessCounter,
+            lastAccess: accessCounter
         )
         trimCacheIfNeeded(protectedId: annotationId)
     }
@@ -378,7 +379,8 @@ final class BlurCacheManager {
         while totalCacheCost > maxTotalCachedPixels,
               let victim = cache
               .filter({ $0.key != protectedId })
-              .min(by: { $0.value.lastAccess < $1.value.lastAccess })?.key {
+              .min(by: { $0.value.lastAccess < $1.value.lastAccess })?.key
+        {
             cache.removeValue(forKey: victim)
         }
     }
@@ -392,7 +394,7 @@ final class BlurCacheManager {
             pixelWidth: cgImage.width,
             pixelHeight: cgImage.height,
             pointWidth: Int(sourceImage.size.width.rounded(.toNearestOrAwayFromZero)),
-            pointHeight: Int(sourceImage.size.height.rounded(.toNearestOrAwayFromZero)),
+            pointHeight: Int(sourceImage.size.height.rounded(.toNearestOrAwayFromZero))
         )
     }
 

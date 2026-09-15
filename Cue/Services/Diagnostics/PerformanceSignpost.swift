@@ -56,7 +56,7 @@ enum PerfSignpost {
                     DiagnosticLogger.shared.log(
                         .debug,
                         .ui,
-                        "Performance [\(name)]: \(String(format: "%.2f", elapsed))ms",
+                        "Performance [\(name)]: \(String(format: "%.2f", elapsed))ms"
                     )
                 }
                 return body()

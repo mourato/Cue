@@ -28,7 +28,7 @@ private struct AnnotateWorkspaceBackground: View {
                             x: x - dotRadius,
                             y: y - dotRadius,
                             width: dotRadius * 2,
-                            height: dotRadius * 2,
+                            height: dotRadius * 2
                         ))
                     }
                 }
@@ -68,7 +68,7 @@ struct AnnotateMainView: View {
                                 notes: state.cueNotes,
                                 selectedNoteID: state.notinhasSelectedNoteID,
                                 onSelect: { state.notinhasSelectNote(id: $0) },
-                                onDelete: { state.notinhasDeleteNote(id: $0) },
+                                onDelete: { state.notinhasDeleteNote(id: $0) }
                             )
                         case .hidden:
                             EmptyView()

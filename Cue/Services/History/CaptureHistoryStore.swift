@@ -77,7 +77,7 @@ final class CaptureHistoryStore: ObservableObject {
                 },
                 onChange: { [weak self] newRecords in
                     self?.records = newRecords
-                },
+                }
             )
         } else {
             cancellable = observation.start(
@@ -89,7 +89,7 @@ final class CaptureHistoryStore: ObservableObject {
                 },
                 onChange: { [weak self] newRecords in
                     self?.records = newRecords
-                },
+                }
             )
         }
         DiagnosticLogger.shared.log(.debug, .history, "Capture history observation started")
@@ -108,7 +108,7 @@ final class CaptureHistoryStore: ObservableObject {
                 .debug,
                 .history,
                 "Capture history add skipped; history disabled",
-                context: ["fileName": record.fileName, "type": record.captureType.rawValue],
+                context: ["fileName": record.fileName, "type": record.captureType.rawValue]
             )
             return
         }
@@ -125,8 +125,8 @@ final class CaptureHistoryStore: ObservableObject {
                 context: [
                     "fileName": record.fileName,
                     "type": record.captureType.rawValue,
-                    "fileSize": "\(record.fileSize)",
-                ],
+                    "fileSize": "\(record.fileSize)"
+                ]
             )
         } catch {
             logger.error("Failed to add capture history record: \(error.localizedDescription)")
@@ -134,7 +134,7 @@ final class CaptureHistoryStore: ObservableObject {
                 .history,
                 error,
                 "Capture history record add failed",
-                context: ["fileName": record.fileName, "type": record.captureType.rawValue],
+                context: ["fileName": record.fileName, "type": record.captureType.rawValue]
             )
         }
     }
@@ -175,7 +175,7 @@ final class CaptureHistoryStore: ObservableObject {
                         .history,
                         error,
                         "Capture history thumbnail cleanup failed",
-                        context: ["fileName": (thumbnailPath as NSString).lastPathComponent],
+                        context: ["fileName": (thumbnailPath as NSString).lastPathComponent]
                     )
                 }
             }
@@ -187,7 +187,7 @@ final class CaptureHistoryStore: ObservableObject {
                     .info,
                     .history,
                     "Capture history records removed",
-                    context: ["recordCount": "\(removedCount)"],
+                    context: ["recordCount": "\(removedCount)"]
                 )
             }
         } catch {
@@ -196,7 +196,7 @@ final class CaptureHistoryStore: ObservableObject {
                 .history,
                 error,
                 "Capture history records remove failed",
-                context: ["requestedCount": "\(uniqueIds.count)"],
+                context: ["requestedCount": "\(uniqueIds.count)"]
             )
         }
     }
@@ -227,7 +227,7 @@ final class CaptureHistoryStore: ObservableObject {
                         .history,
                         error,
                         "Capture history thumbnail cleanup failed",
-                        context: ["fileName": (thumbnailPath as NSString).lastPathComponent],
+                        context: ["fileName": (thumbnailPath as NSString).lastPathComponent]
                     )
                 }
             }
@@ -238,7 +238,7 @@ final class CaptureHistoryStore: ObservableObject {
                     .info,
                     .history,
                     "Capture history record removed by file path",
-                    context: ["fileName": (filePath as NSString).lastPathComponent, "recordCount": "\(count)"],
+                    context: ["fileName": (filePath as NSString).lastPathComponent, "recordCount": "\(count)"]
                 )
             }
         } catch {
@@ -247,7 +247,7 @@ final class CaptureHistoryStore: ObservableObject {
                 .history,
                 error,
                 "Capture history remove by file path failed",
-                context: ["fileName": (filePath as NSString).lastPathComponent],
+                context: ["fileName": (filePath as NSString).lastPathComponent]
             )
         }
     }
@@ -278,7 +278,7 @@ final class CaptureHistoryStore: ObservableObject {
                         .history,
                         error,
                         "Capture history thumbnail cleanup failed",
-                        context: ["fileName": (path as NSString).lastPathComponent],
+                        context: ["fileName": (path as NSString).lastPathComponent]
                     )
                 }
             }
@@ -288,7 +288,7 @@ final class CaptureHistoryStore: ObservableObject {
                 .info,
                 .history,
                 "All capture history records removed",
-                context: ["thumbnailCount": "\(thumbnailPaths.count)"],
+                context: ["thumbnailCount": "\(thumbnailPaths.count)"]
             )
             return true
         } catch {
@@ -315,7 +315,7 @@ final class CaptureHistoryStore: ObservableObject {
                 .history,
                 error,
                 "Capture history thumbnail path update failed",
-                context: ["recordId": id.uuidString],
+                context: ["recordId": id.uuidString]
             )
         }
     }
@@ -337,7 +337,7 @@ final class CaptureHistoryStore: ObservableObject {
                 .info,
                 .history,
                 "Capture history file path updated",
-                context: ["recordId": id.uuidString, "fileName": (newPath as NSString).lastPathComponent],
+                context: ["recordId": id.uuidString, "fileName": (newPath as NSString).lastPathComponent]
             )
         } catch {
             logger.error("Failed to update file path: \(error.localizedDescription)")
@@ -345,7 +345,7 @@ final class CaptureHistoryStore: ObservableObject {
                 .history,
                 error,
                 "Capture history file path update failed",
-                context: ["recordId": id.uuidString, "fileName": (newPath as NSString).lastPathComponent],
+                context: ["recordId": id.uuidString, "fileName": (newPath as NSString).lastPathComponent]
             )
         }
     }
@@ -379,8 +379,8 @@ final class CaptureHistoryStore: ObservableObject {
                     context: [
                         "recordCount": "\(updatedCount)",
                         "oldFileName": (oldPath as NSString).lastPathComponent,
-                        "newFileName": (newPath as NSString).lastPathComponent,
-                    ],
+                        "newFileName": (newPath as NSString).lastPathComponent
+                    ]
                 )
             }
             return updatedCount
@@ -392,8 +392,8 @@ final class CaptureHistoryStore: ObservableObject {
                 "Capture history file path update after move failed",
                 context: [
                     "oldFileName": (oldPath as NSString).lastPathComponent,
-                    "newFileName": (newPath as NSString).lastPathComponent,
-                ],
+                    "newFileName": (newPath as NSString).lastPathComponent
+                ]
             )
             return 0
         }
@@ -435,8 +435,8 @@ final class CaptureHistoryStore: ObservableObject {
                 object: self,
                 userInfo: [
                     "filePath": filePath,
-                    "recordIDs": updatedIds,
-                ],
+                    "recordIDs": updatedIds
+                ]
             )
 
             logger.info("Marked \(updatedIds.count) history thumbnail(s) stale for file: \(fileName)")
@@ -444,7 +444,7 @@ final class CaptureHistoryStore: ObservableObject {
                 .info,
                 .history,
                 "Capture history records marked stale after file change",
-                context: ["fileName": fileName, "recordCount": "\(updatedIds.count)"],
+                context: ["fileName": fileName, "recordCount": "\(updatedIds.count)"]
             )
             return updatedIds
         } catch {
@@ -453,7 +453,7 @@ final class CaptureHistoryStore: ObservableObject {
                 .history,
                 error,
                 "Capture history mark file changed failed",
-                context: ["fileName": fileName],
+                context: ["fileName": fileName]
             )
             return []
         }
@@ -476,7 +476,7 @@ final class CaptureHistoryStore: ObservableObject {
                 .history,
                 error,
                 "Capture history record existence check failed",
-                context: ["fileName": (filePath as NSString).lastPathComponent],
+                context: ["fileName": (filePath as NSString).lastPathComponent]
             )
             return false
         }
@@ -502,7 +502,7 @@ final class CaptureHistoryStore: ObservableObject {
                     .info,
                     .history,
                     "Capture history age retention removed records",
-                    context: ["days": "\(days)", "recordCount": "\(count)"],
+                    context: ["days": "\(days)", "recordCount": "\(count)"]
                 )
             }
         } catch {
@@ -511,7 +511,7 @@ final class CaptureHistoryStore: ObservableObject {
                 .history,
                 error,
                 "Capture history age retention failed",
-                context: ["days": "\(days)"],
+                context: ["days": "\(days)"]
             )
         }
     }
@@ -549,7 +549,7 @@ final class CaptureHistoryStore: ObservableObject {
                 .info,
                 .history,
                 "Capture history count retention trimmed records",
-                context: ["maxCount": "\(maxCount)", "recordCount": "\(idsToDelete.count)"],
+                context: ["maxCount": "\(maxCount)", "recordCount": "\(idsToDelete.count)"]
             )
         } catch {
             logger.error("Failed to trim records: \(error.localizedDescription)")
@@ -557,7 +557,7 @@ final class CaptureHistoryStore: ObservableObject {
                 .history,
                 error,
                 "Capture history count retention failed",
-                context: ["maxCount": "\(maxCount)"],
+                context: ["maxCount": "\(maxCount)"]
             )
         }
     }
@@ -568,7 +568,7 @@ final class CaptureHistoryStore: ObservableObject {
         captureType: CaptureHistoryType,
         duration: TimeInterval? = nil,
         width: Int? = nil,
-        height: Int? = nil,
+        height: Int? = nil
     ) {
         let fileSize: Int64
         do {
@@ -580,7 +580,7 @@ final class CaptureHistoryStore: ObservableObject {
                 .history,
                 error,
                 "Capture history file attributes unavailable",
-                context: ["fileName": url.lastPathComponent, "type": captureType.rawValue],
+                context: ["fileName": url.lastPathComponent, "type": captureType.rawValue]
             )
         }
 
@@ -595,7 +595,7 @@ final class CaptureHistoryStore: ObservableObject {
             height: height,
             duration: duration,
             thumbnailPath: nil,
-            isDeleted: false,
+            isDeleted: false
         )
 
         add(record)
@@ -661,7 +661,7 @@ final class CaptureHistoryStore: ObservableObject {
                     .history,
                     error,
                     "Capture history current file size failed",
-                    context: ["fileName": url.lastPathComponent],
+                    context: ["fileName": url.lastPathComponent]
                 )
             }
             return nil
@@ -689,7 +689,7 @@ final class CaptureHistoryStore: ObservableObject {
                 .warning,
                 .history,
                 "Capture history operation skipped; database unavailable",
-                context: ["operation": operation],
+                context: ["operation": operation]
             )
             return nil
         }

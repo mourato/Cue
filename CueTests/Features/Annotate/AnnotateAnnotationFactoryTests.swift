@@ -17,7 +17,7 @@ import XCTest
 final class AnnotateAnnotationFactoryTests: XCTestCase {
     private func makeContext(
         properties: AnnotationProperties = AnnotationProperties(),
-        blurType: BlurType = .pixelated,
+        blurType: BlurType = .pixelated
     ) -> AnnotationFactory.CreationContext {
         AnnotationFactory.CreationContext(
             properties: properties,
@@ -26,7 +26,7 @@ final class AnnotateAnnotationFactoryTests: XCTestCase {
             blurType: blurType,
             counterValue: 1,
             watermarkText: "Cue",
-            activeAnnotationBounds: CGRect(x: 0, y: 0, width: 400, height: 300),
+            activeAnnotationBounds: CGRect(x: 0, y: 0, width: 400, height: 300)
         )
     }
 
@@ -36,7 +36,7 @@ final class AnnotateAnnotationFactoryTests: XCTestCase {
             from: CGPoint(x: 10, y: 20),
             to: CGPoint(x: 90, y: 80),
             path: [],
-            context: makeContext(),
+            context: makeContext()
         ))
 
         XCTAssertEqual(annotation.type, .rectangle)
@@ -49,7 +49,7 @@ final class AnnotateAnnotationFactoryTests: XCTestCase {
             from: CGPoint(x: 90, y: 80),
             to: CGPoint(x: 10, y: 20),
             path: [],
-            context: makeContext(),
+            context: makeContext()
         ))
 
         XCTAssertEqual(annotation.type, .rectangle)
@@ -63,7 +63,7 @@ final class AnnotateAnnotationFactoryTests: XCTestCase {
             from: CGPoint(x: 0, y: 0),
             to: CGPoint(x: 40, y: 30),
             path: [],
-            context: makeContext(properties: properties),
+            context: makeContext(properties: properties)
         ))
 
         XCTAssertEqual(annotation.type, .rectangle)
@@ -77,7 +77,7 @@ final class AnnotateAnnotationFactoryTests: XCTestCase {
             from: CGPoint(x: 5, y: 5),
             to: CGPoint(x: 55, y: 35),
             path: [],
-            context: makeContext(),
+            context: makeContext()
         ))
 
         XCTAssertEqual(annotation.type, .circle)
@@ -92,10 +92,10 @@ final class AnnotateAnnotationFactoryTests: XCTestCase {
             from: start,
             to: end,
             path: [],
-            context: makeContext(),
+            context: makeContext()
         ))
 
-        guard case .line(let lineStart, let lineEnd) = annotation.type else {
+        guard case let .line(lineStart, lineEnd) = annotation.type else {
             return XCTFail("Expected line annotation, got \(annotation.type)")
         }
         XCTAssertEqual(lineStart, start)
@@ -110,12 +110,12 @@ final class AnnotateAnnotationFactoryTests: XCTestCase {
             from: center,
             to: center,
             path: [],
-            context: makeContext(),
+            context: makeContext()
         ))
 
         XCTAssertEqual(
             annotation.bounds,
-            CGRect(x: 90, y: 40, width: MagnifyGeometry.defaultDiameter, height: MagnifyGeometry.defaultDiameter),
+            CGRect(x: 90, y: 40, width: MagnifyGeometry.defaultDiameter, height: MagnifyGeometry.defaultDiameter)
         )
         XCTAssertEqual(annotation.type, .magnify(sourceCenter: center, showsSourceCircle: false))
     }
@@ -126,16 +126,16 @@ final class AnnotateAnnotationFactoryTests: XCTestCase {
             from: CGPoint(x: 10, y: 20),
             to: CGPoint(x: 70, y: 60),
             path: [],
-            context: makeContext(),
+            context: makeContext()
         ))
 
         XCTAssertEqual(
             annotation.bounds,
-            MagnifyGeometry.destinationBounds(center: CGPoint(x: 70, y: 60)),
+            MagnifyGeometry.destinationBounds(center: CGPoint(x: 70, y: 60))
         )
         XCTAssertEqual(
             annotation.type,
-            .magnify(sourceCenter: CGPoint(x: 10, y: 20), showsSourceCircle: true),
+            .magnify(sourceCenter: CGPoint(x: 10, y: 20), showsSourceCircle: true)
         )
     }
 
@@ -156,7 +156,7 @@ final class AnnotateAnnotationFactoryTests: XCTestCase {
             lensBounds: bounds,
             sourceCenter: CGPoint(x: 200, y: 200),
             sourceBounds: sourceBounds,
-            magnification: 4,
+            magnification: 4
         )
 
         XCTAssertEqual(sourceRect.size, CGSize(width: 30, height: 30))
@@ -167,17 +167,17 @@ final class AnnotateAnnotationFactoryTests: XCTestCase {
         let path = [
             CGPoint(x: 10, y: 10),
             CGPoint(x: 20, y: 40),
-            CGPoint(x: 35, y: 25),
+            CGPoint(x: 35, y: 25)
         ]
         let annotation = try XCTUnwrap(try AnnotationFactory.createAnnotation(
             tool: .pencil,
             from: path[0],
             to: XCTUnwrap(path.last),
             path: path,
-            context: makeContext(),
+            context: makeContext()
         ))
 
-        guard case .path(let points) = annotation.type else {
+        guard case let .path(points) = annotation.type else {
             return XCTFail("Expected pencil path annotation, got \(annotation.type)")
         }
         XCTAssertEqual(points, path)
@@ -190,7 +190,7 @@ final class AnnotateAnnotationFactoryTests: XCTestCase {
             from: point,
             to: point,
             path: [point],
-            context: makeContext(),
+            context: makeContext()
         ))
     }
 
@@ -200,10 +200,10 @@ final class AnnotateAnnotationFactoryTests: XCTestCase {
             from: CGPoint(x: 20, y: 20),
             to: CGPoint(x: 120, y: 100),
             path: [],
-            context: makeContext(blurType: .gaussian),
+            context: makeContext(blurType: .gaussian)
         ))
 
-        guard case .blur(let blurType) = annotation.type else {
+        guard case let .blur(blurType) = annotation.type else {
             return XCTFail("Expected blur annotation, got \(annotation.type)")
         }
         XCTAssertEqual(blurType, .gaussian)

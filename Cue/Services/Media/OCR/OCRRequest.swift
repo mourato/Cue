@@ -23,7 +23,7 @@ struct OCRRequest {
         image: CGImage,
         preferredLanguageIdentifier: String? = nil,
         contentType: OCRContentType = .interfaceText,
-        keepLineBreaks: Bool = true,
+        keepLineBreaks: Bool = true
     ) {
         self.image = image
         self.preferredLanguageIdentifier = preferredLanguageIdentifier

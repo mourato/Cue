@@ -28,11 +28,12 @@ enum PreferencesNumericPickerValue {
         from text: String,
         range: ClosedRange<Double>,
         step: Double,
-        inputScale: Double = 1,
+        inputScale: Double = 1
     ) -> Double? {
         guard inputScale > 0,
               let parsed = Double(text.replacingOccurrences(of: ",", with: ".")),
-              parsed.isFinite else {
+              parsed.isFinite
+        else {
             return nil
         }
 
@@ -77,7 +78,7 @@ struct PreferencesNumericPicker: View {
         customInputScale: Double = 1,
         valueLabel: @escaping (Double) -> String,
         specialValue: Double? = nil,
-        specialLabel: String? = nil,
+        specialLabel: String? = nil
     ) {
         _value = value
         self.range = range
@@ -185,14 +186,14 @@ struct PreferencesNumericPicker: View {
     private var selectionBinding: Binding<Selection> {
         Binding(
             get: { currentSelection },
-            set: applySelection,
+            set: applySelection
         )
     }
 
     private var customTextBinding: Binding<String> {
         Binding(
             get: { customText },
-            set: { customText = PreferencesNumericPickerValue.sanitizedText($0, allowsFraction: allowsFraction) },
+            set: { customText = PreferencesNumericPickerValue.sanitizedText($0, allowsFraction: allowsFraction) }
         )
     }
 
@@ -219,7 +220,7 @@ struct PreferencesNumericPicker: View {
             from: customText,
             range: range,
             step: step,
-            inputScale: customInputScale,
+            inputScale: customInputScale
         ) else {
             syncCustomText()
             return
@@ -251,7 +252,7 @@ struct PreferencesNumericPicker: View {
                     step: 1,
                     accessibilityTitle: "Snap Distance",
                     unit: "px",
-                    valueLabel: { "\(Int($0)) px" },
+                    valueLabel: { "\(Int($0)) px" }
                 )
                 .padding()
             }

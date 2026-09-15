@@ -77,7 +77,7 @@ final class FakeWindowOwnerResolver: SmartElementWindowOwnerResolving {
 final class FakeSmartElementCapturePerformer: SmartElementCapturePerforming {
     private(set) var capturedRects: [CGRect] = []
 
-    func captureRect(_ rect: CGRect) async {
+    func captureRect(_ rect: CGRect) {
         capturedRects.append(rect)
     }
 }

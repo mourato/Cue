@@ -24,7 +24,7 @@ final class AllInOneTimerScheduler {
 
     func scheduleAreaCapture(
         afterNanoseconds delay: UInt64 = AllInOneTimerScheduler.defaultDelayNanoseconds,
-        action: @escaping @MainActor () -> Void,
+        action: @escaping @MainActor () -> Void
     ) {
         cancel()
         pendingTask = Task { @MainActor [sleep] in

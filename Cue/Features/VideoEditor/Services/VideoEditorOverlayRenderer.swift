@@ -25,24 +25,25 @@
             keystrokePlacement: KeystrokeOverlayPosition,
             cursorScale: CGFloat = VideoEditorStylePreset.defaultCursorScale,
             zoomLevel: CGFloat = 1,
-            zoomCenter: CGPoint = ZoomCalculator.neutralCenter,
+            zoomCenter: CGPoint = ZoomCalculator.neutralCenter
         ) -> CIImage {
             var result = image
             let canvasHeight = canvasSize.height
 
             if showsClickEffects,
-               let press = pointerFrame?.press {
+               let press = pointerFrame?.press
+            {
                 let center = VideoEditorOverlayPlacement.pointInCanvas(
                     press.location,
                     contentRect: contentRect,
                     canvasHeight: canvasHeight,
                     zoomLevel: zoomLevel,
-                    zoomCenter: zoomCenter,
+                    zoomCenter: zoomCenter
                 )
                 let geometry = VideoEditorPointerPressEffectStyle.geometry(
                     progress: press.progress,
                     referenceHeight: contentRect.height,
-                    cursorScale: cursorScale,
+                    cursorScale: cursorScale
                 )
                 if let clickImage = clickEffectImage(geometry: geometry, center: center) {
                     result = clickImage.composited(over: result)
@@ -51,20 +52,21 @@
 
             if showsSyntheticCursor,
                let pointerFrame,
-               pointerFrame.opacity > 0.01 {
+               pointerFrame.opacity > 0.01
+            {
                 let tip = VideoEditorOverlayPlacement.pointInCanvas(
                     pointerFrame.location,
                     contentRect: contentRect,
                     canvasHeight: canvasHeight,
                     zoomLevel: zoomLevel,
-                    zoomCenter: zoomCenter,
+                    zoomCenter: zoomCenter
                 )
                 if let cursorImage = pointerArtworkImage(
                     pointerFrame: pointerFrame,
                     timeline: pointerTimeline,
                     tip: tip,
                     referenceHeight: contentRect.height,
-                    cursorScale: cursorScale,
+                    cursorScale: cursorScale
                 ) {
                     result = cursorImage.composited(over: result)
                 }
@@ -76,8 +78,9 @@
                    frame: keystrokeFrame,
                    cardRect: contentRect,
                    canvasSize: canvasSize,
-                   placement: keystrokePlacement,
-               ) {
+                   placement: keystrokePlacement
+               )
+            {
                 result = captionImage.composited(over: result)
             }
 
@@ -89,7 +92,7 @@
             timeline: VideoEditorPointerTimeline,
             tip: CGPoint,
             referenceHeight: CGFloat,
-            cursorScale: CGFloat,
+            cursorScale: CGFloat
         ) -> CIImage? {
             let artwork = timeline.artwork(id: pointerFrame.artworkID)
             let height = referenceHeight
@@ -108,25 +111,25 @@
 
             let drawOrigin = CGPoint(
                 x: tip.x - anchor.x * width,
-                y: tip.y - (1 - anchor.y) * height,
+                y: tip.y - (1 - anchor.y) * height
             )
             var transformed = sized
                 .transformed(by: CGAffineTransform(translationX: drawOrigin.x, y: drawOrigin.y))
                 .applyingFilter("CIColorMatrix", parameters: [
-                    "inputAVector": CIVector(x: 0, y: 0, z: 0, w: pointerFrame.opacity),
+                    "inputAVector": CIVector(x: 0, y: 0, z: 0, w: pointerFrame.opacity)
                 ])
 
             if pointerFrame.blurRadius > 0.01 {
                 transformed = transformed
                     .clampedToExtent()
                     .applyingFilter("CIGaussianBlur", parameters: [
-                        kCIInputRadiusKey: pointerFrame.blurRadius,
+                        kCIInputRadiusKey: pointerFrame.blurRadius
                     ])
                     .cropped(to: CGRect(
                         x: drawOrigin.x,
                         y: drawOrigin.y,
                         width: width,
-                        height: height,
+                        height: height
                     ))
             }
 
@@ -150,7 +153,7 @@
 
         private static func clickEffectImage(
             geometry: VideoEditorPointerPressEffectGeometry,
-            center: CGPoint,
+            center: CGPoint
         ) -> CIImage? {
             let color = VideoEditorPointerPressEffectStyle.color
             var layers: [CIImage] = []
@@ -163,8 +166,8 @@
                         red: color.red,
                         green: color.green,
                         blue: color.blue,
-                        alpha: geometry.impactOpacity,
-                    ),
+                        alpha: geometry.impactOpacity
+                    )
                 ) {
                     layers.append(impact)
                 }
@@ -179,8 +182,8 @@
                         red: color.red,
                         green: color.green,
                         blue: color.blue,
-                        alpha: geometry.rippleOpacity,
-                    ),
+                        alpha: geometry.rippleOpacity
+                    )
                 ) {
                     layers.append(ripple)
                 }
@@ -195,7 +198,7 @@
             frame: VideoEditorKeystrokeCaptionFrame,
             cardRect: CGRect,
             canvasSize: CGSize,
-            placement: KeystrokeOverlayPosition,
+            placement: KeystrokeOverlayPosition
         ) -> CIImage? {
             let metrics = VideoEditorKeystrokeCaptionMetrics(cardHeight: cardRect.height)
             let textParts = VideoEditorKeystrokeCaptionMetrics.text(for: frame)
@@ -205,29 +208,29 @@
             let font = NSFont.monospacedSystemFont(ofSize: metrics.fontSize * CGFloat(frame.scale), weight: .medium)
             let attributes: [NSAttributedString.Key: Any] = [
                 .font: font,
-                .foregroundColor: NSColor.white.withAlphaComponent(frame.opacity),
+                .foregroundColor: NSColor.white.withAlphaComponent(frame.opacity)
             ]
             let attributed = NSMutableAttributedString(string: fullText, attributes: attributes)
             if !textParts.modifiers.isEmpty {
                 attributed.addAttributes(
                     [
                         .foregroundColor: NSColor.white.withAlphaComponent(
-                            frame.opacity * VideoEditorKeystrokeCaptionMetrics.modifierAlpha,
-                        ),
+                            frame.opacity * VideoEditorKeystrokeCaptionMetrics.modifierAlpha
+                        )
                     ],
-                    range: NSRange(location: 0, length: textParts.modifiers.count),
+                    range: NSRange(location: 0, length: textParts.modifiers.count)
                 )
             }
 
             let textSize = attributed.size()
             let pillSize = CGSize(
                 width: textSize.width + metrics.paddingHorizontal * 2,
-                height: textSize.height + metrics.paddingVertical * 2,
+                height: textSize.height + metrics.paddingVertical * 2
             )
             let topLeftOrigin = metrics.pillOrigin(
                 pillSize: pillSize,
                 cardRect: cardRect,
-                placement: placement,
+                placement: placement
             )
             let canvasHeight = canvasSize.height
             let ciOrigin = CGPoint(x: topLeftOrigin.x, y: canvasHeight - topLeftOrigin.y - pillSize.height)
@@ -239,7 +242,7 @@
                 bitsPerComponent: 8,
                 bytesPerRow: 0,
                 space: CGColorSpaceCreateDeviceRGB(),
-                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
             ) else {
                 return nil
             }
@@ -248,13 +251,13 @@
             let pillRect = CGRect(origin: ciOrigin, size: pillSize)
             context.setFillColor(
                 NSColor.black.withAlphaComponent(frame.opacity * VideoEditorKeystrokeCaptionMetrics.backgroundAlpha)
-                    .cgColor,
+                    .cgColor
             )
             let path = CGPath(
                 roundedRect: pillRect,
                 cornerWidth: metrics.cornerRadius,
                 cornerHeight: metrics.cornerRadius,
-                transform: nil,
+                transform: nil
             )
             context.addPath(path)
             context.fillPath()
@@ -265,7 +268,7 @@
             context.scaleBy(x: 1, y: -1)
             let drawPoint = CGPoint(
                 x: pillRect.minX + metrics.paddingHorizontal,
-                y: canvasSize.height - pillRect.maxY + metrics.paddingVertical,
+                y: canvasSize.height - pillRect.maxY + metrics.paddingVertical
             )
             let line = CTLineCreateWithAttributedString(attributed)
             context.textPosition = drawPoint
@@ -282,7 +285,7 @@
                 x: center.x - radius,
                 y: center.y - radius,
                 width: radius * 2,
-                height: radius * 2,
+                height: radius * 2
             )
             guard let context = CGContext(
                 data: nil,
@@ -291,7 +294,7 @@
                 bitsPerComponent: 8,
                 bytesPerRow: 0,
                 space: CGColorSpaceCreateDeviceRGB(),
-                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
             ) else {
                 return nil
             }
@@ -306,14 +309,14 @@
             center: CGPoint,
             radius: CGFloat,
             lineWidth: CGFloat,
-            color: NSColor,
+            color: NSColor
         ) -> CIImage? {
             guard radius > 0 else { return nil }
             let rect = CGRect(
                 x: center.x - radius,
                 y: center.y - radius,
                 width: radius * 2,
-                height: radius * 2,
+                height: radius * 2
             )
             guard let context = CGContext(
                 data: nil,
@@ -322,7 +325,7 @@
                 bitsPerComponent: 8,
                 bytesPerRow: 0,
                 space: CGColorSpaceCreateDeviceRGB(),
-                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
             ) else {
                 return nil
             }

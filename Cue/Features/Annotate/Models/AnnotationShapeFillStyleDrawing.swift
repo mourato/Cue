@@ -15,7 +15,7 @@ nonisolated enum AnnotationShapeFillStyleDrawing {
         style: AnnotationShapeFillStyle,
         color: NSColor,
         strokeWidth: CGFloat,
-        in context: CGContext,
+        in context: CGContext
     ) {
         let standardized = rect.standardized
         let path = roundedRectPath(in: standardized, cornerRadius: cornerRadius)
@@ -27,7 +27,7 @@ nonisolated enum AnnotationShapeFillStyleDrawing {
         style: AnnotationShapeFillStyle,
         color: NSColor,
         strokeWidth: CGFloat,
-        in context: CGContext,
+        in context: CGContext
     ) {
         let standardized = rect.standardized
         let path = CGPath(ellipseIn: standardized, transform: nil)
@@ -56,7 +56,7 @@ nonisolated enum AnnotationShapeFillStyleDrawing {
         style: AnnotationShapeFillStyle,
         color: NSColor,
         strokeWidth: CGFloat,
-        in context: CGContext,
+        in context: CGContext
     ) {
         context.saveGState()
         context.setLineWidth(strokeWidth)
@@ -98,7 +98,7 @@ nonisolated enum AnnotationShapeFillStyleDrawing {
             roundedRect: rect,
             cornerWidth: radius,
             cornerHeight: radius,
-            transform: nil,
+            transform: nil
         )
     }
 }

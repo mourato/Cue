@@ -49,7 +49,7 @@ actor CueImageKitUploadService {
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         request.setValue(
             "Basic \(Data("\(key):".utf8).base64EncodedString())",
-            forHTTPHeaderField: "Authorization",
+            forHTTPHeaderField: "Authorization"
         )
         let fileName = "\(UUID().uuidString.lowercased()).\(image.fileExtension)"
         request.httpBody = makeMultipartBody(boundary: boundary, image: image, fileName: fileName)
@@ -72,7 +72,8 @@ actor CueImageKitUploadService {
         guard !key.isEmpty else { throw CueImageKitUploadError.missingPrivateKey }
         guard FileManager.default.fileExists(atPath: fileURL.path),
               let fileSize = try fileURL.resourceValues(forKeys: [.fileSizeKey]).fileSize,
-              fileSize > 0 else {
+              fileSize > 0
+        else {
             throw CueImageKitUploadError.invalidImageData
         }
 
@@ -83,7 +84,7 @@ actor CueImageKitUploadService {
             bodyURL = try makeMultipartBodyFile(
                 boundary: boundary,
                 sourceURL: fileURL,
-                fileName: fileName,
+                fileName: fileName
             )
         } catch let error as CueImageKitUploadError {
             throw error
@@ -99,7 +100,7 @@ actor CueImageKitUploadService {
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         request.setValue(
             "Basic \(Data("\(key):".utf8).base64EncodedString())",
-            forHTTPHeaderField: "Authorization",
+            forHTTPHeaderField: "Authorization"
         )
 
         let data: Data
@@ -142,7 +143,7 @@ actor CueImageKitUploadService {
     private func makeMultipartBodyFile(
         boundary: String,
         sourceURL: URL,
-        fileName: String,
+        fileName: String
     ) throws -> URL {
         let directory = FileManager.default.temporaryDirectory
             .appendingPathComponent("CueImageKitUpload-\(UUID().uuidString)", isDirectory: true)
@@ -163,14 +164,14 @@ actor CueImageKitUploadService {
 
             try output.write(contentsOf: Data(
                 "--\(boundary)\r\nContent-Disposition: form-data; name=\"file\"; filename=\"\(fileName)\"\r\nContent-Type: \(contentType(for: sourceURL.pathExtension))\r\n\r\n"
-                    .utf8,
+                    .utf8
             ))
             while let chunk = try input.read(upToCount: 1_048_576), !chunk.isEmpty {
                 try output.write(contentsOf: chunk)
             }
             try output.write(contentsOf: Data(
                 "\r\n--\(boundary)\r\nContent-Disposition: form-data; name=\"fileName\"\r\n\r\n\(fileName)\r\n--\(boundary)--\r\n"
-                    .utf8,
+                    .utf8
             ))
         } catch {
             try? FileManager.default.removeItem(at: directory)
@@ -195,7 +196,7 @@ actor CueImageKitUploadService {
         body.append("--\(boundary)\(lineBreak)")
         body
             .append(
-                "Content-Disposition: form-data; name=\"file\"; filename=\"\(fileName)\"\(lineBreak)",
+                "Content-Disposition: form-data; name=\"file\"; filename=\"\(fileName)\"\(lineBreak)"
             )
         body.append("Content-Type: \(image.contentType)\(lineBreak)\(lineBreak)")
         body.append(image.data)

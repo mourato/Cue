@@ -36,7 +36,7 @@
                     return event
                 }
             },
-            monitorRemover: @escaping (Any) -> Void = { NSEvent.removeMonitor($0) },
+            monitorRemover: @escaping (Any) -> Void = { NSEvent.removeMonitor($0) }
         ) {
             self.uptimeProvider = uptimeProvider
             self.globalMonitorInstaller = globalMonitorInstaller
@@ -104,8 +104,8 @@
                 RecordedKeystrokeEvent(
                     time: time,
                     modifiers: parsed.modifiers,
-                    key: parsed.key,
-                ),
+                    key: parsed.key
+                )
             )
         }
 

@@ -17,7 +17,7 @@ final class AnnotationSessionStore {
 
     init(
         rootDirectory: URL = AnnotationSessionStore.defaultRootDirectory(),
-        fileManager: FileManager = .default,
+        fileManager: FileManager = .default
     ) {
         self.rootDirectory = rootDirectory
         self.fileManager = fileManager
@@ -45,7 +45,8 @@ final class AnnotationSessionStore {
               manifest.sourceFilePathHash == pathHash,
               manifest.sourceFilePath == normalizedPath,
               let currentSignature = fileSignature(for: sourceURL),
-              currentSignature == manifest.sourceSignature else {
+              currentSignature == manifest.sourceSignature
+        else {
             return nil
         }
 
@@ -64,7 +65,7 @@ final class AnnotationSessionStore {
             return manifest.sessionData(
                 originalImageData: originalData,
                 cutoutImageData: cutoutData,
-                embeddedImageAssetsData: embeddedAssets,
+                embeddedImageAssetsData: embeddedAssets
             )
         } catch {
             DiagnosticLogger.shared.logError(.annotate, error, "Annotation sidecar load failed")
@@ -96,20 +97,20 @@ final class AnnotationSessionStore {
     private func buildManifest(
         _ sessionData: AnnotationSessionData,
         for sourceURL: URL,
-        signature: PersistedFileSignature,
+        signature: PersistedFileSignature
     ) -> PersistedAnnotationSession {
         let normalizedPath = Self.normalizedPath(for: sourceURL)
         let pathHash = Self.pathHash(for: normalizedPath)
         let directory = sessionDirectory(pathHash: pathHash)
         let previousCreatedAt = readManifest(
-            at: directory.appendingPathComponent("manifest.json"),
+            at: directory.appendingPathComponent("manifest.json")
         )?.createdAt ?? Date()
         return PersistedAnnotationSession(
             sessionData: sessionData,
             sourceFilePath: normalizedPath,
             sourceFilePathHash: pathHash,
             sourceSignature: signature,
-            createdAt: previousCreatedAt,
+            createdAt: previousCreatedAt
         )
     }
 
@@ -118,7 +119,7 @@ final class AnnotationSessionStore {
     private nonisolated func persistWrite(
         manifest: PersistedAnnotationSession,
         sessionData: AnnotationSessionData,
-        for sourceURL: URL,
+        for sourceURL: URL
     ) -> Bool {
         let pathHash = Self.pathHash(for: Self.normalizedPath(for: sourceURL))
         let directory = sessionDirectory(pathHash: pathHash)
@@ -126,13 +127,13 @@ final class AnnotationSessionStore {
             try writePackage(
                 manifest: manifest,
                 sessionData: sessionData,
-                to: directory,
+                to: directory
             )
             DiagnosticLogger.shared.log(
                 .debug,
                 .annotate,
                 "Annotation sidecar persisted",
-                context: ["fileName": sourceURL.lastPathComponent, "annotations": "\(sessionData.annotations.count)"],
+                context: ["fileName": sourceURL.lastPathComponent, "annotations": "\(sessionData.annotations.count)"]
             )
             return true
         } catch {
@@ -153,7 +154,8 @@ final class AnnotationSessionStore {
         let newDirectory = sessionDirectory(pathHash: newHash)
         guard oldDirectory.standardizedFileURL != newDirectory.standardizedFileURL else { return true }
         guard let signature = fileSignature(for: newURL),
-              var manifest = readManifest(at: oldDirectory.appendingPathComponent("manifest.json")) else {
+              var manifest = readManifest(at: oldDirectory.appendingPathComponent("manifest.json"))
+        else {
             return false
         }
 
@@ -190,7 +192,7 @@ final class AnnotationSessionStore {
     func cleanup(keepingScreenshotFilePaths paths: Set<String>) {
         guard let contents = try? fileManager.contentsOfDirectory(
             at: rootDirectory,
-            includingPropertiesForKeys: [.isDirectoryKey],
+            includingPropertiesForKeys: [.isDirectoryKey]
         ) else { return }
 
         let activePaths = Set(paths.map(Self.normalizedPath(forPath:)))
@@ -276,7 +278,7 @@ final class AnnotationSessionStore {
         return PersistedFileSignature(
             fileSize: fileSize,
             modifiedAtMilliseconds: modifiedAtMs,
-            pathExtension: sourceURL.pathExtension.lowercased(),
+            pathExtension: sourceURL.pathExtension.lowercased()
         )
     }
 
@@ -290,19 +292,19 @@ final class AnnotationSessionStore {
     private nonisolated func writePackage(
         manifest: PersistedAnnotationSession,
         sessionData: AnnotationSessionData,
-        to directory: URL,
+        to directory: URL
     ) throws {
         try ensureRootDirectory()
         let tempDirectory = rootDirectory.appendingPathComponent(
             ".\(directory.lastPathComponent).\(UUID().uuidString)",
-            isDirectory: true,
+            isDirectory: true
         )
         let assetsDirectory = tempDirectory.appendingPathComponent("assets", isDirectory: true)
         try FileManager.default.createDirectory(at: assetsDirectory, withIntermediateDirectories: true)
         do {
             try sessionData.originalImageData.write(
                 to: tempDirectory.appendingPathComponent(manifest.originalFileName),
-                options: .atomic,
+                options: .atomic
             )
             if let cutoutFileName = manifest.cutoutFileName, let cutoutImageData = sessionData.cutoutImageData {
                 try cutoutImageData.write(to: tempDirectory.appendingPathComponent(cutoutFileName), options: .atomic)

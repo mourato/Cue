@@ -75,13 +75,13 @@
             .background(
                 RoundedRectangle(cornerRadius: 12)
                     .strokeBorder(
-                        style: StrokeStyle(lineWidth: 2, dash: [8, 4]),
+                        style: StrokeStyle(lineWidth: 2, dash: [8, 4])
                     )
-                    .foregroundColor(isTargeted ? .accentColor : .secondary.opacity(0.5)),
+                    .foregroundColor(isTargeted ? .accentColor : .secondary.opacity(0.5))
             )
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isTargeted ? Color.accentColor.opacity(0.1) : Color.clear),
+                    .fill(isTargeted ? Color.accentColor.opacity(0.1) : Color.clear)
             )
             .onDrop(of: supportedTypes, isTargeted: $isTargeted) { providers in
                 handleDrop(providers: providers)
@@ -99,7 +99,7 @@
                 .info,
                 .editor,
                 "Video editor drop received",
-                context: ["registeredTypeCount": "\(provider.registeredTypeIdentifiers.count)"],
+                context: ["registeredTypeCount": "\(provider.registeredTypeIdentifiers.count)"]
             )
 
             // Find the first video type the provider can load
@@ -117,7 +117,7 @@
                 .debug,
                 .editor,
                 "Video editor drop loading file",
-                context: ["type": videoType.identifier],
+                context: ["type": videoType.identifier]
             )
 
             // First, extract the original URL using loadItem (provides actual file URL)
@@ -127,7 +127,7 @@
                         .editor,
                         error,
                         "Video editor drop loadItem failed",
-                        context: ["type": videoType.identifier],
+                        context: ["type": videoType.identifier]
                     )
                     DispatchQueue.main.async {
                         showError(message: L10n.VideoEditor.failedToLoadFile(error.localizedDescription))
@@ -143,7 +143,7 @@
                         .debug,
                         .editor,
                         "Video editor drop original URL resolved",
-                        context: ["source": "loadItem", "fileName": url.lastPathComponent],
+                        context: ["source": "loadItem", "fileName": url.lastPathComponent]
                     )
                 } else if let data = item as? Data, let url = URL(dataRepresentation: data, relativeTo: nil) {
                     originalURL = url
@@ -151,7 +151,7 @@
                         .debug,
                         .editor,
                         "Video editor drop original URL resolved",
-                        context: ["source": "data", "fileName": url.lastPathComponent],
+                        context: ["source": "data", "fileName": url.lastPathComponent]
                     )
                 } else {
                     originalURL = nil
@@ -165,7 +165,7 @@
                             .editor,
                             repError,
                             "Video editor drop file representation failed",
-                            context: ["type": videoType.identifier],
+                            context: ["type": videoType.identifier]
                         )
                         DispatchQueue.main.async {
                             showError(message: L10n.VideoEditor.failedToLoadFile(repError.localizedDescription))
@@ -177,7 +177,7 @@
                         DiagnosticLogger.shared.log(
                             .warning,
                             .editor,
-                            "Video editor drop file representation missing temp URL",
+                            "Video editor drop file representation missing temp URL"
                         )
                         DispatchQueue.main.async {
                             showError(message: L10n.VideoEditor.couldNotReadFile)
@@ -194,7 +194,7 @@
                     do {
                         try FileManager.default.createDirectory(
                             at: destURL.deletingLastPathComponent(),
-                            withIntermediateDirectories: true,
+                            withIntermediateDirectories: true
                         )
                         try FileManager.default.copyItem(at: tempURL, to: destURL)
                         DiagnosticLogger.shared.log(
@@ -203,8 +203,8 @@
                             "Video editor drop prepared working copy",
                             context: [
                                 "fileName": destURL.lastPathComponent,
-                                "hasOriginalURL": originalURL == nil ? "false" : "true",
-                            ],
+                                "hasOriginalURL": originalURL == nil ? "false" : "true"
+                            ]
                         )
 
                         DispatchQueue.main.async {
@@ -215,7 +215,7 @@
                             .editor,
                             error,
                             "Video editor drop working copy failed",
-                            context: ["fileName": tempURL.lastPathComponent],
+                            context: ["fileName": tempURL.lastPathComponent]
                         )
                         DispatchQueue.main.async {
                             showError(message: L10n.VideoEditor.failedToPrepareFile(error.localizedDescription))
@@ -240,7 +240,7 @@
                         .info,
                         .editor,
                         "Video editor browse selected file",
-                        context: ["fileName": url.lastPathComponent],
+                        context: ["fileName": url.lastPathComponent]
                     )
                     // Browse uses original file directly - pass same URL as both working and original
                     validateAndLoad(url: url, originalURL: url)
@@ -257,7 +257,7 @@
                     .warning,
                     .editor,
                     "Video editor load rejected; file missing",
-                    context: ["fileName": url.lastPathComponent],
+                    context: ["fileName": url.lastPathComponent]
                 )
                 showError(message: L10n.VideoEditor.fileNotFound)
                 return
@@ -265,12 +265,13 @@
 
             // Validate it's a video or GIF file
             guard let type = try? url.resourceValues(forKeys: [.contentTypeKey]).contentType,
-                  type.conforms(to: .movie) || type.conforms(to: .video) || type.conforms(to: .gif) else {
+                  type.conforms(to: .movie) || type.conforms(to: .video) || type.conforms(to: .gif)
+            else {
                 DiagnosticLogger.shared.log(
                     .warning,
                     .editor,
                     "Video editor load rejected; invalid type",
-                    context: ["fileName": url.lastPathComponent],
+                    context: ["fileName": url.lastPathComponent]
                 )
                 showError(message: L10n.VideoEditor.selectValidVideoOrGIFFile)
                 return
@@ -280,7 +281,7 @@
                 .info,
                 .editor,
                 "Video editor loading file",
-                context: ["fileName": url.lastPathComponent, "hasOriginalURL": originalURL == nil ? "false" : "true"],
+                context: ["fileName": url.lastPathComponent, "hasOriginalURL": originalURL == nil ? "false" : "true"]
             )
             onVideoDropped(url, originalURL)
         }

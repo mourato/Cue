@@ -21,7 +21,7 @@ final class SmartElementWindowOwnerResolver: SmartElementWindowOwnerResolving {
 
     init(
         windowListSource: SmartElementWindowListSource = CGWindowListSmartElementSource(),
-        ownBundleIdentifier: String? = Bundle.main.bundleIdentifier,
+        ownBundleIdentifier: String? = Bundle.main.bundleIdentifier
     ) {
         self.windowListSource = windowListSource
         self.ownBundleIdentifier = ownBundleIdentifier
@@ -33,7 +33,7 @@ final class SmartElementWindowOwnerResolver: SmartElementWindowOwnerResolving {
             return SmartElementWindowOwner(
                 pid: owner.pid,
                 windowID: owner.windowID,
-                bundleIdentifier: owner.bundleIdentifier,
+                bundleIdentifier: owner.bundleIdentifier
             )
         }
         return nil
@@ -52,7 +52,7 @@ final class SmartElementWindowOwnerResolver: SmartElementWindowOwnerResolving {
         }
 
         let bundleIdentifier = NSRunningApplication(
-            processIdentifier: ownerPID.int32Value,
+            processIdentifier: ownerPID.int32Value
         )?.bundleIdentifier
         if let ownBundleIdentifier, bundleIdentifier == ownBundleIdentifier {
             return nil
@@ -65,7 +65,7 @@ final class SmartElementWindowOwnerResolver: SmartElementWindowOwnerResolving {
             pid: ownerPID.int32Value,
             windowID: CGWindowID(windowNumber.uint32Value),
             bundleIdentifier: bundleIdentifier,
-            frame: frame,
+            frame: frame
         )
     }
 

@@ -59,11 +59,11 @@ private struct BackButton: View {
                 .frame(width: 32, height: 32)
                 .background(
                     Circle()
-                        .fill(isHovered ? VSDesignSystem.Colors.cardFill : Color.clear),
+                        .fill(isHovered ? VSDesignSystem.Colors.cardFill : Color.clear)
                 )
                 .overlay(
                     Circle()
-                        .stroke(VSDesignSystem.Colors.cardStroke, lineWidth: 1),
+                        .stroke(VSDesignSystem.Colors.cardStroke, lineWidth: 1)
                 )
                 .contentShape(Circle())
         }

@@ -14,8 +14,8 @@ final class AnnotationShapeFillStyleMigrationTests: XCTestCase {
             item: AnnotationItem(
                 type: .rectangle,
                 bounds: CGRect(x: 0, y: 0, width: 40, height: 20),
-                properties: AnnotationProperties(shapeFillStyle: .outline),
-            ),
+                properties: AnnotationProperties(shapeFillStyle: .outline)
+            )
         )
         persisted.type.kind = .filledRectangle
 
@@ -29,8 +29,8 @@ final class AnnotationShapeFillStyleMigrationTests: XCTestCase {
             item: AnnotationItem(
                 type: .circle,
                 bounds: CGRect(x: 0, y: 0, width: 40, height: 20),
-                properties: AnnotationProperties(),
-            ),
+                properties: AnnotationProperties()
+            )
         )
         persisted.type.kind = .oval
 
@@ -43,7 +43,7 @@ final class AnnotationShapeFillStyleMigrationTests: XCTestCase {
         let item = AnnotationItem(
             type: .circle,
             bounds: CGRect(x: 1, y: 2, width: 3, height: 4),
-            properties: AnnotationProperties(shapeFillStyle: .hatched),
+            properties: AnnotationProperties(shapeFillStyle: .hatched)
         )
         let persisted = PersistedAnnotationItem(item: item)
         XCTAssertEqual(persisted.type.kind, .circle)
@@ -54,7 +54,7 @@ final class AnnotationShapeFillStyleMigrationTests: XCTestCase {
         XCTAssertFalse(AnnotationShapeFillStyle.notinhasCases.contains(.solid))
         XCTAssertEqual(
             AnnotationShapeFillStyle.notinhasCases,
-            [.outline, .tinted, .hatched],
+            [.outline, .tinted, .hatched]
         )
     }
 }

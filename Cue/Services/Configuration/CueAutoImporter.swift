@@ -38,21 +38,21 @@ struct CueConfigurationAutoImportResult {
 @MainActor
 enum CueConfigurationAutoImporter {
     static func applyIfNeededOnLaunch(
-        defaults: UserDefaults = .standard,
+        defaults: UserDefaults = .standard
     ) -> CueConfigurationAutoImportResult {
         applyIfNeededOnLaunch(service: .shared, defaults: defaults)
     }
 
     static func applyIfNeededOnLaunch(
         service: CueConfigurationService,
-        defaults: UserDefaults = .standard,
+        defaults: UserDefaults = .standard
     ) -> CueConfigurationAutoImportResult {
         if service.needsUserSelectedConfigAccess {
             return CueConfigurationAutoImportResult(
                 status: .skippedPermissionRequired,
                 fileURL: service.resolvedConfigFileURL,
                 importResult: nil,
-                errorMessage: nil,
+                errorMessage: nil
             )
         }
 
@@ -64,7 +64,7 @@ enum CueConfigurationAutoImporter {
 
     static func applyIfNeeded(
         from fileURL: URL,
-        defaults: UserDefaults = .standard,
+        defaults: UserDefaults = .standard
     ) -> CueConfigurationAutoImportResult {
         let fileManager = FileManager.default
         guard fileManager.fileExists(atPath: fileURL.path) else {
@@ -72,7 +72,7 @@ enum CueConfigurationAutoImporter {
                 status: .skippedMissingFile,
                 fileURL: fileURL,
                 importResult: nil,
-                errorMessage: nil,
+                errorMessage: nil
             )
         }
 
@@ -84,7 +84,7 @@ enum CueConfigurationAutoImporter {
                 status: .failed,
                 fileURL: fileURL,
                 importResult: nil,
-                errorMessage: error.localizedDescription,
+                errorMessage: error.localizedDescription
             )
         }
 
@@ -94,7 +94,7 @@ enum CueConfigurationAutoImporter {
                 status: .skippedUnchanged,
                 fileURL: fileURL,
                 importResult: nil,
-                errorMessage: nil,
+                errorMessage: nil
             )
         }
 
@@ -104,7 +104,7 @@ enum CueConfigurationAutoImporter {
                 status: .failed,
                 fileURL: fileURL,
                 importResult: importResult,
-                errorMessage: nil,
+                errorMessage: nil
             )
         }
 
@@ -113,7 +113,7 @@ enum CueConfigurationAutoImporter {
             status: .applied,
             fileURL: fileURL,
             importResult: importResult,
-            errorMessage: nil,
+            errorMessage: nil
         )
     }
 

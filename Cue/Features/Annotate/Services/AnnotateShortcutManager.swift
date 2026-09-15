@@ -49,25 +49,25 @@ final class AnnotateShortcutManager: ObservableObject {
     /// Tools that support shortcuts (excludes mockup - internal only)
     static let configurableTools: [AnnotationToolType] = [
         .crop, .selection, .rectangle, .circle, .arrow,
-        .line, .magnify, .text, .highlighter, .blur, .spotlight, .cueNote, .watermark, .pencil,
+        .line, .magnify, .text, .highlighter, .blur, .spotlight, .cueNote, .watermark, .pencil
     ]
 
     /// Default: ⌘⇧C
     static let defaultCopyAndClose = ShortcutConfig(
         keyCode: UInt32(kVK_ANSI_C),
-        modifiers: UInt32(cmdKey | shiftKey),
+        modifiers: UInt32(cmdKey | shiftKey)
     )
 
     /// Default: ⌘B
     static let defaultToggleSidebar = ShortcutConfig(
         keyCode: UInt32(kVK_ANSI_B),
-        modifiers: UInt32(cmdKey),
+        modifiers: UInt32(cmdKey)
     )
 
     /// Default: ⌃⌘P
     static let defaultTogglePin = ShortcutConfig(
         keyCode: UInt32(kVK_ANSI_P),
-        modifiers: UInt32(cmdKey | controlKey),
+        modifiers: UInt32(cmdKey | controlKey)
     )
 
     /// No default shortcut; available for users who want a local Annotate action key.
@@ -284,7 +284,8 @@ final class AnnotateShortcutManager: ObservableObject {
         defaults.removeObject(forKey: filledKey)
 
         if defaults.object(forKey: circleKey) == nil,
-           let ovalStored = defaults.string(forKey: ovalKey) {
+           let ovalStored = defaults.string(forKey: ovalKey)
+        {
             defaults.set(ovalStored, forKey: circleKey)
             if let char = ovalStored.first {
                 shortcuts[.circle] = char
@@ -325,7 +326,7 @@ final class AnnotateShortcutManager: ObservableObject {
         togglePinShortcut = loadActionShortcut(forKey: togglePinKey, defaultValue: Self.defaultTogglePin)
         autoRedactSensitiveDataShortcut = loadActionShortcut(
             forKey: autoRedactSensitiveDataKey,
-            defaultValue: Self.defaultAutoRedactSensitiveData,
+            defaultValue: Self.defaultAutoRedactSensitiveData
         )
     }
 

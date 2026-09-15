@@ -100,7 +100,8 @@ enum AnnotateClipboardImageBehavior: String, CaseIterable, Identifiable {
 
     static func stored(userDefaults: UserDefaults = .standard) -> Self {
         guard let rawValue = userDefaults.string(forKey: PreferencesKeys.annotateClipboardImageOpenBehavior),
-              let behavior = Self(rawValue: rawValue) else {
+              let behavior = Self(rawValue: rawValue)
+        else {
             return .ask
         }
         return behavior
@@ -133,7 +134,8 @@ enum ClipboardCopyMode: String, CaseIterable, Identifiable {
 
     static func stored(userDefaults: UserDefaults = .standard) -> Self {
         guard let rawValue = userDefaults.string(forKey: PreferencesKeys.clipboardCopyMode),
-              let mode = Self(rawValue: rawValue) else {
+              let mode = Self(rawValue: rawValue)
+        else {
             return .fileAndImage
         }
         return mode
@@ -239,8 +241,8 @@ final class PreferencesManager: ObservableObject {
             context: [
                 "action": action.rawValue,
                 "captureType": type.rawValue,
-                "enabled": enabled ? "true" : "false",
-            ],
+                "enabled": enabled ? "true" : "false"
+            ]
         )
         saveAfterCaptureActions()
     }
@@ -286,7 +288,7 @@ final class PreferencesManager: ObservableObject {
                 .preferences,
                 error,
                 "Failed to save after-capture actions",
-                context: ["actionCount": "\(afterCaptureActions.count)"],
+                context: ["actionCount": "\(afterCaptureActions.count)"]
             )
         }
     }
@@ -305,7 +307,7 @@ final class PreferencesManager: ObservableObject {
                 .preferences,
                 error,
                 "Failed to decode after-capture actions; using defaults",
-                context: ["dataBytes": "\(data.count)"],
+                context: ["dataBytes": "\(data.count)"]
             )
             initializeDefaults()
             return
@@ -318,7 +320,7 @@ final class PreferencesManager: ObservableObject {
                     .warning,
                     .preferences,
                     "Unknown after-capture action ignored",
-                    context: ["action": actionRaw],
+                    context: ["action": actionRaw]
                 )
                 continue
             }
@@ -328,7 +330,7 @@ final class PreferencesManager: ObservableObject {
                         .warning,
                         .preferences,
                         "Unknown after-capture capture type ignored",
-                        context: ["captureType": typeRaw],
+                        context: ["captureType": typeRaw]
                     )
                     continue
                 }
@@ -342,7 +344,7 @@ final class PreferencesManager: ObservableObject {
             .debug,
             .preferences,
             "After-capture actions loaded",
-            context: ["actionCount": "\(afterCaptureActions.count)"],
+            context: ["actionCount": "\(afterCaptureActions.count)"]
         )
     }
 

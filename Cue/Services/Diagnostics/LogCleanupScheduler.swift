@@ -37,7 +37,7 @@ final class LogCleanupScheduler {
             timer?.invalidate()
             timer = Timer.scheduledTimer(
                 withTimeInterval: cleanupInterval,
-                repeats: true,
+                repeats: true
             ) { [weak self] _ in
                 self?.performCleanup()
             }
@@ -77,7 +77,7 @@ final class LogCleanupScheduler {
         let earliestKeptDay = calendar.date(
             byAdding: .day,
             value: -(retentionDays - 1),
-            to: today,
+            to: today
         ) ?? today
 
         for file in files {
@@ -92,7 +92,7 @@ final class LogCleanupScheduler {
             CueStoragePaths.destinationLogFilePrefix,
             CueStoragePaths.legacyLogFilePrefix,
             NotinhasStoragePaths.destinationLogFilePrefix,
-            NotinhasStoragePaths.legacyLogFilePrefix,
+            NotinhasStoragePaths.legacyLogFilePrefix
         ]
         guard
             fileName.hasSuffix(".txt"),

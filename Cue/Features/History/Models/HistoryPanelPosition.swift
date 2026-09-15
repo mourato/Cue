@@ -16,7 +16,7 @@ enum HistoryPanelPosition: String, Codable {
 
     static let allCases: [HistoryPanelPosition] = [
         .topCenter,
-        .bottomCenter,
+        .bottomCenter
     ]
 
     /// Calculate origin point for panel placement
@@ -56,7 +56,7 @@ enum HistoryBackgroundStyle: String, CaseIterable, Codable, Identifiable {
 
     static func currentStoredStyle(userDefaults: UserDefaults = .standard) -> HistoryBackgroundStyle {
         HistoryBackgroundStyle(
-            rawValue: userDefaults.string(forKey: PreferencesKeys.historyBackgroundStyle) ?? "",
+            rawValue: userDefaults.string(forKey: PreferencesKeys.historyBackgroundStyle) ?? ""
         ) ?? .defaultStyle
     }
 

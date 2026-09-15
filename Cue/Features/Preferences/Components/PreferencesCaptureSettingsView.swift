@@ -34,7 +34,7 @@ struct CaptureSettingsView: View {
     // Snapping
     @AppStorage(PreferencesKeys.captureSelectionSnappingEnabled) private var captureSelectionSnappingEnabled = true
     @AppStorage(PreferencesKeys.captureSelectionSnapDistance) private var captureSelectionSnapDistance = Int(
-        CaptureSelectionSnappingConfiguration.defaultSnapDistance,
+        CaptureSelectionSnappingConfiguration.defaultSnapDistance
     )
     @AppStorage(PreferencesKeys.captureSelectionColorSensitivity) private var captureSelectionColorSensitivity =
         CaptureSelectionSnappingConfiguration.defaultColorSensitivity
@@ -82,7 +82,7 @@ struct CaptureSettingsView: View {
             Section {
                 SettingRow(
                     title: L10n.PreferencesCapture.includeInScreenshotsTitle,
-                    description: L10n.PreferencesCapture.includeInScreenshotsDescription,
+                    description: L10n.PreferencesCapture.includeInScreenshotsDescription
                 ) {
                     Toggle("", isOn: $includeOwnAppInScreenshots)
                         .labelsHidden()
@@ -90,7 +90,7 @@ struct CaptureSettingsView: View {
                 }
 
                 SettingRow(
-                    title: L10n.PreferencesCapture.showCursorTitle,
+                    title: L10n.PreferencesCapture.showCursorTitle
                 ) {
                     Toggle("", isOn: $screenshotShowCursor)
                         .labelsHidden()
@@ -99,7 +99,7 @@ struct CaptureSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesCapture.freezeAreaTitle,
-                    description: L10n.PreferencesCapture.freezeAreaDescription,
+                    description: L10n.PreferencesCapture.freezeAreaDescription
                 ) {
                     Toggle("", isOn: $freezeAreaCapture)
                         .labelsHidden()
@@ -107,7 +107,7 @@ struct CaptureSettingsView: View {
                 }
 
                 SettingRow(
-                    title: L10n.PreferencesCapture.hideDesktopIconsTitle,
+                    title: L10n.PreferencesCapture.hideDesktopIconsTitle
                 ) {
                     Toggle("", isOn: $hideDesktopIcons)
                         .labelsHidden()
@@ -115,7 +115,7 @@ struct CaptureSettingsView: View {
                 }
 
                 SettingRow(
-                    title: L10n.PreferencesCapture.hideDesktopWidgetsTitle,
+                    title: L10n.PreferencesCapture.hideDesktopWidgetsTitle
                 ) {
                     Toggle("", isOn: $hideDesktopWidgets)
                         .labelsHidden()
@@ -124,7 +124,7 @@ struct CaptureSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesCapture.allInOneModesSection,
-                    description: L10n.PreferencesCapture.allInOneModesDescription,
+                    description: L10n.PreferencesCapture.allInOneModesDescription
                 ) {
                     Button(L10n.PreferencesGeneral.customizeButton) {
                         isAllInOneModesPresented = true
@@ -135,7 +135,7 @@ struct CaptureSettingsView: View {
                 }
 
                 SettingRow(
-                    title: L10n.PreferencesAdvanced.rememberLastSelectionTitle,
+                    title: L10n.PreferencesAdvanced.rememberLastSelectionTitle
                 ) {
                     Toggle("", isOn: $rememberLastSelection)
                         .labelsHidden()
@@ -154,7 +154,7 @@ struct CaptureSettingsView: View {
 
             Section(L10n.PreferencesCapture.windowScreenshotsSection) {
                 SettingRow(
-                    title: L10n.PreferencesCapture.windowShadowTitle,
+                    title: L10n.PreferencesCapture.windowShadowTitle
                 ) {
                     Toggle("", isOn: $captureWindowShadow)
                         .labelsHidden()
@@ -167,7 +167,7 @@ struct CaptureSettingsView: View {
             Section {
                 SettingRow(
                     title: L10n.PreferencesAnnotate.quickPropertiesSyncTitle,
-                    description: L10n.PreferencesAnnotate.quickPropertiesSyncDescription,
+                    description: L10n.PreferencesAnnotate.quickPropertiesSyncDescription
                 ) {
                     Toggle("", isOn: $annotateQuickPropertiesSyncEnabled)
                         .labelsHidden()
@@ -176,7 +176,7 @@ struct CaptureSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesAnnotate.combineSaveAsEditTitle,
-                    description: L10n.PreferencesAnnotate.combineSaveAsEditDescription,
+                    description: L10n.PreferencesAnnotate.combineSaveAsEditDescription
                 ) {
                     Toggle("", isOn: $annotateCombineSaveAsEdit)
                         .labelsHidden()
@@ -185,7 +185,7 @@ struct CaptureSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesAnnotate.clipboardTitle,
-                    description: L10n.PreferencesAnnotate.clipboardDescription,
+                    description: L10n.PreferencesAnnotate.clipboardDescription
                 ) {
                     Picker("", selection: $annotateClipboardImageOpenBehavior) {
                         ForEach(AnnotateClipboardImageBehavior.allCases) { behavior in
@@ -201,7 +201,7 @@ struct CaptureSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesAnnotate.closeAfterDragTitle,
-                    description: L10n.PreferencesAnnotate.closeAfterDragDescription,
+                    description: L10n.PreferencesAnnotate.closeAfterDragDescription
                 ) {
                     Toggle("", isOn: $annotateCloseAfterDrag)
                         .labelsHidden()
@@ -210,7 +210,7 @@ struct CaptureSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesAnnotate.bringForwardAfterDragTitle,
-                    description: L10n.PreferencesAnnotate.bringForwardAfterDragDescription,
+                    description: L10n.PreferencesAnnotate.bringForwardAfterDragDescription
                 ) {
                     Toggle("", isOn: $annotateBringForwardAfterDrag)
                         .labelsHidden()
@@ -219,7 +219,7 @@ struct CaptureSettingsView: View {
                 .disabled(annotateCloseAfterDrag)
 
                 SettingRow(
-                    title: L10n.PreferencesAnnotate.chromeToolbarSection,
+                    title: L10n.PreferencesAnnotate.chromeToolbarSection
                 ) {
                     Button(L10n.PreferencesGeneral.customizeButton) {
                         isAnnotateToolbarPresented = true
@@ -230,7 +230,7 @@ struct CaptureSettingsView: View {
                 }
 
                 SettingRow(
-                    title: L10n.PreferencesAnnotate.chromeBottomSection,
+                    title: L10n.PreferencesAnnotate.chromeBottomSection
                 ) {
                     Button(L10n.PreferencesGeneral.customizeButton) {
                         isAnnotateBottomBarPresented = true
@@ -250,7 +250,7 @@ struct CaptureSettingsView: View {
             Section(L10n.PreferencesCapture.selectionSection) {
                 SettingRow(
                     title: L10n.PreferencesCapture.showSelectionAreaOverlayTitle,
-                    description: L10n.PreferencesCapture.showSelectionAreaOverlayDescription,
+                    description: L10n.PreferencesCapture.showSelectionAreaOverlayDescription
                 ) {
                     Toggle("", isOn: $showSelectionAreaOverlay)
                         .labelsHidden()
@@ -259,7 +259,7 @@ struct CaptureSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesCapture.reverseMagnifierZoomDirectionTitle,
-                    description: L10n.PreferencesCapture.reverseMagnifierZoomDirectionDescription,
+                    description: L10n.PreferencesCapture.reverseMagnifierZoomDirectionDescription
                 ) {
                     Toggle("", isOn: $reverseMagnifierZoomDirection)
                         .labelsHidden()
@@ -268,7 +268,7 @@ struct CaptureSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesCapture.snappingTitle,
-                    description: L10n.PreferencesCapture.snappingDescription,
+                    description: L10n.PreferencesCapture.snappingDescription
                 ) {
                     Toggle("", isOn: $captureSelectionSnappingEnabled)
                         .labelsHidden()
@@ -281,7 +281,7 @@ struct CaptureSettingsView: View {
                         content: {
                             VStack(spacing: 8) {
                                 SettingRow(
-                                    title: L10n.PreferencesCapture.selectionSnapGuidesTitle,
+                                    title: L10n.PreferencesCapture.selectionSnapGuidesTitle
                                 ) {
                                     Toggle("", isOn: $captureSelectionShowSnapGuides)
                                         .labelsHidden()
@@ -290,12 +290,12 @@ struct CaptureSettingsView: View {
 
                                 SettingRow(
                                     title: L10n.PreferencesCapture.selectionSnapDistanceTitle,
-                                    description: L10n.PreferencesCapture.selectionSnapDistanceDescription,
+                                    description: L10n.PreferencesCapture.selectionSnapDistanceDescription
                                 ) {
                                     PreferencesNumericPicker(
                                         value: Binding(
                                             get: { Double(captureSelectionSnapDistance) },
-                                            set: { captureSelectionSnapDistance = Int($0.rounded()) },
+                                            set: { captureSelectionSnapDistance = Int($0.rounded()) }
                                         ),
                                         range: Double(CaptureSelectionSnappingConfiguration.snapDistanceRange
                                             .lowerBound)
@@ -305,18 +305,20 @@ struct CaptureSettingsView: View {
                                         step: 1,
                                         accessibilityTitle: L10n.PreferencesCapture.selectionSnapDistanceTitle,
                                         unit: "px",
-                                        valueLabel: { "\(Int($0)) px" },
+                                        valueLabel: { "\(Int($0)) px" }
                                     )
                                 }
 
                                 SettingRow(
                                     title: L10n.PreferencesCapture.selectionColorSensitivityTitle,
-                                    description: L10n.PreferencesCapture.selectionColorSensitivityDescription,
+                                    description: L10n.PreferencesCapture.selectionColorSensitivityDescription
                                 ) {
                                     Picker("", selection: $captureSelectionColorSensitivity) {
-                                        ForEach(Array(CaptureSelectionSnappingConfiguration
-                                                    .colorSensitivityRange),
-                                        id: \.self) { value in
+                                        ForEach(
+                                            Array(CaptureSelectionSnappingConfiguration
+                                                .colorSensitivityRange),
+                                            id: \.self
+                                        ) { value in
                                             Text(L10n.PreferencesCapture.selectionColorSensitivityLabel(value))
                                                 .tag(value)
                                         }
@@ -332,7 +334,7 @@ struct CaptureSettingsView: View {
                             Text(L10n.PreferencesCapture.snappingAdvancedSettings)
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                        },
+                        }
                     )
                 }
             }
@@ -342,7 +344,7 @@ struct CaptureSettingsView: View {
             Section(L10n.PreferencesCapture.postProcessingSection) {
                 SettingRow(
                     title: L10n.PreferencesCapture.autoCropSubjectTitle,
-                    description: L10n.PreferencesCapture.autoCropSubjectDescription,
+                    description: L10n.PreferencesCapture.autoCropSubjectDescription
                 ) {
                     Toggle("", isOn: $backgroundCutoutAutoCropEnabled)
                         .labelsHidden()
@@ -354,7 +356,7 @@ struct CaptureSettingsView: View {
 
             Section {
                 SettingRow(
-                    title: L10n.PreferencesCapture.showSessionHintsTitle,
+                    title: L10n.PreferencesCapture.showSessionHintsTitle
                 ) {
                     Toggle("", isOn: $scrollingCaptureShowHints)
                         .labelsHidden()
@@ -363,7 +365,7 @@ struct CaptureSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesCapture.ocrSuccessNotificationTitle,
-                    description: L10n.PreferencesCapture.ocrSuccessNotificationDescription,
+                    description: L10n.PreferencesCapture.ocrSuccessNotificationDescription
                 ) {
                     Toggle("", isOn: $ocrSuccessNotification)
                         .labelsHidden()
@@ -371,7 +373,7 @@ struct CaptureSettingsView: View {
                 }
 
                 SettingRow(
-                    title: L10n.PreferencesAdvanced.ocrLanguageTitle,
+                    title: L10n.PreferencesAdvanced.ocrLanguageTitle
                 ) {
                     Picker("", selection: $ocrLanguage) {
                         Text(L10n.PreferencesAdvanced.ocrAutomaticLanguage).tag("")
@@ -386,7 +388,7 @@ struct CaptureSettingsView: View {
                 }
 
                 SettingRow(
-                    title: L10n.PreferencesAdvanced.keepLineBreaksTitle,
+                    title: L10n.PreferencesAdvanced.keepLineBreaksTitle
                 ) {
                     Toggle("", isOn: $keepOCRLineBreaks)
                         .labelsHidden()
@@ -394,7 +396,7 @@ struct CaptureSettingsView: View {
                 }
 
                 SettingRow(
-                    title: L10n.PreferencesAdvanced.detectLinksTitle,
+                    title: L10n.PreferencesAdvanced.detectLinksTitle
                 ) {
                     Toggle("", isOn: $detectOCRLinks)
                         .labelsHidden()
@@ -441,7 +443,7 @@ struct CaptureSettingsView: View {
         }
         .alert(
             L10n.PreferencesCapture.resetScreenshotDefaultsConfirmationTitle,
-            isPresented: $isResetScreenshotDefaultsConfirmationPresented,
+            isPresented: $isResetScreenshotDefaultsConfirmationPresented
         ) {
             Button(L10n.Common.cancel, role: .cancel) {}
             Button(L10n.PreferencesCapture.resetScreenshotDefaultsConfirmButton, role: .destructive) {
@@ -466,7 +468,7 @@ struct CaptureSettingsView: View {
     @ViewBuilder
     private var outputSettings: some View {
         SettingRow(
-            title: L10n.PreferencesCapture.imageFormatTitle,
+            title: L10n.PreferencesCapture.imageFormatTitle
         ) {
             Picker("", selection: $screenshotFormat) {
                 ForEach(ImageFormatOption.allCases, id: \.self) { option in
@@ -480,13 +482,13 @@ struct CaptureSettingsView: View {
 
         if screenshotFormat == ImageFormatOption.jpeg.rawValue {
             SettingRow(
-                title: L10n.PreferencesCapture.jpegQualityTitle,
+                title: L10n.PreferencesCapture.jpegQualityTitle
             ) {
                 HStack(spacing: 8) {
                     Slider(
                         value: $screenshotJpegQuality,
                         in: 0.1 ... 1.0,
-                        step: 0.05,
+                        step: 0.05
                     )
                     .frame(width: 120)
                     .accessibilityLabel(L10n.PreferencesCapture.jpegQualityTitle)

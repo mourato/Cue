@@ -38,7 +38,7 @@ enum AnnotationToolContext {
         case .both:
             [
                 AnnotationToolBadge(label: L10n.CaptureKind.screenshot, color: .blue),
-                AnnotationToolBadge(label: L10n.CaptureKind.recording, color: .orange),
+                AnnotationToolBadge(label: L10n.CaptureKind.recording, color: .orange)
             ]
         }
     }
@@ -73,7 +73,7 @@ struct SingleKeyRecorderView: View {
                         .padding(.horizontal, 5)
                         .padding(.vertical, 1)
                         .background(
-                            Capsule().fill(badge.color.opacity(0.15)),
+                            Capsule().fill(badge.color.opacity(0.15))
                         )
                 }
             }
@@ -109,7 +109,7 @@ struct SingleKeyRecorderView: View {
 
             ShortcutResetButton(
                 isDisabled: !isEnabled || isRecording || shortcut == defaultShortcut,
-                action: resetToDefault,
+                action: resetToDefault
             )
 
             HStack(spacing: 6) {
@@ -159,7 +159,8 @@ struct SingleKeyRecorderView: View {
 
             // Get character (lowercase for consistency)
             if let char = event.charactersIgnoringModifiers?.lowercased().first,
-               char.isLetter || char.isNumber || char.isPunctuation || char.isSymbol {
+               char.isLetter || char.isNumber || char.isPunctuation || char.isSymbol
+            {
                 _ = onChanged(char)
                 stopRecording()
                 return nil

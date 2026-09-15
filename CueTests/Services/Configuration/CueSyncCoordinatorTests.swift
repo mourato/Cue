@@ -22,9 +22,9 @@ final class CueConfigurationSyncCoordinatorTests: XCTestCase {
                 return CueConfigurationSyncResult(
                     status: .synced,
                     fileURL: fileURL,
-                    exportedSettingsSignature: "synced",
+                    exportedSettingsSignature: "synced"
                 )
-            },
+            }
         )
         defer { coordinator.stop() }
 
@@ -52,9 +52,9 @@ final class CueConfigurationSyncCoordinatorTests: XCTestCase {
                 return CueConfigurationSyncResult(
                     status: .alreadyCurrent,
                     fileURL: fileURL,
-                    exportedSettingsSignature: "current",
+                    exportedSettingsSignature: "current"
                 )
-            },
+            }
         )
         defer { coordinator.stop() }
 
@@ -82,7 +82,7 @@ final class CueConfigurationSyncCoordinatorTests: XCTestCase {
             confirmedSync: { _, _ in
                 overwriteCount += 1
                 return fileURL
-            },
+            }
         )
         defer { coordinator.stop() }
 
@@ -104,14 +104,14 @@ final class CueConfigurationSyncCoordinatorTests: XCTestCase {
                 overwriteURL = url
                 overwriteSignature = expectedSignature
                 return fileURL
-            },
+            }
         )
         defer { coordinator.stop() }
 
         coordinator.start()
         let returnedURL = try coordinator.syncCurrentSettingsAfterConfirmation(
             at: fileURL,
-            expectedFileSignature: "approved",
+            expectedFileSignature: "approved"
         )
 
         XCTAssertEqual(returnedURL, fileURL)
@@ -128,7 +128,7 @@ final class CueConfigurationSyncCoordinatorTests: XCTestCase {
         let coordinator = makeCoordinator(
             sync: {
                 CueConfigurationSyncResult(status: .permissionRequired, fileURL: fileURL)
-            },
+            }
         )
         defer { coordinator.stop() }
 
@@ -151,10 +151,10 @@ final class CueConfigurationSyncCoordinatorTests: XCTestCase {
                 return CueConfigurationSyncResult(
                     status: .synced,
                     fileURL: fileURL,
-                    exportedSettingsSignature: "same-settings",
+                    exportedSettingsSignature: "same-settings"
                 )
             },
-            currentSettingsSignature: { "same-settings" },
+            currentSettingsSignature: { "same-settings" }
         )
         defer { coordinator.stop() }
 
@@ -177,7 +177,7 @@ final class CueConfigurationSyncCoordinatorTests: XCTestCase {
                 return CueConfigurationSyncResult(
                     status: .synced,
                     fileURL: fileURL,
-                    exportedSettingsSignature: "manual",
+                    exportedSettingsSignature: "manual"
                 )
             },
             backgroundSync: {
@@ -188,10 +188,10 @@ final class CueConfigurationSyncCoordinatorTests: XCTestCase {
                 return CueConfigurationSyncResult(
                     status: .needsConfirmation,
                     fileURL: fileURL,
-                    exportedSettingsSignature: "background",
+                    exportedSettingsSignature: "background"
                 )
             },
-            currentSettingsSignature: { "manual" },
+            currentSettingsSignature: { "manual" }
         )
         defer { coordinator.stop() }
 
@@ -225,7 +225,7 @@ final class CueConfigurationSyncCoordinatorTests: XCTestCase {
                 return CueConfigurationSyncResult(
                     status: .synced,
                     fileURL: fileURL,
-                    exportedSettingsSignature: "flush",
+                    exportedSettingsSignature: "flush"
                 )
             },
             backgroundSync: {
@@ -236,10 +236,10 @@ final class CueConfigurationSyncCoordinatorTests: XCTestCase {
                 return CueConfigurationSyncResult(
                     status: .synced,
                     fileURL: fileURL,
-                    exportedSettingsSignature: "background",
+                    exportedSettingsSignature: "background"
                 )
             },
-            currentSettingsSignature: { "flush" },
+            currentSettingsSignature: { "flush" }
         )
         defer { coordinator.stop() }
 
@@ -267,7 +267,7 @@ final class CueConfigurationSyncCoordinatorTests: XCTestCase {
         confirmedSync: @escaping @MainActor (URL?, String?) throws -> URL = { url, _ in
             url ?? URL(fileURLWithPath: "/tmp/config.toml")
         },
-        currentSettingsSignature: @escaping @MainActor () -> String = { "" },
+        currentSettingsSignature: @escaping @MainActor () -> String = { "" }
     ) -> CueConfigurationSyncCoordinator {
         CueConfigurationSyncCoordinator(
             notificationCenter: notificationCenter,
@@ -275,7 +275,7 @@ final class CueConfigurationSyncCoordinatorTests: XCTestCase {
             syncManagedConfigIfSafe: sync,
             syncManagedConfigIfSafeInBackground: backgroundSync,
             syncCurrentSettingsAfterConfirmation: confirmedSync,
-            currentSettingsSignature: currentSettingsSignature,
+            currentSettingsSignature: currentSettingsSignature
         )
     }
 

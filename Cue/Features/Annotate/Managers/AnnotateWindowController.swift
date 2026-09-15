@@ -24,7 +24,7 @@ enum AnnotateDragCompletionPolicy {
     static func action(
         success: Bool,
         closeAfterDrag: Bool,
-        bringForwardAfterDrag: Bool,
+        bringForwardAfterDrag: Bool
     ) -> AnnotateDragCompletionAction {
         guard success else { return .restore(presentation: .foreground) }
         if closeAfterDrag {
@@ -54,7 +54,7 @@ enum AnnotateCommitRouting {
         for action: AnnotateCommitAction,
         hasImage: Bool,
         combineSaveNeedsDialog: Bool,
-        protectsSourceFromImplicitCombineWrite: Bool,
+        protectsSourceFromImplicitCombineWrite: Bool
     ) -> AnnotateCommitRoute {
         switch action {
         case .saveAndClose:
@@ -96,7 +96,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
     init(
         item: QuickAccessItem,
         sessionData: AnnotationSessionData? = nil,
-        pendingCommitRecovery: Bool = false,
+        pendingCommitRecovery: Bool = false
     ) {
         quickAccessItemId = item.id
         sourceFileAccess = fileAccessManager.beginAccessingURL(item.url)
@@ -111,14 +111,14 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                 image: image,
                 url: item.url,
                 quickAccessItemId: item.id,
-                appliesDefaultCanvasPresetOnNewImages: false,
+                appliesDefaultCanvasPresetOnNewImages: false
             )
             state.restoreEmbeddedImageAssets(from: sessionData.embeddedImageAssetsData)
             state.annotations = sessionData.annotations
             state.applyCanvasEffects(
                 sessionData.canvasEffects,
                 preferredSelectedCanvasPresetId: sessionData.selectedCanvasPresetId,
-                preferredPresetDirtyState: sessionData.isSelectedCanvasPresetDirty,
+                preferredPresetDirtyState: sessionData.isSelectedCanvasPresetDirty
             )
             state.cropRect = sessionData.cropRect
             state.isCropActive = false
@@ -126,7 +126,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                 isApplied: sessionData.isCutoutApplied,
                 cutoutImageData: sessionData.cutoutImageData,
                 didAutoApplyCrop: sessionData.didCutoutAutoApplyCrop,
-                autoAppliedCropRect: sessionData.cutoutAutoAppliedCropRect,
+                autoAppliedCropRect: sessionData.cutoutAutoAppliedCropRect
             )
             if let combineSession = sessionData.combineSession {
                 state.restoreCombineSession(combineSession)
@@ -142,7 +142,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
             state = AnnotateState(
                 image: image,
                 url: item.url,
-                quickAccessItemId: item.id,
+                quickAccessItemId: item.id
             )
         }
 
@@ -158,16 +158,16 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
             x: 0,
             y: 0,
             width: 1440,
-            height: 900,
+            height: 900
         )
 
         let origin = NSPoint(
             x: (screenFrame.width - windowWidth) / 2,
-            y: (screenFrame.height - windowHeight) / 2,
+            y: (screenFrame.height - windowHeight) / 2
         )
 
         let window = AnnotateWindow(
-            contentRect: NSRect(origin: origin, size: NSSize(width: windowWidth, height: windowHeight)),
+            contentRect: NSRect(origin: origin, size: NSSize(width: windowWidth, height: windowHeight))
         )
 
         super.init(window: window)
@@ -196,16 +196,16 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
             x: 0,
             y: 0,
             width: 1440,
-            height: 900,
+            height: 900
         )
 
         let origin = NSPoint(
             x: (screenFrame.width - defaultWidth) / 2,
-            y: (screenFrame.height - defaultHeight) / 2,
+            y: (screenFrame.height - defaultHeight) / 2
         )
 
         let window = AnnotateWindow(
-            contentRect: NSRect(origin: origin, size: NSSize(width: defaultWidth, height: defaultHeight)),
+            contentRect: NSRect(origin: origin, size: NSSize(width: defaultWidth, height: defaultHeight))
         )
 
         super.init(window: window)
@@ -231,7 +231,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
     init(
         url: URL,
         sessionData: AnnotationSessionData? = nil,
-        pendingCommitRecovery: Bool = false,
+        pendingCommitRecovery: Bool = false
     ) {
         quickAccessItemId = nil
         sourceFileAccess = SandboxFileAccessManager.shared.beginAccessingURL(url)
@@ -245,14 +245,14 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
             state = AnnotateState(
                 image: image,
                 url: url,
-                appliesDefaultCanvasPresetOnNewImages: false,
+                appliesDefaultCanvasPresetOnNewImages: false
             )
             state.restoreEmbeddedImageAssets(from: sessionData.embeddedImageAssetsData)
             state.annotations = sessionData.annotations
             state.applyCanvasEffects(
                 sessionData.canvasEffects,
                 preferredSelectedCanvasPresetId: sessionData.selectedCanvasPresetId,
-                preferredPresetDirtyState: sessionData.isSelectedCanvasPresetDirty,
+                preferredPresetDirtyState: sessionData.isSelectedCanvasPresetDirty
             )
             state.cropRect = sessionData.cropRect
             state.isCropActive = false
@@ -260,7 +260,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                 isApplied: sessionData.isCutoutApplied,
                 cutoutImageData: sessionData.cutoutImageData,
                 didAutoApplyCrop: sessionData.didCutoutAutoApplyCrop,
-                autoAppliedCropRect: sessionData.cutoutAutoAppliedCropRect,
+                autoAppliedCropRect: sessionData.cutoutAutoAppliedCropRect
             )
             if let combineSession = sessionData.combineSession {
                 state.restoreCombineSession(combineSession)
@@ -287,16 +287,16 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
             x: 0,
             y: 0,
             width: 1440,
-            height: 900,
+            height: 900
         )
 
         let origin = NSPoint(
             x: (screenFrame.width - windowWidth) / 2,
-            y: (screenFrame.height - windowHeight) / 2,
+            y: (screenFrame.height - windowHeight) / 2
         )
 
         let window = AnnotateWindow(
-            contentRect: NSRect(origin: origin, size: NSSize(width: windowWidth, height: windowHeight)),
+            contentRect: NSRect(origin: origin, size: NSSize(width: windowWidth, height: windowHeight))
         )
 
         super.init(window: window)
@@ -334,13 +334,13 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                 .info,
                 .action,
                 "Annotate window close request via Esc",
-                context: ["itemId": quickAccessItemId.uuidString],
+                context: ["itemId": quickAccessItemId.uuidString]
             )
         } else {
             DiagnosticLogger.shared.log(
                 .info,
                 .action,
-                "Annotate window close request via Esc",
+                "Annotate window close request via Esc"
             )
         }
 
@@ -402,7 +402,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
 
     private static func normalizedRetinaLogicalSizeIfNeeded(
         for image: NSImage,
-        scaleFactor: CGFloat,
+        scaleFactor: CGFloat
     ) -> NSSize? {
         guard scaleFactor > 1 else { return nil }
         guard let rep = image.representations.first, rep.pixelsWide > 0, rep.pixelsHigh > 0 else {
@@ -414,7 +414,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         let currentSize = image.size
         let expectedSize = NSSize(
             width: pixelWidth / scaleFactor,
-            height: pixelHeight / scaleFactor,
+            height: pixelHeight / scaleFactor
         )
 
         let isAlreadyScaled =
@@ -474,7 +474,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         NSPasteboard.PasteboardType(UTType.gif.identifier),
         NSPasteboard.PasteboardType(UTType.bmp.identifier),
         NSPasteboard.PasteboardType(UTType.heic.identifier),
-        NSPasteboard.PasteboardType(UTType.webP.identifier),
+        NSPasteboard.PasteboardType(UTType.webP.identifier)
     ]
 
     private static func hasPasteboardImage(_ pasteboard: NSPasteboard) -> Bool {
@@ -492,7 +492,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         var candidates: [PasteboardImageCandidate] = []
         let pastedURLs = pasteboard.readObjects(
             forClasses: [NSURL.self],
-            options: [.urlReadingFileURLsOnly: true],
+            options: [.urlReadingFileURLsOnly: true]
         )
 
         if let imageURLs = (pastedURLs as? [URL]) ?? (pastedURLs as? [NSURL])?.map({ $0 as URL }) {
@@ -502,7 +502,8 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         }
 
         if let images = pasteboard.readObjects(forClasses: [NSImage.self], options: nil) as? [NSImage],
-           let image = images.first {
+           let image = images.first
+        {
             candidates.append(.image(image))
         }
 
@@ -513,7 +514,8 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         var candidates: [PasteboardImageCandidate] = []
 
         if let fileURL = fileURL(from: item),
-           AnnotateCanvasView.isValidImageFile(url: fileURL) {
+           AnnotateCanvasView.isValidImageFile(url: fileURL)
+        {
             candidates.append(.file(fileURL))
         }
 
@@ -632,7 +634,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
             for: .saveAndClose,
             hasImage: state.hasImage,
             combineSaveNeedsDialog: combineSaveNeedsDialog,
-            protectsSourceFromImplicitCombineWrite: protectsSourceFromImplicitCombineWrite,
+            protectsSourceFromImplicitCombineWrite: protectsSourceFromImplicitCombineWrite
         ) {
         case .combineDialog:
             performCombineSave()
@@ -661,11 +663,12 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
             // authoritative render replaces it in ~50-100ms). The pin window is NOT updated
             // here — it keeps its full-res image until the real render lands.
             if let itemId,
-               let instantThumbnail = PerfSignpost.measure("instantThumbCapture", { captureCanvasThumbnail() }) {
+               let instantThumbnail = PerfSignpost.measure("instantThumbCapture", { captureCanvasThumbnail() })
+            {
                 QuickAccessManager.shared.updateItemThumbnail(
                     id: itemId,
                     thumbnail: instantThumbnail,
-                    fullResImage: nil,
+                    fullResImage: nil
                 )
             }
 
@@ -676,7 +679,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                     DiagnosticLogger.shared.log(.error, .annotate, "Save-and-close skipped: no render snapshot")
                     await Self.presentBackgroundCommitFailure(
                         sourceURL: sourceURL,
-                        sessionSnapshot: sessionSnapshot,
+                        sessionSnapshot: sessionSnapshot
                     )
                     return
                 }
@@ -690,7 +693,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                     DiagnosticLogger.shared.log(.error, .annotate, "Save-and-close render failed; file not saved")
                     await Self.presentBackgroundCommitFailure(
                         sourceURL: sourceURL,
-                        sessionSnapshot: sessionSnapshot,
+                        sessionSnapshot: sessionSnapshot
                     )
                     return
                 }
@@ -707,7 +710,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                             id: itemId,
                             thumbnail: finalThumbnail,
                             fullResImage: renderedImage,
-                            generation: generation,
+                            generation: generation
                         )
                     }
                 }
@@ -716,12 +719,12 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                     image: renderedImage,
                     sourceURL: sourceURL,
                     sessionSnapshot: sessionSnapshot,
-                    copyEditedCapture: true,
+                    copyEditedCapture: true
                 )
                 if !didPersist {
                     await Self.presentBackgroundCommitFailure(
                         sourceURL: sourceURL,
-                        sessionSnapshot: sessionSnapshot,
+                        sessionSnapshot: sessionSnapshot
                     )
                 }
             }
@@ -778,7 +781,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         NotificationCenter.default.addObserver(
             forName: .annotateSave,
             object: window,
-            queue: .main,
+            queue: .main
         ) { [weak self] _ in
             MainActor.assumeIsolated {
                 self?.performSave()
@@ -788,7 +791,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         NotificationCenter.default.addObserver(
             forName: .annotateSaveAs,
             object: window,
-            queue: .main,
+            queue: .main
         ) { [weak self] _ in
             MainActor.assumeIsolated {
                 self?.performSaveAs()
@@ -798,7 +801,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         NotificationCenter.default.addObserver(
             forName: .annotateCopyAndClose,
             object: window,
-            queue: .main,
+            queue: .main
         ) { [weak self] _ in
             MainActor.assumeIsolated {
                 self?.performCopy()
@@ -808,7 +811,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         NotificationCenter.default.addObserver(
             forName: .annotateTogglePin,
             object: window,
-            queue: .main,
+            queue: .main
         ) { [weak self] _ in
             MainActor.assumeIsolated {
                 self?.togglePin()
@@ -818,7 +821,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         NotificationCenter.default.addObserver(
             forName: .annotatePasteImage,
             object: window,
-            queue: .main,
+            queue: .main
         ) { [weak self] _ in
             MainActor.assumeIsolated {
                 _ = self?.performPasteImage()
@@ -828,7 +831,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         NotificationCenter.default.addObserver(
             forName: .annotateAddImage,
             object: window,
-            queue: .main,
+            queue: .main
         ) { [weak self] _ in
             MainActor.assumeIsolated {
                 self?.performAddImages()
@@ -838,7 +841,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         NotificationCenter.default.addObserver(
             forName: .annotateAutoRedactSensitiveData,
             object: window,
-            queue: .main,
+            queue: .main
         ) { [weak self] _ in
             MainActor.assumeIsolated {
                 self?.state.autoRedactSensitiveData()
@@ -849,7 +852,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         NotificationCenter.default.addObserver(
             forName: .annotateDragStarted,
             object: window,
-            queue: .main,
+            queue: .main
         ) { [weak self] _ in
             MainActor.assumeIsolated {
                 self?.handleDragStarted()
@@ -860,7 +863,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         NotificationCenter.default.addObserver(
             forName: .annotateDragEnded,
             object: window,
-            queue: .main,
+            queue: .main
         ) { [weak self] notification in
             let success = (notification.userInfo?["success"] as? Bool) ?? false
             MainActor.assumeIsolated {
@@ -884,7 +887,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         switch AnnotateDragCompletionPolicy.action(
             success: success,
             closeAfterDrag: shouldCloseAfterDrag,
-            bringForwardAfterDrag: shouldBringForwardAfterDrag,
+            bringForwardAfterDrag: shouldBringForwardAfterDrag
         ) {
         case .closeAndDismiss:
             commitDragSuccessChangesIfNeeded()
@@ -895,7 +898,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
             }
             print("[AnnotateDrag] Drag succeeded — window + QA card dismissed")
 
-        case .restore(let presentation):
+        case let .restore(presentation):
             restoreWindowAfterDrag(presentation: presentation)
             if success {
                 print("[AnnotateDrag] Drag succeeded — editor preserved")
@@ -945,7 +948,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                 .error,
                 .annotate,
                 "Annotate drag success save skipped; render returned nil",
-                context: ["fileName": sourceURL.lastPathComponent],
+                context: ["fileName": sourceURL.lastPathComponent]
             )
             state.markAsSaved()
             return
@@ -965,14 +968,14 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                     .error,
                     .annotate,
                     "Annotate drag success save failed",
-                    context: ["fileName": sourceURL.lastPathComponent],
+                    context: ["fileName": sourceURL.lastPathComponent]
                 )
                 return
             }
             await Self.persistCommittedSessionOffMain(sessionSnapshot, for: sourceURL)
             await PostCaptureActionHandler.shared.copyEditedCaptureToClipboardIfEnabled(
                 for: .screenshot,
-                url: sourceURL,
+                url: sourceURL
             )
         }
     }
@@ -1020,11 +1023,11 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
 
     private func importPasteboardImage(_ candidate: PasteboardImageCandidate) -> Bool {
         switch candidate {
-        case .file(let url):
+        case let .file(url):
             state.importImage(from: url)
-        case .data(let image, let data):
+        case let .data(image, data):
             state.importImage(image, sourceURL: nil, sourceData: data)
-        case .image(let image):
+        case let .image(image):
             state.importImage(image, sourceURL: nil)
         }
     }
@@ -1058,7 +1061,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
             for: .save,
             hasImage: state.hasImage,
             combineSaveNeedsDialog: combineSaveNeedsDialog,
-            protectsSourceFromImplicitCombineWrite: protectsSourceFromImplicitCombineWrite,
+            protectsSourceFromImplicitCombineWrite: protectsSourceFromImplicitCombineWrite
         ) {
         case .noOp:
             return
@@ -1102,12 +1105,12 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                     image: renderedImage,
                     sourceURL: sourceURL,
                     sessionSnapshot: sessionSnapshot,
-                    copyEditedCapture: true,
+                    copyEditedCapture: true
                 )
                 if !didPersist {
                     await Self.presentBackgroundCommitFailure(
                         sourceURL: sourceURL,
-                        sessionSnapshot: sessionSnapshot,
+                        sessionSnapshot: sessionSnapshot
                     )
                 }
             }
@@ -1211,7 +1214,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
             for: .copy,
             hasImage: state.hasImage,
             combineSaveNeedsDialog: combineSaveNeedsDialog,
-            protectsSourceFromImplicitCombineWrite: protectsSourceFromImplicitCombineWrite,
+            protectsSourceFromImplicitCombineWrite: protectsSourceFromImplicitCombineWrite
         ) {
         case .noOp:
             return
@@ -1264,12 +1267,12 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
                 image: renderedImage,
                 sourceURL: sourceURL,
                 sessionSnapshot: sessionSnapshot,
-                copyEditedCapture: false,
+                copyEditedCapture: false
             )
             if !didPersist {
                 await Self.presentBackgroundCommitFailure(
                     sourceURL: sourceURL,
-                    sessionSnapshot: sessionSnapshot,
+                    sessionSnapshot: sessionSnapshot
                 )
             }
         }
@@ -1286,19 +1289,19 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         guard let itemId = quickAccessItemId,
               let snapshot else { return }
         let startedAt = CFAbsoluteTimeGetCurrent()
-        let snapshotDurationMs = Int((CFAbsoluteTimeGetCurrent() - startedAt) * 1_000)
+        let snapshotDurationMs = Int((CFAbsoluteTimeGetCurrent() - startedAt) * 1000)
         let embeddedBytes = snapshot.embeddedImageAssetsData.values.reduce(0) { $0 + $1.count }
 
         AnnotateManager.shared.saveSessionData(snapshot, for: itemId)
 
-        let totalDurationMs = Int((CFAbsoluteTimeGetCurrent() - startedAt) * 1_000)
+        let totalDurationMs = Int((CFAbsoluteTimeGetCurrent() - startedAt) * 1000)
         DiagnosticLogger.shared.log(.debug, .annotate, "Session cache updated", context: [
             "itemId": itemId.uuidString,
             "annotations": "\(snapshot.annotations.count)",
             "embeddedAssets": "\(snapshot.embeddedImageAssetsData.count)",
             "embeddedBytes": "\(embeddedBytes)",
             "snapshotMs": "\(snapshotDurationMs)",
-            "totalMs": "\(totalDurationMs)",
+            "totalMs": "\(totalDurationMs)"
         ])
     }
 
@@ -1313,7 +1316,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
     /// runs on the calling queue; only the cheap shouldPersist check hops to main.
     private nonisolated static func persistCommittedSessionOffMain(
         _ snapshot: AnnotationSessionData?,
-        for sourceURL: URL,
+        for sourceURL: URL
     ) async {
         guard let snapshot else { return }
         let shouldPersist = await MainActor.run { AnnotationSessionStore.shared.shouldPersist(for: sourceURL) }
@@ -1325,7 +1328,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         image: NSImage?,
         sourceURL: URL?,
         sessionSnapshot: AnnotationSessionData?,
-        copyEditedCapture: Bool,
+        copyEditedCapture: Bool
     ) async -> Bool {
         guard let image,
               let sourceURL,
@@ -1336,7 +1339,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         if copyEditedCapture {
             await PostCaptureActionHandler.shared.copyEditedCaptureToClipboardIfEnabled(
                 for: .screenshot,
-                url: sourceURL,
+                url: sourceURL
             )
         }
         return true
@@ -1344,19 +1347,19 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
 
     private static func presentBackgroundCommitFailure(
         sourceURL: URL?,
-        sessionSnapshot: AnnotationSessionData?,
+        sessionSnapshot: AnnotationSessionData?
     ) {
         AppToastManager.shared.show(
             message: L10n.AnnotateUI.saveFailedMessage,
             style: .error,
-            duration: 5,
+            duration: 5
         )
 
         guard let sourceURL, let sessionSnapshot else {
             DiagnosticLogger.shared.log(
                 .error,
                 .annotate,
-                "Annotate background commit recovery unavailable: missing source URL or session snapshot",
+                "Annotate background commit recovery unavailable: missing source URL or session snapshot"
             )
             return
         }
@@ -1364,7 +1367,7 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         AnnotateManager.shared.openAnnotation(
             url: sourceURL,
             sessionData: sessionSnapshot,
-            pendingCommitRecovery: true,
+            pendingCommitRecovery: true
         )
     }
 }

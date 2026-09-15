@@ -206,7 +206,7 @@ final class AnnotateColorPaletteStoreTests: XCTestCase {
     func testDragPayloadAdvertisesOnlyPlainTextType() {
         let provider = AnnotateColorDragPayload.itemProvider(
             color: color(red: 0.25, green: 0.5, blue: 0.75, alpha: 1),
-            sourceFavoriteRole: .annotationStroke,
+            sourceFavoriteRole: .annotationStroke
         )
 
         XCTAssertEqual(AnnotateColorDragPayload.supportedContentTypes, [.plainText])
@@ -217,7 +217,7 @@ final class AnnotateColorPaletteStoreTests: XCTestCase {
     func testDragPayloadPlainTextRoundTripsColorAndSourceRole() throws {
         let originalColor = color(red: 0.25, green: 0.5, blue: 0.75, alpha: 0.8)
         let payload = try XCTUnwrap(
-            AnnotateColorDragPayload(color: originalColor, sourceFavoriteRole: .annotationFill),
+            AnnotateColorDragPayload(color: originalColor, sourceFavoriteRole: .annotationFill)
         )
 
         let decoded = try XCTUnwrap(AnnotateColorDragPayload.parsePlainText(payload.encodedPlainText))
@@ -268,7 +268,7 @@ final class AnnotateColorPaletteStoreTests: XCTestCase {
         store.addFavorite(thirdFavorite, for: .annotationStroke)
 
         let payload = try XCTUnwrap(
-            AnnotateColorDragPayload(color: firstFavorite, sourceFavoriteRole: .annotationStroke),
+            AnnotateColorDragPayload(color: firstFavorite, sourceFavoriteRole: .annotationStroke)
         )
 
         store.acceptFavoriteDrop(payload, for: .annotationStroke)
@@ -291,7 +291,7 @@ final class AnnotateColorPaletteStoreTests: XCTestCase {
         store.addFavorite(thirdFavorite, for: .annotationStroke)
 
         let payload = try XCTUnwrap(
-            AnnotateColorDragPayload(color: firstFavorite, sourceFavoriteRole: .annotationStroke),
+            AnnotateColorDragPayload(color: firstFavorite, sourceFavoriteRole: .annotationStroke)
         )
 
         store.acceptFavoriteDrop(payload, for: .annotationStroke, targetColor: thirdFavorite)
@@ -308,7 +308,7 @@ final class AnnotateColorPaletteStoreTests: XCTestCase {
             red: Double(index + 1) / Double(total + 1),
             green: Double((index * 7) % total + 1) / Double(total + 1),
             blue: Double((index * 13) % total + 1) / Double(total + 1),
-            alpha: 1,
+            alpha: 1
         )
     }
 

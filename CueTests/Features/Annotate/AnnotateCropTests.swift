@@ -35,11 +35,11 @@ final class AnnotateCropTests: XCTestCase {
     @MainActor
     private func makeLoadedState() throws -> AnnotateState {
         let cgImage = try XCTUnwrap(
-            TestImageFactory.solidColor(width: Self.imageWidth, height: Self.imageHeight),
+            TestImageFactory.solidColor(width: Self.imageWidth, height: Self.imageHeight)
         )
         let image = NSImage(
             cgImage: cgImage,
-            size: NSSize(width: Self.imageWidth, height: Self.imageHeight),
+            size: NSSize(width: Self.imageWidth, height: Self.imageHeight)
         )
         let state = makeAnnotateState()
         state.loadImage(image)
@@ -306,7 +306,7 @@ final class AnnotateCropTests: XCTestCase {
                 rect.width / rect.height,
                 ratio.ratio,
                 accuracy: 0.0001,
-                "aspect ratio \(ratio.rawValue) should yield matching w/h",
+                "aspect ratio \(ratio.rawValue) should yield matching w/h"
             )
         }
 

@@ -49,7 +49,7 @@ final class AnnotateModifierGestureTests: XCTestCase {
         let original = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 10, y: 20, width: 40, height: 30),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         state.annotations = [original]
         state.setSelectedAnnotationIds([original.id])
@@ -75,7 +75,7 @@ final class AnnotateModifierGestureTests: XCTestCase {
         let counter = AnnotationItem(
             type: .counter(3),
             bounds: CGRect(x: 0, y: 0, width: 32, height: 32),
-            properties: AnnotationProperties(strokeWidth: 3),
+            properties: AnnotationProperties(strokeWidth: 3)
         )
         state.annotations = [counter]
         state.setSelectedAnnotationIds([counter.id])
@@ -83,7 +83,7 @@ final class AnnotateModifierGestureTests: XCTestCase {
         let cloneIds = state.duplicateAnnotations(withIds: [counter.id])
         let clone = try XCTUnwrap(state.annotations.first { $0.id == cloneIds.first })
 
-        guard case .counter(let cloneValue) = clone.type else {
+        guard case let .counter(cloneValue) = clone.type else {
             return XCTFail("Expected duplicated counter annotation")
         }
         XCTAssertEqual(cloneValue, 4)
@@ -95,7 +95,7 @@ final class AnnotateModifierGestureTests: XCTestCase {
         let original = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 10, y: 20, width: 40, height: 30),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         state.annotations = [original]
         state.setSelectedAnnotationIds([original.id])
@@ -119,7 +119,7 @@ final class AnnotateModifierGestureTests: XCTestCase {
         let original = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 0, y: 0, width: 20, height: 20),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         state.annotations = [original]
         state.setSelectedAnnotationIds([original.id])
@@ -138,7 +138,7 @@ final class AnnotateModifierGestureTests: XCTestCase {
         let original = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 10, y: 20, width: 40, height: 30),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         state.annotations = [original]
         state.setSelectedAnnotationIds([original.id])
@@ -164,7 +164,7 @@ final class AnnotateModifierGestureTests: XCTestCase {
         let original = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 0, y: 0, width: 30, height: 20),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         state.annotations = [original]
         state.setSelectedAnnotationIds([original.id])
@@ -186,12 +186,12 @@ final class AnnotateModifierGestureTests: XCTestCase {
         let lower = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 0, y: 0, width: 20, height: 20),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         let upper = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 40, y: 40, width: 20, height: 20),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         state.annotations = [lower, upper]
         state.setSelectedAnnotationIds([lower.id, upper.id])
@@ -211,13 +211,13 @@ final class AnnotateModifierGestureTests: XCTestCase {
         state.importImage(NSImage(size: NSSize(width: 50, height: 50)))
 
         let embedded = try XCTUnwrap(state.annotations.last)
-        guard case .embeddedImage(let originalAssetId) = embedded.type else {
+        guard case let .embeddedImage(originalAssetId) = embedded.type else {
             return XCTFail("Expected embedded image annotation")
         }
 
         let cloneIds = state.duplicateAnnotations(withIds: [embedded.id], anchorOriginalId: embedded.id)
         let clone = try XCTUnwrap(state.annotations.first { cloneIds.contains($0.id) })
-        guard case .embeddedImage(let cloneAssetId) = clone.type else {
+        guard case let .embeddedImage(cloneAssetId) = clone.type else {
             return XCTFail("Expected duplicated embedded image annotation")
         }
 

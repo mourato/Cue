@@ -44,7 +44,7 @@ final class CueImgBBUploadServiceTests: XCTestCase {
                 url: request.url!,
                 statusCode: 200,
                 httpVersion: nil,
-                headerFields: nil,
+                headerFields: nil
             )!
             return (response, Data(responseJSON.utf8))
         }
@@ -66,14 +66,14 @@ final class CueImgBBUploadServiceTests: XCTestCase {
                 url: request.url!,
                 statusCode: 200,
                 httpVersion: nil,
-                headerFields: nil,
+                headerFields: nil
             )!
             return (response, Data(#"{"data":{"url":"https://i.ibb.co/example/animation.gif"}}"#.utf8))
         }
 
         let result = try await makeService().upload(
             image: CueEncodedImage(data: gifData, fileExtension: "gif", contentType: "image/gif"),
-            apiKey: "test-api-key",
+            apiKey: "test-api-key"
         )
 
         XCTAssertEqual(result.link, "https://i.ibb.co/example/animation.gif")
@@ -95,7 +95,7 @@ final class CueImgBBUploadServiceTests: XCTestCase {
                 url: request.url!,
                 statusCode: 400,
                 httpVersion: nil,
-                headerFields: nil,
+                headerFields: nil
             )!
             return (response, Data(responseJSON.utf8))
         }

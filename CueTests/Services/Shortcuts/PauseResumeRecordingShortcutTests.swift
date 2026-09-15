@@ -66,7 +66,7 @@
             manager.setPauseResumeRecordingShortcut(nil)
             XCTAssertNil(
                 manager.shortcut(for: .pauseResumeRecording),
-                "Clearing the pause/resume shortcut must resolve to nil, never the seeded recommended combo",
+                "Clearing the pause/resume shortcut must resolve to nil, never the seeded recommended combo"
             )
         }
 
@@ -89,7 +89,7 @@
             // Clearing must drop the persisted value entirely (no stale "ghost" combo left behind).
             XCTAssertNil(
                 UserDefaults.standard.data(forKey: defaultsKey),
-                "Cleared pause/resume shortcut must not leave a ghost value in UserDefaults",
+                "Cleared pause/resume shortcut must not leave a ghost value in UserDefaults"
             )
         }
     }

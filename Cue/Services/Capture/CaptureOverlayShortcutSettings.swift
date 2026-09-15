@@ -124,13 +124,13 @@ enum CaptureOverlayShortcutSettings {
 
     static let defaultRecordingApplicationCaptureShortcut = CaptureOverlayShortcut(
         keyCode: UInt32(kVK_Space),
-        modifiers: 0,
+        modifiers: 0
     )
 
     static var recordingApplicationCaptureShortcut: CaptureOverlayShortcut? {
         shortcut(
             forKey: PreferencesKeys.recordingApplicationCaptureShortcut,
-            defaultValue: defaultRecordingApplicationCaptureShortcut,
+            defaultValue: defaultRecordingApplicationCaptureShortcut
         )
     }
 
@@ -167,7 +167,7 @@ enum CaptureOverlayShortcutSettings {
 
     private static func shortcut(
         forKey key: String,
-        defaultValue: CaptureOverlayShortcut,
+        defaultValue: CaptureOverlayShortcut
     ) -> CaptureOverlayShortcut? {
         let decoder = JSONDecoder()
         if let data = Self.defaults.data(forKey: key) {
@@ -193,7 +193,7 @@ enum CaptureOverlayShortcutSettings {
 
     private static func effectiveDisplay(
         shortcut: CaptureOverlayShortcut?,
-        parentShortcut: ShortcutConfig?,
+        parentShortcut: ShortcutConfig?
     ) -> String {
         guard let shortcut else { return L10n.Common.none }
         if shortcut.isIndependent {
@@ -207,7 +207,8 @@ enum CaptureOverlayShortcutSettings {
 
     private static func legacyShortcut(forKey key: String) -> CaptureOverlayShortcut? {
         guard let character = normalizedLegacyShortcut(from: defaults.string(forKey: key)),
-              let keyCode = legacyKeyCode(for: character) else {
+              let keyCode = legacyKeyCode(for: character)
+        else {
             return nil
         }
         return CaptureOverlayShortcut(keyCode: keyCode, modifiers: 0)

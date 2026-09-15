@@ -66,13 +66,13 @@
                         context: nil,
                         eventNumber: 0,
                         clickCount: 1,
-                        pressure: 0,
+                        pressure: 0
                     )!
                     capturedEvents.append(event)
                     handler(event)
                     return TestMouseMonitor()
                 },
-                pressMonitorRemover: { _ in },
+                pressMonitorRemover: { _ in }
             )
 
             tracker.start()
@@ -110,7 +110,7 @@
                 uptimeProvider: { clock.uptime },
                 mouseLocationProvider: { CGPoint(x: 50, y: 50) },
                 mouseMonitorInstaller: { _ in TestMouseMonitor() },
-                mouseMonitorRemover: { _ in },
+                mouseMonitorRemover: { _ in }
             )
         }
     }

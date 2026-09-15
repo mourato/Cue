@@ -68,7 +68,7 @@ enum ThumbnailGenerator {
 
         image.size = NSSize(
             width: pixelWidth / scaleFactor,
-            height: pixelHeight / scaleFactor,
+            height: pixelHeight / scaleFactor
         )
         return image
     }
@@ -120,7 +120,7 @@ enum ThumbnailGenerator {
 
                 let newSize = CGSize(
                     width: originalSize.width * scale,
-                    height: originalSize.height * scale,
+                    height: originalSize.height * scale
                 )
 
                 let thumbnail = NSImage(size: newSize)
@@ -130,7 +130,7 @@ enum ThumbnailGenerator {
                     in: NSRect(origin: .zero, size: newSize),
                     from: NSRect(origin: .zero, size: originalSize),
                     operation: .copy,
-                    fraction: 1.0,
+                    fraction: 1.0
                 )
                 thumbnail.unlockFocus()
                 return thumbnail
@@ -164,7 +164,7 @@ enum ThumbnailGenerator {
 
         do {
             let (cgImage, _) = try await imageGenerator.image(at: time)
-            let nsImage = NSImage(cgImage: cgImage, size: NSZeroSize)
+            let nsImage = NSImage(cgImage: cgImage, size: NSSize.zero)
             let scaledThumbnail = scaleImage(nsImage, maxSize: maxSize)
             return ThumbnailResult(thumbnail: scaledThumbnail, duration: duration)
         } catch {
@@ -190,7 +190,7 @@ enum ThumbnailGenerator {
 
         let newSize = CGSize(
             width: originalSize.width * scale,
-            height: originalSize.height * scale,
+            height: originalSize.height * scale
         )
 
         let thumbnail = NSImage(size: newSize)
@@ -200,7 +200,7 @@ enum ThumbnailGenerator {
             in: NSRect(origin: .zero, size: newSize),
             from: NSRect(origin: .zero, size: originalSize),
             operation: .copy,
-            fraction: 1.0,
+            fraction: 1.0
         )
         thumbnail.unlockFocus()
 

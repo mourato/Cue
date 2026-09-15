@@ -81,7 +81,7 @@ struct CloudSettingsView: View {
                         TextField(
                             L10n.CloudSettings.imageKitCustomVideoUploadLimit,
                             value: customVideoLimitBinding,
-                            format: .number,
+                            format: .number
                         )
                         .textFieldStyle(.roundedBorder)
                     }
@@ -96,7 +96,7 @@ struct CloudSettingsView: View {
                 Section(L10n.CloudSettings.cloudflareSection) {
                     TextField(L10n.CloudSettings.cloudflareWorkerURL, text: Binding(
                         get: { uploadConfiguration.cloudflareWorkerURL },
-                        set: { uploadConfiguration.setCloudflareWorkerURL($0) },
+                        set: { uploadConfiguration.setCloudflareWorkerURL($0) }
                     ))
                     .textFieldStyle(.roundedBorder)
                     HStack {
@@ -106,14 +106,15 @@ struct CloudSettingsView: View {
                             isEditing = true
                         }
                         Button(revealToken ? L10n.CloudSettings.cloudflareHideToken : L10n.CloudSettings
-                            .cloudflareRevealToken) {
-                                revealToken.toggle()
-                            }
+                            .cloudflareRevealToken)
+                        {
+                            revealToken.toggle()
+                        }
                         Button(L10n.CloudSettings.cloudflareCopyToken) {
                             NSPasteboard.general.clearContents()
                             NSPasteboard.general.setString(
                                 credential.isEmpty ? (uploadConfiguration.cloudflare.token ?? "") : credential,
-                                forType: .string,
+                                forType: .string
                             )
                         }
                     }
@@ -121,8 +122,8 @@ struct CloudSettingsView: View {
                         Link(
                             L10n.CloudSettings.cloudflareDocs,
                             destination: URL(
-                                string: "https://developers.cloudflare.com/workers/get-started/guide/",
-                            )!,
+                                string: "https://developers.cloudflare.com/workers/get-started/guide/"
+                            )!
                         )
                         Button(L10n.CloudSettings.cloudflareVerify) {
                             Task { await uploadConfiguration.verifyCloudflareConnection() }
@@ -151,7 +152,7 @@ struct CloudSettingsView: View {
                 if !$0 {
                     errorMessage = nil
                 }
-            },
+            }
         )
     }
 
@@ -182,21 +183,21 @@ struct CloudSettingsView: View {
                 isEditing = false
                 revealToken = false
                 didPrefillCloudflareToken = false
-            },
+            }
         )
     }
 
     private var imageKitPlanBinding: Binding<CueImageKitUploadPlan> {
         Binding(
             get: { uploadConfiguration.imageKitPlan },
-            set: { uploadConfiguration.selectImageKitPlan($0) },
+            set: { uploadConfiguration.selectImageKitPlan($0) }
         )
     }
 
     private var customVideoLimitBinding: Binding<Int> {
         Binding(
             get: { uploadConfiguration.imageKitCustomVideoLimitMB },
-            set: { uploadConfiguration.setImageKitCustomVideoLimitMB($0) },
+            set: { uploadConfiguration.setImageKitCustomVideoLimitMB($0) }
         )
     }
 
@@ -252,7 +253,7 @@ struct CloudSettingsView: View {
             token: uploadConfiguration.cloudflare.token,
             credential: credential,
             isEditing: isEditing,
-            didPrefill: didPrefillCloudflareToken,
+            didPrefill: didPrefillCloudflareToken
         ) else { return }
         didPrefillCloudflareToken = true
         credential = CueCloudflareCredentialStore.generatedToken()
@@ -268,7 +269,7 @@ enum CloudflareTokenPrefill {
         token: String?,
         credential: String,
         isEditing: Bool,
-        didPrefill: Bool,
+        didPrefill: Bool
     ) -> Bool {
         provider == .cloudflare && token == nil && credential.isEmpty && !isEditing && !didPrefill
     }

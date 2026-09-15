@@ -44,7 +44,7 @@
                     state: state,
                     primaryActionTitle: primaryActionTitle,
                     onCancel: { onCancel?() },
-                    onConvert: { onSave?() },
+                    onConvert: { onSave?() }
                 )
             }
             // Keyboard shortcuts
@@ -93,7 +93,7 @@
                     if !$0 {
                         state.frameExtractionError = nil
                     }
-                },
+                }
             )) {
                 Button(L10n.Common.ok) { state.frameExtractionError = nil }
             } message: {
@@ -160,7 +160,7 @@
 
                     VideoEditorRightSidebar(
                         state: state,
-                        previewImage: currentFrameImage,
+                        previewImage: currentFrameImage
                     )
                     .frame(maxHeight: .infinity, alignment: .top)
                 }

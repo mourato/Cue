@@ -68,8 +68,8 @@
                     trackID: 2,
                     role: .camera,
                     captureSize: CGSize(width: 640, height: 480),
-                    isMirrored: true,
-                ),
+                    isMirrored: true
+                )
             ]
             let data = try JSONEncoder().encode(metadata)
             let decoded = try JSONDecoder().decode(RecordingMetadata.self, from: data)
@@ -81,7 +81,7 @@
             metadata.cameraOverlayLayout = RecordedCameraOverlayLayout(
                 normalizedRect: CGRect(x: 0.1, y: 0.2, width: 0.3, height: 0.2),
                 shape: .circle,
-                size: .huge,
+                size: .huge
             )
             metadata.clickHighlightsWereBaked = true
             metadata.keystrokesWereBaked = false
@@ -97,11 +97,11 @@
         func testVideoTrackRoles_doNotInferCameraWithoutAppendedFrames() {
             XCTAssertEqual(
                 ScreenRecordingManager.videoTrackRoles(trackCount: 2, cameraFramesAppended: 0),
-                [.screen],
+                [.screen]
             )
             XCTAssertEqual(
                 ScreenRecordingManager.videoTrackRoles(trackCount: 2, cameraFramesAppended: 1),
-                [.screen, .camera],
+                [.screen, .camera]
             )
         }
 
@@ -111,8 +111,8 @@
                 captureSize: CGSize(width: 320, height: 200),
                 samplesPerSecond: 60,
                 mouseSamples: [
-                    RecordedMouseSample(time: 0.1, normalizedX: 0.2, normalizedY: 0.25, isInsideCapture: true),
-                ],
+                    RecordedMouseSample(time: 0.1, normalizedX: 0.2, normalizedY: 0.25, isInsideCapture: true)
+                ]
             )
             let data = try JSONEncoder().encode(legacy)
             let decoded = try JSONDecoder().decode(RecordingMetadata.self, from: data)
@@ -130,7 +130,7 @@
                 captureSize: CGSize(width: 640, height: 360),
                 samplesPerSecond: 60,
                 mouseSamples: [],
-                audioSourceURL: sourceURL,
+                audioSourceURL: sourceURL
             )
             let data = try JSONEncoder().encode(legacy)
             let decoded = try JSONDecoder().decode(RecordingMetadata.self, from: data)
@@ -144,15 +144,15 @@
         func testRecordingAudioSourceTrackRolesFollowWriterOrder() {
             XCTAssertEqual(
                 RecordingAudioSourceTrackRole.roles(capturesSystemAudio: true, capturesMicrophone: true),
-                [.systemAudio, .microphone],
+                [.systemAudio, .microphone]
             )
             XCTAssertEqual(
                 RecordingAudioSourceTrackRole.roles(capturesSystemAudio: true, capturesMicrophone: false),
-                [.systemAudio],
+                [.systemAudio]
             )
             XCTAssertEqual(
                 RecordingAudioSourceTrackRole.roles(capturesSystemAudio: false, capturesMicrophone: true),
-                [.microphone],
+                [.microphone]
             )
         }
 
@@ -175,8 +175,8 @@
                 samplesPerSecond: 30,
                 mouseSamples: [
                     RecordedMouseSample(time: 0.0, normalizedX: 0.3, normalizedY: 0.25, isInsideCapture: true),
-                    RecordedMouseSample(time: 0.5, normalizedX: 0.6, normalizedY: 1.2, isInsideCapture: false),
-                ],
+                    RecordedMouseSample(time: 0.5, normalizedX: 0.6, normalizedY: 1.2, isInsideCapture: false)
+                ]
             )
             try JSONEncoder().encode(legacy).write(to: sidecarURL, options: .atomic)
 
@@ -228,7 +228,7 @@
             metadata.audioSourceTrackRoles = [.systemAudio, .microphone]
             metadata.audioSourceTracks = [
                 RecordingAudioSourceTrack(trackID: 2, role: .systemAudio),
-                RecordingAudioSourceTrack(trackID: 3, role: .microphone),
+                RecordingAudioSourceTrack(trackID: 3, role: .microphone)
             ]
 
             try RecordingMetadataStore.save(metadata, for: videoURL)
@@ -258,11 +258,11 @@
             XCTAssertEqual(VideoEditorState.editorAssetURL(for: videoURL, metadata: loaded), storedSourceURL)
             XCTAssertEqual(
                 VideoEditorState.audioTrackRoles(forAudioTrackCount: 2, metadata: loaded),
-                [.systemAudio, .microphone],
+                [.systemAudio, .microphone]
             )
             XCTAssertEqual(
                 VideoEditorState.audioTrackRoles(forAudioTrackCount: 1, metadata: loaded),
-                [.mixed],
+                [.mixed]
             )
         }
 
@@ -270,11 +270,11 @@
             let composition = AVMutableComposition()
             let microphoneTrack = try XCTUnwrap(composition.addMutableTrack(
                 withMediaType: .audio,
-                preferredTrackID: 42,
+                preferredTrackID: 42
             ))
             let systemTrack = try XCTUnwrap(composition.addMutableTrack(
                 withMediaType: .audio,
-                preferredTrackID: 7,
+                preferredTrackID: 7
             ))
 
             let metadata = RecordingMetadata(
@@ -285,13 +285,13 @@
                 audioSourceTrackRoles: [.systemAudio, .microphone],
                 audioSourceTracks: [
                     RecordingAudioSourceTrack(trackID: Int(systemTrack.trackID), role: .systemAudio),
-                    RecordingAudioSourceTrack(trackID: Int(microphoneTrack.trackID), role: .microphone),
-                ],
+                    RecordingAudioSourceTrack(trackID: Int(microphoneTrack.trackID), role: .microphone)
+                ]
             )
 
             XCTAssertEqual(
                 VideoEditorState.audioTrackRoles(for: [microphoneTrack, systemTrack], metadata: metadata),
-                [.microphone, .systemAudio],
+                [.microphone, .systemAudio]
             )
         }
 
@@ -299,11 +299,11 @@
             let legacy = RecordingMetadata(
                 version: 6,
                 coordinateSpace: .topLeftNormalized,
-                captureSize: CGSize(width: 1_280, height: 720),
+                captureSize: CGSize(width: 1280, height: 720),
                 samplesPerSecond: 60,
                 mouseSamples: [
-                    RecordedMouseSample(time: 0, normalizedX: 0.5, normalizedY: 0.5, isInsideCapture: true),
-                ],
+                    RecordedMouseSample(time: 0, normalizedX: 0.5, normalizedY: 0.5, isInsideCapture: true)
+                ]
             )
             let data = try JSONEncoder().encode(legacy)
             let decoded = try JSONDecoder().decode(RecordingMetadata.self, from: data)
@@ -319,8 +319,8 @@
                     normalizedX: 0.3,
                     normalizedY: 0.7,
                     button: 0,
-                    phase: .down,
-                ),
+                    phase: .down
+                )
             ]
             let data = try JSONEncoder().encode(metadata)
             let decoded = try JSONDecoder().decode(RecordingMetadata.self, from: data)
@@ -331,12 +331,12 @@
         private func makeCurrentMetadata() -> RecordingMetadata {
             RecordingMetadata(
                 coordinateSpace: .topLeftNormalized,
-                captureSize: CGSize(width: 1_280, height: 720),
+                captureSize: CGSize(width: 1280, height: 720),
                 samplesPerSecond: 60,
                 mouseSamples: [
                     RecordedMouseSample(time: 0.0, normalizedX: 0.1, normalizedY: 0.2, isInsideCapture: true),
-                    RecordedMouseSample(time: 0.5, normalizedX: 0.7, normalizedY: 0.8, isInsideCapture: true),
-                ],
+                    RecordedMouseSample(time: 0.5, normalizedX: 0.7, normalizedY: 0.8, isInsideCapture: true)
+                ]
             )
         }
 

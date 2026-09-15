@@ -31,7 +31,7 @@ final class AreaSelectionOverlayMagnifierLayoutTests: AreaSelectionOverlayTestCa
             context: nil,
             eventNumber: 0,
             clickCount: 0,
-            pressure: 0,
+            pressure: 0
         )))
 
         // THEN: Magnifier is placed at top-right (x = 10 + 20 = 30)
@@ -51,7 +51,7 @@ final class AreaSelectionOverlayMagnifierLayoutTests: AreaSelectionOverlayTestCa
             context: nil,
             eventNumber: 0,
             clickCount: 0,
-            pressure: 0,
+            pressure: 0
         )))
 
         // THEN: Magnifier flips to top-left/bottom
@@ -110,7 +110,7 @@ final class AreaSelectionOverlayMagnifierLayoutTests: AreaSelectionOverlayTestCa
             context: nil,
             eventNumber: 0,
             clickCount: 0,
-            pressure: 0,
+            pressure: 0
         )))
 
         guard let imgLayer = overlayView.testMagnifierImageLayer else {
@@ -147,7 +147,8 @@ final class AreaSelectionOverlayMagnifierLayoutTests: AreaSelectionOverlayTestCa
             let mirror = Mirror(reflecting: controller)
             if let pool = mirror.children.first(where: { $0.label == "windowPool" })?
                 .value as? [CGDirectDisplayID: AreaSelectionWindow],
-                let window = pool[targetDisplayID] {
+                let window = pool[targetDisplayID]
+            {
                 XCTAssertNotNil(window.overlayView.testSnapshotLayer.contents)
             }
             expectation.fulfill()
@@ -167,14 +168,14 @@ private final class RecordingAreaSelectionBackdropCapturer: AreaSelectionBackdro
         displayID: CGDirectDisplayID,
         captureRect: CGRect,
         scaleFactor: CGFloat,
-        isVisible: Bool,
+        isVisible: Bool
     ) async -> AreaSelectionBackdrop? {
         recordCapture()
         return await inner.captureBackdrop(
             displayID: displayID,
             captureRect: captureRect,
             scaleFactor: scaleFactor,
-            isVisible: isVisible,
+            isVisible: isVisible
         )
     }
 

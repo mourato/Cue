@@ -51,7 +51,7 @@
             return ParsedKeystrokeEvent(
                 modifiers: modifiers,
                 key: keyName,
-                displayString: parts.joined(separator: " "),
+                displayString: parts.joined(separator: " ")
             )
         }
 

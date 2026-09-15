@@ -48,7 +48,7 @@ final class FeedbackSurfaceTests: XCTestCase {
         XCTAssertGreaterThan(darkAppearanceBackground.alphaComponent, 0)
         XCTAssertLessThan(
             lightAppearanceBackground.redComponent,
-            darkAppearanceBackground.redComponent,
+            darkAppearanceBackground.redComponent
         )
 
         let lightComponents = FeedbackAppearanceTokens.solidBackgroundSRGBComponents(isDarkAppearance: false)
@@ -63,7 +63,7 @@ final class FeedbackSurfaceTests: XCTestCase {
         let size = FeedbackToastMetrics.measuredToastSize(
             for: longMessage,
             maxWidth: maxWidth,
-            variant: .regular,
+            variant: .regular
         )
 
         XCTAssertLessThanOrEqual(size.width, maxWidth)

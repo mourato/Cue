@@ -42,11 +42,11 @@ struct ShortcutOverlayView: View {
             .frame(width: 760)
             .background(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(Color(nsColor: .windowBackgroundColor).opacity(0.96)),
+                    .fill(Color(nsColor: .windowBackgroundColor).opacity(0.96))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .stroke(Color.primary.opacity(0.08), lineWidth: 1),
+                    .stroke(Color.primary.opacity(0.08), lineWidth: 1)
             )
             .shadow(color: .black.opacity(0.2), radius: 16, x: 0, y: 8)
             .padding(24)
@@ -119,11 +119,11 @@ struct ShortcutOverlayView: View {
             }
             .background(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(Color.primary.opacity(0.035)),
+                    .fill(Color.primary.opacity(0.035))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .stroke(Color.primary.opacity(0.06), lineWidth: 1),
+                    .stroke(Color.primary.opacity(0.06), lineWidth: 1)
             )
         }
     }
@@ -166,9 +166,9 @@ struct ShortcutOverlayView: View {
     @ViewBuilder
     private func displayView(_ display: ShortcutOverlayItem.ShortcutDisplay) -> some View {
         switch display {
-        case .keycaps(let parts):
+        case let .keycaps(parts):
             KeyCapGroupView(parts: parts)
-        case .text(let text):
+        case let .text(text):
             Text(text)
                 .font(.system(size: 12, weight: .medium, design: .monospaced))
                 .foregroundColor(.secondary)
@@ -176,7 +176,7 @@ struct ShortcutOverlayView: View {
                 .padding(.vertical, 6)
                 .background(
                     RoundedRectangle(cornerRadius: 7, style: .continuous)
-                        .fill(Color.secondary.opacity(0.12)),
+                        .fill(Color.secondary.opacity(0.12))
                 )
         }
     }
@@ -186,6 +186,6 @@ struct ShortcutOverlayView: View {
     ShortcutOverlayView(
         sections: ShortcutOverlayContentBuilder.buildSections(),
         onClose: {},
-        onOpenSettings: {},
+        onOpenSettings: {}
     )
 }

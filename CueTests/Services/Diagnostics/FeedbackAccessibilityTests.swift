@@ -23,12 +23,12 @@ final class FeedbackAccessibilityTests: XCTestCase {
         XCTAssertEqual(
             FeedbackMotionPolicy.toastEntranceScale(reduceMotion: false, appeared: false),
             0.96,
-            accuracy: 0.001,
+            accuracy: 0.001
         )
         XCTAssertEqual(
             FeedbackMotionPolicy.quickAccessPressScale(reduceMotion: false, isPressed: true),
             0.85,
-            accuracy: 0.001,
+            accuracy: 0.001
         )
     }
 
@@ -48,7 +48,7 @@ final class FeedbackAccessibilityTests: XCTestCase {
         let label = FeedbackAccessibilityPolicy.toastAccessibilityLabel(
             message: "Upload complete",
             tone: .success,
-            isProgress: false,
+            isProgress: false
         )
         XCTAssertEqual(label, "Upload complete")
     }
@@ -56,7 +56,7 @@ final class FeedbackAccessibilityTests: XCTestCase {
     func testProgressToastAccessibilityValueDiffersFromTerminal() {
         XCTAssertEqual(
             FeedbackAccessibilityPolicy.toastAccessibilityValue(message: "Uploading", isProgress: true),
-            "Uploading",
+            "Uploading"
         )
         XCTAssertNil(FeedbackAccessibilityPolicy.toastAccessibilityValue(message: "Uploading", isProgress: false))
     }
@@ -66,8 +66,8 @@ final class FeedbackAccessibilityTests: XCTestCase {
             FeedbackAccessibilityPolicy.shouldAnnounceToastUpdate(
                 previousMessage: "Scanning",
                 newMessage: "Scanning image",
-                isProgress: true,
-            ),
+                isProgress: true
+            )
         )
     }
 

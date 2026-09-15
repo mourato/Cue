@@ -26,7 +26,7 @@ final class AnnotateImageRotationTests: XCTestCase {
         let rotated = AnnotateImageRotation.rotatePoint(
             CGPoint(x: imageSize.width, y: 0),
             oldSize: imageSize,
-            clockwise: true,
+            clockwise: true
         )
         XCTAssertEqual(rotated, .zero)
     }
@@ -35,7 +35,7 @@ final class AnnotateImageRotationTests: XCTestCase {
         let rotated = AnnotateImageRotation.rotatePoint(
             CGPoint(x: imageSize.width, y: imageSize.height),
             oldSize: imageSize,
-            clockwise: true,
+            clockwise: true
         )
         XCTAssertEqual(rotated, CGPoint(x: imageSize.height, y: 0))
     }
@@ -49,7 +49,7 @@ final class AnnotateImageRotationTests: XCTestCase {
         let rotated = AnnotateImageRotation.rotatePoint(
             CGPoint(x: 0, y: imageSize.height),
             oldSize: imageSize,
-            clockwise: false,
+            clockwise: false
         )
         XCTAssertEqual(rotated, .zero)
     }
@@ -60,13 +60,13 @@ final class AnnotateImageRotationTests: XCTestCase {
         let pass2 = AnnotateImageRotation.rotatePoint(
             pass1,
             oldSize: CGSize(width: imageSize.height, height: imageSize.width),
-            clockwise: true,
+            clockwise: true
         )
         let pass3 = AnnotateImageRotation.rotatePoint(pass2, oldSize: imageSize, clockwise: true)
         let pass4 = AnnotateImageRotation.rotatePoint(
             pass3,
             oldSize: CGSize(width: imageSize.height, height: imageSize.width),
-            clockwise: true,
+            clockwise: true
         )
         XCTAssertEqual(pass4, point)
     }
@@ -77,7 +77,7 @@ final class AnnotateImageRotationTests: XCTestCase {
         let back = AnnotateImageRotation.rotatePoint(
             forward,
             oldSize: CGSize(width: imageSize.height, height: imageSize.width),
-            clockwise: false,
+            clockwise: false
         )
         XCTAssertEqual(back, point)
     }
@@ -93,8 +93,8 @@ final class AnnotateImageRotationTests: XCTestCase {
                 x: rect.minY,
                 y: imageSize.width - rect.minX - rect.width,
                 width: rect.height,
-                height: rect.width,
-            ),
+                height: rect.width
+            )
         )
     }
 
@@ -107,8 +107,8 @@ final class AnnotateImageRotationTests: XCTestCase {
                 x: imageSize.height - rect.minY - rect.height,
                 y: rect.minX,
                 width: rect.height,
-                height: rect.width,
-            ),
+                height: rect.width
+            )
         )
     }
 
@@ -140,12 +140,12 @@ final class AnnotateImageRotationTests: XCTestCase {
         let clockwise = AnnotateImageRotation.rotateLayoutRectPreservingSize(
             rect,
             oldSize: imageSize,
-            clockwise: true,
+            clockwise: true
         )
         let restored = AnnotateImageRotation.rotateLayoutRectPreservingSize(
             clockwise,
             oldSize: CGSize(width: imageSize.height, height: imageSize.width),
-            clockwise: false,
+            clockwise: false
         )
 
         XCTAssertEqual(restored, rect)
@@ -183,9 +183,9 @@ final class AnnotateImageRotationTests: XCTestCase {
             AnnotateImageRotation.rotatePoint(
                 CGPoint(x: 0, y: 2),
                 oldSize: CGSize(width: 3, height: 2),
-                clockwise: true,
+                clockwise: true
             ),
-            CGPoint(x: 2, y: 3),
+            CGPoint(x: 2, y: 3)
         )
 
         XCTAssertPixel(
@@ -193,14 +193,14 @@ final class AnnotateImageRotationTests: XCTestCase {
             at: CGPoint(x: 1, y: 0),
             width: cgImage.width,
             equals: MarkerColor.topLeftRed,
-            "Clockwise image rotation should move the old top-left marker to the new top-right.",
+            "Clockwise image rotation should move the old top-left marker to the new top-right."
         )
         XCTAssertPixel(
             pixels,
             at: CGPoint(x: 1, y: 2),
             width: cgImage.width,
             equals: MarkerColor.topRightGreen,
-            "Clockwise image rotation should move the old top-right marker to the new bottom-right.",
+            "Clockwise image rotation should move the old top-right marker to the new bottom-right."
         )
     }
 
@@ -214,9 +214,9 @@ final class AnnotateImageRotationTests: XCTestCase {
             AnnotateImageRotation.rotatePoint(
                 CGPoint(x: 0, y: 2),
                 oldSize: CGSize(width: 3, height: 2),
-                clockwise: false,
+                clockwise: false
             ),
-            .zero,
+            .zero
         )
 
         XCTAssertPixel(
@@ -224,14 +224,14 @@ final class AnnotateImageRotationTests: XCTestCase {
             at: CGPoint(x: 0, y: 2),
             width: cgImage.width,
             equals: MarkerColor.topLeftRed,
-            "Counter-clockwise image rotation should move the old top-left marker to the new bottom-left.",
+            "Counter-clockwise image rotation should move the old top-left marker to the new bottom-left."
         )
         XCTAssertPixel(
             pixels,
             at: CGPoint(x: 0, y: 0),
             width: cgImage.width,
             equals: MarkerColor.topRightGreen,
-            "Counter-clockwise image rotation should move the old top-right marker to the new top-left.",
+            "Counter-clockwise image rotation should move the old top-right marker to the new top-left."
         )
     }
 
@@ -242,12 +242,12 @@ final class AnnotateImageRotationTests: XCTestCase {
         let rectangle = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 10, y: 20, width: 80, height: 60),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         let line = AnnotationItem(
             type: .line(start: CGPoint(x: 20, y: 30), end: CGPoint(x: 120, y: 90)),
             bounds: CGRect(x: 20, y: 30, width: 100, height: 60),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         state.annotations = [rectangle, line]
         state.setSelectedAnnotationIds([rectangle.id, line.id])
@@ -257,10 +257,10 @@ final class AnnotateImageRotationTests: XCTestCase {
         XCTAssertEqual(state.sourceImage?.size, NSSize(width: imageSize.height, height: imageSize.width))
         XCTAssertEqual(
             try XCTUnwrap(state.annotations.first(where: { $0.id == rectangle.id })).bounds,
-            CGRect(x: 20, y: 310, width: 60, height: 80),
+            CGRect(x: 20, y: 310, width: 60, height: 80)
         )
         let rotatedLine = try XCTUnwrap(state.annotations.first(where: { $0.id == line.id }))
-        guard case .line(let start, let end) = rotatedLine.type else {
+        guard case let .line(start, end) = rotatedLine.type else {
             return XCTFail("Expected rotated line annotation.")
         }
         XCTAssertEqual(start, CGPoint(x: 30, y: 380))
@@ -273,7 +273,7 @@ final class AnnotateImageRotationTests: XCTestCase {
         XCTAssertEqual(state.sourceImage?.size, NSSize(width: imageSize.width, height: imageSize.height))
         XCTAssertEqual(
             try XCTUnwrap(state.annotations.first(where: { $0.id == rectangle.id })).bounds,
-            rectangle.bounds,
+            rectangle.bounds
         )
         let restoredLine = try XCTUnwrap(state.annotations.first(where: { $0.id == line.id }))
         XCTAssertEqual(restoredLine.bounds, line.bounds)
@@ -286,7 +286,7 @@ final class AnnotateImageRotationTests: XCTestCase {
         let text = AnnotationItem(
             type: .text("text"),
             bounds: CGRect(x: 100, y: 80, width: 120, height: 30),
-            properties: AnnotationProperties(fontSize: 28),
+            properties: AnnotationProperties(fontSize: 28)
         )
         state.annotations = [text]
         state.setSelectedAnnotationIds([text.id])
@@ -357,7 +357,7 @@ final class AnnotateImageRotationTests: XCTestCase {
             provider: provider,
             decode: nil,
             shouldInterpolate: false,
-            intent: .defaultIntent,
+            intent: .defaultIntent
         )!
         return NSImage(cgImage: cgImage, size: NSSize(width: width, height: height))
     }
@@ -367,7 +367,7 @@ final class AnnotateImageRotationTests: XCTestCase {
         atX x: Int,
         y: Int,
         width: Int,
-        in pixels: inout [UInt8],
+        in pixels: inout [UInt8]
     ) {
         let offset = (y * width + x) * 4
         pixels[offset] = color[0]
@@ -388,7 +388,7 @@ final class AnnotateImageRotationTests: XCTestCase {
             bitsPerComponent: 8,
             bytesPerRow: bytesPerRow,
             space: CGColorSpaceCreateDeviceRGB(),
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue
         ) else {
             throw NSError(domain: "AnnotateImageRotationTests", code: 1)
         }
@@ -404,7 +404,7 @@ final class AnnotateImageRotationTests: XCTestCase {
         equals expected: [UInt8],
         _ message: String,
         file: StaticString = #filePath,
-        line: UInt = #line,
+        line: UInt = #line
     ) {
         let offset = (Int(point.y) * width + Int(point.x)) * 4
         XCTAssertEqual(Array(pixels[offset ..< offset + 4]), expected, message, file: file, line: line)

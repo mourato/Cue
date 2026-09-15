@@ -11,7 +11,7 @@ import Foundation
 @MainActor
 final class HistorySearchViewModel: ObservableObject {
     @Published var searchText: String = ""
-    @Published var selectedFilter: CaptureHistoryType? = nil
+    @Published var selectedFilter: CaptureHistoryType?
     @Published var selectedTimeFilter: HistoryFloatingTimeFilter = .all
     @Published private(set) var filteredRecords: [CaptureHistoryRecord] = []
 
@@ -22,7 +22,7 @@ final class HistorySearchViewModel: ObservableObject {
         store: CaptureHistoryStore = .shared,
         searchTextPublisher: AnyPublisher<String, Never>? = nil,
         selectedFilterPublisher: AnyPublisher<CaptureHistoryType?, Never>? = nil,
-        selectedTimeFilterPublisher: AnyPublisher<HistoryFloatingTimeFilter, Never>? = nil,
+        selectedTimeFilterPublisher: AnyPublisher<HistoryFloatingTimeFilter, Never>? = nil
     ) {
         self.store = store
         let textSource = searchTextPublisher ?? $searchText.eraseToAnyPublisher()
@@ -35,7 +35,7 @@ final class HistorySearchViewModel: ObservableObject {
                 .debounce(for: .milliseconds(150), scheduler: RunLoop.main)
                 .removeDuplicates(),
             filterSource,
-            timeSource,
+            timeSource
         )
         .receive(on: DispatchQueue.global(qos: .userInitiated))
         .map(Self.filterRecords)
@@ -51,8 +51,8 @@ final class HistorySearchViewModel: ObservableObject {
             [CaptureHistoryRecord],
             String,
             CaptureHistoryType?,
-            HistoryFloatingTimeFilter,
-        ),
+            HistoryFloatingTimeFilter
+        )
     ) -> [CaptureHistoryRecord] {
         let (records, searchText, selectedFilter, selectedTimeFilter) = input
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -62,7 +62,7 @@ final class HistorySearchViewModel: ObservableObject {
             let matchesType = selectedFilter == nil || record.captureType == selectedFilter
             let matchesTime = selectedTimeFilter == .all || selectedTimeFilter.includes(
                 record.capturedAt,
-                relativeTo: now,
+                relativeTo: now
             )
             let matchesSearch = query.isEmpty || record.fileName.localizedCaseInsensitiveContains(query)
             return matchesType && matchesTime && matchesSearch

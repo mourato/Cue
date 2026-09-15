@@ -111,7 +111,7 @@ final class ShadowHostView: NSView {
             roundedRect: bounds,
             cornerWidth: cornerRadius,
             cornerHeight: cornerRadius,
-            transform: nil,
+            transform: nil
         )
     }
 

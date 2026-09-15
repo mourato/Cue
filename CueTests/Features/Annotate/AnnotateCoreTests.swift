@@ -55,9 +55,9 @@ final class AnnotateCoreTests: XCTestCase {
             AnnotateDragCompletionPolicy.action(
                 success: true,
                 closeAfterDrag: true,
-                bringForwardAfterDrag: false,
+                bringForwardAfterDrag: false
             ),
-            .closeAndDismiss,
+            .closeAndDismiss
         )
     }
 
@@ -66,9 +66,9 @@ final class AnnotateCoreTests: XCTestCase {
             AnnotateDragCompletionPolicy.action(
                 success: true,
                 closeAfterDrag: false,
-                bringForwardAfterDrag: false,
+                bringForwardAfterDrag: false
             ),
-            .restore(presentation: .background),
+            .restore(presentation: .background)
         )
     }
 
@@ -77,9 +77,9 @@ final class AnnotateCoreTests: XCTestCase {
             AnnotateDragCompletionPolicy.action(
                 success: true,
                 closeAfterDrag: false,
-                bringForwardAfterDrag: true,
+                bringForwardAfterDrag: true
             ),
-            .restore(presentation: .foreground),
+            .restore(presentation: .foreground)
         )
     }
 
@@ -88,17 +88,17 @@ final class AnnotateCoreTests: XCTestCase {
             AnnotateDragCompletionPolicy.action(
                 success: false,
                 closeAfterDrag: true,
-                bringForwardAfterDrag: false,
+                bringForwardAfterDrag: false
             ),
-            .restore(presentation: .foreground),
+            .restore(presentation: .foreground)
         )
         XCTAssertEqual(
             AnnotateDragCompletionPolicy.action(
                 success: false,
                 closeAfterDrag: false,
-                bringForwardAfterDrag: true,
+                bringForwardAfterDrag: true
             ),
-            .restore(presentation: .foreground),
+            .restore(presentation: .foreground)
         )
     }
 
@@ -108,9 +108,9 @@ final class AnnotateCoreTests: XCTestCase {
                 for: .saveAndClose,
                 hasImage: false,
                 combineSaveNeedsDialog: true,
-                protectsSourceFromImplicitCombineWrite: false,
+                protectsSourceFromImplicitCombineWrite: false
             ),
-            .combineDialog,
+            .combineDialog
         )
     }
 
@@ -120,9 +120,9 @@ final class AnnotateCoreTests: XCTestCase {
                 for: .saveAndClose,
                 hasImage: true,
                 combineSaveNeedsDialog: false,
-                protectsSourceFromImplicitCombineWrite: false,
+                protectsSourceFromImplicitCombineWrite: false
             ),
-            .saveAndClose,
+            .saveAndClose
         )
     }
 
@@ -132,9 +132,9 @@ final class AnnotateCoreTests: XCTestCase {
                 for: .save,
                 hasImage: false,
                 combineSaveNeedsDialog: true,
-                protectsSourceFromImplicitCombineWrite: false,
+                protectsSourceFromImplicitCombineWrite: false
             ),
-            .noOp,
+            .noOp
         )
     }
 
@@ -144,9 +144,9 @@ final class AnnotateCoreTests: XCTestCase {
                 for: .save,
                 hasImage: true,
                 combineSaveNeedsDialog: true,
-                protectsSourceFromImplicitCombineWrite: false,
+                protectsSourceFromImplicitCombineWrite: false
             ),
-            .combineDialog,
+            .combineDialog
         )
     }
 
@@ -156,9 +156,9 @@ final class AnnotateCoreTests: XCTestCase {
                 for: .save,
                 hasImage: true,
                 combineSaveNeedsDialog: false,
-                protectsSourceFromImplicitCombineWrite: false,
+                protectsSourceFromImplicitCombineWrite: false
             ),
-            .save,
+            .save
         )
     }
 
@@ -168,9 +168,9 @@ final class AnnotateCoreTests: XCTestCase {
                 for: .copy,
                 hasImage: false,
                 combineSaveNeedsDialog: false,
-                protectsSourceFromImplicitCombineWrite: true,
+                protectsSourceFromImplicitCombineWrite: true
             ),
-            .noOp,
+            .noOp
         )
     }
 
@@ -180,9 +180,9 @@ final class AnnotateCoreTests: XCTestCase {
                 for: .copy,
                 hasImage: true,
                 combineSaveNeedsDialog: false,
-                protectsSourceFromImplicitCombineWrite: true,
+                protectsSourceFromImplicitCombineWrite: true
             ),
-            .copyWithoutSourceWrite,
+            .copyWithoutSourceWrite
         )
     }
 
@@ -192,9 +192,9 @@ final class AnnotateCoreTests: XCTestCase {
                 for: .copy,
                 hasImage: true,
                 combineSaveNeedsDialog: false,
-                protectsSourceFromImplicitCombineWrite: false,
+                protectsSourceFromImplicitCombineWrite: false
             ),
-            .copy,
+            .copy
         )
     }
 
@@ -214,7 +214,7 @@ final class AnnotateCoreTests: XCTestCase {
     @MainActor
     func testAnnotateWindowFocusSyncKeepsInactiveWindowAtRestingLevel() {
         let window = MockAnnotateWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 800, height: 600),
+            contentRect: NSRect(x: 0, y: 0, width: 800, height: 600)
         )
         defer { window.close() }
 
@@ -305,45 +305,45 @@ final class AnnotateCoreTests: XCTestCase {
             AnnotateSensitiveOCRLine(
                 text: "/ BANK NAME",
                 bounds: CGRect(x: 111, y: 102, width: 141, height: 20),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "4532 3100 9999",
                 bounds: CGRect(x: 106, y: 210, width: 211, height: 20),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "1048",
                 bounds: CGRect(x: 333, y: 211, width: 61, height: 20),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "MEMBER",
                 bounds: CGRect(x: 108, y: 255, width: 37, height: 8),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "SINCE",
                 bounds: CGRect(x: 108, y: 264, width: 25, height: 9),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(text: "00", bounds: CGRect(x: 152, y: 255, width: 21, height: 14), confidence: 1),
             AnnotateSensitiveOCRLine(
                 text: "VALID",
                 bounds: CGRect(x: 215, y: 255, width: 26, height: 8),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(text: "THRU", bounds: CGRect(x: 215, y: 264, width: 24, height: 8), confidence: 1),
             AnnotateSensitiveOCRLine(
                 text: "00-00",
                 bounds: CGRect(x: 260, y: 254, width: 48, height: 15),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "CARDHOLDER NAME",
                 bounds: CGRect(x: 108, y: 290, width: 155, height: 15),
-                confidence: 1,
-            ),
+                confidence: 1
+            )
         ]
 
         let regions = AnnotateSensitiveRedactionService.contextualRegions(from: lines, imageSize: imageSize)
@@ -357,7 +357,7 @@ final class AnnotateCoreTests: XCTestCase {
             regions.contains {
                 $0.kind == .creditCard
                     && $0.bounds.contains(CGRect(x: 106, y: 210, width: 288, height: 21))
-            },
+            }
         )
         XCTAssertFalse(regions
             .contains { $0.bounds.intersects(CGRect(x: 152, y: 255, width: 21, height: 14)) && $0.kind != .creditCard })
@@ -370,63 +370,63 @@ final class AnnotateCoreTests: XCTestCase {
             AnnotateSensitiveOCRLine(
                 text: "/ BANK NAME",
                 bounds: CGRect(x: 154, y: 131.9, width: 135, height: 16),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "4532",
                 bounds: CGRect(x: 145, y: 238.7, width: 58.1, height: 20.2),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "3100",
                 bounds: CGRect(x: 211.1, y: 238.4, width: 66.8, height: 22.6),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "9999",
                 bounds: CGRect(x: 294, y: 238.7, width: 59.1, height: 20.2),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "1048",
                 bounds: CGRect(x: 370, y: 238.8, width: 60, height: 20),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "MEMBER",
                 bounds: CGRect(x: 143.9, y: 283.4, width: 38.1, height: 8.6),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "SINCE",
                 bounds: CGRect(x: 145, y: 291.7, width: 25, height: 9),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "00",
                 bounds: CGRect(x: 189, y: 282.7, width: 21, height: 14),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "VALID",
                 bounds: CGRect(x: 252, y: 283.7, width: 25, height: 8),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "THRU",
                 bounds: CGRect(x: 252, y: 292.7, width: 23, height: 8),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "00-00",
                 bounds: CGRect(x: 297, y: 282.7, width: 48, height: 14),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "CARDHOLDER NAME",
                 bounds: CGRect(x: 145, y: 318.7, width: 154, height: 14),
-                confidence: 1,
-            ),
+                confidence: 1
+            )
         ]
 
         let regions = AnnotateSensitiveRedactionService.contextualRegions(from: lines, imageSize: imageSize)
@@ -447,63 +447,63 @@ final class AnnotateCoreTests: XCTestCase {
             AnnotateSensitiveOCRLine(
                 text: "Save as...",
                 bounds: CGRect(x: 1094.5, y: 40.5, width: 61, height: 13.1),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "Done",
                 bounds: CGRect(x: 1185.1, y: 40.7, width: 33.3, height: 12.9),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "Selected Blur",
                 bounds: CGRect(x: 94.3, y: 88.5, width: 74, height: 9.5),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "Blur Type",
                 bounds: CGRect(x: 245.9, y: 88.5, width: 48.2, height: 11.4),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "4532 3100",
                 bounds: CGRect(x: 482.5, y: 437.9, width: 131.3, height: 22.2),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "9999 1048",
                 bounds: CGRect(x: 630.5, y: 437.9, width: 136.8, height: 22.2),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "MEMBER 00",
                 bounds: CGRect(x: 482.5, y: 482.3, width: 64.7, height: 14.8),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "SINCE",
                 bounds: CGRect(x: 482.5, y: 491.5, width: 24, height: 9.2),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "VALID",
                 bounds: CGRect(x: 589.8, y: 482.3, width: 25.9, height: 11.1),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "THRU",
                 bounds: CGRect(x: 589.8, y: 491.5, width: 24, height: 9.2),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "00-00",
                 bounds: CGRect(x: 632.3, y: 482.3, width: 49.9, height: 16.6),
-                confidence: 1,
+                confidence: 1
             ),
             AnnotateSensitiveOCRLine(
                 text: "CARDHOLDER NAME",
                 bounds: CGRect(x: 480.7, y: 519.3, width: 157.2, height: 14.8),
-                confidence: 1,
-            ),
+                confidence: 1
+            )
         ]
 
         let regions = AnnotateSensitiveRedactionService.contextualRegions(from: lines, imageSize: imageSize)
@@ -534,7 +534,7 @@ final class AnnotateCoreTests: XCTestCase {
             Sample(text: "Order 1234 5678 9012 3456", expectedKinds: []),
             Sample(text: "Version 2026-06-07 build 973", expectedKinds: []),
             Sample(text: "Member since 00", expectedKinds: []),
-            Sample(text: "Invoice total 1048", expectedKinds: []),
+            Sample(text: "Invoice total 1048", expectedKinds: [])
         ]
 
         var truePositives = 0
@@ -558,7 +558,7 @@ final class AnnotateCoreTests: XCTestCase {
     func testSensitiveRedactionVisionBoxConvertsToImageCoordinates() {
         let rect = AnnotateSensitiveRedactionService.imageRect(
             fromVisionBoundingBox: CGRect(x: 0.25, y: 0.2, width: 0.5, height: 0.1),
-            imageSize: CGSize(width: 400, height: 200),
+            imageSize: CGSize(width: 400, height: 200)
         )
 
         XCTAssertEqual(rect.origin.x, 100, accuracy: 0.0001)
@@ -579,7 +579,7 @@ final class AnnotateCoreTests: XCTestCase {
             matchRange: matchRange,
             text: text,
             kind: .email,
-            imageSize: CGSize(width: 200, height: 100),
+            imageSize: CGSize(width: 200, height: 100)
         )
 
         XCTAssertTrue(rect.contains(lineRect))
@@ -597,7 +597,7 @@ final class AnnotateCoreTests: XCTestCase {
             matchRange: matchRange,
             text: text,
             kind: .email,
-            imageSize: CGSize(width: 300, height: 100),
+            imageSize: CGSize(width: 300, height: 100)
         )
 
         XCTAssertTrue(rect.contains(tightMatchRect))
@@ -618,13 +618,13 @@ final class AnnotateCoreTests: XCTestCase {
             AnnotateSensitiveRedactionRegion(
                 kind: .email,
                 bounds: CGRect(x: 10, y: 12, width: 80, height: 18),
-                confidence: 0.95,
+                confidence: 0.95
             ),
             AnnotateSensitiveRedactionRegion(
                 kind: .accessToken,
                 bounds: CGRect(x: 120, y: 48, width: 60, height: 16),
-                confidence: 0.98,
-            ),
+                confidence: 0.98
+            )
         ])
 
         XCTAssertEqual(insertedCount, 2)
@@ -665,8 +665,8 @@ final class AnnotateCoreTests: XCTestCase {
             AnnotateSensitiveRedactionRegion(
                 kind: .email,
                 bounds: CGRect(x: 10, y: 12, width: 80, height: 18),
-                confidence: 0.95,
-            ),
+                confidence: 0.95
+            )
         ])
 
         XCTAssertEqual(insertedCount, 1)
@@ -691,7 +691,7 @@ final class AnnotateCoreTests: XCTestCase {
             containerSize: containerSize,
             showsProperties: true,
             propertiesContentWidth: 0,
-            controlInsets: .zero,
+            controlInsets: .zero
         )
 
         let reservedHeight = InlineAreaLayout.reservedControlHeight(showsProperties: true)
@@ -699,12 +699,12 @@ final class AnnotateCoreTests: XCTestCase {
         XCTAssertEqual(
             placement.toolbarCenter.y,
             expectedGroupTop + InlineAreaLayout.toolbarHeight / 2,
-            accuracy: 0.0001,
+            accuracy: 0.0001
         )
         XCTAssertEqual(
             placement.propertiesCenter.y + InlineAreaLayout.propertiesHeight / 2,
             containerSize.height - InlineAreaLayout.screenPadding,
-            accuracy: 0.0001,
+            accuracy: 0.0001
         )
         XCTAssertGreaterThan(placement.toolbarCenter.y, containerSize.height / 2)
     }
@@ -719,17 +719,17 @@ final class AnnotateCoreTests: XCTestCase {
             containerSize: containerSize,
             showsProperties: false,
             propertiesContentWidth: 0,
-            controlInsets: controlInsets,
+            controlInsets: controlInsets
         )
 
         XCTAssertEqual(
             placement.toolbarCenter.y - InlineAreaLayout.toolbarHeight / 2,
             controlInsets.controlTopPadding,
-            accuracy: 0.0001,
+            accuracy: 0.0001
         )
         XCTAssertLessThanOrEqual(
             placement.toolbarCenter.y + InlineAreaLayout.toolbarHeight / 2,
-            rect.minY + 0.0001,
+            rect.minY + 0.0001
         )
     }
 
@@ -742,13 +742,13 @@ final class AnnotateCoreTests: XCTestCase {
             containerSize: containerSize,
             showsProperties: false,
             propertiesContentWidth: 0,
-            controlInsets: .zero,
+            controlInsets: .zero
         )
 
         XCTAssertEqual(
             placement.toolbarCenter.y,
             rect.minY - InlineAreaLayout.selectionGap - InlineAreaLayout.toolbarHeight / 2,
-            accuracy: 0.0001,
+            accuracy: 0.0001
         )
     }
 
@@ -761,12 +761,12 @@ final class AnnotateCoreTests: XCTestCase {
             containerSize: containerSize,
             showsProperties: false,
             propertiesContentWidth: 0,
-            controlInsets: .zero,
+            controlInsets: .zero
         )
 
         XCTAssertLessThan(
             placement.actionRailCenter.x + InlineAreaLayout.actionRailWidth / 2,
-            rect.minX,
+            rect.minX
         )
     }
 
@@ -779,7 +779,7 @@ final class AnnotateCoreTests: XCTestCase {
             containerSize: containerSize,
             showsProperties: false,
             propertiesContentWidth: 0,
-            controlInsets: .zero,
+            controlInsets: .zero
         )
 
         let maximumX = containerSize.width
@@ -789,7 +789,7 @@ final class AnnotateCoreTests: XCTestCase {
         XCTAssertGreaterThan(placement.actionRailCenter.x, rect.midX)
         XCTAssertLessThanOrEqual(
             placement.actionRailCenter.x + InlineAreaLayout.actionRailWidth / 2,
-            rect.maxX + 0.0001,
+            rect.maxX + 0.0001
         )
     }
 
@@ -797,7 +797,7 @@ final class AnnotateCoreTests: XCTestCase {
         let insets = InlineAreaControlInsets(
             screenFrame: CGRect(x: 0, y: 0, width: 1512, height: 982),
             visibleFrame: CGRect(x: 40, y: 50, width: 1432, height: 900),
-            safeAreaInsets: NSEdgeInsets(top: 70, left: 12, bottom: 10, right: 24),
+            safeAreaInsets: NSEdgeInsets(top: 70, left: 12, bottom: 10, right: 24)
         )
 
         XCTAssertEqual(insets.top, 70)
@@ -809,7 +809,7 @@ final class AnnotateCoreTests: XCTestCase {
     func testInlineAreaDesktopFrameUsesUnionOfDisplayFrames() {
         let desktopFrame = InlineAreaAnnotateSession.desktopFrame(for: [
             CGRect(x: 0, y: 0, width: 300, height: 200),
-            CGRect(x: 300, y: -100, width: 200, height: 160),
+            CGRect(x: 300, y: -100, width: 200, height: 160)
         ])
 
         XCTAssertEqual(desktopFrame, CGRect(x: 0, y: -100, width: 500, height: 300))
@@ -849,13 +849,13 @@ final class AnnotateCoreTests: XCTestCase {
         let screenFramesByDisplayID: [CGDirectDisplayID: CGRect] = [
             1: CGRect(x: 0, y: 0, width: 200, height: 200),
             2: CGRect(x: 200, y: 0, width: 200, height: 200),
-            3: CGRect(x: 0, y: 200, width: 200, height: 200),
+            3: CGRect(x: 0, y: 200, width: 200, height: 200)
         ]
         let selection = CGRect(x: 150, y: 40, width: 120, height: 80)
 
         let displayIDs = InlineAreaAnnotateSession.displayIDsIntersecting(
             selection,
-            screenFramesByDisplayID: screenFramesByDisplayID,
+            screenFramesByDisplayID: screenFramesByDisplayID
         )
 
         XCTAssertEqual(displayIDs, [1, 2])
@@ -864,14 +864,14 @@ final class AnnotateCoreTests: XCTestCase {
     func testInlineAreaPrimaryDisplayIDUsesLargestIntersection() {
         let screenFramesByDisplayID: [CGDirectDisplayID: CGRect] = [
             1: CGRect(x: 0, y: 0, width: 200, height: 200),
-            2: CGRect(x: 200, y: 0, width: 200, height: 200),
+            2: CGRect(x: 200, y: 0, width: 200, height: 200)
         ]
         let selection = CGRect(x: 170, y: 40, width: 160, height: 80)
 
         let displayID = InlineAreaAnnotateSession.primaryDisplayID(
             for: selection,
             screenFramesByDisplayID: screenFramesByDisplayID,
-            fallback: 1,
+            fallback: 1
         )
 
         XCTAssertEqual(displayID, 2)
@@ -885,7 +885,7 @@ final class AnnotateCoreTests: XCTestCase {
 
         let annotationID = state.createTextAnnotation(
             bounds: bounds,
-            properties: properties,
+            properties: properties
         )
         XCTAssertEqual(state.annotations.count, 1)
         XCTAssertEqual(state.selectedAnnotationId, annotationID)
@@ -909,7 +909,7 @@ final class AnnotateCoreTests: XCTestCase {
         state.redo()
 
         let redone = try XCTUnwrap(state.annotations.first)
-        guard case .text(let redoneText) = redone.type else {
+        guard case let .text(redoneText) = redone.type else {
             return XCTFail("Expected text annotation after redo")
         }
         XCTAssertEqual(redoneText, "Hello")
@@ -921,7 +921,7 @@ final class AnnotateCoreTests: XCTestCase {
         let annotation = AnnotationItem(
             type: .text("Original"),
             bounds: CGRect(x: 20, y: 20, width: 140, height: 32),
-            properties: AnnotationProperties(fontSize: 18),
+            properties: AnnotationProperties(fontSize: 18)
         )
         state.annotations = [annotation]
         state.selectedAnnotationId = annotation.id
@@ -932,7 +932,7 @@ final class AnnotateCoreTests: XCTestCase {
         state.undo()
 
         let undone = try XCTUnwrap(state.annotations.first)
-        guard case .text(let undoneText) = undone.type else {
+        guard case let .text(undoneText) = undone.type else {
             return XCTFail("Expected text annotation after undo")
         }
         XCTAssertEqual(undoneText, "Original")
@@ -940,7 +940,7 @@ final class AnnotateCoreTests: XCTestCase {
         state.redo()
 
         let redone = try XCTUnwrap(state.annotations.first)
-        guard case .text(let redoneText) = redone.type else {
+        guard case let .text(redoneText) = redone.type else {
             return XCTFail("Expected text annotation after redo")
         }
         XCTAssertEqual(redoneText, "Changed")
@@ -953,7 +953,7 @@ final class AnnotateCoreTests: XCTestCase {
         let annotation = AnnotationItem(
             type: .text("Resizable text"),
             bounds: originalBounds,
-            properties: AnnotationProperties(fontSize: 18),
+            properties: AnnotationProperties(fontSize: 18)
         )
         state.annotations = [annotation]
         state.selectedAnnotationId = annotation.id
@@ -982,18 +982,18 @@ final class AnnotateCoreTests: XCTestCase {
         let rectangle = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 20, y: 30, width: 80, height: 44),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         let line = AnnotationItem(
             type: .line(start: CGPoint(x: 12, y: 18), end: CGPoint(x: 48, y: 52)),
             bounds: CGRect(x: 12, y: 18, width: 36, height: 34),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         state.annotations = [rectangle, line]
 
         state.replaceSourceImagePreservingAnnotations(
             NSImage(size: CGSize(width: 320, height: 220)),
-            annotationOffset: CGPoint(x: 14, y: -6),
+            annotationOffset: CGPoint(x: 14, y: -6)
         )
 
         XCTAssertEqual(state.sourceImage?.size.width ?? 0, 320, accuracy: 0.0001)
@@ -1003,7 +1003,7 @@ final class AnnotateCoreTests: XCTestCase {
         XCTAssertEqual(shiftedRectangle.bounds, rectangle.bounds.offsetBy(dx: 14, dy: -6))
 
         let shiftedLine = try XCTUnwrap(state.annotations.first(where: { $0.id == line.id }))
-        guard case .line(let start, let end) = shiftedLine.type else {
+        guard case let .line(start, end) = shiftedLine.type else {
             return XCTFail("Expected shifted line annotation")
         }
         XCTAssertEqual(start, CGPoint(x: 26, y: 12))
@@ -1019,13 +1019,13 @@ final class AnnotateCoreTests: XCTestCase {
         let annotation = AnnotationItem(
             type: .text(""),
             bounds: originalBounds,
-            properties: AnnotationProperties(fontSize: 18),
+            properties: AnnotationProperties(fontSize: 18)
         )
         state.annotations = [annotation]
 
         state.updateAnnotationText(
             id: annotation.id,
-            text: "A much longer textbox value",
+            text: "A much longer textbox value"
         )
 
         let resized = try XCTUnwrap(state.annotations.first)
@@ -1043,7 +1043,7 @@ final class AnnotateCoreTests: XCTestCase {
         let annotation = AnnotationItem(
             type: .text(""),
             bounds: originalBounds,
-            properties: AnnotationProperties(fontSize: 18),
+            properties: AnnotationProperties(fontSize: 18)
         )
         state.annotations = [annotation]
 
@@ -1055,7 +1055,7 @@ final class AnnotateCoreTests: XCTestCase {
         XCTAssertGreaterThan(resized.bounds.height, originalBounds.height)
         XCTAssertGreaterThanOrEqual(
             resized.bounds.height,
-            AnnotateTextLayout.minimumHeight(for: AnnotateTextLayout.font(size: 18)),
+            AnnotateTextLayout.minimumHeight(for: AnnotateTextLayout.font(size: 18))
         )
     }
 
@@ -1067,13 +1067,13 @@ final class AnnotateCoreTests: XCTestCase {
         let annotation = AnnotationItem(
             type: .text(""),
             bounds: originalBounds,
-            properties: AnnotationProperties(fontSize: 18),
+            properties: AnnotationProperties(fontSize: 18)
         )
         state.annotations = [annotation]
 
         state.updateAnnotationText(
             id: annotation.id,
-            text: "asdasdasdaasdasdasdaasdasdasdaasdasdasda",
+            text: "asdasdasdaasdasdasdaasdasdasdaasdasdasda"
         )
 
         let resized = try XCTUnwrap(state.annotations.first)
@@ -1099,7 +1099,7 @@ final class AnnotateCoreTests: XCTestCase {
             from: CGPoint(x: 50, y: 60),
             to: CGPoint(x: 50, y: 60),
             path: [],
-            context: makeContext(counterValue: 5),
+            context: makeContext(counterValue: 5)
         )
 
         guard case .counter(5) = annotation?.type else {
@@ -1117,42 +1117,42 @@ final class AnnotateCoreTests: XCTestCase {
             from: start,
             to: start,
             path: [],
-            context: context,
+            context: context
         ))
         XCTAssertNil(AnnotationFactory.createAnnotation(
             tool: .crop,
             from: start,
             to: start,
             path: [],
-            context: context,
+            context: context
         ))
         XCTAssertNil(AnnotationFactory.createAnnotation(
             tool: .text,
             from: start,
             to: start,
             path: [],
-            context: context,
+            context: context
         ))
         XCTAssertNil(AnnotationFactory.createAnnotation(
             tool: .mockup,
             from: start,
             to: start,
             path: [],
-            context: context,
+            context: context
         ))
         XCTAssertNil(AnnotationFactory.createAnnotation(
             tool: .pencil,
             from: start,
             to: start,
             path: [start],
-            context: context,
+            context: context
         ))
         XCTAssertNil(AnnotationFactory.createAnnotation(
             tool: .highlighter,
             from: start,
             to: start,
             path: [start],
-            context: context,
+            context: context
         ))
     }
 
@@ -1160,7 +1160,7 @@ final class AnnotateCoreTests: XCTestCase {
         for tool in [AnnotationToolType.rectangle, .circle, .arrow, .line, .blur, .watermark] {
             XCTAssertTrue(
                 tool.requiresDragToCreateAnnotation,
-                "\(tool) should not create a new item from an empty click.",
+                "\(tool) should not create a new item from an empty click."
             )
         }
 
@@ -1172,7 +1172,7 @@ final class AnnotateCoreTests: XCTestCase {
             .counter,
             .cueNote,
             .pencil,
-            .mockup,
+            .mockup
         ] {
             XCTAssertFalse(tool.requiresDragToCreateAnnotation, "\(tool) keeps its existing non-drag behavior.")
         }
@@ -1184,7 +1184,7 @@ final class AnnotateCoreTests: XCTestCase {
         let annotation = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 10, y: 10, width: 40, height: 40),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         state.annotations = [annotation]
         state.selectedAnnotationId = annotation.id
@@ -1213,7 +1213,7 @@ final class AnnotateCoreTests: XCTestCase {
             CGPoint(x: 10, y: 100),
             CGPoint(x: 30, y: 102),
             CGPoint(x: 60, y: 98),
-            CGPoint(x: 90, y: 101),
+            CGPoint(x: 90, y: 101)
         ]
 
         let annotation = try XCTUnwrap(try AnnotationFactory.createAnnotation(
@@ -1221,10 +1221,10 @@ final class AnnotateCoreTests: XCTestCase {
             from: path[0],
             to: XCTUnwrap(path.last),
             path: path,
-            context: makeContext(),
+            context: makeContext()
         ))
 
-        guard case .highlight(let points) = annotation.type else {
+        guard case let .highlight(points) = annotation.type else {
             return XCTFail("Expected highlighter annotation, got \(annotation.type)")
         }
         XCTAssertEqual(points.count, 2)
@@ -1241,10 +1241,10 @@ final class AnnotateCoreTests: XCTestCase {
             from: CGPoint(x: 500, y: 250),
             to: CGPoint(x: 504, y: 254),
             path: [],
-            context: makeContext(watermarkText: "   ", bounds: CGRect(x: 0, y: 0, width: 1000, height: 500)),
+            context: makeContext(watermarkText: "   ", bounds: CGRect(x: 0, y: 0, width: 1000, height: 500))
         ))
 
-        guard case .watermark(let text) = annotation.type else {
+        guard case let .watermark(text) = annotation.type else {
             return XCTFail("Expected watermark annotation, got \(annotation.type)")
         }
         XCTAssertEqual(text, "Cue")
@@ -1257,10 +1257,10 @@ final class AnnotateCoreTests: XCTestCase {
             from: CGPoint(x: 10, y: 20),
             to: CGPoint(x: 90, y: 80),
             path: [],
-            context: makeContext(arrowStyle: .curvedRight),
+            context: makeContext(arrowStyle: .curvedRight)
         ))
 
-        guard case .arrow(let geometry) = annotation.type else {
+        guard case let .arrow(geometry) = annotation.type else {
             return XCTFail("Expected arrow annotation, got \(annotation.type)")
         }
         XCTAssertEqual(geometry.style, .curvedRight)
@@ -1275,10 +1275,10 @@ final class AnnotateCoreTests: XCTestCase {
             from: CGPoint(x: 10, y: 20),
             to: CGPoint(x: 90, y: 80),
             path: [],
-            context: makeContext(arrowStyle: .curvedLeft, arrowBendDirection: .alternate),
+            context: makeContext(arrowStyle: .curvedLeft, arrowBendDirection: .alternate)
         ))
 
-        guard case .arrow(let geometry) = annotation.type else {
+        guard case let .arrow(geometry) = annotation.type else {
             return XCTFail("Expected arrow annotation, got \(annotation.type)")
         }
         XCTAssertEqual(geometry.style, .curvedRight) // alternating curvedLeft style flips it to curvedRight
@@ -1296,10 +1296,10 @@ final class AnnotateCoreTests: XCTestCase {
             from: CGPoint(x: 10, y: 20),
             to: CGPoint(x: 90, y: 80),
             path: [],
-            state: state,
+            state: state
         ))
 
-        guard case .arrow(let geometry) = annotation.type else {
+        guard case let .arrow(geometry) = annotation.type else {
             return XCTFail("Expected arrow annotation, got \(annotation.type)")
         }
         XCTAssertEqual(geometry.bendDirection, .alternate)
@@ -1311,12 +1311,12 @@ final class AnnotateCoreTests: XCTestCase {
         let geometry = ArrowGeometry(
             start: CGPoint(x: 10, y: 20),
             end: CGPoint(x: 90, y: 80),
-            style: .curvedLeft,
+            style: .curvedLeft
         )
         let annotation = AnnotationItem(
             type: .arrow(geometry),
             bounds: geometry.bounds(),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         state.annotations.append(annotation)
         state.selectedAnnotationId = annotation.id
@@ -1324,7 +1324,7 @@ final class AnnotateCoreTests: XCTestCase {
         state.setActiveArrowBendDirection(.alternate)
 
         let updated = try XCTUnwrap(state.annotations.first)
-        guard case .arrow(let updatedGeometry) = updated.type else {
+        guard case let .arrow(updatedGeometry) = updated.type else {
             return XCTFail("Expected arrow annotation, got \(updated.type)")
         }
         XCTAssertEqual(updatedGeometry.bendDirection, .alternate)
@@ -1337,12 +1337,12 @@ final class AnnotateCoreTests: XCTestCase {
         let geometry = ArrowGeometry(
             start: CGPoint(x: 10, y: 20),
             end: CGPoint(x: 90, y: 80),
-            style: .curvedLeft,
+            style: .curvedLeft
         )
         let annotation = AnnotationItem(
             type: .arrow(geometry),
             bounds: geometry.bounds(),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         state.annotations.append(annotation)
         state.selectedAnnotationId = annotation.id
@@ -1356,7 +1356,7 @@ final class AnnotateCoreTests: XCTestCase {
         state.undo()
 
         let restored = try XCTUnwrap(state.annotations.first)
-        guard case .arrow(let restoredGeometry) = restored.type else {
+        guard case let .arrow(restoredGeometry) = restored.type else {
             return XCTFail("Expected arrow annotation, got \(restored.type)")
         }
         XCTAssertEqual(restoredGeometry.bendDirection, .primary)
@@ -1446,7 +1446,8 @@ final class AnnotateCoreTests: XCTestCase {
         XCTAssertEqual(renderedCGImage.width, Int(cropRect.width * scale))
         XCTAssertEqual(renderedCGImage.height, Int(cropRect.height * scale))
         guard renderedCGImage.width == Int(cropRect.width * scale),
-              renderedCGImage.height == Int(cropRect.height * scale) else {
+              renderedCGImage.height == Int(cropRect.height * scale)
+        else {
             return
         }
 
@@ -1476,7 +1477,7 @@ final class AnnotateCoreTests: XCTestCase {
         let canvasSize = AspectRatioOption.auto.canvasSize(
             for: foregroundSize,
             padding: 100,
-            alignmentSpace: 0,
+            alignmentSpace: 0
         )
 
         XCTAssertEqual(canvasSize.height, 800, accuracy: 0.0001)
@@ -1490,7 +1491,7 @@ final class AnnotateCoreTests: XCTestCase {
         let canvasSize = AspectRatioOption.free.canvasSize(
             for: CGSize(width: 1000, height: 600),
             padding: 100,
-            alignmentSpace: 0,
+            alignmentSpace: 0
         )
 
         XCTAssertEqual(canvasSize, CGSize(width: 1200, height: 800))
@@ -1503,7 +1504,7 @@ final class AnnotateCoreTests: XCTestCase {
             for: foregroundSize,
             padding: 100,
             alignmentSpace: 0,
-            orientation: .vertical,
+            orientation: .vertical
         )
 
         XCTAssertEqual(canvasSize.width, 1200, accuracy: 0.0001)
@@ -1552,15 +1553,15 @@ final class AnnotateCoreTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(CodableBackgroundStyle(from: BackgroundStyle.none)).toBackgroundStyle(), .none)
         XCTAssertEqual(
             try XCTUnwrap(CodableBackgroundStyle(from: .gradient(.cyanBlue))).toBackgroundStyle(),
-            .gradient(.cyanBlue),
+            .gradient(.cyanBlue)
         )
         XCTAssertEqual(
             try XCTUnwrap(CodableBackgroundStyle(from: .wallpaper(wallpaperURL))).toBackgroundStyle(),
-            .wallpaper(wallpaperURL),
+            .wallpaper(wallpaperURL)
         )
         XCTAssertEqual(
             try XCTUnwrap(CodableBackgroundStyle(from: .blurred(blurredURL))).toBackgroundStyle(),
-            .blurred(blurredURL),
+            .blurred(blurredURL)
         )
 
         let solid = try XCTUnwrap(CodableBackgroundStyle(from: .solidColor(.red)))
@@ -1582,19 +1583,19 @@ final class AnnotateCoreTests: XCTestCase {
             backgroundStyle: XCTUnwrap(CodableBackgroundStyle(from: .gradient(.bluePurple))),
             padding: 40,
             shadowIntensity: 0.3,
-            cornerRadius: 12,
+            cornerRadius: 12
         )
         let close = try AnnotateCanvasPresetPayload(
             backgroundStyle: XCTUnwrap(CodableBackgroundStyle(from: .gradient(.bluePurple))),
             padding: 40.00005,
             shadowIntensity: 0.30005,
-            cornerRadius: 12.00005,
+            cornerRadius: 12.00005
         )
         let different = try AnnotateCanvasPresetPayload(
             backgroundStyle: XCTUnwrap(CodableBackgroundStyle(from: .gradient(.orangeRed))),
             padding: 40,
             shadowIntensity: 0.3,
-            cornerRadius: 12,
+            cornerRadius: 12
         )
 
         XCTAssertTrue(first.approximatelyEquals(close))
@@ -1630,7 +1631,7 @@ final class AnnotateCoreTests: XCTestCase {
             blurredBackgroundEffect: .soft,
             padding: 40,
             shadowIntensity: 0.3,
-            cornerRadius: 12,
+            cornerRadius: 12
         )
         let vivid = try AnnotateCanvasPresetPayload(
             backgroundStyle: XCTUnwrap(CodableBackgroundStyle(from: .wallpaper(wallpaperURL))),
@@ -1638,7 +1639,7 @@ final class AnnotateCoreTests: XCTestCase {
             blurredBackgroundEffect: .vivid,
             padding: 40,
             shadowIntensity: 0.3,
-            cornerRadius: 12,
+            cornerRadius: 12
         )
 
         XCTAssertFalse(soft.approximatelyEquals(vivid))
@@ -1652,7 +1653,7 @@ final class AnnotateCoreTests: XCTestCase {
             blurredBackgroundEffect: .soft,
             padding: 40,
             shadowIntensity: 0.3,
-            cornerRadius: 12,
+            cornerRadius: 12
         )
         let enabled = try AnnotateCanvasPresetPayload(
             backgroundStyle: XCTUnwrap(CodableBackgroundStyle(from: .wallpaper(wallpaperURL))),
@@ -1660,7 +1661,7 @@ final class AnnotateCoreTests: XCTestCase {
             blurredBackgroundEffect: .soft,
             padding: 40,
             shadowIntensity: 0.3,
-            cornerRadius: 12,
+            cornerRadius: 12
         )
 
         XCTAssertFalse(disabled.approximatelyEquals(enabled))
@@ -1673,7 +1674,7 @@ final class AnnotateCoreTests: XCTestCase {
             blurredBackgroundEffect: .soft,
             padding: 40,
             shadowIntensity: 0.3,
-            cornerRadius: 12,
+            cornerRadius: 12
         )
         let vivid = try AnnotateCanvasPresetPayload(
             backgroundStyle: XCTUnwrap(CodableBackgroundStyle(from: .gradient(.bluePurple))),
@@ -1681,7 +1682,7 @@ final class AnnotateCoreTests: XCTestCase {
             blurredBackgroundEffect: .vivid,
             padding: 40,
             shadowIntensity: 0.3,
-            cornerRadius: 12,
+            cornerRadius: 12
         )
 
         XCTAssertTrue(soft.approximatelyEquals(vivid))
@@ -1693,14 +1694,14 @@ final class AnnotateCoreTests: XCTestCase {
             padding: 40,
             shadowIntensity: 0.3,
             cornerRadius: 12,
-            aspectRatio: .auto,
+            aspectRatio: .auto
         )
         let fixedRatio = try AnnotateCanvasPresetPayload(
             backgroundStyle: XCTUnwrap(CodableBackgroundStyle(from: .gradient(.bluePurple))),
             padding: 40,
             shadowIntensity: 0.3,
             cornerRadius: 12,
-            aspectRatio: .ratio16x9,
+            aspectRatio: .ratio16x9
         )
 
         XCTAssertFalse(originalRatio.approximatelyEquals(fixedRatio))
@@ -1713,7 +1714,7 @@ final class AnnotateCoreTests: XCTestCase {
             shadowIntensity: 0.3,
             cornerRadius: 12,
             aspectRatio: .ratio16x9,
-            aspectRatioOrientation: .horizontal,
+            aspectRatioOrientation: .horizontal
         )
         let verticalRatio = try AnnotateCanvasPresetPayload(
             backgroundStyle: XCTUnwrap(CodableBackgroundStyle(from: .gradient(.bluePurple))),
@@ -1721,7 +1722,7 @@ final class AnnotateCoreTests: XCTestCase {
             shadowIntensity: 0.3,
             cornerRadius: 12,
             aspectRatio: .ratio16x9,
-            aspectRatioOrientation: .vertical,
+            aspectRatioOrientation: .vertical
         )
 
         XCTAssertFalse(horizontalRatio.approximatelyEquals(verticalRatio))
@@ -1736,8 +1737,8 @@ final class AnnotateCoreTests: XCTestCase {
                 backgroundStyle: XCTUnwrap(CodableBackgroundStyle(from: .gradient(.bluePurple))),
                 padding: 40,
                 shadowIntensity: 0.3,
-                cornerRadius: 12,
-            ),
+                cornerRadius: 12
+            )
         )
 
         store.savePresets([preset])
@@ -1768,8 +1769,8 @@ final class AnnotateCoreTests: XCTestCase {
                 backgroundStyle: XCTUnwrap(CodableBackgroundStyle(from: .gradient(.orangeRed))),
                 padding: 48,
                 shadowIntensity: 0.35,
-                cornerRadius: 16,
-            ),
+                cornerRadius: 16
+            )
         )
         store.savePresets([preset])
         store.saveDefaultPresetId(preset.id)
@@ -1777,7 +1778,7 @@ final class AnnotateCoreTests: XCTestCase {
         let state = AnnotateState(
             image: NSImage(size: NSSize(width: 20, height: 20)),
             url: URL(fileURLWithPath: "/tmp/snapzy-default-preset.png"),
-            canvasPresetStore: store,
+            canvasPresetStore: store
         )
         Self.retainedAnnotateStates.append(state)
 
@@ -1807,8 +1808,8 @@ final class AnnotateCoreTests: XCTestCase {
                 backgroundStyle: XCTUnwrap(CodableBackgroundStyle(from: .gradient(.orangeRed))),
                 padding: 48,
                 shadowIntensity: 0.35,
-                cornerRadius: 16,
-            ),
+                cornerRadius: 16
+            )
         )
         store.savePresets([preset])
         store.saveDefaultPresetId(preset.id)
@@ -1817,7 +1818,7 @@ final class AnnotateCoreTests: XCTestCase {
             image: NSImage(size: NSSize(width: 20, height: 20)),
             url: URL(fileURLWithPath: "/tmp/snapzy-default-preset.png"),
             canvasPresetStore: store,
-            appliesDefaultCanvasPresetOnNewImages: false,
+            appliesDefaultCanvasPresetOnNewImages: false
         )
         Self.retainedAnnotateStates.append(state)
 
@@ -1863,7 +1864,7 @@ final class AnnotateCoreTests: XCTestCase {
         let annotation = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 0, y: 0, width: 80, height: 40),
-            properties: AnnotationProperties(strokeColor: .red, fillColor: .green),
+            properties: AnnotationProperties(strokeColor: .red, fillColor: .green)
         )
         state.annotations = [annotation]
         state.setSelectedAnnotationIds([annotation.id])
@@ -1952,7 +1953,7 @@ final class AnnotateCoreTests: XCTestCase {
         let annotation = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 0, y: 0, width: 80, height: 40),
-            properties: AnnotationProperties(strokeColor: .red, fillColor: .clear),
+            properties: AnnotationProperties(strokeColor: .red, fillColor: .clear)
         )
         state.annotations = [annotation]
         state.setSelectedAnnotationIds([annotation.id])
@@ -1974,23 +1975,23 @@ final class AnnotateCoreTests: XCTestCase {
 
         XCTAssertEqual(
             state.annotationCreationProperties(for: .rectangle).strokeWidth,
-            AnnotationStrokeWidth.heavy.points,
+            AnnotationStrokeWidth.heavy.points
         )
         XCTAssertEqual(
             state.annotationCreationProperties(for: .rectangle).strokeWidth,
-            AnnotationStrokeWidth.heavy.points,
+            AnnotationStrokeWidth.heavy.points
         )
         XCTAssertEqual(
             state.annotationCreationProperties(for: .arrow).strokeWidth,
-            AnnotationStrokeWidth.heavy.points,
+            AnnotationStrokeWidth.heavy.points
         )
         XCTAssertEqual(
             state.annotationCreationProperties(for: .blur).strokeWidth,
-            AnnotationStrokeWidth.heavy.points,
+            AnnotationStrokeWidth.heavy.points
         )
         XCTAssertEqual(
             state.annotationCreationProperties(for: .pencil).strokeWidth,
-            AnnotationStrokeWidth.heavy.points,
+            AnnotationStrokeWidth.heavy.points
         )
 
         state.activateTool(.arrow)
@@ -2031,7 +2032,7 @@ final class AnnotateCoreTests: XCTestCase {
         let annotation = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 0, y: 0, width: 80, height: 40),
-            properties: AnnotationProperties(strokeWidth: AnnotationStrokeWidth.regular.points),
+            properties: AnnotationProperties(strokeWidth: AnnotationStrokeWidth.regular.points)
         )
         state.annotations = [annotation]
         state.setSelectedAnnotationIds([annotation.id])
@@ -2042,11 +2043,11 @@ final class AnnotateCoreTests: XCTestCase {
         XCTAssertEqual(updated.properties.strokeWidth, AnnotationStrokeWidth.heavy.points)
         XCTAssertEqual(
             state.annotationCreationProperties(for: .arrow).strokeWidth,
-            AnnotationStrokeWidth.default.points,
+            AnnotationStrokeWidth.default.points
         )
         XCTAssertEqual(
             state.annotationCreationProperties(for: .rectangle).strokeWidth,
-            AnnotationStrokeWidth.default.points,
+            AnnotationStrokeWidth.default.points
         )
     }
 
@@ -2056,7 +2057,7 @@ final class AnnotateCoreTests: XCTestCase {
         let annotation = AnnotationItem(
             type: .blur(.pixelated),
             bounds: CGRect(x: 0, y: 0, width: 120, height: 80),
-            properties: AnnotationProperties(strokeWidth: AnnotationStrokeWidth.regular.points),
+            properties: AnnotationProperties(strokeWidth: AnnotationStrokeWidth.regular.points)
         )
         state.annotations = [annotation]
         state.setSelectedAnnotationIds([annotation.id])
@@ -2066,21 +2067,21 @@ final class AnnotateCoreTests: XCTestCase {
 
         XCTAssertEqual(
             try XCTUnwrap(state.annotations.first).properties.strokeWidth,
-            AnnotationStrokeWidth.heavy.points,
+            AnnotationStrokeWidth.heavy.points
         )
 
         state.undo()
 
         XCTAssertEqual(
             try XCTUnwrap(state.annotations.first).properties.strokeWidth,
-            AnnotationStrokeWidth.thick.points,
+            AnnotationStrokeWidth.thick.points
         )
 
         state.undo()
 
         XCTAssertEqual(
             try XCTUnwrap(state.annotations.first).properties.strokeWidth,
-            AnnotationStrokeWidth.regular.points,
+            AnnotationStrokeWidth.regular.points
         )
         XCTAssertFalse(state.canUndo)
     }
@@ -2103,11 +2104,11 @@ final class AnnotateCoreTests: XCTestCase {
 
         XCTAssertEqual(
             reloadedState.annotationCreationProperties(for: .line).strokeWidth,
-            AnnotationStrokeWidth.heavy.points,
+            AnnotationStrokeWidth.heavy.points
         )
         XCTAssertEqual(
             reloadedState.annotationCreationProperties(for: .blur).strokeWidth,
-            AnnotationStrokeWidth.heavy.points,
+            AnnotationStrokeWidth.heavy.points
         )
         XCTAssertEqual(reloadedState.annotationCreationProperties(for: .rectangle).cornerRadius, 7)
         XCTAssertEqual(reloadedState.annotationCreationProperties(for: .text).fontSize, 32)
@@ -2150,14 +2151,14 @@ final class AnnotateCoreTests: XCTestCase {
 
         XCTAssertEqual(
             state.annotationCreationProperties(for: .rectangle).strokeWidth,
-            AnnotationStrokeWidth.heavy.points,
+            AnnotationStrokeWidth.heavy.points
         )
         XCTAssertEqual(state.annotationCreationProperties(for: .rectangle).cornerRadius, 12)
         assertColorsMatch(state.annotationCreationProperties(for: .rectangle).strokeColor, .blue)
 
         XCTAssertEqual(
             state.annotationCreationProperties(for: .arrow).strokeWidth,
-            AnnotationStrokeWidth.thin.points,
+            AnnotationStrokeWidth.thin.points
         )
         XCTAssertEqual(state.annotationCreationProperties(for: .arrow).cornerRadius, 0)
         assertColorsMatch(state.annotationCreationProperties(for: .arrow).strokeColor, .green)
@@ -2190,7 +2191,7 @@ final class AnnotateCoreTests: XCTestCase {
         let annotation = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 0, y: 0, width: 80, height: 40),
-            properties: AnnotationProperties(strokeColor: .red, fillColor: .clear),
+            properties: AnnotationProperties(strokeColor: .red, fillColor: .clear)
         )
         state.annotations = [annotation]
         state.setSelectedAnnotationIds([annotation.id])
@@ -2225,14 +2226,14 @@ final class AnnotateCoreTests: XCTestCase {
 
         XCTAssertEqual(
             reloadedState.annotationCreationProperties(for: .rectangle).strokeWidth,
-            AnnotationStrokeWidth.heavy.points,
+            AnnotationStrokeWidth.heavy.points
         )
         XCTAssertEqual(reloadedState.annotationCreationProperties(for: .rectangle).cornerRadius, 12)
         assertColorsMatch(reloadedState.annotationCreationProperties(for: .rectangle).strokeColor, .blue)
 
         XCTAssertEqual(
             reloadedState.annotationCreationProperties(for: .arrow).strokeWidth,
-            AnnotationStrokeWidth.thin.points,
+            AnnotationStrokeWidth.thin.points
         )
         assertColorsMatch(reloadedState.annotationCreationProperties(for: .arrow).strokeColor, .green)
 
@@ -2253,11 +2254,11 @@ final class AnnotateCoreTests: XCTestCase {
 
         XCTAssertEqual(
             independentState.annotationCreationProperties(for: .rectangle).strokeWidth,
-            AnnotationStrokeWidth.heavy.points,
+            AnnotationStrokeWidth.heavy.points
         )
         XCTAssertEqual(
             independentState.annotationCreationProperties(for: .arrow).strokeWidth,
-            AnnotationStrokeWidth.heavy.points,
+            AnnotationStrokeWidth.heavy.points
         )
         assertColorsMatch(independentState.annotationCreationProperties(for: .rectangle).strokeColor, .blue)
         assertColorsMatch(independentState.annotationCreationProperties(for: .arrow).strokeColor, .blue)
@@ -2268,11 +2269,11 @@ final class AnnotateCoreTests: XCTestCase {
 
         XCTAssertEqual(
             independentState.annotationCreationProperties(for: .rectangle).strokeWidth,
-            AnnotationStrokeWidth.heavy.points,
+            AnnotationStrokeWidth.heavy.points
         )
         XCTAssertEqual(
             independentState.annotationCreationProperties(for: .arrow).strokeWidth,
-            AnnotationStrokeWidth.thin.points,
+            AnnotationStrokeWidth.thin.points
         )
         assertColorsMatch(independentState.annotationCreationProperties(for: .rectangle).strokeColor, .blue)
         assertColorsMatch(independentState.annotationCreationProperties(for: .arrow).strokeColor, .green)
@@ -2306,11 +2307,11 @@ final class AnnotateCoreTests: XCTestCase {
 
         XCTAssertEqual(
             syncedState.annotationCreationProperties(for: .rectangle).strokeWidth,
-            AnnotationStrokeWidth.heavy.points,
+            AnnotationStrokeWidth.heavy.points
         )
         XCTAssertEqual(
             syncedState.annotationCreationProperties(for: .arrow).strokeWidth,
-            AnnotationStrokeWidth.heavy.points,
+            AnnotationStrokeWidth.heavy.points
         )
         XCTAssertEqual(syncedState.annotationCreationProperties(for: .rectangle).cornerRadius, 12)
         XCTAssertEqual(syncedState.annotationCreationProperties(for: .rectangle).cornerRadius, 12)
@@ -2337,7 +2338,7 @@ final class AnnotateCoreTests: XCTestCase {
         blurType: BlurType = .pixelated,
         counterValue: Int = 1,
         watermarkText: String = "Cue",
-        bounds: CGRect = CGRect(x: 0, y: 0, width: 400, height: 300),
+        bounds: CGRect = CGRect(x: 0, y: 0, width: 400, height: 300)
     ) -> AnnotationFactory.CreationContext {
         AnnotationFactory.CreationContext(
             properties: properties,
@@ -2346,7 +2347,7 @@ final class AnnotateCoreTests: XCTestCase {
             blurType: blurType,
             counterValue: counterValue,
             watermarkText: watermarkText,
-            activeAnnotationBounds: bounds,
+            activeAnnotationBounds: bounds
         )
     }
 
@@ -2360,14 +2361,14 @@ final class AnnotateCoreTests: XCTestCase {
             context: nil,
             eventNumber: 0,
             clickCount: 1,
-            pressure: 1,
+            pressure: 1
         )!
     }
 
     private func makeRetinaPixelPatternImage(
         pixelWidth: Int,
         pixelHeight: Int,
-        scale: CGFloat,
+        scale: CGFloat
     ) throws -> NSImage {
         var pixels = [UInt8](repeating: 0, count: pixelWidth * pixelHeight * 4)
         for y in 0 ..< pixelHeight {
@@ -2394,12 +2395,12 @@ final class AnnotateCoreTests: XCTestCase {
             provider: provider,
             decode: nil,
             shouldInterpolate: false,
-            intent: .defaultIntent,
+            intent: .defaultIntent
         ))
 
         return NSImage(
             cgImage: cgImage,
-            size: CGSize(width: CGFloat(pixelWidth) / scale, height: CGFloat(pixelHeight) / scale),
+            size: CGSize(width: CGFloat(pixelWidth) / scale, height: CGFloat(pixelHeight) / scale)
         )
     }
 
@@ -2413,7 +2414,7 @@ final class AnnotateCoreTests: XCTestCase {
                 bitsPerComponent: 8,
                 bytesPerRow: image.width * 4,
                 space: CGColorSpaceCreateDeviceRGB(),
-                bitmapInfo: rgbaBitmapInfo.rawValue,
+                bitmapInfo: rgbaBitmapInfo.rawValue
             ))
             context.interpolationQuality = .none
             context.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
@@ -2425,7 +2426,7 @@ final class AnnotateCoreTests: XCTestCase {
         _ lhs: Color,
         _ rhs: Color,
         file: StaticString = #filePath,
-        line: UInt = #line,
+        line: UInt = #line
     ) {
         XCTAssertEqual(RGBAColor(color: lhs), RGBAColor(color: rhs), file: file, line: line)
     }
@@ -2449,7 +2450,7 @@ final class AnnotateCoreTests: XCTestCase {
             from: start,
             to: end,
             path: [],
-            state: state,
+            state: state
         )
         XCTAssertNotNil(item)
         XCTAssertEqual(item?.type, .spotlight)
@@ -2469,7 +2470,7 @@ final class AnnotateCoreTests: XCTestCase {
             from: start,
             to: end,
             path: [],
-            state: state,
+            state: state
         )
         XCTAssertNil(item)
     }
@@ -2491,7 +2492,7 @@ final class AnnotateCoreTests: XCTestCase {
             from: start,
             to: end,
             path: [],
-            state: state,
+            state: state
         )
         XCTAssertEqual(item?.properties.cornerRadius, 14)
     }
@@ -2511,7 +2512,7 @@ final class AnnotateCoreTests: XCTestCase {
             from: CGPoint(x: 0, y: 0),
             to: CGPoint(x: 100, y: 100),
             path: [],
-            state: state,
+            state: state
         )
         let unwrapped = try XCTUnwrap(item)
         // Item must carry the opacity at creation time, not the default 0.5

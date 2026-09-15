@@ -56,7 +56,7 @@ enum CaptureSelectionDisplayTopology {
     static func clampResizedRect(
         _ rect: CGRect,
         to bounds: CGRect = unifiedDesktopFrame,
-        minSize: CGFloat = CaptureSelectionGeometry.defaultMinSize,
+        minSize: CGFloat = CaptureSelectionGeometry.defaultMinSize
     ) -> CGRect {
         var r = rect
         if r.minX < bounds.minX {
@@ -100,7 +100,7 @@ enum CaptureSelectionDisplayTopology {
     static func screenForDeepLinkDisplay(
         _ display: Int?,
         cursorPoint: CGPoint = NSEvent.mouseLocation,
-        screens: [NSScreen] = NSScreen.screens,
+        screens: [NSScreen] = NSScreen.screens
     ) -> NSScreen? {
         let ordered = screensOrderedForDeepLink(screens)
         if let display {
@@ -118,13 +118,13 @@ enum CaptureSelectionDisplayTopology {
         y: CGFloat,
         width: CGFloat,
         height: CGFloat,
-        screenFrame: CGRect,
+        screenFrame: CGRect
     ) -> CGRect {
         CGRect(
             x: screenFrame.minX + x,
             y: screenFrame.maxY - y - height,
             width: width,
-            height: height,
+            height: height
         )
     }
 

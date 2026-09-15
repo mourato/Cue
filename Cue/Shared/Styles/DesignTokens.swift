@@ -105,13 +105,13 @@ struct PopoverMenuItemStyle: ViewModifier {
             .frame(
                 maxWidth: .infinity,
                 minHeight: PopoverTokens.menuItemMinHeight,
-                alignment: .leading,
+                alignment: .leading
             )
             .padding(.horizontal, PopoverTokens.menuItemHorizontalPadding)
             .contentShape(Rectangle())
             .background(
                 RoundedRectangle(cornerRadius: PopoverTokens.controlCornerRadius, style: .continuous)
-                    .fill(isSelected ? PopoverTokens.selectedFill : isHovering ? PopoverTokens.hoverFill : .clear),
+                    .fill(isSelected ? PopoverTokens.selectedFill : isHovering ? PopoverTokens.hoverFill : .clear)
             )
             .overlay {
                 if isSelected {
@@ -162,7 +162,7 @@ struct ToolbarButton: View {
                 .frame(width: 28, height: 28)
                 .background(
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(backgroundColor),
+                        .fill(backgroundColor)
                 )
                 .overlay(alignment: .topTrailing) {
                     if let selectedBadgeIcon, isSelected {
@@ -264,11 +264,11 @@ struct SidebarItemStyle: ViewModifier {
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius)
-                    .fill(isHovering && !isSelected ? SidebarColors.itemHover.opacity(0.35) : Color.clear),
+                    .fill(isHovering && !isSelected ? SidebarColors.itemHover.opacity(0.35) : Color.clear)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius)
-                    .strokeBorder(borderColor, lineWidth: Size.strokeSelected),
+                    .strokeBorder(borderColor, lineWidth: Size.strokeSelected)
             )
             .onHover { isHovering = $0 }
     }
@@ -301,7 +301,7 @@ struct ColorSwatchStyle: ViewModifier {
             .clipShape(Circle())
             .overlay(
                 Circle()
-                    .stroke(borderColor, lineWidth: borderWidth),
+                    .stroke(borderColor, lineWidth: borderWidth)
             )
             .scaleEffect(isHovering && !isSelected ? 1.1 : 1.0)
             .animation(.easeInOut(duration: 0.15), value: isHovering)
@@ -340,12 +340,12 @@ struct ActionButtonStyle: ViewModifier {
             .aspectRatio(1, contentMode: .fit)
             .background(
                 RoundedRectangle(cornerRadius: cornerRadius)
-                    .fill(isHovering ? SidebarColors.actionButtonHover : SidebarColors.actionButton),
+                    .fill(isHovering ? SidebarColors.actionButtonHover : SidebarColors.actionButton)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [4]))
-                    .foregroundColor(isHovering ? .primary.opacity(0.5) : .primary.opacity(0.3)),
+                    .foregroundColor(isHovering ? .primary.opacity(0.5) : .primary.opacity(0.3))
             )
             .onHover { isHovering = $0 }
     }

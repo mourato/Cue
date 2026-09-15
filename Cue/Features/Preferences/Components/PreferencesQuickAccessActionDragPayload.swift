@@ -31,8 +31,10 @@ struct QuickAccessActionDragPayload {
         let provider = NSItemProvider()
         if let data = Self(action: action, source: source).encoded.data(using: .utf8) {
             provider
-                .registerDataRepresentation(forTypeIdentifier: UTType.quickAccessAction.identifier,
-                                            visibility: .all) { completion in
+                .registerDataRepresentation(
+                    forTypeIdentifier: UTType.quickAccessAction.identifier,
+                    visibility: .all
+                ) { completion in
                     completion(data, nil)
                     return nil
                 }
@@ -42,17 +44,19 @@ struct QuickAccessActionDragPayload {
 
     static func load(
         from providers: [NSItemProvider],
-        completion: @escaping @MainActor @Sendable (QuickAccessActionDragPayload) -> Void,
+        completion: @escaping @MainActor @Sendable (QuickAccessActionDragPayload) -> Void
     ) {
         guard let provider = providers
-            .first(where: { $0.hasItemConformingToTypeIdentifier(UTType.quickAccessAction.identifier) }) else {
+            .first(where: { $0.hasItemConformingToTypeIdentifier(UTType.quickAccessAction.identifier) })
+        else {
             return
         }
 
         _ = provider.loadDataRepresentation(forTypeIdentifier: UTType.quickAccessAction.identifier) { data, _ in
             guard let data,
                   let text = String(data: data, encoding: .utf8),
-                  let payload = Self.parse(text) else {
+                  let payload = Self.parse(text)
+            else {
                 return
             }
 
@@ -66,9 +70,9 @@ struct QuickAccessActionDragPayload {
         switch source {
         case .actionList:
             "\(Self.marker)|list|\(action.rawValue)"
-        case .preview(let slot):
+        case let .preview(slot):
             "\(Self.marker)|preview|\(slot.rawValue)|\(action.rawValue)"
-        case .swipePreview(let direction):
+        case let .swipePreview(direction):
             "\(Self.marker)|swipe|\(direction.rawValue)|\(action.rawValue)"
         }
     }
@@ -79,21 +83,24 @@ struct QuickAccessActionDragPayload {
 
         if parts.count == 3,
            parts[1] == "list",
-           let action = QuickAccessActionKind(rawValue: parts[2]) {
+           let action = QuickAccessActionKind(rawValue: parts[2])
+        {
             return QuickAccessActionDragPayload(action: action, source: .actionList)
         }
 
         if parts.count == 4,
            parts[1] == "preview",
            let slot = QuickAccessActionSlot(rawValue: parts[2]),
-           let action = QuickAccessActionKind(rawValue: parts[3]) {
+           let action = QuickAccessActionKind(rawValue: parts[3])
+        {
             return QuickAccessActionDragPayload(action: action, source: .preview(slot: slot))
         }
 
         if parts.count == 4,
            parts[1] == "swipe",
            let direction = QuickAccessSwipeDirection(rawValue: parts[2]),
-           let action = QuickAccessActionKind(rawValue: parts[3]) {
+           let action = QuickAccessActionKind(rawValue: parts[3])
+        {
             return QuickAccessActionDragPayload(action: action, source: .swipePreview(direction: direction))
         }
 

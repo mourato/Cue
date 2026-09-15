@@ -30,7 +30,7 @@ final class SmartElementOverlayView: NSView {
             "frame": NSNull(),
             "hidden": NSNull(),
             "path": NSNull(),
-            "position": NSNull(),
+            "position": NSNull()
         ]
     }
 
@@ -65,8 +65,8 @@ final class SmartElementOverlayView: NSView {
                 rect: bounds,
                 options: [.activeAlways, .mouseMoved, .mouseEnteredAndExited, .inVisibleRect, .cursorUpdate],
                 owner: self,
-                userInfo: nil,
-            ),
+                userInfo: nil
+            )
         )
     }
 

@@ -34,7 +34,7 @@
                 cacheKey: key,
                 sourceFingerprint: fingerprint,
                 recipe: recipe,
-                cacheRoot: tempRoot,
+                cacheRoot: tempRoot
             )
             XCTAssertNil(result)
         }
@@ -54,7 +54,7 @@
                 cacheKey: key,
                 sourceFingerprint: fingerprint,
                 recipe: recipe,
-                cacheRoot: tempRoot,
+                cacheRoot: tempRoot
             )
 
             var changed = VideoEditorState(url: URL(fileURLWithPath: "/tmp/sample-other.mov"))
@@ -66,14 +66,14 @@
                 cacheKey: changedRecipe.cacheKey(),
                 sourceFingerprint: fingerprint,
                 recipe: changedRecipe,
-                cacheRoot: tempRoot,
+                cacheRoot: tempRoot
             )
             XCTAssertNil(miss)
         }
 
         func testEntryDirectory_rejectsInvalidKey() {
             XCTAssertThrowsError(
-                try VideoEditorRenderCacheStore.entryDirectory(for: "../escape", cacheRoot: tempRoot),
+                try VideoEditorRenderCacheStore.entryDirectory(for: "../escape", cacheRoot: tempRoot)
             )
         }
     }

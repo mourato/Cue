@@ -101,11 +101,11 @@
 
             let origin = NSPoint(
                 x: (screen.frame.width - windowWidth) / 2,
-                y: (screen.frame.height - windowHeight) / 2,
+                y: (screen.frame.height - windowHeight) / 2
             )
 
             return VideoEditorWindow(
-                contentRect: NSRect(origin: origin, size: NSSize(width: windowWidth, height: windowHeight)),
+                contentRect: NSRect(origin: origin, size: NSSize(width: windowWidth, height: windowHeight))
             )
         }
 
@@ -119,7 +119,7 @@
                 state: state,
                 primaryActionTitle: primaryActionTitle,
                 onSave: { [weak self] in self?.showSaveConfirmation() },
-                onCancel: { [weak self] in self?.handleCancel() },
+                onCancel: { [weak self] in self?.handleCancel() }
             )
             bindDocumentEditedState(to: state)
             window?.contentView = NSHostingView(rootView: mainView)
@@ -277,7 +277,7 @@
         private func saveTempCaptureToDestination() {
             guard let state else { return }
             guard let exportDirectory = fileAccessManager.ensureExportDirectoryForOperation(
-                promptMessage: L10n.Recording.chooseSaveLocationMessage,
+                promptMessage: L10n.Recording.chooseSaveLocationMessage
             )
             else {
                 return
@@ -315,7 +315,7 @@
                 case .alertSecondButtonReturn:
                     showTempSaveAsPanel(
                         defaultDirectory: destinationURL.deletingLastPathComponent(),
-                        suggestedFilename: defaultSaveAsFilename(for: destinationURL),
+                        suggestedFilename: defaultSaveAsFilename(for: destinationURL)
                     )
                 default:
                     break
@@ -387,7 +387,7 @@
             }
         }
 
-        private func saveTempGIF(state: VideoEditorState, to outputURL: URL) async throws {
+        private func saveTempGIF(state: VideoEditorState, to outputURL: URL) throws {
             let targetSize = state.exportSettings.exportSize(from: state.naturalSize)
             let isResizing = Int(targetSize.width) != Int(state.naturalSize.width)
                 || Int(targetSize.height) != Int(state.naturalSize.height)
@@ -399,7 +399,7 @@
                 try GIFResizer.resize(
                     sourceURL: state.sourceURL,
                     targetSize: targetSize,
-                    outputURL: scopedOutputURL,
+                    outputURL: scopedOutputURL
                 ) { progress in
                     Task { @MainActor in
                         state.exportProgress = Float(progress)
@@ -431,12 +431,12 @@
 
             CaptureHistoryStore.shared.updateFilePath(
                 from: sourceURL.path,
-                to: destinationURL.path,
+                to: destinationURL.path
             )
 
             PostCaptureActionHandler.shared.copyEditedCaptureToClipboardIfEnabled(
                 for: .recording,
-                url: destinationURL,
+                url: destinationURL
             )
 
             cleanupTempSourceFile(at: sourceURL)
@@ -485,7 +485,7 @@
                 Int(state.naturalSize.width),
                 Int(state.naturalSize.height),
                 Int(targetSize.width),
-                Int(targetSize.height),
+                Int(targetSize.height)
             )
             alert.alertStyle = .informational
 
@@ -523,7 +523,7 @@
                     try GIFResizer.resize(
                         sourceURL: state.sourceURL,
                         targetSize: targetSize,
-                        outputURL: tempURL,
+                        outputURL: tempURL
                     ) { progress in
                         Task { @MainActor in
                             state.exportProgress = Float(progress)
@@ -549,7 +549,7 @@
                     }
                     await PostCaptureActionHandler.shared.copyEditedCaptureToClipboardIfEnabled(
                         for: .recording,
-                        url: originalAccess.url,
+                        url: originalAccess.url
                     )
                     forceClose()
                 } catch {
@@ -594,7 +594,7 @@
                     try GIFResizer.resize(
                         sourceURL: state.sourceURL,
                         targetSize: targetSize,
-                        outputURL: outputURL,
+                        outputURL: outputURL
                     ) { progress in
                         Task { @MainActor in
                             state.exportProgress = Float(progress)
@@ -640,7 +640,7 @@
                     }
                     await PostCaptureActionHandler.shared.copyEditedCaptureToClipboardIfEnabled(
                         for: .recording,
-                        url: state.originalURL,
+                        url: state.originalURL
                     )
                     self.forceClose()
                 } catch {

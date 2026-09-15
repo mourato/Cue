@@ -48,7 +48,7 @@ struct QuickAccessPreviewTextSlot: View {
         RoundedRectangle(cornerRadius: cornerRadius)
             .stroke(
                 isTargeted ? Color(nsColor: .controlAccentColor) : Color.clear,
-                style: StrokeStyle(lineWidth: 2, dash: [5, 4]),
+                style: StrokeStyle(lineWidth: 2, dash: [5, 4])
             )
     }
 
@@ -125,7 +125,7 @@ struct QuickAccessPreviewActionPopover: View {
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: PopoverTokens.overlayCornerRadius))
         .overlay(
             RoundedRectangle(cornerRadius: PopoverTokens.overlayCornerRadius)
-                .stroke(isEnabled ? Color.primary.opacity(0.12) : Color.secondary.opacity(0.18), lineWidth: 1),
+                .stroke(isEnabled ? Color.primary.opacity(0.12) : Color.secondary.opacity(0.18), lineWidth: 1)
         )
         .opacity(isEnabled ? 1 : 0.72)
         .shadow(color: Color.black.opacity(0.14), radius: 8, x: 0, y: 3)
@@ -139,14 +139,14 @@ struct QuickAccessPreviewActionPopover: View {
             action: .copy,
             isEnabled: true,
             isTargeted: false,
-            onHover: { _ in },
+            onHover: { _ in }
         )
         QuickAccessPreviewIconSlot(
             slot: .topTrailing,
             action: .delete,
             isEnabled: true,
             isTargeted: true,
-            onHover: { _ in },
+            onHover: { _ in }
         )
         QuickAccessPreviewActionPopover(action: .copy, slot: .centerTop, isEnabled: true)
     }

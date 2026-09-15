@@ -42,7 +42,7 @@ final class OCRLinkPromptManager {
                     .info,
                     .ocr,
                     "OCR link prompt opened link",
-                    context: ["host": url.host ?? ""],
+                    context: ["host": url.host ?? ""]
                 )
                 self?.dismiss(presentationID: presentationID)
             },
@@ -51,7 +51,7 @@ final class OCRLinkPromptManager {
             },
             onHoverChange: { [weak self] hovering in
                 self?.setHoverPaused(hovering, presentationID: presentationID)
-            },
+            }
         )
 
         let hostingView = NSHostingView(rootView: content)
@@ -61,14 +61,14 @@ final class OCRLinkPromptManager {
         let frame = FeedbackPanelPlacement.frame(
             in: screen.visibleFrame,
             panelSize: size,
-            slot: .bottomCenterRaised,
+            slot: .bottomCenterRaised
         )
 
         let newPanel = NSPanel(
             contentRect: frame,
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
-            defer: false,
+            defer: false
         )
         newPanel.level = .statusBar
         newPanel.isOpaque = false
@@ -93,7 +93,7 @@ final class OCRLinkPromptManager {
             .info,
             .ocr,
             "OCR link prompt shown",
-            context: ["linkCount": "\(links.count)"],
+            context: ["linkCount": "\(links.count)"]
         )
     }
 
@@ -158,7 +158,7 @@ private struct OCRLinkPromptView: View {
 
     var body: some View {
         let usesSolidFallback = FeedbackChromePolicy.usesSolidFallback(
-            reduceTransparency: reduceTransparency,
+            reduceTransparency: reduceTransparency
         )
         let textColor = feedbackStyle.textColor(usesSolidFallback: usesSolidFallback)
 
@@ -178,7 +178,7 @@ private struct OCRLinkPromptView: View {
                         OCRLinkRowButton(
                             link: link,
                             feedbackStyle: feedbackStyle,
-                            usesSolidFallback: usesSolidFallback,
+                            usesSolidFallback: usesSolidFallback
                         ) {
                             onOpen(link)
                         }
@@ -236,13 +236,13 @@ private struct OCRLinkRowButton: View {
             .foregroundColor(
                 isHovering
                     ? accentColor
-                    : Color(nsColor: textColor).opacity(0.85),
+                    : Color(nsColor: textColor).opacity(0.85)
             )
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
             .background(
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .fill(Color(nsColor: textColor).opacity(isHovering ? 0.14 : 0.07)),
+                    .fill(Color(nsColor: textColor).opacity(isHovering ? 0.14 : 0.07))
             )
             .contentShape(Rectangle())
         }

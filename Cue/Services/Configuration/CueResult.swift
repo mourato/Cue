@@ -50,7 +50,7 @@ struct CueConfigurationSyncResult: Sendable {
         status: CueConfigurationSyncStatus,
         fileURL: URL,
         observedFileSignature: String? = nil,
-        exportedSettingsSignature: String? = nil,
+        exportedSettingsSignature: String? = nil
     ) {
         self.status = status
         self.fileURL = fileURL

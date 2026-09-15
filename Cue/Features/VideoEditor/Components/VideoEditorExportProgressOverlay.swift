@@ -58,16 +58,16 @@
                                             LinearGradient(
                                                 colors: [feedbackStyle.iconColor, ZoomColors.primaryDark],
                                                 startPoint: .leading,
-                                                endPoint: .trailing,
-                                            ),
+                                                endPoint: .trailing
+                                            )
                                         )
                                         .frame(
                                             width: max(0, geometry.size.width * CGFloat(state.exportProgress)),
-                                            height: 8,
+                                            height: 8
                                         )
                                         .animation(
                                             reduceMotion ? nil : .easeInOut(duration: 0.2),
-                                            value: state.exportProgress,
+                                            value: state.exportProgress
                                         )
                                 }
                             }
@@ -110,7 +110,7 @@
                 state.exportProgress = 0.65
                 state.exportStatusMessage = "Processing zoom effects..."
                 return state
-            }(),
+            }()
         )
     }
 #endif

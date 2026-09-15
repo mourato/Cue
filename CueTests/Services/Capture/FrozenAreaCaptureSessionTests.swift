@@ -20,12 +20,12 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
         height: Int = 200,
         scaleFactor: CGFloat = 2.0,
         screenOriginX: CGFloat = 0,
-        screenOriginY: CGFloat = 0,
+        screenOriginY: CGFloat = 0
     ) -> FrozenAreaCaptureSession? {
         guard let image = TestImageFactory.solidColor(
             width: Int(CGFloat(width) * scaleFactor),
             height: Int(CGFloat(height) * scaleFactor),
-            red: 100, green: 150, blue: 200,
+            red: 100, green: 150, blue: 200
         ) else {
             return nil
         }
@@ -36,11 +36,11 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
                 x: screenOriginX,
                 y: screenOriginY,
                 width: CGFloat(width),
-                height: CGFloat(height),
+                height: CGFloat(height)
             ),
             scaleFactor: scaleFactor,
             colorSpaceName: nil,
-            image: image,
+            image: image
         )
 
         return FrozenAreaCaptureSession.fromSnapshot(snapshot)
@@ -49,12 +49,12 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
     /// Create an AreaSelectionResult for testing.
     private func makeSelection(
         rect: CGRect,
-        displayID: CGDirectDisplayID = 1,
+        displayID: CGDirectDisplayID = 1
     ) -> AreaSelectionResult {
         AreaSelectionResult(
             target: .rect(rect),
             displayID: displayID,
-            mode: .screenshot,
+            mode: .screenshot
         )
     }
 
@@ -68,7 +68,7 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
         screenOriginY: CGFloat = 0,
         red: UInt8 = 80,
         green: UInt8 = 120,
-        blue: UInt8 = 180,
+        blue: UInt8 = 180
     ) -> FrozenDisplaySnapshot? {
         let bitmapScaleFactor = imageScaleFactor ?? scaleFactor
         guard let image = TestImageFactory.solidColor(
@@ -76,7 +76,7 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
             height: Int(CGFloat(height) * bitmapScaleFactor),
             red: red,
             green: green,
-            blue: blue,
+            blue: blue
         ) else {
             return nil
         }
@@ -87,11 +87,11 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
                 x: screenOriginX,
                 y: screenOriginY,
                 width: CGFloat(width),
-                height: CGFloat(height),
+                height: CGFloat(height)
             ),
             scaleFactor: scaleFactor,
             colorSpaceName: nil,
-            image: image,
+            image: image
         )
     }
 
@@ -103,13 +103,13 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
         screenOriginX: CGFloat = 0,
         screenOriginY: CGFloat = 0,
         topGray: UInt8 = 20,
-        bottomGray: UInt8 = 220,
+        bottomGray: UInt8 = 220
     ) -> FrozenDisplaySnapshot? {
         guard let image = TestImageFactory.verticalGradient(
             width: Int(CGFloat(width) * scaleFactor),
             height: Int(CGFloat(height) * scaleFactor),
             topGray: topGray,
-            bottomGray: bottomGray,
+            bottomGray: bottomGray
         ) else {
             return nil
         }
@@ -120,11 +120,11 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
                 x: screenOriginX,
                 y: screenOriginY,
                 width: CGFloat(width),
-                height: CGFloat(height),
+                height: CGFloat(height)
             ),
             scaleFactor: scaleFactor,
             colorSpaceName: nil,
-            image: image,
+            image: image
         )
     }
 
@@ -135,12 +135,12 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
         scaleFactor: CGFloat = 1.0,
         screenOriginX: CGFloat = 0,
         screenOriginY: CGFloat = 0,
-        edgeX: Int? = nil,
+        edgeX: Int? = nil
     ) -> FrozenDisplaySnapshot? {
         guard let image = TestImageFactory.verticalEdge(
             width: Int(CGFloat(width) * scaleFactor),
             height: Int(CGFloat(height) * scaleFactor),
-            edgeX: edgeX,
+            edgeX: edgeX
         ) else {
             return nil
         }
@@ -151,11 +151,11 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
                 x: screenOriginX,
                 y: screenOriginY,
                 width: CGFloat(width),
-                height: CGFloat(height),
+                height: CGFloat(height)
             ),
             scaleFactor: scaleFactor,
             colorSpaceName: nil,
-            image: image,
+            image: image
         )
     }
 
@@ -174,7 +174,7 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
                 bitsPerComponent: 8,
                 bytesPerRow: image.width * 4,
                 space: CGColorSpaceCreateDeviceRGB(),
-                bitmapInfo: rgbaBitmapInfo.rawValue,
+                bitmapInfo: rgbaBitmapInfo.rawValue
             ))
             context.interpolationQuality = .none
             context.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
@@ -317,7 +317,7 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
             height: 100,
             scaleFactor: 1.0,
             imageScaleFactor: 1.5,
-            screenOriginX: 400,
+            screenOriginX: 400
         ) else {
             XCTFail("Failed to create display snapshot")
             return
@@ -326,7 +326,7 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
         let session = FrozenAreaCaptureSession.fromSnapshot(snapshot)
         let selection = makeSelection(
             rect: CGRect(x: 410, y: 10, width: 40, height: 20),
-            displayID: 2,
+            displayID: 2
         )
 
         let result = try session.cropImage(for: selection)
@@ -347,7 +347,7 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
         let selection = makeSelection(rect: CGRect(x: 10, y: 10, width: 40, height: 20))
         let result = try session.cropImage(
             for: selection,
-            minimumOutputScaleFactor: 2.0,
+            minimumOutputScaleFactor: 2.0
         )
 
         XCTAssertEqual(result.scaleFactor, 2.0)
@@ -366,7 +366,7 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
         let selection = makeSelection(rect: CGRect(x: 10, y: 10, width: 40, height: 20))
         let result = try session.cropImage(
             for: selection,
-            minimumOutputScaleFactor: 2.0,
+            minimumOutputScaleFactor: 2.0
         )
 
         XCTAssertEqual(result.scaleFactor, 2.0)
@@ -383,7 +383,7 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
             logicalSize: logicalSize,
             sourceScaleFactor: 1.0,
             minimumOutputScaleFactor: 2.0,
-            colorSpaceName: nil,
+            colorSpaceName: nil
         )
 
         XCTAssertEqual(result.scaleFactor, 2.0)
@@ -442,7 +442,7 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
             width: 200,
             height: 100,
             scaleFactor: 1.0,
-            imageScaleFactor: 1.5,
+            imageScaleFactor: 1.5
         ) else {
             XCTFail("Failed to create display snapshot")
             return
@@ -458,7 +458,8 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
 
     func testAddSnapshot_addsBackdropAndDisplayID() {
         guard let session = makeSession(displayID: 1),
-              let secondSnapshot = makeSnapshot(displayID: 2, screenOriginX: 300) else {
+              let secondSnapshot = makeSnapshot(displayID: 2, screenOriginX: 300)
+        else {
             XCTFail("Failed to create test session")
             return
         }
@@ -474,7 +475,8 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
 
     func testFromSnapshots_buildsSessionWithEverySnapshot() {
         guard let firstSnapshot = makeSnapshot(displayID: 1),
-              let secondSnapshot = makeSnapshot(displayID: 2, screenOriginX: 200) else {
+              let secondSnapshot = makeSnapshot(displayID: 2, screenOriginX: 200)
+        else {
             XCTFail("Failed to create snapshots")
             return
         }
@@ -494,8 +496,9 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
                   height: 90,
                   scaleFactor: 2.0,
                   screenOriginX: 300,
-                  screenOriginY: -100,
-              ) else {
+                  screenOriginY: -100
+              )
+        else {
             XCTFail("Failed to create test session")
             return
         }
@@ -503,7 +506,7 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
         session.addSnapshot(secondSnapshot)
         let selection = makeSelection(
             rect: CGRect(x: 310, y: -90, width: 40, height: 30),
-            displayID: 2,
+            displayID: 2
         )
 
         let result = try session.cropImage(for: selection)
@@ -521,8 +524,9 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
                   height: 200,
                   scaleFactor: 2.0,
                   screenOriginX: 200,
-                  screenOriginY: 0,
-              ) else {
+                  screenOriginY: 0
+              )
+        else {
             XCTFail("Failed to create test session")
             return
         }
@@ -532,7 +536,7 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
             target: .rect(CGRect(x: 150, y: 50, width: 100, height: 60)),
             displayID: 1,
             mode: .screenshot,
-            displayIDs: [1, 2],
+            displayIDs: [1, 2]
         )
 
         let result = try session.cropCompositeImage(for: selection)
@@ -550,8 +554,9 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
                   height: 200,
                   scaleFactor: 2.0,
                   screenOriginX: 200,
-                  screenOriginY: 0,
-              ) else {
+                  screenOriginY: 0
+              )
+        else {
             XCTFail("Failed to create test session")
             return
         }
@@ -561,7 +566,7 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
             target: .rect(CGRect(x: 150.2, y: 20.3, width: 99.2, height: 40.2)),
             displayID: 1,
             mode: .screenshot,
-            displayIDs: [1, 2],
+            displayIDs: [1, 2]
         )
 
         let result = try session.cropCompositeImage(for: selection)
@@ -585,8 +590,9 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
                   height: 100,
                   scaleFactor: 1.0,
                   imageScaleFactor: 1.5,
-                  screenOriginX: 200,
-              ) else {
+                  screenOriginX: 200
+              )
+        else {
             XCTFail("Failed to create display snapshots")
             return
         }
@@ -596,7 +602,7 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
             target: .rect(CGRect(x: 210, y: 10, width: 40, height: 20)),
             displayID: 2,
             mode: .screenshot,
-            displayIDs: [2],
+            displayIDs: [2]
         )
 
         let result = try session.cropCompositeImage(for: selection)
@@ -615,8 +621,9 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
                   width: 200,
                   height: 100,
                   scaleFactor: 1.0,
-                  screenOriginX: 200,
-              ) else {
+                  screenOriginX: 200
+              )
+        else {
             XCTFail("Failed to create display snapshots")
             return
         }
@@ -626,12 +633,12 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
             target: .rect(CGRect(x: 210, y: 10, width: 40, height: 20)),
             displayID: 2,
             mode: .screenshot,
-            displayIDs: [2],
+            displayIDs: [2]
         )
 
         let result = try session.cropCompositeImage(
             for: selection,
-            minimumOutputScaleFactor: 2.0,
+            minimumOutputScaleFactor: 2.0
         )
 
         XCTAssertEqual(result.scaleFactor, 2.0)
@@ -647,7 +654,7 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
             width: 100,
             height: 40,
             scaleFactor: 2.0,
-            screenOriginX: 0,
+            screenOriginX: 0
         ),
             let lowDensitySnapshot = makeVerticalEdgeSnapshot(
                 displayID: 2,
@@ -655,8 +662,9 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
                 height: 40,
                 scaleFactor: 1.0,
                 screenOriginX: 100,
-                edgeX: 50,
-            ) else {
+                edgeX: 50
+            )
+        else {
             XCTFail("Failed to create display snapshots")
             return
         }
@@ -666,31 +674,31 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
             target: .rect(CGRect(x: 90, y: 0, width: 70, height: 20)),
             displayID: 1,
             mode: .screenshot,
-            displayIDs: [1, 2],
+            displayIDs: [1, 2]
         )
 
         let result = try session.cropCompositeImage(
             for: selection,
-            minimumOutputScaleFactor: 2.0,
+            minimumOutputScaleFactor: 2.0
         )
         let lowDensitySourceCrop = try XCTUnwrap(lowDensitySnapshot.image.cropping(to: CGRect(
             x: 0,
             y: 20,
             width: 60,
-            height: 20,
+            height: 20
         )))
         let expectedLowDensitySlice = FrozenAreaCaptureSession.imageByPromotingScaleIfNeeded(
             lowDensitySourceCrop,
             logicalSize: CGSize(width: 60, height: 20),
             sourceScaleFactor: 1.0,
             minimumOutputScaleFactor: 2.0,
-            colorSpaceName: nil,
+            colorSpaceName: nil
         ).image
         let actualLowDensitySlice = try XCTUnwrap(result.image.cropping(to: CGRect(
             x: 20,
             y: 0,
             width: 120,
-            height: 40,
+            height: 40
         )))
 
         XCTAssertEqual(result.scaleFactor, 2.0)
@@ -701,7 +709,8 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
 
     func testCropCompositeImage_preservesVerticalScreenOrientation() throws {
         guard let firstSnapshot = makeGradientSnapshot(displayID: 1),
-              let secondSnapshot = makeGradientSnapshot(displayID: 2, screenOriginX: 100) else {
+              let secondSnapshot = makeGradientSnapshot(displayID: 2, screenOriginX: 100)
+        else {
             XCTFail("Failed to create gradient snapshots")
             return
         }
@@ -712,7 +721,7 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
             target: .rect(CGRect(x: 75, y: 25, width: 50, height: 50)),
             displayID: 1,
             mode: .screenshot,
-            displayIDs: [1, 2],
+            displayIDs: [1, 2]
         )
 
         let result = try session.cropCompositeImage(for: selection)
@@ -731,7 +740,7 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
             screenOriginY: 0,
             red: 10,
             green: 20,
-            blue: 220,
+            blue: 220
         ),
             let topSnapshot = makeSnapshot(
                 displayID: 2,
@@ -741,8 +750,9 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
                 screenOriginY: 100,
                 red: 240,
                 green: 40,
-                blue: 40,
-            ) else {
+                blue: 40
+            )
+        else {
             XCTFail("Failed to create stacked display snapshots")
             return
         }
@@ -753,7 +763,7 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
             target: .rect(CGRect(x: 0, y: 50, width: 100, height: 100)),
             displayID: 2,
             mode: .screenshot,
-            displayIDs: [1, 2],
+            displayIDs: [1, 2]
         )
 
         let result = try session.cropCompositeImage(for: selection)
@@ -765,7 +775,8 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
 
     func testMissingSnapshotDisplayIDs_returnsOnlyMissingDisplays() {
         guard let session = makeSession(displayID: 1),
-              let secondSnapshot = makeSnapshot(displayID: 2, screenOriginX: 200) else {
+              let secondSnapshot = makeSnapshot(displayID: 2, screenOriginX: 200)
+        else {
             XCTFail("Failed to create test session")
             return
         }
@@ -777,7 +788,8 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
 
     func testInvalidate_afterAddingSnapshot_clearsAllSnapshots() {
         guard let session = makeSession(displayID: 1),
-              let secondSnapshot = makeSnapshot(displayID: 2, screenOriginX: 300) else {
+              let secondSnapshot = makeSnapshot(displayID: 2, screenOriginX: 300)
+        else {
             XCTFail("Failed to create test session")
             return
         }
@@ -800,7 +812,7 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
             height: 100,
             scaleFactor: 2.0,
             screenOriginX: 1920,
-            screenOriginY: 0,
+            screenOriginY: 0
         ) else {
             XCTFail("Failed to create test session")
             return
@@ -809,7 +821,7 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
         // Selection in global coordinates on the second display
         let selection = makeSelection(
             rect: CGRect(x: 1930, y: 10, width: 50, height: 50),
-            displayID: 2,
+            displayID: 2
         )
         let result = try session.cropImage(for: selection)
 
@@ -831,12 +843,12 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
             bitsPerComponent: 8,
             bytesPerRow: 4,
             space: CGColorSpaceCreateDeviceRGB(),
-            bitmapInfo: bitmapInfo,
+            bitmapInfo: bitmapInfo
         ) else { return nil }
         // Draw the image's top-left region into the 1x1 context.
         ctx.draw(
             image,
-            in: CGRect(x: 0, y: 1 - CGFloat(image.height), width: CGFloat(image.width), height: CGFloat(image.height)),
+            in: CGRect(x: 0, y: 1 - CGFloat(image.height), width: CGFloat(image.width), height: CGFloat(image.height))
         )
         return (pixel[0], pixel[1], pixel[2])
     }
@@ -852,11 +864,13 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
             screenFrame: CGRect(x: 0, y: 0, width: 200, height: 200),
             scaleFactor: 2.0,
             colorSpaceName: nil,
-            image: redImage,
+            image: redImage
         )
         let session = FrozenAreaCaptureSession.fromSnapshot(redSnapshot)
-        XCTAssertTrue((session.backdrop(for: 1)?.image as AnyObject) === (redImage as AnyObject),
-                      "Initial backdrop must reference the red snapshot image")
+        XCTAssertTrue(
+            (session.backdrop(for: 1)?.image as AnyObject) === (redImage as AnyObject),
+            "Initial backdrop must reference the red snapshot image"
+        )
 
         // WHEN: a transition re-freeze replaces display 1 with a BLUE snapshot (same display).
         guard let blueImage = TestImageFactory.solidColor(width: 400, height: 400, red: 0, green: 0, blue: 255) else {
@@ -868,13 +882,15 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
             screenFrame: CGRect(x: 0, y: 0, width: 200, height: 200),
             scaleFactor: 2.0,
             colorSpaceName: nil,
-            image: blueImage,
+            image: blueImage
         )
         session.addSnapshot(blueSnapshot)
 
         // THEN: the visible backdrop now references the blue image (preview reflects new state)...
-        XCTAssertTrue((session.backdrop(for: 1)?.image as AnyObject) === (blueImage as AnyObject),
-                      "After re-freeze, backdrop must reference the new blue snapshot image")
+        XCTAssertTrue(
+            (session.backdrop(for: 1)?.image as AnyObject) === (blueImage as AnyObject),
+            "After re-freeze, backdrop must reference the new blue snapshot image"
+        )
 
         // ...and the FINAL crop source samples blue, not the stale red (capture reflects new state).
         let selection = makeSelection(rect: CGRect(x: 10, y: 10, width: 50, height: 50), displayID: 1)
@@ -890,7 +906,8 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
     func testAddSnapshot_doesNotAffectOtherDisplays() {
         // GIVEN: two displays with distinct snapshots.
         guard let redImage = TestImageFactory.solidColor(width: 200, height: 200, red: 255, green: 0, blue: 0),
-              let greenImage = TestImageFactory.solidColor(width: 200, height: 200, red: 0, green: 255, blue: 0) else {
+              let greenImage = TestImageFactory.solidColor(width: 200, height: 200, red: 0, green: 255, blue: 0)
+        else {
             XCTFail("Failed to create images")
             return
         }
@@ -900,15 +917,15 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
                 screenFrame: CGRect(x: 0, y: 0, width: 200, height: 200),
                 scaleFactor: 1.0,
                 colorSpaceName: nil,
-                image: redImage,
+                image: redImage
             ),
             FrozenDisplaySnapshot(
                 displayID: 2,
                 screenFrame: CGRect(x: 200, y: 0, width: 200, height: 200),
                 scaleFactor: 1.0,
                 colorSpaceName: nil,
-                image: greenImage,
-            ),
+                image: greenImage
+            )
         ])
 
         // WHEN: re-freezing only display 1.
@@ -921,13 +938,17 @@ final class FrozenAreaCaptureSessionTests: XCTestCase {
             screenFrame: CGRect(x: 0, y: 0, width: 200, height: 200),
             scaleFactor: 1.0,
             colorSpaceName: nil,
-            image: blueImage,
+            image: blueImage
         ))
 
         // THEN: display 2 is untouched.
-        XCTAssertTrue((session.backdrop(for: 2)?.image as AnyObject) === (greenImage as AnyObject),
-                      "Re-freezing display 1 must not affect display 2's snapshot")
-        XCTAssertTrue((session.backdrop(for: 1)?.image as AnyObject) === (blueImage as AnyObject),
-                      "Display 1 must reflect the re-frozen blue snapshot")
+        XCTAssertTrue(
+            (session.backdrop(for: 2)?.image as AnyObject) === (greenImage as AnyObject),
+            "Re-freezing display 1 must not affect display 2's snapshot"
+        )
+        XCTAssertTrue(
+            (session.backdrop(for: 1)?.image as AnyObject) === (blueImage as AnyObject),
+            "Display 1 must reflect the re-frozen blue snapshot"
+        )
     }
 }

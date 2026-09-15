@@ -28,11 +28,11 @@
             sourceURL: URL,
             targetSize: CGSize,
             outputURL: URL,
-            onProgress: @escaping (Double) -> Void,
+            onProgress: @escaping (Double) -> Void
         ) throws {
             let sourceAccess = SandboxFileAccessManager.shared.beginAccessingURL(sourceURL)
             let outputDirAccess = SandboxFileAccessManager.shared.beginAccessingURL(
-                outputURL.deletingLastPathComponent(),
+                outputURL.deletingLastPathComponent()
             )
             defer {
                 sourceAccess.stop()
@@ -60,7 +60,7 @@
             // Create output directory if needed
             try FileManager.default.createDirectory(
                 at: outputURL.deletingLastPathComponent(),
-                withIntermediateDirectories: true,
+                withIntermediateDirectories: true
             )
 
             // Create destination
@@ -68,7 +68,7 @@
                 outputURL as CFURL,
                 UTType.gif.identifier as CFString,
                 frameCount,
-                nil,
+                nil
             ) else {
                 throw GIFResizeError.cannotCreateDestination
             }
@@ -77,8 +77,8 @@
             let destGIFProperties: [String: Any] = [
                 kCGImagePropertyGIFDictionary as String: [
                     kCGImagePropertyGIFLoopCount as String: loopCount,
-                    kCGImagePropertyGIFHasGlobalColorMap as String: true,
-                ],
+                    kCGImagePropertyGIFHasGlobalColorMap as String: true
+                ]
             ]
             CGImageDestinationSetProperties(destination, destGIFProperties as CFDictionary)
 
@@ -108,7 +108,7 @@
                     bitsPerComponent: 8,
                     bytesPerRow: 0,
                     space: colorSpace,
-                    bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+                    bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
                 ) else {
                     continue
                 }
@@ -119,7 +119,7 @@
 
                 let fittedRect = VideoEditorExportLayout.aspectFitRect(
                     sourceSize: CGSize(width: sourceImage.width, height: sourceImage.height),
-                    in: CGSize(width: targetWidth, height: targetHeight),
+                    in: CGSize(width: targetWidth, height: targetHeight)
                 )
                 context.draw(sourceImage, in: fittedRect)
 
@@ -131,8 +131,8 @@
                 let outputFrameProperties: [String: Any] = [
                     kCGImagePropertyGIFDictionary as String: [
                         kCGImagePropertyGIFDelayTime as String: delayTime,
-                        kCGImagePropertyGIFUnclampedDelayTime as String: delayTime,
-                    ],
+                        kCGImagePropertyGIFUnclampedDelayTime as String: delayTime
+                    ]
                 ]
                 CGImageDestinationAddImage(destination, resizedImage, outputFrameProperties as CFDictionary)
 
@@ -152,7 +152,7 @@
             let fileSize = (try? FileManager.default.attributesOfItem(atPath: outputURL.path)[.size] as? Int) ?? 0
             let fileSizeMB = String(format: "%.1f", Double(fileSize) / 1_048_576.0)
             logger.info(
-                "GIF resized: \(outputURL.lastPathComponent) — \(frameCount) frames, \(targetWidth)×\(targetHeight), \(fileSizeMB)MB",
+                "GIF resized: \(outputURL.lastPathComponent) — \(frameCount) frames, \(targetWidth)×\(targetHeight), \(fileSizeMB)MB"
             )
         }
 
@@ -185,7 +185,7 @@
                 width: firstFrame.width,
                 height: firstFrame.height,
                 frameCount: frameCount,
-                duration: totalDuration,
+                duration: totalDuration
             )
         }
     }

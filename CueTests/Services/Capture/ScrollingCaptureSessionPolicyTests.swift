@@ -14,9 +14,9 @@ final class ScrollingCaptureSessionPolicyTests: XCTestCase {
             ScrollingCaptureSessionPolicy.scaledScrollDeltaY(
                 deltaX: 0,
                 deltaY: -12,
-                hasPreciseDeltas: true,
+                hasPreciseDeltas: true
             ),
-            -12,
+            -12
         )
     }
 
@@ -25,9 +25,9 @@ final class ScrollingCaptureSessionPolicyTests: XCTestCase {
             ScrollingCaptureSessionPolicy.scaledScrollDeltaY(
                 deltaX: 0,
                 deltaY: -1,
-                hasPreciseDeltas: false,
+                hasPreciseDeltas: false
             ),
-            -18,
+            -18
         )
     }
 
@@ -36,8 +36,8 @@ final class ScrollingCaptureSessionPolicyTests: XCTestCase {
             ScrollingCaptureSessionPolicy.scaledScrollDeltaY(
                 deltaX: 10,
                 deltaY: 4,
-                hasPreciseDeltas: true,
-            ),
+                hasPreciseDeltas: true
+            )
         )
     }
 
@@ -46,8 +46,8 @@ final class ScrollingCaptureSessionPolicyTests: XCTestCase {
             ScrollingCaptureSessionPolicy.scaledScrollDeltaY(
                 deltaX: 0,
                 deltaY: 0.4,
-                hasPreciseDeltas: true,
-            ),
+                hasPreciseDeltas: true
+            )
         )
     }
 
@@ -59,8 +59,8 @@ final class ScrollingCaptureSessionPolicyTests: XCTestCase {
                 activeScrollThreshold: 0.28,
                 timeSinceLastRefresh: 0.2,
                 minimumStreamingInterval: 0.15,
-                canStartRefresh: true,
-            ),
+                canStartRefresh: true
+            )
         )
     }
 
@@ -72,8 +72,8 @@ final class ScrollingCaptureSessionPolicyTests: XCTestCase {
                 activeScrollThreshold: 0.28,
                 timeSinceLastRefresh: 0.05,
                 minimumStreamingInterval: 0.15,
-                canStartRefresh: true,
-            ),
+                canStartRefresh: true
+            )
         )
     }
 }

@@ -23,19 +23,19 @@ enum QuickAccessPinWindowSizing {
         let sourceSize = CGSize(width: max(imageSize.width, 1), height: max(imageSize.height, 1))
         let maxSize = CGSize(
             width: min(absoluteMaxSize.width, visibleSize.width * screenMaxRatio),
-            height: min(absoluteMaxSize.height, visibleSize.height * screenMaxRatio),
+            height: min(absoluteMaxSize.height, visibleSize.height * screenMaxRatio)
         )
         let maxFitScale = min(maxSize.width / sourceSize.width, maxSize.height / sourceSize.height)
         let minFitScale = max(
             minimumInteractiveSize.width / sourceSize.width,
-            minimumInteractiveSize.height / sourceSize.height,
+            minimumInteractiveSize.height / sourceSize.height
         )
         let preferredScale = max(1, minFitScale)
         let normalizedScale = min(preferredScale, maxFitScale)
         let fittedSize = CGSize(width: sourceSize.width * normalizedScale, height: sourceSize.height * normalizedScale)
         let baseSize = CGSize(
             width: min(max(fittedSize.width, minimumInteractiveSize.width), maxSize.width),
-            height: min(max(fittedSize.height, minimumInteractiveSize.height), maxSize.height),
+            height: min(max(fittedSize.height, minimumInteractiveSize.height), maxSize.height)
         )
         return (baseSize, maxSize)
     }
@@ -46,7 +46,7 @@ enum QuickAccessPinWindowSizing {
             x: visibleFrame.midX - size.width / 2,
             y: visibleFrame.midY - size.height / 2,
             width: size.width,
-            height: size.height,
+            height: size.height
         )
     }
 
@@ -62,7 +62,7 @@ enum QuickAccessPinWindowSizing {
             x: min(max(frame.minX, bounds.minX), bounds.maxX - width),
             y: min(max(frame.minY, bounds.minY), bounds.maxY - height),
             width: width,
-            height: height,
+            height: height
         )
     }
 }

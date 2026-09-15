@@ -19,7 +19,7 @@ final class AnnotateBlurEffectRendererTests: XCTestCase {
             bitsPerComponent: 8,
             bytesPerRow: 0,
             space: CGColorSpaceCreateDeviceRGB(),
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
         )
     }
 
@@ -31,7 +31,7 @@ final class AnnotateBlurEffectRendererTests: XCTestCase {
         BlurEffectRenderer.drawBlurPreview(
             in: context,
             region: CGRect(x: 10, y: 10, width: 80, height: 80),
-            strokeColor: CGColor(red: 1, green: 0, blue: 0, alpha: 1),
+            strokeColor: CGColor(red: 1, green: 0, blue: 0, alpha: 1)
         )
     }
 
@@ -49,7 +49,7 @@ final class AnnotateBlurEffectRendererTests: XCTestCase {
             in: context,
             sourceImage: nsImage,
             region: CGRect(x: 10, y: 10, width: 80, height: 80),
-            pixelSize: 8,
+            pixelSize: 8
         )
     }
 
@@ -67,7 +67,7 @@ final class AnnotateBlurEffectRendererTests: XCTestCase {
             in: context,
             sourceImage: nsImage,
             region: CGRect(x: 0, y: 0, width: 0, height: 0),
-            pixelSize: 8,
+            pixelSize: 8
         )
     }
 
@@ -85,7 +85,7 @@ final class AnnotateBlurEffectRendererTests: XCTestCase {
             in: context,
             sourceImage: nsImage,
             region: CGRect(x: 10, y: 10, width: 80, height: 80),
-            radius: 10,
+            radius: 10
         )
     }
 
@@ -103,7 +103,7 @@ final class AnnotateBlurEffectRendererTests: XCTestCase {
             in: context,
             sourceImage: nsImage,
             region: CGRect(x: 10, y: 10, width: 80, height: 80),
-            scale: 8,
+            scale: 8
         )
     }
 
@@ -121,7 +121,7 @@ final class AnnotateBlurEffectRendererTests: XCTestCase {
             in: context,
             sourceImage: nsImage,
             region: CGRect(x: 10, y: 10, width: 80, height: 80),
-            radius: 8,
+            radius: 8
         )
     }
 
@@ -139,7 +139,7 @@ final class AnnotateBlurEffectRendererTests: XCTestCase {
             in: context,
             sourceImage: nsImage,
             region: CGRect(x: 10, y: 10, width: 80, height: 80),
-            radius: 8,
+            radius: 8
         )
     }
 
@@ -157,7 +157,7 @@ final class AnnotateBlurEffectRendererTests: XCTestCase {
             in: context,
             sourceImage: nsImage,
             region: CGRect(x: 10, y: 10, width: 80, height: 80),
-            width: 8,
+            width: 8
         )
     }
 
@@ -169,7 +169,7 @@ final class AnnotateBlurEffectRendererTests: XCTestCase {
         BlurEffectRenderer.drawTapeRegion(
             in: context,
             region: CGRect(x: 10, y: 10, width: 80, height: 80),
-            patternSpacing: 10,
+            patternSpacing: 10
         )
 
         guard let cgImage = TestImageFactory.solidColor(width: 100, height: 100) else {
@@ -181,7 +181,7 @@ final class AnnotateBlurEffectRendererTests: XCTestCase {
             in: context,
             sourceImage: nsImage,
             region: CGRect(x: 10, y: 10, width: 80, height: 80),
-            patternSpacing: 10.0,
+            patternSpacing: 10.0
         )
 
         BlurEffectRenderer.drawTapeRegion(
@@ -190,7 +190,7 @@ final class AnnotateBlurEffectRendererTests: XCTestCase {
             sourceSize: CGSize(width: 100, height: 100),
             sourceRegion: CGRect(x: 10, y: 10, width: 80, height: 80),
             destRegion: CGRect(x: 10, y: 10, width: 80, height: 80),
-            patternSpacing: 10.0,
+            patternSpacing: 10.0
         )
     }
 
@@ -202,7 +202,7 @@ final class AnnotateBlurEffectRendererTests: XCTestCase {
         BlurEffectRenderer.drawWashiRegion(
             in: context,
             region: CGRect(x: 10, y: 10, width: 80, height: 80),
-            patternSpacing: 10,
+            patternSpacing: 10
         )
 
         guard let cgImage = TestImageFactory.solidColor(width: 100, height: 100) else {
@@ -214,7 +214,7 @@ final class AnnotateBlurEffectRendererTests: XCTestCase {
             in: context,
             sourceImage: nsImage,
             region: CGRect(x: 10, y: 10, width: 80, height: 80),
-            patternSpacing: 10.0,
+            patternSpacing: 10.0
         )
 
         BlurEffectRenderer.drawWashiRegion(
@@ -223,7 +223,7 @@ final class AnnotateBlurEffectRendererTests: XCTestCase {
             sourceSize: CGSize(width: 100, height: 100),
             sourceRegion: CGRect(x: 10, y: 10, width: 80, height: 80),
             destRegion: CGRect(x: 10, y: 10, width: 80, height: 80),
-            patternSpacing: 10.0,
+            patternSpacing: 10.0
         )
     }
 

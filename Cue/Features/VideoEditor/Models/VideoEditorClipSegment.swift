@@ -22,7 +22,7 @@
             id: UUID = UUID(),
             sourceStart: TimeInterval,
             sourceEnd: TimeInterval,
-            speed: Double = 1,
+            speed: Double = 1
         ) {
             self.id = id
             self.sourceStart = sourceStart

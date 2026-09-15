@@ -6,7 +6,7 @@ enum CombineSnapping {
         draggedBounds: CGRect,
         candidateBounds: [CGRect],
         gap: CGFloat,
-        tolerance: CGFloat,
+        tolerance: CGFloat
     ) -> CGRect? {
         var best: (bounds: CGRect, distance: CGFloat)?
         let safeGap = max(0, gap)
@@ -14,11 +14,11 @@ enum CombineSnapping {
         for candidate in candidateBounds {
             let xTargets = [
                 candidate.minX - safeGap - draggedBounds.width,
-                candidate.maxX + safeGap,
+                candidate.maxX + safeGap
             ]
             let yTargets = [
                 candidate.minY - safeGap - draggedBounds.height,
-                candidate.maxY + safeGap,
+                candidate.maxY + safeGap
             ]
 
             for x in xTargets {
@@ -29,13 +29,13 @@ enum CombineSnapping {
                     currentMax: draggedBounds.maxY,
                     candidateMin: candidate.minY,
                     candidateMax: candidate.maxY,
-                    tolerance: tolerance,
+                    tolerance: tolerance
                 ) ?? draggedBounds.minY
                 let bounds = CGRect(
                     x: x.rounded(),
                     y: alignedY.rounded(),
                     width: draggedBounds.width,
-                    height: draggedBounds.height,
+                    height: draggedBounds.height
                 )
                 if best == nil || distance < best!.distance {
                     best = (bounds, distance)
@@ -50,13 +50,13 @@ enum CombineSnapping {
                     currentMax: draggedBounds.maxX,
                     candidateMin: candidate.minX,
                     candidateMax: candidate.maxX,
-                    tolerance: tolerance,
+                    tolerance: tolerance
                 ) ?? draggedBounds.minX
                 let bounds = CGRect(
                     x: alignedX.rounded(),
                     y: y.rounded(),
                     width: draggedBounds.width,
-                    height: draggedBounds.height,
+                    height: draggedBounds.height
                 )
                 if best == nil || distance < best!.distance {
                     best = (bounds, distance)
@@ -71,11 +71,11 @@ enum CombineSnapping {
         currentMax: CGFloat,
         candidateMin: CGFloat,
         candidateMax: CGFloat,
-        tolerance: CGFloat,
+        tolerance: CGFloat
     ) -> CGFloat? {
         let options = [
             (candidateMin, abs(currentMin - candidateMin)),
-            (candidateMax - (currentMax - currentMin), abs(currentMax - candidateMax)),
+            (candidateMax - (currentMax - currentMin), abs(currentMax - candidateMax))
         ]
         return options.min(by: { $0.1 < $1.1 }).flatMap { $0.1 <= tolerance ? $0.0 : nil }
     }

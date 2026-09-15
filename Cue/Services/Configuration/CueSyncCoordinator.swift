@@ -52,7 +52,7 @@ final class CueConfigurationSyncCoordinator: ObservableObject {
     init(
         service: CueConfigurationService,
         notificationCenter: NotificationCenter = .default,
-        debounceInterval: TimeInterval = 1.2,
+        debounceInterval: TimeInterval = 1.2
     ) {
         self.notificationCenter = notificationCenter
         self.debounceInterval = debounceInterval
@@ -65,7 +65,7 @@ final class CueConfigurationSyncCoordinator: ObservableObject {
         syncCurrentSettings = { url, expectedFileSignature in
             try service.syncManagedConfigToCurrentSettingsIfUnchanged(
                 at: url,
-                expectedFileSignature: expectedFileSignature,
+                expectedFileSignature: expectedFileSignature
             )
         }
         currentSettingsSignature = {
@@ -75,12 +75,12 @@ final class CueConfigurationSyncCoordinator: ObservableObject {
 
     convenience init(
         notificationCenter: NotificationCenter = .default,
-        debounceInterval: TimeInterval = 1.2,
+        debounceInterval: TimeInterval = 1.2
     ) {
         self.init(
             service: CueConfigurationService.shared,
             notificationCenter: notificationCenter,
-            debounceInterval: debounceInterval,
+            debounceInterval: debounceInterval
         )
     }
 
@@ -90,7 +90,7 @@ final class CueConfigurationSyncCoordinator: ObservableObject {
         syncManagedConfigIfSafe: @escaping @MainActor () throws -> CueConfigurationSyncResult,
         syncManagedConfigIfSafeInBackground: (@MainActor () async throws -> CueConfigurationSyncResult)? = nil,
         syncCurrentSettingsAfterConfirmation: @escaping @MainActor (URL?, String?) throws -> URL,
-        currentSettingsSignature: @escaping @MainActor () -> String = { "" },
+        currentSettingsSignature: @escaping @MainActor () -> String = { "" }
     ) {
         self.notificationCenter = notificationCenter
         self.debounceInterval = debounceInterval
@@ -112,7 +112,7 @@ final class CueConfigurationSyncCoordinator: ObservableObject {
         defaultsObserver = notificationCenter.addObserver(
             forName: UserDefaults.didChangeNotification,
             object: nil,
-            queue: .main,
+            queue: .main
         ) { [weak self] _ in
             Task { [weak self] in
                 await self?.scheduleSyncFromDefaultsChange()
@@ -139,7 +139,8 @@ final class CueConfigurationSyncCoordinator: ObservableObject {
         guard isStarted else { return }
         if reason == .defaultsChanged,
            let lastAttemptedSettingsSignature,
-           currentSettingsSignature() == lastAttemptedSettingsSignature {
+           currentSettingsSignature() == lastAttemptedSettingsSignature
+        {
             return
         }
 
@@ -161,7 +162,7 @@ final class CueConfigurationSyncCoordinator: ObservableObject {
                 DiagnosticLogger.shared.logError(
                     .preferences,
                     error,
-                    "TOML configuration background sync failed",
+                    "TOML configuration background sync failed"
                 )
             }
         }
@@ -223,7 +224,7 @@ final class CueConfigurationSyncCoordinator: ObservableObject {
     @discardableResult
     func syncCurrentSettingsAfterConfirmation(
         at url: URL? = nil,
-        expectedFileSignature: String? = nil,
+        expectedFileSignature: String? = nil
     ) throws -> URL {
         cancelPendingSync()
         let sequence = beginSync()
@@ -238,7 +239,7 @@ final class CueConfigurationSyncCoordinator: ObservableObject {
             let result = CueConfigurationSyncResult(
                 status: .synced,
                 fileURL: fileURL,
-                exportedSettingsSignature: settingsSignature,
+                exportedSettingsSignature: settingsSignature
             )
             syncResult = result
             lastAttemptedSettingsSignature = settingsSignature
@@ -247,7 +248,7 @@ final class CueConfigurationSyncCoordinator: ObservableObject {
                 .info,
                 .preferences,
                 "TOML configuration sync confirmed",
-                context: ["file": fileURL.path],
+                context: ["file": fileURL.path]
             )
             return fileURL
         } catch {
@@ -314,8 +315,8 @@ final class CueConfigurationSyncCoordinator: ObservableObject {
             context: [
                 "reason": reason.rawValue,
                 "status": "\(result.status)",
-                "file": result.fileURL.path,
-            ],
+                "file": result.fileURL.path
+            ]
         )
     }
 }

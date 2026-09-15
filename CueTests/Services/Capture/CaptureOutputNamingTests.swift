@@ -36,7 +36,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: "My Screenshot",
             kind: .screenshot,
             date: fixedDate,
-            defaults: defaults,
+            defaults: defaults
         )
         XCTAssertEqual(result, "My Screenshot")
     }
@@ -48,7 +48,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: "My Screenshot",
             kind: .screenshot,
             defaults: defaults,
-            scaleFactor: 2,
+            scaleFactor: 2
         )
 
         XCTAssertEqual(result, "My Screenshot@2x")
@@ -59,7 +59,7 @@ final class CaptureOutputNamingTests: XCTestCase {
 
         let result = CaptureOutputNaming.makeRenamedFileURL(
             for: sourceURL,
-            requestedName: "  Design: handoff.png  ",
+            requestedName: "  Design: handoff.png  "
         )
 
         XCTAssertEqual(result?.lastPathComponent, "Design_ handoff.png")
@@ -70,7 +70,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: nil,
             kind: .screenshot,
             date: fixedDate,
-            defaults: defaults,
+            defaults: defaults
         )
         // Default template: "Cue_{datetime}_{ms}"
         XCTAssertTrue(result.hasPrefix("Cue_"), "Expected template-based name, got: \(result)")
@@ -82,7 +82,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: "",
             kind: .screenshot,
             date: fixedDate,
-            defaults: defaults,
+            defaults: defaults
         )
         XCTAssertTrue(result.hasPrefix("Cue_"), "Expected template-based name, got: \(result)")
     }
@@ -92,7 +92,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: "   ",
             kind: .screenshot,
             date: fixedDate,
-            defaults: defaults,
+            defaults: defaults
         )
         XCTAssertTrue(result.hasPrefix("Cue_"))
     }
@@ -106,7 +106,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: nil,
             kind: .screenshot,
             date: fixedDate,
-            defaults: defaults,
+            defaults: defaults
         )
         XCTAssertEqual(result, "screenshot_capture")
     }
@@ -118,7 +118,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: nil,
             kind: .recording,
             date: fixedDate,
-            defaults: defaults,
+            defaults: defaults
         )
         XCTAssertEqual(result, "recording_file")
     }
@@ -130,7 +130,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: nil,
             kind: .screenshot,
             date: fixedDate,
-            defaults: defaults,
+            defaults: defaults
         )
 
         // datetime format: yyyy-MM-dd_HH-mm-ss
@@ -138,7 +138,7 @@ final class CaptureOutputNamingTests: XCTestCase {
         let datePattern = #"\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}"#
         XCTAssertNotNil(
             result.range(of: datePattern, options: .regularExpression),
-            "Expected datetime pattern in: \(result)",
+            "Expected datetime pattern in: \(result)"
         )
     }
 
@@ -149,14 +149,14 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: nil,
             kind: .screenshot,
             date: fixedDate,
-            defaults: defaults,
+            defaults: defaults
         )
 
         // ms token should be 3 digits
         let msPattern = #"file_\d{3}"#
         XCTAssertNotNil(
             result.range(of: msPattern, options: .regularExpression),
-            "Expected ms pattern in: \(result)",
+            "Expected ms pattern in: \(result)"
         )
     }
 
@@ -167,7 +167,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: nil,
             kind: .screenshot,
             date: fixedDate,
-            defaults: defaults,
+            defaults: defaults
         )
 
         let expected = "ts_\(Int(fixedDate.timeIntervalSince1970))"
@@ -184,14 +184,14 @@ final class CaptureOutputNamingTests: XCTestCase {
             day: 15,
             hour: 14,
             minute: 30,
-            second: 45,
+            second: 45
         )))
 
         let result = CaptureOutputNaming.resolveBaseName(
             customName: nil,
             kind: .screenshot,
             date: localDate,
-            defaults: defaults,
+            defaults: defaults
         )
 
         XCTAssertEqual(result, "2026/01/15/shot")
@@ -207,14 +207,14 @@ final class CaptureOutputNamingTests: XCTestCase {
             day: 15,
             hour: 14,
             minute: 30,
-            second: 45,
+            second: 45
         )))
 
         let result = CaptureOutputNaming.resolveBaseName(
             customName: nil,
             kind: .screenshot,
             date: localDate,
-            defaults: defaults,
+            defaults: defaults
         )
 
         XCTAssertEqual(result, "2026/26/26/26/shot")
@@ -223,7 +223,7 @@ final class CaptureOutputNamingTests: XCTestCase {
     func testResolveBaseName_monthNameTokens() throws {
         defaults.set(
             "{year}/{monthName}/{monthShort}/{month_name}/{month_short}/shot",
-            forKey: PreferencesKeys.screenshotFileNameTemplate,
+            forKey: PreferencesKeys.screenshotFileNameTemplate
         )
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = .current
@@ -233,26 +233,26 @@ final class CaptureOutputNamingTests: XCTestCase {
             day: 15,
             hour: 14,
             minute: 30,
-            second: 45,
+            second: 45
         )))
         let monthName = CaptureOutputNaming.resolveBaseName(
             customName: Self.format(localDate, style: "MMMM"),
             kind: .screenshot,
             date: localDate,
-            defaults: defaults,
+            defaults: defaults
         )
         let monthShort = CaptureOutputNaming.resolveBaseName(
             customName: Self.format(localDate, style: "MMM"),
             kind: .screenshot,
             date: localDate,
-            defaults: defaults,
+            defaults: defaults
         )
 
         let result = CaptureOutputNaming.resolveBaseName(
             customName: nil,
             kind: .screenshot,
             date: localDate,
-            defaults: defaults,
+            defaults: defaults
         )
 
         XCTAssertEqual(result, "2026/\(monthName)/\(monthShort)/\(monthName)/\(monthShort)/shot")
@@ -265,7 +265,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: nil,
             kind: .screenshot,
             date: fixedDate,
-            defaults: defaults,
+            defaults: defaults
         )
 
         XCTAssertEqual(result, "screenshot/\(Int(fixedDate.timeIntervalSince1970))/shot_123")
@@ -275,7 +275,7 @@ final class CaptureOutputNamingTests: XCTestCase {
         let result = CaptureOutputNaming.resolveTemplateBaseName(
             "Shots/{timestamp}/Cue_{ms}",
             kind: .screenshot,
-            date: fixedDate,
+            date: fixedDate
         )
 
         XCTAssertEqual(result, "Shots/\(Int(fixedDate.timeIntervalSince1970))/Cue_123")
@@ -294,7 +294,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: "file/with\\bad:chars?test",
             kind: .screenshot,
             date: fixedDate,
-            defaults: defaults,
+            defaults: defaults
         )
         XCTAssertEqual(result, "file/with_bad_chars_test")
         XCTAssertTrue(result.contains("/"))
@@ -308,7 +308,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: "../Shots//./2026:May/final.png",
             kind: .screenshot,
             date: fixedDate,
-            defaults: defaults,
+            defaults: defaults
         )
         XCTAssertEqual(result, "Shots/2026_May/final")
         XCTAssertFalse(result.contains(".."))
@@ -319,7 +319,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: "file___name",
             kind: .screenshot,
             date: fixedDate,
-            defaults: defaults,
+            defaults: defaults
         )
         XCTAssertFalse(result.contains("___"))
         XCTAssertTrue(result.contains("_"))
@@ -330,7 +330,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: "myfile.png",
             kind: .screenshot,
             date: fixedDate,
-            defaults: defaults,
+            defaults: defaults
         )
         XCTAssertEqual(result, "myfile")
     }
@@ -340,7 +340,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: "capture.jpeg",
             kind: .screenshot,
             date: fixedDate,
-            defaults: defaults,
+            defaults: defaults
         )
         XCTAssertEqual(result, "capture")
     }
@@ -350,7 +350,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: "Screenshots.png/capture.jpeg",
             kind: .screenshot,
             date: fixedDate,
-            defaults: defaults,
+            defaults: defaults
         )
         XCTAssertEqual(result, "Screenshots.png/capture")
     }
@@ -360,7 +360,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: "document.pdf",
             kind: .screenshot,
             date: fixedDate,
-            defaults: defaults,
+            defaults: defaults
         )
         XCTAssertEqual(result, "document.pdf")
     }
@@ -370,7 +370,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: "  .file. ",
             kind: .screenshot,
             date: fixedDate,
-            defaults: defaults,
+            defaults: defaults
         )
         XCTAssertEqual(result, "file")
     }
@@ -381,7 +381,7 @@ final class CaptureOutputNamingTests: XCTestCase {
         let result = CaptureOutputNaming.makeUniqueFileURL(
             in: tempDirectory,
             baseName: "test_capture",
-            fileExtension: "png",
+            fileExtension: "png"
         )
         XCTAssertEqual(result.lastPathComponent, "test_capture.png")
     }
@@ -394,7 +394,7 @@ final class CaptureOutputNamingTests: XCTestCase {
         let result = CaptureOutputNaming.makeUniqueFileURL(
             in: tempDirectory,
             baseName: "test_capture",
-            fileExtension: "png",
+            fileExtension: "png"
         )
         XCTAssertEqual(result.lastPathComponent, "test_capture_2.png")
     }
@@ -407,7 +407,7 @@ final class CaptureOutputNamingTests: XCTestCase {
         let result = CaptureOutputNaming.makeUniqueFileURL(
             in: tempDirectory,
             baseName: "shot",
-            fileExtension: "png",
+            fileExtension: "png"
         )
         XCTAssertEqual(result.lastPathComponent, "shot_3.png")
     }
@@ -416,7 +416,7 @@ final class CaptureOutputNamingTests: XCTestCase {
         let result = CaptureOutputNaming.makeUniqueFileURL(
             in: tempDirectory,
             baseName: "Shots/May/shot",
-            fileExtension: "png",
+            fileExtension: "png"
         )
 
         let expected = tempDirectory
@@ -434,7 +434,7 @@ final class CaptureOutputNamingTests: XCTestCase {
         let result = CaptureOutputNaming.makeUniqueFileURL(
             in: tempDirectory,
             baseName: "Shots/May/shot",
-            fileExtension: "png",
+            fileExtension: "png"
         )
 
         XCTAssertEqual(result.lastPathComponent, "shot_3.png")
@@ -448,17 +448,17 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: "Runtime/Subfolder/shot",
             kind: .screenshot,
             date: fixedDate,
-            defaults: defaults,
+            defaults: defaults
         )
 
         let result = await ScreenCaptureManager.shared.saveProcessedImage(
             image,
             to: tempDirectory,
             fileName: baseName,
-            format: .png,
+            format: .png
         )
 
-        guard case .success(let url) = result else {
+        guard case let .success(url) = result else {
             XCTFail("Expected nested screenshot save to succeed, got \(result)")
             return
         }
@@ -520,7 +520,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             customName: nil,
             kind: .screenshot,
             date: fixedDate,
-            defaults: defaults,
+            defaults: defaults
         )
 
         // Fallback format: "Cue_{yyyy-MM-dd_HH-mm-ss-SSS}"
@@ -538,7 +538,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             kind: .screenshot,
             date: fixedDate,
             context: context,
-            defaults: defaults,
+            defaults: defaults
         )
         XCTAssertEqual(result, "App_Safari")
     }
@@ -552,7 +552,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             kind: .screenshot,
             date: fixedDate,
             context: context,
-            defaults: defaults,
+            defaults: defaults
         )
         XCTAssertEqual(result, "App_Finder")
     }
@@ -566,7 +566,7 @@ final class CaptureOutputNamingTests: XCTestCase {
             kind: .screenshot,
             date: fixedDate,
             context: context,
-            defaults: defaults,
+            defaults: defaults
         )
         // When appName is missing, it should resolve to empty string
         // Resulting in App_

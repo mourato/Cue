@@ -37,7 +37,7 @@ final class CueCloudflareCredentialStore: ObservableObject {
 
     init(
         defaults: UserDefaults = .standard,
-        keychain: CloudflareKeychainBacking = CloudKeychainCloudflareBacking(),
+        keychain: CloudflareKeychainBacking = CloudKeychainCloudflareBacking()
     ) {
         self.defaults = defaults
         self.keychain = keychain

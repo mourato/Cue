@@ -22,7 +22,7 @@ enum LoginItemManager {
                 .info,
                 .preferences,
                 "Launch at login preference updated",
-                context: ["enabled": enabled ? "true" : "false"],
+                context: ["enabled": enabled ? "true" : "false"]
             )
             CueConfigurationSyncCoordinator.shared.scheduleSync(reason: .explicitChange)
         } catch {
@@ -30,7 +30,7 @@ enum LoginItemManager {
                 .preferences,
                 error,
                 "Launch at login preference update failed",
-                context: ["enabled": enabled ? "true" : "false"],
+                context: ["enabled": enabled ? "true" : "false"]
             )
         }
     }

@@ -18,7 +18,7 @@
 
         static func reduce(
             value: inout [VideoEditorToolbarSection: CGFloat],
-            nextValue: () -> [VideoEditorToolbarSection: CGFloat],
+            nextValue: () -> [VideoEditorToolbarSection: CGFloat]
         ) {
             value.merge(nextValue(), uniquingKeysWith: { _, next in next })
         }
@@ -30,9 +30,9 @@
                 GeometryReader { proxy in
                     Color.clear.preference(
                         key: VideoEditorToolbarSectionWidthKey.self,
-                        value: [section: proxy.size.width],
+                        value: [section: proxy.size.width]
                     )
-                },
+                }
             )
         }
     }
@@ -127,7 +127,7 @@
                     icon: "info.circle",
                     selectedIcon: "info.circle.fill",
                     isSelected: state.isVideoInfoSidebarVisible,
-                    highlightColor: ZoomColors.primary,
+                    highlightColor: ZoomColors.primary
                 ) {
                     state.toggleVideoInfoSidebar()
                 }
@@ -146,7 +146,7 @@
             ToolbarButton(
                 icon: "sidebar.left",
                 isSelected: state.isLeftSidebarVisible,
-                highlightColor: ZoomColors.primary,
+                highlightColor: ZoomColors.primary
             ) {
                 state.toggleLeftSidebar()
             }
@@ -159,7 +159,7 @@
             ToolbarButton(
                 icon: "sidebar.right",
                 isSelected: state.isRightSidebarVisible,
-                highlightColor: ZoomColors.primary,
+                highlightColor: ZoomColors.primary
             ) {
                 state.toggleRightSidebar()
             }
@@ -197,7 +197,7 @@
 
                     ToolbarButton(
                         icon: "pencil",
-                        isSelected: false,
+                        isSelected: false
                     ) {
                         startRename()
                     }
@@ -268,7 +268,7 @@
 
     #Preview {
         VideoEditorToolbarView(
-            state: VideoEditorState(url: URL(fileURLWithPath: "/tmp/test-video.mov")),
+            state: VideoEditorState(url: URL(fileURLWithPath: "/tmp/test-video.mov"))
         )
         .frame(width: 800)
         .background(Color(NSColor.windowBackgroundColor))

@@ -145,11 +145,11 @@ struct AnnotateQuickPropertiesBar: View {
                 isVisible: showSelectionInfo,
                 isEnabled: true,
                 showsLeadingDivider: false,
-                width: density.selectionInfoWidth,
+                width: density.selectionInfoWidth
             ) {
                 QuickSelectionInfoControl(
                     count: state.quickPropertiesSelectedAnnotationCount,
-                    groupSpacing: density.groupSpacing,
+                    groupSpacing: density.groupSpacing
                 )
             }
 
@@ -157,7 +157,7 @@ struct AnnotateQuickPropertiesBar: View {
                 isVisible: showStrokeColor,
                 isEnabled: state.quickPropertiesSupportsStrokeColor,
                 showsLeadingDivider: false,
-                width: nil,
+                width: nil
             ) {
                 QuickPropertiesColorPopoverControl(
                     title: colorTitle,
@@ -165,7 +165,7 @@ struct AnnotateQuickPropertiesBar: View {
                     colors: strokeColors,
                     role: .annotationStroke,
                     quickColorLimit: density == .regular ? 4 : 2,
-                    groupSpacing: density.groupSpacing,
+                    groupSpacing: density.groupSpacing
                 )
             }
 
@@ -173,7 +173,7 @@ struct AnnotateQuickPropertiesBar: View {
                 isVisible: showFill,
                 isEnabled: state.quickPropertiesSupportsFill,
                 showsLeadingDivider: showStrokeColor,
-                width: nil,
+                width: nil
             ) {
                 QuickPropertiesColorPopoverControl(
                     title: L10n.Common.fill,
@@ -181,7 +181,7 @@ struct AnnotateQuickPropertiesBar: View {
                     colors: fillColors,
                     role: .annotationFill,
                     quickColorLimit: density == .regular ? 4 : 2,
-                    groupSpacing: density.groupSpacing,
+                    groupSpacing: density.groupSpacing
                 )
             }
 
@@ -189,13 +189,13 @@ struct AnnotateQuickPropertiesBar: View {
                 isVisible: showTextPresentation,
                 isEnabled: state.quickPropertiesSupportsTextPresentation,
                 showsLeadingDivider: hasBeforeTextPresentation,
-                width: nil,
+                width: nil
             ) {
                 QuickTextPresentationControl(
                     buttonWidth: density.controlButtonWidth,
                     groupSpacing: density.groupSpacing,
                     selectedPresentation: state.quickTextPresentation,
-                    onSelect: state.setTextPresentation,
+                    onSelect: state.setTextPresentation
                 )
             }
 
@@ -203,7 +203,7 @@ struct AnnotateQuickPropertiesBar: View {
                 isVisible: showTextBackground,
                 isEnabled: state.quickPropertiesSupportsTextBackground,
                 showsLeadingDivider: hasBeforeTextBackground,
-                width: nil,
+                width: nil
             ) {
                 QuickPropertiesColorPopoverControl(
                     title: L10n.Common.background,
@@ -211,7 +211,7 @@ struct AnnotateQuickPropertiesBar: View {
                     colors: textBackgroundColors,
                     role: .textBackground,
                     quickColorLimit: density == .regular ? 3 : 1,
-                    groupSpacing: density.groupSpacing,
+                    groupSpacing: density.groupSpacing
                 )
             }
 
@@ -219,12 +219,12 @@ struct AnnotateQuickPropertiesBar: View {
                 isVisible: showTextFontSize,
                 isEnabled: state.quickPropertiesSupportsTextFontSize,
                 showsLeadingDivider: hasBeforeTextFontSize,
-                width: nil,
+                width: nil
             ) {
                 QuickTextFontSizeControl(
                     value: state.quickTextFontSizeBinding,
                     sliderWidth: density.sliderWidth,
-                    groupSpacing: density.groupSpacing,
+                    groupSpacing: density.groupSpacing
                 )
             }
 
@@ -232,11 +232,11 @@ struct AnnotateQuickPropertiesBar: View {
                 isVisible: showWatermark,
                 isEnabled: state.quickPropertiesSupportsWatermark,
                 showsLeadingDivider: hasBeforeWatermarkText,
-                width: nil,
+                width: nil
             ) {
                 QuickWatermarkTextControl(
                     text: state.quickWatermarkTextBinding,
-                    groupSpacing: density.groupSpacing,
+                    groupSpacing: density.groupSpacing
                 )
             }
 
@@ -244,12 +244,12 @@ struct AnnotateQuickPropertiesBar: View {
                 isVisible: showWatermark,
                 isEnabled: state.quickPropertiesSupportsWatermark,
                 showsLeadingDivider: hasBeforeWatermarkStyle,
-                width: density.watermarkStyleControlWidth,
+                width: density.watermarkStyleControlWidth
             ) {
                 QuickWatermarkStyleControl(
                     selectedStyle: state.quickWatermarkStyleBinding,
                     buttonWidth: density.controlButtonWidth,
-                    groupSpacing: density.groupSpacing,
+                    groupSpacing: density.groupSpacing
                 )
             }
 
@@ -257,12 +257,12 @@ struct AnnotateQuickPropertiesBar: View {
                 isVisible: showWatermark,
                 isEnabled: state.quickPropertiesSupportsWatermark,
                 showsLeadingDivider: hasBeforeWatermarkOpacity,
-                width: nil,
+                width: nil
             ) {
                 QuickWatermarkOpacityControl(
                     value: state.quickWatermarkOpacityBinding,
                     sliderWidth: density.sliderWidth,
-                    groupSpacing: density.groupSpacing,
+                    groupSpacing: density.groupSpacing
                 )
             }
 
@@ -270,12 +270,12 @@ struct AnnotateQuickPropertiesBar: View {
                 isVisible: showWatermark,
                 isEnabled: state.quickPropertiesSupportsWatermark,
                 showsLeadingDivider: hasBeforeWatermarkRotation,
-                width: nil,
+                width: nil
             ) {
                 QuickWatermarkRotationControl(
                     value: state.quickWatermarkRotationBinding,
                     sliderWidth: density.sliderWidth,
-                    groupSpacing: density.groupSpacing,
+                    groupSpacing: density.groupSpacing
                 )
             }
 
@@ -283,12 +283,12 @@ struct AnnotateQuickPropertiesBar: View {
                 isVisible: showBlurType,
                 isEnabled: state.quickPropertiesSupportsBlurType,
                 showsLeadingDivider: hasBeforeBlurType,
-                width: density.blurTypeControlWidth,
+                width: density.blurTypeControlWidth
             ) {
                 QuickBlurTypeControl(
                     selectedType: state.quickBlurTypeBinding,
                     buttonWidth: density.controlButtonWidth,
-                    groupSpacing: density.groupSpacing,
+                    groupSpacing: density.groupSpacing
                 )
             }
 
@@ -297,12 +297,12 @@ struct AnnotateQuickPropertiesBar: View {
                 isEnabled: state.quickPropertiesSupportsBlurType && state.hasImage && !state
                     .isSensitiveRedactionScanning && state.editorMode == .annotate && !state.isCropInteractionActive,
                 showsLeadingDivider: true,
-                width: nil,
+                width: nil
             ) {
                 QuickAutoRedactControl(
                     state: state,
                     buttonWidth: density.controlButtonWidth,
-                    groupSpacing: density.groupSpacing,
+                    groupSpacing: density.groupSpacing
                 )
             }
 
@@ -310,12 +310,12 @@ struct AnnotateQuickPropertiesBar: View {
                 isVisible: state.quickPropertiesSupportsSpotlightOpacity,
                 isEnabled: state.quickPropertiesSupportsSpotlightOpacity,
                 showsLeadingDivider: hasBeforeSpotlightOpacity,
-                width: nil,
+                width: nil
             ) {
                 QuickSpotlightOpacityControl(
                     value: state.quickSpotlightOpacityBinding,
                     sliderWidth: density.sliderWidth,
-                    groupSpacing: density.groupSpacing,
+                    groupSpacing: density.groupSpacing
                 )
             }
 
@@ -323,12 +323,12 @@ struct AnnotateQuickPropertiesBar: View {
                 isVisible: showMagnification,
                 isEnabled: state.quickPropertiesSupportsMagnification,
                 showsLeadingDivider: hasBeforeMagnification,
-                width: nil,
+                width: nil
             ) {
                 QuickMagnificationControl(
                     value: state.quickMagnificationBinding,
                     sliderWidth: density.sliderWidth,
-                    groupSpacing: density.groupSpacing,
+                    groupSpacing: density.groupSpacing
                 )
             }
 
@@ -336,12 +336,12 @@ struct AnnotateQuickPropertiesBar: View {
                 isVisible: showStrokeWidth,
                 isEnabled: state.quickPropertiesSupportsStrokeWidth,
                 showsLeadingDivider: hasBeforeStrokeWidth,
-                width: nil,
+                width: nil
             ) {
                 QuickStrokeWidthControl(
                     title: state.quickStrokeWidthLabel,
                     value: state.quickStrokeWidthBinding,
-                    groupSpacing: density.groupSpacing,
+                    groupSpacing: density.groupSpacing
                 )
             }
 
@@ -349,12 +349,12 @@ struct AnnotateQuickPropertiesBar: View {
                 isVisible: showCornerRadius,
                 isEnabled: state.quickPropertiesSupportsCornerRadius,
                 showsLeadingDivider: hasBeforeCornerRadius,
-                width: nil,
+                width: nil
             ) {
                 QuickCornerRadiusControl(
                     value: state.quickCornerRadiusBinding,
                     sliderWidth: density.sliderWidth,
-                    groupSpacing: density.groupSpacing,
+                    groupSpacing: density.groupSpacing
                 )
             }
 
@@ -362,7 +362,7 @@ struct AnnotateQuickPropertiesBar: View {
                 isVisible: showArrowStyle,
                 isEnabled: state.quickPropertiesSupportsArrowStyle,
                 showsLeadingDivider: hasBeforeArrowStyle,
-                width: nil,
+                width: nil
             ) {
                 QuickArrowStyleControl(
                     selectedStyle: state.quickArrowStyleBinding,
@@ -373,7 +373,7 @@ struct AnnotateQuickPropertiesBar: View {
                     showsBendDirection: state.quickPropertiesSupportsArrowBendDirection,
                     showsEndpoints: state.quickPropertiesSupportsArrowEndpoints,
                     buttonWidth: density.controlButtonWidth,
-                    groupSpacing: density.groupSpacing,
+                    groupSpacing: density.groupSpacing
                 )
             }
 
@@ -381,12 +381,12 @@ struct AnnotateQuickPropertiesBar: View {
                 isVisible: showShapeFillStyle,
                 isEnabled: state.quickPropertiesSupportsShapeFillStyle,
                 showsLeadingDivider: hasBeforeShapeFillStyle,
-                width: nil,
+                width: nil
             ) {
                 QuickShapeFillStyleControl(
                     selectedStyle: state.quickShapeFillStyleBinding,
                     color: state.quickStrokeColorBinding.wrappedValue,
-                    groupSpacing: density.groupSpacing,
+                    groupSpacing: density.groupSpacing
                 )
             }
         }
@@ -398,7 +398,7 @@ struct AnnotateQuickPropertiesBar: View {
     private func stableSlot(
         isEnabled: Bool,
         width: CGFloat?,
-        @ViewBuilder content: () -> some View,
+        @ViewBuilder content: () -> some View
     ) -> some View {
         Group {
             if let width {
@@ -419,7 +419,7 @@ struct AnnotateQuickPropertiesBar: View {
         isEnabled: Bool,
         showsLeadingDivider: Bool,
         width: CGFloat?,
-        @ViewBuilder content: () -> some View,
+        @ViewBuilder content: () -> some View
     ) -> some View {
         if isVisible {
             if showsLeadingDivider {
@@ -444,7 +444,7 @@ struct AnnotateQuickPropertiesBar: View {
         compactContextChip(
             icon: icon,
             title: title,
-            isSelectedItem: state.quickPropertiesMode == .selectedItem,
+            isSelectedItem: state.quickPropertiesMode == .selectedItem
         )
     }
 
@@ -455,11 +455,11 @@ struct AnnotateQuickPropertiesBar: View {
             .frame(width: 28, height: 26)
             .background(
                 Circle()
-                    .fill(Color.accentColor.opacity(isSelectedItem ? 0.18 : 0.1)),
+                    .fill(Color.accentColor.opacity(isSelectedItem ? 0.18 : 0.1))
             )
             .overlay(
                 Circle()
-                    .stroke(Color.accentColor.opacity(0.35), lineWidth: 1),
+                    .stroke(Color.accentColor.opacity(0.35), lineWidth: 1)
             )
             .help(title)
             .accessibilityLabel(title)
@@ -487,7 +487,7 @@ private struct QuickPropertiesColorPopoverControl: View {
                         QuickPropertiesColorSwatch(
                             color: selectedColor,
                             isSelected: false,
-                            size: 16,
+                            size: 16
                         )
                         Image(systemName: "chevron.down")
                             .font(.system(size: 8, weight: .bold))
@@ -496,11 +496,11 @@ private struct QuickPropertiesColorPopoverControl: View {
                     .frame(width: 42, height: 26)
                     .background(
                         RoundedRectangle(cornerRadius: 7)
-                            .fill(SidebarColors.itemDefault),
+                            .fill(SidebarColors.itemDefault)
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 7)
-                            .stroke(Color.secondary.opacity(0.14), lineWidth: 1),
+                            .stroke(Color.secondary.opacity(0.14), lineWidth: 1)
                     )
                 }
                 .buttonStyle(.plain)
@@ -511,7 +511,7 @@ private struct QuickPropertiesColorPopoverControl: View {
                         title: title,
                         selectedColor: $selectedColor,
                         colors: colors,
-                        role: role,
+                        role: role
                     )
                 }
 
@@ -522,7 +522,7 @@ private struct QuickPropertiesColorPopoverControl: View {
                         QuickPropertiesColorSwatch(
                             color: color,
                             isSelected: AnnotateColorPaletteStore.colorsMatch(selectedColor, color),
-                            size: 16,
+                            size: 16
                         )
                         .frame(width: 22, height: 26)
                     }
@@ -532,7 +532,7 @@ private struct QuickPropertiesColorPopoverControl: View {
                     .accessibilityValue(
                         AnnotateColorPaletteStore.colorsMatch(selectedColor, color)
                             ? L10n.Cue.selected
-                            : "",
+                            : ""
                     )
                     .annotateColorDraggable(color, sourceFavoriteRole: role)
                 }
@@ -560,7 +560,7 @@ private struct QuickPropertiesColorPopover: View {
 
     private let columns = Array(
         repeating: GridItem(.fixed(PopoverTokens.colorGridCellSize), spacing: PopoverTokens.colorGridSpacing),
-        count: 5,
+        count: 5
     )
 
     var body: some View {
@@ -610,7 +610,7 @@ private struct QuickPropertiesColorPopover: View {
                         overlayAction: {
                             paletteStore.removeColor(color)
                         },
-                        overlayHelp: L10n.Common.deleteAction,
+                        overlayHelp: L10n.Common.deleteAction
                     )
                 }
 
@@ -679,7 +679,7 @@ private struct QuickPropertiesColorPopover: View {
 
     private var favoriteDropSlot: some View {
         QuickPropertiesFavoriteDropSlot(
-            onTap: showFavoriteSelectionPopover,
+            onTap: showFavoriteSelectionPopover
         ) { payload in
             handleFavoriteDrop(payload)
         }
@@ -690,7 +690,7 @@ private struct QuickPropertiesColorPopover: View {
 
     private var favoriteEmptyDropTarget: some View {
         QuickPropertiesFavoriteEmptyDropTarget(
-            onTap: showFavoriteSelectionPopover,
+            onTap: showFavoriteSelectionPopover
         ) { payload in
             handleFavoriteDrop(payload)
         }
@@ -747,7 +747,7 @@ private struct QuickPropertiesColorPopover: View {
             QuickPropertiesColorSwatch(
                 color: draftCustomColor,
                 isSelected: true,
-                size: PopoverTokens.colorSwatchSize,
+                size: PopoverTokens.colorSwatchSize
             )
         }
         .buttonStyle(.plain)
@@ -763,7 +763,7 @@ private struct QuickPropertiesColorPopover: View {
             QuickPropertiesColorSwatch(
                 color: draftCustomColor,
                 isSelected: AnnotateColorPaletteStore.colorsMatch(selectedColor, draftCustomColor),
-                size: PopoverTokens.colorSwatchSize,
+                size: PopoverTokens.colorSwatchSize
             )
         }
         .buttonStyle(.plain)
@@ -779,7 +779,7 @@ private struct QuickPropertiesColorPopover: View {
             onCancel: {
                 cancelColorDraft()
             },
-            onApply: applyColorDraft,
+            onApply: applyColorDraft
         )
     }
 
@@ -793,7 +793,7 @@ private struct QuickPropertiesColorPopover: View {
             overlayHelp: "",
             onSelect: {
                 addVaultColorToFavorites(color)
-            },
+            }
         )
     }
 
@@ -812,14 +812,14 @@ private struct QuickPropertiesColorPopover: View {
             },
             onSelect: {
                 selectColor(color)
-            },
+            }
         )
     }
 
     private func paletteColorButton(
         _ color: Color,
         overlayAction: (() -> Void)?,
-        overlayHelp: String,
+        overlayHelp: String
     ) -> some View {
         QuickPropertiesPaletteColorButton(
             color: color,
@@ -830,7 +830,7 @@ private struct QuickPropertiesColorPopover: View {
             overlayHelp: overlayHelp,
             onSelect: {
                 selectColor(color)
-            },
+            }
         )
     }
 
@@ -839,7 +839,7 @@ private struct QuickPropertiesColorPopover: View {
 
         paletteStore.acceptFavoriteDrop(
             payload,
-            for: role,
+            for: role
         )
         if !canAddFavorite {
             closeFavoriteSelectionPopover()
@@ -848,14 +848,14 @@ private struct QuickPropertiesColorPopover: View {
 
     private func handleFavoriteDrop(
         _ payload: AnnotateColorDragPayload,
-        targetColor: Color,
+        targetColor: Color
     ) {
         guard canAcceptFavoriteDrop(payload) else { return }
 
         paletteStore.acceptFavoriteDrop(
             payload,
             for: role,
-            targetColor: targetColor,
+            targetColor: targetColor
         )
         if !canAddFavorite {
             closeFavoriteSelectionPopover()
@@ -1023,7 +1023,7 @@ private struct QuickPropertiesPaletteColorButton: View {
                 QuickPropertiesColorSwatch(
                     color: color,
                     isSelected: isSelected,
-                    size: PopoverTokens.colorSwatchSize,
+                    size: PopoverTokens.colorSwatchSize
                 )
             }
             .buttonStyle(.plain)
@@ -1041,7 +1041,7 @@ private struct QuickPropertiesPaletteColorButton: View {
                         .background(
                             Circle()
                                 .fill(SidebarColors.itemDefault)
-                                .frame(width: 8, height: 8),
+                                .frame(width: 8, height: 8)
                         )
                 }
                 .buttonStyle(.plain)
@@ -1079,8 +1079,8 @@ private struct QuickPropertiesFavoriteEmptyDropTarget: View {
                         Circle()
                             .stroke(
                                 isTargeted ? Color.accentColor.opacity(0.65) : Color.secondary.opacity(0.35),
-                                style: StrokeStyle(lineWidth: 1, dash: [3, 2]),
-                            ),
+                                style: StrokeStyle(lineWidth: 1, dash: [3, 2])
+                            )
                     )
 
                 Text(L10n.Common.dragColorsHere)
@@ -1120,8 +1120,8 @@ private struct QuickPropertiesFavoriteDropSlot: View {
                     Circle()
                         .stroke(
                             isTargeted ? Color.accentColor.opacity(0.65) : Color.secondary.opacity(0.35),
-                            style: StrokeStyle(lineWidth: 1, dash: [3, 2]),
-                        ),
+                            style: StrokeStyle(lineWidth: 1, dash: [3, 2])
+                        )
                 )
                 .frame(width: 24, height: 24)
         }
@@ -1152,8 +1152,8 @@ private struct QuickPropertiesColorSwatch: View {
                     Circle()
                         .strokeBorder(
                             isSelected ? Color.accentColor : Color.secondary.opacity(0.35),
-                            lineWidth: isSelected ? 2 : 1,
-                        ),
+                            lineWidth: isSelected ? 2 : 1
+                        )
                 )
 
             if AnnotateColorPaletteStore.isClear(color) {
@@ -1235,7 +1235,7 @@ private struct QuickStrokeWidthControl: View {
         QuickPropertiesGroup(title: title, spacing: groupSpacing) {
             QuickPropertiesPopoverTriggerButton(
                 title: title,
-                isPresented: $showsPopover,
+                isPresented: $showsPopover
             ) {
                 Capsule()
                     .fill(Color.primary)
@@ -1277,7 +1277,7 @@ private struct QuickMagnificationControl: View {
                     value: $value,
                     step: 0.25,
                     in: AnnotationProperties.magnificationRange,
-                    sliderWidth: sliderWidth,
+                    sliderWidth: sliderWidth
                 )
 
                 Text(String(format: "%.2g×", Double(value)))
@@ -1307,7 +1307,7 @@ private struct QuickTextFontSizeControl: View {
                     value: $value,
                     step: 1,
                     in: 12 ... 72,
-                    sliderWidth: sliderWidth,
+                    sliderWidth: sliderWidth
                 )
 
                 Text("\(Int(value))pt")
@@ -1342,7 +1342,7 @@ private struct QuickTextPresentationControl: View {
                                 RoundedRectangle(cornerRadius: 7)
                                     .fill(selectedPresentation == presentation ? Color.accentColor
                                         .opacity(0.16) : SidebarColors
-                                        .itemDefault),
+                                        .itemDefault)
                             )
                             .overlay(
                                 RoundedRectangle(cornerRadius: 7)
@@ -1350,8 +1350,8 @@ private struct QuickTextPresentationControl: View {
                                         selectedPresentation == presentation ? Color.accentColor.opacity(0.45) : Color
                                             .secondary
                                             .opacity(0.14),
-                                        lineWidth: 1,
-                                    ),
+                                        lineWidth: 1
+                                    )
                             )
                     }
                     .buttonStyle(.plain)
@@ -1384,15 +1384,15 @@ private struct QuickWatermarkTextControl: View {
                 .frame(
                     minWidth: QuickWatermarkTextControlMetrics.fieldMinWidth,
                     maxWidth: QuickWatermarkTextControlMetrics.fieldMinWidth,
-                    maxHeight: 24,
+                    maxHeight: 24
                 )
                 .background(
                     RoundedRectangle(cornerRadius: 7)
-                        .fill(SidebarColors.itemDefault),
+                        .fill(SidebarColors.itemDefault)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 7)
-                        .stroke(Color.secondary.opacity(0.14), lineWidth: 1),
+                        .stroke(Color.secondary.opacity(0.14), lineWidth: 1)
                 )
         }
     }
@@ -1417,15 +1417,15 @@ private struct QuickWatermarkStyleControl: View {
                             .background(
                                 RoundedRectangle(cornerRadius: 7)
                                     .fill(selectedStyle == style ? Color.accentColor.opacity(0.16) : SidebarColors
-                                        .itemDefault),
+                                        .itemDefault)
                             )
                             .overlay(
                                 RoundedRectangle(cornerRadius: 7)
                                     .stroke(
                                         selectedStyle == style ? Color.accentColor.opacity(0.45) : Color.secondary
                                             .opacity(0.14),
-                                        lineWidth: 1,
-                                    ),
+                                        lineWidth: 1
+                                    )
                             )
                     }
                     .buttonStyle(.plain)
@@ -1454,7 +1454,7 @@ private struct QuickWatermarkOpacityControl: View {
                     value: $value,
                     step: 0.01,
                     in: 0.05 ... 0.65,
-                    sliderWidth: sliderWidth,
+                    sliderWidth: sliderWidth
                 )
 
                 Text("\(Int((value * 100).rounded()))%")
@@ -1484,7 +1484,7 @@ private struct QuickSpotlightOpacityControl: View {
                     value: $value,
                     step: 0.01,
                     in: 0.1 ... 0.9,
-                    sliderWidth: sliderWidth,
+                    sliderWidth: sliderWidth
                 )
 
                 Text("\(Int((value * 100).rounded()))%")
@@ -1514,7 +1514,7 @@ private struct QuickWatermarkRotationControl: View {
                     value: $value,
                     step: 1,
                     in: -45 ... 45,
-                    sliderWidth: sliderWidth,
+                    sliderWidth: sliderWidth
                 )
 
                 Text("\(Int(value.rounded()))deg")
@@ -1544,7 +1544,7 @@ private struct QuickCornerRadiusControl: View {
                     value: $value,
                     step: 1,
                     in: 0 ... 60,
-                    sliderWidth: sliderWidth,
+                    sliderWidth: sliderWidth
                 )
 
                 Text("\(Int(value))")
@@ -1577,15 +1577,15 @@ private struct QuickBlurTypeControl: View {
                             .background(
                                 RoundedRectangle(cornerRadius: 7)
                                     .fill(selectedType == blurType ? Color.accentColor.opacity(0.16) : SidebarColors
-                                        .itemDefault),
+                                        .itemDefault)
                             )
                             .overlay(
                                 RoundedRectangle(cornerRadius: 7)
                                     .stroke(
                                         selectedType == blurType ? Color.accentColor.opacity(0.45) : Color.secondary
                                             .opacity(0.14),
-                                        lineWidth: 1,
-                                    ),
+                                        lineWidth: 1
+                                    )
                             )
                     }
                     .buttonStyle(.plain)
@@ -1614,11 +1614,11 @@ private struct QuickAutoRedactControl: View {
                     .frame(width: buttonWidth, height: 24)
                     .background(
                         RoundedRectangle(cornerRadius: 7)
-                            .fill(SidebarColors.itemDefault),
+                            .fill(SidebarColors.itemDefault)
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 7)
-                            .stroke(Color.secondary.opacity(0.14), lineWidth: 1),
+                            .stroke(Color.secondary.opacity(0.14), lineWidth: 1)
                     )
             }
             .buttonStyle(.plain)
@@ -1629,12 +1629,12 @@ private struct QuickAutoRedactControl: View {
             .help(
                 state.isSensitiveRedactionScanning
                     ? L10n.AnnotateUI.autoRedactionScanning
-                    : L10n.AnnotateUI.autoRedactSensitiveData,
+                    : L10n.AnnotateUI.autoRedactSensitiveData
             )
             .accessibilityLabel(
                 state.isSensitiveRedactionScanning
                     ? L10n.AnnotateUI.autoRedactionScanning
-                    : L10n.AnnotateUI.autoRedactSensitiveData,
+                    : L10n.AnnotateUI.autoRedactSensitiveData
             )
         }
     }
@@ -1651,13 +1651,13 @@ private struct QuickShapeFillStyleControl: View {
         QuickPropertiesGroup(title: L10n.AnnotateUI.shapeStyle, spacing: groupSpacing) {
             QuickPropertiesPopoverTriggerButton(
                 title: L10n.AnnotateUI.shapeStyle,
-                isPresented: $showsPopover,
+                isPresented: $showsPopover
             ) {
                 CueAreaStylePreview(
                     style: selectedStyle,
                     color: color,
                     width: 16,
-                    height: 12,
+                    height: 12
                 )
             }
             .popover(isPresented: $showsPopover, arrowEdge: .bottom) {
@@ -1673,7 +1673,7 @@ private struct QuickShapeFillStyleControl: View {
                                 style: style,
                                 isSelected: selectedStyle == style,
                                 color: color,
-                                action: { selectedStyle = style },
+                                action: { selectedStyle = style }
                             )
                         }
                     }
@@ -1711,15 +1711,15 @@ private struct QuickArrowStyleControl: View {
                                 .background(
                                     RoundedRectangle(cornerRadius: 7)
                                         .fill(selectedStyle == style ? Color.accentColor.opacity(0.16) : SidebarColors
-                                            .itemDefault),
+                                            .itemDefault)
                                 )
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 7)
                                         .stroke(
                                             selectedStyle == style ? Color.accentColor.opacity(0.45) : Color.secondary
                                                 .opacity(0.14),
-                                            lineWidth: 1,
-                                        ),
+                                            lineWidth: 1
+                                        )
                                 )
                         }
                         .buttonStyle(.plain)
@@ -1744,15 +1744,15 @@ private struct QuickArrowStyleControl: View {
                                 .background(
                                     RoundedRectangle(cornerRadius: 7)
                                         .fill(bendDirection == .alternate ? Color.accentColor
-                                            .opacity(0.16) : SidebarColors.itemDefault),
+                                            .opacity(0.16) : SidebarColors.itemDefault)
                                 )
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 7)
                                         .stroke(
                                             bendDirection == .alternate ? Color.accentColor.opacity(0.45) : Color
                                                 .secondary.opacity(0.14),
-                                            lineWidth: 1,
-                                        ),
+                                            lineWidth: 1
+                                        )
                                 )
                         }
                         .buttonStyle(.plain)
@@ -1780,15 +1780,15 @@ private struct QuickArrowStyleControl: View {
                                 .background(
                                     RoundedRectangle(cornerRadius: 7)
                                         .fill(selectedType == type ? Color.accentColor.opacity(0.16) : SidebarColors
-                                            .itemDefault),
+                                            .itemDefault)
                                 )
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 7)
                                         .stroke(
                                             selectedType == type ? Color.accentColor.opacity(0.45) : Color.secondary
                                                 .opacity(0.14),
-                                            lineWidth: 1,
-                                        ),
+                                            lineWidth: 1
+                                        )
                                 )
                         }
                         .buttonStyle(.plain)
@@ -1825,15 +1825,15 @@ private struct QuickArrowStyleControl: View {
                             .background(
                                 RoundedRectangle(cornerRadius: 7)
                                     .fill(selection.wrappedValue == head ? Color.accentColor
-                                        .opacity(0.16) : SidebarColors.itemDefault),
+                                        .opacity(0.16) : SidebarColors.itemDefault)
                             )
                             .overlay(
                                 RoundedRectangle(cornerRadius: 7)
                                     .stroke(
                                         selection.wrappedValue == head ? Color.accentColor.opacity(0.45) : Color
                                             .secondary.opacity(0.14),
-                                        lineWidth: 1,
-                                    ),
+                                        lineWidth: 1
+                                    )
                             )
                     }
                     .buttonStyle(.plain)
@@ -1864,11 +1864,11 @@ private struct QuickPropertiesPopoverTriggerButton<Preview: View>: View {
             .frame(width: 42, height: 26)
             .background(
                 RoundedRectangle(cornerRadius: 7)
-                    .fill(SidebarColors.itemDefault),
+                    .fill(SidebarColors.itemDefault)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 7)
-                    .stroke(Color.secondary.opacity(0.14), lineWidth: 1),
+                    .stroke(Color.secondary.opacity(0.14), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)

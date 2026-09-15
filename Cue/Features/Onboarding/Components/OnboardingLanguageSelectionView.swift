@@ -55,7 +55,7 @@ struct OnboardingLanguageSelectionView: View {
                     title: languageAutoTitle,
                     subtitle: languageAutoDescription,
                     isSelected: onboardingLocalization.selectedLanguageIdentifier.isEmpty,
-                    action: { onboardingLocalization.selectLanguage("") },
+                    action: { onboardingLocalization.selectLanguage("") }
                 )
 
                 ForEach(onboardingLocalization.availableOptions) { option in
@@ -63,7 +63,7 @@ struct OnboardingLanguageSelectionView: View {
                         title: option.displayName,
                         subtitle: nil,
                         isSelected: onboardingLocalization.selectedLanguageIdentifier == option.identifier,
-                        action: { onboardingLocalization.selectLanguage(option.identifier) },
+                        action: { onboardingLocalization.selectLanguage(option.identifier) }
                     )
                 }
             }
@@ -77,7 +77,7 @@ struct OnboardingLanguageSelectionView: View {
                 LinearGradient(
                     colors: [.clear, .black],
                     startPoint: .top,
-                    endPoint: .bottom,
+                    endPoint: .bottom
                 )
                 .frame(height: 8)
 
@@ -86,10 +86,10 @@ struct OnboardingLanguageSelectionView: View {
                 LinearGradient(
                     colors: [.black, .clear],
                     startPoint: .top,
-                    endPoint: .bottom,
+                    endPoint: .bottom
                 )
                 .frame(height: 8)
-            },
+            }
         )
     }
 
@@ -107,7 +107,7 @@ struct OnboardingLanguageSelectionView: View {
         onboardingLocalization.string(
             "onboarding.language.title",
             defaultValue: "Choose your language",
-            comment: "Onboarding language step title",
+            comment: "Onboarding language step title"
         )
     }
 
@@ -115,7 +115,7 @@ struct OnboardingLanguageSelectionView: View {
         onboardingLocalization.string(
             "onboarding.language.subtitle",
             defaultValue: "Cue can follow your Mac or preview a specific app language during setup.",
-            comment: "Onboarding language step subtitle",
+            comment: "Onboarding language step subtitle"
         )
     }
 
@@ -123,7 +123,7 @@ struct OnboardingLanguageSelectionView: View {
         onboardingLocalization.string(
             "onboarding.language.auto-title",
             defaultValue: "Auto",
-            comment: "Auto language option title shown during onboarding",
+            comment: "Auto language option title shown during onboarding"
         )
     }
 
@@ -132,7 +132,7 @@ struct OnboardingLanguageSelectionView: View {
             "onboarding.language.auto-description",
             defaultValue: "Follow macOS. Currently %@.",
             comment: "Description for the onboarding auto language option. %@ is the resolved language display name.",
-            arguments: [systemResolvedLanguageName],
+            arguments: [systemResolvedLanguageName]
         )
     }
 
@@ -140,7 +140,7 @@ struct OnboardingLanguageSelectionView: View {
         onboardingLocalization.string(
             "onboarding.language.apply-later",
             defaultValue: "Continue and Apply on Finish",
-            comment: "Primary button title when onboarding language changes will be applied after completing onboarding",
+            comment: "Primary button title when onboarding language changes will be applied after completing onboarding"
         )
     }
 
@@ -148,7 +148,7 @@ struct OnboardingLanguageSelectionView: View {
         onboardingLocalization.string(
             "onboarding.language.preferences-hint",
             defaultValue: "You can change this anytime in Preferences -> General.",
-            comment: "Hint shown below the onboarding language picker",
+            comment: "Hint shown below the onboarding language picker"
         )
     }
 
@@ -156,7 +156,7 @@ struct OnboardingLanguageSelectionView: View {
         onboardingLocalization.string(
             "common.continue",
             defaultValue: "Continue",
-            comment: "Generic continue button title",
+            comment: "Generic continue button title"
         )
     }
 }
@@ -194,14 +194,14 @@ private struct LanguageOptionRow: View {
             .padding(.vertical, 12)
             .background(
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(isSelected ? VSDesignSystem.Colors.buttonFill : VSDesignSystem.Colors.cardFill),
+                    .fill(isSelected ? VSDesignSystem.Colors.buttonFill : VSDesignSystem.Colors.cardFill)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
                     .stroke(
                         isSelected ? VSDesignSystem.Colors.buttonStroke : VSDesignSystem.Colors.cardStroke,
-                        lineWidth: 1,
-                    ),
+                        lineWidth: 1
+                    )
             )
         }
         .buttonStyle(.plain)

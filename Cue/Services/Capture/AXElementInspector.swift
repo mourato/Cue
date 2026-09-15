@@ -22,12 +22,12 @@ enum AXElementInspector {
         // Website specific roles
         "AXHeading", "AXParagraph", "AXList", "AXForm", "AXGrid",
         "AXDocument", "AXLandmark", "AXRegion", "AXBlockQuote",
-        "AXComboBox", "AXSlider", "AXDisclosureTriangle", "AXTabGroup",
+        "AXComboBox", "AXSlider", "AXDisclosureTriangle", "AXTabGroup"
     ]
 
     /// Roles to reject outright — too coarse or non-renderable.
     static let rejectedRoles: Set<String> = [
-        "AXApplication", "AXSystemWide", "AXUnknown",
+        "AXApplication", "AXSystemWide", "AXUnknown"
     ]
 
     static let minSide: CGFloat = 12
@@ -85,7 +85,7 @@ enum AXElementInspector {
             x: axRect.origin.x,
             y: primaryHeight - axRect.maxY,
             width: axRect.width,
-            height: axRect.height,
+            height: axRect.height
         )
         let screen = NSScreen.screens.first(where: { $0.frame.intersects(flippedProbe) })
             ?? NSScreen.screens.first(where: { $0.frame.contains(flippedProbe.origin) })

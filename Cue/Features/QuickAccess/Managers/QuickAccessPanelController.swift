@@ -87,16 +87,16 @@ final class QuickAccessPanelController {
                 duration: QuickAccessAnimations.panelEnterDuration,
                 animations: { context in
                     context.timingFunction = CAMediaTimingFunction(
-                        controlPoints: 0.22, 1.0, 0.36, 1.0, // Custom spring-like curve
+                        controlPoints: 0.22, 1.0, 0.36, 1.0 // Custom spring-like curve
                     )
                     panel.animator().setFrame(targetFrame, display: true)
                 },
                 completion: { [weak self] in
                     panel.updatePassthroughRegion(
                         itemCount: self?.visibleItemCount ?? 0,
-                        scale: self?.overlayScale ?? 1,
+                        scale: self?.overlayScale ?? 1
                     )
-                },
+                }
             )
         }
 
@@ -189,7 +189,7 @@ final class QuickAccessPanelController {
                     if self?.panel === panel {
                         self?.panel = nil
                     }
-                },
+                }
             )
         }
     }
@@ -250,7 +250,7 @@ final class QuickAccessPanelController {
         _ kind: PanelTransition,
         duration: TimeInterval,
         animations: @escaping (NSAnimationContext) -> Void,
-        completion: @escaping () -> Void,
+        completion: @escaping () -> Void
     ) {
         activeTransition = kind
         transitionToken &+= 1
@@ -288,7 +288,7 @@ final class QuickAccessPanelController {
             .warning,
             .ui,
             "Quick access panel force-closed",
-            context: ["reason": reason],
+            context: ["reason": reason]
         )
     }
 }

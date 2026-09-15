@@ -48,7 +48,7 @@
             let area = NSTrackingArea(
                 rect: bounds,
                 options: [.activeAlways, .mouseMoved, .mouseEnteredAndExited],
-                owner: self,
+                owner: self
             )
             addTrackingArea(area)
             trackingArea = area
@@ -77,7 +77,7 @@
                     start: drawStart,
                     currentPath: currentPath,
                     strokeColor: state.strokeColor,
-                    strokeWidth: state.strokeWidth,
+                    strokeWidth: state.strokeWidth
                 )
             }
         }
@@ -130,7 +130,7 @@
                 path: currentPath,
                 strokeColor: state.strokeColor,
                 strokeWidth: state.strokeWidth,
-                shapeFillStyle: state.shapeFillStyle,
+                shapeFillStyle: state.shapeFillStyle
             ) {
                 state.appendAnnotation(item, tool: state.selectedTool)
             }
@@ -142,10 +142,12 @@
         override func keyDown(with event: NSEvent) {
             // Tool shortcuts — only when shortcut mode is active (modifier held)
             if state.isShortcutModeActive,
-               let char = event.characters?.lowercased().first {
+               let char = event.characters?.lowercased().first
+            {
                 let tools = RecordingAnnotationState.availableTools
                 if let matchedTool = shortcutManager.tool(for: char),
-                   tools.contains(matchedTool) {
+                   tools.contains(matchedTool)
+                {
                     state.selectedTool = matchedTool
                     needsDisplay = true
                     return
@@ -177,7 +179,7 @@
                     isDraggingAnnotation = true
                     dragOffset = CGPoint(
                         x: point.x - entry.item.bounds.origin.x,
-                        y: point.y - entry.item.bounds.origin.y,
+                        y: point.y - entry.item.bounds.origin.y
                     )
                     needsDisplay = true
                     return

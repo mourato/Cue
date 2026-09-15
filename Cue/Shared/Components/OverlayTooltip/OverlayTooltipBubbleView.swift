@@ -28,11 +28,11 @@ struct OverlayTooltipBubbleView: View {
         .padding(.vertical, 7)
         .background(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(.regularMaterial),
+                .fill(.regularMaterial)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .strokeBorder(Color.primary.opacity(0.10), lineWidth: 0.5),
+                .strokeBorder(Color.primary.opacity(0.10), lineWidth: 0.5)
         )
         .fixedSize()
     }
@@ -46,7 +46,7 @@ struct OverlayTooltipBubbleView: View {
         OverlayTooltipBubbleView(content: .init(
             title: "Note",
             keys: ["N"],
-            secondary: "Click to pin · Drag for area",
+            secondary: "Click to pin · Drag for area"
         ))
     }
     .padding(40)

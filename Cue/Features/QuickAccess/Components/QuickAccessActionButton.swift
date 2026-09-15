@@ -23,7 +23,7 @@ struct QuickAccessActionButton: View {
                 .frame(width: 32, height: 32)
                 .background(
                     Circle()
-                        .fill(isHovering ? Color.white.opacity(0.3) : Color.black.opacity(0.5)),
+                        .fill(isHovering ? Color.white.opacity(0.3) : Color.black.opacity(0.5))
                 )
         }
         .buttonStyle(.plain)

@@ -24,7 +24,7 @@ final class AnnotateOverlayTooltipKeysTests: XCTestCase {
     func testToolKeys_returnsDefaultShortcutWhenEnabled() {
         XCTAssertEqual(
             AnnotateOverlayTooltipKeys.toolKeys(for: .rectangle, manager: manager),
-            ["R"],
+            ["R"]
         )
     }
 
@@ -32,7 +32,7 @@ final class AnnotateOverlayTooltipKeysTests: XCTestCase {
         manager.setShortcutEnabled(false, for: .rectangle)
         XCTAssertEqual(
             AnnotateOverlayTooltipKeys.toolKeys(for: .rectangle, manager: manager),
-            [],
+            []
         )
     }
 
@@ -40,14 +40,14 @@ final class AnnotateOverlayTooltipKeysTests: XCTestCase {
         manager.setShortcut(nil, for: .rectangle)
         XCTAssertEqual(
             AnnotateOverlayTooltipKeys.toolKeys(for: .rectangle, manager: manager),
-            [],
+            []
         )
     }
 
     func testActionKeys_returnsDisplayPartsWhenEnabled() {
         XCTAssertEqual(
             AnnotateOverlayTooltipKeys.actionKeys(for: .copyAndClose, manager: manager),
-            AnnotateShortcutManager.defaultCopyAndClose.displayParts,
+            AnnotateShortcutManager.defaultCopyAndClose.displayParts
         )
     }
 
@@ -55,7 +55,7 @@ final class AnnotateOverlayTooltipKeysTests: XCTestCase {
         manager.setActionShortcutEnabled(false, for: .copyAndClose)
         XCTAssertEqual(
             AnnotateOverlayTooltipKeys.actionKeys(for: .copyAndClose, manager: manager),
-            [],
+            []
         )
     }
 }

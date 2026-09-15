@@ -45,7 +45,7 @@ struct PermissionsSettingsSection: View {
                 statusIcon: screenRecordingStatusIcon,
                 statusColor: screenRecordingStatusColor,
                 isRequired: true,
-                settingsURL: screenRecordingURL,
+                settingsURL: screenRecordingURL
             )
 
             permissionRow(
@@ -56,7 +56,7 @@ struct PermissionsSettingsSection: View {
                 statusIcon: saveFolderGranted ? "checkmark.circle.fill" : "xmark.circle.fill",
                 statusColor: permissionStatusColor(isGranted: saveFolderGranted),
                 isRequired: true,
-                settingsURL: filesAndFoldersURL,
+                settingsURL: filesAndFoldersURL
             )
 
             if videoModuleEnabled {
@@ -68,7 +68,7 @@ struct PermissionsSettingsSection: View {
                     statusIcon: microphoneGranted ? "checkmark.circle.fill" : "xmark.circle.fill",
                     statusColor: permissionStatusColor(isGranted: microphoneGranted),
                     isRequired: false,
-                    settingsURL: microphoneURL,
+                    settingsURL: microphoneURL
                 )
             }
 
@@ -80,7 +80,7 @@ struct PermissionsSettingsSection: View {
                 statusIcon: accessibilityGranted ? "checkmark.circle.fill" : "xmark.circle.fill",
                 statusColor: permissionStatusColor(isGranted: accessibilityGranted),
                 isRequired: false,
-                settingsURL: accessibilityURL,
+                settingsURL: accessibilityURL
             )
 
             if !identityManager.health.isHealthy {
@@ -144,7 +144,7 @@ struct PermissionsSettingsSection: View {
         statusIcon: String,
         statusColor: Color,
         isRequired: Bool,
-        settingsURL: String,
+        settingsURL: String
     ) -> some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
@@ -160,7 +160,7 @@ struct PermissionsSettingsSection: View {
                         StatusBadge(
                             label: L10n.PermissionRow.required,
                             systemImage: "exclamationmark.circle.fill",
-                            tint: FeedbackStyle(tone: .warning).iconColor,
+                            tint: FeedbackStyle(tone: .warning).iconColor
                         )
                         .help(L10n.PermissionRow.required)
                     }
@@ -175,7 +175,7 @@ struct PermissionsSettingsSection: View {
             StatusBadge(
                 label: statusLabel,
                 systemImage: statusIcon,
-                tint: statusColor,
+                tint: statusColor
             )
 
             Button(L10n.Common.openSettings) {

@@ -10,7 +10,7 @@ import XCTest
 final class CounterToCueNoteMigrationTests: XCTestCase {
     func testMigrate_noCounters_isIdempotent() {
         let annotations = [
-            AnnotationItem(type: .rectangle, bounds: CGRect(x: 0, y: 0, width: 10, height: 10), properties: .init()),
+            AnnotationItem(type: .rectangle, bounds: CGRect(x: 0, y: 0, width: 10, height: 10), properties: .init())
         ]
         let existing = makeNote(order: 1, center: CGPoint(x: 20, y: 20))
 
@@ -27,22 +27,22 @@ final class CounterToCueNoteMigrationTests: XCTestCase {
         let firstCounter = AnnotationItem(
             type: .counter(9),
             bounds: CGRect(x: 38, y: 48, width: 24, height: 24),
-            properties: AnnotationProperties(strokeColor: .blue, strokeWidth: 6),
+            properties: AnnotationProperties(strokeColor: .blue, strokeWidth: 6)
         )
         let secondCounter = AnnotationItem(
             type: .counter(2),
             bounds: CGRect(x: 100, y: 120, width: 16, height: 16),
-            properties: AnnotationProperties(strokeColor: .green, strokeWidth: 4),
+            properties: AnnotationProperties(strokeColor: .green, strokeWidth: 4)
         )
         let rectangle = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 0, y: 0, width: 40, height: 40),
-            properties: .init(),
+            properties: .init()
         )
 
         let result = CounterToCueNoteMigration.migrate(
             annotations: [rectangle, firstCounter, secondCounter],
-            cueNotes: [existing],
+            cueNotes: [existing]
         )
 
         XCTAssertTrue(result.didMigrate)
@@ -55,7 +55,7 @@ final class CounterToCueNoteMigrationTests: XCTestCase {
         XCTAssertEqual(migratedFirst.creationOrder, 4)
         XCTAssertEqual(migratedFirst.pinControlValue, 6)
         XCTAssertEqual(migratedFirst.color, RGBAColor(color: .blue))
-        guard case .point(let center) = migratedFirst.target else {
+        guard case let .point(center) = migratedFirst.target else {
             return XCTFail("Expected point target")
         }
         XCTAssertEqual(center.x, 50, accuracy: 0.001)
@@ -65,7 +65,7 @@ final class CounterToCueNoteMigrationTests: XCTestCase {
         XCTAssertEqual(migratedSecond.creationOrder, 5)
         XCTAssertEqual(migratedSecond.pinControlValue, 4)
         XCTAssertEqual(migratedSecond.color, RGBAColor(color: .green))
-        guard case .point(let secondCenter) = migratedSecond.target else {
+        guard case let .point(secondCenter) = migratedSecond.target else {
             return XCTFail("Expected point target")
         }
         XCTAssertEqual(secondCenter.x, 108, accuracy: 0.001)
@@ -76,12 +76,12 @@ final class CounterToCueNoteMigrationTests: XCTestCase {
         let counter = AnnotationItem(
             type: .counter(1),
             bounds: CGRect(x: 10, y: 10, width: 20, height: 20),
-            properties: AnnotationProperties(strokeColor: .red, strokeWidth: 3),
+            properties: AnnotationProperties(strokeColor: .red, strokeWidth: 3)
         )
         let first = CounterToCueNoteMigration.migrate(annotations: [counter], cueNotes: [])
         let second = CounterToCueNoteMigration.migrate(
             annotations: first.annotations,
-            cueNotes: first.cueNotes,
+            cueNotes: first.cueNotes
         )
 
         XCTAssertTrue(first.didMigrate)
@@ -97,8 +97,8 @@ final class CounterToCueNoteMigrationTests: XCTestCase {
             AnnotationItem(
                 type: .counter(7),
                 bounds: CGRect(x: 0, y: 0, width: 24, height: 24),
-                properties: AnnotationProperties(strokeColor: .orange, strokeWidth: 5),
-            ),
+                properties: AnnotationProperties(strokeColor: .orange, strokeWidth: 5)
+            )
         ]
 
         state.migrateLegacyCountersToNotinhasIfNeeded()
@@ -113,7 +113,7 @@ final class CounterToCueNoteMigrationTests: XCTestCase {
         CueVisualNote(
             target: .point(center),
             color: color ?? RGBAColor(red: 0, green: 0, blue: 1, alpha: 1),
-            creationOrder: order,
+            creationOrder: order
         )
     }
 }

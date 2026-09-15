@@ -24,7 +24,7 @@
                     .frame(width: 28, height: 28)
                     .background(
                         RoundedRectangle(cornerRadius: 6)
-                            .fill(backgroundColor),
+                            .fill(backgroundColor)
                     )
                     .contentShape(RoundedRectangle(cornerRadius: 6))
                     .animation(ToolbarConstants.hoverAnimation, value: isHovered)

@@ -45,14 +45,14 @@
             let safeDuration = max(0, sourceDuration.isFinite ? sourceDuration : 0)
             guard safeDuration > 0 else { return VideoEditorClipTimeline(segments: []) }
             return VideoEditorClipTimeline(segments: [
-                VideoEditorClipSegment(sourceStart: 0, sourceEnd: safeDuration),
+                VideoEditorClipSegment(sourceStart: 0, sourceEnd: safeDuration)
             ])
         }
 
         static func legacyTrim(
             start: TimeInterval?,
             end: TimeInterval?,
-            sourceDuration: TimeInterval,
+            sourceDuration: TimeInterval
         ) -> VideoEditorClipTimeline {
             let safeDuration = max(0, sourceDuration.isFinite ? sourceDuration : 0)
             let safeStart = min(max(start ?? 0, 0), safeDuration)
@@ -61,7 +61,7 @@
                 return full(sourceDuration: safeDuration)
             }
             return VideoEditorClipTimeline(segments: [
-                VideoEditorClipSegment(sourceStart: safeStart, sourceEnd: safeEnd),
+                VideoEditorClipSegment(sourceStart: safeStart, sourceEnd: safeEnd)
             ])
         }
 
@@ -81,7 +81,7 @@
                     id: id,
                     sourceStart: start,
                     sourceEnd: end,
-                    speed: segment.speed,
+                    speed: segment.speed
                 ).clampedSpeed()
             }
             .sorted {
@@ -121,7 +121,7 @@
                         segmentID: segment.id,
                         editorStart: editorStart,
                         offset: offset,
-                        sourceTime: segment.sourceStart + sourceOffset,
+                        sourceTime: segment.sourceStart + sourceOffset
                     )
                 }
                 editorStart = editorEnd
@@ -137,7 +137,8 @@
             var editorStart: TimeInterval = 0
             for segment in segments {
                 if sourceTime >= segment.sourceStart - 0.000_001,
-                   sourceTime <= segment.sourceEnd + 0.000_001 {
+                   sourceTime <= segment.sourceEnd + 0.000_001
+                {
                     let sourceOffset = min(max(sourceTime - segment.sourceStart, 0), segment.duration)
                     return editorStart + sourceOffset / segment.speed
                 }
@@ -151,7 +152,8 @@
             let segment = segments[location.segmentIndex]
             let sourceTime = location.sourceTime
             guard sourceTime - segment.sourceStart >= VideoEditorClipSegment.minimumDuration,
-                  segment.sourceEnd - sourceTime >= VideoEditorClipSegment.minimumDuration else {
+                  segment.sourceEnd - sourceTime >= VideoEditorClipSegment.minimumDuration
+            else {
                 return nil
             }
 
@@ -160,13 +162,13 @@
                 id: segment.id,
                 sourceStart: segment.sourceStart,
                 sourceEnd: sourceTime,
-                speed: segment.speed,
+                speed: segment.speed
             )
             let trailing = VideoEditorClipSegment(
                 id: trailingID,
                 sourceStart: sourceTime,
                 sourceEnd: segment.sourceEnd,
-                speed: segment.speed,
+                speed: segment.speed
             )
             var next = segments
             next.replaceSubrange(location.segmentIndex ... location.segmentIndex, with: [leading, trailing])
@@ -210,8 +212,8 @@
                             sourceStart: overlapStart,
                             sourceEnd: overlapEnd,
                             editorStart: editorStart,
-                            editorEnd: editorEnd,
-                        ),
+                            editorEnd: editorEnd
+                        )
                     )
                 }
                 editorOffset += segment.editorDuration
@@ -245,7 +247,7 @@
         /// Maps source-time zoom segments into the editor timeline after clip edits.
         static func mapZoomSegmentsToEditorTimeline(
             _ segments: [ZoomSegment],
-            clipTimeline: VideoEditorClipTimeline,
+            clipTimeline: VideoEditorClipTimeline
         ) -> [ZoomSegment] {
             var mapped: [ZoomSegment] = []
             for segment in segments where segment.isEnabled {

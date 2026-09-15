@@ -34,10 +34,10 @@
         static func geometry(
             progress: Double,
             referenceHeight: CGFloat,
-            cursorScale: CGFloat = 1,
+            cursorScale: CGFloat = 1
         ) -> VideoEditorPointerPressEffectGeometry {
             let age = min(max(progress, 0), 1) * duration
-            let base = referenceHeight * CGFloat(21.0 / 1_080.0) * cursorScale
+            let base = referenceHeight * CGFloat(21.0 / 1080.0) * cursorScale
             let impactProgress = min(max(age / impactDuration, 0), 1)
             let impactEase = easeOutCubic(impactProgress)
             let rippleProgress = min(max((age - rippleDelay) / (duration - rippleDelay), 0), 1)
@@ -47,7 +47,7 @@
                 impactOpacity: age <= impactDuration ? 0.38 * (1 - impactEase) : 0,
                 rippleRadius: base * CGFloat(0.62 + 0.93 * rippleEase),
                 rippleOpacity: age >= rippleDelay ? 0.44 * (1 - rippleEase) : 0,
-                rippleLineWidth: max(1, base * CGFloat(0.14 - 0.07 * rippleEase)),
+                rippleLineWidth: max(1, base * CGFloat(0.14 - 0.07 * rippleEase))
             )
         }
 
@@ -87,7 +87,7 @@
             metadata: RecordingMetadata?,
             trimStart: TimeInterval,
             trimEnd: TimeInterval,
-            speedMap: SpeedTimeMap?,
+            speedMap: SpeedTimeMap?
         ) -> VideoEditorKeystrokeCaptionTimeline {
             guard var metadata else { return .empty }
 
@@ -158,7 +158,7 @@
                 modifiers: event.modifiers,
                 key: event.key,
                 opacity: opacity,
-                scale: scale,
+                scale: scale
             )
         }
     }
@@ -189,7 +189,7 @@
         func pillOrigin(
             pillSize: CGSize,
             cardRect: CGRect,
-            placement: KeystrokeOverlayPosition,
+            placement: KeystrokeOverlayPosition
         ) -> CGPoint {
             let x: CGFloat = switch placement {
             case .topLeft, .bottomLeft:

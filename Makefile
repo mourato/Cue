@@ -35,21 +35,26 @@ test-video:
 	@./scripts/run-tests.sh --video-module
 
 format-check:
-	@swiftformat Cue CueTests --lint
+	@swiftformat --lint --config "$(STYLE_CONFIG_DIR)/.swiftformat" Cue CueTests
 
 format-fix:
-	@swiftformat Cue CueTests
+	@swiftformat --config "$(STYLE_CONFIG_DIR)/.swiftformat" Cue CueTests
 
 lint:
-	@swiftlint lint --config .swiftlint.yml Cue CueTests
+	@if [ -f .swiftlint-baseline.json ]; then \
+		swiftlint lint --strict --config "$(STYLE_CONFIG_DIR)/.swiftlint.yml" --baseline .swiftlint-baseline.json Cue CueTests; \
+	else \
+		swiftlint lint --strict --config "$(STYLE_CONFIG_DIR)/.swiftlint.yml" Cue CueTests; \
+	fi
 
 lint-changed:
 	@./scripts/lint-changed.sh
 
 lint-fix:
-	@swiftlint lint --fix --config .swiftlint.yml Cue CueTests
+	@swiftlint lint --fix --config "$(STYLE_CONFIG_DIR)/.swiftlint.yml" Cue CueTests
 
 AGENT_CONFIG_HOME ?= $(HOME)/.agents
+STYLE_CONFIG_DIR ?= $(AGENT_CONFIG_HOME)/skills/swift-conventions/config
 VALIDATE_LANE ?= $(AGENT_CONFIG_HOME)/scripts/validate-lane
 VALIDATE_BASE ?= $(shell git merge-base origin/main HEAD 2>/dev/null || git rev-parse HEAD^)
 VALIDATE_ARTIFACT_ROOTS := build/verification

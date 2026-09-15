@@ -12,7 +12,7 @@ import Foundation
 final class ScreenshotPresetAutoApplier {
     static let shared = ScreenshotPresetAutoApplier(
         presetStore: AnnotateCanvasPresetStore.shared,
-        fileAccess: SandboxFileAccessManager.shared,
+        fileAccess: SandboxFileAccessManager.shared
     )
 
     private static let emptyCanvasPresetPayload = AnnotateCanvasPresetPayload(
@@ -23,7 +23,7 @@ final class ScreenshotPresetAutoApplier {
         shadowIntensity: 0.3,
         cornerRadius: AnnotateCanvasDefaults.cornerRadius,
         aspectRatio: .auto,
-        aspectRatioOrientation: .horizontal,
+        aspectRatioOrientation: .horizontal
     )
 
     private let presetStore: AnnotateCanvasPresetStore
@@ -41,7 +41,8 @@ final class ScreenshotPresetAutoApplier {
     func applyDefaultPresetIfNeeded(to url: URL) -> AnnotationSessionData? {
         let presets = presetStore.loadPresets()
         guard let defaultPresetId = presetStore.loadDefaultPresetId(validating: presets),
-              let preset = presets.first(where: { $0.id == defaultPresetId }) else {
+              let preset = presets.first(where: { $0.id == defaultPresetId })
+        else {
             return nil
         }
 
@@ -50,7 +51,7 @@ final class ScreenshotPresetAutoApplier {
                 .warning,
                 .annotate,
                 "Screenshot preset auto-apply skipped; file missing",
-                context: ["fileName": url.lastPathComponent],
+                context: ["fileName": url.lastPathComponent]
             )
             return nil
         }
@@ -65,7 +66,7 @@ final class ScreenshotPresetAutoApplier {
                 .annotate,
                 error,
                 "Screenshot preset auto-apply skipped; original read failed",
-                context: ["fileName": url.lastPathComponent],
+                context: ["fileName": url.lastPathComponent]
             )
             return nil
         }
@@ -75,7 +76,7 @@ final class ScreenshotPresetAutoApplier {
                 .warning,
                 .annotate,
                 "Screenshot preset auto-apply skipped; image load failed",
-                context: ["fileName": url.lastPathComponent],
+                context: ["fileName": url.lastPathComponent]
             )
             return nil
         }
@@ -87,18 +88,19 @@ final class ScreenshotPresetAutoApplier {
                 .debug,
                 .annotate,
                 "Screenshot preset auto-apply skipped; preset leaves image unchanged",
-                context: ["fileName": url.lastPathComponent, "preset": preset.name],
+                context: ["fileName": url.lastPathComponent, "preset": preset.name]
             )
             return nil
         }
 
         guard let renderedImage = AnnotateExporter.renderCanvasEffects(sourceImage: sourceImage, effects: effects),
-              let renderedData = AnnotateExporter.imageData(from: renderedImage, for: url.pathExtension) else {
+              let renderedData = AnnotateExporter.imageData(from: renderedImage, for: url.pathExtension)
+        else {
             DiagnosticLogger.shared.log(
                 .error,
                 .annotate,
                 "Screenshot preset auto-apply failed; render returned no data",
-                context: ["fileName": url.lastPathComponent, "preset": preset.name],
+                context: ["fileName": url.lastPathComponent, "preset": preset.name]
             )
             return nil
         }
@@ -112,7 +114,7 @@ final class ScreenshotPresetAutoApplier {
                 .annotate,
                 error,
                 "Screenshot preset auto-apply failed; write failed",
-                context: ["fileName": url.lastPathComponent, "preset": preset.name],
+                context: ["fileName": url.lastPathComponent, "preset": preset.name]
             )
             return nil
         }
@@ -121,7 +123,7 @@ final class ScreenshotPresetAutoApplier {
             .info,
             .annotate,
             "Screenshot preset auto-applied",
-            context: ["fileName": url.lastPathComponent, "preset": preset.name],
+            context: ["fileName": url.lastPathComponent, "preset": preset.name]
         )
 
         return AnnotationSessionData(
@@ -130,7 +132,7 @@ final class ScreenshotPresetAutoApplier {
             canvasEffects: effects,
             selectedCanvasPresetId: preset.id,
             isSelectedCanvasPresetDirty: false,
-            cropRect: nil,
+            cropRect: nil
         )
     }
 
@@ -152,7 +154,7 @@ final class ScreenshotPresetAutoApplier {
             cornerRadius: payload.cornerRadius,
             imageAlignment: .center,
             aspectRatio: payload.aspectRatio,
-            aspectRatioOrientation: payload.aspectRatioOrientation,
+            aspectRatioOrientation: payload.aspectRatioOrientation
         )
     }
 }

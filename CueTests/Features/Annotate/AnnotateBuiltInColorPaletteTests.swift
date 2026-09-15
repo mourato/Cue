@@ -42,7 +42,7 @@ final class AnnotateBuiltInColorPaletteTests: XCTestCase {
             for other in values[(index + 1)...] {
                 XCTAssertFalse(
                     colorsMatch(value, other),
-                    "Duplicate RGB in annotation palette",
+                    "Duplicate RGB in annotation palette"
                 )
             }
         }
@@ -59,7 +59,7 @@ final class AnnotateBuiltInColorPaletteTests: XCTestCase {
         for entry in AnnotateBuiltInColorPalette.annotationEntries {
             XCTAssertTrue(
                 AnnotateBuiltInColorPalette.canvasEntries.contains { $0.id == entry.id },
-                "Canvas missing annotation entry \(entry.id)",
+                "Canvas missing annotation entry \(entry.id)"
             )
         }
         XCTAssertTrue(AnnotateBuiltInColorPalette.canvasEntries.contains { $0.id == "darkGray" })
@@ -90,7 +90,7 @@ final class AnnotateBuiltInColorPaletteTests: XCTestCase {
             format: "#%02X%02X%02X",
             Int((color.red * 255).rounded()),
             Int((color.green * 255).rounded()),
-            Int((color.blue * 255).rounded()),
+            Int((color.blue * 255).rounded())
         )
     }
 }

@@ -50,13 +50,13 @@ final class AnnotateRenderSnapshotTests: XCTestCase {
             AnnotationItem(
                 type: .rectangle,
                 bounds: CGRect(x: 10, y: 10, width: 40, height: 30),
-                properties: AnnotationProperties(strokeColor: .red, strokeWidth: 3),
+                properties: AnnotationProperties(strokeColor: .red, strokeWidth: 3)
             ),
             AnnotationItem(
                 type: .text("Hi"),
                 bounds: CGRect(x: 20, y: 40, width: 60, height: 20),
-                properties: AnnotationProperties(fontSize: 14),
-            ),
+                properties: AnnotationProperties(fontSize: 14)
+            )
         ]
 
         let reference = try XCTUnwrap(AnnotateExporter.renderFinalImage(state: state))
@@ -114,8 +114,8 @@ final class AnnotateRenderSnapshotTests: XCTestCase {
             AnnotationItem(
                 type: .embeddedImage(assetId),
                 bounds: CGRect(x: 5, y: 5, width: 20, height: 20),
-                properties: AnnotationProperties(strokeColor: .clear, fillColor: .clear, strokeWidth: 1),
-            ),
+                properties: AnnotationProperties(strokeColor: .clear, fillColor: .clear, strokeWidth: 1)
+            )
         ]
 
         let snapshot = try XCTUnwrap(state.makeRenderSnapshot())
@@ -132,8 +132,8 @@ final class AnnotateRenderSnapshotTests: XCTestCase {
             AnnotationItem(
                 type: .rectangle,
                 bounds: CGRect(x: 10, y: 10, width: 40, height: 30),
-                properties: AnnotationProperties(strokeColor: .red, strokeWidth: 3),
-            ),
+                properties: AnnotationProperties(strokeColor: .red, strokeWidth: 3)
+            )
         ]
 
         let reference = try XCTUnwrap(AnnotateExporter.renderFinalImage(state: state))

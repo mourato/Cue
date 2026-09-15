@@ -30,7 +30,7 @@ final class ScrollingCaptureMouseMoveSuppressor {
                 options: .defaultTap,
                 eventsOfInterest: eventMask,
                 callback: callback,
-                userInfo: nil,
+                userInfo: nil
             )
         else {
             return false

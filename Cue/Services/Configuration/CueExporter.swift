@@ -15,7 +15,7 @@ enum CueConfigurationExporter {
         writer.root("schema_version", 1)
         writer.root(
             "cue_min_version",
-            Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.20.0",
+            Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.20.0"
         )
 
         writeGeneral(&writer, defaults: defaults)
@@ -42,7 +42,7 @@ enum CueConfigurationExporter {
         writer.value("start_at_login", LoginItemManager.isEnabled)
         writer.value(
             "export_location",
-            CueConfigurationPaths.collapsingHomePath(SandboxFileAccessManager.shared.exportLocationPath),
+            CueConfigurationPaths.collapsingHomePath(SandboxFileAccessManager.shared.exportLocationPath)
         )
 
         writer.section("diagnostics")
@@ -50,7 +50,7 @@ enum CueConfigurationExporter {
         writer.value(
             "retention_days",
             defaults.object(forKey: PreferencesKeys.diagnosticsRetentionDays) as? Int
-                ?? LogCleanupScheduler.defaultRetentionDays,
+                ?? LogCleanupScheduler.defaultRetentionDays
         )
     }
 
@@ -64,11 +64,11 @@ enum CueConfigurationExporter {
         writer.value("recording_template", CaptureOutputNaming.resolvedTemplate(for: .recording, defaults: defaults))
         writer.value(
             "ask_for_name_after_capture",
-            defaults.boolValue(PreferencesKeys.captureAskForNameAfterCapture, default: false),
+            defaults.boolValue(PreferencesKeys.captureAskForNameAfterCapture, default: false)
         )
         writer.value(
             "add_retina_suffix",
-            defaults.boolValue(PreferencesKeys.screenshotAddRetinaSuffix, default: true),
+            defaults.boolValue(PreferencesKeys.screenshotAddRetinaSuffix, default: true)
         )
 
         writer.section("capture.clipboard")
@@ -77,45 +77,45 @@ enum CueConfigurationExporter {
         writer.section("capture.all_in_one")
         writer.value(
             "remember_last_selection",
-            defaults.boolValue(PreferencesKeys.captureAllInOneRememberLastSelection, default: true),
+            defaults.boolValue(PreferencesKeys.captureAllInOneRememberLastSelection, default: true)
         )
 
         writer.section("capture.screenshot")
         writer.value(
             "format",
-            defaults.string(forKey: PreferencesKeys.screenshotFormat) ?? ImageFormatOption.png.rawValue,
+            defaults.string(forKey: PreferencesKeys.screenshotFormat) ?? ImageFormatOption.png.rawValue
         )
         writer.value("include_own_app", defaults.boolValue(PreferencesKeys.screenshotIncludeOwnApp, default: false))
         writer.value("show_cursor", defaults.boolValue(PreferencesKeys.screenshotShowCursor, default: false))
         writer.value("freeze_area", defaults.boolValue(PreferencesKeys.screenshotFreezeArea, default: false))
         writer.value(
             "show_selection_area_overlay",
-            defaults.boolValue(PreferencesKeys.screenshotShowSelectionAreaOverlay, default: true),
+            defaults.boolValue(PreferencesKeys.screenshotShowSelectionAreaOverlay, default: true)
         )
         writer.value(
             "reverse_magnifier_zoom_direction",
-            defaults.boolValue(PreferencesKeys.screenshotReverseMagnifierZoomDirection, default: false),
+            defaults.boolValue(PreferencesKeys.screenshotReverseMagnifierZoomDirection, default: false)
         )
         writer.value(
             "selection_snap_distance",
             defaults.integerValue(
                 PreferencesKeys.captureSelectionSnapDistance,
-                default: Int(CaptureSelectionSnappingConfiguration.defaultSnapDistance),
-            ),
+                default: Int(CaptureSelectionSnappingConfiguration.defaultSnapDistance)
+            )
         )
         writer.value(
             "selection_color_sensitivity",
             defaults.integerValue(
                 PreferencesKeys.captureSelectionColorSensitivity,
-                default: CaptureSelectionSnappingConfiguration.defaultColorSensitivity,
-            ),
+                default: CaptureSelectionSnappingConfiguration.defaultColorSensitivity
+            )
         )
         writer.value(
             "show_selection_snap_guides",
             defaults.boolValue(
                 PreferencesKeys.captureSelectionShowSnapGuides,
-                default: CaptureSelectionSnappingConfiguration.defaultShowSnapGuides,
-            ),
+                default: CaptureSelectionSnappingConfiguration.defaultShowSnapGuides
+            )
         )
 
         writer.section("capture.scrolling")
@@ -124,19 +124,19 @@ enum CueConfigurationExporter {
         writer.section("capture.ocr")
         writer.value(
             "success_notification",
-            defaults.boolValue(PreferencesKeys.ocrSuccessNotificationEnabled, default: true),
+            defaults.boolValue(PreferencesKeys.ocrSuccessNotificationEnabled, default: true)
         )
         writer.value(
             "language",
-            defaults.string(forKey: PreferencesKeys.ocrLanguage) ?? "auto",
+            defaults.string(forKey: PreferencesKeys.ocrLanguage) ?? "auto"
         )
         writer.value(
             "keep_line_breaks",
-            defaults.boolValue(PreferencesKeys.ocrKeepLineBreaks, default: true),
+            defaults.boolValue(PreferencesKeys.ocrKeepLineBreaks, default: true)
         )
         writer.value(
             "link_detection",
-            defaults.boolValue(PreferencesKeys.ocrLinkDetectionEnabled, default: false),
+            defaults.boolValue(PreferencesKeys.ocrLinkDetectionEnabled, default: false)
         )
 
         writer.section("capture.object_cutout")
@@ -160,11 +160,11 @@ enum CueConfigurationExporter {
             writer.value("camera_device_id", RecordingToolbarPreferences.cameraDeviceID(defaults: defaults))
             writer.value(
                 "show_camera_preview_during_recording",
-                RecordingToolbarPreferences.showCameraPreviewDuringRecording(defaults: defaults),
+                RecordingToolbarPreferences.showCameraPreviewDuringRecording(defaults: defaults)
             )
             writer.value(
                 "remember_last_area",
-                defaults.boolValue(PreferencesKeys.recordingRememberLastArea, default: true),
+                defaults.boolValue(PreferencesKeys.recordingRememberLastArea, default: true)
             )
             writer.value("include_own_app", defaults.boolValue(PreferencesKeys.recordingIncludeOwnApp, default: false))
             writer.value("show_cursor", RecordingToolbarPreferences.showCursor(defaults: defaults))
@@ -172,23 +172,23 @@ enum CueConfigurationExporter {
             writer.value("show_keystrokes", RecordingToolbarPreferences.showKeystrokes(defaults: defaults))
             writer.value(
                 "dim_screen_while_recording",
-                RecordingToolbarPreferences.dimScreenWhileRecording(defaults: defaults),
+                RecordingToolbarPreferences.dimScreenWhileRecording(defaults: defaults)
             )
             writer.value("show_countdown", RecordingToolbarPreferences.showCountdown(defaults: defaults))
             writer.value(
                 "do_not_disturb_while_recording",
-                RecordingToolbarPreferences.doNotDisturbWhileRecording(defaults: defaults),
+                RecordingToolbarPreferences.doNotDisturbWhileRecording(defaults: defaults)
             )
             writer.value("max_resolution", RecordingToolbarPreferences.maxResolution(defaults: defaults))
             writer.value("scale_retina_to_1x", RecordingToolbarPreferences.scaleRetinaTo1x(defaults: defaults))
             writer.value("record_audio_in_mono", RecordingToolbarPreferences.recordAudioInMono(defaults: defaults))
             writer.value(
                 "audio_tracks",
-                defaults.string(forKey: PreferencesKeys.recordingAudioTracks) ?? "single",
+                defaults.string(forKey: PreferencesKeys.recordingAudioTracks) ?? "single"
             )
             writer.value(
                 "video_editor_zoom_transition_duration",
-                defaults.doubleValue(PreferencesKeys.videoEditorZoomTransitionDuration, default: 0.4),
+                defaults.doubleValue(PreferencesKeys.videoEditorZoomTransitionDuration, default: 0.4)
             )
 
             writer.section("recording.mouse_highlight")
@@ -196,7 +196,7 @@ enum CueConfigurationExporter {
             writer.value("size", defaults.doubleValue(PreferencesKeys.mouseHighlightSize, default: 50))
             writer.value(
                 "animation_duration",
-                defaults.doubleValue(PreferencesKeys.mouseHighlightAnimationDuration, default: 0.7),
+                defaults.doubleValue(PreferencesKeys.mouseHighlightAnimationDuration, default: 0.7)
             )
             writer.value("color", CueConfigurationColor.hexString(from: color))
             writer.value("opacity", defaults.doubleValue(PreferencesKeys.mouseHighlightOpacity, default: 0.5))
@@ -207,11 +207,11 @@ enum CueConfigurationExporter {
             writer.value(
                 "position",
                 defaults.string(forKey: PreferencesKeys.keystrokePosition) ?? KeystrokeOverlayPosition.bottomCenter
-                    .rawValue,
+                    .rawValue
             )
             writer.value(
                 "display_duration",
-                defaults.doubleValue(PreferencesKeys.keystrokeDisplayDuration, default: 1.5),
+                defaults.doubleValue(PreferencesKeys.keystrokeDisplayDuration, default: 1.5)
             )
 
             writer.section("recording.gif")
@@ -225,17 +225,18 @@ enum CueConfigurationExporter {
             writer.value(
                 "modifier",
                 defaults.string(forKey: PreferencesKeys.annotationShortcutModifier)
-                    ?? AnnotationShortcutModifier.shift.rawValue,
+                    ?? AnnotationShortcutModifier.shift.rawValue
             )
             writer.value(
                 "hold_duration",
-                defaults.doubleValue(PreferencesKeys.annotationShortcutHoldDuration, default: 0.3),
+                defaults.doubleValue(PreferencesKeys.annotationShortcutHoldDuration, default: 0.3)
             )
         }
 
         private static func storedMouseColor(defaults: UserDefaults) -> NSColor {
             guard let data = defaults.data(forKey: PreferencesKeys.mouseHighlightColor),
-                  let color = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: data) else {
+                  let color = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: data)
+            else {
                 return MouseHighlightConfiguration.defaultHighlightColor
             }
             return color
@@ -301,12 +302,12 @@ enum CueConfigurationExporter {
         writer.section("annotate")
         writer.value(
             "clipboard_image_open_behavior",
-            AnnotateClipboardImageBehavior.stored(userDefaults: defaults).rawValue,
+            AnnotateClipboardImageBehavior.stored(userDefaults: defaults).rawValue
         )
         writer.value("close_after_drag", defaults.boolValue(PreferencesKeys.annotateCloseAfterDrag, default: true))
         writer.value(
             "bring_forward_after_drag",
-            defaults.boolValue(PreferencesKeys.annotateBringForwardAfterDrag, default: false),
+            defaults.boolValue(PreferencesKeys.annotateBringForwardAfterDrag, default: false)
         )
         writer.value("quick_properties_sync", AnnotateQuickPropertiesSyncPreference.isEnabled(userDefaults: defaults))
         writer.value("combine_save_as_edit", CombineSaveAsEditPreference.isEnabled(userDefaults: defaults))
@@ -319,7 +320,7 @@ enum CueConfigurationExporter {
                 .map(\.rawValue)
                 + chromeStore.bottomActionOrder
                 .filter { chromeStore.isEnabled($0) }
-                .map(\.rawValue),
+                .map(\.rawValue)
         )
     }
 

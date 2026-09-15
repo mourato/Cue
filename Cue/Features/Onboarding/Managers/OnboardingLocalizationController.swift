@@ -58,7 +58,7 @@ final class OnboardingLocalizationController: ObservableObject {
             key,
             defaultValue: defaultValue,
             localeIdentifier: effectiveLanguageIdentifier,
-            comment: comment,
+            comment: comment
         )
     }
 
@@ -66,13 +66,13 @@ final class OnboardingLocalizationController: ObservableObject {
         _ key: String,
         defaultValue: String,
         comment: String,
-        arguments: [CVarArg],
+        arguments: [CVarArg]
     ) -> String {
         let format = string(key, defaultValue: defaultValue, comment: comment)
         return String(
             format: format,
             locale: Locale(identifier: effectiveLanguageIdentifier),
-            arguments: arguments,
+            arguments: arguments
         )
     }
 }

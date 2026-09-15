@@ -11,13 +11,13 @@ final class CueNotesComposerTests: XCTestCase {
             text: "Button color",
             target: .point(CGPoint(x: 20, y: 20)),
             color: red,
-            creationOrder: 1,
+            creationOrder: 1
         )
 
         let composed = CueNotesComposer.compose(
             baseImage: base,
             notes: [note],
-            panelSide: .right,
+            panelSide: .right
         )
 
         XCTAssertGreaterThan(composed.size.width, base.size.width)
@@ -31,7 +31,7 @@ final class CueNotesComposerTests: XCTestCase {
         let composed = CueNotesComposer.compose(
             baseImage: base,
             notes: [note],
-            panelSide: .left,
+            panelSide: .left
         )
 
         XCTAssertEqual(composed.size, base.size)

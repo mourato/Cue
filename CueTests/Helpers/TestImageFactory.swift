@@ -16,7 +16,7 @@ enum TestImageFactory {
         red: UInt8 = 128,
         green: UInt8 = 128,
         blue: UInt8 = 128,
-        alpha: UInt8 = 255,
+        alpha: UInt8 = 255
     ) -> CGImage? {
         let bytesPerRow = width * 4
         var pixels = [UInt8](repeating: 0, count: height * bytesPerRow)
@@ -40,7 +40,7 @@ enum TestImageFactory {
         width: Int,
         height: Int,
         topGray: UInt8 = 0,
-        bottomGray: UInt8 = 255,
+        bottomGray: UInt8 = 255
     ) -> CGImage? {
         let bytesPerRow = width * 4
         var pixels = [UInt8](repeating: 0, count: height * bytesPerRow)
@@ -67,7 +67,7 @@ enum TestImageFactory {
         height: Int,
         edgeX: Int? = nil,
         leftGray: UInt8 = 0,
-        rightGray: UInt8 = 255,
+        rightGray: UInt8 = 255
     ) -> CGImage? {
         let splitX = min(max(edgeX ?? width / 2, 0), width)
         let bytesPerRow = width * 4
@@ -95,7 +95,7 @@ enum TestImageFactory {
         height: Int,
         topGray: UInt8 = 0,
         bottomGray: UInt8 = 255,
-        shiftPixels: Int,
+        shiftPixels: Int
     ) -> CGImage? {
         let bytesPerRow = width * 4
         var pixels = [UInt8](repeating: 0, count: height * bytesPerRow)
@@ -125,7 +125,7 @@ enum TestImageFactory {
     static func scrollingFrame(
         width: Int,
         height: Int,
-        logicalYOffset: Int = 0,
+        logicalYOffset: Int = 0
     ) -> CGImage? {
         let bytesPerRow = width * 4
         var pixels = [UInt8](repeating: 0, count: height * bytesPerRow)
@@ -155,7 +155,7 @@ enum TestImageFactory {
         width: Int,
         height: Int,
         bytesPerRow: Int,
-        pixels: [UInt8],
+        pixels: [UInt8]
     ) -> CGImage? {
         let data = Data(pixels) as CFData
         guard let provider = CGDataProvider(data: data) else { return nil }
@@ -174,7 +174,7 @@ enum TestImageFactory {
             provider: provider,
             decode: nil,
             shouldInterpolate: false,
-            intent: .defaultIntent,
+            intent: .defaultIntent
         )
     }
 }

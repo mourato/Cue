@@ -22,7 +22,7 @@ private struct AnnotateBottomBarWidthPreferenceKey: PreferenceKey {
 
     static func reduce(
         value: inout [AnnotateBottomBarMeasuredSide: CGFloat],
-        nextValue: () -> [AnnotateBottomBarMeasuredSide: CGFloat],
+        nextValue: () -> [AnnotateBottomBarMeasuredSide: CGFloat]
     ) {
         value.merge(nextValue(), uniquingKeysWith: { _, newValue in newValue })
     }
@@ -34,9 +34,9 @@ private extension View {
             GeometryReader { geometry in
                 Color.clear.preference(
                     key: AnnotateBottomBarWidthPreferenceKey.self,
-                    value: [side: geometry.size.width],
+                    value: [side: geometry.size.width]
                 )
-            },
+            }
         )
     }
 }
@@ -115,7 +115,7 @@ struct AnnotateBottomBarView: View {
                 if state.hasImage, activeActionRegistration == .annotateDefault, dragWidth > 0 {
                     dragHandle(
                         width: dragWidth,
-                        isCompact: dragWidth < centeredDragFullWidth,
+                        isCompact: dragWidth < centeredDragFullWidth
                     )
                     .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
                 }
@@ -227,7 +227,7 @@ struct AnnotateBottomBarView: View {
                 AnnotateModeSwitcherButton(
                     systemImage: modeIcon(for: mode),
                     title: modeTitle(for: mode),
-                    isSelected: state.editorMode == mode,
+                    isSelected: state.editorMode == mode
                 ) {
                     state.editorMode = mode
                 }
@@ -236,7 +236,7 @@ struct AnnotateBottomBarView: View {
         .padding(3)
         .background(
             RoundedRectangle(cornerRadius: 9, style: .continuous)
-                .fill(Color.primary.opacity(0.06)),
+                .fill(Color.primary.opacity(0.06))
         )
         .clipShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
         .fixedSize(horizontal: true, vertical: false)
@@ -286,15 +286,15 @@ struct AnnotateBottomBarView: View {
                             .foregroundColor(dragLabelColor(for: dragState))
                     }
                 }
-                .allowsHitTesting(false),
+                .allowsHitTesting(false)
             )
             .background(
                 Capsule()
-                    .fill(dragBackgroundColor(for: dragState)),
+                    .fill(dragBackgroundColor(for: dragState))
             )
             .overlay(
                 Capsule()
-                    .strokeBorder(dragBorderColor(for: dragState), lineWidth: 1),
+                    .strokeBorder(dragBorderColor(for: dragState), lineWidth: 1)
             )
             .onHover { isDragHovering = $0 }
             .animation(.easeInOut(duration: 0.15), value: isDragHovering)
@@ -377,7 +377,7 @@ struct AnnotateBottomBarView: View {
         case .newWindow:
             BottomBarButton(
                 icon: "plus.rectangle.on.rectangle",
-                tooltipTitle: L10n.AnnotateUI.newWindow,
+                tooltipTitle: L10n.AnnotateUI.newWindow
             ) {
                 AnnotateManager.shared.openEmptyAnnotation()
             }
@@ -391,7 +391,7 @@ struct AnnotateBottomBarView: View {
             BottomBarButton(
                 icon: isUploading ? "xmark" : "icloud.and.arrow.up",
                 title: isUploading ? L10n.Common.cancel : nil,
-                tooltipTitle: isUploading ? L10n.Common.cancel : uploadTooltipTitle,
+                tooltipTitle: isUploading ? L10n.Common.cancel : uploadTooltipTitle
             ) {
                 if isUploading {
                     uploadTask?.cancel()
@@ -408,7 +408,7 @@ struct AnnotateBottomBarView: View {
             BottomBarButton(
                 icon: state.isPinned ? "pin.fill" : "pin",
                 tooltipTitle: state.isPinned ? L10n.AnnotateUI.unpinWindow : L10n.AnnotateUI.pinWindow,
-                tooltipKeys: pinKeys,
+                tooltipKeys: pinKeys
             ) {
                 pin()
             }
@@ -419,7 +419,7 @@ struct AnnotateBottomBarView: View {
                 icon: "doc.on.doc",
                 title: L10n.Common.copy,
                 tooltipTitle: L10n.AnnotateUI.copyToClipboard,
-                tooltipKeys: copyKeys,
+                tooltipKeys: copyKeys
             ) {
                 copyToClipboard()
             }
@@ -522,13 +522,13 @@ struct AnnotateBottomBarView: View {
             message: uploadingMessage,
             style: .info,
             duration: nil,
-            iconMode: .spinner,
+            iconMode: .spinner
         )
 
         uploadTask = Task { @MainActor in
             defer { isUploading = false }
             let link = await uploadCoordinator.upload(
-                finalImage: renderedImage,
+                finalImage: renderedImage
             )
             // Cancellation is silent: dismiss the spinner, no error toast.
             if Task.isCancelled {
@@ -546,7 +546,7 @@ struct AnnotateBottomBarView: View {
                     AppToastManager.shared.update(
                         progressToast,
                         message: uploadedMessage,
-                        style: .success,
+                        style: .success
                     )
                 } else {
                     AppToastManager.shared.show(message: uploadedMessage, style: .success)
@@ -611,7 +611,7 @@ private struct AnnotateModeSwitcherButton: View {
                 .frame(width: 28, height: 28)
                 .background(
                     RoundedRectangle(cornerRadius: 6, style: .continuous)
-                        .fill(backgroundColor),
+                        .fill(backgroundColor)
                 )
                 .overlay {
                     if isSelected {
@@ -667,7 +667,7 @@ struct BottomBarButton: View {
                     .frame(width: 28, height: 28)
                     .background(
                         RoundedRectangle(cornerRadius: 6)
-                            .fill(isHovering ? Color.primary.opacity(0.15) : Color.clear),
+                            .fill(isHovering ? Color.primary.opacity(0.15) : Color.clear)
                     )
             }
             .buttonStyle(.plain)
@@ -680,6 +680,6 @@ struct BottomBarButton: View {
     private var accessibilityTitle: String {
         tooltipKeys.isEmpty
             ? tooltipTitle
-            : L10n.Common.withShortcut(tooltipTitle, tooltipKeys.joined(separator: ""))
+            : L10n.Common.withShortcut(tooltipTitle, tooltipKeys.joined())
     }
 }

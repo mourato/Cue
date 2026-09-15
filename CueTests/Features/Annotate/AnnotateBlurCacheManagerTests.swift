@@ -38,7 +38,7 @@ final class AnnotateBlurCacheManagerTests: XCTestCase {
             bounds: bounds,
             sourceImage: sourceImage,
             blurType: .pixelated,
-            effectValue: 8,
+            effectValue: 8
         )
         XCTAssertNotNil(image)
     }
@@ -51,14 +51,14 @@ final class AnnotateBlurCacheManagerTests: XCTestCase {
             bounds: bounds,
             sourceImage: sourceImage,
             blurType: .pixelated,
-            effectValue: 8,
+            effectValue: 8
         )
         let second = cache.getCachedBlur(
             for: id,
             bounds: bounds,
             sourceImage: sourceImage,
             blurType: .pixelated,
-            effectValue: 8,
+            effectValue: 8
         )
         XCTAssertTrue(first === second)
     }
@@ -70,14 +70,14 @@ final class AnnotateBlurCacheManagerTests: XCTestCase {
             bounds: CGRect(x: 10, y: 10, width: 50, height: 50),
             sourceImage: sourceImage,
             blurType: .pixelated,
-            effectValue: 8,
+            effectValue: 8
         )
         let second = cache.getCachedBlur(
             for: id,
             bounds: CGRect(x: 10, y: 10, width: 60, height: 60),
             sourceImage: sourceImage,
             blurType: .pixelated,
-            effectValue: 8,
+            effectValue: 8
         )
         XCTAssertFalse(first === second)
     }
@@ -89,7 +89,7 @@ final class AnnotateBlurCacheManagerTests: XCTestCase {
             bounds: CGRect(x: 10, y: 10, width: 50, height: 50),
             sourceImage: sourceImage,
             blurType: .pixelated,
-            effectValue: 8,
+            effectValue: 8
         )
         let second = cache.getCachedBlur(
             for: id,
@@ -97,7 +97,7 @@ final class AnnotateBlurCacheManagerTests: XCTestCase {
             sourceImage: sourceImage,
             blurType: .pixelated,
             effectValue: 8,
-            allowApproximateReuse: true,
+            allowApproximateReuse: true
         )
         XCTAssertTrue(first === second)
     }
@@ -112,7 +112,7 @@ final class AnnotateBlurCacheManagerTests: XCTestCase {
             sourceImage: sourceImage,
             blurType: .pixelated,
             effectValue: 8,
-            renderSynchronously: false,
+            renderSynchronously: false
         )
         XCTAssertNil(immediate)
 
@@ -135,7 +135,7 @@ final class AnnotateBlurCacheManagerTests: XCTestCase {
             bounds: CGRect(x: 0, y: 0, width: 20, height: 20),
             sourceImage: sourceImage,
             blurType: .pixelated,
-            effectValue: 8,
+            effectValue: 8
         )
         XCTAssertTrue(cache.hasCachedBlur(for: id))
         cache.invalidate(id: id)
@@ -150,14 +150,14 @@ final class AnnotateBlurCacheManagerTests: XCTestCase {
             bounds: CGRect(x: 0, y: 0, width: 20, height: 20),
             sourceImage: sourceImage,
             blurType: .pixelated,
-            effectValue: 8,
+            effectValue: 8
         )
         cache.getCachedBlur(
             for: id2,
             bounds: CGRect(x: 0, y: 0, width: 20, height: 20),
             sourceImage: sourceImage,
             blurType: .pixelated,
-            effectValue: 8,
+            effectValue: 8
         )
         cache.clearAll()
         XCTAssertFalse(cache.hasCachedBlur(for: id1))
@@ -170,7 +170,7 @@ final class AnnotateBlurCacheManagerTests: XCTestCase {
             bounds: CGRect(x: 0, y: 0, width: 0, height: 0),
             sourceImage: sourceImage,
             blurType: .pixelated,
-            effectValue: 8,
+            effectValue: 8
         )
         XCTAssertNil(image)
     }

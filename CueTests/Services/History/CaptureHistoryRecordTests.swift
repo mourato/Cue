@@ -54,7 +54,7 @@ final class CaptureHistoryRecordTests: XCTestCase {
     private func makeRecord(
         filePath: String = "/tmp/capture.png",
         duration: TimeInterval? = 12,
-        thumbnailPath: String? = nil,
+        thumbnailPath: String? = nil
     ) -> CaptureHistoryRecord {
         CaptureHistoryRecord(
             id: UUID(),
@@ -67,7 +67,7 @@ final class CaptureHistoryRecordTests: XCTestCase {
             height: 360,
             duration: duration,
             thumbnailPath: thumbnailPath,
-            isDeleted: false,
+            isDeleted: false
         )
     }
 }

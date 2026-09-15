@@ -43,7 +43,7 @@ final class CaptureOverlayShortcutSettingsTests: XCTestCase {
     func testIsIndependent_withModifiers_returnsTrue() {
         let shortcut = CaptureOverlayShortcut(
             keyCode: UInt32(kVK_ANSI_A),
-            modifiers: UInt32(cmdKey),
+            modifiers: UInt32(cmdKey)
         )
         XCTAssertTrue(shortcut.isIndependent)
     }
@@ -58,7 +58,7 @@ final class CaptureOverlayShortcutSettingsTests: XCTestCase {
     func testIndependentShortcutConfig_withModifiers_returnsConfig() {
         let shortcut = CaptureOverlayShortcut(
             keyCode: UInt32(kVK_ANSI_A),
-            modifiers: UInt32(cmdKey),
+            modifiers: UInt32(cmdKey)
         )
         let config = shortcut.independentShortcutConfig
         XCTAssertNotNil(config)
@@ -103,7 +103,7 @@ final class CaptureOverlayShortcutSettingsTests: XCTestCase {
     func testSetAndReadShortcut_recordingApplicationCapture_roundtrips() throws {
         let shortcut = CaptureOverlayShortcut(
             keyCode: UInt32(kVK_ANSI_C),
-            modifiers: UInt32(shiftKey),
+            modifiers: UInt32(shiftKey)
         )
         CaptureOverlayShortcutSettings.setRecordingApplicationCaptureShortcut(shortcut)
 
@@ -137,7 +137,7 @@ final class CaptureOverlayShortcutSettingsTests: XCTestCase {
         let shortcut = try XCTUnwrap(CaptureOverlayShortcutSettings.shortcut(for: .applicationRecording))
         XCTAssertEqual(
             shortcut.keyCode,
-            try XCTUnwrap(CaptureOverlayShortcutSettings.recordingApplicationCaptureShortcut).keyCode,
+            try XCTUnwrap(CaptureOverlayShortcutSettings.recordingApplicationCaptureShortcut).keyCode
         )
     }
 
@@ -179,7 +179,7 @@ final class CaptureOverlayShortcutSettingsTests: XCTestCase {
     func testCaptureOverlayShortcut_encodeDecode_roundtrips() throws {
         let original = CaptureOverlayShortcut(
             keyCode: UInt32(kVK_ANSI_M),
-            modifiers: UInt32(cmdKey | shiftKey),
+            modifiers: UInt32(cmdKey | shiftKey)
         )
         let data = try JSONEncoder().encode(original)
         let decoded = try JSONDecoder().decode(CaptureOverlayShortcut.self, from: data)
@@ -218,7 +218,7 @@ final class CaptureOverlayShortcutSettingsTests: XCTestCase {
             characters: " ",
             charactersIgnoringModifiers: " ",
             isARepeat: false,
-            keyCode: UInt16(kVK_Space),
+            keyCode: UInt16(kVK_Space)
         )
         XCTAssertNotNil(event)
         let shortcut = try CaptureOverlayShortcut(from: XCTUnwrap(event))
@@ -255,7 +255,7 @@ final class CaptureOverlayShortcutSettingsTests: XCTestCase {
     private func makeKeyEvent(
         keyCode: UInt16,
         modifierFlags: NSEvent.ModifierFlags,
-        characters: String = "a",
+        characters: String = "a"
     ) -> NSEvent? {
         NSEvent.keyEvent(
             with: .keyDown,
@@ -267,13 +267,13 @@ final class CaptureOverlayShortcutSettingsTests: XCTestCase {
             characters: characters,
             charactersIgnoringModifiers: characters,
             isARepeat: false,
-            keyCode: keyCode,
+            keyCode: keyCode
         )
     }
 
     func testInitFromEvent_fnModifier_capturesFnBit() throws {
         let event = try XCTUnwrap(
-            makeKeyEvent(keyCode: UInt16(kVK_ANSI_A), modifierFlags: [.function]),
+            makeKeyEvent(keyCode: UInt16(kVK_ANSI_A), modifierFlags: [.function])
         )
 
         let shortcut = try XCTUnwrap(CaptureOverlayShortcut(from: event))
@@ -284,7 +284,7 @@ final class CaptureOverlayShortcutSettingsTests: XCTestCase {
     func testMatches_fnModifier_requiresFn() throws {
         let shortcut = CaptureOverlayShortcut(
             keyCode: UInt32(kVK_ANSI_A),
-            modifiers: ShortcutConfig.functionCarbonModifier,
+            modifiers: ShortcutConfig.functionCarbonModifier
         )
 
         let withFn = try XCTUnwrap(makeKeyEvent(keyCode: UInt16(kVK_ANSI_A), modifierFlags: [.function]))

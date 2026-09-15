@@ -17,7 +17,7 @@ final class HistoryFloatingPanel: NSPanel {
             contentRect: contentRect,
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
-            defer: false,
+            defer: false
         )
         configurePanel()
     }

@@ -17,9 +17,9 @@ final class CueNoteGeometryTests: XCTestCase {
         let translated = CueNoteGeometry.translated(
             .point(CGPoint(x: 90, y: 50)),
             by: CGPoint(x: 20, y: 0),
-            within: bounds,
+            within: bounds
         )
-        guard case .point(let point) = translated else {
+        guard case let .point(point) = translated else {
             return XCTFail("Expected point target")
         }
         XCTAssertEqual(point.x, 100)
@@ -31,9 +31,9 @@ final class CueNoteGeometryTests: XCTestCase {
         let translated = CueNoteGeometry.translated(
             .rect(CGRect(x: 70, y: 10, width: 20, height: 20)),
             by: CGPoint(x: 20, y: 0),
-            within: bounds,
+            within: bounds
         )
-        guard case .rect(let rect, _) = translated else {
+        guard case let .rect(rect, _) = translated else {
             return XCTFail("Expected rect target")
         }
         XCTAssertEqual(rect.origin.x, 80)
@@ -46,10 +46,10 @@ final class CueNoteGeometryTests: XCTestCase {
             target,
             handle: .bottomRight,
             to: CGPoint(x: 70, y: 50),
-            within: CGRect(x: 0, y: 0, width: 200, height: 200),
+            within: CGRect(x: 0, y: 0, width: 200, height: 200)
         )
 
-        guard case .rect(let rect, _) = resized else {
+        guard case let .rect(rect, _) = resized else {
             return XCTFail("Expected rect target")
         }
         XCTAssertEqual(rect, CGRect(x: 20, y: 50, width: 50, height: 40))
@@ -58,9 +58,9 @@ final class CueNoteGeometryTests: XCTestCase {
             target,
             handle: .topLeft,
             to: CGPoint(x: 95, y: 35),
-            within: CGRect(x: 0, y: 0, width: 200, height: 200),
+            within: CGRect(x: 0, y: 0, width: 200, height: 200)
         )
-        guard case .rect(let minimumRect, _) = tooSmall else {
+        guard case let .rect(minimumRect, _) = tooSmall else {
             return XCTFail("Expected rect target")
         }
         XCTAssertEqual(minimumRect.width, CueNoteGeometry.minimumRectSize)
@@ -69,7 +69,7 @@ final class CueNoteGeometryTests: XCTestCase {
 
     func testResizeHandleCentersIncludeEachSideMidpoint() {
         let centers = CueNoteGeometry.resizeHandleCenters(
-            for: CGRect(x: 20, y: 30, width: 80, height: 60),
+            for: CGRect(x: 20, y: 30, width: 80, height: 60)
         )
 
         XCTAssertEqual(centers.count, 8)
@@ -86,16 +86,16 @@ final class CueNoteGeometryTests: XCTestCase {
             target,
             handle: .top,
             to: CGPoint(x: 60, y: 110),
-            within: CGRect(x: 0, y: 0, width: 200, height: 200),
+            within: CGRect(x: 0, y: 0, width: 200, height: 200)
         )
         let left = CueNoteGeometry.resized(
             target,
             handle: .left,
             to: CGPoint(x: 0, y: 60),
-            within: CGRect(x: 0, y: 0, width: 200, height: 200),
+            within: CGRect(x: 0, y: 0, width: 200, height: 200)
         )
 
-        guard case .rect(let topRect, _) = top, case .rect(let leftRect, _) = left else {
+        guard case let .rect(topRect, _) = top, case let .rect(leftRect, _) = left else {
             return XCTFail("Expected rectangle targets")
         }
         XCTAssertEqual(topRect, CGRect(x: 20, y: 30, width: 80, height: 80))
@@ -108,7 +108,7 @@ final class CueNoteGeometryTests: XCTestCase {
             text: "Two",
             target: .point(CGPoint(x: 10, y: 10)),
             color: red,
-            creationOrder: 2,
+            creationOrder: 2
         )
         let empty = CueVisualNote(text: "   ", target: .point(CGPoint(x: 20, y: 20)), color: red, creationOrder: 3)
         let notes = [first, second, empty]
@@ -122,14 +122,14 @@ final class CueNoteGeometryTests: XCTestCase {
             text: "Move",
             target: .rect(CGRect(x: 10, y: 20, width: 30, height: 40)),
             color: red,
-            creationOrder: 1,
+            creationOrder: 1
         )
         let transformed = CueNoteGeometry.exportTransformed(
             note,
             cropOrigin: CGPoint(x: 5, y: 5),
-            destinationOffset: CGPoint(x: 100, y: 200),
+            destinationOffset: CGPoint(x: 100, y: 200)
         )
-        guard case .rect(let rect, _) = transformed.target else {
+        guard case let .rect(rect, _) = transformed.target else {
             return XCTFail("Expected rect target")
         }
         XCTAssertEqual(rect.origin.x, 105)
@@ -141,12 +141,12 @@ final class CueNoteGeometryTests: XCTestCase {
 
         XCTAssertEqual(
             CueNoteTarget.point(CGPoint(x: 10, y: 20)).rotated(oldSize: size, clockwise: true),
-            .point(CGPoint(x: 20, y: 90)),
+            .point(CGPoint(x: 20, y: 90))
         )
         XCTAssertEqual(
             CueNoteTarget.rect(CGRect(x: 10, y: 20, width: 30, height: 15))
                 .rotated(oldSize: size, clockwise: false),
-            .rect(CGRect(x: 25, y: 10, width: 15, height: 30), pinCorner: .bottomLeft),
+            .rect(CGRect(x: 25, y: 10, width: 15, height: 30), pinCorner: .bottomLeft)
         )
     }
 
@@ -154,19 +154,19 @@ final class CueNoteGeometryTests: XCTestCase {
         let rect = CGRect(x: 20, y: 30, width: 80, height: 60)
         XCTAssertEqual(
             CueNoteGeometry.pinCenter(for: rect, pinCorner: .topLeft),
-            CGPoint(x: 20, y: 90),
+            CGPoint(x: 20, y: 90)
         )
         XCTAssertEqual(
             CueNoteGeometry.pinCenter(for: rect, pinCorner: .topRight),
-            CGPoint(x: 100, y: 90),
+            CGPoint(x: 100, y: 90)
         )
         XCTAssertEqual(
             CueNoteGeometry.pinCenter(for: rect, pinCorner: .bottomLeft),
-            CGPoint(x: 20, y: 30),
+            CGPoint(x: 20, y: 30)
         )
         XCTAssertEqual(
             CueNoteGeometry.pinCenter(for: rect, pinCorner: .bottomRight),
-            CGPoint(x: 100, y: 30),
+            CGPoint(x: 100, y: 30)
         )
     }
 
@@ -174,37 +174,37 @@ final class CueNoteGeometryTests: XCTestCase {
         let start = CGPoint(x: 40, y: 50)
         XCTAssertEqual(
             CueRectPinCorner.fromDrag(start: start, end: CGPoint(x: 90, y: 20)),
-            .topLeft,
+            .topLeft
         )
         XCTAssertEqual(
             CueRectPinCorner.fromDrag(start: start, end: CGPoint(x: 90, y: 80)),
-            .bottomLeft,
+            .bottomLeft
         )
         XCTAssertEqual(
             CueRectPinCorner.fromDrag(start: start, end: CGPoint(x: 10, y: 20)),
-            .topRight,
+            .topRight
         )
         XCTAssertEqual(
             CueRectPinCorner.fromDrag(start: start, end: CGPoint(x: 10, y: 80)),
-            .bottomRight,
+            .bottomRight
         )
     }
 
     func testResizedAndTranslatedRectPreservePinCorner() {
         let target = CueNoteTarget.rect(
             CGRect(x: 20, y: 30, width: 80, height: 60),
-            pinCorner: .bottomRight,
+            pinCorner: .bottomRight
         )
         let resized = CueNoteGeometry.resized(
             target,
             handle: .topLeft,
             to: CGPoint(x: 10, y: 100),
-            within: CGRect(x: 0, y: 0, width: 200, height: 200),
+            within: CGRect(x: 0, y: 0, width: 200, height: 200)
         )
         let translated = CueNoteGeometry.translated(
             target,
             by: CGPoint(x: 5, y: -5),
-            within: CGRect(x: 0, y: 0, width: 200, height: 200),
+            within: CGRect(x: 0, y: 0, width: 200, height: 200)
         )
         XCTAssertEqual(resized.pinCorner, .bottomRight)
         XCTAssertEqual(translated.pinCorner, .bottomRight)
@@ -214,7 +214,7 @@ final class CueNoteGeometryTests: XCTestCase {
         let size = CGSize(width: 100, height: 60)
         let target = CueNoteTarget.rect(
             CGRect(x: 10, y: 20, width: 30, height: 15),
-            pinCorner: .topLeft,
+            pinCorner: .topLeft
         )
         XCTAssertEqual(target.rotated(oldSize: size, clockwise: true).pinCorner, .topRight)
         XCTAssertEqual(target.rotated(oldSize: size, clockwise: false).pinCorner, .bottomLeft)
@@ -223,15 +223,15 @@ final class CueNoteGeometryTests: XCTestCase {
     func testRectTargetDecodeDefaultsMissingPinCornerToTopLeft() throws {
         let modern = CueNoteTarget.rect(
             CGRect(x: 10, y: 20, width: 30, height: 40),
-            pinCorner: .bottomRight,
+            pinCorner: .bottomRight
         )
         var object = try XCTUnwrap(
-            JSONSerialization.jsonObject(with: JSONEncoder().encode(modern)) as? [String: Any],
+            JSONSerialization.jsonObject(with: JSONEncoder().encode(modern)) as? [String: Any]
         )
         object.removeValue(forKey: "pinCorner")
         let decoded = try JSONDecoder().decode(
             CueNoteTarget.self,
-            from: JSONSerialization.data(withJSONObject: object),
+            from: JSONSerialization.data(withJSONObject: object)
         )
         XCTAssertEqual(decoded, .rect(CGRect(x: 10, y: 20, width: 30, height: 40), pinCorner: .topLeft))
     }
@@ -243,7 +243,7 @@ final class CueNoteGeometryTests: XCTestCase {
         let origin = CueNoteGeometry.editorOrigin(
             forSelectionBounds: selection,
             panelSize: panelSize,
-            in: container,
+            in: container
         )
 
         XCTAssertEqual(origin.x, selection.maxX + 24, accuracy: 0.001)
@@ -258,7 +258,7 @@ final class CueNoteGeometryTests: XCTestCase {
         let origin = CueNoteGeometry.editorOrigin(
             forSelectionBounds: selection,
             panelSize: panelSize,
-            in: container,
+            in: container
         )
 
         XCTAssertEqual(origin.x, selection.minX - panelSize.width - 24, accuracy: 0.001)
@@ -272,7 +272,7 @@ final class CueNoteGeometryTests: XCTestCase {
         let origin = CueNoteGeometry.editorOrigin(
             forSelectionBounds: selection,
             panelSize: panelSize,
-            in: container,
+            in: container
         )
 
         XCTAssertEqual(origin.x, selection.maxX + 24, accuracy: 0.001)
@@ -285,7 +285,7 @@ final class CueNoteGeometryTests: XCTestCase {
         let origin = CueNoteGeometry.editorOrigin(
             forSelectionBounds: selection,
             panelSize: panelSize,
-            in: container,
+            in: container
         )
 
         XCTAssertGreaterThanOrEqual(origin.x, 12)
@@ -300,7 +300,7 @@ final class CueNoteGeometryTests: XCTestCase {
         let displayBounds = CueNoteGeometry.selectionDisplayBounds(
             for: target,
             canvasBounds: canvasBounds,
-            displayScale: 2,
+            displayScale: 2
         )
 
         XCTAssertEqual(displayBounds.origin.x, 72, accuracy: 0.001)
@@ -313,7 +313,7 @@ final class CueNoteGeometryTests: XCTestCase {
         let container = CGRect(x: 0, y: 0, width: 260, height: 180)
         let panelSize = CueNoteGeometry.editorPanelSize(
             isRectangular: false,
-            in: container,
+            in: container
         )
 
         // Must not exceed container insets (260 - 24, 180 - 24).
@@ -349,7 +349,7 @@ final class CueNoteGeometryTests: XCTestCase {
         let clamped = CueNoteGeometry.clampedEditorPanelOrigin(
             origin,
             panelSize: panelSize,
-            in: container,
+            in: container
         )
 
         XCTAssertEqual(clamped, origin)
@@ -361,7 +361,7 @@ final class CueNoteGeometryTests: XCTestCase {
         let origin = CueNoteGeometry.clampedEditorPanelOrigin(
             CGPoint(x: -40, y: -20),
             panelSize: panelSize,
-            in: container,
+            in: container
         )
 
         XCTAssertEqual(origin.x, 12, accuracy: 0.001)
@@ -374,7 +374,7 @@ final class CueNoteGeometryTests: XCTestCase {
         let origin = CueNoteGeometry.clampedEditorPanelOrigin(
             CGPoint(x: 420, y: 360),
             panelSize: panelSize,
-            in: container,
+            in: container
         )
 
         XCTAssertEqual(origin.x, 288, accuracy: 0.001)
@@ -387,7 +387,7 @@ final class CueNoteGeometryTests: XCTestCase {
         let origin = CueNoteGeometry.clampedEditorPanelOrigin(
             CGPoint(x: 10, y: 10),
             panelSize: panelSize,
-            in: container,
+            in: container
         )
 
         XCTAssertEqual(origin.x, 52, accuracy: 0.001)
@@ -400,7 +400,7 @@ final class CueNoteGeometryTests: XCTestCase {
         let origin = CueNoteGeometry.clampedEditorPanelOrigin(
             CGPoint(x: 90, y: 70),
             panelSize: panelSize,
-            in: container,
+            in: container
         )
 
         XCTAssertEqual(origin.x, 12, accuracy: 0.001)
@@ -415,7 +415,7 @@ final class CueNoteGeometryTests: XCTestCase {
             backgroundDisplaySize: CGSize(width: 200, height: 160),
             workAreaSize: CGSize(width: 400, height: 300),
             zoomLevel: 2,
-            panOffset: CGSize(width: 6, height: -4),
+            panOffset: CGSize(width: 6, height: -4)
         )
 
         XCTAssertEqual(mapped.origin.x, 66, accuracy: 0.001)

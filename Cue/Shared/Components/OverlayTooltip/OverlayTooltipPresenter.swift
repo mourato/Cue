@@ -19,7 +19,7 @@ final class OverlayTooltipPresenter {
         _ content: OverlayTooltipContent,
         anchorScreenFrame: CGRect,
         preferred: OverlayTooltipEdge,
-        owner: UUID,
+        owner: UUID
     ) {
         let bubble = OverlayTooltipBubbleView(content: content)
         let host = hostingView ?? NSHostingView(rootView: bubble)
@@ -39,7 +39,7 @@ final class OverlayTooltipPresenter {
             anchor: anchorScreenFrame,
             tooltipSize: size,
             visibleFrame: visibleFrame,
-            preferred: preferred,
+            preferred: preferred
         )
 
         #if DEBUG
@@ -91,7 +91,7 @@ final class OverlayTooltipPresenter {
             contentRect: .zero,
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
-            defer: false,
+            defer: false
         )
         panel.level = .popUpMenu
         panel.isOpaque = false

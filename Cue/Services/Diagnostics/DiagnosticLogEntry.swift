@@ -58,7 +58,7 @@ nonisolated struct DiagnosticLogEntry: Sendable {
         file: String = #fileID,
         function: String = #function,
         line: Int = #line,
-        timestamp: Date = Date(),
+        timestamp: Date = Date()
     ) {
         self.timestamp = timestamp
         self.level = level

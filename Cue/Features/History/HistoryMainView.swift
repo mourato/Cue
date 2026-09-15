@@ -19,7 +19,7 @@ struct HistoryMainView: View {
 
     init(
         store: CaptureHistoryStore = .shared,
-        thumbnailOverrides: [UUID: NSImage] = [:],
+        thumbnailOverrides: [UUID: NSImage] = [:]
     ) {
         self.store = store
         self.thumbnailOverrides = thumbnailOverrides
@@ -46,24 +46,24 @@ struct HistoryMainView: View {
                     canSelectAll: selectedRecords.count < filteredRecords.count,
                     onSelectAll: selectAllFilteredRecords,
                     onClearSelection: { selectedIds.removeAll() },
-                    onDeleteSelection: deleteSelectedRecords,
+                    onDeleteSelection: deleteSelectedRecords
                 )
 
                 HistoryFilterBar(
                     selectedFilter: $viewModel.selectedFilter,
-                    counts: filterCounts,
+                    counts: filterCounts
                 )
 
                 if filteredRecords.isEmpty {
                     HistoryEmptyStateView(
                         filter: viewModel.selectedFilter,
-                        hasSearch: !viewModel.searchText.isEmpty,
+                        hasSearch: !viewModel.searchText.isEmpty
                     )
                 } else {
                     HistoryGridView(
                         records: filteredRecords,
                         selectedIds: $selectedIds,
-                        thumbnailOverrides: thumbnailOverrides,
+                        thumbnailOverrides: thumbnailOverrides
                     )
                 }
             }
@@ -113,7 +113,7 @@ struct HistoryMainView: View {
     private func deleteSelectedRecords() {
         let deletedCount = HistoryWindowController.shared.deleteRecords(
             selectedRecords,
-            asksConfirmation: true,
+            asksConfirmation: true
         )
         guard deletedCount > 0 else { return }
         selectedIds.removeAll()
@@ -147,14 +147,14 @@ struct HistoryBackdropView: View {
                         width: 220,
                         height: 220,
                         x: -170,
-                        y: -120,
+                        y: -120
                     )
                     glow(
                         color: Color.black.opacity(colorScheme == .dark ? 0.08 : 0.03),
                         width: 240,
                         height: 240,
                         x: 180,
-                        y: 130,
+                        y: 130
                     )
                 case .solid:
                     Color(nsColor: WindowSurfacePalette.backgroundColor(for: themeManager.preferredAppearance))
@@ -179,15 +179,15 @@ struct HistoryBackdropView: View {
                 ? [
                     Color.white.opacity(0.05),
                     Color.black.opacity(0.12),
-                    Color.white.opacity(0.03),
+                    Color.white.opacity(0.03)
                 ]
                 : [
                     Color.white.opacity(0.18),
                     Color.black.opacity(0.05),
-                    Color.white.opacity(0.12),
+                    Color.white.opacity(0.12)
                 ],
             startPoint: .topLeading,
-            endPoint: .bottomTrailing,
+            endPoint: .bottomTrailing
         )
     }
 
@@ -196,10 +196,10 @@ struct HistoryBackdropView: View {
             colors: [
                 Color.white.opacity(colorScheme == .dark ? 0.05 : 0.24),
                 Color.clear,
-                Color.black.opacity(colorScheme == .dark ? 0.1 : 0.03),
+                Color.black.opacity(colorScheme == .dark ? 0.1 : 0.03)
             ],
             startPoint: .topLeading,
-            endPoint: .bottomTrailing,
+            endPoint: .bottomTrailing
         )
     }
 
@@ -246,7 +246,7 @@ struct HistoryBackdropView: View {
                         .frame(width: 16, height: 26)
                         .overlay(
                             RoundedRectangle(cornerRadius: 2, style: .continuous)
-                                .stroke(previewWindowStroke, lineWidth: 0.5),
+                                .stroke(previewWindowStroke, lineWidth: 0.5)
                         )
                 }
             }
@@ -286,10 +286,10 @@ enum HistoryPreviewFixtures {
         age: TimeInterval,
         width: Int,
         height: Int,
-        duration: TimeInterval?,
+        duration: TimeInterval?
     )] = [
-        ("design-handoff.png", .screenshot, 1_572_864, 3_600, 1440, 900, nil),
-        ("product-demo.mov", .video, 24_117_248, 86_400, 1920, 1080, 42),
+        ("design-handoff.png", .screenshot, 1_572_864, 3600, 1440, 900, nil),
+        ("product-demo.mov", .video, 24_117_248, 86400, 1920, 1080, 42),
         ("animation.gif", .gif, 4_718_592, 172_800, 1280, 720, 8),
         ("nav-bar-states.png", .screenshot, 892_416, 259_200, 1512, 982, nil),
         ("onboarding-flow.mov", .video, 31_457_280, 345_600, 1920, 1080, 67),
@@ -299,7 +299,7 @@ enum HistoryPreviewFixtures {
         ("pin-placement.gif", .gif, 3_145_728, 691_200, 1100, 720, 5),
         ("empty-history.png", .screenshot, 654_336, 777_600, 980, 640, nil),
         ("toolbar-variants.png", .screenshot, 1_310_720, 864_000, 1440, 900, nil),
-        ("clipboard-ready.gif", .gif, 5_242_880, 950_400, 1280, 720, 12),
+        ("clipboard-ready.gif", .gif, 5_242_880, 950_400, 1280, 720, 12)
     ]
 
     static func make() -> (records: [CaptureHistoryRecord], thumbnails: [UUID: NSImage]) {
@@ -316,7 +316,7 @@ enum HistoryPreviewFixtures {
                 height: sample.height,
                 duration: sample.duration,
                 thumbnailPath: nil,
-                isDeleted: false,
+                isDeleted: false
             )
         }
 
@@ -328,7 +328,7 @@ enum HistoryPreviewFixtures {
             }
             let image = NSImage(
                 systemSymbolName: symbolName,
-                accessibilityDescription: record.fileName,
+                accessibilityDescription: record.fileName
             ) ?? NSImage(size: NSSize(width: 1, height: 1))
             return (record.id, image)
         })
@@ -342,7 +342,7 @@ enum HistoryPreviewFixtures {
 
     HistoryMainView(
         store: .preview(records: fixtures.records),
-        thumbnailOverrides: fixtures.thumbnails,
+        thumbnailOverrides: fixtures.thumbnails
     )
     .frame(width: 980, height: 640)
 }

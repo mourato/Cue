@@ -21,7 +21,7 @@ final class AllDisplayFrozenSessionPreparerTests: XCTestCase {
         let session = FrozenAreaCaptureSession.fromSnapshot(snapshot)
 
         XCTAssertThrowsError(
-            try AllDisplayFrozenSessionPreparer.validateCompleteSession(session, expectedDisplayIDs: [10, 20]),
+            try AllDisplayFrozenSessionPreparer.validateCompleteSession(session, expectedDisplayIDs: [10, 20])
         )
     }
 
@@ -34,14 +34,14 @@ final class AllDisplayFrozenSessionPreparerTests: XCTestCase {
 
         XCTAssertNoThrow(try AllDisplayFrozenSessionPreparer.validateCompleteSession(
             session,
-            expectedDisplayIDs: [10, 20],
+            expectedDisplayIDs: [10, 20]
         ))
     }
 
     func testPrioritizedCaptureOrder_putsPriorityDisplayFirst() {
         let order = AllDisplayFrozenSessionPreparer.prioritizedCaptureOrder(
             displayIDs: [10, 20, 30],
-            priorityDisplayID: 20,
+            priorityDisplayID: 20
         )
         XCTAssertEqual(order.priority, 20)
         XCTAssertEqual(order.remaining, [10, 30])
@@ -50,7 +50,7 @@ final class AllDisplayFrozenSessionPreparerTests: XCTestCase {
     func testPrioritizedCaptureOrder_fallsBackWhenPriorityMissing() {
         let order = AllDisplayFrozenSessionPreparer.prioritizedCaptureOrder(
             displayIDs: [40, 10],
-            priorityDisplayID: 99,
+            priorityDisplayID: 99
         )
         XCTAssertEqual(order.priority, 10)
         XCTAssertEqual(order.remaining, [40])
@@ -59,7 +59,7 @@ final class AllDisplayFrozenSessionPreparerTests: XCTestCase {
     func testPrioritizedCaptureOrder_emptySet() {
         let order = AllDisplayFrozenSessionPreparer.prioritizedCaptureOrder(
             displayIDs: [],
-            priorityDisplayID: 1,
+            priorityDisplayID: 1
         )
         XCTAssertNil(order.priority)
         XCTAssertTrue(order.remaining.isEmpty)
@@ -83,7 +83,7 @@ final class AllDisplayFrozenSessionPreparerTests: XCTestCase {
             screenFrame: CGRect(x: 0, y: 0, width: 100, height: 100),
             scaleFactor: 2,
             colorSpaceName: nil,
-            image: image,
+            image: image
         )
     }
 }

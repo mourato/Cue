@@ -19,7 +19,7 @@ struct MockupPresetBarInline: View {
                     MockupPresetButtonInline(
                         preset: preset,
                         isSelected: state.selectedMockupPresetId == preset.id,
-                        action: { state.applyMockupPreset(preset) },
+                        action: { state.applyMockupPreset(preset) }
                     )
                 }
             }
@@ -49,7 +49,7 @@ struct MockupPresetButtonInline: View {
                         RoundedRectangle(cornerRadius: 4)
                             .stroke(
                                 isSelected ? Color.accentColor : Color.gray.opacity(0.3),
-                                lineWidth: isSelected ? 2 : 1,
+                                lineWidth: isSelected ? 2 : 1
                             )
                     }
                     .scaleEffect(isHovered ? 1.05 : 1.0)
@@ -72,7 +72,7 @@ struct MockupPresetButtonInline: View {
             LinearGradient(
                 colors: [Color.blue.opacity(0.2), Color.purple.opacity(0.2)],
                 startPoint: .topLeading,
-                endPoint: .bottomTrailing,
+                endPoint: .bottomTrailing
             )
 
             RoundedRectangle(cornerRadius: 2)
@@ -81,16 +81,16 @@ struct MockupPresetButtonInline: View {
                 .rotation3DEffect(
                     .degrees(preset.rotationY),
                     axis: (x: 0, y: 1, z: 0),
-                    perspective: preset.perspective,
+                    perspective: preset.perspective
                 )
                 .rotation3DEffect(
                     .degrees(preset.rotationX),
                     axis: (x: 1, y: 0, z: 0),
-                    perspective: preset.perspective,
+                    perspective: preset.perspective
                 )
                 .rotation3DEffect(
                     .degrees(preset.rotationZ),
-                    axis: (x: 0, y: 0, z: 1),
+                    axis: (x: 0, y: 0, z: 1)
                 )
                 .shadow(radius: 1, x: 0.5, y: 0.5)
         }

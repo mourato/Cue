@@ -20,7 +20,7 @@ final class HistoryThumbnailGeneratorTests: XCTestCase {
             .appendingPathComponent("NotinhasTests_HistoryThumbs_\(UUID().uuidString)", isDirectory: true)
         try? FileManager.default.createDirectory(at: testDirectory, withIntermediateDirectories: true)
         generator = HistoryThumbnailGenerator(
-            thumbnailsDirectory: testDirectory.appendingPathComponent("thumbnails", isDirectory: true),
+            thumbnailsDirectory: testDirectory.appendingPathComponent("thumbnails", isDirectory: true)
         )
         generator.clearAllThumbnails()
     }
@@ -150,7 +150,7 @@ final class HistoryThumbnailGeneratorTests: XCTestCase {
             height: 100,
             duration: nil,
             thumbnailPath: nil,
-            isDeleted: false,
+            isDeleted: false
         )
     }
 

@@ -37,12 +37,12 @@ enum ShortcutOverlayContentBuilder {
             ShortcutOverlaySection(
                 id: "capture",
                 title: L10n.ShortcutOverlay.captureSection,
-                items: captureItems(manager: keyboard),
+                items: captureItems(manager: keyboard)
             ),
             ShortcutOverlaySection(
                 id: "recording",
                 title: L10n.Onboarding.recordingSection,
-                items: recordingItems(manager: keyboard),
+                items: recordingItems(manager: keyboard)
             ),
             ShortcutOverlaySection(
                 id: "tools",
@@ -50,20 +50,20 @@ enum ShortcutOverlayContentBuilder {
                 items: [
                     globalItem(kind: .annotate, icon: "pencil.and.scribble", manager: keyboard),
                     globalItem(kind: .videoEditor, icon: "film", manager: keyboard),
-                    globalItem(kind: .shortcutList, icon: "list.bullet.rectangle", manager: keyboard),
-                ],
+                    globalItem(kind: .shortcutList, icon: "list.bullet.rectangle", manager: keyboard)
+                ]
             ),
             ShortcutOverlaySection(
                 id: "history",
                 title: L10n.PreferencesShortcuts.historySection,
                 items: [
-                    globalItem(kind: .history, icon: "clock.arrow.circlepath", manager: keyboard),
-                ],
+                    globalItem(kind: .history, icon: "clock.arrow.circlepath", manager: keyboard)
+                ]
             ),
             ShortcutOverlaySection(
                 id: "quick-access",
                 title: L10n.PreferencesShortcuts.quickAccessSection,
-                items: quickAccessItems(),
+                items: quickAccessItems()
             ),
             ShortcutOverlaySection(
                 id: "annotate-actions",
@@ -77,9 +77,9 @@ enum ShortcutOverlayContentBuilder {
                         title: title,
                         subtitle: L10n.ShortcutOverlay.insideAnnotateEditor,
                         isEnabled: annotate.isActionShortcutEnabled(for: kind),
-                        display: shortcut.map { .keycaps($0.displayParts) } ?? .text(L10n.Common.none),
+                        display: shortcut.map { .keycaps($0.displayParts) } ?? .text(L10n.Common.none)
                     )
-                },
+                }
             ),
             ShortcutOverlaySection(
                 id: "annotate-tools",
@@ -94,9 +94,9 @@ enum ShortcutOverlayContentBuilder {
                         title: tool.displayName,
                         subtitle: toolContextSubtitle(for: tool),
                         isEnabled: annotate.isShortcutEnabled(for: tool),
-                        display: display,
+                        display: display
                     )
-                },
+                }
             ),
             ShortcutOverlaySection(
                 id: "annotate-reference",
@@ -108,7 +108,7 @@ enum ShortcutOverlayContentBuilder {
                         title: L10n.ShortcutOverlay.saveDone,
                         subtitle: nil,
                         isEnabled: true,
-                        display: .keycaps(["⌘", "S"]),
+                        display: .keycaps(["⌘", "S"])
                     ),
                     ShortcutOverlayItem(
                         id: "annotate-ref-save-as",
@@ -116,7 +116,7 @@ enum ShortcutOverlayContentBuilder {
                         title: L10n.ShortcutOverlay.saveAs,
                         subtitle: nil,
                         isEnabled: true,
-                        display: .keycaps(["⌘", "⇧", "S"]),
+                        display: .keycaps(["⌘", "⇧", "S"])
                     ),
                     ShortcutOverlayItem(
                         id: "annotate-ref-undo",
@@ -124,7 +124,7 @@ enum ShortcutOverlayContentBuilder {
                         title: L10n.ShortcutOverlay.undo,
                         subtitle: nil,
                         isEnabled: true,
-                        display: .keycaps(["⌘", "Z"]),
+                        display: .keycaps(["⌘", "Z"])
                     ),
                     ShortcutOverlayItem(
                         id: "annotate-ref-redo",
@@ -132,7 +132,7 @@ enum ShortcutOverlayContentBuilder {
                         title: L10n.ShortcutOverlay.redo,
                         subtitle: nil,
                         isEnabled: true,
-                        display: .keycaps(["⌘", "⇧", "Z"]),
+                        display: .keycaps(["⌘", "⇧", "Z"])
                     ),
                     ShortcutOverlayItem(
                         id: "annotate-ref-delete",
@@ -140,7 +140,7 @@ enum ShortcutOverlayContentBuilder {
                         title: L10n.ShortcutOverlay.deleteAnnotation,
                         subtitle: nil,
                         isEnabled: true,
-                        display: .keycaps(["⌫"]),
+                        display: .keycaps(["⌫"])
                     ),
                     ShortcutOverlayItem(
                         id: "annotate-ref-cancel",
@@ -148,7 +148,7 @@ enum ShortcutOverlayContentBuilder {
                         title: L10n.ShortcutOverlay.cancelDeselect,
                         subtitle: nil,
                         isEnabled: true,
-                        display: .keycaps(["⎋"]),
+                        display: .keycaps(["⎋"])
                     ),
                     ShortcutOverlayItem(
                         id: "annotate-ref-confirm-crop",
@@ -156,7 +156,7 @@ enum ShortcutOverlayContentBuilder {
                         title: L10n.ShortcutOverlay.confirmCrop,
                         subtitle: nil,
                         isEnabled: true,
-                        display: .keycaps(["↩"]),
+                        display: .keycaps(["↩"])
                     ),
                     ShortcutOverlayItem(
                         id: "annotate-ref-nudge",
@@ -164,7 +164,7 @@ enum ShortcutOverlayContentBuilder {
                         title: L10n.ShortcutOverlay.nudgeAnnotation,
                         subtitle: nil,
                         isEnabled: true,
-                        display: .text("← → ↑ ↓"),
+                        display: .text("← → ↑ ↓")
                     ),
                     ShortcutOverlayItem(
                         id: "annotate-ref-nudge-10",
@@ -172,17 +172,17 @@ enum ShortcutOverlayContentBuilder {
                         title: L10n.ShortcutOverlay.nudgeTenPixels,
                         subtitle: nil,
                         isEnabled: true,
-                        display: .text("⇧ ← → ↑ ↓"),
-                    ),
-                ],
-            ),
+                        display: .text("⇧ ← → ↑ ↓")
+                    )
+                ]
+            )
         ]
     }
 
     private static func globalItem(
         kind: GlobalShortcutKind,
         icon: String,
-        manager: KeyboardShortcutManager,
+        manager: KeyboardShortcutManager
     ) -> ShortcutOverlayItem {
         let config = manager.shortcut(for: kind)
         return ShortcutOverlayItem(
@@ -191,7 +191,7 @@ enum ShortcutOverlayContentBuilder {
             title: kind.displayName,
             subtitle: nil,
             isEnabled: manager.isShortcutEnabled(for: kind),
-            display: config.map { .keycaps($0.displayParts) } ?? .text(L10n.Common.none),
+            display: config.map { .keycaps($0.displayParts) } ?? .text(L10n.Common.none)
         )
     }
 
@@ -205,13 +205,13 @@ enum ShortcutOverlayContentBuilder {
                 title: GlobalShortcutKind.allInOne.displayName,
                 subtitle: modeSubtitle,
                 isEnabled: manager.isShortcutEnabled(for: .allInOne),
-                display: allInOneConfig.map { .keycaps($0.displayParts) } ?? .text(L10n.Common.none),
+                display: allInOneConfig.map { .keycaps($0.displayParts) } ?? .text(L10n.Common.none)
             ),
             globalItem(kind: .fullscreen, icon: "rectangle.dashed.and.paperclip", manager: manager),
             globalItem(kind: .area, icon: "rectangle.dashed", manager: manager),
             globalItem(kind: .areaAnnotate, icon: "pencil.and.scribble", manager: manager),
             globalItem(kind: .activeWindow, icon: "macwindow", manager: manager),
-            globalItem(kind: .scrollingCapture, icon: "arrow.up.and.down", manager: manager),
+            globalItem(kind: .scrollingCapture, icon: "arrow.up.and.down", manager: manager)
         ]
 
         items.append(globalItem(kind: .objectCutout, icon: "person.crop.rectangle", manager: manager))
@@ -239,15 +239,15 @@ enum ShortcutOverlayContentBuilder {
                 title: GlobalShortcutKind.recording.displayName,
                 subtitle: L10n.ShortcutOverlay.applicationRecording(
                     CaptureOverlayShortcutSettings
-                        .effectiveRecordingApplicationCaptureDisplay(parentShortcut: recordingConfig),
+                        .effectiveRecordingApplicationCaptureDisplay(parentShortcut: recordingConfig)
                 ),
                 isEnabled: manager.isShortcutEnabled(for: .recording),
-                display: recordingConfig.map { .keycaps($0.displayParts) } ?? .text(L10n.Common.none),
+                display: recordingConfig.map { .keycaps($0.displayParts) } ?? .text(L10n.Common.none)
             ),
             globalItem(kind: .pauseResumeRecording, icon: "pause.circle", manager: manager),
             globalItem(kind: .togglePenRecording, icon: "pencil.tip.crop.circle", manager: manager),
             globalItem(kind: .restartRecording, icon: "arrow.counterclockwise.circle", manager: manager),
-            globalItem(kind: .deleteRecording, icon: "trash.circle", manager: manager),
+            globalItem(kind: .deleteRecording, icon: "trash.circle", manager: manager)
         ]
     }
 
@@ -262,8 +262,8 @@ enum ShortcutOverlayContentBuilder {
                 title: L10n.PreferencesShortcuts.editLatestCapture,
                 subtitle: nil,
                 isEnabled: quickAccess.openEditorShortcutEnabled,
-                display: shortcut.map { .keycaps($0.displayParts) } ?? .text(L10n.Common.none),
-            ),
+                display: shortcut.map { .keycaps($0.displayParts) } ?? .text(L10n.Common.none)
+            )
         ]
     }
 
@@ -282,11 +282,11 @@ enum ShortcutOverlayContentBuilder {
 
     private static func toolContextSubtitle(for tool: AnnotationToolType) -> String {
         let recordingTools: Set<AnnotationToolType> = [
-            .selection, .rectangle, .circle, .arrow, .line, .pencil, .highlighter,
+            .selection, .rectangle, .circle, .arrow, .line, .pencil, .highlighter
         ]
         let screenshotTools: Set<AnnotationToolType> = [
             .selection, .rectangle, .circle, .arrow, .line, .text,
-            .highlighter, .blur, .cueNote, .pencil,
+            .highlighter, .blur, .cueNote, .pencil
         ]
 
         let inScreenshot = screenshotTools.contains(tool)

@@ -31,7 +31,7 @@ final class AnnotateTextEditingTests: XCTestCase {
         AnnotationItem(
             type: .text(text),
             bounds: CGRect(x: 20, y: 20, width: 140, height: 32),
-            properties: AnnotationProperties(fontSize: 18),
+            properties: AnnotationProperties(fontSize: 18)
         )
     }
 
@@ -70,7 +70,7 @@ final class AnnotateTextEditingTests: XCTestCase {
         state.commitTextEditing()
 
         let committed = try XCTUnwrap(state.annotations.first)
-        guard case .text(let text) = committed.type else {
+        guard case let .text(text) = committed.type else {
             return XCTFail("Expected text annotation, got \(committed.type)")
         }
         XCTAssertEqual(text, "Updated text")
@@ -89,7 +89,7 @@ final class AnnotateTextEditingTests: XCTestCase {
         state.commitTextEditing()
 
         let committed = try XCTUnwrap(state.annotations.first)
-        guard case .text(let text) = committed.type else {
+        guard case let .text(text) = committed.type else {
             return XCTFail("Expected text annotation, got \(committed.type)")
         }
         XCTAssertEqual(text, "padded value")
@@ -137,7 +137,7 @@ final class AnnotateTextEditingTests: XCTestCase {
 
         XCTAssertNil(state.editingTextAnnotationId)
         let item = try XCTUnwrap(state.annotations.first)
-        guard case .text(let text) = item.type else {
+        guard case let .text(text) = item.type else {
             return XCTFail("Expected text annotation, got \(item.type)")
         }
         XCTAssertEqual(text, "not committed")
@@ -177,7 +177,7 @@ final class AnnotateTextEditingTests: XCTestCase {
         state.useAutomaticTextWidth(for: annotation.id)
         state.updateAnnotationBounds(
             id: annotation.id,
-            bounds: CGRect(x: 20, y: 20, width: 180, height: 32),
+            bounds: CGRect(x: 20, y: 20, width: 180, height: 32)
         )
 
         state.updateAnnotationText(id: annotation.id, text: "This text should wrap in the width chosen by the user")
@@ -191,7 +191,7 @@ final class AnnotateTextEditingTests: XCTestCase {
         let annotation = AnnotationItem(
             type: .text("Label"),
             bounds: CGRect(x: 40, y: 80, width: 120, height: 32),
-            properties: AnnotationProperties(strokeColor: .green, fillColor: .clear),
+            properties: AnnotationProperties(strokeColor: .green, fillColor: .clear)
         )
         state.annotations = [annotation]
         state.selectedAnnotationId = annotation.id
@@ -222,7 +222,7 @@ final class AnnotateTextEditingTests: XCTestCase {
         state.updateTextCalloutTail(id: annotation.id, target: movedTail)
         state.updateAnnotationBounds(
             id: annotation.id,
-            bounds: CGRect(x: 50, y: 35, width: initial.bounds.width, height: initial.bounds.height),
+            bounds: CGRect(x: 50, y: 35, width: initial.bounds.width, height: initial.bounds.height)
         )
 
         let updated = try XCTUnwrap(state.annotations.first)
@@ -237,20 +237,20 @@ final class AnnotateTextEditingTests: XCTestCase {
             text: "Note",
             font: font,
             minimumWidth: AnnotateTextLayout.minWidth,
-            presentation: .plain,
+            presentation: .plain
         )
         let bubbleWidth = AnnotateTextLayout.preferredAutoWidth(
             text: "Note",
             font: font,
             minimumWidth: AnnotateTextLayout.minWidth,
-            presentation: .callout,
+            presentation: .callout
         )
         let bounds = AnnotateTextLayout.bounds(
             text: "Note",
             font: font,
             origin: .zero,
             constrainedWidth: bubbleWidth,
-            presentation: .callout,
+            presentation: .callout
         )
 
         XCTAssertGreaterThan(bubbleWidth, plainWidth)
@@ -264,7 +264,7 @@ final class AnnotateTextEditingTests: XCTestCase {
         let annotation = AnnotationItem(
             type: .text(""),
             bounds: CGRect(x: 30, y: 120, width: 30, height: 30),
-            properties: AnnotationProperties(fillColor: .black, fontSize: 18, textPresentation: .callout),
+            properties: AnnotationProperties(fillColor: .black, fontSize: 18, textPresentation: .callout)
         )
         state.annotations = [annotation]
         state.useAutomaticTextWidth(for: annotation.id)
@@ -294,7 +294,7 @@ final class AnnotateTextEditingTests: XCTestCase {
         let resolved = TextBubbleGeometry.resolvedTailTarget(
             in: bounds,
             requestedTarget: CGPoint(x: 120, y: -500),
-            fontSize: 20,
+            fontSize: 20
         )
 
         XCTAssertEqual(resolved.x, 120, accuracy: 0.5)
@@ -307,17 +307,17 @@ final class AnnotateTextEditingTests: XCTestCase {
         let left = TextBubbleGeometry.tailPath(
             in: bounds,
             to: CGPoint(x: 45, y: bounds.midY),
-            fontSize: 20,
+            fontSize: 20
         ).boundingBoxOfPath
         let right = TextBubbleGeometry.tailPath(
             in: bounds,
             to: CGPoint(x: 335, y: bounds.midY),
-            fontSize: 20,
+            fontSize: 20
         ).boundingBoxOfPath
         let centered = TextBubbleGeometry.tailPath(
             in: bounds,
             to: CGPoint(x: bounds.midX, y: 74),
-            fontSize: 20,
+            fontSize: 20
         ).boundingBoxOfPath
 
         XCTAssertLessThan(left.minX, bounds.minX)
@@ -342,7 +342,7 @@ final class AnnotateTextEditingTests: XCTestCase {
             in: bounds,
             cornerRadius: TextBubbleGeometry.cornerRadius(in: bounds, fontSize: 20),
             tailTarget: internalTarget,
-            fontSize: 20,
+            fontSize: 20
         )
 
         XCTAssertEqual(path.boundingBoxOfPath.minX, bounds.minX, accuracy: 0.01)
@@ -368,7 +368,7 @@ final class AnnotateTextEditingTests: XCTestCase {
         let second = AnnotationItem(
             type: .text("second"),
             bounds: CGRect(x: 200, y: 20, width: 140, height: 32),
-            properties: AnnotationProperties(fontSize: 18),
+            properties: AnnotationProperties(fontSize: 18)
         )
         state.annotations = [first, second]
 
@@ -379,7 +379,7 @@ final class AnnotateTextEditingTests: XCTestCase {
 
         XCTAssertEqual(state.editingTextAnnotationId, second.id)
         let firstItem = try XCTUnwrap(state.annotations.first(where: { $0.id == first.id }))
-        guard case .text(let firstText) = firstItem.type else {
+        guard case let .text(firstText) = firstItem.type else {
             return XCTFail("Expected text annotation, got \(firstItem.type)")
         }
         XCTAssertEqual(firstText, "first edited")

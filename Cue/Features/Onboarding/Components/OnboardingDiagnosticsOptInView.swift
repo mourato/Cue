@@ -61,11 +61,11 @@ struct DiagnosticsOptInView: View {
                 .padding(.vertical, 10)
                 .background(
                     RoundedRectangle(cornerRadius: 8)
-                        .fill(VSDesignSystem.Colors.cardFill),
+                        .fill(VSDesignSystem.Colors.cardFill)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(VSDesignSystem.Colors.cardStroke, lineWidth: 1),
+                        .stroke(VSDesignSystem.Colors.cardStroke, lineWidth: 1)
                 )
             }
             .frame(maxWidth: 380)
@@ -93,7 +93,7 @@ struct DiagnosticsOptInView: View {
         onboardingLocalization.string(
             "onboarding.diagnostics.title",
             defaultValue: "Help improve Cue?",
-            comment: "Diagnostics onboarding step title",
+            comment: "Diagnostics onboarding step title"
         )
     }
 
@@ -101,7 +101,7 @@ struct DiagnosticsOptInView: View {
         onboardingLocalization.string(
             "onboarding.diagnostics.description",
             defaultValue: "Allow local diagnostic logs so Cue can recover better when something goes wrong.",
-            comment: "Diagnostics onboarding step description",
+            comment: "Diagnostics onboarding step description"
         )
     }
 
@@ -109,7 +109,7 @@ struct DiagnosticsOptInView: View {
         onboardingLocalization.string(
             "onboarding.diagnostics.enable-crash-logging",
             defaultValue: "Enable diagnostic logging",
-            comment: "Toggle label for enabling diagnostic logging during onboarding",
+            comment: "Toggle label for enabling diagnostic logging during onboarding"
         )
     }
 
@@ -117,7 +117,7 @@ struct DiagnosticsOptInView: View {
         onboardingLocalization.string(
             "onboarding.diagnostics.logs-stored-locally",
             defaultValue: "Logs stay on this Mac unless you choose to share them.",
-            comment: "Supporting text below diagnostic logging toggle during onboarding",
+            comment: "Supporting text below diagnostic logging toggle during onboarding"
         )
     }
 
@@ -125,7 +125,7 @@ struct DiagnosticsOptInView: View {
         onboardingLocalization.string(
             "onboarding.diagnostics.privacy-note",
             defaultValue: "You can change this later in Preferences -> General.",
-            comment: "Privacy note shown below diagnostics toggle during onboarding",
+            comment: "Privacy note shown below diagnostics toggle during onboarding"
         )
     }
 
@@ -133,14 +133,14 @@ struct DiagnosticsOptInView: View {
         onboardingLocalization.string(
             "common.next",
             defaultValue: "Next",
-            comment: "Primary next action button title",
+            comment: "Primary next action button title"
         )
     }
 }
 
 #Preview {
     DiagnosticsOptInView(
-        onNext: {},
+        onNext: {}
     )
     .frame(width: 500, height: 520)
     .background(OnboardingSurfaceBackground())

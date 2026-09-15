@@ -13,7 +13,7 @@
     final class VideoEditorZoomSegmentSynthesizerTests: XCTestCase {
         func testSegments_emptyPresses_returnsEmpty() {
             XCTAssertTrue(
-                VideoEditorZoomSegmentSynthesizer.segments(from: [], duration: 10).isEmpty,
+                VideoEditorZoomSegmentSynthesizer.segments(from: [], duration: 10).isEmpty
             )
         }
 
@@ -23,10 +23,10 @@
                 normalizedX: 0.5,
                 normalizedY: 0.5,
                 button: 0,
-                phase: .down,
+                phase: .down
             )]
             XCTAssertTrue(
-                VideoEditorZoomSegmentSynthesizer.segments(from: presses, duration: 0).isEmpty,
+                VideoEditorZoomSegmentSynthesizer.segments(from: presses, duration: 0).isEmpty
             )
         }
 
@@ -36,7 +36,7 @@
                 normalizedX: 0.4,
                 normalizedY: 0.6,
                 button: 0,
-                phase: .down,
+                phase: .down
             )]
 
             let segments = VideoEditorZoomSegmentSynthesizer.segments(from: presses, duration: 10)
@@ -57,18 +57,18 @@
                 normalizedX: 0.5,
                 normalizedY: 0.5,
                 button: 0,
-                phase: .down,
+                phase: .down
             )]
 
             XCTAssertTrue(
-                VideoEditorZoomSegmentSynthesizer.segments(from: presses, duration: 10).isEmpty,
+                VideoEditorZoomSegmentSynthesizer.segments(from: presses, duration: 10).isEmpty
             )
         }
 
         func testSegments_mergesNearbyClicksWithinJoinTolerance() {
             let presses = [
                 RecordedMousePress(time: 1, normalizedX: 0.2, normalizedY: 0.2, button: 0, phase: .down),
-                RecordedMousePress(time: 3, normalizedX: 0.8, normalizedY: 0.8, button: 0, phase: .down),
+                RecordedMousePress(time: 3, normalizedX: 0.8, normalizedY: 0.8, button: 0, phase: .down)
             ]
 
             let segments = VideoEditorZoomSegmentSynthesizer.segments(from: presses, duration: 12)
@@ -80,11 +80,11 @@
 
         func testSegments_ignoresMouseUpEvents() {
             let presses = [
-                RecordedMousePress(time: 2, normalizedX: 0.5, normalizedY: 0.5, button: 0, phase: .up),
+                RecordedMousePress(time: 2, normalizedX: 0.5, normalizedY: 0.5, button: 0, phase: .up)
             ]
 
             XCTAssertTrue(
-                VideoEditorZoomSegmentSynthesizer.segments(from: presses, duration: 10).isEmpty,
+                VideoEditorZoomSegmentSynthesizer.segments(from: presses, duration: 10).isEmpty
             )
         }
     }

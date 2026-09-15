@@ -180,7 +180,7 @@ enum FeedbackAppearanceTokens {
         red: CGFloat,
         green: CGFloat,
         blue: CGFloat,
-        alpha: CGFloat,
+        alpha: CGFloat
     ) {
         if isDarkAppearance {
             (0.96, 0.96, 0.97, 0.97)
@@ -196,7 +196,7 @@ enum FeedbackAppearanceTokens {
             srgbRed: components.red,
             green: components.green,
             blue: components.blue,
-            alpha: components.alpha,
+            alpha: components.alpha
         )
     }
 

@@ -29,7 +29,7 @@
             let item = AnnotationItem(
                 type: .rectangle,
                 bounds: CGRect(x: 0, y: 0, width: 10, height: 10),
-                properties: AnnotationProperties(),
+                properties: AnnotationProperties()
             )
             state.appendAnnotation(item, tool: .rectangle)
             XCTAssertEqual(state.annotations.count, 1)
@@ -39,7 +39,7 @@
             let item = AnnotationItem(
                 type: .rectangle,
                 bounds: CGRect(x: 0, y: 0, width: 10, height: 10),
-                properties: AnnotationProperties(),
+                properties: AnnotationProperties()
             )
             state.appendAnnotation(item, tool: .rectangle)
             state.clearAll()
@@ -51,7 +51,7 @@
             let item = AnnotationItem(
                 type: .rectangle,
                 bounds: CGRect(x: 0, y: 0, width: 10, height: 10),
-                properties: AnnotationProperties(),
+                properties: AnnotationProperties()
             )
             state.appendAnnotation(item, tool: .rectangle)
             state.selectedAnnotationId = item.id
@@ -64,7 +64,7 @@
             let item = AnnotationItem(
                 type: .rectangle,
                 bounds: CGRect(x: 0, y: 0, width: 10, height: 10),
-                properties: AnnotationProperties(),
+                properties: AnnotationProperties()
             )
             state.appendAnnotation(item, tool: .rectangle)
             state.deleteSelected()
@@ -81,7 +81,7 @@
                 let item = AnnotationItem(
                     type: .rectangle,
                     bounds: CGRect(x: CGFloat(i), y: 0, width: 10, height: 10),
-                    properties: AnnotationProperties(),
+                    properties: AnnotationProperties()
                 )
                 state.appendAnnotation(item, tool: .rectangle)
             }
@@ -94,7 +94,7 @@
                 let item = AnnotationItem(
                     type: .rectangle,
                     bounds: CGRect(x: CGFloat(i), y: 0, width: 10, height: 10),
-                    properties: AnnotationProperties(),
+                    properties: AnnotationProperties()
                 )
                 state.appendAnnotation(item, tool: .rectangle)
             }
@@ -106,7 +106,7 @@
             let item = AnnotationItem(
                 type: .path([CGPoint(x: 0, y: 0)]),
                 bounds: .zero,
-                properties: AnnotationProperties(),
+                properties: AnnotationProperties()
             )
             state.appendAnnotation(item, tool: .pencil)
             XCTAssertEqual(state.annotations.count, 1)

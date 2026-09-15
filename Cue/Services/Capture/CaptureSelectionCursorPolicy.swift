@@ -32,7 +32,7 @@ enum CaptureSelectionCursorPhase: Equatable {
 enum CaptureSelectionCursorPolicy {
     static func cursorKind(
         zone: CaptureSelectionCursorZone,
-        phase: CaptureSelectionCursorPhase,
+        phase: CaptureSelectionCursorPhase
     ) -> CaptureSelectionCursorKind {
         switch zone {
         case .hud:

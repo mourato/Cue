@@ -37,7 +37,7 @@ final class ScrollingCaptureCoordinator {
     private let previewRenderScale: CGFloat = 2
     private let processingQueue = DispatchQueue(
         label: "com.mourato.notinhas.scrolling-capture.processing",
-        qos: .userInitiated,
+        qos: .userInitiated
     )
 
     private var sessionModel: ScrollingCaptureSessionModel?
@@ -93,7 +93,7 @@ final class ScrollingCaptureCoordinator {
         saveDirectory: URL,
         format: ImageFormat,
         prefetchedContentTask: ShareableContentPrefetchTask?,
-        onSessionEnded: (@MainActor () -> Void)? = nil,
+        onSessionEnded: (@MainActor () -> Void)? = nil
     ) {
         cancel()
         sessionGeneration += 1
@@ -137,7 +137,7 @@ final class ScrollingCaptureCoordinator {
             model: model,
             onDone: { [weak self] in self?.finish() },
             onCancel: { [weak self] in self?.cancel() },
-            onToggleAutoScroll: { [weak self] in self?.toggleAutoScrolling() },
+            onToggleAutoScroll: { [weak self] in self?.toggleAutoScrolling() }
         )
         previewWindow = ScrollingCapturePreviewWindow(anchorRect: rect, model: model)
 
@@ -151,7 +151,7 @@ final class ScrollingCaptureCoordinator {
             AppToastManager.shared.show(
                 message: L10n.ScrollingCaptureStatus.readyHintToast,
                 style: .info,
-                position: .topCenter,
+                position: .topCenter
             )
         }
 
@@ -159,7 +159,7 @@ final class ScrollingCaptureCoordinator {
             .info,
             .capture,
             "Scrolling capture session ready",
-            context: ["rect": "\(Int(rect.width))x\(Int(rect.height))"],
+            context: ["rect": "\(Int(rect.width))x\(Int(rect.height))"]
         )
 
         startCapture()
@@ -239,7 +239,7 @@ final class ScrollingCaptureCoordinator {
         sessionModel.runtimeState = .streaming
         sessionModel.setStatus(
             L10n.ScrollingCaptureStatus.capturingFirstFrame,
-            guidance: .holdSteady,
+            guidance: .holdSteady
         )
         updatePreviewTruthState()
         installScrollMonitorIfNeeded()
@@ -259,7 +259,7 @@ final class ScrollingCaptureCoordinator {
         } else {
             logScrollingCaptureDebug(
                 "mouse-move-suppression-unavailable",
-                context: ["accessibilityGranted": String(AXIsProcessTrusted())],
+                context: ["accessibilityGranted": String(AXIsProcessTrusted())]
             )
         }
     }
@@ -304,27 +304,27 @@ final class ScrollingCaptureCoordinator {
                 let mouseLocation = NSEvent.mouseLocation
                 if let scrollTargetPoint = ScrollingCaptureAutoScrollPolicy.scrollTargetPoint(
                     mouseLocation: mouseLocation,
-                    selectedRect: rect,
+                    selectedRect: rect
                 ) {
                     if sessionModel.guidanceKind == .placeMouseInsideSelection {
                         sessionModel.setStatus(
                             L10n.ScrollingCaptureStatus.sessionActive(
                                 sessionModel.acceptedFrameCount,
-                                sessionModel.stitchedPixelHeight,
+                                sessionModel.stitchedPixelHeight
                             ),
-                            guidance: .scrollDownSteadily,
+                            guidance: .scrollDownSteadily
                         )
                     }
 
                     postScrollEvent(
                         deltaY: autoScrollDeltaY,
-                        at: scrollTargetPoint,
+                        at: scrollTargetPoint
                     )
                     try? await Task.sleep(nanoseconds: autoScrollIntervalNanoseconds)
                 } else {
                     sessionModel.setStatus(
                         L10n.ScrollingCaptureStatus.autoScrollPausedMoveMouseInside,
-                        guidance: .placeMouseInsideSelection,
+                        guidance: .placeMouseInsideSelection
                     )
                     try? await Task.sleep(nanoseconds: autoScrollPausedIntervalNanoseconds)
                 }
@@ -345,22 +345,22 @@ final class ScrollingCaptureCoordinator {
         }
 
         let options = [
-            "AXTrustedCheckOptionPrompt": true,
+            "AXTrustedCheckOptionPrompt": true
         ] as CFDictionary
         _ = AXIsProcessTrustedWithOptions(options)
 
         sessionModel?.setStatus(
             L10n.ScrollingCaptureStatus.autoScrollNeedsAccessibility,
-            guidance: .continueManually,
+            guidance: .continueManually
         )
         AppToastManager.shared.show(
             message: L10n.ScrollingCaptureStatus.autoScrollNeedsAccessibility,
-            style: .warning,
+            style: .warning
         )
         DiagnosticLogger.shared.log(
             .warning,
             .capture,
-            "Auto-scroll blocked by missing Accessibility permission",
+            "Auto-scroll blocked by missing Accessibility permission"
         )
         return false
     }
@@ -374,7 +374,7 @@ final class ScrollingCaptureCoordinator {
                 wheelCount: 1,
                 wheel1: deltaY,
                 wheel2: 0,
-                wheel3: 0,
+                wheel3: 0
             )
         else {
             return
@@ -427,7 +427,7 @@ final class ScrollingCaptureCoordinator {
                 sessionModel.runtimeState = .paused
                 sessionModel.setStatus(
                     L10n.ScrollingCaptureStatus.noSavableResultReady,
-                    guidance: .keepCapturing,
+                    guidance: .keepCapturing
                 )
                 sessionModel.previewCaption = L10n.ScrollingCapture.captionNoSavableResultReady
                 updatePreviewTruthState()
@@ -440,7 +440,7 @@ final class ScrollingCaptureCoordinator {
             sessionModel.runtimeState = .saving
             sessionModel.setStatus(
                 L10n.ScrollingCaptureStatus.savingStitchedImage,
-                guidance: .savingLongScreenshot,
+                guidance: .savingLongScreenshot
             )
             sessionModel.previewCaption = L10n.ScrollingCapture.captionSavingStitchedResult
             updatePreviewTruthState()
@@ -449,7 +449,7 @@ final class ScrollingCaptureCoordinator {
                 latestImage,
                 to: saveDirectory,
                 format: format,
-                scaleFactor: captureScaleFactor,
+                scaleFactor: captureScaleFactor
             )
 
             switch result {
@@ -458,15 +458,15 @@ final class ScrollingCaptureCoordinator {
                 SoundManager.playScreenshotCapture()
                 AppToastManager.shared.show(
                     message: L10n.ScrollingCapture.toastSavedStitchedImage,
-                    style: .success,
+                    style: .success
                 )
                 cancel()
-            case .failure(let error):
+            case let .failure(error):
                 sessionModel.phase = .capturing
                 sessionModel.runtimeState = .paused
                 sessionModel.setStatus(
                     L10n.ScrollingCaptureStatus.saveFailedResultStillReady,
-                    guidance: .tryDoneAgain,
+                    guidance: .tryDoneAgain
                 )
                 sessionModel.previewCaption = L10n.ScrollingCapture.captionSaveFailedResultStillReady
                 updatePreviewTruthState()
@@ -503,7 +503,7 @@ final class ScrollingCaptureCoordinator {
         guard let scaledDeltaY = ScrollingCaptureSessionPolicy.scaledScrollDeltaY(
             deltaX: Double(event.scrollingDeltaX),
             deltaY: Double(event.scrollingDeltaY),
-            hasPreciseDeltas: event.hasPreciseScrollingDeltas,
+            hasPreciseDeltas: event.hasPreciseScrollingDeltas
         ) else {
             logScrollingCaptureDebug("scroll-event-dropped", context: [:])
             return
@@ -515,7 +515,7 @@ final class ScrollingCaptureCoordinator {
         if let lockedScrollDirection, direction != lockedScrollDirection {
             sessionModel.setStatus(
                 L10n.ScrollingCaptureStatus.directionChanged,
-                guidance: .keepOneDirection,
+                guidance: .keepOneDirection
             )
             pendingRefreshTask?.cancel()
             pendingRefreshTask = nil
@@ -538,7 +538,7 @@ final class ScrollingCaptureCoordinator {
 
         sessionModel.setStatus(
             L10n.ScrollingCaptureStatus.aligningLatestContent,
-            guidance: .scrollDownSteadily,
+            guidance: .scrollDownSteadily
         )
         startLiveRefreshLoopIfNeeded()
         updatePreviewTruthState()
@@ -546,7 +546,7 @@ final class ScrollingCaptureCoordinator {
 
     private func refreshPreview(
         reason: String,
-        expectedSignedDeltaPixelsOverride: Int? = nil,
+        expectedSignedDeltaPixelsOverride: Int? = nil
     ) async -> ScrollingCaptureStitchUpdate? {
         let generation = sessionGeneration
         guard let sessionModel else { return nil }
@@ -574,7 +574,7 @@ final class ScrollingCaptureCoordinator {
                 expectedSignedDeltaPixels = expectedSignedDeltaPixelsOverride
             } else if abs(pendingScrollDistancePoints) > 2 {
                 expectedSignedDeltaPixels = normalizedExpectedDeltaPixels(
-                    from: Int(round(pendingScrollDistancePoints * captureScaleFactor)),
+                    from: Int(round(pendingScrollDistancePoints * captureScaleFactor))
                 )
             } else {
                 expectedSignedDeltaPixels = nil
@@ -589,21 +589,21 @@ final class ScrollingCaptureCoordinator {
                     isFinalizingRefresh
                         ? L10n.ScrollingCaptureStatus.mixedDirectionsFinalizing
                         : L10n.ScrollingCaptureStatus.mixedDirectionsDetected,
-                    guidance: isFinalizingRefresh ? .lockingCurrentCapture : .keepOneDirection,
+                    guidance: isFinalizingRefresh ? .lockingCurrentCapture : .keepOneDirection
                 )
                 let totalDurationMs = Self.elapsedMilliseconds(since: refreshStartedAt)
                 sessionMetrics.recordRefreshFailure(
                     reason: reason,
                     captureDurationMs: 0,
                     stitchDurationMs: 0,
-                    totalDurationMs: totalDurationMs,
+                    totalDurationMs: totalDurationMs
                 )
                 logScrollingCaptureRefreshFailure(
                     reason: reason,
                     stage: "mixed-directions",
                     captureDurationMs: 0,
                     stitchDurationMs: 0,
-                    totalDurationMs: totalDurationMs,
+                    totalDurationMs: totalDurationMs
                 )
                 updatePreviewTruthState()
                 return nil
@@ -616,7 +616,7 @@ final class ScrollingCaptureCoordinator {
                     isFinalizingRefresh
                         ? L10n.ScrollingCaptureStatus.couldntCaptureLastFrame
                         : L10n.ScrollingCaptureStatus.unableToCaptureArea,
-                    guidance: isFinalizingRefresh ? .lockingCurrentCapture : .previewNeedsRecovery,
+                    guidance: isFinalizingRefresh ? .lockingCurrentCapture : .previewNeedsRecovery
                 )
                 let totalDurationMs = Self.elapsedMilliseconds(since: refreshStartedAt)
                 let captureDurationMs = Self.elapsedMilliseconds(since: captureStartedAt)
@@ -624,14 +624,14 @@ final class ScrollingCaptureCoordinator {
                     reason: reason,
                     captureDurationMs: captureDurationMs,
                     stitchDurationMs: 0,
-                    totalDurationMs: totalDurationMs,
+                    totalDurationMs: totalDurationMs
                 )
                 logScrollingCaptureRefreshFailure(
                     reason: reason,
                     stage: "capture-frame-missing",
                     captureDurationMs: captureDurationMs,
                     stitchDurationMs: 0,
-                    totalDurationMs: totalDurationMs,
+                    totalDurationMs: totalDurationMs
                 )
                 updatePreviewTruthState()
                 return nil
@@ -645,7 +645,7 @@ final class ScrollingCaptureCoordinator {
             let (update, processedStitcher) = await stitchCapturedImage(
                 capturedImage,
                 expectedSignedDeltaPixels: expectedSignedDeltaPixels,
-                renderMergedImage: shouldRenderMergedImage,
+                renderMergedImage: shouldRenderMergedImage
             )
             let stitchDurationMs = Self.elapsedMilliseconds(since: stitchStartedAt)
             guard generation == sessionGeneration, let sessionModel = self.sessionModel else { return nil }
@@ -659,14 +659,14 @@ final class ScrollingCaptureCoordinator {
                     isFinalizingRefresh
                         ? L10n.ScrollingCaptureStatus.couldntRefreshLastFrame
                         : L10n.ScrollingCaptureStatus.unableToRenderPreview,
-                    guidance: isFinalizingRefresh ? .lockingCurrentCapture : .previewNeedsRecovery,
+                    guidance: isFinalizingRefresh ? .lockingCurrentCapture : .previewNeedsRecovery
                 )
                 let totalDurationMs = Self.elapsedMilliseconds(since: refreshStartedAt)
                 sessionMetrics.recordRefreshFailure(
                     reason: reason,
                     captureDurationMs: captureDurationMs,
                     stitchDurationMs: stitchDurationMs,
-                    totalDurationMs: totalDurationMs,
+                    totalDurationMs: totalDurationMs
                 )
                 logScrollingCaptureRefreshFailure(
                     reason: reason,
@@ -674,7 +674,7 @@ final class ScrollingCaptureCoordinator {
                     captureDurationMs: captureDurationMs,
                     stitchDurationMs: stitchDurationMs,
                     totalDurationMs: totalDurationMs,
-                    commitFrame: commitFrame,
+                    commitFrame: commitFrame
                 )
                 updatePreviewTruthState()
                 return nil
@@ -689,14 +689,15 @@ final class ScrollingCaptureCoordinator {
                 previousAcceptedFrameCount: sessionModel.acceptedFrameCount,
                 previousOutputHeight: sessionModel.stitchedPixelHeight,
                 acceptedFrameCount: update.acceptedFrameCount,
-                outputHeight: update.outputHeight,
+                outputHeight: update.outputHeight
             )
             if
                 ScrollingCaptureSessionPolicy.shouldUpdateStitchedPreview(
                     outputChanged: outputChanged,
-                    outcome: update.outcome,
+                    outcome: update.outcome
                 ),
-                let processedStitcher {
+                let processedStitcher
+            {
                 sessionModel.previewImage =
                     makePreviewImage(from: processedStitcher)
                         ?? update.mergedImage
@@ -706,7 +707,8 @@ final class ScrollingCaptureCoordinator {
                 case .appended = update.outcome,
                 lockedScrollDirection == nil,
                 update.mergeDirection != .unresolved,
-                let batchScrollDirection {
+                let batchScrollDirection
+            {
                 lockedScrollDirection = batchScrollDirection
             }
             recordCommittedObservation(for: update.outcome)
@@ -722,7 +724,7 @@ final class ScrollingCaptureCoordinator {
                 totalDurationMs: totalDurationMs,
                 outcome: update.outcome,
                 alignmentDebug: update.alignmentDebug,
-                safety: update.safety,
+                safety: update.safety
             )
             logScrollingCaptureStitchUpdate(
                 reason: reason,
@@ -733,7 +735,7 @@ final class ScrollingCaptureCoordinator {
                 captureDurationMs: captureDurationMs,
                 stitchDurationMs: stitchDurationMs,
                 previewPublishDurationMs: previewPublishDurationMs,
-                totalDurationMs: totalDurationMs,
+                totalDurationMs: totalDurationMs
             )
 
             if isFinalizingRefresh {
@@ -741,7 +743,7 @@ final class ScrollingCaptureCoordinator {
                 sessionModel.previewCaption = finalizingPreviewCaption(for: update)
                 sessionModel.setStatus(
                     finalizingStatusText(for: update),
-                    guidance: finalizingGuidanceKind(for: update),
+                    guidance: finalizingGuidanceKind(for: update)
                 )
                 updatePreviewTruthState()
                 return update
@@ -754,18 +756,18 @@ final class ScrollingCaptureCoordinator {
                 sessionModel.previewCaption = L10n.ScrollingCapture.captionFirstFrameLocked
                 sessionModel.setStatus(
                     L10n.ScrollingCaptureStatus.firstFrameLocked,
-                    guidance: .holdSteady,
+                    guidance: .holdSteady
                 )
-            case .appended(let deltaY):
+            case let .appended(deltaY):
                 lastAcceptedDeltaPixels = deltaY
                 sessionModel.runtimeState = previewRuntimeState()
                 sessionModel.previewCaption = L10n.ScrollingCapture.framesStitchedDelta(
                     update.acceptedFrameCount,
-                    deltaY,
+                    deltaY
                 )
                 sessionModel.setStatus(
                     L10n.ScrollingCaptureStatus.sessionActive(update.acceptedFrameCount, update.outputHeight),
-                    guidance: .scrollDownSteadily,
+                    guidance: .scrollDownSteadily
                 )
             case .ignoredNoMovement:
                 sessionModel.runtimeState = previewRuntimeState()
@@ -774,12 +776,12 @@ final class ScrollingCaptureCoordinator {
                         .framesStitchedNoNewContent(update.acceptedFrameCount)
                     sessionModel.setStatus(
                         L10n.ScrollingCaptureStatus.endReachedNoNewContent,
-                        guidance: .pressDoneNoNewContent,
+                        guidance: .pressDoneNoNewContent
                     )
                 } else {
                     sessionModel.setStatus(
                         L10n.ScrollingCaptureStatus.waitingForNewContent,
-                        guidance: .keepScrollingDown,
+                        guidance: .keepScrollingDown
                     )
                 }
             case .ignoredAlignmentFailed:
@@ -787,12 +789,12 @@ final class ScrollingCaptureCoordinator {
                 if update.matchFailureCount >= 2 {
                     sessionModel.setStatus(
                         L10n.ScrollingCaptureStatus.alignmentPaused,
-                        guidance: .slowDown,
+                        guidance: .slowDown
                     )
                 } else {
                     sessionModel.setStatus(
                         L10n.ScrollingCaptureStatus.couldntAlignFrame,
-                        guidance: .keepSteadierPace,
+                        guidance: .keepSteadierPace
                     )
                 }
             case .reachedHeightLimit:
@@ -801,7 +803,7 @@ final class ScrollingCaptureCoordinator {
                     .framesStitchedHeightLimitReached(update.acceptedFrameCount)
                 sessionModel.setStatus(
                     L10n.ScrollingCaptureStatus.heightLimitReached(maxOutputHeight),
-                    guidance: .heightLimitReached,
+                    guidance: .heightLimitReached
                 )
             }
             handleAutoScrollStitchUpdate(update)
@@ -813,7 +815,7 @@ final class ScrollingCaptureCoordinator {
                 reason: reason,
                 captureDurationMs: 0,
                 stitchDurationMs: 0,
-                totalDurationMs: totalDurationMs,
+                totalDurationMs: totalDurationMs
             )
             logScrollingCaptureRefreshFailure(
                 reason: reason,
@@ -821,20 +823,20 @@ final class ScrollingCaptureCoordinator {
                 captureDurationMs: 0,
                 stitchDurationMs: 0,
                 totalDurationMs: totalDurationMs,
-                errorDescription: error.localizedDescription,
+                errorDescription: error.localizedDescription
             )
             sessionModel.runtimeState = isFinalizingRefresh ? .finalizing : .paused
             DiagnosticLogger.shared.log(
                 .error,
                 .capture,
                 "Scrolling capture preview refresh failed",
-                context: ["error": error.localizedDescription],
+                context: ["error": error.localizedDescription]
             )
             sessionModel.setStatus(
                 isFinalizingRefresh
                     ? L10n.ScrollingCaptureStatus.finalizingCurrentCapture
                     : L10n.ScrollingCaptureStatus.previewRefreshFailed,
-                guidance: isFinalizingRefresh ? .lockingCurrentCapture : .previewNeedsRecovery,
+                guidance: isFinalizingRefresh ? .lockingCurrentCapture : .previewNeedsRecovery
             )
             updatePreviewTruthState()
             return nil
@@ -890,7 +892,7 @@ final class ScrollingCaptureCoordinator {
         return CaptureSelectionOverlayGuidance(
             title: guidance.title,
             detail: guidance.detail,
-            tone: tone,
+            tone: tone
         )
     }
 
@@ -942,7 +944,7 @@ final class ScrollingCaptureCoordinator {
         sessionModel.runtimeState = .ready
         sessionModel.setStatus(
             L10n.ScrollingCaptureStatus.adjustRegion,
-            guidance: .frameOnlyScrollingContent,
+            guidance: .frameOnlyScrollingContent
         )
 
         prewarmCaptureContext(for: selectedRect)
@@ -960,7 +962,7 @@ final class ScrollingCaptureCoordinator {
                     excludeDesktopIcons: DesktopIconManager.shared.isIconHidingEnabled,
                     excludeDesktopWidgets: DesktopIconManager.shared.isWidgetHidingEnabled,
                     excludeOwnApplication: true,
-                    prefetchedContentTask: prefetchedContentTask,
+                    prefetchedContentTask: prefetchedContentTask
                 )
 
                 guard !Task.isCancelled else { return }
@@ -974,7 +976,7 @@ final class ScrollingCaptureCoordinator {
                     .warning,
                     .capture,
                     "Scrolling capture prewarm failed",
-                    context: ["error": error.localizedDescription],
+                    context: ["error": error.localizedDescription]
                 )
             }
         }
@@ -1002,7 +1004,7 @@ final class ScrollingCaptureCoordinator {
             excludeDesktopIcons: DesktopIconManager.shared.isIconHidingEnabled,
             excludeDesktopWidgets: DesktopIconManager.shared.isWidgetHidingEnabled,
             excludeOwnApplication: true,
-            prefetchedContentTask: prefetchedContentTask,
+            prefetchedContentTask: prefetchedContentTask
         )
         preparedCaptureContext = context
         captureScaleFactor = max(context.scaleFactor, context.minimumOutputScaleFactor)
@@ -1029,7 +1031,7 @@ final class ScrollingCaptureCoordinator {
             if let normalizedImage = normalizeCommitFrame(capturedImage, context: context) {
                 let commitFrame = ScrollingCaptureCommitFrameSelection.makeOnDemandFrame(
                     streamFrame: streamFrame,
-                    normalizedImage: normalizedImage,
+                    normalizedImage: normalizedImage
                 )
                 recordCommitFrameSelection(commitFrame)
                 return commitFrame
@@ -1042,8 +1044,8 @@ final class ScrollingCaptureCoordinator {
                     "inputSize": "\(capturedImage.width)x\(capturedImage.height)",
                     "logicalSize": "\(Int(context.logicalCropSize.width))x\(Int(context.logicalCropSize.height))",
                     "sourceScale": Self.formattedDebugDouble(Double(context.scaleFactor)),
-                    "outputScale": Self.formattedDebugDouble(Double(captureScaleFactor)),
-                ],
+                    "outputScale": Self.formattedDebugDouble(Double(captureScaleFactor))
+                ]
             )
         }
 
@@ -1053,8 +1055,8 @@ final class ScrollingCaptureCoordinator {
                 context: [
                     "reason": "on-demand-and-stream-unavailable",
                     "ringFrames": "\(liveFrameRing.frames.count)",
-                    "lastCommittedSequence": optionalString(liveFrameRing.lastCommittedSequenceNumber),
-                ],
+                    "lastCommittedSequence": optionalString(liveFrameRing.lastCommittedSequenceNumber)
+                ]
             )
             return nil
         }
@@ -1067,16 +1069,16 @@ final class ScrollingCaptureCoordinator {
                     "inputSize": "\(streamFrame.image.width)x\(streamFrame.image.height)",
                     "logicalSize": "\(Int(context.logicalCropSize.width))x\(Int(context.logicalCropSize.height))",
                     "sourceScale": Self.formattedDebugDouble(Double(context.scaleFactor)),
-                    "outputScale": Self.formattedDebugDouble(Double(captureScaleFactor)),
-                ],
+                    "outputScale": Self.formattedDebugDouble(Double(captureScaleFactor))
+                ]
             )
             logScrollingCaptureDebug(
                 "commit-frame-missing",
                 context: [
                     "reason": "on-demand-and-stream-unavailable",
                     "ringFrames": "\(liveFrameRing.frames.count)",
-                    "lastCommittedSequence": optionalString(liveFrameRing.lastCommittedSequenceNumber),
-                ],
+                    "lastCommittedSequence": optionalString(liveFrameRing.lastCommittedSequenceNumber)
+                ]
             )
             return nil
         }
@@ -1084,7 +1086,7 @@ final class ScrollingCaptureCoordinator {
         let commitFrame = ScrollingCaptureCommitFrameSelection.makeStreamFrame(
             streamFrame: streamFrame,
             normalizedImage: normalizedImage,
-            lastCommittedSequenceNumber: liveFrameRing.lastCommittedSequenceNumber,
+            lastCommittedSequenceNumber: liveFrameRing.lastCommittedSequenceNumber
         )
         recordCommitFrameSelection(commitFrame)
         return commitFrame
@@ -1094,21 +1096,21 @@ final class ScrollingCaptureCoordinator {
         sessionMetrics.recordCommitFrameSelected(
             source: commitFrame.source,
             frameAgeMs: commitFrame.frameAgeMs,
-            isDuplicateFrame: commitFrame.isDuplicateFrame,
+            isDuplicateFrame: commitFrame.isDuplicateFrame
         )
         logScrollingCaptureCommitFrameSelected(commitFrame)
     }
 
     private func normalizeCommitFrame(
         _ image: CGImage,
-        context: ScreenCaptureManager.PreparedAreaCaptureContext,
+        context: ScreenCaptureManager.PreparedAreaCaptureContext
     ) -> CGImage? {
         ScrollingCaptureCommitFrameNormalizer.normalize(
             image,
             logicalSize: context.logicalCropSize,
             sourceScaleFactor: context.scaleFactor,
             minimumOutputScaleFactor: context.minimumOutputScaleFactor,
-            colorSpaceName: context.configuration.colorSpaceName,
+            colorSpaceName: context.configuration.colorSpaceName
         )
     }
 
@@ -1138,7 +1140,7 @@ final class ScrollingCaptureCoordinator {
                     activeScrollThreshold: scrollIdleTimeout,
                     timeSinceLastRefresh: timeSinceLastRefresh,
                     minimumStreamingInterval: duringScrollCommitInterval,
-                    canStartRefresh: canRefresh,
+                    canStartRefresh: canRefresh
                 )
                 let hasEnoughSettledMotion = pendingDistance >= minimumPendingScrollPoints()
                     && idleDuration >= scrollSettleDelay()
@@ -1194,7 +1196,7 @@ final class ScrollingCaptureCoordinator {
                 },
                 failureHandler: { [weak self] errorDescription in
                     self?.handleLivePreviewFailure(errorDescription)
-                },
+                }
             )
             sessionMetrics.recordLivePreviewStart(success: true)
             sessionModel.livePreviewImage = nil
@@ -1209,8 +1211,8 @@ final class ScrollingCaptureCoordinator {
                     "outputSize": "\(context.outputWidth)x\(context.outputHeight)",
                     "streamScale": Self.formattedDebugDouble(Double(context.scaleFactor)),
                     "commitScale": Self.formattedDebugDouble(Double(captureScaleFactor)),
-                    "ringFrames": "\(liveFrameRing.frames.count)",
-                ],
+                    "ringFrames": "\(liveFrameRing.frames.count)"
+                ]
             )
         } catch {
             sessionMetrics.recordLivePreviewStart(success: false)
@@ -1219,13 +1221,13 @@ final class ScrollingCaptureCoordinator {
             updatePreviewTruthState()
             logScrollingCaptureDebug(
                 "live-stream-fallback",
-                context: ["error": error.localizedDescription],
+                context: ["error": error.localizedDescription]
             )
             DiagnosticLogger.shared.log(
                 .warning,
                 .capture,
                 "Scrolling capture live preview fallback to stitched preview",
-                context: ["error": error.localizedDescription],
+                context: ["error": error.localizedDescription]
             )
         }
     }
@@ -1254,7 +1256,7 @@ final class ScrollingCaptureCoordinator {
             hasCommittedPreview: sessionModel.previewImage != nil,
             capturedAt: observedFrame.capturedAt,
             lastPublishedAt: lastLivePreviewPublishedAt,
-            minimumInterval: livePreviewUIRefreshInterval,
+            minimumInterval: livePreviewUIRefreshInterval
         )
         guard shouldPublish else { return }
 
@@ -1263,7 +1265,7 @@ final class ScrollingCaptureCoordinator {
         lastLivePreviewPublishedAt = observedFrame.capturedAt
         sessionMetrics.recordLivePreviewFramePublished(
             at: observedFrame.capturedAt,
-            publishDurationMs: publishDurationMs,
+            publishDurationMs: publishDurationMs
         )
         if !sessionModel.isUsingLivePreview {
             sessionModel.isUsingLivePreview = true
@@ -1284,8 +1286,8 @@ final class ScrollingCaptureCoordinator {
                     "lastCommittedSequence": optionalString(liveFrameRing.lastCommittedSequenceNumber),
                     "publishMs": "\(publishDurationMs)",
                     "previewTruth": previewTruthStateName(sessionModel.previewTruthState),
-                    "activePreview": sessionModel.previewImage == nil ? "live" : "stitched",
-                ],
+                    "activePreview": sessionModel.previewImage == nil ? "live" : "stitched"
+                ]
             )
         }
     }
@@ -1296,7 +1298,7 @@ final class ScrollingCaptureCoordinator {
             .warning,
             .capture,
             "Scrolling capture live preview stream stopped",
-            context: ["error": errorDescription],
+            context: ["error": errorDescription]
         )
         stopLivePreviewIfNeeded(clearImage: false)
         sessionModel?.runtimeState = .paused
@@ -1309,7 +1311,7 @@ final class ScrollingCaptureCoordinator {
         let sign = rawValue > 0 ? 1 : -1
         let magnitude = abs(rawValue)
         guard let lastAcceptedDeltaPixels, lastAcceptedDeltaPixels > 0 else {
-            return sign * min(max(16, magnitude), 1_600)
+            return sign * min(max(16, magnitude), 1600)
         }
 
         let blendedMagnitude = Int(round(Double(magnitude + lastAcceptedDeltaPixels) / 2.0))
@@ -1322,7 +1324,7 @@ final class ScrollingCaptureCoordinator {
     private func stitchCapturedImage(
         _ capturedImage: CGImage,
         expectedSignedDeltaPixels: Int?,
-        renderMergedImage: Bool,
+        renderMergedImage: Bool
     ) async -> (ScrollingCaptureStitchUpdate?, ScrollingCaptureStitcher?) {
         let currentStitcher = stitcher
         let maxOutputHeight = maxOutputHeight
@@ -1335,7 +1337,7 @@ final class ScrollingCaptureCoordinator {
                             capturedImage,
                             maxOutputHeight: maxOutputHeight,
                             expectedSignedDeltaPixels: expectedSignedDeltaPixels,
-                            renderMergedImage: renderMergedImage,
+                            renderMergedImage: renderMergedImage
                         )
                         continuation.resume(returning: (update, currentStitcher))
                     } else {
@@ -1387,7 +1389,7 @@ final class ScrollingCaptureCoordinator {
         guard sessionModel?.phase == .capturing else { return }
         let update = await refreshPreview(
             reason: request.reason,
-            expectedSignedDeltaPixelsOverride: request.expectedSignedDeltaPixels,
+            expectedSignedDeltaPixelsOverride: request.expectedSignedDeltaPixels
         )
         lastScheduledCommitSequenceNumber = request.sequenceNumber
         lastScheduledCommitUpdate = update
@@ -1402,20 +1404,20 @@ final class ScrollingCaptureCoordinator {
             operation: { [weak self] request in
                 guard let self else { return }
                 await performScheduledCommit(request)
-            },
+            }
         )
     }
 
     @discardableResult
     private func scheduleCommitRefresh(
         reason: String,
-        expectedSignedDeltaPixelsOverride: Int? = nil,
+        expectedSignedDeltaPixelsOverride: Int? = nil
     ) -> ScrollingCaptureCommitScheduler.Request? {
         guard let sessionModel, sessionModel.phase == .capturing else { return nil }
         sessionMetrics.recordCommitScheduled()
         let request = commitScheduler?.schedule(
             reason: reason,
-            expectedSignedDeltaPixels: expectedSignedDeltaPixelsOverride,
+            expectedSignedDeltaPixels: expectedSignedDeltaPixelsOverride
         )
         updatePreviewTruthState()
         return request
@@ -1423,18 +1425,18 @@ final class ScrollingCaptureCoordinator {
 
     private func scheduleCommitRefreshAndWait(
         reason: String,
-        expectedSignedDeltaPixelsOverride: Int? = nil,
+        expectedSignedDeltaPixelsOverride: Int? = nil
     ) async -> ScrollingCaptureStitchUpdate? {
         guard let commitScheduler else {
             return await refreshPreview(
                 reason: reason,
-                expectedSignedDeltaPixelsOverride: expectedSignedDeltaPixelsOverride,
+                expectedSignedDeltaPixelsOverride: expectedSignedDeltaPixelsOverride
             )
         }
 
         guard let request = scheduleCommitRefresh(
             reason: reason,
-            expectedSignedDeltaPixelsOverride: expectedSignedDeltaPixelsOverride,
+            expectedSignedDeltaPixelsOverride: expectedSignedDeltaPixelsOverride
         ) else {
             return nil
         }
@@ -1453,7 +1455,7 @@ final class ScrollingCaptureCoordinator {
         sessionModel.runtimeState = .finalizing
         sessionModel.setStatus(
             L10n.ScrollingCaptureStatus.finalizingCurrentCapture,
-            guidance: .lockingCurrentCapture,
+            guidance: .lockingCurrentCapture
         )
         sessionModel.previewCaption = L10n.ScrollingCapture.captionFinalizingStitchedResult
         sessionMetrics.recordFinalizingStarted(at: ProcessInfo.processInfo.systemUptime)
@@ -1463,7 +1465,7 @@ final class ScrollingCaptureCoordinator {
     private func makePreviewImage(from stitcher: ScrollingCaptureStitcher) -> CGImage? {
         stitcher.previewImage(
             maxPixelWidth: Int((ScrollingCapturePreviewLayout.previewWidth * previewRenderScale).rounded()),
-            maxPixelHeight: Int((ScrollingCapturePreviewLayout.maxPreviewHeight * previewRenderScale).rounded()),
+            maxPixelHeight: Int((ScrollingCapturePreviewLayout.maxPreviewHeight * previewRenderScale).rounded())
         )
     }
 
@@ -1544,7 +1546,7 @@ final class ScrollingCaptureCoordinator {
             update.likelyReachedBoundary
                 ? L10n.ScrollingCapture.captionFinalizingCurrentResultNoNewContent
                 : L10n.ScrollingCapture.finalizingFramesLocked(update.acceptedFrameCount)
-        case .appended(let deltaY):
+        case let .appended(deltaY):
             L10n.ScrollingCapture.finalFrameLocked(update.acceptedFrameCount, deltaY)
         case .ignoredAlignmentFailed:
             L10n.ScrollingCapture.captionFinalizingCurrentResultLastFrameSkipped
@@ -1569,7 +1571,8 @@ final class ScrollingCaptureCoordinator {
     }
 
     private func finalizingGuidanceKind(for update: ScrollingCaptureStitchUpdate)
-        -> ScrollingCaptureSelectionGuidanceKind {
+        -> ScrollingCaptureSelectionGuidanceKind
+    {
         switch update.outcome {
         case .reachedHeightLimit:
             .savingCurrentResult
@@ -1588,7 +1591,7 @@ final class ScrollingCaptureCoordinator {
             latestCapturedAt: lastCapturedFrameAt,
             lastCommittedObservationAt: lastCommittedObservationAt,
             isUsingLivePreview: sessionModel.isUsingLivePreview,
-            toleranceMs: previewTruthLagToleranceMs,
+            toleranceMs: previewTruthLagToleranceMs
         )
         if sessionModel.pendingCommitCount != pendingCommitCount {
             sessionModel.pendingCommitCount = pendingCommitCount
@@ -1650,8 +1653,8 @@ final class ScrollingCaptureCoordinator {
                 "ringFrames": "\(liveFrameRing.frames.count)",
                 "frameAgeMs": optionalString(commitFrame.frameAgeMs),
                 "duplicate": String(commitFrame.isDuplicateFrame),
-                "inputSize": imageSizeString(commitFrame.image),
-            ],
+                "inputSize": imageSizeString(commitFrame.image)
+            ]
         )
     }
 
@@ -1664,7 +1667,7 @@ final class ScrollingCaptureCoordinator {
         captureDurationMs: Int,
         stitchDurationMs: Int,
         previewPublishDurationMs: Int,
-        totalDurationMs: Int,
+        totalDurationMs: Int
     ) {
         var context: [String: String] = [
             "reason": reason,
@@ -1687,7 +1690,7 @@ final class ScrollingCaptureCoordinator {
             "totalMs": "\(totalDurationMs)",
             "renderMergedFullImage": String(shouldRenderMergedImage),
             "ringFrames": "\(liveFrameRing.frames.count)",
-            "lastCommittedSequence": optionalString(liveFrameRing.lastCommittedSequenceNumber),
+            "lastCommittedSequence": optionalString(liveFrameRing.lastCommittedSequenceNumber)
         ]
 
         addOutcomeDetails(update.outcome, to: &context)
@@ -1718,7 +1721,7 @@ final class ScrollingCaptureCoordinator {
         stitchDurationMs: Int,
         totalDurationMs: Int,
         commitFrame: ScrollingCaptureCommitFrame? = nil,
-        errorDescription: String? = nil,
+        errorDescription: String? = nil
     ) {
         var context: [String: String] = [
             "reason": reason,
@@ -1727,7 +1730,7 @@ final class ScrollingCaptureCoordinator {
             "stitchMs": "\(stitchDurationMs)",
             "totalMs": "\(totalDurationMs)",
             "ringFrames": "\(liveFrameRing.frames.count)",
-            "lastCommittedSequence": optionalString(liveFrameRing.lastCommittedSequenceNumber),
+            "lastCommittedSequence": optionalString(liveFrameRing.lastCommittedSequenceNumber)
         ]
 
         if let commitFrame {
@@ -1751,7 +1754,7 @@ final class ScrollingCaptureCoordinator {
             .debug,
             .capture,
             "ScrollingCaptureDebug \(event)",
-            context: context,
+            context: context
         )
     }
 
@@ -1766,18 +1769,18 @@ final class ScrollingCaptureCoordinator {
         didFlushSessionMetrics = true
         logScrollingCaptureDebug(
             "session-summary",
-            context: sessionMetrics.summaryContext(reason: reason),
+            context: sessionMetrics.summaryContext(reason: reason)
         )
         DiagnosticLogger.shared.log(
             .info,
             .capture,
             "Scrolling capture session metrics",
-            context: sessionMetrics.summaryContext(reason: reason),
+            context: sessionMetrics.summaryContext(reason: reason)
         )
     }
 
     private static func elapsedMilliseconds(since startedAt: CFAbsoluteTime) -> Int {
-        Int(((CFAbsoluteTimeGetCurrent() - startedAt) * 1_000).rounded())
+        Int(((CFAbsoluteTimeGetCurrent() - startedAt) * 1000).rounded())
     }
 
     private func commitFrameSourceName(_ source: ScrollingCaptureCommitFrameSource) -> String {
@@ -1806,9 +1809,9 @@ final class ScrollingCaptureCoordinator {
 
     private func addOutcomeDetails(
         _ outcome: ScrollingCaptureStitchOutcome,
-        to context: inout [String: String],
+        to context: inout [String: String]
     ) {
-        if case .appended(let deltaY) = outcome {
+        if case let .appended(deltaY) = outcome {
             context["outcomeDeltaY"] = "\(deltaY)"
         }
     }
@@ -1817,9 +1820,9 @@ final class ScrollingCaptureCoordinator {
         switch safety {
         case .confirmed:
             "confirmed"
-        case .tentative(let reason):
+        case let .tentative(reason):
             "tentative:\(reason)"
-        case .unsafe (let reason):
+        case let .unsafe(reason):
             "unsafe:\(reason)"
         }
     }
@@ -1880,7 +1883,7 @@ extension ScrollingCaptureCoordinator: CaptureSelectionOverlayDelegate {
         updateSelectedRect(rect, reprepareSession: false)
         sessionModel.setStatus(
             L10n.ScrollingCaptureStatus.releaseToLockUpdatedRegion,
-            guidance: .releaseToLockArea,
+            guidance: .releaseToLockArea
         )
     }
 
@@ -1889,7 +1892,7 @@ extension ScrollingCaptureCoordinator: CaptureSelectionOverlayDelegate {
         refreshSelectionPreparation()
         sessionModel.setStatus(
             L10n.ScrollingCaptureStatus.regionUpdated,
-            guidance: .areaUpdated,
+            guidance: .areaUpdated
         )
     }
 
@@ -1898,20 +1901,20 @@ extension ScrollingCaptureCoordinator: CaptureSelectionOverlayDelegate {
         updateSelectedRect(rect, reprepareSession: true)
         sessionModel.setStatus(
             L10n.ScrollingCaptureStatus.regionUpdated,
-            guidance: .areaUpdated,
+            guidance: .areaUpdated
         )
     }
 
     func overlay(
         _: CaptureSelectionOverlayWindow,
         didResizeRegionTo rect: CGRect,
-        modifiers _: NSEvent.ModifierFlags,
+        modifiers _: NSEvent.ModifierFlags
     ) {
         guard let sessionModel, sessionModel.phase == .ready else { return }
         updateSelectedRect(rect, reprepareSession: false)
         sessionModel.setStatus(
             L10n.ScrollingCaptureStatus.releaseToLockUpdatedRegion,
-            guidance: .releaseToLockArea,
+            guidance: .releaseToLockArea
         )
     }
 
@@ -1920,7 +1923,7 @@ extension ScrollingCaptureCoordinator: CaptureSelectionOverlayDelegate {
         refreshSelectionPreparation()
         sessionModel.setStatus(
             L10n.ScrollingCaptureStatus.regionUpdated,
-            guidance: .areaUpdated,
+            guidance: .areaUpdated
         )
     }
 }

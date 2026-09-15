@@ -91,14 +91,14 @@ extension NSWindow {
 
     @MainActor
     private func trafficLightFrames(
-        config: TrafficLightConfiguration,
+        config: TrafficLightConfiguration
     ) -> (
         close: NSButton,
         miniaturize: NSButton,
         zoom: NSButton,
         closeOrigin: NSPoint,
         miniaturizeOrigin: NSPoint,
-        zoomOrigin: NSPoint,
+        zoomOrigin: NSPoint
     )? {
         guard let closeButton = standardWindowButton(.closeButton),
               let miniaturizeButton = standardWindowButton(.miniaturizeButton),
@@ -127,11 +127,11 @@ extension NSWindow {
         let closeOrigin = NSPoint(x: config.horizontalOffset, y: yPosition)
         let miniaturizeOrigin = NSPoint(
             x: closeOrigin.x + closeButton.frame.width + config.buttonSpacing,
-            y: yPosition,
+            y: yPosition
         )
         let zoomOrigin = NSPoint(
             x: miniaturizeOrigin.x + miniaturizeButton.frame.width + config.buttonSpacing,
-            y: yPosition,
+            y: yPosition
         )
 
         return (
@@ -140,7 +140,7 @@ extension NSWindow {
             zoomButton,
             closeOrigin,
             miniaturizeOrigin,
-            zoomOrigin,
+            zoomOrigin
         )
     }
 }
@@ -164,7 +164,7 @@ private extension NSWindow {
                 self,
                 &TrafficLightsAssociation.controller,
                 newValue,
-                .OBJC_ASSOCIATION_RETAIN_NONATOMIC,
+                .OBJC_ASSOCIATION_RETAIN_NONATOMIC
             )
         }
     }
@@ -204,25 +204,25 @@ private final class TrafficLightsLayoutController: NSObject {
             self,
             selector: #selector(handleWindowEvent),
             name: NSWindow.didResizeNotification,
-            object: window,
+            object: window
         )
         center.addObserver(
             self,
             selector: #selector(handleWindowEvent),
             name: NSWindow.didEndLiveResizeNotification,
-            object: window,
+            object: window
         )
         center.addObserver(
             self,
             selector: #selector(handleWindowEvent),
             name: NSWindow.didBecomeKeyNotification,
-            object: window,
+            object: window
         )
         center.addObserver(
             self,
             selector: #selector(handleWindowEvent),
             name: NSApplication.didChangeScreenParametersNotification,
-            object: nil,
+            object: nil
         )
         isObservingWindow = true
         scheduleApply()
@@ -278,7 +278,7 @@ private final class TrafficLightsLayoutController: NSObject {
             NotificationCenter.default.removeObserver(
                 self,
                 name: NSView.frameDidChangeNotification,
-                object: observedCloseButton,
+                object: observedCloseButton
             )
         }
 
@@ -288,7 +288,7 @@ private final class TrafficLightsLayoutController: NSObject {
             self,
             selector: #selector(handleCloseButtonFrameChange),
             name: NSView.frameDidChangeNotification,
-            object: closeButton,
+            object: closeButton
         )
     }
 }

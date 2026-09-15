@@ -78,7 +78,7 @@ final class PersistedCombineSessionTests: XCTestCase {
         let restored = AnnotateState(
             image: baseImage,
             url: sourceURL,
-            appliesDefaultCanvasPresetOnNewImages: false,
+            appliesDefaultCanvasPresetOnNewImages: false
         )
         restored.restoreEmbeddedImageAssets(from: loaded.embeddedImageAssetsData)
         restored.annotations = loaded.annotations
@@ -102,7 +102,7 @@ final class PersistedCombineSessionTests: XCTestCase {
             mode: .freeCanvas,
             direction: .vertical,
             gap: 24,
-            freeBoundsByAnnotationID: [layerId: CGRect(x: 5, y: 6, width: 40, height: 30)],
+            freeBoundsByAnnotationID: [layerId: CGRect(x: 5, y: 6, width: 40, height: 30)]
         )
         let sessionData = try makeSessionData(combineSession: combine)
 
@@ -143,7 +143,7 @@ final class PersistedCombineSessionTests: XCTestCase {
             mode: .autoStitch,
             direction: .smart,
             gap: 0,
-            freeBoundsByAnnotationID: [:],
+            freeBoundsByAnnotationID: [:]
         )
         XCTAssertTrue(try store.persist(makeSessionData(combineSession: combine), for: sourceURL))
 
@@ -166,7 +166,7 @@ final class PersistedCombineSessionTests: XCTestCase {
             modeRawValue: "autoStitch",
             directionRawValue: "horizontal",
             gap: 12.5,
-            freeBoundsByAnnotationID: ["11111111-1111-1111-1111-111111111111": CGRect(x: 1, y: 2, width: 3, height: 4)],
+            freeBoundsByAnnotationID: ["11111111-1111-1111-1111-111111111111": CGRect(x: 1, y: 2, width: 3, height: 4)]
         )
         let data = try JSONEncoder().encode(original)
         let decoded = try JSONDecoder().decode(PersistedCombineSession.self, from: data)
@@ -180,7 +180,7 @@ final class PersistedCombineSessionTests: XCTestCase {
             modeRawValue: "tesseractStitch",
             directionRawValue: "diagonal",
             gap: 8,
-            freeBoundsByAnnotationID: [:],
+            freeBoundsByAnnotationID: [:]
         )
         let snapshot = persisted.toSnapshot()
         XCTAssertEqual(snapshot.mode, .autoStitch)
@@ -196,14 +196,14 @@ final class PersistedCombineSessionTests: XCTestCase {
             gap: 0,
             freeBoundsByAnnotationID: [
                 validKey: CGRect(x: 0, y: 0, width: 10, height: 10),
-                "not-a-uuid": CGRect(x: 1, y: 1, width: 2, height: 2),
-            ],
+                "not-a-uuid": CGRect(x: 1, y: 1, width: 2, height: 2)
+            ]
         )
         let snapshot = persisted.toSnapshot()
         XCTAssertEqual(snapshot.freeBoundsByAnnotationID.count, 1)
         XCTAssertEqual(
             try snapshot.freeBoundsByAnnotationID[XCTUnwrap(UUID(uuidString: validKey))],
-            CGRect(x: 0, y: 0, width: 10, height: 10),
+            CGRect(x: 0, y: 0, width: 10, height: 10)
         )
     }
 
@@ -228,7 +228,7 @@ final class PersistedCombineSessionTests: XCTestCase {
             didCutoutAutoApplyCrop: false,
             cutoutAutoAppliedCropRect: nil,
             embeddedImageAssetsData: [:],
-            combineSession: combineSession,
+            combineSession: combineSession
         )
     }
 
@@ -245,7 +245,7 @@ final class PersistedCombineSessionTests: XCTestCase {
         let normalizedPath = AnnotationSessionStore.normalizedPath(for: sourceURL)
         return sessionsDirectory.appendingPathComponent(
             AnnotationSessionStore.pathHash(for: normalizedPath),
-            isDirectory: true,
+            isDirectory: true
         )
     }
 }

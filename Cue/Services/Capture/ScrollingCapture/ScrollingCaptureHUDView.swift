@@ -25,7 +25,7 @@ struct ScrollingCaptureHUDView: View {
             Button(action: onToggleAutoScroll) {
                 Label(
                     model.isAutoScrolling ? L10n.ScrollingCapture.stopAutoScroll : L10n.ScrollingCapture.autoScroll,
-                    systemImage: model.isAutoScrolling ? "stop.circle.fill" : "play.circle.fill",
+                    systemImage: model.isAutoScrolling ? "stop.circle.fill" : "play.circle.fill"
                 )
                 .lineLimit(1)
                 .fixedSize(horizontal: true, vertical: false)
@@ -43,7 +43,7 @@ struct ScrollingCaptureHUDView: View {
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .strokeBorder(Color.white.opacity(0.12)),
+                .strokeBorder(Color.white.opacity(0.12))
         )
     }
 }

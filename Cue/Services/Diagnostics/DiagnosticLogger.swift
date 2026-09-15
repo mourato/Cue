@@ -206,7 +206,8 @@ private final class DiagnosticLoggerState: @unchecked Sendable {
         var service = IOIteratorNext(iterator)
         while service != 0 {
             if let model = IORegistryEntryCreateCFProperty(service, "model" as CFString, kCFAllocatorDefault, 0)?
-                .takeRetainedValue() as? Data {
+                .takeRetainedValue() as? Data
+            {
                 let name = String(data: model, encoding: .utf8)?.trimmingCharacters(in: .controlCharacters) ?? ""
                 if !name.isEmpty {
                     IOObjectRelease(service)
@@ -228,9 +229,10 @@ private final class DiagnosticLoggerState: @unchecked Sendable {
                     accelService,
                     "IOClass" as CFString,
                     kCFAllocatorDefault,
-                    0,
+                    0
                 )?
-                    .takeRetainedValue() as? String {
+                    .takeRetainedValue() as? String
+                {
                     IOObjectRelease(accelService)
                     return props
                 }
@@ -283,7 +285,7 @@ final class DiagnosticLogger: Sendable {
         context: [String: String]? = nil,
         file: String = #fileID,
         function: String = #function,
-        line: Int = #line,
+        line: Int = #line
     ) {
         guard isEnabled else { return }
         let entry = DiagnosticLogEntry(
@@ -293,7 +295,7 @@ final class DiagnosticLogger: Sendable {
             context: context,
             file: file,
             function: function,
-            line: line,
+            line: line
         )
         state.enqueue(entry)
     }
@@ -306,7 +308,7 @@ final class DiagnosticLogger: Sendable {
         context: [String: String]? = nil,
         file: String = #fileID,
         function: String = #function,
-        line: Int = #line,
+        line: Int = #line
     ) {
         let nsError = error as NSError
         var ctx = context ?? [:]
@@ -324,7 +326,7 @@ final class DiagnosticLogger: Sendable {
             context: ctx,
             file: file,
             function: function,
-            line: line,
+            line: line
         )
     }
 

@@ -25,7 +25,7 @@ final class AppLaunchPolicyTests: XCTestCase {
                 didRequestScreenCount = true
                 return 1
             },
-            xctestRuntimePresent: { false },
+            xctestRuntimePresent: { false }
         )
 
         XCTAssertFalse(policy.shouldStartInteractiveApplication)
@@ -36,7 +36,7 @@ final class AppLaunchPolicyTests: XCTestCase {
         let policy = AppLaunchPolicy(
             environment: [:],
             screenCountProvider: { 0 },
-            xctestRuntimePresent: { false },
+            xctestRuntimePresent: { false }
         )
 
         XCTAssertTrue(policy.isHeadlessDisplaySession)
@@ -47,7 +47,7 @@ final class AppLaunchPolicyTests: XCTestCase {
         let policy = AppLaunchPolicy(
             environment: [:],
             screenCountProvider: { 1 },
-            xctestRuntimePresent: { false },
+            xctestRuntimePresent: { false }
         )
 
         XCTAssertFalse(policy.isRunningUnderXCTest)
@@ -59,10 +59,10 @@ final class AppLaunchPolicyTests: XCTestCase {
         let policy = AppLaunchPolicy(
             environment: [
                 "XCTestConfigurationFilePath": "/tmp/NotinhasTests.xctestconfiguration",
-                "CUE_ALLOW_INTERACTIVE_XCTEST_HOST": "1",
+                "CUE_ALLOW_INTERACTIVE_XCTEST_HOST": "1"
             ],
             screenCountProvider: { 1 },
-            xctestRuntimePresent: { false },
+            xctestRuntimePresent: { false }
         )
 
         XCTAssertTrue(policy.shouldStartInteractiveApplication)
@@ -72,7 +72,7 @@ final class AppLaunchPolicyTests: XCTestCase {
         let policy = AppLaunchPolicy(
             environment: ["XCInjectBundle": "/tmp/NotinhasTests.xctest"],
             screenCountProvider: { 1 },
-            xctestRuntimePresent: { false },
+            xctestRuntimePresent: { false }
         )
 
         XCTAssertTrue(policy.isRunningUnderXCTest)
@@ -82,10 +82,10 @@ final class AppLaunchPolicyTests: XCTestCase {
     func testIsRunningUnderXCTest_detectsDYLDInsertLibrariesWithoutConfigurationPath() {
         let policy = AppLaunchPolicy(
             environment: [
-                "DYLD_INSERT_LIBRARIES": "/usr/lib/libXCTestBundleInject.dylib:/tmp/XCTTargetBootstrapInject.dylib",
+                "DYLD_INSERT_LIBRARIES": "/usr/lib/libXCTestBundleInject.dylib:/tmp/XCTTargetBootstrapInject.dylib"
             ],
             screenCountProvider: { 1 },
-            xctestRuntimePresent: { false },
+            xctestRuntimePresent: { false }
         )
 
         XCTAssertTrue(policy.isRunningUnderXCTest)
@@ -96,7 +96,7 @@ final class AppLaunchPolicyTests: XCTestCase {
         let policy = AppLaunchPolicy(
             environment: [:],
             screenCountProvider: { 1 },
-            xctestRuntimePresent: { true },
+            xctestRuntimePresent: { true }
         )
 
         XCTAssertTrue(policy.isRunningUnderXCTest)
@@ -109,16 +109,16 @@ final class AppLaunchPolicyTests: XCTestCase {
                 AppLaunchPolicy(
                     environment: [:],
                     screenCountProvider: { 0 },
-                    xctestRuntimePresent: { false },
+                    xctestRuntimePresent: { false }
                 )
-            },
+            }
         )
         let fileURL = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString)
             .appendingPathExtension("png")
 
         delegate.applicationDidFinishLaunching(
-            Notification(name: NSApplication.didFinishLaunchingNotification),
+            Notification(name: NSApplication.didFinishLaunchingNotification)
         )
         delegate.application(NSApplication.shared, open: [fileURL])
 

@@ -129,7 +129,7 @@ final class AnnotateManager {
         let controller = AnnotateWindowController(
             item: item,
             sessionData: sessionData,
-            pendingCommitRecovery: pendingCommitRecovery,
+            pendingCommitRecovery: pendingCommitRecovery
         )
         windowControllers[item.id] = controller
         DiagnosticLogger.shared.log(.info, .action, "Annotate window opened for item \(item.id)")
@@ -143,7 +143,7 @@ final class AnnotateManager {
             NotificationCenter.default.addObserver(
                 forName: NSWindow.willCloseNotification,
                 object: window,
-                queue: .main,
+                queue: .main
             ) { [weak self] _ in
                 MainActor.assumeIsolated {
                     self?.windowControllers.removeValue(forKey: itemId)
@@ -183,7 +183,7 @@ final class AnnotateManager {
     func openAnnotation(
         url: URL,
         sessionData: AnnotationSessionData? = nil,
-        pendingCommitRecovery: Bool = false,
+        pendingCommitRecovery: Bool = false
     ) {
         guard NSScreen.screens.isEmpty == false else {
             DiagnosticLogger.shared.log(.error, .action, "Annotate open failed: no screens available")
@@ -206,7 +206,7 @@ final class AnnotateManager {
         let controller = AnnotateWindowController(
             url: url,
             sessionData: restoredSessionData,
-            pendingCommitRecovery: pendingCommitRecovery,
+            pendingCommitRecovery: pendingCommitRecovery
         )
         let controllerId = UUID()
         windowControllers[controllerId] = controller
@@ -217,7 +217,7 @@ final class AnnotateManager {
             NotificationCenter.default.addObserver(
                 forName: NSWindow.willCloseNotification,
                 object: window,
-                queue: .main,
+                queue: .main
             ) { [weak self] _ in
                 MainActor.assumeIsolated {
                     self?.windowControllers.removeValue(forKey: controllerId)
@@ -249,7 +249,7 @@ final class AnnotateManager {
             NotificationCenter.default.addObserver(
                 forName: NSWindow.willCloseNotification,
                 object: window,
-                queue: .main,
+                queue: .main
             ) { [weak self] _ in
                 MainActor.assumeIsolated {
                     self?.manualWindowControllers.removeValue(forKey: controllerId)
@@ -274,7 +274,7 @@ final class AnnotateManager {
             NotificationCenter.default.addObserver(
                 forName: NSWindow.willCloseNotification,
                 object: window,
-                queue: .main,
+                queue: .main
             ) { [weak self] _ in
                 MainActor.assumeIsolated {
                     self?.manualWindowControllers.removeValue(forKey: controllerID)
@@ -301,7 +301,7 @@ final class AnnotateManager {
         cutoutImageData: Data? = nil,
         didCutoutAutoApplyCrop: Bool = false,
         cutoutAutoAppliedCropRect: CGRect? = nil,
-        embeddedImageAssetsData: [UUID: Data] = [:],
+        embeddedImageAssetsData: [UUID: Data] = [:]
     ) {
         sessionCache[itemId] = AnnotationSessionData(
             originalImageData: originalImageData,
@@ -314,7 +314,7 @@ final class AnnotateManager {
             cutoutImageData: cutoutImageData,
             didCutoutAutoApplyCrop: didCutoutAutoApplyCrop,
             cutoutAutoAppliedCropRect: cutoutAutoAppliedCropRect,
-            embeddedImageAssetsData: embeddedImageAssetsData,
+            embeddedImageAssetsData: embeddedImageAssetsData
         )
     }
 
@@ -366,7 +366,7 @@ extension AnnotationSessionData {
             embeddedImageAssetsData: state.embeddedImageAssetsSnapshotData(),
             combineSession: state.combineSessionSnapshot(),
             cueNotes: state.cueNotes
-                .isEmpty ? nil : PersistedCueNotesSession(notes: state.cueNotes),
+                .isEmpty ? nil : PersistedCueNotesSession(notes: state.cueNotes)
         )
     }
 }

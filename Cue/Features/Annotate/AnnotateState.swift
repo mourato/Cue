@@ -87,7 +87,8 @@ final class AnnotateState: ObservableObject {
 
         init?(_ properties: AnnotationProperties) {
             guard let strokeColor = RGBAColor(color: properties.strokeColor),
-                  let fillColor = RGBAColor(color: properties.fillColor) else {
+                  let fillColor = RGBAColor(color: properties.fillColor)
+            else {
                 return nil
             }
 
@@ -116,7 +117,7 @@ final class AnnotateState: ObservableObject {
                 rotationDegrees: rotationDegrees,
                 watermarkStyle: WatermarkStyle(rawValue: watermarkStyle) ?? .single,
                 spotlightOpacity: spotlightOpacity ?? 0.5,
-                magnification: magnification ?? MagnifyGeometry.defaultMagnification,
+                magnification: magnification ?? MagnifyGeometry.defaultMagnification
             )
         }
     }
@@ -280,7 +281,7 @@ final class AnnotateState: ObservableObject {
     func moveCombineImage(at index: Int, by offset: Int) {
         guard isCombineMode, offset != 0, let sourceImage else { return }
         let slots = annotations.compactMap { annotation -> UUID? in
-            guard case .embeddedImage(let assetID) = annotation.type else { return nil }
+            guard case let .embeddedImage(assetID) = annotation.type else { return nil }
             return assetID
         }
         var orderedImages = [sourceImage] + slots.compactMap { embeddedImageAssets[$0] }
@@ -380,7 +381,7 @@ final class AnnotateState: ObservableObject {
             mode: combineMode,
             direction: combineDirection,
             gap: combineGap,
-            freeBoundsByAnnotationID: freeCombineBoundsByAnnotationID,
+            freeBoundsByAnnotationID: freeCombineBoundsByAnnotationID
         )
     }
 
@@ -458,7 +459,7 @@ final class AnnotateState: ObservableObject {
     var zoomMenuPresetPercents: [Int] {
         let maxDisplayedPercent = max(
             25,
-            Int((effectiveMaximumZoomLevel * fitScale * 100).rounded(.down) / 25) * 25,
+            Int((effectiveMaximumZoomLevel * fitScale * 100).rounded(.down) / 25) * 25
         )
 
         var options = Self.zoomPresetPercents.filter {
@@ -568,7 +569,8 @@ final class AnnotateState: ObservableObject {
         guard canvasContainerSize.width > 0,
               canvasContainerSize.height > 0,
               baseCanvasDisplaySize.width > 0,
-              baseCanvasDisplaySize.height > 0 else {
+              baseCanvasDisplaySize.height > 0
+        else {
             return .zero
         }
 
@@ -577,7 +579,7 @@ final class AnnotateState: ObservableObject {
 
         return CGSize(
             width: max((renderedWidth - canvasContainerSize.width) / 2, 0),
-            height: max((renderedHeight - canvasContainerSize.height) / 2, 0),
+            height: max((renderedHeight - canvasContainerSize.height) / 2, 0)
         )
     }
 
@@ -587,7 +589,7 @@ final class AnnotateState: ObservableObject {
         didSet {
             // Pre-cache image-backed backgrounds when style changes.
             switch backgroundStyle {
-            case .wallpaper(let url), .blurred(let url):
+            case let .wallpaper(url), let .blurred(url):
                 loadBackgroundImage(from: url)
             default:
                 cachedBackgroundImage = nil
@@ -714,7 +716,8 @@ final class AnnotateState: ObservableObject {
 
     func blurredBackgroundImage(for url: URL) -> NSImage? {
         if activeBlurredBackgroundURL == url,
-           let cachedBlurredImage {
+           let cachedBlurredImage
+        {
             return cachedBlurredImage
         }
         return makeBlurredBackgroundImage(from: backgroundImage(for: url))
@@ -850,14 +853,14 @@ final class AnnotateState: ObservableObject {
             cornerRadius: cornerRadius,
             imageAlignment: imageAlignment,
             aspectRatio: aspectRatio,
-            aspectRatioOrientation: aspectRatioOrientation,
+            aspectRatioOrientation: aspectRatioOrientation
         )
     }
 
     func applyCanvasEffects(
         _ effects: AnnotationCanvasEffects,
         preferredSelectedCanvasPresetId: UUID? = nil,
-        preferredPresetDirtyState: Bool? = nil,
+        preferredPresetDirtyState: Bool? = nil
     ) {
         withCanvasEffectChangeTrackingSuspended {
             backgroundStyle = effects.backgroundStyle
@@ -876,7 +879,7 @@ final class AnnotateState: ObservableObject {
 
         restoreCanvasPresetSelection(
             preferredSelectedCanvasPresetId: preferredSelectedCanvasPresetId,
-            preferredPresetDirtyState: preferredPresetDirtyState,
+            preferredPresetDirtyState: preferredPresetDirtyState
         )
         isDefaultCanvasPresetAutoApplied = false
 
@@ -890,7 +893,8 @@ final class AnnotateState: ObservableObject {
         canvasPresets = canvasPresetStore.loadPresets()
         defaultCanvasPresetId = canvasPresetStore.loadDefaultPresetId(validating: canvasPresets)
         if let selectedCanvasPresetId,
-           canvasPresets.contains(where: { $0.id == selectedCanvasPresetId }) == false {
+           canvasPresets.contains(where: { $0.id == selectedCanvasPresetId }) == false
+        {
             self.selectedCanvasPresetId = nil
         }
         recomputeCanvasPresetDirtyState()
@@ -940,7 +944,8 @@ final class AnnotateState: ObservableObject {
 
         if let beforePayload,
            let afterPayload = currentCanvasPresetPayload(),
-           beforePayload.approximatelyEquals(afterPayload) == false {
+           beforePayload.approximatelyEquals(afterPayload) == false
+        {
             hasUnsavedChanges = true
         }
     }
@@ -1010,7 +1015,8 @@ final class AnnotateState: ObservableObject {
     @discardableResult
     func updateSelectedCanvasPreset() -> CanvasPresetMutationResult {
         guard let selectedCanvasPresetId,
-              let index = canvasPresets.firstIndex(where: { $0.id == selectedCanvasPresetId }) else {
+              let index = canvasPresets.firstIndex(where: { $0.id == selectedCanvasPresetId })
+        else {
             return .missingSelection
         }
 
@@ -1103,16 +1109,17 @@ final class AnnotateState: ObservableObject {
             shadowIntensity: shadowIntensity,
             cornerRadius: cornerRadius,
             aspectRatio: aspectRatio,
-            aspectRatioOrientation: aspectRatioOrientation,
+            aspectRatioOrientation: aspectRatioOrientation
         )
     }
 
     private func restoreCanvasPresetSelection(
         preferredSelectedCanvasPresetId: UUID?,
-        preferredPresetDirtyState: Bool?,
+        preferredPresetDirtyState: Bool?
     ) {
         if let preferredSelectedCanvasPresetId,
-           canvasPresets.contains(where: { $0.id == preferredSelectedCanvasPresetId }) {
+           canvasPresets.contains(where: { $0.id == preferredSelectedCanvasPresetId })
+        {
             selectedCanvasPresetId = preferredSelectedCanvasPresetId
             if let preferredPresetDirtyState {
                 isSelectedCanvasPresetDirty = preferredPresetDirtyState
@@ -1123,7 +1130,8 @@ final class AnnotateState: ObservableObject {
         }
 
         guard let currentPayload = currentCanvasPresetPayload(),
-              let matchingPreset = canvasPresets.first(where: { $0.payload.approximatelyEquals(currentPayload) }) else {
+              let matchingPreset = canvasPresets.first(where: { $0.payload.approximatelyEquals(currentPayload) })
+        else {
             selectedCanvasPresetId = nil
             isSelectedCanvasPresetDirty = false
             return
@@ -1135,7 +1143,7 @@ final class AnnotateState: ObservableObject {
 
     private func uniqueCanvasPresetName(
         from baseName: String,
-        excludingId: UUID? = nil,
+        excludingId: UUID? = nil
     ) -> String {
         let normalizedBaseName = baseName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard normalizedBaseName.isEmpty == false else {
@@ -1148,7 +1156,7 @@ final class AnnotateState: ObservableObject {
                     guard let excludingId else { return true }
                     return preset.id != excludingId
                 }
-                .map { $0.name.lowercased() },
+                .map { $0.name.lowercased() }
         )
 
         if existingNames.contains(normalizedBaseName.lowercased()) == false {
@@ -1156,7 +1164,7 @@ final class AnnotateState: ObservableObject {
         }
 
         var suffix = 2
-        while suffix < 1_000 {
+        while suffix < 1000 {
             let candidate = "\(normalizedBaseName) \(suffix)"
             if existingNames.contains(candidate.lowercased()) == false {
                 return candidate
@@ -1447,7 +1455,7 @@ final class AnnotateState: ObservableObject {
         quickAccessItemId: UUID? = nil,
         defaults: UserDefaults = .standard,
         canvasPresetStore: AnnotateCanvasPresetStore? = nil,
-        appliesDefaultCanvasPresetOnNewImages: Bool = true,
+        appliesDefaultCanvasPresetOnNewImages: Bool = true
     ) {
         self.defaults = defaults
         self.canvasPresetStore = canvasPresetStore ?? AnnotateCanvasPresetStore.shared
@@ -1467,7 +1475,7 @@ final class AnnotateState: ObservableObject {
     init(
         defaults: UserDefaults = .standard,
         canvasPresetStore: AnnotateCanvasPresetStore? = nil,
-        appliesDefaultCanvasPresetOnNewImages: Bool = true,
+        appliesDefaultCanvasPresetOnNewImages: Bool = true
     ) {
         self.defaults = defaults
         self.canvasPresetStore = canvasPresetStore ?? AnnotateCanvasPresetStore.shared
@@ -1490,14 +1498,14 @@ final class AnnotateState: ObservableObject {
             .info,
             .annotate,
             "Loading image from URL",
-            context: ["file": url.lastPathComponent],
+            context: ["file": url.lastPathComponent]
         )
         guard let image = Self.loadImageWithCorrectScale(from: url) else {
             DiagnosticLogger.shared.log(
                 .error,
                 .annotate,
                 "Failed to load image",
-                context: ["file": url.lastPathComponent],
+                context: ["file": url.lastPathComponent]
             )
             return
         }
@@ -1508,7 +1516,7 @@ final class AnnotateState: ObservableObject {
     func loadImage(_ image: NSImage, url: URL? = nil) {
         DiagnosticLogger.shared.log(.info, .annotate, "Loading image directly", context: [
             "size": "\(Int(image.size.width))x\(Int(image.size.height))",
-            "url": url?.lastPathComponent ?? "nil",
+            "url": url?.lastPathComponent ?? "nil"
         ])
         resetCanvasForNewBaseImage(image: image, url: url)
     }
@@ -1588,8 +1596,8 @@ final class AnnotateState: ObservableObject {
             properties: AnnotationProperties(
                 strokeColor: .clear,
                 fillColor: .clear,
-                strokeWidth: AnnotationStrokeWidth.thin.points,
-            ),
+                strokeWidth: AnnotationStrokeWidth.thin.points
+            )
         )
         annotations.append(item)
         freeCombineBoundsByAnnotationID[item.id] = placementBounds
@@ -1610,7 +1618,8 @@ final class AnnotateState: ObservableObject {
             return cached
         }
         guard let image = embeddedImageAssets[assetId],
-              let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+              let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil)
+        else {
             return nil
         }
         embeddedImageCGImageCache[assetId] = cgImage
@@ -1626,7 +1635,7 @@ final class AnnotateState: ObservableObject {
         // Warm the lazy CGImage cache for every embedded asset referenced by annotations,
         // then freeze plain dictionary copies (off-main render must be read-only).
         for annotation in annotations {
-            if case .embeddedImage(let assetId) = annotation.type {
+            if case let .embeddedImage(assetId) = annotation.type {
                 _ = embeddedCGImage(for: assetId)
             }
         }
@@ -1634,11 +1643,11 @@ final class AnnotateState: ObservableObject {
         // Pre-resolve the background image for the active style (mirrors the exporter's
         // resolve logic: blurred preferred when the effect is active / for .blurred style).
         let resolvedBackgroundImage: NSImage? = switch backgroundStyle {
-        case .wallpaper(let url) where url.scheme != "preset":
+        case let .wallpaper(url) where url.scheme != "preset":
             isBlurredBackgroundEffectActive
                 ? blurredBackgroundImage(for: url)
                 : backgroundImage(for: url)
-        case .blurred(let url):
+        case let .blurred(url):
             blurredBackgroundImage(for: url)
         default:
             nil
@@ -1671,7 +1680,7 @@ final class AnnotateState: ObservableObject {
             mockupPerspective: mockupPerspective,
             mockupShadowRadius: mockupShadowRadius,
             mockupShadowOffsetX: mockupShadowOffsetX,
-            mockupShadowOffsetY: mockupShadowOffsetY,
+            mockupShadowOffsetY: mockupShadowOffsetY
         )
     }
 
@@ -1720,12 +1729,12 @@ final class AnnotateState: ObservableObject {
             result[assetId] = pngData
         }
 
-        let durationMs = Int((CFAbsoluteTimeGetCurrent() - startedAt) * 1_000)
+        let durationMs = Int((CFAbsoluteTimeGetCurrent() - startedAt) * 1000)
         let totalBytes = result.values.reduce(0) { $0 + $1.count }
         DiagnosticLogger.shared.log(.debug, .annotate, "Embedded image snapshot serialized", context: [
             "assets": "\(result.count)",
             "bytes": "\(totalBytes)",
-            "durationMs": "\(durationMs)",
+            "durationMs": "\(durationMs)"
         ])
         return result
     }
@@ -1813,7 +1822,7 @@ final class AnnotateState: ObservableObject {
             style: .info,
             duration: nil,
             variant: .compact,
-            iconMode: .spinner,
+            iconMode: .spinner
         )
 
         Task {
@@ -1830,12 +1839,12 @@ final class AnnotateState: ObservableObject {
                 } else {
                     updateSensitiveRedactionToast(
                         message: L10n.AnnotateUI.autoRedactionComplete(insertedCount),
-                        style: .success,
+                        style: .success
                     )
                 }
 
                 DiagnosticLogger.shared.log(.info, .annotate, "Sensitive redaction scan completed", context: [
-                    "regions": "\(insertedCount)",
+                    "regions": "\(insertedCount)"
                 ])
             } catch {
                 guard activeSensitiveRedactionOperationID == operationID else { return }
@@ -1845,7 +1854,7 @@ final class AnnotateState: ObservableObject {
                 let message = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
                 updateSensitiveRedactionToast(message: message, style: .error)
                 DiagnosticLogger.shared.log(.error, .annotate, "Sensitive redaction scan failed", context: [
-                    "error": String(describing: type(of: error)),
+                    "error": String(describing: type(of: error))
                 ])
             }
         }
@@ -1858,7 +1867,7 @@ final class AnnotateState: ObservableObject {
                 AnnotateSensitiveRedactionRegion(
                     kind: region.kind,
                     bounds: region.bounds.standardized.intersection(sourceImageBounds).standardized,
-                    confidence: region.confidence,
+                    confidence: region.confidence
                 )
             }
             .filter { !$0.bounds.isEmpty && $0.bounds.width >= 2 && $0.bounds.height >= 2 }
@@ -1872,7 +1881,7 @@ final class AnnotateState: ObservableObject {
             AnnotationItem(
                 type: .blur(redactionBlurType),
                 bounds: region.bounds,
-                properties: blurProperties,
+                properties: blurProperties
             )
         }
 
@@ -1896,7 +1905,7 @@ final class AnnotateState: ObservableObject {
         AppToastManager.shared.show(
             message: message,
             style: style,
-            variant: .compact,
+            variant: .compact
         )
     }
 
@@ -1907,7 +1916,7 @@ final class AnnotateState: ObservableObject {
                 message: message,
                 style: style,
                 duration: style == .error ? AppToastManager.defaultDuration : 2.5,
-                variant: .compact,
+                variant: .compact
             )
             sensitiveRedactionToast = nil
         } else {
@@ -1927,7 +1936,8 @@ final class AnnotateState: ObservableObject {
         guard !isCutoutProcessing else { return }
 
         guard let sourceImage,
-              let sourceCGImage = sourceImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+              let sourceCGImage = sourceImage.cgImage(forProposedRect: nil, context: nil, hints: nil)
+        else {
             cutoutErrorMessage = "Unable to load image data for background cutout."
             return
         }
@@ -1949,7 +1959,7 @@ final class AnnotateState: ObservableObject {
                 applyCutoutSuggestedAutoCropIfNeeded(
                     cutoutResult: cutoutResult,
                     sourceCGImage: sourceCGImage,
-                    autoCropEnabled: isBackgroundCutoutAutoCropEnabled,
+                    autoCropEnabled: isBackgroundCutoutAutoCropEnabled
                 )
                 hasUnsavedChanges = true
             } catch {
@@ -1984,7 +1994,7 @@ final class AnnotateState: ObservableObject {
         isApplied: Bool,
         cutoutImageData: Data?,
         didAutoApplyCrop: Bool,
-        autoAppliedCropRect: CGRect?,
+        autoAppliedCropRect: CGRect?
     ) {
         guard isCutoutApplied, let cutoutImage else { return (false, nil, false, nil) }
         guard let cutoutImageData = Self.pngData(from: cutoutImage) else {
@@ -1995,7 +2005,7 @@ final class AnnotateState: ObservableObject {
             true,
             cutoutImageData,
             didCutoutAutoApplyCrop,
-            didCutoutAutoApplyCrop ? cutoutAutoAppliedCropRect : nil,
+            didCutoutAutoApplyCrop ? cutoutAutoAppliedCropRect : nil
         )
     }
 
@@ -2004,7 +2014,7 @@ final class AnnotateState: ObservableObject {
         isApplied: Bool,
         cutoutImageData: Data?,
         didAutoApplyCrop: Bool = false,
-        autoAppliedCropRect: CGRect? = nil,
+        autoAppliedCropRect: CGRect? = nil
     ) {
         activeCutoutOperationID = nil
         isCutoutProcessing = false
@@ -2012,7 +2022,8 @@ final class AnnotateState: ObservableObject {
 
         guard isApplied,
               let cutoutImageData,
-              let restoredImage = NSImage(data: cutoutImageData) else {
+              let restoredImage = NSImage(data: cutoutImageData)
+        else {
             cutoutImage = nil
             isCutoutApplied = false
             clearCutoutAutoCropTracking()
@@ -2035,7 +2046,7 @@ final class AnnotateState: ObservableObject {
     private func applyCutoutSuggestedAutoCropIfNeeded(
         cutoutResult: ForegroundCutoutResult,
         sourceCGImage: CGImage,
-        autoCropEnabled: Bool,
+        autoCropEnabled: Bool
     ) {
         guard autoCropEnabled else { return }
         guard cropRect == nil, !isCropActive else { return }
@@ -2045,7 +2056,7 @@ final class AnnotateState: ObservableObject {
         let convertedRect = Self.convertAutoCropRectToImageCoordinates(
             pixelRectTopLeft: suggestedPixelRect,
             sourceImageSize: sourceImage?.size ?? .zero,
-            sourcePixelSize: CGSize(width: sourceCGImage.width, height: sourceCGImage.height),
+            sourcePixelSize: CGSize(width: sourceCGImage.width, height: sourceCGImage.height)
         )
         guard !convertedRect.isEmpty else { return }
 
@@ -2080,7 +2091,7 @@ final class AnnotateState: ObservableObject {
     private static func convertAutoCropRectToImageCoordinates(
         pixelRectTopLeft: CGRect,
         sourceImageSize: CGSize,
-        sourcePixelSize: CGSize,
+        sourcePixelSize: CGSize
     ) -> CGRect {
         guard sourceImageSize.width > 0,
               sourceImageSize.height > 0,
@@ -2121,7 +2132,7 @@ final class AnnotateState: ObservableObject {
 
     private static func normalizedRetinaLogicalSizeIfNeeded(
         for image: NSImage,
-        scaleFactor: CGFloat,
+        scaleFactor: CGFloat
     ) -> NSSize? {
         guard scaleFactor > 1 else { return nil }
         guard let rep = image.representations.first, rep.pixelsWide > 0, rep.pixelsHigh > 0 else {
@@ -2133,7 +2144,7 @@ final class AnnotateState: ObservableObject {
         let currentSize = image.size
         let expectedSize = NSSize(
             width: pixelWidth / scaleFactor,
-            height: pixelHeight / scaleFactor,
+            height: pixelHeight / scaleFactor
         )
 
         let isAlreadyScaled =
@@ -2157,7 +2168,7 @@ final class AnnotateState: ObservableObject {
 
     private func usedEmbeddedImageAssetIDs() -> Set<UUID> {
         Set(annotations.compactMap { annotation -> UUID? in
-            guard case .embeddedImage(let assetId) = annotation.type else { return nil }
+            guard case let .embeddedImage(assetId) = annotation.type else { return nil }
             return assetId
         })
     }
@@ -2200,7 +2211,7 @@ final class AnnotateState: ObservableObject {
         DiagnosticLogger.shared.log(.warning, .annotate, "Imported image budget warning", context: [
             "layers": "\(layerCount)",
             "pixels": "\(totalPixelCount)",
-            "thresholdPixels": "\(Self.importedImagePixelBudgetWarningThreshold)",
+            "thresholdPixels": "\(Self.importedImagePixelBudgetWarningThreshold)"
         ])
     }
 
@@ -2217,11 +2228,11 @@ final class AnnotateState: ObservableObject {
         var items = [
             CombineImagesLayoutItem(
                 id: Self.combineBaseLayerID,
-                size: CGSize(width: imageWidth, height: imageHeight),
-            ),
+                size: CGSize(width: imageWidth, height: imageHeight)
+            )
         ]
         for annotation in annotations {
-            guard case .embeddedImage(let assetID) = annotation.type,
+            guard case let .embeddedImage(assetID) = annotation.type,
                   let image = embeddedImageAssets[assetID] else { continue }
             let size = normalizedCanvasImageSize(for: image)
             guard size.width > 0, size.height > 0 else { continue }
@@ -2235,7 +2246,7 @@ final class AnnotateState: ObservableObject {
         let result = CombineImagesLayout.layout(
             items: combineLayoutItems(),
             direction: combineDirection,
-            gap: combineGap,
+            gap: combineGap
         )
         combineResolvedDirection = result.direction
         for index in annotations.indices {
@@ -2279,7 +2290,8 @@ final class AnnotateState: ObservableObject {
 
     private func preferredCombineModeFromDefaults() -> CombineImagesMode {
         guard let raw = defaults.string(forKey: PreferencesKeys.annotateCombineLastMode),
-              let mode = CombineImagesMode(rawValue: raw) else {
+              let mode = CombineImagesMode(rawValue: raw)
+        else {
             return .freeCanvas
         }
         return mode
@@ -2300,12 +2312,12 @@ final class AnnotateState: ObservableObject {
                 targetSize = downscaledImportedImageSize(
                     for: imageSize,
                     maxWidth: max(1, combineContentBounds.width * Self.importedImageMaxCoverage),
-                    maxHeight: max(1, combineContentBounds.height * Self.importedImageMaxCoverage),
+                    maxHeight: max(1, combineContentBounds.height * Self.importedImageMaxCoverage)
                 )
             }
             return CGRect(
                 origin: CGPoint(x: combineContentBounds.maxX + combineGap, y: combineContentBounds.minY),
-                size: targetSize,
+                size: targetSize
             )
         }
 
@@ -2318,7 +2330,7 @@ final class AnnotateState: ObservableObject {
         let targetSize = downscaledImportedImageSize(
             for: imageSize,
             maxWidth: max(1, drawingBounds.width * Self.importedImageMaxCoverage),
-            maxHeight: max(1, drawingBounds.height * Self.importedImageMaxCoverage),
+            maxHeight: max(1, drawingBounds.height * Self.importedImageMaxCoverage)
         )
 
         let existingEmbeddedCount = annotations.reduce(into: 0) { count, annotation in
@@ -2344,12 +2356,12 @@ final class AnnotateState: ObservableObject {
     private func downscaledImportedImageSize(
         for imageSize: CGSize,
         maxWidth: CGFloat,
-        maxHeight: CGFloat,
+        maxHeight: CGFloat
     ) -> CGSize {
         let scale = min(maxWidth / imageSize.width, maxHeight / imageSize.height, 1)
         return CGSize(
             width: max(1, imageSize.width * scale),
-            height: max(1, imageSize.height * scale),
+            height: max(1, imageSize.height * scale)
         )
     }
 
@@ -2378,9 +2390,9 @@ final class AnnotateState: ObservableObject {
             AnnotationSnapshot(
                 annotations: annotations,
                 embeddedImageAssets: embeddedImageAssets,
-                cueNotes: notes,
+                cueNotes: notes
             ),
-            annotationCount: annotations.count,
+            annotationCount: annotations.count
         )
     }
 
@@ -2389,7 +2401,7 @@ final class AnnotateState: ObservableObject {
             .debug,
             .annotate,
             "Undo checkpoint",
-            context: ["annotations": "\(annotationCount)"],
+            context: ["annotations": "\(annotationCount)"]
         )
         undoStack.append(.annotations(snapshot))
         redoStack.removeAll()
@@ -2414,10 +2426,10 @@ final class AnnotateState: ObservableObject {
         DiagnosticLogger.shared.log(.debug, .annotate, "Undo", context: ["stackDepth": "\(undoStack.count)"])
         guard let previous = undoStack.popLast() else { return }
         switch previous {
-        case .annotations(let snapshot):
+        case let .annotations(snapshot):
             redoStack.append(.annotations(currentSnapshot()))
             applySnapshot(snapshot)
-        case .rotation(let snapshot):
+        case let .rotation(snapshot):
             redoStack.append(.rotation(currentRotationSnapshot()))
             applyRotationSnapshot(snapshot)
         }
@@ -2432,10 +2444,10 @@ final class AnnotateState: ObservableObject {
         DiagnosticLogger.shared.log(.debug, .annotate, "Redo", context: ["stackDepth": "\(redoStack.count)"])
         guard let next = redoStack.popLast() else { return }
         switch next {
-        case .annotations(let snapshot):
+        case let .annotations(snapshot):
             undoStack.append(.annotations(currentSnapshot()))
             applySnapshot(snapshot)
-        case .rotation(let snapshot):
+        case let .rotation(snapshot):
             undoStack.append(.rotation(currentRotationSnapshot()))
             applyRotationSnapshot(snapshot)
         }
@@ -2447,7 +2459,7 @@ final class AnnotateState: ObservableObject {
         AnnotationSnapshot(
             annotations: annotations,
             embeddedImageAssets: embeddedImageAssets,
-            cueNotes: cueNotes,
+            cueNotes: cueNotes
         )
     }
 
@@ -2466,7 +2478,7 @@ final class AnnotateState: ObservableObject {
             cropAspectRatio: cropAspectRatio,
             isCropPortraitOrientation: isCropPortraitOrientation,
             didCutoutAutoApplyCrop: didCutoutAutoApplyCrop,
-            cutoutAutoAppliedCropRect: cutoutAutoAppliedCropRect,
+            cutoutAutoAppliedCropRect: cutoutAutoAppliedCropRect
         )
     }
 
@@ -2477,11 +2489,12 @@ final class AnnotateState: ObservableObject {
 
         if recordsUndo,
            let annotation = annotations.first(where: { $0.id == id }),
-           case .text(let text) = annotation.type {
+           case let .text(text) = annotation.type
+        {
             textEditingUndoTransaction = TextEditingUndoTransaction(
                 annotationId: id,
                 snapshotBeforeEdit: currentSnapshot(),
-                originalText: text,
+                originalText: text
             )
         } else {
             textEditingUndoTransaction = nil
@@ -2508,7 +2521,7 @@ final class AnnotateState: ObservableObject {
 
         pushUndoSnapshot(
             transaction.snapshotBeforeEdit,
-            annotationCount: transaction.snapshotBeforeEdit.annotations.count,
+            annotationCount: transaction.snapshotBeforeEdit.annotations.count
         )
         transaction.didRecordUndo = true
         textEditingUndoTransaction = transaction
@@ -2528,7 +2541,8 @@ final class AnnotateState: ObservableObject {
         setSelectedAnnotationIds(selectedAnnotationIds.intersection(validAnnotationIds))
 
         if let editingTextAnnotationId,
-           !annotations.contains(where: { $0.id == editingTextAnnotationId }) {
+           !annotations.contains(where: { $0.id == editingTextAnnotationId })
+        {
             self.editingTextAnnotationId = nil
         }
         refreshCombineLayout()
@@ -2573,7 +2587,8 @@ final class AnnotateState: ObservableObject {
         setSelectedAnnotationIds(selectedAnnotationIds.intersection(validAnnotationIds))
 
         if let editingTextAnnotationId,
-           !annotations.contains(where: { $0.id == editingTextAnnotationId }) {
+           !annotations.contains(where: { $0.id == editingTextAnnotationId })
+        {
             self.editingTextAnnotationId = nil
         }
     }
@@ -2593,7 +2608,8 @@ final class AnnotateState: ObservableObject {
     func rotateImage(clockwise: Bool) {
         guard canRotateImage,
               let source = sourceImage,
-              let rotatedSource = source.rotated90(clockwise: clockwise) else {
+              let rotatedSource = source.rotated90(clockwise: clockwise)
+        else {
             return
         }
 
@@ -2603,7 +2619,7 @@ final class AnnotateState: ObservableObject {
 
         DiagnosticLogger.shared.log(.info, .annotate, "Image rotated", context: [
             "direction": clockwise ? "clockwise" : "counterclockwise",
-            "oldSize": "\(Int(imageWidth))x\(Int(imageHeight))",
+            "oldSize": "\(Int(imageWidth))x\(Int(imageHeight))"
         ])
 
         let oldSize = CGSize(width: imageWidth, height: imageHeight)
@@ -2631,7 +2647,7 @@ final class AnnotateState: ObservableObject {
         originalCropRect = originalCropRect.map { AnnotateImageRotation.rotateRect(
             $0,
             oldSize: oldSize,
-            clockwise: clockwise,
+            clockwise: clockwise
         ) }
         cutoutAutoAppliedCropRect = cutoutAutoAppliedCropRect.map {
             AnnotateImageRotation.rotateRect($0, oldSize: oldSize, clockwise: clockwise)
@@ -2648,13 +2664,13 @@ final class AnnotateState: ObservableObject {
     private func rotateAnnotation(
         _ annotation: AnnotationItem,
         oldSize: CGSize,
-        clockwise: Bool,
+        clockwise: Bool
     ) -> AnnotationItem {
         var rotated = annotation
         rotated.bounds = AnnotateImageRotation.rotateRect(annotation.bounds, oldSize: oldSize, clockwise: clockwise)
 
         switch annotation.type {
-        case .arrow(let geometry):
+        case let .arrow(geometry):
             let newStart = AnnotateImageRotation.rotatePoint(geometry.start, oldSize: oldSize, clockwise: clockwise)
             let newEnd = AnnotateImageRotation.rotatePoint(geometry.end, oldSize: oldSize, clockwise: clockwise)
             let newControl = geometry.resolvedControlPoint.map {
@@ -2667,41 +2683,41 @@ final class AnnotateState: ObservableObject {
                 controlPoint: newControl,
                 arrowType: geometry.arrowType,
                 startHead: geometry.startHead,
-                endHead: geometry.endHead,
+                endHead: geometry.endHead
             )
             rotated.type = .arrow(newGeometry)
             rotated.bounds = newGeometry.bounds()
 
-        case .line(let start, let end):
+        case let .line(start, end):
             let newStart = AnnotateImageRotation.rotatePoint(start, oldSize: oldSize, clockwise: clockwise)
             let newEnd = AnnotateImageRotation.rotatePoint(end, oldSize: oldSize, clockwise: clockwise)
             rotated.type = .line(start: newStart, end: newEnd)
 
-        case .path(let points):
+        case let .path(points):
             rotated.type = .path(points.map {
                 AnnotateImageRotation.rotatePoint($0, oldSize: oldSize, clockwise: clockwise)
             })
 
-        case .highlight(let points):
+        case let .highlight(points):
             rotated.type = .highlight(points.map {
                 AnnotateImageRotation.rotatePoint($0, oldSize: oldSize, clockwise: clockwise)
             })
 
-        case .magnify(let sourceCenter, let showsSourceCircle):
+        case let .magnify(sourceCenter, showsSourceCircle):
             rotated.type = .magnify(
                 sourceCenter: AnnotateImageRotation.rotatePoint(
                     sourceCenter,
                     oldSize: oldSize,
-                    clockwise: clockwise,
+                    clockwise: clockwise
                 ),
-                showsSourceCircle: showsSourceCircle,
+                showsSourceCircle: showsSourceCircle
             )
 
         case .text:
             rotated.bounds = AnnotateImageRotation.rotateLayoutRectPreservingSize(
                 annotation.bounds,
                 oldSize: oldSize,
-                clockwise: clockwise,
+                clockwise: clockwise
             )
 
         case .rectangle, .circle, .blur, .counter, .watermark, .embeddedImage, .spotlight:
@@ -2717,7 +2733,7 @@ final class AnnotateState: ObservableObject {
     private func rotateCueNote(
         _ note: CueVisualNote,
         oldSize: CGSize,
-        clockwise: Bool,
+        clockwise: Bool
     ) -> CueVisualNote {
         var rotated = note
         rotated.target = note.target.rotated(oldSize: oldSize, clockwise: clockwise)
@@ -2730,7 +2746,7 @@ final class AnnotateState: ObservableObject {
     /// This ensures undo/redo correctly adjusts future counter values.
     func nextCounterValue() -> Int {
         let maxExisting = annotations.compactMap { annotation -> Int? in
-            if case .counter(let v) = annotation.type {
+            if case let .counter(v) = annotation.type {
                 return v
             }
             return nil
@@ -2771,7 +2787,7 @@ final class AnnotateState: ObservableObject {
                 selectedAnnotationIds: selectedAnnotationIds,
                 cropRect: cropRect,
                 didCutoutAutoApplyCrop: didCutoutAutoApplyCrop,
-                cutoutAutoAppliedCropRect: cutoutAutoAppliedCropRect,
+                cutoutAutoAppliedCropRect: cutoutAutoAppliedCropRect
             )
         }
 
@@ -2798,7 +2814,7 @@ final class AnnotateState: ObservableObject {
             .info,
             .annotate,
             "Crop initialized",
-            context: ["imageSize": "\(Int(imageWidth))x\(Int(imageHeight))"],
+            context: ["imageSize": "\(Int(imageWidth))x\(Int(imageHeight))"]
         )
         let fullImageRect = CGRect(origin: .zero, size: CGSize(width: imageWidth, height: imageHeight))
         cropRect = fullImageRect
@@ -2809,12 +2825,13 @@ final class AnnotateState: ObservableObject {
     /// Apply crop (confirm) - keeps cropRect for export
     func applyCrop() {
         DiagnosticLogger.shared.log(.info, .annotate, "Crop applied", context: [
-            "rect": cropRect.map { "\(Int($0.width))x\(Int($0.height))" } ?? "nil",
+            "rect": cropRect.map { "\(Int($0.width))x\(Int($0.height))" } ?? "nil"
         ])
         if didCutoutAutoApplyCrop,
            let currentCropRect = cropRect,
            let autoCropRect = cutoutAutoAppliedCropRect,
-           !Self.rectApproximatelyEqual(currentCropRect, autoCropRect) {
+           !Self.rectApproximatelyEqual(currentCropRect, autoCropRect)
+        {
             clearCutoutAutoCropTracking()
         }
         isCropActive = false
@@ -2922,7 +2939,8 @@ final class AnnotateState: ObservableObject {
         let constrainedRect = constrainCropToImageBounds(rect)
         if didCutoutAutoApplyCrop,
            let autoCropRect = cutoutAutoAppliedCropRect,
-           !Self.rectApproximatelyEqual(constrainedRect, autoCropRect) {
+           !Self.rectApproximatelyEqual(constrainedRect, autoCropRect)
+        {
             clearCutoutAutoCropTracking()
         }
         cropRect = constrainedRect
@@ -2951,7 +2969,8 @@ final class AnnotateState: ObservableObject {
         let constrainedRect = constrainCropToImageBounds(newRect)
         if didCutoutAutoApplyCrop,
            let autoCropRect = cutoutAutoAppliedCropRect,
-           !Self.rectApproximatelyEqual(constrainedRect, autoCropRect) {
+           !Self.rectApproximatelyEqual(constrainedRect, autoCropRect)
+        {
             clearCutoutAutoCropTracking()
         }
         cropRect = constrainedRect
@@ -3040,12 +3059,14 @@ final class AnnotateState: ObservableObject {
         annotations[index] = annotations[index].applyingResizeBounds(normalizedBounds)
 
         if case .text = annotations[index].type,
-           abs(oldBounds.width - normalizedBounds.width) > 0.5 {
+           abs(oldBounds.width - normalizedBounds.width) > 0.5
+        {
             autoSizingTextAnnotationIDs.remove(id)
         }
 
         if isCombineMode, combineMode == .freeCanvas,
-           case .embeddedImage = annotations[index].type {
+           case .embeddedImage = annotations[index].type
+        {
             freeCombineBoundsByAnnotationID[id] = annotations[index].bounds
             updateCombineContentBounds()
         }
@@ -3053,7 +3074,7 @@ final class AnnotateState: ObservableObject {
 
     func updateLineEndpoint(id: UUID, start newStart: CGPoint? = nil, end newEnd: CGPoint? = nil) {
         guard let index = annotations.firstIndex(where: { $0.id == id }),
-              case .line(let start, let end) = annotations[index].type else { return }
+              case let .line(start, end) = annotations[index].type else { return }
 
         let updatedStart = newStart ?? start
         let updatedEnd = newEnd ?? end
@@ -3062,7 +3083,7 @@ final class AnnotateState: ObservableObject {
             x: min(updatedStart.x, updatedEnd.x),
             y: min(updatedStart.y, updatedEnd.y),
             width: abs(updatedEnd.x - updatedStart.x),
-            height: abs(updatedEnd.y - updatedStart.y),
+            height: abs(updatedEnd.y - updatedStart.y)
         ).standardized
     }
 
@@ -3071,7 +3092,7 @@ final class AnnotateState: ObservableObject {
     /// re-derived from the new endpoints so curved arrows follow the drag.
     func updateArrowEndpoint(id: UUID, start newStart: CGPoint? = nil, end newEnd: CGPoint? = nil) {
         guard let index = annotations.firstIndex(where: { $0.id == id }),
-              case .arrow(let geometry) = annotations[index].type else { return }
+              case let .arrow(geometry) = annotations[index].type else { return }
 
         let updatedStart = newStart ?? geometry.start
         let updatedEnd = newEnd ?? geometry.end
@@ -3081,7 +3102,7 @@ final class AnnotateState: ObservableObject {
             style: geometry.style,
             arrowType: geometry.arrowType,
             startHead: geometry.startHead,
-            endHead: geometry.endHead,
+            endHead: geometry.endHead
         )
         annotations[index].type = .arrow(updated)
         annotations[index].bounds = updated.bounds()
@@ -3090,14 +3111,14 @@ final class AnnotateState: ObservableObject {
 
     func updateAnnotationText(id: UUID, text: String) {
         guard let index = annotations.firstIndex(where: { $0.id == id }),
-              case .text(let currentText) = annotations[index].type else { return }
+              case let .text(currentText) = annotations[index].type else { return }
 
         let currentBounds = annotations[index].bounds
         let newBounds = resizedTextBounds(
             id: id,
             text: text,
             properties: annotations[index].properties,
-            currentBounds: currentBounds,
+            currentBounds: currentBounds
         )
 
         let textChanged = currentText != text
@@ -3114,11 +3135,12 @@ final class AnnotateState: ObservableObject {
            TextBubbleGeometry.isDefaultTail(
                tailTarget,
                for: currentBounds,
-               fontSize: annotations[index].properties.fontSize,
-           ) {
+               fontSize: annotations[index].properties.fontSize
+           )
+        {
             annotations[index].properties.calloutTailTarget = defaultCalloutTailTarget(
                 for: newBounds,
-                fontSize: annotations[index].properties.fontSize,
+                fontSize: annotations[index].properties.fontSize
             )
         }
         hasUnsavedChanges = true
@@ -3133,7 +3155,7 @@ final class AnnotateState: ObservableObject {
 
     func updateArrowStyle(id: UUID, style: ArrowStyle) {
         guard let index = annotations.firstIndex(where: { $0.id == id }),
-              case .arrow(let geometry) = annotations[index].type else { return }
+              case let .arrow(geometry) = annotations[index].type else { return }
 
         let updated = geometry.withStyle(style)
         guard updated != geometry else { return }
@@ -3145,7 +3167,7 @@ final class AnnotateState: ObservableObject {
 
     func updateArrowType(id: UUID, arrowType: ArrowType) {
         guard let index = annotations.firstIndex(where: { $0.id == id }),
-              case .arrow(let geometry) = annotations[index].type else { return }
+              case let .arrow(geometry) = annotations[index].type else { return }
 
         let updated = geometry.withArrowType(arrowType)
         guard updated != geometry else { return }
@@ -3157,7 +3179,7 @@ final class AnnotateState: ObservableObject {
 
     func updateArrowBendDirection(id: UUID, bendDirection: ArrowBendDirection) {
         guard let index = annotations.firstIndex(where: { $0.id == id }),
-              case .arrow(let geometry) = annotations[index].type,
+              case let .arrow(geometry) = annotations[index].type,
               geometry.style.supportsBendDirection else { return }
 
         let updated = geometry.withBendDirection(bendDirection)
@@ -3170,7 +3192,7 @@ final class AnnotateState: ObservableObject {
 
     func updateArrowStartHead(id: UUID, head: ArrowEndpointStyle) {
         guard let index = annotations.firstIndex(where: { $0.id == id }),
-              case .arrow(let geometry) = annotations[index].type else { return }
+              case let .arrow(geometry) = annotations[index].type else { return }
 
         let updated = geometry.withStartHead(head)
         guard updated != geometry else { return }
@@ -3182,7 +3204,7 @@ final class AnnotateState: ObservableObject {
 
     func updateArrowEndHead(id: UUID, head: ArrowEndpointStyle) {
         guard let index = annotations.firstIndex(where: { $0.id == id }),
-              case .arrow(let geometry) = annotations[index].type else { return }
+              case let .arrow(geometry) = annotations[index].type else { return }
 
         let updated = geometry.withEndHead(head)
         guard updated != geometry else { return }
@@ -3213,13 +3235,13 @@ final class AnnotateState: ObservableObject {
         spotlightOpacity: CGFloat? = nil,
         magnification: CGFloat? = nil,
         shapeFillStyle: AnnotationShapeFillStyle? = nil,
-        recordsUndo: Bool = false,
+        recordsUndo: Bool = false
     ) {
         guard let index = annotations.firstIndex(where: { $0.id == id }) else { return }
         let colorUpdate = normalizedColorUpdate(
             for: annotations[index],
             strokeColor: strokeColor,
-            fillColor: fillColor,
+            fillColor: fillColor
         )
 
         guard annotationPropertiesWillChange(
@@ -3234,7 +3256,7 @@ final class AnnotateState: ObservableObject {
             watermarkStyle: watermarkStyle,
             spotlightOpacity: spotlightOpacity,
             magnification: magnification,
-            shapeFillStyle: shapeFillStyle,
+            shapeFillStyle: shapeFillStyle
         ) else { return }
 
         if recordsUndo {
@@ -3252,14 +3274,14 @@ final class AnnotateState: ObservableObject {
         if let fontSize {
             annotations[index].properties.fontSize = fontSize
             // Recalculate bounds for new font size
-            if case .text(let content) = annotations[index].type {
+            if case let .text(content) = annotations[index].type {
                 let currentBounds = annotations[index].bounds
                 let properties = annotations[index].properties
                 annotations[index].bounds = resizedTextBounds(
                     id: id,
                     text: content,
                     properties: properties,
-                    currentBounds: currentBounds,
+                    currentBounds: currentBounds
                 )
             }
         }
@@ -3297,12 +3319,12 @@ final class AnnotateState: ObservableObject {
     func updateAnnotationPrimaryColor(
         id: UUID,
         color: Color,
-        recordsUndo: Bool = false,
+        recordsUndo: Bool = false
     ) {
         updateAnnotationProperties(
             id: id,
             strokeColor: color,
-            recordsUndo: recordsUndo,
+            recordsUndo: recordsUndo
         )
         if isQuickPropertiesSyncEnabled {
             rememberSharedAnnotationColor(color)
@@ -3312,14 +3334,16 @@ final class AnnotateState: ObservableObject {
     private func normalizedColorUpdate(
         for annotation: AnnotationItem,
         strokeColor: Color?,
-        fillColor: Color?,
+        fillColor: Color?
     ) -> (strokeColor: Color?, fillColor: Color?) {
         if case .rectangle = annotation.type,
-           let color = strokeColor ?? fillColor {
+           let color = strokeColor ?? fillColor
+        {
             return (color, color)
         }
         if case .circle = annotation.type,
-           let color = strokeColor ?? fillColor {
+           let color = strokeColor ?? fillColor
+        {
             return (color, color)
         }
 
@@ -3338,57 +3362,68 @@ final class AnnotateState: ObservableObject {
         watermarkStyle: WatermarkStyle? = nil,
         spotlightOpacity: CGFloat? = nil,
         magnification: CGFloat? = nil,
-        shapeFillStyle: AnnotationShapeFillStyle? = nil,
+        shapeFillStyle: AnnotationShapeFillStyle? = nil
     ) -> Bool {
         let properties = annotation.properties
         let colorUpdate = normalizedColorUpdate(
             for: annotation,
             strokeColor: strokeColor,
-            fillColor: fillColor,
+            fillColor: fillColor
         )
 
         if let strokeWidth,
-           properties.strokeWidth != AnnotationProperties.clampedControlValue(strokeWidth) {
+           properties.strokeWidth != AnnotationProperties.clampedControlValue(strokeWidth)
+        {
             return true
         }
         if let fontSize,
-           properties.fontSize != fontSize {
+           properties.fontSize != fontSize
+        {
             return true
         }
         if let strokeColor = colorUpdate.strokeColor,
-           properties.strokeColor != strokeColor {
+           properties.strokeColor != strokeColor
+        {
             return true
         }
         if let fillColor = colorUpdate.fillColor,
-           properties.fillColor != fillColor {
+           properties.fillColor != fillColor
+        {
             return true
         }
         if let cornerRadius,
-           properties.cornerRadius != max(0, cornerRadius) {
+           properties.cornerRadius != max(0, cornerRadius)
+        {
             return true
         }
         if let opacity,
-           properties.opacity != AnnotationProperties.clampedOpacity(opacity) {
+           properties.opacity != AnnotationProperties.clampedOpacity(opacity)
+        {
             return true
         }
         if let rotationDegrees,
-           properties.rotationDegrees != AnnotationProperties.clampedRotationDegrees(rotationDegrees) {
+           properties.rotationDegrees != AnnotationProperties.clampedRotationDegrees(rotationDegrees)
+        {
             return true
         }
         if let magnification,
-           properties.magnification != AnnotationProperties.clampedMagnification(magnification) {
+           properties.magnification != AnnotationProperties.clampedMagnification(magnification)
+        {
             return true
         }
         if let watermarkStyle,
-           properties.watermarkStyle != watermarkStyle {
+           properties.watermarkStyle != watermarkStyle
+        {
             return true
         }
         if let spotlightOpacity,
-           properties.spotlightOpacity != AnnotationProperties.clampedSpotlightOpacity(spotlightOpacity) {
+           properties.spotlightOpacity != AnnotationProperties.clampedSpotlightOpacity(spotlightOpacity)
+        {
             return true
         }
         if let shapeFillStyle,
-           properties.shapeFillStyle != shapeFillStyle {
+           properties.shapeFillStyle != shapeFillStyle
+        {
             return true
         }
         return false
@@ -3408,7 +3443,7 @@ final class AnnotateState: ObservableObject {
         fontName: String? = nil,
         constrainedWidth: CGFloat? = nil,
         maximumHeight: CGFloat = AnnotateTextLayout.maxHeight,
-        presentation: TextPresentation = .plain,
+        presentation: TextPresentation = .plain
     ) -> CGRect {
         AnnotateTextLayout.bounds(
             text: text,
@@ -3416,7 +3451,7 @@ final class AnnotateState: ObservableObject {
             origin: origin,
             constrainedWidth: constrainedWidth,
             maximumHeight: maximumHeight,
-            presentation: presentation,
+            presentation: presentation
         )
     }
 
@@ -3424,7 +3459,7 @@ final class AnnotateState: ObservableObject {
         id: UUID,
         text: String,
         properties: AnnotationProperties,
-        currentBounds: CGRect,
+        currentBounds: CGRect
     ) -> CGRect {
         let font = AnnotateTextLayout.font(size: properties.fontSize, fontName: properties.fontName)
         let annotationBounds = activeAnnotationBounds.standardized
@@ -3432,7 +3467,7 @@ final class AnnotateState: ObservableObject {
         let availableWidth = max(annotationBounds.maxX - currentBounds.minX, AnnotateTextLayout.minWidth)
         let availableHeight = max(
             topY - annotationBounds.minY,
-            AnnotateTextLayout.minimumHeight(for: font, presentation: properties.textPresentation),
+            AnnotateTextLayout.minimumHeight(for: font, presentation: properties.textPresentation)
         )
         let targetWidth: CGFloat = if autoSizingTextAnnotationIDs.contains(id) {
             AnnotateTextLayout.preferredAutoWidth(
@@ -3440,12 +3475,12 @@ final class AnnotateState: ObservableObject {
                 font: font,
                 minimumWidth: AnnotateTextLayout.minWidth,
                 maximumWidth: availableWidth,
-                presentation: properties.textPresentation,
+                presentation: properties.textPresentation
             )
         } else {
             AnnotateTextLayout.clampedWidth(
                 currentBounds.width,
-                maximumWidth: availableWidth,
+                maximumWidth: availableWidth
             )
         }
 
@@ -3456,7 +3491,7 @@ final class AnnotateState: ObservableObject {
             fontName: properties.fontName,
             constrainedWidth: targetWidth,
             maximumHeight: availableHeight,
-            presentation: properties.textPresentation,
+            presentation: properties.textPresentation
         )
         bounds.origin.y = topY - bounds.height
         return bounds
@@ -3465,7 +3500,8 @@ final class AnnotateState: ObservableObject {
     /// Get selected annotation if it's a text type
     var selectedTextAnnotation: AnnotationItem? {
         guard let annotation = selectedAnnotation,
-              case .text = annotation.type else {
+              case .text = annotation.type
+        else {
             return nil
         }
         return annotation
@@ -3480,7 +3516,8 @@ final class AnnotateState: ObservableObject {
 
     var selectedArrowAnnotation: AnnotationItem? {
         guard let annotation = selectedAnnotation,
-              case .arrow = annotation.type else {
+              case .arrow = annotation.type
+        else {
             return nil
         }
         return annotation
@@ -3515,7 +3552,8 @@ final class AnnotateState: ObservableObject {
 
     var activeArrowStyle: ArrowStyle {
         if let annotation = selectedArrowAnnotations.first,
-           case .arrow(let geometry) = annotation.type {
+           case let .arrow(geometry) = annotation.type
+        {
             return geometry.style
         }
         return arrowStyle
@@ -3529,7 +3567,7 @@ final class AnnotateState: ObservableObject {
         let arrowAnnotations = selectedArrowAnnotations
         if !arrowAnnotations.isEmpty {
             if arrowAnnotations.contains(where: {
-                guard case .arrow(let geometry) = $0.type else { return false }
+                guard case let .arrow(geometry) = $0.type else { return false }
                 return geometry.style != style
             }) {
                 saveState()
@@ -3542,7 +3580,8 @@ final class AnnotateState: ObservableObject {
 
     var activeArrowType: ArrowType {
         if let annotation = selectedArrowAnnotations.first,
-           case .arrow(let geometry) = annotation.type {
+           case let .arrow(geometry) = annotation.type
+        {
             return geometry.arrowType
         }
         return arrowType
@@ -3556,7 +3595,7 @@ final class AnnotateState: ObservableObject {
         let arrowAnnotations = selectedArrowAnnotations
         if !arrowAnnotations.isEmpty {
             if arrowAnnotations.contains(where: {
-                guard case .arrow(let geometry) = $0.type else { return false }
+                guard case let .arrow(geometry) = $0.type else { return false }
                 return geometry.arrowType != type
             }) {
                 saveState()
@@ -3569,7 +3608,8 @@ final class AnnotateState: ObservableObject {
 
     var activeArrowBendDirection: ArrowBendDirection {
         if let annotation = selectedArrowAnnotations.first,
-           case .arrow(let geometry) = annotation.type {
+           case let .arrow(geometry) = annotation.type
+        {
             return geometry.bendDirection
         }
         return arrowBendDirection
@@ -3583,7 +3623,7 @@ final class AnnotateState: ObservableObject {
         let arrowAnnotations = selectedArrowAnnotations
         if !arrowAnnotations.isEmpty {
             if arrowAnnotations.contains(where: {
-                guard case .arrow(let geometry) = $0.type else { return false }
+                guard case let .arrow(geometry) = $0.type else { return false }
                 return geometry.style.supportsBendDirection && geometry.bendDirection != bendDirection
             }) {
                 saveState()
@@ -3598,7 +3638,8 @@ final class AnnotateState: ObservableObject {
 
     var activeArrowStartHead: ArrowEndpointStyle {
         if let annotation = selectedArrowAnnotations.first,
-           case .arrow(let geometry) = annotation.type {
+           case let .arrow(geometry) = annotation.type
+        {
             return geometry.startHead
         }
         return arrowStartHead
@@ -3612,7 +3653,7 @@ final class AnnotateState: ObservableObject {
         let arrowAnnotations = selectedArrowAnnotations
         if !arrowAnnotations.isEmpty {
             if arrowAnnotations.contains(where: {
-                guard case .arrow(let geometry) = $0.type else { return false }
+                guard case let .arrow(geometry) = $0.type else { return false }
                 return geometry.startHead != head
             }) {
                 saveState()
@@ -3623,7 +3664,8 @@ final class AnnotateState: ObservableObject {
 
     var activeArrowEndHead: ArrowEndpointStyle {
         if let annotation = selectedArrowAnnotations.first,
-           case .arrow(let geometry) = annotation.type {
+           case let .arrow(geometry) = annotation.type
+        {
             return geometry.endHead
         }
         return arrowEndHead
@@ -3637,7 +3679,7 @@ final class AnnotateState: ObservableObject {
         let arrowAnnotations = selectedArrowAnnotations
         if !arrowAnnotations.isEmpty {
             if arrowAnnotations.contains(where: {
-                guard case .arrow(let geometry) = $0.type else { return false }
+                guard case let .arrow(geometry) = $0.type else { return false }
                 return geometry.endHead != head
             }) {
                 saveState()
@@ -3648,7 +3690,8 @@ final class AnnotateState: ObservableObject {
 
     var activeBlurType: BlurType {
         if let annotation = selectedBlurAnnotations.first,
-           case .blur(let type) = annotation.type {
+           case let .blur(type) = annotation.type
+        {
             return type
         }
         return blurType
@@ -3676,21 +3719,22 @@ final class AnnotateState: ObservableObject {
                 updateAnnotationProperties(
                     id: watermarkAnnotation.id,
                     rotationDegrees: rotationDegrees,
-                    watermarkStyle: style,
+                    watermarkStyle: style
                 )
             }
         } else {
             updateDefaultAnnotationProperties(
                 for: .watermark,
                 rotationDegrees: rotationDegrees,
-                watermarkStyle: style,
+                watermarkStyle: style
             )
         }
     }
 
     private func loadSharedAnnotationColor() {
         guard let data = defaults.data(forKey: PreferencesKeys.annotatePrimaryColor),
-              let rgba = try? JSONDecoder().decode(RGBAColor.self, from: data) else {
+              let rgba = try? JSONDecoder().decode(RGBAColor.self, from: data)
+        else {
             return
         }
         sharedAnnotationColor = rgba.color
@@ -3699,7 +3743,8 @@ final class AnnotateState: ObservableObject {
 
     private func rememberSharedAnnotationColor(_ color: Color) {
         guard let rgba = RGBAColor(color: color),
-              let data = try? JSONEncoder().encode(rgba) else {
+              let data = try? JSONEncoder().encode(rgba)
+        else {
             return
         }
 
@@ -3716,23 +3761,28 @@ final class AnnotateState: ObservableObject {
         sharedAnnotationParameterDefaults = sanitizedSharedAnnotationParameterDefaults(decoded)
 
         if let savedStyleRaw = sharedAnnotationParameterDefaults.arrowStyle,
-           let savedStyle = ArrowStyle(rawValue: savedStyleRaw) {
+           let savedStyle = ArrowStyle(rawValue: savedStyleRaw)
+        {
             arrowStyle = savedStyle
         }
         if let savedTypeRaw = sharedAnnotationParameterDefaults.arrowType,
-           let savedType = ArrowType(rawValue: savedTypeRaw) {
+           let savedType = ArrowType(rawValue: savedTypeRaw)
+        {
             arrowType = savedType
         }
         if let savedBendRaw = sharedAnnotationParameterDefaults.arrowBendDirection,
-           let savedBend = ArrowBendDirection(rawValue: savedBendRaw) {
+           let savedBend = ArrowBendDirection(rawValue: savedBendRaw)
+        {
             arrowBendDirection = savedBend
         }
         if let savedStartHeadRaw = sharedAnnotationParameterDefaults.arrowStartHead,
-           let savedStartHead = ArrowEndpointStyle(rawValue: savedStartHeadRaw) {
+           let savedStartHead = ArrowEndpointStyle(rawValue: savedStartHeadRaw)
+        {
             arrowStartHead = savedStartHead
         }
         if let savedEndHeadRaw = sharedAnnotationParameterDefaults.arrowEndHead,
-           let savedEndHead = ArrowEndpointStyle(rawValue: savedEndHeadRaw) {
+           let savedEndHead = ArrowEndpointStyle(rawValue: savedEndHeadRaw)
+        {
             arrowEndHead = savedEndHead
         }
     }
@@ -3743,7 +3793,7 @@ final class AnnotateState: ObservableObject {
     }
 
     private func sanitizedSharedAnnotationParameterDefaults(
-        _ defaults: SharedAnnotationParameterDefaults,
+        _ defaults: SharedAnnotationParameterDefaults
     ) -> SharedAnnotationParameterDefaults {
         SharedAnnotationParameterDefaults(
             strokeWidth: defaults.strokeWidth.map(AnnotationProperties.clampedControlValue(_:)),
@@ -3757,7 +3807,7 @@ final class AnnotateState: ObservableObject {
             arrowType: defaults.arrowType,
             arrowBendDirection: defaults.arrowBendDirection,
             arrowStartHead: defaults.arrowStartHead,
-            arrowEndHead: defaults.arrowEndHead,
+            arrowEndHead: defaults.arrowEndHead
         )
     }
 
@@ -3785,7 +3835,7 @@ final class AnnotateState: ObservableObject {
 
     private func sanitizedAnnotationProperties(
         _ properties: AnnotationProperties,
-        for tool: AnnotationToolType,
+        for tool: AnnotationToolType
     ) -> AnnotationProperties {
         var sanitized = properties
         sanitized.strokeWidth = AnnotationProperties.clampedControlValue(properties.strokeWidth)
@@ -3928,7 +3978,7 @@ final class AnnotateState: ObservableObject {
 
         updateDefaultAnnotationProperties(
             for: .watermark,
-            opacity: AnnotationProperties.clampedOpacity(opacity),
+            opacity: AnnotationProperties.clampedOpacity(opacity)
         )
     }
 
@@ -3940,7 +3990,7 @@ final class AnnotateState: ObservableObject {
 
         updateDefaultAnnotationProperties(
             for: .watermark,
-            rotationDegrees: AnnotationProperties.clampedRotationDegrees(rotationDegrees),
+            rotationDegrees: AnnotationProperties.clampedRotationDegrees(rotationDegrees)
         )
     }
 
@@ -3978,7 +4028,7 @@ final class AnnotateState: ObservableObject {
 
     func defaultNotinhasPinControlValue() -> CGFloat {
         AnnotationProperties.clampedControlValue(
-            defaultAnnotationProperties(for: .cueNote).strokeWidth,
+            defaultAnnotationProperties(for: .cueNote).strokeWidth
         )
     }
 
@@ -3990,7 +4040,7 @@ final class AnnotateState: ObservableObject {
                 strokeWidth: AnnotationStrokeWidth.default.points,
                 cornerRadius: 14,
                 opacity: 1.0,
-                spotlightOpacity: spotlightOpacity,
+                spotlightOpacity: spotlightOpacity
             )
             applySharedParameterDefaults(to: &properties, for: tool)
             return properties
@@ -4021,7 +4071,7 @@ final class AnnotateState: ObservableObject {
             fontName: "SF Pro",
             opacity: 0.22,
             rotationDegrees: WatermarkStyle.diagonal.defaultRotationDegrees,
-            watermarkStyle: .diagonal,
+            watermarkStyle: .diagonal
         )
         applySharedParameterDefaults(to: &properties, for: tool)
         return properties
@@ -4029,7 +4079,7 @@ final class AnnotateState: ObservableObject {
 
     private func applySynchronizedQuickProperties(
         to properties: inout AnnotationProperties,
-        for tool: AnnotationToolType,
+        for tool: AnnotationToolType
     ) {
         let sharedProperties = baseAnnotationProperties(for: tool)
 
@@ -4064,12 +4114,13 @@ final class AnnotateState: ObservableObject {
 
     private func applySharedParameterDefaults(
         to properties: inout AnnotationProperties,
-        for tool: AnnotationToolType?,
+        for tool: AnnotationToolType?
     ) {
         let defaults = sharedAnnotationParameterDefaults
 
         if tool == nil || tool?.supportsQuickStrokeWidth == true,
-           let strokeWidth = defaults.strokeWidth {
+           let strokeWidth = defaults.strokeWidth
+        {
             properties.strokeWidth = strokeWidth
         }
 
@@ -4086,7 +4137,8 @@ final class AnnotateState: ObservableObject {
         }
 
         if tool == nil || tool == .text || tool == .watermark,
-           let fontSize = defaults.fontSize {
+           let fontSize = defaults.fontSize
+        {
             properties.fontSize = fontSize
         }
 
@@ -4139,7 +4191,7 @@ final class AnnotateState: ObservableObject {
         watermarkStyle: WatermarkStyle? = nil,
         spotlightOpacity: CGFloat? = nil,
         magnification: CGFloat? = nil,
-        shapeFillStyle: AnnotationShapeFillStyle? = nil,
+        shapeFillStyle: AnnotationShapeFillStyle? = nil
     ) {
         var properties = defaultAnnotationProperties(for: tool)
 
@@ -4147,7 +4199,8 @@ final class AnnotateState: ObservableObject {
             properties.strokeWidth = AnnotationProperties.clampedControlValue(strokeWidth)
         }
         if tool.supportsShapeFillStyle,
-           let color = strokeColor ?? fillColor {
+           let color = strokeColor ?? fillColor
+        {
             properties.strokeColor = color
             properties.fillColor = color
         } else {
@@ -4200,7 +4253,7 @@ final class AnnotateState: ObservableObject {
             x: center.x - diameter / 2,
             y: center.y - diameter / 2,
             width: diameter,
-            height: diameter,
+            height: diameter
         )
     }
 
@@ -4211,7 +4264,7 @@ final class AnnotateState: ObservableObject {
 
     private func applyToolPropertiesToLegacyState(
         _ properties: AnnotationProperties,
-        for tool: AnnotationToolType,
+        for tool: AnnotationToolType
     ) {
         strokeColor = properties.strokeColor
         fillColor = properties.fillColor
@@ -4288,7 +4341,7 @@ final class AnnotateState: ObservableObject {
         spotlightOpacity: CGFloat? = nil,
         magnification: CGFloat? = nil,
         recordsUndo: Bool = false,
-        matching predicate: ((AnnotationType) -> Bool)? = nil,
+        matching predicate: ((AnnotationType) -> Bool)? = nil
     ) -> Bool {
         let selected = quickPropertiesSelectionTargets.filter { annotation in
             predicate?(annotation.type) ?? true
@@ -4307,7 +4360,7 @@ final class AnnotateState: ObservableObject {
                 rotationDegrees: rotationDegrees,
                 watermarkStyle: watermarkStyle,
                 spotlightOpacity: spotlightOpacity,
-                magnification: magnification,
+                magnification: magnification
             )
         })
 
@@ -4332,7 +4385,7 @@ final class AnnotateState: ObservableObject {
                 rotationDegrees: rotationDegrees,
                 watermarkStyle: watermarkStyle,
                 spotlightOpacity: spotlightOpacity,
-                magnification: magnification,
+                magnification: magnification
             )
         }
         return true
@@ -4340,7 +4393,8 @@ final class AnnotateState: ObservableObject {
 
     var quickPropertiesSupportsArrowStyle: Bool {
         guard editorMode == .annotate,
-              selectedTool != .crop else {
+              selectedTool != .crop
+        else {
             return false
         }
 
@@ -4359,13 +4413,14 @@ final class AnnotateState: ObservableObject {
 
     var quickPropertiesSupportsShapeFillStyle: Bool {
         guard editorMode == .annotate,
-              selectedTool != .crop else {
+              selectedTool != .crop
+        else {
             return false
         }
 
         let selected = quickPropertiesSelectionAnnotations
         if !selected.isEmpty {
-            return selected.contains { $0.type.toolType.supportsShapeFillStyle }
+            return selected.contains(where: \.type.toolType.supportsShapeFillStyle)
         }
 
         return quickPropertiesTool?.supportsShapeFillStyle ?? false
@@ -4374,9 +4429,7 @@ final class AnnotateState: ObservableObject {
     var quickShapeFillStyleBinding: Binding<AnnotationShapeFillStyle> {
         Binding(
             get: {
-                if let selected = self.quickPropertiesSelectionAnnotations.first(where: {
-                    $0.type.toolType.supportsShapeFillStyle
-                }) {
+                if let selected = self.quickPropertiesSelectionAnnotations.first(where: \.type.toolType.supportsShapeFillStyle) {
                     return selected.properties.shapeFillStyle
                 }
                 return self.shapeFillStyle
@@ -4389,13 +4442,13 @@ final class AnnotateState: ObservableObject {
                         self.updateAnnotationProperties(
                             id: annotation.id,
                             shapeFillStyle: newStyle,
-                            recordsUndo: true,
+                            recordsUndo: true
                         )
                     }
                 } else if let tool = self.quickPropertiesTool, tool.supportsShapeFillStyle {
                     self.updateDefaultAnnotationProperties(for: tool, shapeFillStyle: newStyle)
                 }
-            },
+            }
         )
     }
 
@@ -4407,7 +4460,7 @@ final class AnnotateState: ObservableObject {
         let selected = quickPropertiesSelectionAnnotations
         if !selected.isEmpty {
             return selected.contains {
-                guard case .arrow(let geometry) = $0.type else { return false }
+                guard case let .arrow(geometry) = $0.type else { return false }
                 return geometry.style.supportsBendDirection
             }
         }
@@ -4424,7 +4477,7 @@ final class AnnotateState: ObservableObject {
         let selected = quickPropertiesSelectionAnnotations
         if !selected.isEmpty {
             return selected.contains {
-                guard case .arrow(let geometry) = $0.type else { return false }
+                guard case let .arrow(geometry) = $0.type else { return false }
                 return geometry.arrowType == .classic
             }
         }
@@ -4439,7 +4492,7 @@ final class AnnotateState: ObservableObject {
             },
             set: { [weak self] newStyle in
                 self?.setActiveArrowStyle(newStyle)
-            },
+            }
         )
     }
 
@@ -4450,7 +4503,7 @@ final class AnnotateState: ObservableObject {
             },
             set: { [weak self] newType in
                 self?.setActiveArrowType(newType)
-            },
+            }
         )
     }
 
@@ -4461,7 +4514,7 @@ final class AnnotateState: ObservableObject {
             },
             set: { [weak self] newDirection in
                 self?.setActiveArrowBendDirection(newDirection)
-            },
+            }
         )
     }
 
@@ -4472,7 +4525,7 @@ final class AnnotateState: ObservableObject {
             },
             set: { [weak self] newHead in
                 self?.setActiveArrowStartHead(newHead)
-            },
+            }
         )
     }
 
@@ -4483,13 +4536,14 @@ final class AnnotateState: ObservableObject {
             },
             set: { [weak self] newHead in
                 self?.setActiveArrowEndHead(newHead)
-            },
+            }
         )
     }
 
     var quickPropertiesSupportsTextFontSize: Bool {
         guard editorMode == .annotate,
-              selectedTool != .crop else {
+              selectedTool != .crop
+        else {
             return false
         }
 
@@ -4510,7 +4564,8 @@ final class AnnotateState: ObservableObject {
 
     var quickPropertiesSupportsTextBackground: Bool {
         guard editorMode == .annotate,
-              selectedTool != .crop else {
+              selectedTool != .crop
+        else {
             return false
         }
 
@@ -4571,7 +4626,7 @@ final class AnnotateState: ObservableObject {
                 annotations[index].properties.calloutTailTarget = annotations[index].properties.calloutTailTarget
                     ?? defaultCalloutTailTarget(
                         for: annotations[index].bounds,
-                        fontSize: annotations[index].properties.fontSize,
+                        fontSize: annotations[index].properties.fontSize
                     )
             } else {
                 annotations[index].properties.calloutTailTarget = nil
@@ -4590,7 +4645,7 @@ final class AnnotateState: ObservableObject {
               annotations[index].properties.calloutTailTarget == nil else { return }
         annotations[index].properties.calloutTailTarget = defaultCalloutTailTarget(
             for: annotations[index].bounds,
-            fontSize: annotations[index].properties.fontSize,
+            fontSize: annotations[index].properties.fontSize
         )
     }
 
@@ -4601,7 +4656,7 @@ final class AnnotateState: ObservableObject {
         annotations[index].properties.calloutTailTarget = TextBubbleGeometry.resolvedTailTarget(
             in: annotations[index].bounds,
             requestedTarget: target,
-            fontSize: annotations[index].properties.fontSize,
+            fontSize: annotations[index].properties.fontSize
         )
         hasUnsavedChanges = true
     }
@@ -4637,11 +4692,11 @@ final class AnnotateState: ObservableObject {
                         default:
                             false
                         }
-                    },
+                    }
                 ) {
                     rememberAnnotationFontSize(clampedSize, for: quickPropertiesTool)
                 }
-            },
+            }
         )
     }
 
@@ -4667,19 +4722,20 @@ final class AnnotateState: ObservableObject {
                             return true
                         }
                         return false
-                    },
+                    }
                 ) {
                     if let tool = quickPropertiesTool {
                         updateDefaultAnnotationProperties(for: tool, fillColor: newColor)
                     }
                 }
-            },
+            }
         )
     }
 
     var quickPropertiesSupportsBlurType: Bool {
         guard editorMode == .annotate,
-              selectedTool != .crop else {
+              selectedTool != .crop
+        else {
             return false
         }
 
@@ -4703,13 +4759,14 @@ final class AnnotateState: ObservableObject {
             },
             set: { [weak self] newType in
                 self?.setActiveBlurType(newType)
-            },
+            }
         )
     }
 
     var quickPropertiesSupportsWatermark: Bool {
         guard editorMode == .annotate,
-              selectedTool != .crop else {
+              selectedTool != .crop
+        else {
             return false
         }
 
@@ -4736,7 +4793,8 @@ final class AnnotateState: ObservableObject {
                     }
                     return false
                 }).first,
-                    case .watermark(let text) = annotation.type {
+                    case let .watermark(text) = annotation.type
+                {
                     return text
                 }
                 return watermarkText
@@ -4754,7 +4812,7 @@ final class AnnotateState: ObservableObject {
                 } else {
                     selected.forEach { self.updateWatermarkText(id: $0.id, text: newText) }
                 }
-            },
+            }
         )
     }
 
@@ -4765,7 +4823,7 @@ final class AnnotateState: ObservableObject {
             },
             set: { [weak self] newStyle in
                 self?.setActiveWatermarkStyle(newStyle)
-            },
+            }
         )
     }
 
@@ -4792,11 +4850,11 @@ final class AnnotateState: ObservableObject {
                             return true
                         }
                         return false
-                    },
+                    }
                 ) {
                     rememberWatermarkOpacity(clampedOpacity)
                 }
-            },
+            }
         )
     }
 
@@ -4823,18 +4881,19 @@ final class AnnotateState: ObservableObject {
                             return true
                         }
                         return false
-                    },
+                    }
                 ) {
                     rememberWatermarkRotation(clampedRotation)
                 }
-            },
+            }
         )
     }
 
     var quickPropertiesAnnotation: AnnotationItem? {
         guard let annotation = quickPropertiesSelectionAnnotations.first,
               quickPropertiesSelectionAnnotations.count == 1,
-              annotation.type.supportsQuickPropertiesBar else {
+              annotation.type.supportsQuickPropertiesBar
+        else {
             return nil
         }
         return annotation
@@ -4865,7 +4924,8 @@ final class AnnotateState: ObservableObject {
 
         guard editorMode == .annotate,
               selectedTool != .crop,
-              selectedTool.supportsQuickPropertiesBar else {
+              selectedTool.supportsQuickPropertiesBar
+        else {
             return nil
         }
         return selectedTool
@@ -4983,7 +5043,8 @@ final class AnnotateState: ObservableObject {
     private var quickStrokeWidthValue: CGFloat {
         if selectedTool == .cueNote {
             if let selectedID = notinhasSelectedNoteID,
-               let note = cueNotes.first(where: { $0.id == selectedID }) {
+               let note = cueNotes.first(where: { $0.id == selectedID })
+            {
                 return note.pinControlValue
             }
             return defaultAnnotationProperties(for: .cueNote).strokeWidth
@@ -5017,7 +5078,8 @@ final class AnnotateState: ObservableObject {
                 guard let self else { return .red }
                 if selectedTool == .cueNote {
                     if let selectedID = notinhasSelectedNoteID,
-                       let note = cueNotes.first(where: { $0.id == selectedID }) {
+                       let note = cueNotes.first(where: { $0.id == selectedID })
+                    {
                         return note.color.color
                     }
                     return defaultAnnotationProperties(for: .cueNote).strokeColor
@@ -5030,7 +5092,8 @@ final class AnnotateState: ObservableObject {
                 if selectedTool == .cueNote {
                     guard let rgba = RGBAColor(color: newColor) else { return }
                     if let selectedID = notinhasSelectedNoteID,
-                       let index = cueNotes.firstIndex(where: { $0.id == selectedID }) {
+                       let index = cueNotes.firstIndex(where: { $0.id == selectedID })
+                    {
                         var note = cueNotes[index]
                         guard note.color != rgba else { return }
                         note.color = rgba
@@ -5044,7 +5107,7 @@ final class AnnotateState: ObservableObject {
                 let didUpdateSelection = updateQuickSelectionProperties(
                     strokeColor: newColor,
                     recordsUndo: true,
-                    matching: { $0.supportsQuickStrokeColor },
+                    matching: { $0.supportsQuickStrokeColor }
                 )
                 if didUpdateSelection {
                     if isQuickPropertiesSyncEnabled {
@@ -5056,7 +5119,7 @@ final class AnnotateState: ObservableObject {
                 if !didUpdateSelection, quickPropertiesTool == nil {
                     strokeColor = newColor
                 }
-            },
+            }
         )
     }
 
@@ -5072,7 +5135,7 @@ final class AnnotateState: ObservableObject {
                 if !updateQuickSelectionProperties(
                     fillColor: newColor,
                     recordsUndo: true,
-                    matching: { $0.supportsQuickFillColor },
+                    matching: { $0.supportsQuickFillColor }
                 ) {
                     if let tool = quickPropertiesTool {
                         updateDefaultAnnotationProperties(for: tool, fillColor: newColor)
@@ -5080,7 +5143,7 @@ final class AnnotateState: ObservableObject {
                         fillColor = newColor
                     }
                 }
-            },
+            }
         )
     }
 
@@ -5090,7 +5153,8 @@ final class AnnotateState: ObservableObject {
                 guard let self else { return AnnotationStrokeWidth.default.points }
                 if selectedTool == .cueNote {
                     if let selectedID = notinhasSelectedNoteID,
-                       let note = cueNotes.first(where: { $0.id == selectedID }) {
+                       let note = cueNotes.first(where: { $0.id == selectedID })
+                    {
                         return note.pinControlValue
                     }
                     return defaultAnnotationProperties(for: .cueNote).strokeWidth
@@ -5103,7 +5167,8 @@ final class AnnotateState: ObservableObject {
                 if selectedTool == .cueNote {
                     let clampedWidth = AnnotationProperties.clampedControlValue(newWidth)
                     if let selectedID = notinhasSelectedNoteID,
-                       let index = cueNotes.firstIndex(where: { $0.id == selectedID }) {
+                       let index = cueNotes.firstIndex(where: { $0.id == selectedID })
+                    {
                         var note = cueNotes[index]
                         guard note.pinControlValue != clampedWidth else { return }
                         note.pinControlValue = clampedWidth
@@ -5116,11 +5181,11 @@ final class AnnotateState: ObservableObject {
                 if !updateQuickSelectionProperties(
                     strokeWidth: newWidth,
                     recordsUndo: true,
-                    matching: { $0.supportsQuickStrokeWidth },
+                    matching: { $0.supportsQuickStrokeWidth }
                 ) {
                     rememberAnnotationStrokeWidth(newWidth, for: quickPropertiesTool)
                 }
-            },
+            }
         )
     }
 
@@ -5138,11 +5203,11 @@ final class AnnotateState: ObservableObject {
                 if !updateQuickSelectionProperties(
                     magnification: clamped,
                     recordsUndo: true,
-                    matching: { $0.supportsQuickMagnification },
+                    matching: { $0.supportsQuickMagnification }
                 ) {
                     updateDefaultAnnotationProperties(for: .magnify, magnification: clamped)
                 }
-            },
+            }
         )
     }
 
@@ -5160,11 +5225,11 @@ final class AnnotateState: ObservableObject {
                 if !updateQuickSelectionProperties(
                     cornerRadius: clampedRadius,
                     recordsUndo: true,
-                    matching: { $0.toolType.supportsQuickCornerRadius },
+                    matching: { $0.toolType.supportsQuickCornerRadius }
                 ) {
                     rememberAnnotationCornerRadius(clampedRadius, for: quickPropertiesTool)
                 }
-            },
+            }
         )
     }
 
@@ -5190,11 +5255,11 @@ final class AnnotateState: ObservableObject {
                             return true
                         }
                         return false
-                    },
+                    }
                 ) {
                     rememberAnnotationSpotlightOpacity(newOpacity, for: quickPropertiesTool)
                 }
-            },
+            }
         )
     }
 
@@ -5226,7 +5291,7 @@ final class AnnotateState: ObservableObject {
         let selectedIds = selectedAnnotationIds
         guard !selectedIds.isEmpty else { return }
         DiagnosticLogger.shared.log(.debug, .annotate, "Delete annotation", context: [
-            "count": "\(selectedIds.count)",
+            "count": "\(selectedIds.count)"
         ])
         saveState()
         annotations.removeAll { selectedIds.contains($0.id) }
@@ -5243,7 +5308,8 @@ final class AnnotateState: ObservableObject {
         guard let editingId = editingTextAnnotationId else { return }
 
         if let annotation = annotations.first(where: { $0.id == editingId }),
-           case .text(let text) = annotation.type {
+           case let .text(text) = annotation.type
+        {
             let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
             if trimmed.isEmpty {
                 recordTextEditingUndoIfNeeded(id: editingId, newText: trimmed)
@@ -5286,18 +5352,18 @@ final class AnnotateState: ObservableObject {
         annotations[index].bounds.origin.y += dy
 
         switch annotations[index].type {
-        case .arrow(let geometry):
+        case let .arrow(geometry):
             let updated = geometry.translatedBy(dx: dx, dy: dy)
             annotations[index].type = .arrow(updated)
             annotations[index].bounds = updated.bounds()
-        case .line(let start, let end):
+        case let .line(start, end):
             annotations[index].type = .line(
                 start: CGPoint(x: start.x + dx, y: start.y + dy),
-                end: CGPoint(x: end.x + dx, y: end.y + dy),
+                end: CGPoint(x: end.x + dx, y: end.y + dy)
             )
-        case .path(let points):
+        case let .path(points):
             annotations[index].type = .path(points.map { CGPoint(x: $0.x + dx, y: $0.y + dy) })
-        case .highlight(let points):
+        case let .highlight(points):
             annotations[index].type = .highlight(points.map { CGPoint(x: $0.x + dx, y: $0.y + dy) })
         default:
             break
@@ -5341,7 +5407,7 @@ final class AnnotateState: ObservableObject {
 
     func duplicateAnnotationsDetail(
         withIds ids: Set<UUID>,
-        anchorOriginalId: UUID? = nil,
+        anchorOriginalId: UUID? = nil
     ) -> (cloneIds: Set<UUID>, anchorCloneId: UUID?) {
         let sources = annotations.filter { ids.contains($0.id) }
         guard !sources.isEmpty else { return ([], nil) }
@@ -5361,7 +5427,7 @@ final class AnnotateState: ObservableObject {
     @discardableResult
     private func appendClonedAnnotations(
         from persistedItems: [PersistedAnnotationItem],
-        offset: CGSize,
+        offset: CGSize
     ) -> ClonedAnnotationBatch {
         var newIds: Set<UUID> = []
         var idMapping: [UUID: UUID] = [:]
@@ -5400,7 +5466,7 @@ final class AnnotateState: ObservableObject {
         switch source.type {
         case .counter:
             persisted.type.counterValue = nextCounterValue()
-        case .embeddedImage(let assetId):
+        case let .embeddedImage(assetId):
             let newAssetId = UUID()
             cloneEmbeddedImageAsset(from: assetId, to: newAssetId)
             persisted.type.embeddedImageAssetId = newAssetId
@@ -5440,7 +5506,8 @@ nonisolated enum AnnotateTextLayout {
         let clampedSize = min(max(size, 8), 144)
 
         if let fontName,
-           let namedFont = NSFont(name: fontName, size: clampedSize) {
+           let namedFont = NSFont(name: fontName, size: clampedSize)
+        {
             return namedFont
         }
 
@@ -5464,7 +5531,7 @@ nonisolated enum AnnotateTextLayout {
         origin: CGPoint,
         constrainedWidth: CGFloat? = nil,
         maximumHeight: CGFloat = maxHeight,
-        presentation: TextPresentation = .plain,
+        presentation: TextPresentation = .plain
     ) -> CGRect {
         let finalWidth: CGFloat = if let constrainedWidth {
             clampedWidth(constrainedWidth)
@@ -5478,19 +5545,23 @@ nonisolated enum AnnotateTextLayout {
         let resolvedMaximumHeight = max(minimumHeight(for: font), min(maximumHeight, maxHeight))
         let finalHeight = min(
             max(contentHeight + insets.height * 2, minimumHeight(for: font, presentation: presentation)),
-            resolvedMaximumHeight,
+            resolvedMaximumHeight
         )
 
         return CGRect(
             x: origin.x,
             y: origin.y,
             width: finalWidth,
-            height: finalHeight,
+            height: finalHeight
         )
     }
 
-    static func textRect(for text: String, font: NSFont, in bounds: CGRect,
-                         presentation: TextPresentation = .plain) -> CGRect {
+    static func textRect(
+        for text: String,
+        font: NSFont,
+        in bounds: CGRect,
+        presentation: TextPresentation = .plain
+    ) -> CGRect {
         let insets = TextBubbleGeometry.contentInsets(for: presentation, fontSize: font.pointSize)
         let contentWidth = max(bounds.width - insets.width * 2, minContentWidth)
         let contentHeight = ceil(contentSize(for: text, font: font, constrainedWidth: contentWidth).height)
@@ -5501,7 +5572,7 @@ nonisolated enum AnnotateTextLayout {
             x: bounds.minX + insets.width,
             y: bounds.minY + verticalInset,
             width: contentWidth,
-            height: drawHeight,
+            height: drawHeight
         )
     }
 
@@ -5510,17 +5581,20 @@ nonisolated enum AnnotateTextLayout {
             text: text,
             font: font,
             origin: .zero,
-            constrainedWidth: constrainedWidth,
+            constrainedWidth: constrainedWidth
         ).height
     }
 
-    static func textEditorInset(scale: CGFloat, presentation: TextPresentation = .plain,
-                                fontSize: CGFloat = 16) -> NSSize {
+    static func textEditorInset(
+        scale: CGFloat,
+        presentation: TextPresentation = .plain,
+        fontSize: CGFloat = 16
+    ) -> NSSize {
         let resolvedScale = max(scale, 0.0001)
         let insets = TextBubbleGeometry.contentInsets(for: presentation, fontSize: fontSize)
         return NSSize(
             width: insets.width * resolvedScale,
-            height: insets.height * resolvedScale,
+            height: insets.height * resolvedScale
         )
     }
 
@@ -5534,7 +5608,7 @@ nonisolated enum AnnotateTextLayout {
         font: NSFont,
         minimumWidth: CGFloat = defaultInitialWidth,
         maximumWidth: CGFloat = maxWidth,
-        presentation: TextPresentation = .plain,
+        presentation: TextPresentation = .plain
     ) -> CGFloat {
         let insets = TextBubbleGeometry.contentInsets(for: presentation, fontSize: font.pointSize)
         let measuredWidth = ceil(singleLineSize(for: text, font: font).width) + insets.width * 2
@@ -5556,7 +5630,7 @@ nonisolated enum AnnotateTextLayout {
         let rect = (measurementText(for: text) as NSString).boundingRect(
             with: CGSize(width: constrainedWidth, height: maxHeight),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
-            attributes: textAttributes(font: font),
+            attributes: textAttributes(font: font)
         )
         return rect.size
     }
@@ -5571,7 +5645,7 @@ nonisolated enum AnnotateTextLayout {
 
         return [
             .font: font,
-            .paragraphStyle: paragraphStyle,
+            .paragraphStyle: paragraphStyle
         ]
     }
 }

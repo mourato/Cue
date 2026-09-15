@@ -57,7 +57,7 @@ struct RecordingProcessingManifest: Codable, Equatable {
         lastCheckpoint: Date = Date(),
         isFinalized: Bool,
         ownerProcessID: Int = Int(ProcessInfo.processInfo.processIdentifier),
-        ownerToken: String = "legacy",
+        ownerToken: String = "legacy"
     ) {
         self.version = version
         self.sessionID = sessionID
@@ -113,7 +113,7 @@ final class TempCaptureManager {
     init(
         preferences: PreferencesProviding = PreferencesManager.shared,
         fileAccess: SandboxFileAccessing = SandboxFileAccessManager.shared,
-        defaults: UserDefaults = .standard,
+        defaults: UserDefaults = .standard
     ) {
         self.preferences = preferences
         self.fileAccess = fileAccess
@@ -125,7 +125,7 @@ final class TempCaptureManager {
     /// during drag-and-drop — same pattern as CleanShot X.
     let tempCaptureDirectory: URL = {
         guard let appSupport = FileManager.default.urls(
-            for: .applicationSupportDirectory, in: .userDomainMask,
+            for: .applicationSupportDirectory, in: .userDomainMask
         ).first else {
             // Fallback if Application Support unavailable
             let fallback = FileManager.default.temporaryDirectory
@@ -155,7 +155,7 @@ final class TempCaptureManager {
     /// Returns temp directory if auto-save is OFF, export directory if ON.
     func resolveSaveDirectory(
         for captureType: CaptureType,
-        exportDirectory: URL,
+        exportDirectory: URL
     ) -> URL {
         let autoSaveEnabled = preferences.isActionEnabled(.save, for: captureType)
         let typeLabel = captureType == .screenshot ? "screenshot" : "recording"
@@ -166,7 +166,7 @@ final class TempCaptureManager {
                 .info,
                 .capture,
                 "Temp capture resolved to export directory",
-                context: ["captureType": typeLabel, "autoSave": "true"],
+                context: ["captureType": typeLabel, "autoSave": "true"]
             )
             return exportDirectory
         }
@@ -177,7 +177,7 @@ final class TempCaptureManager {
             .info,
             .capture,
             "Temp capture resolved to temp directory",
-            context: ["captureType": typeLabel, "autoSave": "false"],
+            context: ["captureType": typeLabel, "autoSave": "false"]
         )
         return tempCaptureDirectory
     }
@@ -198,7 +198,7 @@ final class TempCaptureManager {
             state: "prepared",
             lastCheckpoint: Date(),
             isFinalized: false,
-            ownerToken: ownerToken,
+            ownerToken: ownerToken
         )
         try writeManifest(manifest, in: processingDirectory)
 
@@ -209,14 +209,14 @@ final class TempCaptureManager {
             context: [
                 "autoSave": autoSaveEnabled ? "true" : "false",
                 "finalDirectory": finalDirectory.lastPathComponent,
-                "processingDirectory": processingDirectory.lastPathComponent,
-            ],
+                "processingDirectory": processingDirectory.lastPathComponent
+            ]
         )
 
         return RecordingSavePlan(
             finalDirectory: finalDirectory,
             processingDirectory: processingDirectory,
-            autoSaveEnabled: autoSaveEnabled,
+            autoSaveEnabled: autoSaveEnabled
         )
     }
 
@@ -228,13 +228,13 @@ final class TempCaptureManager {
         container: String? = nil,
         codec: String? = nil,
         width: Int? = nil,
-        height: Int? = nil,
+        height: Int? = nil
     ) -> Bool {
         guard isRecordingProcessingSessionDirectory(directory) else {
             DiagnosticLogger.shared.log(
                 .warning,
                 .recording,
-                "Recording manifest update rejected outside processing root",
+                "Recording manifest update rejected outside processing root"
             )
             return false
         }
@@ -243,7 +243,7 @@ final class TempCaptureManager {
             DiagnosticLogger.shared.log(
                 .warning,
                 .recording,
-                "Recording manifest update rejected outside session directory",
+                "Recording manifest update rejected outside session directory"
             )
             return false
         }
@@ -266,7 +266,7 @@ final class TempCaptureManager {
             lastCheckpoint: checkpoint,
             isFinalized: isFinalized,
             ownerProcessID: previous?.ownerProcessID ?? Int(ProcessInfo.processInfo.processIdentifier),
-            ownerToken: previous?.ownerToken ?? ownerToken,
+            ownerToken: previous?.ownerToken ?? ownerToken
         )
         do {
             try writeManifest(manifest, in: directory)
@@ -283,7 +283,7 @@ final class TempCaptureManager {
             guard let directories = try? fm.contentsOfDirectory(
                 at: recordingProcessingDirectory,
                 includingPropertiesForKeys: [.isDirectoryKey],
-                options: [.skipsHiddenFiles],
+                options: [.skipsHiddenFiles]
             ) else { return [] }
 
             var results: [RecordingRecoveryDisposition] = []
@@ -293,7 +293,7 @@ final class TempCaptureManager {
                     DiagnosticLogger.shared.log(
                         .warning,
                         .recording,
-                        "Recording recovery preserved session with invalid manifest",
+                        "Recording recovery preserved session with invalid manifest"
                     )
                     results.append(.preservedInvalid)
                     continue
@@ -301,7 +301,8 @@ final class TempCaptureManager {
                 if manifest.ownerProcessID == ProcessInfo.processInfo.processIdentifier,
                    manifest.ownerToken == ownerToken,
                    ["prepared", "recording", "paused"].contains(manifest.state),
-                   !manifest.isFinalized {
+                   !manifest.isFinalized
+                {
                     results.append(.active)
                     continue
                 }
@@ -313,7 +314,7 @@ final class TempCaptureManager {
                     DiagnosticLogger.shared.log(
                         .warning,
                         .recording,
-                        "Recording recovery preserved invalid or incomplete session",
+                        "Recording recovery preserved invalid or incomplete session"
                     )
                     results.append(.preservedInvalid)
                     continue
@@ -331,7 +332,7 @@ final class TempCaptureManager {
                     DiagnosticLogger.shared.logError(
                         .recording,
                         error,
-                        "Recording recovery promotion failed; preserving session",
+                        "Recording recovery promotion failed; preserving session"
                     )
                     results.append(.preservedInvalid)
                 }
@@ -347,7 +348,7 @@ final class TempCaptureManager {
         return CaptureOutputNaming.makeUniqueFileURL(
             in: tempCaptureDirectory,
             baseName: baseName,
-            fileExtension: fileExtension,
+            fileExtension: fileExtension
         )
     }
 
@@ -358,7 +359,7 @@ final class TempCaptureManager {
                 .warning,
                 .recording,
                 "Recording processing directory cleanup skipped; path outside processing root",
-                context: ["directory": directory.lastPathComponent],
+                context: ["directory": directory.lastPathComponent]
             )
             return
         }
@@ -371,14 +372,14 @@ final class TempCaptureManager {
                 .debug,
                 .recording,
                 "Recording processing directory cleaned",
-                context: ["directory": directory.lastPathComponent],
+                context: ["directory": directory.lastPathComponent]
             )
         } catch {
             DiagnosticLogger.shared.logError(
                 .recording,
                 error,
                 "Recording processing directory cleanup failed",
-                context: ["directory": directory.lastPathComponent],
+                context: ["directory": directory.lastPathComponent]
             )
         }
     }
@@ -392,7 +393,7 @@ final class TempCaptureManager {
                 .warning,
                 .fileAccess,
                 "Temp capture save skipped; source is not a temp file",
-                context: ["fileName": tempURL.lastPathComponent],
+                context: ["fileName": tempURL.lastPathComponent]
             )
             return nil
         }
@@ -406,7 +407,7 @@ final class TempCaptureManager {
                 .warning,
                 .fileAccess,
                 "Temp capture save skipped; source has no relative temp path",
-                context: ["fileName": tempURL.lastPathComponent],
+                context: ["fileName": tempURL.lastPathComponent]
             )
             return nil
         }
@@ -417,7 +418,7 @@ final class TempCaptureManager {
             // Create export directory if needed
             try FileManager.default.createDirectory(
                 at: destinationURL.deletingLastPathComponent(),
-                withIntermediateDirectories: true,
+                withIntermediateDirectories: true
             )
 
             // Move file from temp to export
@@ -432,7 +433,7 @@ final class TempCaptureManager {
                 .info,
                 .fileAccess,
                 "Temp capture saved to export",
-                context: ["fileName": destinationURL.lastPathComponent],
+                context: ["fileName": destinationURL.lastPathComponent]
             )
             return destinationURL
         } catch {
@@ -441,7 +442,7 @@ final class TempCaptureManager {
                 .fileAccess,
                 error,
                 "Temp capture save to export failed",
-                context: ["fileName": tempURL.lastPathComponent],
+                context: ["fileName": tempURL.lastPathComponent]
             )
             return nil
         }
@@ -463,7 +464,7 @@ final class TempCaptureManager {
                 .info,
                 .fileAccess,
                 "Temp capture deleted",
-                context: ["fileName": url.lastPathComponent],
+                context: ["fileName": url.lastPathComponent]
             )
         } catch {
             logger.error("Failed to delete temp file: \(error.localizedDescription)")
@@ -471,7 +472,7 @@ final class TempCaptureManager {
                 .fileAccess,
                 error,
                 "Temp capture delete failed",
-                context: ["fileName": url.lastPathComponent],
+                context: ["fileName": url.lastPathComponent]
             )
         }
     }
@@ -492,7 +493,7 @@ final class TempCaptureManager {
         guard let enumerator = fm.enumerator(
             at: tempCaptureDirectory,
             includingPropertiesForKeys: [.isRegularFileKey, .contentModificationDateKey, .creationDateKey],
-            options: [.skipsHiddenFiles],
+            options: [.skipsHiddenFiles]
         ) else {
             DiagnosticLogger.shared.log(.warning, .fileAccess, "Temp capture startup cleanup failed to list directory")
             return
@@ -549,7 +550,7 @@ final class TempCaptureManager {
                     .fileAccess,
                     error,
                     "Temp capture startup cleanup failed to delete orphan",
-                    context: ["fileName": fileURL.lastPathComponent],
+                    context: ["fileName": fileURL.lastPathComponent]
                 )
             }
         }
@@ -564,7 +565,7 @@ final class TempCaptureManager {
                 .info,
                 .lifecycle,
                 "Temp capture startup cleanup removed orphaned files",
-                context: ["fileCount": "\(count)"],
+                context: ["fileCount": "\(count)"]
             )
         }
         if skipped > 0 {
@@ -573,7 +574,7 @@ final class TempCaptureManager {
                 .info,
                 .lifecycle,
                 "Temp capture startup cleanup preserved files with history records",
-                context: ["fileCount": "\(skipped)"],
+                context: ["fileCount": "\(skipped)"]
             )
         }
         if preservedForRetention > 0 {
@@ -582,7 +583,7 @@ final class TempCaptureManager {
                 .info,
                 .lifecycle,
                 "Temp capture startup cleanup preserved recent files within history retention window",
-                context: ["fileCount": "\(preservedForRetention)"],
+                context: ["fileCount": "\(preservedForRetention)"]
             )
         }
     }
@@ -591,7 +592,7 @@ final class TempCaptureManager {
 
     private static func tempCaptureRootDirectory() -> URL {
         guard let appSupport = FileManager.default.urls(
-            for: .applicationSupportDirectory, in: .userDomainMask,
+            for: .applicationSupportDirectory, in: .userDomainMask
         ).first else {
             return FileManager.default.temporaryDirectory
                 .appendingPathComponent("Cue_Captures", isDirectory: true)
@@ -620,7 +621,7 @@ final class TempCaptureManager {
             guard
                 let contents = try? FileManager.default.contentsOfDirectory(
                     at: current,
-                    includingPropertiesForKeys: nil,
+                    includingPropertiesForKeys: nil
                 ),
                 contents.isEmpty
             else {
@@ -703,14 +704,14 @@ final class TempCaptureManager {
                         .debug,
                         .recording,
                         "Recording metadata moved with temp capture",
-                        context: ["fileName": destinationURL.lastPathComponent],
+                        context: ["fileName": destinationURL.lastPathComponent]
                     )
                 } catch {
                     DiagnosticLogger.shared.logError(
                         .recording,
                         error,
                         "Recording metadata move failed for temp capture",
-                        context: ["fileName": destinationURL.lastPathComponent],
+                        context: ["fileName": destinationURL.lastPathComponent]
                     )
                 }
             }
@@ -721,7 +722,7 @@ final class TempCaptureManager {
         guard historyEnabled else { return false }
         guard
             let values = try? fileURL.resourceValues(
-                forKeys: [.isRegularFileKey, .contentModificationDateKey, .creationDateKey],
+                forKeys: [.isRegularFileKey, .contentModificationDateKey, .creationDateKey]
             ),
             values.isRegularFile == true
         else {

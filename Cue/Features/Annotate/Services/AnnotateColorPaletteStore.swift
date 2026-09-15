@@ -49,11 +49,11 @@ struct AnnotateColorDragPayload: Codable {
 
     static func itemProvider(
         color: Color,
-        sourceFavoriteRole: AnnotateColorPaletteRole?,
+        sourceFavoriteRole: AnnotateColorPaletteRole?
     ) -> NSItemProvider {
         guard let payload = AnnotateColorDragPayload(
             color: color,
-            sourceFavoriteRole: sourceFavoriteRole,
+            sourceFavoriteRole: sourceFavoriteRole
         ) else { return NSItemProvider() }
 
         return NSItemProvider(object: payload.encodedPlainText as NSString)
@@ -61,7 +61,7 @@ struct AnnotateColorDragPayload: Codable {
 
     static func load(
         from providers: [NSItemProvider],
-        completion: @escaping @MainActor @Sendable (AnnotateColorDragPayload?) -> Void,
+        completion: @escaping @MainActor @Sendable (AnnotateColorDragPayload?) -> Void
     ) -> Bool {
         guard let provider = providers.first(where: {
             $0.hasItemConformingToTypeIdentifier(UTType.plainText.identifier)
@@ -191,7 +191,7 @@ final class AnnotateColorPaletteStore: ObservableObject {
 
     func acceptFavoriteDrop(
         _ payload: AnnotateColorDragPayload,
-        for role: AnnotateColorPaletteRole,
+        for role: AnnotateColorPaletteRole
     ) {
         guard let value = Self.rgbaColor(for: payload.color) else { return }
 
@@ -205,7 +205,7 @@ final class AnnotateColorPaletteStore: ObservableObject {
     func acceptFavoriteDrop(
         _ payload: AnnotateColorDragPayload,
         for role: AnnotateColorPaletteRole,
-        targetColor: Color,
+        targetColor: Color
     ) {
         guard let sourceValue = Self.rgbaColor(for: payload.color),
               let targetValue = Self.rgbaColor(for: targetColor)
@@ -255,12 +255,12 @@ final class AnnotateColorPaletteStore: ObservableObject {
 
     private func commitFavoriteColors(
         _ values: [RGBAColor],
-        for role: AnnotateColorPaletteRole,
+        for role: AnnotateColorPaletteRole
     ) {
         let sanitizedValues = Self.sanitized(
             values,
             maximumCount: Self.maximumFavoriteColorCount,
-            allowsClear: true,
+            allowsClear: true
         )
 
         guard storedFavoriteColors[role, default: []] != sanitizedValues else { return }
@@ -301,7 +301,7 @@ final class AnnotateColorPaletteStore: ObservableObject {
     private func swapFavoriteValues(
         _ sourceValue: RGBAColor,
         with targetValue: RGBAColor,
-        for role: AnnotateColorPaletteRole,
+        for role: AnnotateColorPaletteRole
     ) {
         var nextValues = storedFavoriteColors[role, default: []]
 
@@ -340,7 +340,7 @@ final class AnnotateColorPaletteStore: ObservableObject {
         let encodableValues = Dictionary(
             uniqueKeysWithValues: storedFavoriteColors.map { role, values in
                 (role.rawValue, values)
-            },
+            }
         )
 
         do {
@@ -353,7 +353,7 @@ final class AnnotateColorPaletteStore: ObservableObject {
 
     private static func loadStoredColors(
         from defaults: UserDefaults,
-        decoder: JSONDecoder,
+        decoder: JSONDecoder
     ) -> [RGBAColor] {
         guard let data = defaults.data(forKey: PreferencesKeys.annotateCustomColors) else {
             return []
@@ -370,7 +370,7 @@ final class AnnotateColorPaletteStore: ObservableObject {
 
     private static func loadStoredFavoriteColors(
         from defaults: UserDefaults,
-        decoder: JSONDecoder,
+        decoder: JSONDecoder
     ) -> [AnnotateColorPaletteRole: [RGBAColor]] {
         guard let data = defaults.data(forKey: PreferencesKeys.annotateFavoriteColors) else {
             return [:]
@@ -385,7 +385,7 @@ final class AnnotateColorPaletteStore: ObservableObject {
                 let sanitizedValues = sanitized(
                     values,
                     maximumCount: maximumFavoriteColorCount,
-                    allowsClear: true,
+                    allowsClear: true
                 )
                 if !sanitizedValues.isEmpty {
                     result[role] = sanitizedValues
@@ -400,19 +400,19 @@ final class AnnotateColorPaletteStore: ObservableObject {
     }
 
     private static func colorBuckets(
-        from storedValues: [AnnotateColorPaletteRole: [RGBAColor]],
+        from storedValues: [AnnotateColorPaletteRole: [RGBAColor]]
     ) -> [AnnotateColorPaletteRole: [Color]] {
         Dictionary(
             uniqueKeysWithValues: storedValues.map { role, values in
                 (role, values.map(\.color))
-            },
+            }
         )
     }
 
     private static func sanitized(
         _ values: [RGBAColor],
         maximumCount: Int,
-        allowsClear: Bool,
+        allowsClear: Bool
     ) -> [RGBAColor] {
         var result: [RGBAColor] = []
 
@@ -447,7 +447,7 @@ private struct AnnotateColorDraggableModifier: ViewModifier {
         content.onDrag {
             AnnotateColorDragPayload.itemProvider(
                 color: color,
-                sourceFavoriteRole: sourceFavoriteRole,
+                sourceFavoriteRole: sourceFavoriteRole
             )
         }
     }
@@ -456,13 +456,13 @@ private struct AnnotateColorDraggableModifier: ViewModifier {
 extension View {
     func annotateColorDraggable(
         _ color: Color,
-        sourceFavoriteRole: AnnotateColorPaletteRole? = nil,
+        sourceFavoriteRole: AnnotateColorPaletteRole? = nil
     ) -> some View {
         modifier(
             AnnotateColorDraggableModifier(
                 color: color,
-                sourceFavoriteRole: sourceFavoriteRole,
-            ),
+                sourceFavoriteRole: sourceFavoriteRole
+            )
         )
     }
 }

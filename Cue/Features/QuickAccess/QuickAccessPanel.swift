@@ -22,7 +22,7 @@ final class QuickAccessPanel: NSPanel {
             contentRect: contentRect,
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
-            defer: false,
+            defer: false
         )
         configurePanel()
         installMouseMonitors()
@@ -76,13 +76,13 @@ final class QuickAccessPanel: NSPanel {
         let activeHeight = Self.interactiveContentHeight(
             itemCount: visibleItemCount,
             scale: overlayScale,
-            panelHeight: frame.height,
+            panelHeight: frame.height
         )
         let interactiveRect = NSRect(
             x: frame.minX,
             y: frame.minY,
             width: frame.width,
-            height: activeHeight,
+            height: activeHeight
         )
         return interactiveRect.contains(screenPoint)
     }
@@ -117,7 +117,7 @@ final class QuickAccessPanel: NSPanel {
             .mouseMoved,
             .leftMouseDragged,
             .rightMouseDragged,
-            .otherMouseDragged,
+            .otherMouseDragged
         ]
 
         if localMouseMonitor == nil {

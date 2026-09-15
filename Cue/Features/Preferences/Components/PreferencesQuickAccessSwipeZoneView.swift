@@ -35,7 +35,7 @@ struct QuickAccessPreviewSwipeZone: View {
                     .overlay(
                         Image(systemName: "plus")
                             .font(.system(size: 9, weight: .bold))
-                            .foregroundColor(.white.opacity(0.8)),
+                            .foregroundColor(.white.opacity(0.8))
                     )
                     .frame(width: 20, height: 20)
                     .background(Circle().fill(Color.black.opacity(0.25)))
@@ -43,7 +43,7 @@ struct QuickAccessPreviewSwipeZone: View {
         }
         .frame(width: diameter, height: diameter)
         .overlay(
-            Circle().stroke(isActive ? Color(nsColor: .controlAccentColor) : Color.clear, lineWidth: 2),
+            Circle().stroke(isActive ? Color(nsColor: .controlAccentColor) : Color.clear, lineWidth: 2)
         )
         .contentShape(Circle())
         .scaleEffect(isActive ? 1.1 : 1)
@@ -92,8 +92,8 @@ struct QuickAccessPreviewSwipeArrow: View {
                 style: StrokeStyle(
                     lineWidth: isHighlighted ? 2.0 : 1.4,
                     lineCap: .round,
-                    lineJoin: .round,
-                ),
+                    lineJoin: .round
+                )
             )
 
             Image(systemName: arrowHeadSystemImage)
@@ -120,12 +120,12 @@ struct QuickAccessPreviewSwipeArrow: View {
 
         let start = CGPoint(
             x: center.x + directionSign * (cardWidth / 2 + 10),
-            y: center.y,
+            y: center.y
         )
         // End the line exactly at the arrow head center for seamless joint
         let end = CGPoint(
             x: center.x + directionSign * (targetOffsetX - targetDiameter / 2 - 4),
-            y: center.y,
+            y: center.y
         )
 
         // Distance between start and end is roughly 50 points.
@@ -133,12 +133,12 @@ struct QuickAccessPreviewSwipeArrow: View {
         let dx = end.x - start.x
         let control1 = CGPoint(
             x: start.x + dx * 0.33,
-            y: start.y + arcLift,
+            y: start.y + arcLift
         )
         // control2.y == end.y ensures horizontal tangent at arrival, matching arrowhead perfectly
         let control2 = CGPoint(
             x: end.x - dx * 0.33,
-            y: end.y,
+            y: end.y
         )
 
         return (start, control1, control2, end)
@@ -167,7 +167,7 @@ struct QuickAccessPreviewSwipeZonePopover: View {
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: PopoverTokens.overlayCornerRadius))
         .overlay(
             RoundedRectangle(cornerRadius: PopoverTokens.overlayCornerRadius)
-                .stroke(Color.primary.opacity(0.12), lineWidth: 1),
+                .stroke(Color.primary.opacity(0.12), lineWidth: 1)
         )
         .shadow(color: Color.black.opacity(0.14), radius: 8, x: 0, y: 3)
     }

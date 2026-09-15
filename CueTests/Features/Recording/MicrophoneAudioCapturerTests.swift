@@ -49,7 +49,7 @@
             let factory = MockMicrophoneCaptureSessionFactory()
             let capturer = MicrophoneAudioCapturer(
                 preferredDeviceID: "external-mic-id",
-                captureSessionFactory: factory,
+                captureSessionFactory: factory
             )
 
             capturer.start()
@@ -75,15 +75,15 @@
             try XCTSkipUnless(
                 ProcessInfo.processInfo.environment["CUE_RUN_MICROPHONE_INTEGRATION"] == "1"
                     || ProcessInfo.processInfo.environment["NOTINHAS_RUN_MICROPHONE_INTEGRATION"] == "1",
-                "Real microphone integration is opt-in. Set CUE_RUN_MICROPHONE_INTEGRATION=1 to run.",
+                "Real microphone integration is opt-in. Set CUE_RUN_MICROPHONE_INTEGRATION=1 to run."
             )
             try XCTSkipUnless(
                 AVCaptureDevice.authorizationStatus(for: .audio) == .authorized,
-                "Microphone permission must be granted before running real integration.",
+                "Microphone permission must be granted before running real integration."
             )
             try XCTSkipUnless(
                 AVCaptureDevice.default(for: .audio) != nil,
-                "Default audio device is required for real microphone integration.",
+                "Default audio device is required for real microphone integration."
             )
 
             let capturer = MicrophoneAudioCapturer()
@@ -119,7 +119,7 @@
                 .notDetermined,
                 .restricted,
                 .denied,
-                .authorized,
+                .authorized
             ].contains(status))
         }
     }
@@ -127,7 +127,8 @@
     // MARK: - Mock Delegate
 
     private final nonisolated class MockMicrophoneAudioCapturerDelegate: MicrophoneAudioCapturerDelegate,
-        @unchecked Sendable {
+        @unchecked Sendable
+    {
         var receivedSamples: [CMSampleBuffer] = []
 
         func microphoneCapturer(_: MicrophoneAudioCapturer, didOutput sampleBuffer: CMSampleBuffer) {
@@ -167,7 +168,8 @@
     }
 
     private final nonisolated class MockMicrophoneCaptureSessionFactory: MicrophoneCaptureSessionFactory,
-        @unchecked Sendable {
+        @unchecked Sendable
+    {
         let authorizationStatusValue: AVAuthorizationStatus
         let session = MockMicrophoneCaptureSession()
         private(set) var configureInputCallCount = 0
@@ -195,7 +197,7 @@
         func configureOutput(
             on _: MicrophoneCaptureSession,
             delegate _: AVCaptureAudioDataOutputSampleBufferDelegate,
-            queue _: DispatchQueue,
+            queue _: DispatchQueue
         ) throws {
             configureOutputCallCount += 1
         }

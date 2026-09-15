@@ -32,7 +32,7 @@ struct CueApp: App {
         }
         .defaultSize(
             width: PreferencesWindowChrome.defaultWidth,
-            height: PreferencesWindowChrome.defaultHeight,
+            height: PreferencesWindowChrome.defaultHeight
         )
         .windowResizability(.contentMinSize)
         .windowToolbarStyle(.unifiedCompact)
@@ -49,7 +49,7 @@ struct AppLaunchPolicy {
     init(
         environment: [String: String] = ProcessInfo.processInfo.environment,
         screenCountProvider: @escaping () -> Int = { NSScreen.screens.count },
-        xctestRuntimePresent: @escaping () -> Bool = { NSClassFromString("XCTestCase") != nil },
+        xctestRuntimePresent: @escaping () -> Bool = { NSClassFromString("XCTestCase") != nil }
     ) {
         self.environment = environment
         self.screenCountProvider = screenCountProvider
@@ -74,14 +74,16 @@ struct AppLaunchPolicy {
         }
 
         if let injectBundle = environment["XCInjectBundle"],
-           (injectBundle as NSString).pathExtension == "xctest" {
+           (injectBundle as NSString).pathExtension == "xctest"
+        {
             return true
         }
 
         if let dyldInsert = environment["DYLD_INSERT_LIBRARIES"],
            dyldInsert.contains("libXCTest")
            || dyldInsert.contains("XCTTargetBootstrap")
-           || dyldInsert.contains("libXCTestSwiftSupport") {
+           || dyldInsert.contains("libXCTestSwiftSupport")
+        {
             return true
         }
 
@@ -123,7 +125,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             recordingIsActive = { ScreenRecordingManager.shared.isActive }
             finishRecording = { timeout in
                 await ScreenRecordingManager.shared.finishForApplicationTermination(
-                    timeoutNanoseconds: timeout,
+                    timeoutNanoseconds: timeout
                 )
             }
             abandonRecording = { ScreenRecordingManager.shared.markApplicationTerminationAbandoned() }
@@ -139,7 +141,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         launchPolicyProvider: @escaping () -> AppLaunchPolicy,
         recordingIsActive: @escaping () -> Bool = { false },
         finishRecording: @escaping (UInt64) async -> Bool = { _ in true },
-        abandonRecording: @escaping () -> Void = {},
+        abandonRecording: @escaping () -> Void = {}
     ) {
         self.launchPolicyProvider = launchPolicyProvider
         self.recordingIsActive = recordingIsActive
@@ -153,7 +155,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self,
             andSelector: #selector(handleGetURLEvent(_:withReplyEvent:)),
             forEventClass: AEEventClass(kInternetEventClass),
-            andEventID: AEEventID(kAEGetURL),
+            andEventID: AEEventID(kAEGetURL)
         )
     }
 
@@ -199,7 +201,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(_: Notification) {
         NSAppleEventManager.shared().removeEventHandler(
             forEventClass: AEEventClass(kInternetEventClass),
-            andEventID: AEEventID(kAEGetURL),
+            andEventID: AEEventID(kAEGetURL)
         )
         coordinator?.applicationWillTerminate()
     }
@@ -208,7 +210,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         #if CUE_VIDEO_MODULE
             guard ApplicationTerminationPolicy.shouldWait(
                 isRecording: recordingIsActive(),
-                terminationInProgress: terminationTask != nil,
+                terminationInProgress: terminationTask != nil
             ) else { return .terminateNow }
             guard terminationTask == nil else { return .terminateLater }
 
@@ -265,8 +267,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                             "appSupportErrorSkipped": "\(result.errorSkippedApplicationSupportItems)",
                             "preferencesImported": "\(result.importedPreferenceKeys)",
                             "preferencesSkipped": "\(result.skippedPreferenceKeys)",
-                            "logsCopied": "\(result.copiedLogItems)",
-                        ],
+                            "logsCopied": "\(result.copiedLogItems)"
+                        ]
                     )
                 }
                 return true
@@ -286,7 +288,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         DiagnosticLogger.shared.log(
                             .warning,
                             .lifecycle,
-                            "Sandbox-off data migration skipped by user (Start Fresh)",
+                            "Sandbox-off data migration skipped by user (Start Fresh)"
                         )
                         return true
                     } catch {
@@ -304,7 +306,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func presentSandboxOffMigrationRecoveryAlert(
         error: Error,
-        note: String? = nil,
+        note: String? = nil
     ) -> SandboxOffMigrationRecoveryAction {
         NSApp.activate(ignoringOtherApps: true)
 
@@ -394,8 +396,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                             "preferencesSkipped": "\(result.skippedPreferenceKeys)",
                             "logsCopied": "\(result.copiedLogItems)",
                             "configCopied": "\(result.copiedConfigItems)",
-                            "keychainMigrated": "\(result.migratedKeychainItems)",
-                        ],
+                            "keychainMigrated": "\(result.migratedKeychainItems)"
+                        ]
                     )
                 }
                 return true
@@ -415,7 +417,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         DiagnosticLogger.shared.log(
                             .warning,
                             .lifecycle,
-                            "Notinhas identity migration skipped by user (Start Fresh)",
+                            "Notinhas identity migration skipped by user (Start Fresh)"
                         )
                         return true
                     } catch {
@@ -433,7 +435,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func presentNotinhasIdentityMigrationRecoveryAlert(
         error: Error,
-        note: String? = nil,
+        note: String? = nil
     ) -> NotinhasIdentityMigrationRecoveryAction {
         NSApp.activate(ignoringOtherApps: true)
 
@@ -523,8 +525,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                             "preferencesSkipped": "\(result.skippedPreferenceKeys)",
                             "logsCopied": "\(result.copiedLogItems)",
                             "configCopied": "\(result.copiedConfigItems)",
-                            "keychainMigrated": "\(result.migratedKeychainItems)",
-                        ],
+                            "keychainMigrated": "\(result.migratedKeychainItems)"
+                        ]
                     )
                 }
                 return true
@@ -544,7 +546,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         DiagnosticLogger.shared.log(
                             .warning,
                             .lifecycle,
-                            "Cue identity migration skipped by user (Start Fresh)",
+                            "Cue identity migration skipped by user (Start Fresh)"
                         )
                         return true
                     } catch {
@@ -562,7 +564,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func presentCueIdentityMigrationRecoveryAlert(
         error: Error,
-        note: String? = nil,
+        note: String? = nil
     ) -> CueIdentityMigrationRecoveryAction {
         NSApp.activate(ignoringOtherApps: true)
 
@@ -655,7 +657,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                                 .warning,
                                 .lifecycle,
                                 "Database reset during launch",
-                                context: ["archive": archiveDirectoryURL.path],
+                                context: ["archive": archiveDirectoryURL.path]
                             )
                         }
                         return true
@@ -677,7 +679,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func presentDatabaseRecoveryAlert(
         error: Error,
-        note: String?,
+        note: String?
     ) -> DatabaseLaunchRecoveryAction {
         NSApp.activate(ignoringOtherApps: true)
 
@@ -736,7 +738,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func handleGetURLEvent(
         _ event: NSAppleEventDescriptor,
-        withReplyEvent _: NSAppleEventDescriptor,
+        withReplyEvent _: NSAppleEventDescriptor
     ) {
         guard
             let urlString = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
@@ -784,7 +786,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             .info,
             .action,
             "Received open-file request",
-            context: ["count": "\(fileURLs.count)"],
+            context: ["count": "\(fileURLs.count)"]
         )
 
         if didFinishLaunching {

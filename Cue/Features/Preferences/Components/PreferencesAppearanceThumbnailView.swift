@@ -31,7 +31,7 @@ struct AppearanceThumbnailView: View {
                 thumbnailPreview
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 3),
+                            .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 3)
                     )
                     .shadow(color: .black.opacity(0.15), radius: 2, x: 0, y: 1)
 
@@ -66,8 +66,8 @@ struct AppearanceThumbnailView: View {
                             topLeadingRadius: 8,
                             bottomLeadingRadius: 8,
                             bottomTrailingRadius: 0,
-                            topTrailingRadius: 0,
-                        ),
+                            topTrailingRadius: 0
+                        )
                     )
 
                 // Dark half
@@ -77,8 +77,8 @@ struct AppearanceThumbnailView: View {
                             topLeadingRadius: 0,
                             bottomLeadingRadius: 0,
                             bottomTrailingRadius: 8,
-                            topTrailingRadius: 8,
-                        ),
+                            topTrailingRadius: 8
+                        )
                     )
             }
         }
@@ -160,7 +160,7 @@ struct AppearanceModePicker: View {
             ForEach(AppearanceMode.allCases) { mode in
                 AppearanceThumbnailView(
                     mode: mode,
-                    isSelected: selection == mode,
+                    isSelected: selection == mode
                 ) {
                     withAnimation(.easeInOut(duration: 0.15)) {
                         selection = mode

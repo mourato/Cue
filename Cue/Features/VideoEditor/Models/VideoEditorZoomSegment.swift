@@ -54,7 +54,7 @@
             isImplicit: Bool = false,
             anchorMode: ZoomAnchorMode? = nil,
             boundsBias: CGFloat = 0.25,
-            skipsEasing: Bool = false,
+            skipsEasing: Bool = false
         ) {
             self.id = id
             self.startTime = max(0, startTime)
@@ -62,7 +62,7 @@
             self.zoomLevel = max(Self.minZoomLevel, min(zoomLevel, Self.maxZoomLevel))
             self.zoomCenter = CGPoint(
                 x: max(0, min(zoomCenter.x, 1)),
-                y: max(0, min(zoomCenter.y, 1)),
+                y: max(0, min(zoomCenter.y, 1))
             )
             self.zoomType = zoomType
             self.followSpeed = AutoFocusSettings.clampFollowSpeed(followSpeed)
@@ -138,7 +138,7 @@
                 isEnabled: zoomType == .auto,
                 zoomLevel: zoomLevel,
                 followSpeed: followSpeed,
-                focusMargin: focusMargin,
+                focusMargin: focusMargin
             )
         }
 
@@ -152,14 +152,14 @@
             duration: TimeInterval = defaultDuration,
             zoomLevel: CGFloat = defaultZoomLevel,
             center: CGPoint = CGPoint(x: 0.5, y: 0.5),
-            type: ZoomType = .manual,
+            type: ZoomType = .manual
         ) -> ZoomSegment {
             ZoomSegment(
                 startTime: max(0, time - duration / 2),
                 duration: duration,
                 zoomLevel: zoomLevel,
                 zoomCenter: center,
-                zoomType: type,
+                zoomType: type
             )
         }
 

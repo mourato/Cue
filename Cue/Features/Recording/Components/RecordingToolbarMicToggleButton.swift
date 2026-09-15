@@ -35,13 +35,13 @@
                 ToolbarIconButtonLabel(
                     systemName: systemName,
                     isActive: state.captureMicrophone,
-                    isHovered: isHovered || showPopover,
+                    isHovered: isHovered || showPopover
                 )
             }
             .buttonStyle(.plain)
             .frame(
                 width: ToolbarConstants.iconButtonSize,
-                height: ToolbarConstants.iconButtonSize,
+                height: ToolbarConstants.iconButtonSize
             )
             .onHover { isHovered = $0 }
             .help(tooltipText)
@@ -70,7 +70,7 @@
                 } label: {
                     menuItemLabel(
                         title: L10n.Microphone.doNotUse,
-                        isSelected: !state.captureMicrophone,
+                        isSelected: !state.captureMicrophone
                     )
                 }
                 .buttonStyle(.plain)
@@ -86,12 +86,12 @@
                     } label: {
                         menuItemLabel(
                             title: device.displayName,
-                            isSelected: state.captureMicrophone && state.microphoneDeviceID == device.id,
+                            isSelected: state.captureMicrophone && state.microphoneDeviceID == device.id
                         )
                     }
                     .buttonStyle(.plain)
                     .popoverMenuItem(
-                        isSelected: state.captureMicrophone && state.microphoneDeviceID == device.id,
+                        isSelected: state.captureMicrophone && state.microphoneDeviceID == device.id
                     )
                 }
             }
@@ -101,7 +101,7 @@
 
         private var microphoneMenuDevices: [RecordingMicrophoneDevice] {
             RecordingMicrophoneDeviceProvider.availableDevices(
-                selectedDeviceID: state.microphoneDeviceID,
+                selectedDeviceID: state.microphoneDeviceID
             )
             .filter { !$0.isUnavailable }
         }

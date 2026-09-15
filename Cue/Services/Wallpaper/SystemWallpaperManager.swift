@@ -66,7 +66,7 @@ class SystemWallpaperManager: ObservableObject {
 
     private let bundledWallpaperSubdirectories = [
         "Wallpapers",
-        "Resources/Wallpapers",
+        "Resources/Wallpapers"
     ]
     private let customWallpaperBookmarkKey = PreferencesKeys.customWallpaperBookmarks
     private var customWallpaperBookmarkEntries: [CustomWallpaperBookmarkEntry] = []
@@ -83,7 +83,7 @@ class SystemWallpaperManager: ObservableObject {
         BundledWallpaperResource(fileName: "default-macintosh-dark.jpg", displayName: "Macintosh Dark"),
         BundledWallpaperResource(fileName: "default-macintosh-light.jpg", displayName: "Macintosh Light"),
         BundledWallpaperResource(fileName: "default-tahoe-dark.jpg", displayName: "Tahoe Dark"),
-        BundledWallpaperResource(fileName: "default-tahoe-light.jpg", displayName: "Tahoe Light"),
+        BundledWallpaperResource(fileName: "default-tahoe-light.jpg", displayName: "Tahoe Light")
     ]
 
     private struct BundledWallpaperResource {
@@ -158,19 +158,19 @@ class SystemWallpaperManager: ObservableObject {
             let bookmarkData = try url.bookmarkData(
                 options: .withSecurityScope,
                 includingResourceValuesForKeys: nil,
-                relativeTo: nil,
+                relativeTo: nil
             )
             var isStale = false
             let scopedURL = (try? URL(
                 resolvingBookmarkData: bookmarkData,
                 options: [.withSecurityScope],
                 relativeTo: nil,
-                bookmarkDataIsStale: &isStale,
+                bookmarkDataIsStale: &isStale
             ).standardizedFileURL) ?? normalizedURL
             let item = WallpaperItem(
                 fullImageURL: scopedURL,
                 thumbnailURL: nil,
-                name: wallpaperName(for: scopedURL),
+                name: wallpaperName(for: scopedURL)
             )
 
             customWallpaperBookmarkEntries.append(CustomWallpaperBookmarkEntry(bookmarkData: bookmarkData))
@@ -201,7 +201,8 @@ class SystemWallpaperManager: ObservableObject {
 
     private func loadCustomWallpapers() {
         guard let data = UserDefaults.standard.data(forKey: customWallpaperBookmarkKey),
-              let decodedEntries = try? JSONDecoder().decode([CustomWallpaperBookmarkEntry].self, from: data) else {
+              let decodedEntries = try? JSONDecoder().decode([CustomWallpaperBookmarkEntry].self, from: data)
+        else {
             return
         }
 
@@ -216,7 +217,7 @@ class SystemWallpaperManager: ObservableObject {
                 resolvingBookmarkData: entry.bookmarkData,
                 options: [.withSecurityScope],
                 relativeTo: nil,
-                bookmarkDataIsStale: &isStale,
+                bookmarkDataIsStale: &isStale
             ).standardizedFileURL else {
                 continue
             }
@@ -239,9 +240,10 @@ class SystemWallpaperManager: ObservableObject {
                    try resolvedURL.bookmarkData(
                        options: .withSecurityScope,
                        includingResourceValuesForKeys: nil,
-                       relativeTo: nil,
+                       relativeTo: nil
                    )
-               }) {
+               })
+            {
                 bookmarkEntry = CustomWallpaperBookmarkEntry(bookmarkData: refreshedBookmarkData)
             }
 
@@ -250,8 +252,8 @@ class SystemWallpaperManager: ObservableObject {
                 WallpaperItem(
                     fullImageURL: resolvedURL,
                     thumbnailURL: nil,
-                    name: wallpaperName(for: resolvedURL),
-                ),
+                    name: wallpaperName(for: resolvedURL)
+                )
             )
         }
 
@@ -282,7 +284,7 @@ class SystemWallpaperManager: ObservableObject {
 
     private nonisolated static func withSecurityScopedAccess<T>(
         to url: URL,
-        _ operation: () throws -> T,
+        _ operation: () throws -> T
     ) rethrows -> T {
         let didStartAccessing = url.startAccessingSecurityScopedResource()
         defer {
@@ -344,11 +346,11 @@ class SystemWallpaperManager: ObservableObject {
     ///   - maxSize: Maximum pixel dimension for the output
     nonisolated static func createDownsampledImageSnapshot(
         from url: URL,
-        maxSize: CGFloat,
+        maxSize: CGFloat
     ) -> WallpaperImageSnapshot? {
         withSecurityScopedAccess(to: url) {
             let options: [CFString: Any] = [
-                kCGImageSourceShouldCache: false,
+                kCGImageSourceShouldCache: false
             ]
 
             guard let imageSource = CGImageSourceCreateWithURL(url as CFURL, options as CFDictionary) else {
@@ -360,7 +362,8 @@ class SystemWallpaperManager: ObservableObject {
             var effectiveMaxSize = maxSize
             if let properties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [CFString: Any],
                let width = properties[kCGImagePropertyPixelWidth] as? CGFloat,
-               let height = properties[kCGImagePropertyPixelHeight] as? CGFloat {
+               let height = properties[kCGImagePropertyPixelHeight] as? CGFloat
+            {
                 let sourceMaxDimension = max(width, height)
                 effectiveMaxSize = min(maxSize, sourceMaxDimension)
             }
@@ -369,7 +372,7 @@ class SystemWallpaperManager: ObservableObject {
                 kCGImageSourceCreateThumbnailFromImageAlways: true,
                 kCGImageSourceShouldCacheImmediately: true,
                 kCGImageSourceCreateThumbnailWithTransform: true,
-                kCGImageSourceThumbnailMaxPixelSize: effectiveMaxSize,
+                kCGImageSourceThumbnailMaxPixelSize: effectiveMaxSize
             ]
 
             guard let cgImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions as CFDictionary)
@@ -385,7 +388,7 @@ class SystemWallpaperManager: ObservableObject {
     static func makeImage(from snapshot: WallpaperImageSnapshot) -> NSImage {
         NSImage(
             cgImage: snapshot.cgImage,
-            size: NSSize(width: snapshot.cgImage.width, height: snapshot.cgImage.height),
+            size: NSSize(width: snapshot.cgImage.width, height: snapshot.cgImage.height)
         )
     }
 
@@ -410,7 +413,7 @@ class SystemWallpaperManager: ObservableObject {
             let task = Task.detached(priority: .userInitiated) { [
                 url = key.url,
                 maxPixelSize = key.maxPixelSize,
-                testHook,
+                testHook
             ] in
                 await testHook?(.snapshotCreationStarted)
                 return createDownsampledImageSnapshot(from: url, maxSize: maxPixelSize)
@@ -473,7 +476,7 @@ class SystemWallpaperManager: ObservableObject {
     }
 
     @MainActor
-    func loadDefaultWallpapers() async {
+    func loadDefaultWallpapers() {
         guard !isLoading else { return }
         guard defaultWallpapers.isEmpty else { return } // Only load once
         isLoading = true
@@ -497,7 +500,7 @@ class SystemWallpaperManager: ObservableObject {
             return WallpaperItem(
                 fullImageURL: url,
                 thumbnailURL: nil,
-                name: resource.displayName,
+                name: resource.displayName
             )
         }
     }
@@ -509,7 +512,7 @@ class SystemWallpaperManager: ObservableObject {
             if let url = Bundle.main.url(
                 forResource: resource.resourceName,
                 withExtension: resource.fileExtension,
-                subdirectory: subdirectory,
+                subdirectory: subdirectory
             ) {
                 return url
             }
@@ -517,21 +520,23 @@ class SystemWallpaperManager: ObservableObject {
             if let url = Bundle.main.resourceURL?
                 .appendingPathComponent(subdirectory)
                 .appendingPathComponent(resource.fileName),
-                fm.fileExists(atPath: url.path) {
+                fm.fileExists(atPath: url.path)
+            {
                 return url
             }
         }
 
         if let url = Bundle.main.url(
             forResource: resource.resourceName,
-            withExtension: resource.fileExtension,
+            withExtension: resource.fileExtension
         ) {
             return url
         }
 
         if let url = Bundle.main.resourceURL?
             .appendingPathComponent(resource.fileName),
-            fm.fileExists(atPath: url.path) {
+            fm.fileExists(atPath: url.path)
+        {
             return url
         }
 

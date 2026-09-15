@@ -19,7 +19,7 @@ struct QuickAccessPinDragHandleView: NSViewRepresentable {
             fileURL: fileURL,
             image: image,
             thumbnail: thumbnail,
-            onDragStateChanged: onDragStateChanged,
+            onDragStateChanged: onDragStateChanged
         )
     }
 
@@ -73,7 +73,7 @@ final class QuickAccessPinDragHandleNSView: NSView, NSDraggingSource {
 
     func draggingSession(
         _: NSDraggingSession,
-        sourceOperationMaskFor _: NSDraggingContext,
+        sourceOperationMaskFor _: NSDraggingContext
     ) -> NSDragOperation {
         .copy
     }
@@ -81,7 +81,7 @@ final class QuickAccessPinDragHandleNSView: NSView, NSDraggingSource {
     func draggingSession(
         _: NSDraggingSession,
         endedAt _: NSPoint,
-        operation: NSDragOperation,
+        operation: NSDragOperation
     ) {
         isDragging = false
         shouldRetainActiveDragFile = operation != []
@@ -96,8 +96,8 @@ final class QuickAccessPinDragHandleNSView: NSView, NSDraggingSource {
             "Pinned screenshot drag ended",
             context: [
                 "fileName": fileURL.lastPathComponent,
-                "success": operation != [] ? "true" : "false",
-            ],
+                "success": operation != [] ? "true" : "false"
+            ]
         )
     }
 
@@ -127,7 +127,7 @@ final class QuickAccessPinDragHandleNSView: NSView, NSDraggingSource {
             in: NSRect(origin: .zero, size: imageSize),
             from: .zero,
             operation: .sourceOver,
-            fraction: 0.82,
+            fraction: 0.82
         )
         dragImage.unlockFocus()
 
@@ -137,9 +137,9 @@ final class QuickAccessPinDragHandleNSView: NSView, NSDraggingSource {
                 x: mouseLocation.x - imageSize.width / 2,
                 y: mouseLocation.y - imageSize.height / 2,
                 width: imageSize.width,
-                height: imageSize.height,
+                height: imageSize.height
             ),
-            contents: dragImage,
+            contents: dragImage
         )
 
         draggingWindow?.orderOut(nil)
@@ -150,7 +150,7 @@ final class QuickAccessPinDragHandleNSView: NSView, NSDraggingSource {
             .info,
             .action,
             "Pinned screenshot drag started",
-            context: ["fileName": dragFileURL.lastPathComponent],
+            context: ["fileName": dragFileURL.lastPathComponent]
         )
     }
 
@@ -177,7 +177,7 @@ final class QuickAccessPinDragHandleNSView: NSView, NSDraggingSource {
         let outputURL = CaptureOutputNaming.makeUniqueFileURL(
             in: directory,
             baseName: baseName,
-            fileExtension: fileExtension,
+            fileExtension: fileExtension
         )
 
         do {
@@ -192,7 +192,7 @@ final class QuickAccessPinDragHandleNSView: NSView, NSDraggingSource {
                 .fileAccess,
                 error,
                 "Pinned screenshot drag file preparation failed",
-                context: ["fileName": fileURL.lastPathComponent],
+                context: ["fileName": fileURL.lastPathComponent]
             )
             return nil
         }

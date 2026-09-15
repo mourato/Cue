@@ -41,7 +41,7 @@ final class AreaSelectionOverlayLumaSamplingTests: AreaSelectionOverlayTestCase 
         XCTAssertEqual(
             insideLayer.fillColor,
             NSColor.black.withAlphaComponent(0.12).cgColor,
-            "A small centered selection over a white region must keep the dark overlay regardless of the backdrop's declared scaleFactor",
+            "A small centered selection over a white region must keep the dark overlay regardless of the backdrop's declared scaleFactor"
         )
     }
 }

@@ -67,7 +67,7 @@
         func configureOutput(
             on _: CameraCaptureSession,
             delegate _: AVCaptureVideoDataOutputSampleBufferDelegate,
-            queue _: DispatchQueue,
+            queue _: DispatchQueue
         ) throws {}
     }
 #endif

@@ -12,7 +12,7 @@ enum ScrollingCaptureSessionPolicy {
         previousAcceptedFrameCount: Int,
         previousOutputHeight: Int,
         acceptedFrameCount: Int,
-        outputHeight: Int,
+        outputHeight: Int
     ) -> Bool {
         acceptedFrameCount != previousAcceptedFrameCount || outputHeight != previousOutputHeight
     }
@@ -21,7 +21,7 @@ enum ScrollingCaptureSessionPolicy {
         hasCommittedPreview: Bool,
         capturedAt: TimeInterval,
         lastPublishedAt: TimeInterval?,
-        minimumInterval: TimeInterval,
+        minimumInterval: TimeInterval
     ) -> Bool {
         guard hasCommittedPreview else { return true }
         guard let lastPublishedAt else { return true }
@@ -32,13 +32,13 @@ enum ScrollingCaptureSessionPolicy {
         latestCapturedAt: TimeInterval?,
         lastCommittedObservationAt: TimeInterval?,
         isUsingLivePreview: Bool,
-        toleranceMs: Int,
+        toleranceMs: Int
     ) -> Int {
         guard let latestCapturedAt else { return 0 }
         if let lastCommittedObservationAt {
             return max(
                 0,
-                Int(((latestCapturedAt - lastCommittedObservationAt) * 1_000).rounded()),
+                Int(((latestCapturedAt - lastCommittedObservationAt) * 1000).rounded())
             )
         }
         return isUsingLivePreview ? toleranceMs + 1 : 0
@@ -51,7 +51,7 @@ enum ScrollingCaptureSessionPolicy {
         activeScrollThreshold: TimeInterval,
         timeSinceLastRefresh: TimeInterval?,
         minimumStreamingInterval: TimeInterval,
-        canStartRefresh: Bool,
+        canStartRefresh: Bool
     ) -> Bool {
         guard hasPendingMotion, canStartRefresh else { return false }
         guard idleDuration < activeScrollThreshold else { return false }
@@ -65,7 +65,7 @@ enum ScrollingCaptureSessionPolicy {
     static func scaledScrollDeltaY(
         deltaX: Double,
         deltaY: Double,
-        hasPreciseDeltas: Bool,
+        hasPreciseDeltas: Bool
     ) -> Double? {
         guard abs(deltaY) >= abs(deltaX) else { return nil }
         let scaled = deltaY * (hasPreciseDeltas ? 1 : 18)
@@ -75,7 +75,7 @@ enum ScrollingCaptureSessionPolicy {
 
     static func preferredCommitFrameSource(
         hasOnDemandFrame: Bool,
-        hasStreamFrame: Bool,
+        hasStreamFrame: Bool
     ) -> ScrollingCaptureCommitFrameSource? {
         if hasOnDemandFrame {
             return .onDemand
@@ -88,7 +88,7 @@ enum ScrollingCaptureSessionPolicy {
 
     static func shouldUpdateStitchedPreview(
         outputChanged: Bool,
-        outcome: ScrollingCaptureStitchOutcome,
+        outcome: ScrollingCaptureStitchOutcome
     ) -> Bool {
         if outputChanged {
             return true

@@ -15,8 +15,8 @@ AppKit, and lifecycle entry points opt into `@MainActor` explicitly.
 
 SwiftFormat is pinned by repository policy to Swift 6.2 syntax and four-space
 indentation with the existing 120-column and generated/Pods/build exclusions.
-SwiftLint owns the `Notinhas` and `CueTests` surfaces through
-`.swiftlint.yml`; checks are fail-closed and have separate full, changed, and
+The global `swift-conventions` skill owns the SwiftFormat and SwiftLint rules
+for the `Cue` and `CueTests` surfaces; checks are fail-closed and have separate full, changed, and
 autofix commands. The focused baseline opts into `empty_string` and
 `first_where`, both verified clean on the owned app and test surfaces. The
 configuration preserves named pre-existing repository debt and compatibility

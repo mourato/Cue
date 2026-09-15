@@ -28,7 +28,8 @@ enum CueConfigurationColor {
 
         let body = String(value.dropFirst())
         guard body.count == 6 || body.count == 8,
-              let raw = UInt64(body, radix: 16) else {
+              let raw = UInt64(body, radix: 16)
+        else {
             return nil
         }
 
@@ -38,22 +39,22 @@ enum CueConfigurationColor {
         let alpha: UInt64
 
         if body.count == 6 {
-            red = (raw >> 16) & 0xff
-            green = (raw >> 8) & 0xff
-            blue = raw & 0xff
-            alpha = 0xff
+            red = (raw >> 16) & 0xFF
+            green = (raw >> 8) & 0xFF
+            blue = raw & 0xFF
+            alpha = 0xFF
         } else {
-            red = (raw >> 24) & 0xff
-            green = (raw >> 16) & 0xff
-            blue = (raw >> 8) & 0xff
-            alpha = raw & 0xff
+            red = (raw >> 24) & 0xFF
+            green = (raw >> 16) & 0xFF
+            blue = (raw >> 8) & 0xFF
+            alpha = raw & 0xFF
         }
 
         return NSColor(
             srgbRed: CGFloat(red) / 255,
             green: CGFloat(green) / 255,
             blue: CGFloat(blue) / 255,
-            alpha: CGFloat(alpha) / 255,
+            alpha: CGFloat(alpha) / 255
         )
     }
 

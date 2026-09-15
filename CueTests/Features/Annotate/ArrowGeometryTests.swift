@@ -13,7 +13,7 @@ final class ArrowGeometryTests: XCTestCase {
     func testShiftAngleSnappingUsesNearest45DegreeIncrement() {
         let snapped = AnnotationAngleSnapping.snap45(
             CGPoint(x: 97, y: 82),
-            from: CGPoint(x: 10, y: 10),
+            from: CGPoint(x: 10, y: 10)
         )
 
         XCTAssertEqual(snapped.x - 10, snapped.y - 10, accuracy: 0.001)
@@ -23,7 +23,7 @@ final class ArrowGeometryTests: XCTestCase {
     func testShiftAngleSnappingPreservesHorizontal180DegreeLine() {
         let snapped = AnnotationAngleSnapping.snap45(
             CGPoint(x: 5, y: 99),
-            from: CGPoint(x: 100, y: 100),
+            from: CGPoint(x: 100, y: 100)
         )
 
         XCTAssertEqual(snapped.y, 100, accuracy: 0.001)
@@ -123,7 +123,7 @@ final class ArrowGeometryTests: XCTestCase {
         let geo = ArrowGeometry(start: CGPoint(x: 0, y: 0), end: CGPoint(x: 100, y: 100), style: .straight)
         let remapped = geo.remapped(
             from: CGRect(x: 0, y: 0, width: 100, height: 100),
-            to: CGRect(x: 0, y: 0, width: 200, height: 200),
+            to: CGRect(x: 0, y: 0, width: 200, height: 200)
         )
         XCTAssertEqual(remapped.start, CGPoint(x: 0, y: 0))
         XCTAssertEqual(remapped.end, CGPoint(x: 200, y: 200))
@@ -143,7 +143,7 @@ final class ArrowGeometryTests: XCTestCase {
         let geo = ArrowGeometry(
             start: CGPoint(x: 0, y: 0),
             end: CGPoint(x: 100, y: 30),
-            style: .curvedLeft,
+            style: .curvedLeft
         )
         let curvedRight = geo.withStyle(.curvedRight)
         XCTAssertEqual(curvedRight.style, .curvedRight)
@@ -155,11 +155,11 @@ final class ArrowGeometryTests: XCTestCase {
             start: CGPoint(x: 0, y: 0),
             end: CGPoint(x: 100, y: 0),
             style: .curvedLeft,
-            controlPoint: CGPoint(x: 30, y: 50),
+            controlPoint: CGPoint(x: 30, y: 50)
         )
         let remapped = original.remapped(
             from: CGRect(x: 0, y: 0, width: 100, height: 50),
-            to: CGRect(x: 10, y: 20, width: 180, height: 90),
+            to: CGRect(x: 10, y: 20, width: 180, height: 90)
         )
         let control = try XCTUnwrap(remapped.resolvedControlPoint)
 
@@ -171,12 +171,12 @@ final class ArrowGeometryTests: XCTestCase {
         XCTAssertEqual(
             baselineProgress(flippedControl, start: remapped.start, end: remapped.end),
             baselineProgress(control, start: remapped.start, end: remapped.end),
-            accuracy: 0.001,
+            accuracy: 0.001
         )
         XCTAssertEqual(
             signedPerpendicularDistance(flippedControl, start: remapped.start, end: remapped.end),
             -signedPerpendicularDistance(control, start: remapped.start, end: remapped.end),
-            accuracy: 0.001,
+            accuracy: 0.001
         )
     }
 
@@ -219,7 +219,7 @@ final class ArrowGeometryTests: XCTestCase {
             start: CGPoint(x: 0, y: 0),
             end: CGPoint(x: 100, y: 100),
             style: .straight,
-            arrowType: .classic,
+            arrowType: .classic
         )
         let translated = geo.translatedBy(dx: 10, dy: 10)
         XCTAssertEqual(translated.arrowType, .classic)
@@ -230,11 +230,11 @@ final class ArrowGeometryTests: XCTestCase {
             start: CGPoint(x: 0, y: 0),
             end: CGPoint(x: 100, y: 100),
             style: .straight,
-            arrowType: .classic,
+            arrowType: .classic
         )
         let remapped = geo.remapped(
             from: CGRect(x: 0, y: 0, width: 100, height: 100),
-            to: CGRect(x: 0, y: 0, width: 200, height: 200),
+            to: CGRect(x: 0, y: 0, width: 200, height: 200)
         )
         XCTAssertEqual(remapped.arrowType, .classic)
     }
@@ -244,7 +244,7 @@ final class ArrowGeometryTests: XCTestCase {
             start: CGPoint(x: 0, y: 0),
             end: CGPoint(x: 100, y: 100),
             style: .straight,
-            arrowType: .classic,
+            arrowType: .classic
         )
         let persisted = PersistedArrowGeometry(geometry: geo)
         XCTAssertEqual(persisted.arrowType, "classic")
@@ -259,7 +259,7 @@ final class ArrowGeometryTests: XCTestCase {
         // Simulate older save where arrowType field is missing/nil
         var dictionaryRepresentation = try XCTUnwrap(try JSONSerialization.jsonObject(
             with: JSONEncoder().encode(persisted),
-            options: [],
+            options: []
         ) as? [String: Any])
         dictionaryRepresentation.removeValue(forKey: "arrowType")
 
@@ -275,7 +275,7 @@ final class ArrowGeometryTests: XCTestCase {
             start: CGPoint(x: 0, y: 0),
             end: CGPoint(x: 100, y: 0),
             style: .curvedLeft,
-            controlPoint: CGPoint(x: 30, y: 50),
+            controlPoint: CGPoint(x: 30, y: 50)
         )
         let curvedRight = geo.withStyle(.curvedRight)
         XCTAssertEqual(curvedRight.style, .curvedRight)
@@ -324,7 +324,7 @@ final class ArrowGeometryTests: XCTestCase {
             XCTAssertGreaterThan(
                 metrics.shaftNeckWidth,
                 metrics.shaftBaseWidth,
-                "stroke \(stroke): neck \(metrics.shaftNeckWidth) must be wider than tail \(metrics.shaftBaseWidth)",
+                "stroke \(stroke): neck \(metrics.shaftNeckWidth) must be wider than tail \(metrics.shaftBaseWidth)"
             )
         }
     }
@@ -337,12 +337,12 @@ final class ArrowGeometryTests: XCTestCase {
             XCTAssertLessThan(
                 metrics.shaftNeckWidth,
                 stroke * 3.2,
-                "stroke \(stroke): shaft \(metrics.shaftNeckWidth) too wide vs stroke weight",
+                "stroke \(stroke): shaft \(metrics.shaftNeckWidth) too wide vs stroke weight"
             )
             XCTAssertGreaterThan(
                 metrics.shaftNeckWidth,
                 stroke * 1.2,
-                "stroke \(stroke): shaft \(metrics.shaftNeckWidth) too thin vs stroke weight",
+                "stroke \(stroke): shaft \(metrics.shaftNeckWidth) too thin vs stroke weight"
             )
         }
     }
@@ -360,7 +360,7 @@ final class ArrowGeometryTests: XCTestCase {
             start: CGPoint(x: 20, y: 80),
             end: CGPoint(x: 180, y: 20),
             style: .straight,
-            arrowType: .outlined,
+            arrowType: .outlined
         )
         let path = geo.taperedArrowPath(strokeWidth: 4)
         let bounds = path.boundingBoxOfPath
@@ -384,7 +384,7 @@ final class ArrowGeometryTests: XCTestCase {
             start: CGPoint(x: 0, y: 0),
             end: CGPoint(x: 120, y: 0),
             style: .curvedLeft,
-            arrowType: .tapered,
+            arrowType: .tapered
         )
         let path = geo.taperedArrowPath(strokeWidth: 3)
         XCTAssertFalse(path.isEmpty)
@@ -440,7 +440,7 @@ final class ArrowGeometryTests: XCTestCase {
             start: CGPoint(x: 0, y: 0),
             end: CGPoint(x: 120, y: 0),
             style: .straight,
-            arrowType: .tapered,
+            arrowType: .tapered
         ).taperedArrowPath(strokeWidth: 3).boundingBoxOfPath.height
 
         for style in [ArrowStyle.curvedRight, .curvedLeft] {
@@ -448,7 +448,7 @@ final class ArrowGeometryTests: XCTestCase {
                 start: CGPoint(x: 0, y: 0),
                 end: CGPoint(x: 120, y: 0),
                 style: style,
-                arrowType: .tapered,
+                arrowType: .tapered
             )
             let bounds = geo.taperedArrowPath(strokeWidth: 3).boundingBoxOfPath
             XCTAssertGreaterThan(bounds.height, straightHeight, "\(style): curved body should bow past straight shaft")
@@ -461,7 +461,7 @@ final class ArrowGeometryTests: XCTestCase {
             start: CGPoint(x: 0, y: 0),
             end: CGPoint(x: 100, y: 0),
             style: .curvedRight,
-            arrowType: .classic,
+            arrowType: .classic
         )
         for type in ArrowType.allCases {
             let switched = curved.withArrowType(type)
@@ -532,7 +532,7 @@ final class ArrowGeometryTests: XCTestCase {
             end: CGPoint(x: 100, y: 40),
             style: .curvedRight,
             startHead: .circle,
-            endHead: .none,
+            endHead: .none
         )
 
         let translated = geo.translatedBy(dx: 10, dy: 10)
@@ -541,7 +541,7 @@ final class ArrowGeometryTests: XCTestCase {
 
         let remapped = geo.remapped(
             from: CGRect(x: 0, y: 0, width: 100, height: 40),
-            to: CGRect(x: 0, y: 0, width: 200, height: 80),
+            to: CGRect(x: 0, y: 0, width: 200, height: 80)
         )
         XCTAssertEqual(remapped.startHead, .circle)
         XCTAssertEqual(remapped.endHead, .none)
@@ -568,7 +568,7 @@ final class ArrowGeometryTests: XCTestCase {
             style: .straight,
             arrowType: .classic,
             startHead: .arrow,
-            endHead: .circle,
+            endHead: .circle
         )
         let persisted = PersistedArrowGeometry(geometry: geo)
         XCTAssertEqual(persisted.startHead, "arrow")
@@ -583,7 +583,7 @@ final class ArrowGeometryTests: XCTestCase {
         // Older saves have no startHead/endHead → keep the historical single-headed arrow.
         let persisted = PersistedArrowGeometry(geometry: ArrowGeometry(start: .zero, end: .zero, style: .straight))
         var dict = try XCTUnwrap(try JSONSerialization.jsonObject(
-            with: JSONEncoder().encode(persisted), options: [],
+            with: JSONEncoder().encode(persisted), options: []
         ) as? [String: Any])
         dict.removeValue(forKey: "startHead")
         dict.removeValue(forKey: "endHead")

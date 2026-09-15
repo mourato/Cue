@@ -14,7 +14,7 @@ final class AnnotationItemHitTests: XCTestCase {
         let item = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 0, y: 0, width: 100, height: 50),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         XCTAssertTrue(item.containsPoint(CGPoint(x: 50, y: 25)))
     }
@@ -23,7 +23,7 @@ final class AnnotationItemHitTests: XCTestCase {
         let item = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 0, y: 0, width: 100, height: 50),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         XCTAssertFalse(item.containsPoint(CGPoint(x: 150, y: 25)))
     }
@@ -32,7 +32,7 @@ final class AnnotationItemHitTests: XCTestCase {
         let item = AnnotationItem(
             type: .circle,
             bounds: CGRect(x: 0, y: 0, width: 100, height: 50),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         XCTAssertTrue(item.containsPoint(CGPoint(x: 50, y: 25)))
     }
@@ -41,7 +41,7 @@ final class AnnotationItemHitTests: XCTestCase {
         let item = AnnotationItem(
             type: .circle,
             bounds: CGRect(x: 0, y: 0, width: 100, height: 50),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         XCTAssertFalse(item.containsPoint(CGPoint(x: 90, y: 45)))
     }
@@ -51,7 +51,7 @@ final class AnnotationItemHitTests: XCTestCase {
         let item = AnnotationItem(
             type: .arrow(geo),
             bounds: CGRect(x: 0, y: 0, width: 100, height: 10),
-            properties: AnnotationProperties(strokeWidth: 4),
+            properties: AnnotationProperties(strokeWidth: 4)
         )
         XCTAssertTrue(item.containsPoint(CGPoint(x: 50, y: 2)))
     }
@@ -61,7 +61,7 @@ final class AnnotationItemHitTests: XCTestCase {
         let item = AnnotationItem(
             type: .arrow(geo),
             bounds: CGRect(x: 0, y: 0, width: 100, height: 10),
-            properties: AnnotationProperties(strokeWidth: 4),
+            properties: AnnotationProperties(strokeWidth: 4)
         )
         XCTAssertFalse(item.containsPoint(CGPoint(x: 50, y: 50)))
     }
@@ -70,7 +70,7 @@ final class AnnotationItemHitTests: XCTestCase {
         let item = AnnotationItem(
             type: .line(start: CGPoint(x: 0, y: 0), end: CGPoint(x: 100, y: 100)),
             bounds: CGRect(x: 0, y: 0, width: 100, height: 100),
-            properties: AnnotationProperties(strokeWidth: 2),
+            properties: AnnotationProperties(strokeWidth: 2)
         )
         XCTAssertTrue(item.containsPoint(CGPoint(x: 50, y: 52)))
     }
@@ -79,7 +79,7 @@ final class AnnotationItemHitTests: XCTestCase {
         let item = AnnotationItem(
             type: .line(start: CGPoint(x: 0, y: 0), end: CGPoint(x: 100, y: 100)),
             bounds: CGRect(x: 0, y: 0, width: 100, height: 100),
-            properties: AnnotationProperties(strokeWidth: 2),
+            properties: AnnotationProperties(strokeWidth: 2)
         )
         XCTAssertFalse(item.containsPoint(CGPoint(x: 50, y: 70)))
     }
@@ -88,7 +88,7 @@ final class AnnotationItemHitTests: XCTestCase {
         let item = AnnotationItem(
             type: .path([CGPoint(x: 0, y: 0), CGPoint(x: 50, y: 50), CGPoint(x: 100, y: 0)]),
             bounds: CGRect(x: 0, y: 0, width: 100, height: 50),
-            properties: AnnotationProperties(strokeWidth: 4),
+            properties: AnnotationProperties(strokeWidth: 4)
         )
         XCTAssertTrue(item.containsPoint(CGPoint(x: 50, y: 48)))
     }
@@ -97,7 +97,7 @@ final class AnnotationItemHitTests: XCTestCase {
         let item = AnnotationItem(
             type: .highlight([CGPoint(x: 0, y: 0), CGPoint(x: 100, y: 0)]),
             bounds: CGRect(x: 0, y: 0, width: 100, height: 10),
-            properties: AnnotationProperties(strokeWidth: 4),
+            properties: AnnotationProperties(strokeWidth: 4)
         )
         XCTAssertTrue(item.containsPoint(CGPoint(x: 50, y: 18)))
     }
@@ -106,7 +106,7 @@ final class AnnotationItemHitTests: XCTestCase {
         let item = AnnotationItem(
             type: .text("Hello"),
             bounds: CGRect(x: 10, y: 10, width: 80, height: 20),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         XCTAssertTrue(item.containsPoint(CGPoint(x: 50, y: 20)))
     }
@@ -115,7 +115,7 @@ final class AnnotationItemHitTests: XCTestCase {
         let item = AnnotationItem(
             type: .counter(1),
             bounds: CGRect(x: 40, y: 40, width: 20, height: 20),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         XCTAssertTrue(item.containsPoint(CGPoint(x: 50, y: 50)))
     }
@@ -124,7 +124,7 @@ final class AnnotationItemHitTests: XCTestCase {
         let item = AnnotationItem(
             type: .counter(1),
             bounds: CGRect(x: 40, y: 40, width: 20, height: 20),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         XCTAssertFalse(item.containsPoint(CGPoint(x: 100, y: 100)))
     }
@@ -133,7 +133,7 @@ final class AnnotationItemHitTests: XCTestCase {
         let item = AnnotationItem(
             type: .magnify(sourceCenter: CGPoint(x: 50, y: 50), showsSourceCircle: false),
             bounds: CGRect(x: 0, y: 0, width: 100, height: 100),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
 
         XCTAssertTrue(item.containsPoint(CGPoint(x: 50, y: 50)))
@@ -144,7 +144,7 @@ final class AnnotationItemHitTests: XCTestCase {
         let item = AnnotationItem(
             type: .magnify(sourceCenter: CGPoint(x: 20, y: 20), showsSourceCircle: true),
             bounds: CGRect(x: 100, y: 100, width: 100, height: 100),
-            properties: AnnotationProperties(magnification: 2),
+            properties: AnnotationProperties(magnification: 2)
         )
 
         XCTAssertTrue(item.containsPoint(CGPoint(x: 20, y: 20)))
@@ -164,7 +164,7 @@ final class AnnotationItemHitTests: XCTestCase {
         let item = AnnotationItem(
             type: .path([CGPoint(x: 10, y: 10), CGPoint(x: 10, y: 10)]),
             bounds: CGRect(x: 10, y: 10, width: 0, height: 0),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         let rb = item.resizeBounds
         XCTAssertGreaterThanOrEqual(rb.width, 1)
@@ -175,7 +175,7 @@ final class AnnotationItemHitTests: XCTestCase {
         let item = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 0, y: 0, width: 100, height: 50),
-            properties: AnnotationProperties(strokeWidth: 4),
+            properties: AnnotationProperties(strokeWidth: 4)
         )
         let sb = item.selectionBounds
         XCTAssertGreaterThan(sb.width, item.resizeBounds.width)
@@ -188,7 +188,7 @@ final class AnnotationItemHitTests: XCTestCase {
         let item = AnnotationItem(
             type: .path([CGPoint(x: 0, y: 0)]),
             bounds: CGRect.zero,
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         XCTAssertFalse(item.supportsResize)
     }
@@ -197,7 +197,7 @@ final class AnnotationItemHitTests: XCTestCase {
         let item = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 0, y: 0, width: 10, height: 10),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         XCTAssertTrue(item.supportsResize)
     }
@@ -208,7 +208,7 @@ final class AnnotationItemHitTests: XCTestCase {
         let resized = DrawingCanvasNSView.resizedBounds(
             from: original,
             handle: .right,
-            to: CGPoint(x: 130, y: 60),
+            to: CGPoint(x: 130, y: 60)
         )
 
         XCTAssertEqual(resized, CGRect(x: 20, y: 30, width: 110, height: 60))

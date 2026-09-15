@@ -12,21 +12,21 @@
         func testClickGeometry_startsWithImpactAndRipple() {
             let start = VideoEditorPointerPressEffectStyle.geometry(
                 progress: 0,
-                referenceHeight: 1080,
+                referenceHeight: 1080
             )
             XCTAssertGreaterThan(start.impactOpacity, 0)
             XCTAssertEqual(start.rippleOpacity, 0, accuracy: 0.001)
 
             let mid = VideoEditorPointerPressEffectStyle.geometry(
                 progress: 0.5,
-                referenceHeight: 1080,
+                referenceHeight: 1080
             )
             XCTAssertGreaterThan(mid.rippleRadius, start.rippleRadius)
         }
 
         func testKeystrokeCaptionTimeline_popInAndFadeOut() {
             let timeline = VideoEditorKeystrokeCaptionTimeline(events: [
-                RecordedKeystrokeEvent(time: 1, modifiers: ["⌘"], key: "K"),
+                RecordedKeystrokeEvent(time: 1, modifiers: ["⌘"], key: "K")
             ])
             XCTAssertNil(timeline.frame(at: 0.5))
             XCTAssertNotNil(timeline.frame(at: 1.05))
@@ -41,8 +41,8 @@
                 mouseSamples: [],
                 pointerSynthesized: true,
                 keystrokes: [
-                    RecordedKeystrokeEvent(time: 0.5, modifiers: ["⌘", "⇧"], key: "S"),
-                ],
+                    RecordedKeystrokeEvent(time: 0.5, modifiers: ["⌘", "⇧"], key: "S")
+                ]
             )
             let data = try JSONEncoder().encode(metadata)
             let decoded = try JSONDecoder().decode(RecordingMetadata.self, from: data)

@@ -28,7 +28,7 @@ final class CueDeepLinkHandlerTests: XCTestCase {
             ("cue://open/video-editor", .openVideoEditor),
             ("cue://open/history", .openHistory),
             ("cue://show/shortcuts", .showShortcuts),
-            ("cue://settings", .openSettings(nil)),
+            ("cue://settings", .openSettings(nil))
         ]
 
         for (urlString, expectedAction) in cases {
@@ -41,7 +41,7 @@ final class CueDeepLinkHandlerTests: XCTestCase {
         let aliases = [
             "cue://combine",
             "cue://combine-images",
-            "cue://open-combine",
+            "cue://open-combine"
         ]
 
         for urlString in aliases {
@@ -55,7 +55,7 @@ final class CueDeepLinkHandlerTests: XCTestCase {
         components.queryItems = [
             URLQueryItem(name: "file", value: "/tmp/first image.png"),
             URLQueryItem(name: "file", value: "file:///tmp/second.jpg"),
-            URLQueryItem(name: "ignored", value: "/tmp/not-used.png"),
+            URLQueryItem(name: "ignored", value: "/tmp/not-used.png")
         ]
 
         let url = try XCTUnwrap(components.url)
@@ -63,8 +63,8 @@ final class CueDeepLinkHandlerTests: XCTestCase {
             CueDeepLinkAction(url: url),
             .openCombine([
                 URL(fileURLWithPath: "/tmp/first image.png"),
-                URL(fileURLWithPath: "/tmp/second.jpg"),
-            ]),
+                URL(fileURLWithPath: "/tmp/second.jpg")
+            ])
         )
     }
 
@@ -73,7 +73,7 @@ final class CueDeepLinkHandlerTests: XCTestCase {
             "cue://capture/window",
             "cue://application-capture",
             "cue://window-capture",
-            "cue://screenshot/window",
+            "cue://screenshot/window"
         ]
 
         for urlString in aliases {
@@ -87,7 +87,7 @@ final class CueDeepLinkHandlerTests: XCTestCase {
             "cue://record/window",
             "cue://application-recording",
             "cue://window-recording",
-            "cue://recording/window",
+            "cue://recording/window"
         ]
 
         for urlString in aliases {
@@ -107,7 +107,7 @@ final class CueDeepLinkHandlerTests: XCTestCase {
             ("shortcuts", .shortcuts),
             ("permissions", .advanced),
             ("uploads", .cloud),
-            ("advanced", .advanced),
+            ("advanced", .advanced)
         ]
 
         for (tabName, expectedTab) in cases {
@@ -130,7 +130,7 @@ final class CueDeepLinkHandlerTests: XCTestCase {
             "snapzy://settings",
             "snapzy://open/combine",
             "snapzy://capture/fullscreen",
-            "snapzy://settings/cloud",
+            "snapzy://settings/cloud"
         ]
 
         for urlString in urls {
@@ -145,7 +145,7 @@ final class CueDeepLinkHandlerTests: XCTestCase {
             "notinhas://settings",
             "notinhas://open/combine",
             "notinhas://capture/fullscreen",
-            "notinhas://settings/cloud",
+            "notinhas://settings/cloud"
         ]
 
         for urlString in urls {
@@ -160,7 +160,7 @@ final class CueDeepLinkHandlerTests: XCTestCase {
             "cue://",
             "cue://capture/unknown",
             "cue://record/stop",
-            "cue://open/unknown",
+            "cue://open/unknown"
         ]
 
         for urlString in urls {
@@ -202,11 +202,11 @@ final class CueDeepLinkHandlerTests: XCTestCase {
         #if CUE_VIDEO_MODULE
             XCTAssertTrue(
                 VideoModuleAvailability.isEnabled,
-                "Compiled video builds must keep video actions available",
+                "Compiled video builds must keep video actions available"
             )
             XCTAssertTrue(
                 VideoModuleMediaRouting.shouldDispatchVideoAction(),
-                "Routing gate must allow compiled video deep links",
+                "Routing gate must allow compiled video deep links"
             )
 
             let viewModel = ScreenCaptureViewModel()
@@ -214,7 +214,7 @@ final class CueDeepLinkHandlerTests: XCTestCase {
             let urls = [
                 "cue://record/screen",
                 "cue://record/application",
-                "cue://open/video-editor",
+                "cue://open/video-editor"
             ]
 
             for urlString in urls {
@@ -223,7 +223,7 @@ final class CueDeepLinkHandlerTests: XCTestCase {
                 handler.handle(url)
                 XCTAssertTrue(
                     VideoModuleMediaRouting.shouldDispatchVideoAction(),
-                    "Module must stay available after handling \(urlString)",
+                    "Module must stay available after handling \(urlString)"
                 )
             }
         #else
@@ -239,7 +239,7 @@ final class CueDeepLinkHandlerTests: XCTestCase {
 
     func testCaptureAreaQueryParsesGeometryDisplayAndAction() throws {
         let url = try XCTUnwrap(
-            URL(string: "cue://capture/area?x=10&y=20&width=300&height=200&display=2&action=copy"),
+            URL(string: "cue://capture/area?x=10&y=20&width=300&height=200&display=2&action=copy")
         )
         XCTAssertEqual(
             CueDeepLinkAction(url: url),
@@ -250,9 +250,9 @@ final class CueDeepLinkHandlerTests: XCTestCase {
                     width: 300,
                     height: 200,
                     display: 2,
-                    action: .copyFile,
-                ),
-            ),
+                    action: .copyFile
+                )
+            )
         )
     }
 
@@ -262,14 +262,14 @@ final class CueDeepLinkHandlerTests: XCTestCase {
             ("save", .save),
             ("annotate", .openAnnotate),
             ("upload", .uploadToCloud),
-            ("pin", .pinToScreen),
+            ("pin", .pinToScreen)
         ]
         for (action, expected) in cases {
             let url = try XCTUnwrap(URL(string: "cue://capture/area?action=\(action)"))
             XCTAssertEqual(
                 CueDeepLinkAction(url: url),
                 .captureArea(CaptureAreaDeepLinkQuery(action: expected)),
-                action,
+                action
             )
         }
     }
@@ -277,7 +277,7 @@ final class CueDeepLinkHandlerTests: XCTestCase {
     func testCaptureAreaQueryIgnoresUnknownActionAndIncompleteGeometry() throws {
         let url = try XCTUnwrap(URL(string: "cue://capture/area?x=1&width=100&action=nope"))
         let action = try XCTUnwrap(CueDeepLinkAction(url: url))
-        guard case .captureArea(let query) = action else {
+        guard case let .captureArea(query) = action else {
             return XCTFail("expected captureArea")
         }
         XCTAssertEqual(query.x, 1)
@@ -291,7 +291,7 @@ final class CueDeepLinkHandlerTests: XCTestCase {
         let url = try XCTUnwrap(URL(string: "cue://screenshot/area?action=annotate"))
         XCTAssertEqual(
             CueDeepLinkAction(url: url),
-            .captureArea(CaptureAreaDeepLinkQuery(action: .openAnnotate)),
+            .captureArea(CaptureAreaDeepLinkQuery(action: .openAnnotate))
         )
     }
 }

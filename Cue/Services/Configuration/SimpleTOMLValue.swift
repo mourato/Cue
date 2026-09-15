@@ -16,14 +16,14 @@ enum SimpleTOMLValue: Equatable {
     case table([String: SimpleTOMLValue])
 
     var stringValue: String? {
-        if case .string(let value) = self {
+        if case let .string(value) = self {
             return value
         }
         return nil
     }
 
     var boolValue: Bool? {
-        if case .bool(let value) = self {
+        if case let .bool(value) = self {
             return value
         }
         return nil
@@ -31,9 +31,9 @@ enum SimpleTOMLValue: Equatable {
 
     var intValue: Int? {
         switch self {
-        case .integer(let value):
+        case let .integer(value):
             value
-        case .double(let value) where value.rounded() == value:
+        case let .double(value) where value.rounded() == value:
             Int(value)
         default:
             nil
@@ -42,9 +42,9 @@ enum SimpleTOMLValue: Equatable {
 
     var doubleValue: Double? {
         switch self {
-        case .double(let value):
+        case let .double(value):
             value
-        case .integer(let value):
+        case let .integer(value):
             Double(value)
         default:
             nil
@@ -52,7 +52,7 @@ enum SimpleTOMLValue: Equatable {
     }
 
     var stringArrayValue: [String]? {
-        guard case .array(let values) = self else { return nil }
+        guard case let .array(values) = self else { return nil }
         var strings: [String] = []
         for value in values {
             guard let string = value.stringValue else { return nil }
@@ -74,7 +74,7 @@ struct SimpleTOMLDocument {
         var current = root
 
         for segment in path.dropLast() {
-            guard case .table(let next)? = current[segment] else { return nil }
+            guard case let .table(next)? = current[segment] else { return nil }
             current = next
         }
 
@@ -94,7 +94,7 @@ struct SimpleTOMLDocument {
     private static func set(
         _ value: SimpleTOMLValue,
         at path: ArraySlice<String>,
-        in table: inout [String: SimpleTOMLValue],
+        in table: inout [String: SimpleTOMLValue]
     ) throws {
         guard let head = path.first else { return }
         if path.count == 1 {
@@ -102,7 +102,7 @@ struct SimpleTOMLDocument {
             return
         }
 
-        var child: [String: SimpleTOMLValue] = if case .table(let existing)? = table[head] {
+        var child: [String: SimpleTOMLValue] = if case let .table(existing)? = table[head] {
             existing
         } else {
             [:]
@@ -114,12 +114,12 @@ struct SimpleTOMLDocument {
 
     private static func ensureTable(
         at path: ArraySlice<String>,
-        in table: inout [String: SimpleTOMLValue],
+        in table: inout [String: SimpleTOMLValue]
     ) throws {
         guard let head = path.first else { return }
 
         var child: [String: SimpleTOMLValue]
-        if case .table(let existing)? = table[head] {
+        if case let .table(existing)? = table[head] {
             child = existing
         } else if table[head] == nil {
             child = [:]
@@ -141,11 +141,11 @@ enum SimpleTOMLError: LocalizedError, Equatable {
 
     var errorDescription: String? {
         switch self {
-        case .invalidLine(let line, let text):
+        case let .invalidLine(line, text):
             "Invalid TOML at line \(line): \(text)"
-        case .invalidKey(let text):
+        case let .invalidKey(text):
             "Invalid TOML key: \(text)"
-        case .invalidValue(let line, let text):
+        case let .invalidValue(line, text):
             "Invalid TOML value at line \(line): \(text)"
         }
     }

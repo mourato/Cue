@@ -20,7 +20,7 @@ enum CounterToCueNoteMigration {
     /// counters remain.
     static func migrate(
         annotations: [AnnotationItem],
-        cueNotes: [CueVisualNote],
+        cueNotes: [CueVisualNote]
     ) -> Result {
         let hasCounters = annotations.contains { item in
             if case .counter = item.type {
@@ -45,7 +45,7 @@ enum CounterToCueNoteMigration {
                 target: .point(center),
                 color: rgba,
                 pinControlValue: AnnotationProperties.clampedControlValue(item.properties.strokeWidth),
-                creationOrder: nextCreationOrder,
+                creationOrder: nextCreationOrder
             )
             migratedNotes.append(note)
             nextCreationOrder += 1
@@ -63,7 +63,7 @@ enum CounterToCueNoteMigration {
         return Result(
             annotations: strippedAnnotations,
             cueNotes: notes,
-            didMigrate: true,
+            didMigrate: true
         )
     }
 }
@@ -73,7 +73,7 @@ extension AnnotateState {
     func migrateLegacyCountersToNotinhasIfNeeded() {
         let result = CounterToCueNoteMigration.migrate(
             annotations: annotations,
-            cueNotes: cueNotes,
+            cueNotes: cueNotes
         )
         guard result.didMigrate else { return }
         annotations = result.annotations

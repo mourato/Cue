@@ -30,7 +30,7 @@ struct CueNoteEditorPanelPlacement: Equatable {
         selectionBounds: CGRect,
         panelSize: CGSize,
         in containerBounds: CGRect,
-        margin: CGFloat = 12,
+        margin: CGFloat = 12
     ) -> CGPoint {
         if let origin {
             return origin
@@ -40,7 +40,7 @@ struct CueNoteEditorPanelPlacement: Equatable {
             forSelectionBounds: selectionBounds,
             panelSize: panelSize,
             in: containerBounds,
-            margin: margin,
+            margin: margin
         )
     }
 
@@ -48,14 +48,14 @@ struct CueNoteEditorPanelPlacement: Equatable {
         selectionBounds: CGRect,
         panelSize: CGSize,
         in containerBounds: CGRect,
-        margin: CGFloat = 12,
+        margin: CGFloat = 12
     ) {
         guard origin == nil else { return }
         origin = CueNoteGeometry.editorOrigin(
             forSelectionBounds: selectionBounds,
             panelSize: panelSize,
             in: containerBounds,
-            margin: margin,
+            margin: margin
         )
         recordReclampSizes(panelSize: panelSize, containerSize: containerBounds.size)
     }
@@ -63,7 +63,7 @@ struct CueNoteEditorPanelPlacement: Equatable {
     mutating func reclamp(
         panelSize: CGSize,
         in containerBounds: CGRect,
-        margin: CGFloat = 12,
+        margin: CGFloat = 12
     ) {
         guard let origin else { return }
         guard !isDragging else { return }
@@ -71,14 +71,15 @@ struct CueNoteEditorPanelPlacement: Equatable {
         if let lastReclampPanelSize,
            let lastReclampContainerSize,
            CueNoteGeometry.sizesAreEffectivelyEqual(lastReclampPanelSize, panelSize),
-           CueNoteGeometry.sizesAreEffectivelyEqual(lastReclampContainerSize, containerSize) {
+           CueNoteGeometry.sizesAreEffectivelyEqual(lastReclampContainerSize, containerSize)
+        {
             return
         }
         self.origin = CueNoteGeometry.clampedEditorPanelOrigin(
             origin,
             panelSize: panelSize,
             in: containerBounds,
-            margin: margin,
+            margin: margin
         )
         recordReclampSizes(panelSize: panelSize, containerSize: containerSize)
     }
@@ -87,19 +88,19 @@ struct CueNoteEditorPanelPlacement: Equatable {
         selectionBounds: CGRect,
         panelSize: CGSize,
         in containerBounds: CGRect,
-        margin: CGFloat = 12,
+        margin: CGFloat = 12
     ) -> CGPoint {
         ensureSeeded(
             selectionBounds: selectionBounds,
             panelSize: panelSize,
             in: containerBounds,
-            margin: margin,
+            margin: margin
         )
         return displayOrigin(
             selectionBounds: selectionBounds,
             panelSize: panelSize,
             in: containerBounds,
-            margin: margin,
+            margin: margin
         )
     }
 
@@ -107,20 +108,20 @@ struct CueNoteEditorPanelPlacement: Equatable {
         selectionBounds: CGRect,
         panelSize: CGSize,
         in containerBounds: CGRect,
-        margin: CGFloat = 12,
+        margin: CGFloat = 12
     ) {
         if dragAnchorOrigin == nil {
             ensureSeeded(
                 selectionBounds: selectionBounds,
                 panelSize: panelSize,
                 in: containerBounds,
-                margin: margin,
+                margin: margin
             )
             dragAnchorOrigin = displayOrigin(
                 selectionBounds: selectionBounds,
                 panelSize: panelSize,
                 in: containerBounds,
-                margin: margin,
+                margin: margin
             )
         }
     }
@@ -129,7 +130,7 @@ struct CueNoteEditorPanelPlacement: Equatable {
         translation: CGSize,
         panelSize: CGSize,
         in containerBounds: CGRect,
-        margin: CGFloat = 12,
+        margin: CGFloat = 12
     ) {
         guard let dragAnchorOrigin else { return }
         applyDrag(
@@ -137,7 +138,7 @@ struct CueNoteEditorPanelPlacement: Equatable {
             translation: translation,
             panelSize: panelSize,
             in: containerBounds,
-            margin: margin,
+            margin: margin
         )
     }
 
@@ -150,17 +151,17 @@ struct CueNoteEditorPanelPlacement: Equatable {
         translation: CGSize,
         panelSize: CGSize,
         in containerBounds: CGRect,
-        margin: CGFloat = 12,
+        margin: CGFloat = 12
     ) {
         let proposed = CGPoint(
             x: startOrigin.x + translation.width,
-            y: startOrigin.y + translation.height,
+            y: startOrigin.y + translation.height
         )
         origin = CueNoteGeometry.clampedEditorPanelOrigin(
             proposed,
             panelSize: panelSize,
             in: containerBounds,
-            margin: margin,
+            margin: margin
         )
         recordReclampSizes(panelSize: panelSize, containerSize: containerBounds.size)
     }

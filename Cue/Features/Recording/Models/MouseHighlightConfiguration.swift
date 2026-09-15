@@ -42,7 +42,7 @@
         static let defaultHighlightOpacity: Double = 0.5
 
         static let defaultHighlightColor = NSColor(
-            displayP3Red: 0.068, green: 0.222, blue: 1.0, alpha: 1.0,
+            displayP3Red: 0.068, green: 0.222, blue: 1.0, alpha: 1.0
         )
 
         // MARK: - Init from UserDefaults
@@ -68,7 +68,8 @@
                 ?? Self.defaultHighlightOpacity
 
             if let colorData = ud.data(forKey: PreferencesKeys.mouseHighlightColor),
-               let archived = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: colorData) {
+               let archived = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: colorData)
+            {
                 highlightColor = archived
             } else {
                 highlightColor = Self.defaultHighlightColor

@@ -34,7 +34,7 @@ enum CaptureSelectionChromeAppearance {
                 strokeBlue: 0,
                 strokeAlpha: 0.92,
                 shadowOpacity: 0.35,
-                borderWidth: CaptureSelectionChromeMetrics.continuousBorderWidth,
+                borderWidth: CaptureSelectionChromeMetrics.continuousBorderWidth
             )
         }
 
@@ -44,14 +44,14 @@ enum CaptureSelectionChromeAppearance {
             strokeBlue: 1,
             strokeAlpha: 1,
             shadowOpacity: 0.5,
-            borderWidth: CaptureSelectionChromeMetrics.continuousBorderWidth,
+            borderWidth: CaptureSelectionChromeMetrics.continuousBorderWidth
         )
     }
 
     /// Samples average luma from an RGBA buffer in 0...1 coordinates.
     static func averageLuma(
         samples: [(r: CGFloat, g: CGFloat, b: CGFloat)],
-        fallback: CGFloat = CaptureSelectionChromeAppearanceContext.fallbackLuma,
+        fallback: CGFloat = CaptureSelectionChromeAppearanceContext.fallbackLuma
     ) -> CGFloat {
         guard !samples.isEmpty else { return fallback }
         let total = samples.reduce(CGFloat.zero) { partial, sample in

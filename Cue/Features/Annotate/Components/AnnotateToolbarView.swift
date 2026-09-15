@@ -72,8 +72,8 @@ struct AnnotateToolbarView: View {
                     if !$0 {
                         state.cutoutErrorMessage = nil
                     }
-                },
-            ),
+                }
+            )
         ) {
             Button(L10n.Common.ok, role: .cancel) {}
         } message: {
@@ -85,13 +85,13 @@ struct AnnotateToolbarView: View {
         let sidebarTitle = L10n.AnnotateUI.toggleSidebar
         let sidebarKeys = AnnotateOverlayTooltipKeys.actionKeys(
             for: .toggleSidebar,
-            manager: annotateShortcutManager,
+            manager: annotateShortcutManager
         )
 
         return ToolbarButton(
             icon: "sidebar.left",
             isSelected: state.leftDock == .background,
-            highlightColor: .blue,
+            highlightColor: .blue
         ) {
             state.toggleSidebarVisibility()
         }
@@ -121,7 +121,7 @@ struct AnnotateToolbarView: View {
             let cropKeys = AnnotateOverlayTooltipKeys.toolKeys(for: .crop, manager: annotateShortcutManager)
             ToolbarButton(
                 icon: "crop",
-                isSelected: state.selectedTool == .crop,
+                isSelected: state.selectedTool == .crop
             ) {
                 state.beginCropInteraction()
             }
@@ -176,7 +176,7 @@ struct AnnotateToolbarView: View {
         ToolbarButton(
             icon: state.isCutoutProcessing ? "hourglass" : "wand.and.stars",
             isSelected: state.isCutoutApplied,
-            highlightColor: .blue,
+            highlightColor: .blue
         ) {
             state.toggleBackgroundCutout()
         }
@@ -187,14 +187,14 @@ struct AnnotateToolbarView: View {
                 ? L10n.AnnotateUI.backgroundRemovedClickToRestore
                 : (backgroundCutoutAutoCropEnabled
                     ? L10n.AnnotateUI.removeBackgroundAutoCropsWhenSafe
-                    : L10n.AnnotateUI.removeBackgroundAutoCropDisabledInSettings),
+                    : L10n.AnnotateUI.removeBackgroundAutoCropDisabledInSettings)
         )
         .accessibilityLabel(
             state.isCutoutApplied
                 ? L10n.AnnotateUI.backgroundRemovedClickToRestore
                 : (backgroundCutoutAutoCropEnabled
                     ? L10n.AnnotateUI.removeBackgroundAutoCropsWhenSafe
-                    : L10n.AnnotateUI.removeBackgroundAutoCropDisabledInSettings),
+                    : L10n.AnnotateUI.removeBackgroundAutoCropDisabledInSettings)
         )
     }
 
@@ -204,7 +204,7 @@ struct AnnotateToolbarView: View {
         let accessibilityLabel = accessibilityLabel(for: tool, title: title, keys: keys)
         return ToolbarButton(
             icon: tool.icon,
-            isSelected: state.selectedTool == tool,
+            isSelected: state.selectedTool == tool
         ) {
             state.activateTool(tool)
         }
@@ -212,7 +212,7 @@ struct AnnotateToolbarView: View {
             title,
             keys: keys,
             secondary: tool == .cueNote ? CueL10n.noteToolGestureHint : nil,
-            edge: .below,
+            edge: .below
         )
         .accessibilityLabel(accessibilityLabel)
         .disabled(state.editorMode == .mockup && tool != .selection)
@@ -332,7 +332,7 @@ struct AnnotateToolbarView: View {
 
     private func accessibilityTitle(_ title: String, keys: [String]) -> String {
         guard !keys.isEmpty else { return title }
-        let shortcut = keys.joined(separator: "")
+        let shortcut = keys.joined()
         return L10n.Common.withShortcut(title, shortcut)
     }
 

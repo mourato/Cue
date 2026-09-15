@@ -53,12 +53,12 @@ struct ShortcutsView: View {
                 ShortcutGroup(title: captureSectionTitle, shortcuts: [
                     ShortcutItem(keys: "⇧⌘3", action: captureFullscreenTitle),
                     ShortcutItem(keys: "⇧⌘4", action: captureAreaTitle),
-                    ShortcutItem(keys: "⇧⌘2", action: captureTextOCRTitle),
+                    ShortcutItem(keys: "⇧⌘2", action: captureTextOCRTitle)
                 ])
 
                 if videoModuleEnabled {
                     ShortcutGroup(title: recordingSectionTitle, shortcuts: [
-                        ShortcutItem(keys: "⇧⌘5", action: recordScreenTitle),
+                        ShortcutItem(keys: "⇧⌘5", action: recordScreenTitle)
                     ])
                 }
 
@@ -98,7 +98,7 @@ struct ShortcutsView: View {
                                         isCheckingConflict && !reduceMotion
                                             ? .linear(duration: 0.8).repeatForever(autoreverses: false)
                                             : nil,
-                                        value: isCheckingConflict,
+                                        value: isCheckingConflict
                                     )
                             }
                             .buttonStyle(.plain)
@@ -119,19 +119,19 @@ struct ShortcutsView: View {
                     .padding(.vertical, 10)
                     .background(
                         RoundedRectangle(cornerRadius: 10)
-                            .fill(conflictColor.opacity(conflictCardHighlight ? 0.18 : 0.08)),
+                            .fill(conflictColor.opacity(conflictCardHighlight ? 0.18 : 0.08))
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
                             .stroke(
                                 conflictColor.opacity(conflictCardHighlight ? 0.6 : 0.25),
-                                lineWidth: conflictCardHighlight ? 1.5 : 1,
-                            ),
+                                lineWidth: conflictCardHighlight ? 1.5 : 1
+                            )
                     )
                     .scaleEffect(reduceMotion || !conflictCardHighlight ? 1 : 1.02)
                     .animation(
                         reduceMotion ? nil : .easeInOut(duration: 0.25),
-                        value: conflictCardHighlight,
+                        value: conflictCardHighlight
                     )
                 }
                 .buttonStyle(.plain)
@@ -154,11 +154,11 @@ struct ShortcutsView: View {
                 .padding(.vertical, 10)
                 .background(
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(successColor.opacity(0.08)),
+                        .fill(successColor.opacity(0.08))
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
-                        .stroke(successColor.opacity(0.25), lineWidth: 1),
+                        .stroke(successColor.opacity(0.25), lineWidth: 1)
                 )
                 .frame(maxWidth: 380)
                 .padding(.top, 12)
@@ -197,7 +197,7 @@ struct ShortcutsView: View {
                 .buttonStyle(
                     hasConflict
                         ? VSDesignSystem.PrimaryButtonStyle(isDisabled: true)
-                        : VSDesignSystem.PrimaryButtonStyle(),
+                        : VSDesignSystem.PrimaryButtonStyle()
                 )
                 .offset(x: shakeOffset)
                 .keyboardShortcut(.return, modifiers: [])
@@ -219,7 +219,7 @@ struct ShortcutsView: View {
 
     private var toolsShortcuts: [ShortcutItem] {
         var shortcuts = [
-            ShortcutItem(keys: "⇧⌘A", action: openAnnotateTitle),
+            ShortcutItem(keys: "⇧⌘A", action: openAnnotateTitle)
         ]
         if videoModuleEnabled {
             shortcuts.append(ShortcutItem(keys: "⇧⌘E", action: openVideoEditorTitle))
@@ -261,7 +261,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "onboarding.shortcuts.title",
             defaultValue: "Set as default screenshot tool?",
-            comment: "Onboarding shortcuts step title",
+            comment: "Onboarding shortcuts step title"
         )
     }
 
@@ -269,7 +269,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "onboarding.shortcuts.subtitle",
             defaultValue: "Assign system shortcuts to Cue for quick access.",
-            comment: "Onboarding shortcuts step subtitle",
+            comment: "Onboarding shortcuts step subtitle"
         )
     }
 
@@ -277,7 +277,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "shortcut-overlay.capture-section",
             defaultValue: "Capture",
-            comment: "Capture section title in shortcut overlay",
+            comment: "Capture section title in shortcut overlay"
         )
     }
 
@@ -285,7 +285,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "action.capture-fullscreen",
             defaultValue: "Capture Fullscreen",
-            comment: "Action label for fullscreen screenshot",
+            comment: "Action label for fullscreen screenshot"
         )
     }
 
@@ -293,7 +293,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "action.capture-area",
             defaultValue: "Capture Area",
-            comment: "Action label for area screenshot",
+            comment: "Action label for area screenshot"
         )
     }
 
@@ -301,7 +301,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "action.capture-text-ocr",
             defaultValue: "Capture Text (OCR)",
-            comment: "Action label for OCR screenshot",
+            comment: "Action label for OCR screenshot"
         )
     }
 
@@ -309,7 +309,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "onboarding.shortcuts.section-recording",
             defaultValue: "Recording",
-            comment: "Shortcut group title in onboarding",
+            comment: "Shortcut group title in onboarding"
         )
     }
 
@@ -317,7 +317,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "menu.record-screen",
             defaultValue: "Record Screen",
-            comment: "Menu action title for starting screen recording",
+            comment: "Menu action title for starting screen recording"
         )
     }
 
@@ -325,7 +325,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "onboarding.shortcuts.section-tools",
             defaultValue: "Tools",
-            comment: "Shortcut group title in onboarding",
+            comment: "Shortcut group title in onboarding"
         )
     }
 
@@ -333,7 +333,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "action.open-annotate",
             defaultValue: "Open Annotate",
-            comment: "Action label for opening the image annotator",
+            comment: "Action label for opening the image annotator"
         )
     }
 
@@ -341,7 +341,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "action.open-video-editor",
             defaultValue: "Open Video Editor",
-            comment: "Action label for opening the video editor",
+            comment: "Action label for opening the video editor"
         )
     }
 
@@ -349,7 +349,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "onboarding.shortcuts.resolve-overlap",
             defaultValue: "Resolve macOS shortcut overlap",
-            comment: "Warning title when system screenshot shortcuts overlap with Cue shortcuts",
+            comment: "Warning title when system screenshot shortcuts overlap with Cue shortcuts"
         )
     }
 
@@ -357,7 +357,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "onboarding.shortcuts.open-settings",
             defaultValue: "Open Settings →",
-            comment: "Action hint to open system settings",
+            comment: "Action hint to open system settings"
         )
     }
 
@@ -365,7 +365,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "onboarding.shortcuts.guide-step-1",
             defaultValue: "Open System Settings → Keyboard → Keyboard Shortcuts",
-            comment: "Step 1 in onboarding shortcut conflict resolution guide",
+            comment: "Step 1 in onboarding shortcut conflict resolution guide"
         )
     }
 
@@ -373,7 +373,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "onboarding.shortcuts.guide-step-2",
             defaultValue: "Select Screenshots from the sidebar",
-            comment: "Step 2 in onboarding shortcut conflict resolution guide",
+            comment: "Step 2 in onboarding shortcut conflict resolution guide"
         )
     }
 
@@ -381,7 +381,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "onboarding.shortcuts.guide-step-3",
             defaultValue: "Uncheck the macOS screenshot shortcuts that overlap with the Cue shortcuts you want to keep on",
-            comment: "Step 3 in onboarding shortcut conflict resolution guide",
+            comment: "Step 3 in onboarding shortcut conflict resolution guide"
         )
     }
 
@@ -389,7 +389,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "onboarding.shortcuts.no-conflict",
             defaultValue: "No overlapping macOS screenshot shortcuts detected — ready to go!",
-            comment: "Success message when no system shortcut conflict exists",
+            comment: "Success message when no system shortcut conflict exists"
         )
     }
 
@@ -397,7 +397,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "onboarding.shortcuts.customize-hint",
             defaultValue: "You can customize or turn off shortcuts anytime in Preferences → Shortcuts.",
-            comment: "Hint text below shortcut setup card",
+            comment: "Hint text below shortcut setup card"
         )
     }
 
@@ -405,7 +405,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "onboarding.shortcuts.no-thanks",
             defaultValue: "No, thanks",
-            comment: "Secondary decline button on shortcut setup screen",
+            comment: "Secondary decline button on shortcut setup screen"
         )
     }
 
@@ -413,7 +413,7 @@ struct ShortcutsView: View {
         onboardingLocalization.string(
             "onboarding.shortcuts.enable",
             defaultValue: "Yes, enable shortcuts",
-            comment: "Primary accept button on shortcut setup screen",
+            comment: "Primary accept button on shortcut setup screen"
         )
     }
 
@@ -493,11 +493,11 @@ private struct ShortcutGroup: View {
             }
             .background(
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(VSDesignSystem.Colors.cardFill),
+                    .fill(VSDesignSystem.Colors.cardFill)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
-                    .stroke(VSDesignSystem.Colors.cardStroke, lineWidth: 1),
+                    .stroke(VSDesignSystem.Colors.cardStroke, lineWidth: 1)
             )
         }
     }
@@ -520,11 +520,11 @@ private struct ShortcutRow: View {
                 .padding(.horizontal, 6)
                 .background(
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(VSDesignSystem.Colors.secondaryButtonFill),
+                        .fill(VSDesignSystem.Colors.secondaryButtonFill)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 6)
-                        .stroke(VSDesignSystem.Colors.cardStroke, lineWidth: 1),
+                        .stroke(VSDesignSystem.Colors.cardStroke, lineWidth: 1)
                 )
 
             // Action label
@@ -553,7 +553,7 @@ private struct GuideStepRow: View {
                 .frame(width: 16, height: 16)
                 .background(
                     Circle()
-                        .fill(FeedbackStyle(tone: .warning).iconColor.opacity(0.15)),
+                        .fill(FeedbackStyle(tone: .warning).iconColor.opacity(0.15))
                 )
 
             Text(text)

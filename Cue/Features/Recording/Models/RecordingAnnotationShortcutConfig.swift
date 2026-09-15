@@ -60,13 +60,13 @@
 
         private init() {
             let storedModifier = UserDefaults.standard.string(
-                forKey: PreferencesKeys.annotationShortcutModifier,
+                forKey: PreferencesKeys.annotationShortcutModifier
             )
             modifier = storedModifier.flatMap { AnnotationShortcutModifier(rawValue: $0) }
                 ?? Self.defaultModifier
 
             let storedDuration = UserDefaults.standard.double(
-                forKey: PreferencesKeys.annotationShortcutHoldDuration,
+                forKey: PreferencesKeys.annotationShortcutHoldDuration
             )
             let raw = storedDuration > 0 ? storedDuration : Self.defaultHoldDuration
             holdDuration = min(max(raw, Self.minHoldDuration), Self.maxHoldDuration)

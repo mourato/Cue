@@ -95,7 +95,7 @@
                     .fill(blockFillColor)
                     .overlay(
                         RoundedRectangle(cornerRadius: 6)
-                            .strokeBorder(isSelected ? ZoomColors.selected : Color.clear, lineWidth: 2),
+                            .strokeBorder(isSelected ? ZoomColors.selected : Color.clear, lineWidth: 2)
                     )
                     .shadow(color: isSelected ? ZoomColors.primary.opacity(0.35) : .clear, radius: 3, y: 1)
 
@@ -197,7 +197,7 @@
             } label: {
                 Label(
                     segment.isEnabled ? L10n.VideoEditor.disableZoom : L10n.VideoEditor.enableZoom,
-                    systemImage: segment.isEnabled ? "eye.slash" : "eye",
+                    systemImage: segment.isEnabled ? "eye.slash" : "eye"
                 )
             }
 
@@ -292,7 +292,7 @@
             onSelect: {},
             onStartDrag: { _ in },
             onEndDrag: { _ in },
-            onPositionDrag: { _ in },
+            onPositionDrag: { _ in }
         )
         .frame(width: 400, height: 40, alignment: .leading)
         .padding()

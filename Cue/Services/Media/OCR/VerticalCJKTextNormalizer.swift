@@ -138,7 +138,7 @@ enum VerticalCJKTextNormalizer {
             bitsPerComponent: 8,
             bytesPerRow: 0,
             space: CGColorSpaceCreateDeviceRGB(),
-            bitmapInfo: VerticalCJKBitmapFormat.rgbaBitmapInfo,
+            bitmapInfo: VerticalCJKBitmapFormat.rgbaBitmapInfo
         )
     }
 

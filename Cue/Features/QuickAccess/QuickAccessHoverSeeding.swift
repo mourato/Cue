@@ -22,7 +22,7 @@ enum QuickAccessHoverSeeding {
     @MainActor
     static func postSyntheticMouseMoved(
         at location: NSPoint = NSEvent.mouseLocation,
-        windowNumber: Int = 0,
+        windowNumber: Int = 0
     ) {
         guard let event = NSEvent.mouseEvent(
             with: .mouseMoved,
@@ -33,7 +33,7 @@ enum QuickAccessHoverSeeding {
             context: nil,
             eventNumber: 0,
             clickCount: 0,
-            pressure: 0,
+            pressure: 0
         ) else { return }
 
         NSApp.postEvent(event, atStart: false)

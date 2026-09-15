@@ -11,7 +11,7 @@ final class CueUploadImageEncoderTests: XCTestCase {
             optimizeImages: true,
             imageFormat: .png,
             maximumDimension: 2048,
-            jpegQuality: 0.9,
+            jpegQuality: 0.9
         )
 
         let encoded = try CueUploadImageEncoder.encode(imageData: imageData, settings: settings)
@@ -29,7 +29,7 @@ final class CueUploadImageEncoderTests: XCTestCase {
             optimizeImages: true,
             imageFormat: .jpeg,
             maximumDimension: 2048,
-            jpegQuality: 0.73,
+            jpegQuality: 0.73
         )
 
         let encoded = try CueUploadImageEncoder.encode(imageData: imageData, settings: settings)
@@ -45,7 +45,7 @@ final class CueUploadImageEncoderTests: XCTestCase {
             optimizeImages: false,
             imageFormat: .jpeg,
             maximumDimension: 512,
-            jpegQuality: 0.5,
+            jpegQuality: 0.5
         )
 
         let encoded = try CueUploadImageEncoder.encode(imageData: imageData, settings: settings)
@@ -68,7 +68,7 @@ final class CueUploadImageEncoderTests: XCTestCase {
             optimizeImages: true,
             imageFormat: .webp,
             maximumDimension: 2048,
-            jpegQuality: 0.9,
+            jpegQuality: 0.9
         )
         let prepared = try await CueUploadImageEncoder.prepare(fileURL: sourceURL, settings: settings)
         defer { prepared.cleanup() }
@@ -77,7 +77,7 @@ final class CueUploadImageEncoderTests: XCTestCase {
         XCTAssertNotEqual(prepared.url, sourceURL)
         XCTAssertEqual(
             prepared.url.deletingPathExtension().lastPathComponent,
-            sourceURL.deletingPathExtension().lastPathComponent,
+            sourceURL.deletingPathExtension().lastPathComponent
         )
         XCTAssertEqual(prepared.url.pathExtension, "webp")
         XCTAssertEqual(try Data(contentsOf: sourceURL), originalData)
@@ -97,7 +97,7 @@ final class CueUploadImageEncoderTests: XCTestCase {
             optimizeImages: true,
             imageFormat: .webp,
             maximumDimension: 2048,
-            jpegQuality: 0.9,
+            jpegQuality: 0.9
         )
         let encoded = try CueUploadImageEncoder.encode(fileURL: sourceURL, settings: settings)
 
@@ -117,7 +117,7 @@ final class CueUploadImageEncoderTests: XCTestCase {
             optimizeImages: true,
             imageFormat: .webp,
             maximumDimension: 2048,
-            jpegQuality: 0.9,
+            jpegQuality: 0.9
         )
         let encoded = try CueUploadImageEncoder.encode(fileURL: sourceURL, settings: settings)
 
@@ -140,8 +140,8 @@ final class CueUploadImageEncoderTests: XCTestCase {
                 colorSpaceName: .deviceRGB,
                 bitmapFormat: [],
                 bytesPerRow: 0,
-                bitsPerPixel: 0,
-            ),
+                bitsPerPixel: 0
+            )
         )
         image.addRepresentation(representation)
         return image

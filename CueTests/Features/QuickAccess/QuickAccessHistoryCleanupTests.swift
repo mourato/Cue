@@ -55,7 +55,7 @@ final class QuickAccessHistoryCleanupTests: XCTestCase {
 
     private func waitUntil(
         timeout: TimeInterval = 1.0,
-        condition: @escaping @MainActor () -> Bool,
+        condition: @escaping @MainActor () -> Bool
     ) async -> Bool {
         let deadline = Date().addingTimeInterval(timeout)
         while Date() < deadline {
@@ -74,20 +74,20 @@ final class QuickAccessHistoryCleanupTests: XCTestCase {
         CaptureHistoryStore.shared.addCapture(url: fileURL, captureType: .screenshot)
         XCTAssertTrue(
             CaptureHistoryStore.shared.hasRecord(forFilePath: fileURL.path),
-            "History record should exist before delete",
+            "History record should exist before delete"
         )
 
         await QuickAccessManager.shared.addScreenshot(url: fileURL)
         let item = try XCTUnwrap(
             QuickAccessManager.shared.items.first { $0.url == fileURL },
-            "Quick Access item should have been added",
+            "Quick Access item should have been added"
         )
 
         QuickAccessManager.shared.deleteItem(id: item.id)
 
         XCTAssertFalse(
             CaptureHistoryStore.shared.hasRecord(forFilePath: fileURL.path),
-            "History record should be removed after explicit delete",
+            "History record should be removed after explicit delete"
         )
     }
 
@@ -96,20 +96,20 @@ final class QuickAccessHistoryCleanupTests: XCTestCase {
         CaptureHistoryStore.shared.addCapture(url: fileURL, captureType: .screenshot)
         XCTAssertTrue(
             CaptureHistoryStore.shared.hasRecord(forFilePath: fileURL.path),
-            "History record should exist before dismiss",
+            "History record should exist before dismiss"
         )
 
         await QuickAccessManager.shared.addScreenshot(url: fileURL)
         let item = try XCTUnwrap(
             QuickAccessManager.shared.items.first { $0.url == fileURL },
-            "Quick Access item should have been added",
+            "Quick Access item should have been added"
         )
 
         QuickAccessManager.shared.removeItem(id: item.id)
 
         XCTAssertTrue(
             CaptureHistoryStore.shared.hasRecord(forFilePath: fileURL.path),
-            "History record should be preserved after auto-dismiss path",
+            "History record should be preserved after auto-dismiss path"
         )
     }
 
@@ -119,18 +119,18 @@ final class QuickAccessHistoryCleanupTests: XCTestCase {
         await QuickAccessManager.shared.addScreenshot(url: fileURL)
         let item = try XCTUnwrap(
             QuickAccessManager.shared.items.first { $0.url == fileURL },
-            "Quick Access item should have been added",
+            "Quick Access item should have been added"
         )
 
         QuickAccessManager.shared.removeItem(id: item.id)
 
         XCTAssertFalse(
             QuickAccessManager.shared.items.contains { $0.id == item.id },
-            "Quick Access card should be removed synchronously before cleanup runs",
+            "Quick Access card should be removed synchronously before cleanup runs"
         )
         XCTAssertTrue(
             FileManager.default.fileExists(atPath: fileURL.path),
-            "Temp file should still exist until deferred cleanup gets a chance to run",
+            "Temp file should still exist until deferred cleanup gets a chance to run"
         )
         let didDeleteTempFile = await waitUntil {
             !FileManager.default.fileExists(atPath: fileURL.path)
@@ -147,20 +147,20 @@ final class QuickAccessHistoryCleanupTests: XCTestCase {
         CaptureHistoryStore.shared.addCapture(url: fileURL, captureType: .screenshot)
         XCTAssertTrue(
             CaptureHistoryStore.shared.hasRecord(forFilePath: fileURL.path),
-            "History record should exist before delete",
+            "History record should exist before delete"
         )
 
         await QuickAccessManager.shared.addScreenshot(url: fileURL)
         let item = try XCTUnwrap(
             QuickAccessManager.shared.items.first { $0.url == fileURL },
-            "Quick Access item should have been added",
+            "Quick Access item should have been added"
         )
 
         QuickAccessManager.shared.deleteItem(id: item.id)
 
         XCTAssertFalse(
             CaptureHistoryStore.shared.hasRecord(forFilePath: fileURL.path),
-            "History record should be removed after explicit delete of saved file",
+            "History record should be removed after explicit delete of saved file"
         )
     }
 }

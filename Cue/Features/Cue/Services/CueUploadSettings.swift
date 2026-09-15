@@ -66,7 +66,7 @@ enum CueImageKitUploadPlan: String, CaseIterable, Identifiable, Sendable {
         let megabytes: Int = switch self {
         case .free: 100
         case .lite: 300
-        case .pro: 2_000
+        case .pro: 2000
         case .custom: min(max(customLimitMB, Self.minimumCustomLimitMB), Self.maximumCustomLimitMB)
         }
         return Int64(megabytes) * 1_048_576
@@ -90,34 +90,34 @@ struct CueVideoUploadSettings: Equatable, Sendable {
     var includesAudio: Bool
 
     static let balanced = Self(
-        maximumDimension: 1_920,
+        maximumDimension: 1920,
         quality: .balanced,
         frameRate: 30,
-        includesAudio: true,
+        includesAudio: true
     )
 
     func reducedForRetry(_ attempt: Int) -> Self? {
         switch attempt {
         case 1:
             Self(
-                maximumDimension: min(maximumDimension, 1_280),
+                maximumDimension: min(maximumDimension, 1280),
                 quality: .compact,
                 frameRate: min(frameRate, 30),
-                includesAudio: includesAudio,
+                includesAudio: includesAudio
             )
         case 2:
             Self(
                 maximumDimension: min(maximumDimension, 960),
                 quality: .compact,
                 frameRate: min(frameRate, 24),
-                includesAudio: includesAudio,
+                includesAudio: includesAudio
             )
         case 3:
             Self(
                 maximumDimension: min(maximumDimension, 960),
                 quality: .compact,
                 frameRate: min(frameRate, 24),
-                includesAudio: false,
+                includesAudio: false
             )
         default:
             nil
@@ -149,7 +149,7 @@ struct CueUploadEncodingSettings: Equatable, Sendable {
             optimizeImages: defaults.object(forKey: PreferencesKeys.uploadOptimizeImages) as? Bool ?? true,
             imageFormat: format,
             maximumDimension: min(max(Int(storedDimension.rounded()), 512), 8192),
-            jpegQuality: min(max(storedQuality, 0.5), 1.0),
+            jpegQuality: min(max(storedQuality, 0.5), 1.0)
         )
     }
 }
@@ -193,7 +193,7 @@ enum CueUploadEncodingError: Error {
 
 nonisolated enum CueUploadImageEncoder {
     private static let optimizableExtensions: Set<String> = [
-        "bmp", "heic", "heif", "jpeg", "jpg", "png", "tif", "tiff", "webp",
+        "bmp", "heic", "heif", "jpeg", "jpg", "png", "tif", "tiff", "webp"
     ]
 
     static func encode(fileURL: URL, settings: CueUploadEncodingSettings) throws -> CueEncodedImage {
@@ -204,7 +204,7 @@ nonisolated enum CueUploadImageEncoder {
             return CueEncodedImage(
                 data: originalData,
                 fileExtension: originalExtension.isEmpty ? "bin" : originalExtension,
-                contentType: contentType(for: originalExtension),
+                contentType: contentType(for: originalExtension)
             )
         }
 
@@ -213,7 +213,8 @@ nonisolated enum CueUploadImageEncoder {
 
     static func encode(imageData: Data, settings: CueUploadEncodingSettings) throws -> CueEncodedImage {
         guard let source = CGImageSourceCreateWithData(imageData as CFData, nil),
-              CGImageSourceGetCount(source) == 1 else {
+              CGImageSourceGetCount(source) == 1
+        else {
             throw CueUploadEncodingError.invalidImageData
         }
 
@@ -224,8 +225,8 @@ nonisolated enum CueUploadImageEncoder {
                 [
                     kCGImageSourceCreateThumbnailFromImageAlways: true,
                     kCGImageSourceCreateThumbnailWithTransform: true,
-                    kCGImageSourceThumbnailMaxPixelSize: settings.maximumDimension,
-                ] as CFDictionary,
+                    kCGImageSourceThumbnailMaxPixelSize: settings.maximumDimension
+                ] as CFDictionary
             )
         } else {
             CGImageSourceCreateImageAtIndex(source, 0, nil)
@@ -242,7 +243,7 @@ nonisolated enum CueUploadImageEncoder {
 
     private static func encode(
         rasterImage image: CGImage,
-        settings: CueUploadEncodingSettings,
+        settings: CueUploadEncodingSettings
     ) throws -> CueEncodedImage {
         let hasAlpha = switch image.alphaInfo {
         case .alphaOnly, .premultipliedFirst, .premultipliedLast, .first, .last:
@@ -272,7 +273,7 @@ nonisolated enum CueUploadImageEncoder {
                 destinationData,
                 format == .jpeg ? "public.jpeg" as CFString : "public.png" as CFString,
                 1,
-                nil,
+                nil
             ) else {
                 throw CueUploadEncodingError.failedToCreateBitmap
             }
@@ -293,7 +294,7 @@ nonisolated enum CueUploadImageEncoder {
         return CueEncodedImage(
             data: encodedData,
             fileExtension: format.fileExtension,
-            contentType: format.contentType,
+            contentType: format.contentType
         )
     }
 
@@ -312,8 +313,9 @@ nonisolated enum CueUploadImageEncoder {
                   bitsPerComponent: 8,
                   bytesPerRow: 0,
                   space: colorSpace,
-                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
-              ) else {
+                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+              )
+        else {
             throw CueUploadEncodingError.failedToCreateBitmap
         }
 
@@ -327,7 +329,7 @@ nonisolated enum CueUploadImageEncoder {
 
     static func prepare(
         fileURL: URL,
-        settings: CueUploadEncodingSettings,
+        settings: CueUploadEncodingSettings
     ) async throws -> CuePreparedUpload {
         guard settings.optimizeImages, optimizableExtensions.contains(fileURL.pathExtension.lowercased()) else {
             return .original(fileURL)

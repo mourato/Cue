@@ -35,7 +35,7 @@ final class CueImgBBConfigurationTests: XCTestCase {
         XCTAssertEqual(keychain.readCount, 0)
         XCTAssertEqual(
             defaults.bool(forKey: PreferencesKeys.imgbbCredentialConfigured),
-            true,
+            true
         )
     }
 

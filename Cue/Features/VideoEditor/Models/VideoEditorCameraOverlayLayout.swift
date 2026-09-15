@@ -34,7 +34,7 @@
                     self.capturedNormalizedRect = Self.anchoredRect(
                         capturedNormalizedRect,
                         position: position,
-                        margin: margin,
+                        margin: margin
                     )
                 }
             }
@@ -45,7 +45,7 @@
                 if size != oldValue, let capturedNormalizedRect {
                     self.capturedNormalizedRect = Self.resizedRect(
                         capturedNormalizedRect,
-                        size: size,
+                        size: size
                     )
                 }
             }
@@ -57,7 +57,7 @@
                     self.capturedNormalizedRect = Self.anchoredRect(
                         capturedNormalizedRect,
                         position: position,
-                        margin: margin,
+                        margin: margin
                     )
                 }
             }
@@ -70,7 +70,7 @@
                     self.capturedNormalizedRect = Self.reshapedRect(
                         capturedNormalizedRect,
                         from: oldValue,
-                        to: shape,
+                        to: shape
                     )
                 }
             }
@@ -97,7 +97,7 @@
             margin: CGFloat = 0.04,
             reactsToZoom: Bool = true,
             shape: RecordingCameraPreviewShape = .rectangle,
-            capturedNormalizedRect: CGRect? = nil,
+            capturedNormalizedRect: CGRect? = nil
         ) {
             self.isVisible = isVisible
             self.position = position
@@ -113,7 +113,7 @@
                 size: recordedLayout.size
                     .map { VideoEditorCameraOverlaySize(rawValue: $0.rawValue) ?? .small } ?? .small,
                 shape: recordedLayout.shape,
-                capturedNormalizedRect: recordedLayout.normalizedRect,
+                capturedNormalizedRect: recordedLayout.normalizedRect
             )
         }
 
@@ -158,7 +158,7 @@
             return Self.anchoredRect(
                 CGRect(x: 0, y: 0, width: width, height: height),
                 position: position,
-                margin: margin,
+                margin: margin
             )
         }
 
@@ -173,8 +173,12 @@
             if usesCapturedGeometry {
                 return target
             }
-            return CGRect(x: target.minX + fitted.minX, y: target.minY + fitted.minY,
-                          width: fitted.width, height: fitted.height)
+            return CGRect(
+                x: target.minX + fitted.minX,
+                y: target.minY + fitted.minY,
+                width: fitted.width,
+                height: fitted.height
+            )
         }
 
         func cameraFrame(in canvasSize: CGSize, cameraSize: CGSize, zoomLevel: CGFloat) -> CGRect {
@@ -207,8 +211,12 @@
             if usesCapturedGeometry {
                 return target
             }
-            return CGRect(x: target.minX + fitted.minX, y: target.minY + fitted.minY,
-                          width: fitted.width, height: fitted.height)
+            return CGRect(
+                x: target.minX + fitted.minX,
+                y: target.minY + fitted.minY,
+                width: fitted.width,
+                height: fitted.height
+            )
         }
 
         private var sanitizedCapturedNormalizedRect: CGRect? {
@@ -230,7 +238,7 @@
         private static func anchoredRect(
             _ rect: CGRect,
             position: VideoEditorCameraOverlayPosition,
-            margin: CGFloat,
+            margin: CGFloat
         ) -> CGRect {
             let safeMargin = min(max(margin, 0), 1)
             // An oversized margin falls back to edge placement to preserve the selected corner.
@@ -249,7 +257,7 @@
 
         private static func resizedRect(
             _ rect: CGRect,
-            size: VideoEditorCameraOverlaySize,
+            size: VideoEditorCameraOverlaySize
         ) -> CGRect {
             let width = min(size.fraction, 1)
             let height = width * rect.height / max(rect.width, 0.0001)
@@ -259,7 +267,7 @@
         private static func reshapedRect(
             _ rect: CGRect,
             from oldShape: RecordingCameraPreviewShape,
-            to newShape: RecordingCameraPreviewShape,
+            to newShape: RecordingCameraPreviewShape
         ) -> CGRect {
             let height = rect.height * oldShape.aspectRatio / max(newShape.aspectRatio, 0.0001)
             return centeredRect(width: rect.width, height: height, at: rect.midX, y: rect.midY)

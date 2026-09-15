@@ -31,7 +31,7 @@ final class AXElementInspectorTests: XCTestCase {
     }
 
     func testScreenRect_returnsNil_whenRectIsFarOffAllScreens() {
-        let axRect = CGRect(x: -10_000, y: -10_000, width: 50, height: 50)
+        let axRect = CGRect(x: -10000, y: -10000, width: 50, height: 50)
         XCTAssertNil(AXElementInspector.screenRect(forTopLeftRect: axRect))
     }
 
@@ -42,7 +42,7 @@ final class AXElementInspectorTests: XCTestCase {
             role: "AXButton",
             position: CGPoint(x: 100, y: 100),
             size: CGSize(width: 80, height: 32),
-            containingWindowSize: CGSize(width: 800, height: 600),
+            containingWindowSize: CGSize(width: 800, height: 600)
         )
         let found = AXElementInspector.findMeaningful(button)
         XCTAssertEqual(found?.role, "AXButton")
@@ -53,7 +53,7 @@ final class AXElementInspectorTests: XCTestCase {
         let app = AXElementSnapshot(
             role: "AXApplication",
             position: .zero,
-            size: CGSize(width: 1920, height: 1080),
+            size: CGSize(width: 1920, height: 1080)
         )
         XCTAssertNil(AXElementInspector.findMeaningful(app))
     }
@@ -63,14 +63,14 @@ final class AXElementInspectorTests: XCTestCase {
             role: "AXButton",
             position: CGPoint(x: 100, y: 100),
             size: CGSize(width: 80, height: 32),
-            containingWindowSize: CGSize(width: 800, height: 600),
+            containingWindowSize: CGSize(width: 800, height: 600)
         )
         let tinyChild = AXElementSnapshot(
             role: "AXStaticText",
             position: CGPoint(x: 110, y: 105),
             size: CGSize(width: 4, height: 4), // below 12pt threshold
             containingWindowSize: CGSize(width: 800, height: 600),
-            parent: { parentButton },
+            parent: { parentButton }
         )
 
         let found = AXElementInspector.findMeaningful(tinyChild)
@@ -82,7 +82,7 @@ final class AXElementInspectorTests: XCTestCase {
             role: "AXGroup",
             position: .zero,
             size: CGSize(width: 800, height: 595),
-            containingWindowSize: CGSize(width: 800, height: 600),
+            containingWindowSize: CGSize(width: 800, height: 600)
         )
         XCTAssertNil(AXElementInspector.findMeaningful(oversized))
     }
@@ -93,7 +93,7 @@ final class AXElementInspectorTests: XCTestCase {
                 role: "AXUnknown",
                 position: .zero,
                 size: CGSize(width: 1, height: 1),
-                parent: depth > 0 ? { chain(depth: depth - 1) } : { nil },
+                parent: depth > 0 ? { chain(depth: depth - 1) } : { nil }
             )
         }
         let root = chain(depth: AXElementInspector.maxParentDepth + 4)

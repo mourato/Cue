@@ -16,8 +16,8 @@ struct CueVideoUploadOptionsView: View {
             Text(
                 L10n.QuickAccess.videoUploadTooLargeMessage(
                     sourceSize: ByteCountFormatter.string(fromByteCount: sourceSize, countStyle: .file),
-                    uploadLimit: ByteCountFormatter.string(fromByteCount: uploadLimit, countStyle: .file),
-                ),
+                    uploadLimit: ByteCountFormatter.string(fromByteCount: uploadLimit, countStyle: .file)
+                )
             )
             .font(.caption)
             .foregroundStyle(.secondary)
@@ -31,7 +31,7 @@ struct CueVideoUploadOptionsView: View {
             }
 
             Picker(L10n.QuickAccess.videoUploadDimensions, selection: $settings.maximumDimension) {
-                ForEach([1_920, 1_280, 960], id: \.self) { dimension in
+                ForEach([1920, 1280, 960], id: \.self) { dimension in
                     Text("\(dimension) px").tag(dimension)
                 }
             }

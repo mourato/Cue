@@ -57,7 +57,7 @@ protocol CaptureSelectionOverlayDelegate: AnyObject {
     func overlay(
         _ overlay: CaptureSelectionOverlayWindow,
         didResizeRegionTo rect: CGRect,
-        modifiers: NSEvent.ModifierFlags,
+        modifiers: NSEvent.ModifierFlags
     )
     func overlayDidFinishResizing(_ overlay: CaptureSelectionOverlayWindow)
 }
@@ -76,14 +76,14 @@ final class CaptureSelectionOverlayWindow: NSPanel {
     init(screen: NSScreen, highlightRect: CGRect) {
         overlayView = CaptureSelectionOverlayView(
             frame: screen.frame,
-            highlightRect: highlightRect,
+            highlightRect: highlightRect
         )
 
         super.init(
             contentRect: screen.frame,
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
-            defer: false,
+            defer: false
         )
 
         configureWindow(screen: screen)
@@ -127,7 +127,7 @@ final class CaptureSelectionOverlayWindow: NSPanel {
         // full-screen view (which can be 15M+ pixels on 4K/5K).
         let dirtyRect = CaptureSelectionOverlayInvalidation.dirtyRect(
             from: oldLocalRect,
-            to: newLocalRect,
+            to: newLocalRect
         )
         overlayView.setNeedsDisplay(dirtyRect)
     }
@@ -305,7 +305,7 @@ final class CaptureSelectionOverlayView: NSView {
             self,
             selector: #selector(dimScreenPreferenceChanged),
             name: UserDefaults.didChangeNotification,
-            object: nil,
+            object: nil
         )
         setupTrackingArea()
     }
@@ -339,7 +339,7 @@ final class CaptureSelectionOverlayView: NSView {
             rect: bounds,
             options: [.activeAlways, .mouseMoved, .mouseEnteredAndExited, .inVisibleRect, .cursorUpdate],
             owner: self,
-            userInfo: nil,
+            userInfo: nil
         )
         addTrackingArea(trackingArea)
     }
@@ -425,7 +425,7 @@ final class CaptureSelectionOverlayView: NSView {
             x: highlightRect.origin.x - windowFrame.origin.x,
             y: highlightRect.origin.y - windowFrame.origin.y,
             width: highlightRect.width,
-            height: highlightRect.height,
+            height: highlightRect.height
         )
     }
 
@@ -433,7 +433,7 @@ final class CaptureSelectionOverlayView: NSView {
         guard let window else { return localPoint }
         return CGPoint(
             x: localPoint.x + window.frame.origin.x,
-            y: localPoint.y + window.frame.origin.y,
+            y: localPoint.y + window.frame.origin.y
         )
     }
 
@@ -446,7 +446,7 @@ final class CaptureSelectionOverlayView: NSView {
             at: point,
             in: rect,
             hitSize: handleHitSize,
-            layout: layout,
+            layout: layout
         )
     }
 
@@ -469,7 +469,7 @@ extension CaptureSelectionOverlayView {
     private func calculateResizedRect(
         handle: RecordingResizeHandle,
         delta: CGPoint,
-        modifiers: NSEvent.ModifierFlags,
+        modifiers: NSEvent.ModifierFlags
     ) -> CGRect {
         let resized = CaptureSelectionGeometry.resizedRect(
             original: resizeStartRect,
@@ -477,7 +477,7 @@ extension CaptureSelectionOverlayView {
             translation: delta,
             aspectLocked: false,
             aspectRatio: nil,
-            minSize: minimumSelectionSize,
+            minSize: minimumSelectionSize
         )
         guard !modifiers.contains(.option) else { return resized }
         let candidates = CaptureSelectionSnapping.screenBoundaryCandidates(for: Self.unifiedDesktopFrame)
@@ -487,7 +487,7 @@ extension CaptureSelectionOverlayView {
             candidates: candidates,
             configuration: CaptureSelectionSnappingConfiguration.fromPreferences(),
             desktopBounds: Self.unifiedDesktopFrame,
-            minSize: minimumSelectionSize,
+            minSize: minimumSelectionSize
         ).rect
     }
 
@@ -511,7 +511,7 @@ extension CaptureSelectionOverlayView {
         guard crossDisplayLocalMonitor == nil else { return }
 
         crossDisplayLocalMonitor = NSEvent.addLocalMonitorForEvents(
-            matching: [.leftMouseDragged, .leftMouseUp],
+            matching: [.leftMouseDragged, .leftMouseUp]
         ) { [weak self] event in
             guard let self else { return event }
             let screenPoint = NSEvent.mouseLocation
@@ -528,7 +528,7 @@ extension CaptureSelectionOverlayView {
         }
 
         crossDisplayGlobalMonitor = NSEvent.addGlobalMonitorForEvents(
-            matching: [.leftMouseDragged, .leftMouseUp],
+            matching: [.leftMouseDragged, .leftMouseUp]
         ) { [weak self] event in
             let screenPoint = NSEvent.mouseLocation
             switch event.type {
@@ -571,7 +571,7 @@ extension CaptureSelectionOverlayView {
         CaptureSelectionDisplayTopology.clampResizedRect(
             rect,
             to: Self.unifiedDesktopFrame,
-            minSize: minimumSelectionSize,
+            minSize: minimumSelectionSize
         )
     }
 
@@ -583,12 +583,12 @@ extension CaptureSelectionOverlayView {
             let screenStartPoint = convertToScreenCoords(resizeStartPoint)
             let delta = CGPoint(x: screenPoint.x - screenStartPoint.x, y: screenPoint.y - screenStartPoint.y)
             let newRect = clampResizedRectToDesktop(
-                calculateResizedRect(handle: handle, delta: delta, modifiers: modifiers),
+                calculateResizedRect(handle: handle, delta: delta, modifiers: modifiers)
             )
             overlayWindow.interactionDelegate?.overlay(
                 overlayWindow,
                 didResizeRegionTo: newRect,
-                modifiers: modifiers,
+                modifiers: modifiers
             )
             return
         }
@@ -608,10 +608,10 @@ extension CaptureSelectionOverlayView {
             // Drag: compute new origin in screen coordinates and clamp to desktop.
             let newScreenOrigin = CGPoint(
                 x: screenPoint.x - dragOffset.x,
-                y: screenPoint.y - dragOffset.y,
+                y: screenPoint.y - dragOffset.y
             )
             let newRect = clampRectToDesktop(
-                CGRect(origin: newScreenOrigin, size: highlightRect.size),
+                CGRect(origin: newScreenOrigin, size: highlightRect.size)
             )
             overlayWindow.interactionDelegate?.overlay(overlayWindow, didMoveRegionTo: newRect)
         }
@@ -678,7 +678,7 @@ extension CaptureSelectionOverlayView {
             let screenPoint = NSEvent.mouseLocation
             dragOffset = CGPoint(
                 x: screenPoint.x - highlightRect.origin.x,
-                y: screenPoint.y - highlightRect.origin.y,
+                y: screenPoint.y - highlightRect.origin.y
             )
             NSCursor.closedHand.set()
             installCrossDisplayMonitorIfNeeded()
@@ -727,7 +727,7 @@ extension CaptureSelectionOverlayView {
         guard let window else { return screenPoint }
         return CGPoint(
             x: screenPoint.x - window.frame.origin.x,
-            y: screenPoint.y - window.frame.origin.y,
+            y: screenPoint.y - window.frame.origin.y
         )
     }
 
@@ -778,7 +778,7 @@ extension CaptureSelectionOverlayView {
             x: highlightRect.origin.x - windowFrame.origin.x,
             y: highlightRect.origin.y - windowFrame.origin.y,
             width: highlightRect.width,
-            height: highlightRect.height,
+            height: highlightRect.height
         )
 
         // Only draw highlight if rect intersects this screen
@@ -865,19 +865,19 @@ extension CaptureSelectionOverlayView {
             .font: titleFont,
             .foregroundColor: NSColor.white,
             .paragraphStyle: paragraphStyle,
-            .shadow: shadow,
+            .shadow: shadow
         ]
         let detailAttributes: [NSAttributedString.Key: Any] = [
             .font: detailFont,
             .foregroundColor: NSColor.white.withAlphaComponent(0.84),
-            .paragraphStyle: paragraphStyle,
+            .paragraphStyle: paragraphStyle
         ]
 
         let textWidth = min(availableWidth - 24, 336)
         let titleString = NSAttributedString(string: guidance.title, attributes: titleAttributes)
         let titleBounds = titleString.boundingRect(
             with: CGSize(width: textWidth, height: .greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            options: [.usesLineFragmentOrigin, .usesFontLeading]
         )
 
         let detailString = showsDetail
@@ -885,13 +885,13 @@ extension CaptureSelectionOverlayView {
             : nil
         let detailBounds = detailString?.boundingRect(
             with: CGSize(width: textWidth, height: .greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            options: [.usesLineFragmentOrigin, .usesFontLeading]
         ) ?? .zero
 
         let cardWidth = min(max(160, textWidth + 24), availableWidth)
         let cardHeight = max(
             prefersCompactLayout ? 38 : 44,
-            ceil(titleBounds.height) + (showsDetail ? ceil(detailBounds.height) + 6 : 0) + 22,
+            ceil(titleBounds.height) + (showsDetail ? ceil(detailBounds.height) + 6 : 0) + 22
         )
         let defaultY = rect.maxY - cardHeight - 18
         let cardY = max(rect.minY + 12, defaultY)
@@ -899,13 +899,13 @@ extension CaptureSelectionOverlayView {
             x: rect.midX - cardWidth / 2,
             y: cardY,
             width: cardWidth,
-            height: cardHeight,
+            height: cardHeight
         )
 
         let fillPath = NSBezierPath(
             roundedRect: cardRect,
             xRadius: prefersCompactLayout ? 12 : 14,
-            yRadius: prefersCompactLayout ? 12 : 14,
+            yRadius: prefersCompactLayout ? 12 : 14
         )
         NSColor.black.withAlphaComponent(prefersCompactLayout ? 0.74 : 0.8).setFill()
         fillPath.fill()
@@ -913,7 +913,7 @@ extension CaptureSelectionOverlayView {
         let strokePath = NSBezierPath(
             roundedRect: cardRect,
             xRadius: prefersCompactLayout ? 12 : 14,
-            yRadius: prefersCompactLayout ? 12 : 14,
+            yRadius: prefersCompactLayout ? 12 : 14
         )
         strokePath.lineWidth = 1
         guidance.tone.accentColor.withAlphaComponent(0.5).setStroke()
@@ -923,12 +923,12 @@ extension CaptureSelectionOverlayView {
             x: cardRect.midX - min(cardRect.width * 0.22, 44) / 2,
             y: cardRect.maxY - 6,
             width: min(cardRect.width * 0.22, 44),
-            height: 3,
+            height: 3
         )
         let accentPath = NSBezierPath(
             roundedRect: accentRect,
             xRadius: 1.5,
-            yRadius: 1.5,
+            yRadius: 1.5
         )
         guidance.tone.accentColor.withAlphaComponent(0.95).setFill()
         accentPath.fill()
@@ -938,7 +938,7 @@ extension CaptureSelectionOverlayView {
             y: cardRect
                 .maxY - ceil(titleBounds.height) - (showsDetail ? 12 : (cardHeight - ceil(titleBounds.height)) / 2),
             width: cardRect.width - 24,
-            height: ceil(titleBounds.height),
+            height: ceil(titleBounds.height)
         )
         titleString.draw(with: titleRect, options: [.usesLineFragmentOrigin, .usesFontLeading])
 
@@ -947,7 +947,7 @@ extension CaptureSelectionOverlayView {
                 x: cardRect.minX + 12,
                 y: cardRect.minY + 10,
                 width: cardRect.width - 24,
-                height: ceil(detailBounds.height),
+                height: ceil(detailBounds.height)
             )
             detailString.draw(with: detailRect, options: [.usesLineFragmentOrigin, .usesFontLeading])
         }
@@ -959,7 +959,7 @@ extension CaptureSelectionOverlayView {
 
         for bar in CaptureSelectionHandleGeometry.handleBars(
             in: rect,
-            coordinateSpace: .bottomLeftOrigin,
+            coordinateSpace: .bottomLeftOrigin
         ) {
             drawHandleBar(bar, colors: colors, coordinateSpace: .bottomLeftOrigin)
         }
@@ -968,7 +968,7 @@ extension CaptureSelectionOverlayView {
     private func drawHandleBar(
         _ rect: CGRect,
         colors: CaptureSelectionChromeColors,
-        coordinateSpace: CaptureSelectionCoordinateSpace,
+        coordinateSpace: CaptureSelectionCoordinateSpace
     ) {
         let radius = CaptureSelectionChromeMetrics.handleCornerRadius
         let shadowOffset = CaptureSelectionChromeMetrics.handleShadowOffset(for: coordinateSpace)
@@ -977,7 +977,7 @@ extension CaptureSelectionOverlayView {
         let shadowPath = NSBezierPath(
             roundedRect: rect.offsetBy(dx: shadowOffset.width, dy: shadowOffset.height),
             xRadius: radius,
-            yRadius: radius,
+            yRadius: radius
         )
         NSColor.black.withAlphaComponent(colors.shadowOpacity).setFill()
         shadowPath.fill()
@@ -988,7 +988,7 @@ extension CaptureSelectionOverlayView {
             red: colors.strokeRed,
             green: colors.strokeGreen,
             blue: colors.strokeBlue,
-            alpha: colors.strokeAlpha,
+            alpha: colors.strokeAlpha
         ).setFill()
         path.fill()
     }
@@ -1019,14 +1019,14 @@ extension CaptureSelectionOverlayView {
         let sizeText = "\(Int(screenRect.width)) x \(Int(screenRect.height))"
         let attributes: [NSAttributedString.Key: Any] = [
             .font: NSFont.systemFont(ofSize: 12, weight: .medium),
-            .foregroundColor: NSColor.white,
+            .foregroundColor: NSColor.white
         ]
         let textSize = sizeText.size(withAttributes: attributes)
         var textRect = CGRect(
             x: localRect.maxX - textSize.width - 8,
             y: localRect.minY - textSize.height - 8,
             width: textSize.width + 8,
-            height: textSize.height + 4,
+            height: textSize.height + 4
         )
         if textRect.minY < 0 {
             textRect.origin.y = localRect.maxY + 4

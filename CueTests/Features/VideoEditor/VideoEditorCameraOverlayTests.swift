@@ -11,7 +11,7 @@
             layout.size = .small
             let frame = layout.cameraFrame(
                 in: CGSize(width: 1600, height: 900),
-                cameraSize: CGSize(width: 640, height: 480),
+                cameraSize: CGSize(width: 640, height: 480)
             )
             XCTAssertLessThan(frame.maxX, 1600)
             XCTAssertGreaterThan(frame.minX, 1000)
@@ -22,12 +22,12 @@
         func testRecordedLayoutUsesExactNormalizedFrame() {
             let recorded = RecordedCameraOverlayLayout(
                 normalizedRect: CGRect(x: 0.1, y: 0.2, width: 0.3, height: 0.4),
-                shape: .circle,
+                shape: .circle
             )
             let layout = VideoEditorCameraOverlayLayout(recordedLayout: recorded)
             let frame = layout.cameraFrame(
                 in: CGSize(width: 1600, height: 900),
-                cameraSize: CGSize(width: 640, height: 480),
+                cameraSize: CGSize(width: 640, height: 480)
             )
 
             XCTAssertTrue(layout.usesCapturedGeometry)
@@ -41,7 +41,7 @@
         func testChangingEditorPositionPreservesCapturedGeometry() {
             let recorded = RecordedCameraOverlayLayout(
                 normalizedRect: CGRect(x: 0.1, y: 0.2, width: 0.3, height: 0.4),
-                shape: .circle,
+                shape: .circle
             )
             var layout = VideoEditorCameraOverlayLayout(recordedLayout: recorded)
 
@@ -63,7 +63,7 @@
             let recorded = RecordedCameraOverlayLayout(
                 normalizedRect: CGRect(x: 0.1, y: 0.2, width: 0.3, height: 0.2),
                 shape: .circle,
-                size: .small,
+                size: .small
             )
             var layout = VideoEditorCameraOverlayLayout(recordedLayout: recorded)
             guard let initialRect = layout.capturedNormalizedRect else {
@@ -89,7 +89,7 @@
         func testChangingEditorShapePreservesCapturedPositionAndSize() {
             let recorded = RecordedCameraOverlayLayout(
                 normalizedRect: CGRect(x: 0.2, y: 0.25, width: 0.3, height: 0.3),
-                shape: .circle,
+                shape: .circle
             )
             var layout = VideoEditorCameraOverlayLayout(recordedLayout: recorded)
 
@@ -109,7 +109,7 @@
         func testInvalidRecordedGeometryFallsBackToLegacyLayout() {
             let recorded = RecordedCameraOverlayLayout(
                 normalizedRect: CGRect(x: 2, y: 0.2, width: 0.3, height: 0.4),
-                shape: .rectangle,
+                shape: .rectangle
             )
             let layout = VideoEditorCameraOverlayLayout(recordedLayout: recorded)
 
@@ -122,12 +122,12 @@
                 layout.position = position
                 let legacy = layout.cameraFrame(
                     in: CGSize(width: 1600, height: 900),
-                    cameraSize: CGSize(width: 1600, height: 900),
+                    cameraSize: CGSize(width: 1600, height: 900)
                 )
                 let zoomed = layout.cameraFrame(
                     in: CGSize(width: 1600, height: 900),
                     cameraSize: CGSize(width: 1600, height: 900),
-                    zoomLevel: 1,
+                    zoomLevel: 1
                 )
                 XCTAssertEqual(zoomed, legacy, "Unexpected frame for \(position)")
             }
@@ -163,7 +163,7 @@
             layout.reactsToZoom = false
             let legacy = layout.cameraFrame(
                 in: CGSize(width: 1600, height: 900),
-                cameraSize: CGSize(width: 640, height: 480),
+                cameraSize: CGSize(width: 640, height: 480)
             )
 
             for zoomLevel in [CGFloat(1), CGFloat(2), CGFloat(4)] {
@@ -171,9 +171,9 @@
                     layout.cameraFrame(
                         in: CGSize(width: 1600, height: 900),
                         cameraSize: CGSize(width: 640, height: 480),
-                        zoomLevel: zoomLevel,
+                        zoomLevel: zoomLevel
                     ),
-                    legacy,
+                    legacy
                 )
             }
         }
@@ -198,7 +198,7 @@
             let frame = VideoEditorCameraOverlayLayout.default.cameraFrame(
                 in: CGSize(width: 1600, height: 900),
                 cameraSize: CGSize(width: 480, height: 640),
-                zoomLevel: 2,
+                zoomLevel: 2
             )
             XCTAssertEqual(frame.width / frame.height, 480.0 / 640.0, accuracy: 0.001)
         }
@@ -222,15 +222,19 @@
             let composition = AVMutableComposition()
             let camera = try XCTUnwrap(composition.addMutableTrack(withMediaType: .video, preferredTrackID: 42))
             let screen = try XCTUnwrap(composition.addMutableTrack(withMediaType: .video, preferredTrackID: 7))
-            let metadata = RecordingMetadata(captureSize: CGSize(width: 1280, height: 720), samplesPerSecond: 30,
-                                             mouseSamples: [], videoSourceTracks: [
-                                                 RecordingVideoSourceTrack(trackID: 7, role: .screen),
-                                                 RecordingVideoSourceTrack(
-                                                     trackID: 42,
-                                                     role: .camera,
-                                                     captureSize: CGSize(width: 480, height: 640),
-                                                 ),
-                                             ])
+            let metadata = RecordingMetadata(
+                captureSize: CGSize(width: 1280, height: 720),
+                samplesPerSecond: 30,
+                mouseSamples: [],
+                videoSourceTracks: [
+                    RecordingVideoSourceTrack(trackID: 7, role: .screen),
+                    RecordingVideoSourceTrack(
+                        trackID: 42,
+                        role: .camera,
+                        captureSize: CGSize(width: 480, height: 640)
+                    )
+                ]
+            )
             let result = try await VideoEditorState.resolveVideoTracks([camera, screen], metadata: metadata)
             XCTAssertEqual(result?.screenTrackID, screen.trackID)
             XCTAssertEqual(result?.cameraTrackID, camera.trackID)
@@ -240,11 +244,15 @@
         func testInvalidCameraIDFallsBackToScreenOnly() async throws {
             let composition = AVMutableComposition()
             let screen = try XCTUnwrap(composition.addMutableTrack(withMediaType: .video, preferredTrackID: 7))
-            let metadata = RecordingMetadata(captureSize: CGSize(width: 1280, height: 720), samplesPerSecond: 30,
-                                             mouseSamples: [], videoSourceTracks: [
-                                                 RecordingVideoSourceTrack(trackID: 7, role: .screen),
-                                                 RecordingVideoSourceTrack(trackID: 999, role: .camera),
-                                             ])
+            let metadata = RecordingMetadata(
+                captureSize: CGSize(width: 1280, height: 720),
+                samplesPerSecond: 30,
+                mouseSamples: [],
+                videoSourceTracks: [
+                    RecordingVideoSourceTrack(trackID: 7, role: .screen),
+                    RecordingVideoSourceTrack(trackID: 999, role: .camera)
+                ]
+            )
             let result = try await VideoEditorState.resolveVideoTracks([screen], metadata: metadata)
             XCTAssertEqual(result?.screenTrackID, screen.trackID)
             XCTAssertNil(result?.cameraTrackID)
@@ -254,10 +262,14 @@
         func testCameraMetadataWithoutScreenRoleIsInvalid() async throws {
             let composition = AVMutableComposition()
             let camera = try XCTUnwrap(composition.addMutableTrack(withMediaType: .video, preferredTrackID: 42))
-            let metadata = RecordingMetadata(captureSize: CGSize(width: 1280, height: 720), samplesPerSecond: 30,
-                                             mouseSamples: [], videoSourceTracks: [
-                                                 RecordingVideoSourceTrack(trackID: 42, role: .camera),
-                                             ])
+            let metadata = RecordingMetadata(
+                captureSize: CGSize(width: 1280, height: 720),
+                samplesPerSecond: 30,
+                mouseSamples: [],
+                videoSourceTracks: [
+                    RecordingVideoSourceTrack(trackID: 42, role: .camera)
+                ]
+            )
             let result = try await VideoEditorState.resolveVideoTracks([camera], metadata: metadata)
             XCTAssertNil(result?.cameraTrackID)
             XCTAssertTrue(result?.cameraMetadataWasInvalid == true)
@@ -267,12 +279,16 @@
             let composition = AVMutableComposition()
             let screen = try XCTUnwrap(composition.addMutableTrack(withMediaType: .video, preferredTrackID: 7))
             let camera = try XCTUnwrap(composition.addMutableTrack(withMediaType: .video, preferredTrackID: 42))
-            let metadata = RecordingMetadata(captureSize: CGSize(width: 1280, height: 720), samplesPerSecond: 30,
-                                             mouseSamples: [], videoSourceTracks: [
-                                                 RecordingVideoSourceTrack(trackID: 7, role: .screen),
-                                                 RecordingVideoSourceTrack(trackID: 42, role: .camera),
-                                                 RecordingVideoSourceTrack(trackID: 7, role: .screen),
-                                             ])
+            let metadata = RecordingMetadata(
+                captureSize: CGSize(width: 1280, height: 720),
+                samplesPerSecond: 30,
+                mouseSamples: [],
+                videoSourceTracks: [
+                    RecordingVideoSourceTrack(trackID: 7, role: .screen),
+                    RecordingVideoSourceTrack(trackID: 42, role: .camera),
+                    RecordingVideoSourceTrack(trackID: 7, role: .screen)
+                ]
+            )
             let result = try await VideoEditorState.resolveVideoTracks([screen, camera], metadata: metadata)
             XCTAssertNil(result?.cameraTrackID)
             XCTAssertTrue(result?.cameraMetadataWasInvalid == true)
@@ -282,7 +298,7 @@
             let layout = VideoEditorCameraOverlayLayout.default
             let base = layout.cameraFrame(
                 in: CGSize(width: 1280, height: 720),
-                cameraSize: CGSize(width: 640, height: 480),
+                cameraSize: CGSize(width: 640, height: 480)
             )
             let padded = base.offsetBy(dx: 40, dy: 40)
             XCTAssertEqual(padded.minX, base.minX + 40, accuracy: 0.001)
@@ -297,11 +313,11 @@
                 trackID: 7,
                 renderSize: CGSize(width: 1280, height: 720),
                 transitionDuration: 0.4,
-                cameraTrackID: 42,
+                cameraTrackID: 42
             )
             XCTAssertEqual(
                 instruction.requiredSourceTrackIDs?.compactMap { ($0 as? NSNumber)?.intValue }.sorted(),
-                [7, 42],
+                [7, 42]
             )
         }
 
@@ -312,7 +328,7 @@
                 autoFocusPaths: [:],
                 trackID: 7,
                 renderSize: CGSize(width: 1280, height: 720),
-                transitionDuration: 0.4,
+                transitionDuration: 0.4
             )
             XCTAssertEqual(instruction.requiredSourceTrackIDs?.compactMap { ($0 as? NSNumber)?.intValue }, [7])
         }
@@ -323,13 +339,13 @@
             let compositor = ZoomCompositor(
                 zooms: [],
                 renderSize: CGSize(width: 1280, height: 720),
-                screenTrackID: 999,
+                screenTrackID: 999
             )
 
             do {
                 _ = try await compositor.createVideoComposition(
                     for: asset,
-                    timeRange: CMTimeRange(start: .zero, duration: CMTime(seconds: 1, preferredTimescale: 600)),
+                    timeRange: CMTimeRange(start: .zero, duration: CMTime(seconds: 1, preferredTimescale: 600))
                 )
                 XCTFail("An explicit missing screen track ID must not fall back to the first track")
             } catch ZoomCompositor.ZoomCompositorError.noVideoTrack {

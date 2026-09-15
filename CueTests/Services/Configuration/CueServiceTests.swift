@@ -24,8 +24,8 @@ final class CueConfigurationServiceTests: XCTestCase {
         XCTAssertTrue(CueConfigurationService.shared.isSuggestedConfigDirectory(expectedDirectory))
         XCTAssertFalse(
             CueConfigurationService.shared.isSuggestedConfigDirectory(
-                expectedDirectory.deletingLastPathComponent(),
-            ),
+                expectedDirectory.deletingLastPathComponent()
+            )
         )
     }
 
@@ -36,8 +36,8 @@ final class CueConfigurationServiceTests: XCTestCase {
         XCTAssertTrue(CueConfigurationService.shared.isSuggestedConfigParentDirectory(expectedParentDirectory))
         XCTAssertFalse(
             CueConfigurationService.shared.isSuggestedConfigParentDirectory(
-                expectedParentDirectory.appendingPathComponent("snapzy"),
-            ),
+                expectedParentDirectory.appendingPathComponent("snapzy")
+            )
         )
     }
 
@@ -47,8 +47,8 @@ final class CueConfigurationServiceTests: XCTestCase {
         XCTAssertTrue(CueConfigurationService.shared.isSuggestedConfigRootDirectory(expectedRootDirectory))
         XCTAssertFalse(
             CueConfigurationService.shared.isSuggestedConfigRootDirectory(
-                expectedRootDirectory.appendingPathComponent(".config", isDirectory: true),
-            ),
+                expectedRootDirectory.appendingPathComponent(".config", isDirectory: true)
+            )
         )
     }
 
@@ -105,7 +105,7 @@ final class CueConfigurationServiceTests: XCTestCase {
 
         try FileManager.default.createDirectory(
             at: url.deletingLastPathComponent(),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         try existingSource.write(to: url, atomically: true, encoding: .utf8)
 
@@ -129,7 +129,7 @@ final class CueConfigurationServiceTests: XCTestCase {
 
         let result = try CueConfigurationService.shared.importBackupReplacingManagedConfig(
             from: backupURL,
-            managedConfigURL: managedURL,
+            managedConfigURL: managedURL
         )
 
         XCTAssertFalse(result.hasErrors)
@@ -154,14 +154,14 @@ final class CueConfigurationServiceTests: XCTestCase {
 
         try FileManager.default.createDirectory(
             at: managedURL.deletingLastPathComponent(),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         try existingSource.write(to: managedURL, atomically: true, encoding: .utf8)
         try invalidSource.write(to: backupURL, atomically: true, encoding: .utf8)
 
         let result = try CueConfigurationService.shared.importBackupReplacingManagedConfig(
             from: backupURL,
-            managedConfigURL: managedURL,
+            managedConfigURL: managedURL
         )
 
         XCTAssertTrue(result.hasErrors)
@@ -175,7 +175,7 @@ final class CueConfigurationServiceTests: XCTestCase {
         let decision = CueConfigurationService.syncDecision(
             fileSource: source,
             currentSource: source,
-            defaults: defaults,
+            defaults: defaults
         )
 
         XCTAssertEqual(decision, .alreadyCurrent)
@@ -190,7 +190,7 @@ final class CueConfigurationServiceTests: XCTestCase {
         let decision = CueConfigurationService.syncDecision(
             fileSource: fileSource,
             currentSource: currentSource,
-            defaults: defaults,
+            defaults: defaults
         )
 
         XCTAssertEqual(decision, .syncAutomatically)
@@ -204,7 +204,7 @@ final class CueConfigurationServiceTests: XCTestCase {
         let decision = CueConfigurationService.syncDecision(
             fileSource: fileSource,
             currentSource: currentSource,
-            defaults: defaults,
+            defaults: defaults
         )
 
         XCTAssertEqual(decision, .askBeforeReplacing)
@@ -293,7 +293,7 @@ final class CueConfigurationServiceTests: XCTestCase {
             let result = try CueConfigurationService.shared.prepareManagedConfigForOpening(at: managedURL)
             try CueConfigurationService.shared.syncManagedConfigToCurrentSettingsIfUnchanged(
                 at: managedURL,
-                expectedFileSignature: result.observedFileSignature,
+                expectedFileSignature: result.observedFileSignature
             )
 
             let syncedSource = try String(contentsOf: managedURL, encoding: .utf8)
@@ -319,8 +319,8 @@ final class CueConfigurationServiceTests: XCTestCase {
             XCTAssertThrowsError(
                 try CueConfigurationService.shared.syncManagedConfigToCurrentSettingsIfUnchanged(
                     at: managedURL,
-                    expectedFileSignature: result.observedFileSignature,
-                ),
+                    expectedFileSignature: result.observedFileSignature
+                )
             ) { error in
                 XCTAssertTrue(error is CueConfigurationSyncError)
             }

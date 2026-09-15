@@ -58,7 +58,7 @@ final class AnnotationSessionStoreTests: XCTestCase {
         guard case .text("Editable text") = loaded.annotations[0].type else {
             return XCTFail("Expected text annotation")
         }
-        guard case .arrow(let geometry) = loaded.annotations[1].type else {
+        guard case let .arrow(geometry) = loaded.annotations[1].type else {
             return XCTFail("Expected arrow annotation")
         }
         XCTAssertEqual(geometry.style, .curvedRight)
@@ -66,7 +66,7 @@ final class AnnotationSessionStoreTests: XCTestCase {
         guard case .blur(.gaussian) = loaded.annotations[2].type else {
             return XCTFail("Expected gaussian blur annotation")
         }
-        guard case .embeddedImage(let loadedAssetId) = loaded.annotations[3].type else {
+        guard case let .embeddedImage(loadedAssetId) = loaded.annotations[3].type else {
             return XCTFail("Expected embedded image annotation")
         }
         XCTAssertEqual(loadedAssetId, assetId)
@@ -82,7 +82,7 @@ final class AnnotationSessionStoreTests: XCTestCase {
         try Data("changed flattened image bytes".utf8).write(to: sourceURL, options: .atomic)
         try FileManager.default.setAttributes(
             [.modificationDate: Date().addingTimeInterval(60)],
-            ofItemAtPath: sourceURL.path,
+            ofItemAtPath: sourceURL.path
         )
 
         XCTAssertNil(store.load(for: sourceURL))
@@ -138,7 +138,7 @@ final class AnnotationSessionStoreTests: XCTestCase {
             target: .point(CGPoint(x: 40, y: 60)),
             color: RGBAColor(red: 1, green: 0, blue: 0, alpha: 1),
             pinControlValue: 6,
-            creationOrder: 1,
+            creationOrder: 1
         )
         sessionData.cueNotes = PersistedCueNotesSession(notes: [note])
 
@@ -158,8 +158,8 @@ final class AnnotationSessionStoreTests: XCTestCase {
                 target: .point(CGPoint(x: 40, y: 60)),
                 color: RGBAColor(red: 1, green: 0, blue: 0, alpha: 1),
                 pinControlValue: 6,
-                creationOrder: 1,
-            ),
+                creationOrder: 1
+            )
         ])
 
         let persisted = await store.persistOffMain(sessionData, for: sourceURL)
@@ -180,15 +180,15 @@ final class AnnotationSessionStoreTests: XCTestCase {
                 target: .point(CGPoint(x: 10, y: 20)),
                 color: RGBAColor(red: 0, green: 0, blue: 1, alpha: 1),
                 pinControlValue: 2,
-                creationOrder: 1,
-            ),
+                creationOrder: 1
+            )
         ])
         let manifest = PersistedAnnotationSession(
             sessionData: sessionDataWithNotes,
             sourceFilePath: "/tmp/capture.png",
             sourceFilePathHash: "hash",
             sourceSignature: PersistedFileSignature(fileSize: 1, modifiedAtMilliseconds: 1, pathExtension: "png"),
-            createdAt: Date(timeIntervalSince1970: 0),
+            createdAt: Date(timeIntervalSince1970: 0)
         )
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
@@ -213,7 +213,7 @@ final class AnnotationSessionStoreTests: XCTestCase {
             sourceFilePath: "/tmp/capture.png",
             sourceFilePathHash: "hash",
             sourceSignature: PersistedFileSignature(fileSize: 1, modifiedAtMilliseconds: 1, pathExtension: "png"),
-            createdAt: Date(timeIntervalSince1970: 0),
+            createdAt: Date(timeIntervalSince1970: 0)
         )
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
@@ -238,7 +238,7 @@ final class AnnotationSessionStoreTests: XCTestCase {
             start: CGPoint(x: 4, y: 5),
             end: CGPoint(x: 50, y: 60),
             style: .curvedRight,
-            bendDirection: .alternate,
+            bendDirection: .alternate
         )
         return AnnotationSessionData(
             originalImageData: originalData,
@@ -256,27 +256,27 @@ final class AnnotationSessionStoreTests: XCTestCase {
                         fontName: "SF Pro",
                         opacity: 0.8,
                         rotationDegrees: 12,
-                        watermarkStyle: .diagonal,
-                    ),
+                        watermarkStyle: .diagonal
+                    )
                 ),
                 AnnotationItem(
                     id: UUID(uuidString: "22222222-2222-2222-2222-222222222222")!,
                     type: .arrow(arrowGeometry),
                     bounds: arrowGeometry.bounds(),
-                    properties: AnnotationProperties(strokeColor: .red, strokeWidth: 5),
+                    properties: AnnotationProperties(strokeColor: .red, strokeWidth: 5)
                 ),
                 AnnotationItem(
                     id: UUID(uuidString: "33333333-3333-3333-3333-333333333333")!,
                     type: .blur(.gaussian),
                     bounds: CGRect(x: 10, y: 12, width: 44, height: 22),
-                    properties: AnnotationProperties(),
+                    properties: AnnotationProperties()
                 ),
                 AnnotationItem(
                     id: UUID(uuidString: "44444444-4444-4444-4444-444444444444")!,
                     type: .embeddedImage(assetId),
                     bounds: CGRect(x: 2, y: 3, width: 12, height: 9),
-                    properties: AnnotationProperties(),
-                ),
+                    properties: AnnotationProperties()
+                )
             ],
             canvasEffects: AnnotationCanvasEffects(
                 backgroundStyle: .gradient(.blueGreen),
@@ -289,7 +289,7 @@ final class AnnotationSessionStoreTests: XCTestCase {
                 cornerRadius: 11,
                 imageAlignment: .bottomRight,
                 aspectRatio: .ratio16x9,
-                aspectRatioOrientation: .vertical,
+                aspectRatioOrientation: .vertical
             ),
             selectedCanvasPresetId: presetId,
             isSelectedCanvasPresetDirty: true,
@@ -298,7 +298,7 @@ final class AnnotationSessionStoreTests: XCTestCase {
             cutoutImageData: cutoutData,
             didCutoutAutoApplyCrop: true,
             cutoutAutoAppliedCropRect: CGRect(x: 2, y: 2, width: 10, height: 6),
-            embeddedImageAssetsData: [assetId: Data("embedded-asset".utf8)],
+            embeddedImageAssetsData: [assetId: Data("embedded-asset".utf8)]
         )
     }
 
@@ -312,7 +312,7 @@ final class AnnotationSessionStoreTests: XCTestCase {
         let normalizedPath = AnnotationSessionStore.normalizedPath(for: sourceURL)
         return sessionsDirectory.appendingPathComponent(
             AnnotationSessionStore.pathHash(for: normalizedPath),
-            isDirectory: true,
+            isDirectory: true
         )
     }
 }

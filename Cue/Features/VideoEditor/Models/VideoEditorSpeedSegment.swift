@@ -43,7 +43,7 @@
             startTime: TimeInterval,
             duration: TimeInterval = SpeedSegment.defaultDuration,
             rate: Double = SpeedSegment.defaultRate,
-            isEnabled: Bool = true,
+            isEnabled: Bool = true
         ) {
             self.id = id
             self.startTime = max(0, startTime)
@@ -85,12 +85,12 @@
         static func centered(
             at time: TimeInterval,
             duration: TimeInterval = defaultDuration,
-            rate: Double = defaultRate,
+            rate: Double = defaultRate
         ) -> SpeedSegment {
             SpeedSegment(
                 startTime: max(0, time - duration / 2),
                 duration: duration,
-                rate: rate,
+                rate: rate
             )
         }
 

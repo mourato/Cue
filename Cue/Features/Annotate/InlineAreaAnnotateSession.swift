@@ -79,7 +79,7 @@ final class InlineAreaAnnotateSession: ObservableObject {
         saveDirectory: URL,
         outputFormat: ImageFormat,
         context: CaptureContext = .empty,
-        onComplete: @escaping (CaptureResult) -> Void,
+        onComplete: @escaping (CaptureResult) -> Void
     ) {
         self.primaryDisplayID = primaryDisplayID
         self.desktopFrame = desktopFrame
@@ -131,7 +131,7 @@ final class InlineAreaAnnotateSession: ObservableObject {
             x: min(start.x, localPoint.x),
             y: min(start.y, localPoint.y),
             width: abs(localPoint.x - start.x),
-            height: abs(localPoint.y - start.y),
+            height: abs(localPoint.y - start.y)
         ).standardized)
     }
 
@@ -143,7 +143,8 @@ final class InlineAreaAnnotateSession: ObservableObject {
 
         guard let rect = selectionRect,
               rect.width > CaptureSelectionChromeMetrics.creationMinimumSize,
-              rect.height > CaptureSelectionChromeMetrics.creationMinimumSize else {
+              rect.height > CaptureSelectionChromeMetrics.creationMinimumSize
+        else {
             selectionRect = nil
             return
         }
@@ -153,7 +154,7 @@ final class InlineAreaAnnotateSession: ObservableObject {
     func beginAnnotating(with localRect: CGRect) {
         let confirmedRect = CaptureSelectionGeometry.normalized(
             localRect.standardized,
-            minSize: CaptureSelectionChromeMetrics.confirmedMinimumSize,
+            minSize: CaptureSelectionChromeMetrics.confirmedMinimumSize
         )
         let clampedRect = clampedSelectionRect(confirmedRect)
         guard clampedRect.width > 5, clampedRect.height > 5,
@@ -185,7 +186,7 @@ final class InlineAreaAnnotateSession: ObservableObject {
         let standardizedPreviousRect = previousRect.standardized
         let annotationOffset = CGPoint(
             x: standardizedPreviousRect.minX - crop.localRect.minX,
-            y: standardizedPreviousRect.minY - crop.localRect.minY,
+            y: standardizedPreviousRect.minY - crop.localRect.minY
         )
 
         selectionRect = crop.localRect
@@ -202,7 +203,7 @@ final class InlineAreaAnnotateSession: ObservableObject {
             source: source,
             phase: phase,
             hasTextResponder: windows.allObjects.contains { $0.firstResponder is NSTextView },
-            hasKeyWindow: windows.allObjects.contains { $0.isKeyWindow },
+            hasKeyWindow: windows.allObjects.contains(where: \.isKeyWindow)
         )
 
         if phase != .annotating {
@@ -221,7 +222,7 @@ final class InlineAreaAnnotateSession: ObservableObject {
         case .copyCurrentImage:
             copyCurrentImage()
             return true
-        case .setMoveModifierActive(let active):
+        case let .setMoveModifierActive(active):
             isMoveModifierActive = active
             return true
         case .resetMoveModifierAndPassThrough:
@@ -266,7 +267,8 @@ final class InlineAreaAnnotateSession: ObservableObject {
         }
 
         guard let renderedImage = AnnotateExporter.renderFinalImage(state: state),
-              let cgImage = AnnotateExporter.bestCGImage(from: renderedImage) else {
+              let cgImage = AnnotateExporter.bestCGImage(from: renderedImage)
+        else {
             complete(.failure(.captureFailed(L10n.ScreenCapture.failedToCropCapturedImage)))
             return
         }
@@ -277,17 +279,17 @@ final class InlineAreaAnnotateSession: ObservableObject {
             format: outputFormat,
             scaleFactor: Self.imageScale(renderedImage),
             emitCompletion: !pinToScreen,
-            context: context,
+            context: context
         )
 
         if case .success = result {
             SoundManager.playScreenshotCapture()
         }
-        if case .success(let url) = result {
+        if case let .success(url) = result {
             persistCommittedSession(for: url)
         }
         complete(result)
-        if pinToScreen, case .success(let url) = result {
+        if pinToScreen, case let .success(url) = result {
             await PostCaptureActionHandler.shared.handleScreenshotCapture(url: url, pinToScreen: true)
         }
     }
@@ -304,12 +306,12 @@ final class InlineAreaAnnotateSession: ObservableObject {
             let screenRect = screenRect(for: localRect)
             let displayIDs = Self.displayIDsIntersecting(
                 screenRect,
-                screenFramesByDisplayID: screenFramesByDisplayID,
+                screenFramesByDisplayID: screenFramesByDisplayID
             )
             guard let displayID = Self.primaryDisplayID(
                 for: screenRect,
                 screenFramesByDisplayID: screenFramesByDisplayID,
-                fallback: primaryDisplayID,
+                fallback: primaryDisplayID
             ) else {
                 throw CaptureError.captureFailed(L10n.ScreenCapture.selectionOutsideDisplayBounds)
             }
@@ -318,17 +320,17 @@ final class InlineAreaAnnotateSession: ObservableObject {
                 target: .rect(screenRect),
                 displayID: displayID,
                 mode: .screenshot,
-                displayIDs: displayIDs.isEmpty ? [displayID] : displayIDs,
+                displayIDs: displayIDs.isEmpty ? [displayID] : displayIDs
             )
             let outputScaleFactor = Self.preferredOutputScaleFactor
             let result = selection.spansMultipleDisplays
                 ? try frozenSession.cropCompositeImage(
                     for: selection,
-                    minimumOutputScaleFactor: outputScaleFactor,
+                    minimumOutputScaleFactor: outputScaleFactor
                 )
                 : try frozenSession.cropImage(
                     for: selection,
-                    minimumOutputScaleFactor: outputScaleFactor,
+                    minimumOutputScaleFactor: outputScaleFactor
                 )
             let image = NSImage(cgImage: result.image, size: result.screenRect.size)
             let localRect = Self.localRect(for: result.screenRect, in: desktopFrame)
@@ -378,7 +380,7 @@ final class InlineAreaAnnotateSession: ObservableObject {
     private func installSelectionMonitorIfNeeded() {
         guard selectionLocalMonitor == nil else { return }
         selectionLocalMonitor = NSEvent.addLocalMonitorForEvents(
-            matching: [.leftMouseDragged, .leftMouseUp],
+            matching: [.leftMouseDragged, .leftMouseUp]
         ) { [weak self] event in
             switch event.type {
             case .leftMouseDragged:
@@ -409,7 +411,7 @@ final class InlineAreaAnnotateSession: ObservableObject {
     private func localDesktopPoint(for screenPoint: CGPoint) -> CGPoint {
         CGPoint(
             x: screenPoint.x - desktopFrame.minX,
-            y: desktopFrame.maxY - screenPoint.y,
+            y: desktopFrame.maxY - screenPoint.y
         )
     }
 
@@ -437,12 +439,13 @@ final class InlineAreaAnnotateSession: ObservableObject {
     private func persistCommittedSession(for url: URL) {
         guard AnnotationSessionStore.shared.shouldPersist(for: url),
               let sourceImage = state.sourceImage,
-              let originalImageData = AnnotateExporter.imageData(from: sourceImage, for: "png") else {
+              let originalImageData = AnnotateExporter.imageData(from: sourceImage, for: "png")
+        else {
             return
         }
         let sessionData = AnnotationSessionData.snapshot(
             from: state,
-            originalImageData: originalImageData,
+            originalImageData: originalImageData
         )
         AnnotationSessionStore.shared.persist(sessionData, for: url)
     }
@@ -481,7 +484,7 @@ final class InlineAreaAnnotateSession: ObservableObject {
         _ event: NSEvent,
         isLocalEvent: Bool,
         hasTextResponder: Bool,
-        hasKeyWindow: Bool,
+        hasKeyWindow: Bool
     ) -> Bool {
         matchesCommandCopyShortcut(event) && !hasTextResponder && (isLocalEvent || hasKeyWindow)
     }
@@ -491,7 +494,7 @@ final class InlineAreaAnnotateSession: ObservableObject {
         source: InlineAreaKeyEventSource,
         phase: InlineAreaAnnotatePhase,
         hasTextResponder: Bool,
-        hasKeyWindow: Bool,
+        hasKeyWindow: Bool
     ) -> InlineAreaKeyAction {
         guard phase == .annotating else {
             return matchesCancelShortcut(event) ? .cancel : .passThrough
@@ -509,7 +512,7 @@ final class InlineAreaAnnotateSession: ObservableObject {
             event,
             isLocalEvent: source == .local,
             hasTextResponder: hasTextResponder,
-            hasKeyWindow: hasKeyWindow,
+            hasKeyWindow: hasKeyWindow
         ) {
             return .copyCurrentImage
         }
@@ -554,7 +557,7 @@ final class InlineAreaAnnotateSession: ObservableObject {
             x: screenFrame.minX - desktopFrame.minX,
             y: desktopFrame.maxY - screenFrame.maxY,
             width: screenFrame.width,
-            height: screenFrame.height,
+            height: screenFrame.height
         )
     }
 
@@ -563,7 +566,7 @@ final class InlineAreaAnnotateSession: ObservableObject {
             x: desktopFrame.minX + localRect.minX,
             y: desktopFrame.maxY - localRect.maxY,
             width: localRect.width,
-            height: localRect.height,
+            height: localRect.height
         )
     }
 
@@ -572,13 +575,13 @@ final class InlineAreaAnnotateSession: ObservableObject {
             x: screenRect.minX - desktopFrame.minX,
             y: desktopFrame.maxY - screenRect.maxY,
             width: screenRect.width,
-            height: screenRect.height,
+            height: screenRect.height
         )
     }
 
     nonisolated static func displayIDsIntersecting(
         _ screenRect: CGRect,
-        screenFramesByDisplayID: [CGDirectDisplayID: CGRect],
+        screenFramesByDisplayID: [CGDirectDisplayID: CGRect]
     ) -> Set<CGDirectDisplayID> {
         Set(screenFramesByDisplayID.compactMap { displayID, frame in
             frame.intersects(screenRect) ? displayID : nil
@@ -588,7 +591,7 @@ final class InlineAreaAnnotateSession: ObservableObject {
     nonisolated static func primaryDisplayID(
         for screenRect: CGRect,
         screenFramesByDisplayID: [CGDirectDisplayID: CGRect],
-        fallback: CGDirectDisplayID?,
+        fallback: CGDirectDisplayID?
     ) -> CGDirectDisplayID? {
         let bestMatch = screenFramesByDisplayID
             .compactMap { displayID, frame -> (displayID: CGDirectDisplayID, area: CGFloat)? in

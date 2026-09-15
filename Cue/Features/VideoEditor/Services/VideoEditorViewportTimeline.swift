@@ -15,7 +15,7 @@
 
         static let identity = VideoEditorViewportFrame(
             magnification: 1,
-            anchor: CGPoint(x: 0.5, y: 0.5),
+            anchor: CGPoint(x: 0.5, y: 0.5)
         )
     }
 
@@ -25,7 +25,7 @@
         private static let motionProfile = VideoEditorSpringConstant(
             tension: 200,
             friction: 40,
-            inertia: 2.25,
+            inertia: 2.25
         )
         private static let travelComfortWidths = 1.4
         private static let settleGuardWindow: TimeInterval = 0.15
@@ -50,15 +50,15 @@
                 magnification: a.magnification + (b.magnification - a.magnification) * fraction,
                 anchor: CGPoint(
                     x: a.anchor.x + (b.anchor.x - a.anchor.x) * fraction,
-                    y: a.anchor.y + (b.anchor.y - a.anchor.y) * fraction,
-                ),
+                    y: a.anchor.y + (b.anchor.y - a.anchor.y) * fraction
+                )
             )
         }
 
         static func build(
             segments: [ZoomSegment],
             metadata: RecordingMetadata?,
-            duration: TimeInterval,
+            duration: TimeInterval
         ) -> VideoEditorViewportTimeline {
             guard duration.isFinite, duration > 0 else { return .identity }
 
@@ -69,7 +69,7 @@
                 activityTargetsBySegmentID[segment.id] = activityTargets(
                     for: segment,
                     samples: pointerSamples,
-                    presses: metadata?.mousePresses ?? [],
+                    presses: metadata?.mousePresses ?? []
                 )
             }
 
@@ -88,7 +88,8 @@
             for frameIndex in 0 ..< frameCount {
                 let time = min(Double(frameIndex) * dt, duration)
                 while latestPressIndex + 1 < pressEvents.count,
-                      pressEvents[latestPressIndex + 1].time <= time {
+                      pressEvents[latestPressIndex + 1].time <= time
+                {
                     latestPressIndex += 1
                 }
 
@@ -99,19 +100,19 @@
                         for: segment,
                         at: time,
                         samples: pointerSamples,
-                        activityTargets: activityTargetsBySegmentID[segment.id] ?? [],
+                        activityTargets: activityTargetsBySegmentID[segment.id] ?? []
                     )
                 } ?? CGPoint(x: 0.5, y: 0.5)
                 let targetAnchor = boundedAnchor(
                     rawTarget,
                     magnification: targetMagnification,
                     anchorMode: active?.anchorMode ?? .pinned,
-                    boundsBias: Double(active?.boundsBias ?? 0),
+                    boundsBias: Double(active?.boundsBias ?? 0)
                 )
                 let targetHalfExtent = 1 / (2 * targetMagnification)
                 let remainingTravel = hypot(
                     targetAnchor.x - anchorXSpring.position,
-                    targetAnchor.y - anchorYSpring.position,
+                    targetAnchor.y - anchorYSpring.position
                 )
                 let pursuitMagnification = remainingTravel > 0.000_1
                     ? min(targetMagnification, max(1, travelComfortWidths / remainingTravel))
@@ -136,12 +137,13 @@
                 let magnification = max(1, 1 / (2 * safeHalfExtent))
                 var anchor = clampToFrame(
                     CGPoint(x: anchorXSpring.position, y: anchorYSpring.position),
-                    magnification: magnification,
+                    magnification: magnification
                 )
 
                 if let active,
                    active.anchorMode != .pinned,
-                   latestPressIndex >= 0 {
+                   latestPressIndex >= 0
+                {
                     let press = pressEvents[latestPressIndex]
                     let elapsed = time - press.time
                     if elapsed >= 0, elapsed <= settleGuardWindow {
@@ -149,7 +151,7 @@
                             press.point,
                             from: anchor,
                             magnification: magnification,
-                            interiorMargin: interiorMargin,
+                            interiorMargin: interiorMargin
                         )
                         anchorXSpring.position = anchor.x
                         anchorYSpring.position = anchor.y
@@ -169,18 +171,18 @@
             duration: TimeInterval,
             trimStart: TimeInterval,
             trimEnd: TimeInterval,
-            speedMap: SpeedTimeMap?,
+            speedMap: SpeedTimeMap?
         ) -> VideoEditorViewportTimeline {
             let adjustedMetadata = adjustedMetadata(
                 metadata,
                 trimStart: trimStart,
                 trimEnd: trimEnd,
-                speedMap: speedMap,
+                speedMap: speedMap
             )
             return build(
                 segments: segments.filter(\.isEnabled),
                 metadata: adjustedMetadata,
-                duration: duration,
+                duration: duration
             )
         }
 
@@ -188,7 +190,7 @@
             _ metadata: RecordingMetadata?,
             trimStart: TimeInterval,
             trimEnd: TimeInterval,
-            speedMap: SpeedTimeMap?,
+            speedMap: SpeedTimeMap?
         ) -> RecordingMetadata? {
             guard var metadata else { return nil }
 
@@ -264,7 +266,7 @@
             func canInclude(
                 _ sample: PointerSample,
                 horizontalLimit: CGFloat,
-                verticalLimit: CGFloat,
+                verticalLimit: CGFloat
             ) -> Bool {
                 min(sample.point.x, minX) >= maxX - horizontalLimit
                     && max(sample.point.x, maxX) <= minX + horizontalLimit
@@ -281,7 +283,8 @@
                 let precedence = segmentPriority(segment)
                 if selected == nil
                     || precedence > selectedPrecedence
-                    || (precedence == selectedPrecedence && segment.startTime >= selected!.startTime) {
+                    || (precedence == selectedPrecedence && segment.startTime >= selected!.startTime)
+                {
                     selected = segment
                     selectedPrecedence = precedence
                 }
@@ -304,7 +307,7 @@
             for segment: ZoomSegment,
             at time: TimeInterval,
             samples: [PointerSample],
-            activityTargets: [ActivityTarget],
+            activityTargets: [ActivityTarget]
         ) -> CGPoint {
             switch segment.anchorMode {
             case .pinned:
@@ -319,7 +322,7 @@
         private static func activityTargets(
             for segment: ZoomSegment,
             samples: [PointerSample],
-            presses: [RecordedMousePress],
+            presses: [RecordedMousePress]
         ) -> [ActivityTarget] {
             var cueSamples = samples.filter { $0.time >= segment.startTime && $0.time <= segment.endTime }
             if cueSamples.isEmpty {
@@ -408,10 +411,10 @@
                     PointerSample(
                         time: travel.time,
                         point: normalized(travel.normalizedPoint),
-                        isPress: false,
+                        isPress: false
                     ),
                     0,
-                    index,
+                    index
                 ))
             }
             for (index, press) in metadata.mousePresses.enumerated() where press.phase == .down {
@@ -419,10 +422,10 @@
                     PointerSample(
                         time: press.time,
                         point: normalized(press.normalizedPoint),
-                        isPress: true,
+                        isPress: true
                     ),
                     1,
-                    index,
+                    index
                 ))
             }
 
@@ -441,7 +444,7 @@
             _ point: CGPoint,
             magnification: Double,
             anchorMode: ZoomAnchorMode,
-            boundsBias: Double,
+            boundsBias: Double
         ) -> CGPoint {
             let rawCenteredTarget = normalized(point)
             guard anchorMode != .pinned else {
@@ -451,12 +454,12 @@
             let halfExtent = 1 / (2 * max(magnification, 1))
             let screenPositionPreservingTarget = CGPoint(
                 x: halfExtent + rawCenteredTarget.x * (1 - 2 * halfExtent),
-                y: halfExtent + rawCenteredTarget.y * (1 - 2 * halfExtent),
+                y: halfExtent + rawCenteredTarget.y * (1 - 2 * halfExtent)
             )
             let bias = min(max(boundsBias, 0), 1)
             let blended = CGPoint(
                 x: rawCenteredTarget.x + (screenPositionPreservingTarget.x - rawCenteredTarget.x) * bias,
-                y: rawCenteredTarget.y + (screenPositionPreservingTarget.y - rawCenteredTarget.y) * bias,
+                y: rawCenteredTarget.y + (screenPositionPreservingTarget.y - rawCenteredTarget.y) * bias
             )
             return clampToFrame(blended, magnification: magnification)
         }
@@ -465,7 +468,7 @@
             let halfExtent = 1 / (2 * max(magnification, 1))
             return CGPoint(
                 x: min(max(point.x, halfExtent), 1 - halfExtent),
-                y: min(max(point.y, halfExtent), 1 - halfExtent),
+                y: min(max(point.y, halfExtent), 1 - halfExtent)
             )
         }
 
@@ -473,7 +476,7 @@
             _ point: CGPoint,
             from anchor: CGPoint,
             magnification: Double,
-            interiorMargin: Double,
+            interiorMargin: Double
         ) -> CGPoint {
             let halfExtent = 1 / (2 * max(magnification, 1))
             let margin = halfExtent * interiorMargin
@@ -496,7 +499,7 @@
         private static func normalized(_ point: CGPoint) -> CGPoint {
             CGPoint(
                 x: min(max(point.x, 0), 1),
-                y: min(max(point.y, 0), 1),
+                y: min(max(point.y, 0), 1)
             )
         }
     }

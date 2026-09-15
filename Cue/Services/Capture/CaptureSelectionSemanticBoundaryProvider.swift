@@ -16,7 +16,7 @@ protocol CaptureSelectionSemanticBoundaryProviding: AnyObject {
     func semanticCandidates(
         at screenPoint: CGPoint,
         ownerPID: Int32?,
-        handle: CaptureSelectionResizeHandle,
+        handle: CaptureSelectionResizeHandle
     ) -> [CaptureSelectionSnappingCandidate]
     func clearCache()
 }
@@ -37,7 +37,7 @@ final class CaptureSelectionSemanticBoundaryProvider: CaptureSelectionSemanticBo
     init(
         snapshotProvider: AXSnapshotProviding = AXAccessibilitySnapshotProvider(),
         isTrusted: @escaping () -> Bool = { AXIsProcessTrusted() },
-        minimumSemanticQueryInterval: TimeInterval = 1.0 / 30.0,
+        minimumSemanticQueryInterval: TimeInterval = 1.0 / 30.0
     ) {
         self.snapshotProvider = snapshotProvider
         self.isTrusted = isTrusted
@@ -53,7 +53,8 @@ final class CaptureSelectionSemanticBoundaryProvider: CaptureSelectionSemanticBo
         if let cachedInputRect,
            let cachedRect,
            cachedOwnerPID == ownerPID,
-           cachedInputRect.contains(screenPoint) {
+           cachedInputRect.contains(screenPoint)
+        {
             return cachedRect
         }
 
@@ -86,7 +87,7 @@ final class CaptureSelectionSemanticBoundaryProvider: CaptureSelectionSemanticBo
     func semanticCandidates(
         at screenPoint: CGPoint,
         ownerPID: Int32?,
-        handle: CaptureSelectionResizeHandle,
+        handle: CaptureSelectionResizeHandle
     ) -> [CaptureSelectionSnappingCandidate] {
         guard isTrusted() else {
             clearCache()
@@ -96,13 +97,14 @@ final class CaptureSelectionSemanticBoundaryProvider: CaptureSelectionSemanticBo
         let now = ProcessInfo.processInfo.systemUptime
         if let lastQueryAt = lastSemanticCandidatesQueryAt,
            now - lastQueryAt < minimumSemanticQueryInterval,
-           cachedSemanticCandidatesOwnerPID == ownerPID {
+           cachedSemanticCandidatesOwnerPID == ownerPID
+        {
             return filteredSemanticCandidates(for: handle)
         }
 
         let candidates: [CaptureSelectionSnappingCandidate] = if let rect = semanticRect(
             at: screenPoint,
-            ownerPID: ownerPID,
+            ownerPID: ownerPID
         ) {
             CaptureSelectionSnapping.semanticCandidates(for: rect)
         } else {
@@ -116,7 +118,7 @@ final class CaptureSelectionSemanticBoundaryProvider: CaptureSelectionSemanticBo
     }
 
     private func filteredSemanticCandidates(
-        for handle: CaptureSelectionResizeHandle,
+        for handle: CaptureSelectionResizeHandle
     ) -> [CaptureSelectionSnappingCandidate] {
         let activeEdges = CaptureSelectionSnapping.activeEdges(for: handle)
         return cachedSemanticCandidates.filter { activeEdges.contains($0.edge) }

@@ -110,7 +110,7 @@ struct HistoryItemView: View, Equatable {
             .aspectRatio(1.0, contentMode: .fit)
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2),
+                    .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
             )
             .onHover { hovering in
                 withAnimation(.easeInOut(duration: 0.1)) {
@@ -159,7 +159,7 @@ struct HistoryItemView: View, Equatable {
         .simultaneousGesture(
             TapGesture(count: 2).onEnded {
                 openDefaultEditor()
-            },
+            }
         )
     }
 
@@ -181,7 +181,8 @@ struct HistoryItemView: View, Equatable {
 
     private func matchesHistoryFileChange(_ notification: Notification) -> Bool {
         if let recordIDs = notification.userInfo?["recordIDs"] as? [UUID],
-           recordIDs.contains(record.id) {
+           recordIDs.contains(record.id)
+        {
             return true
         }
 

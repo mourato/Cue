@@ -21,7 +21,7 @@ final class SmartElementCaptureControllerTests: XCTestCase {
             windowFactory: { _ in
                 XCTFail("Window factory should not be called when AX permission is denied")
                 return FakeSmartElementOverlayWindow(displayID: nil, frame: .zero)
-            },
+            }
         )
 
         controller.startCapture()
@@ -107,13 +107,13 @@ final class SmartElementCaptureControllerTests: XCTestCase {
     }
 
     private func makeController(
-        ownerResolver: FakeWindowOwnerResolver = FakeWindowOwnerResolver(),
+        ownerResolver: FakeWindowOwnerResolver = FakeWindowOwnerResolver()
     ) -> (
         SmartElementCaptureController,
         FakeSmartElementQueryProvider,
         FakeWindowOwnerResolver,
         FakeSmartElementCapturePerformer,
-        FakeSmartElementWindowBox,
+        FakeSmartElementWindowBox
     ) {
         let provider = FakeSmartElementQueryProvider()
         let performer = FakeSmartElementCapturePerformer()
@@ -126,7 +126,7 @@ final class SmartElementCaptureControllerTests: XCTestCase {
                 let window = FakeSmartElementOverlayWindow(displayID: screen.displayID, frame: screen.frame)
                 windowBox.windows.append(window)
                 return window
-            },
+            }
         )
         return (controller, provider, ownerResolver, performer, windowBox)
     }

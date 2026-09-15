@@ -78,8 +78,8 @@ final class AnnotateExportSaveTests: XCTestCase {
             AnnotationItem(
                 type: .rectangle,
                 bounds: CGRect(x: 10, y: 10, width: 40, height: 40),
-                properties: AnnotationProperties(),
-            ),
+                properties: AnnotationProperties()
+            )
         ]
 
         let rendered = try XCTUnwrap(AnnotateExporter.renderFinalImage(state: state))
@@ -94,8 +94,8 @@ final class AnnotateExportSaveTests: XCTestCase {
             AnnotationItem(
                 type: .magnify(sourceCenter: CGPoint(x: 80, y: 80), showsSourceCircle: true),
                 bounds: CGRect(x: 20, y: 20, width: 80, height: 80),
-                properties: AnnotationProperties(),
-            ),
+                properties: AnnotationProperties()
+            )
         ]
 
         let rendered = try XCTUnwrap(AnnotateExporter.renderFinalImage(state: state))

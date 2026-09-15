@@ -21,14 +21,14 @@ struct SidebarGradientSection: View {
             LazyVGrid(
                 columns: Array(
                     repeating: GridItem(.flexible(), spacing: GridConfig.gap),
-                    count: GridConfig.backgroundColumns,
+                    count: GridConfig.backgroundColumns
                 ),
-                spacing: GridConfig.gap,
+                spacing: GridConfig.gap
             ) {
                 ForEach(GradientPreset.allCases) { preset in
                     GradientPresetButton(
                         preset: preset,
-                        isSelected: state.backgroundStyle == .gradient(preset),
+                        isSelected: state.backgroundStyle == .gradient(preset)
                     ) {
                         state.backgroundStyle = .gradient(preset)
                     }
@@ -51,15 +51,15 @@ struct SidebarWallpaperSection: View {
             LazyVGrid(
                 columns: Array(
                     repeating: GridItem(.flexible(), spacing: GridConfig.gap),
-                    count: GridConfig.backgroundColumns,
+                    count: GridConfig.backgroundColumns
                 ),
-                spacing: GridConfig.gap,
+                spacing: GridConfig.gap
             ) {
                 // Bundled default wallpapers
                 ForEach(wallpaperManager.defaultWallpapers) { item in
                     DefaultWallpaperButton(
                         item: item,
-                        isSelected: isDefaultWallpaperSelected(item),
+                        isSelected: isDefaultWallpaperSelected(item)
                     ) {
                         selectDefaultWallpaper(item)
                     }
@@ -75,7 +75,7 @@ struct SidebarWallpaperSection: View {
                         },
                         onRemove: {
                             removeCustomWallpaper(item)
-                        },
+                        }
                     )
                 }
 
@@ -102,14 +102,14 @@ struct SidebarWallpaperSection: View {
     }
 
     private func isUrlSelected(_ url: URL) -> Bool {
-        if case .wallpaper(let selectedUrl) = state.backgroundStyle {
+        if case let .wallpaper(selectedUrl) = state.backgroundStyle {
             return selectedUrl == url
         }
         return false
     }
 
     private func isDefaultWallpaperSelected(_ item: SystemWallpaperManager.WallpaperItem) -> Bool {
-        if case .wallpaper(let url) = state.backgroundStyle {
+        if case let .wallpaper(url) = state.backgroundStyle {
             return url == item.fullImageURL
         }
         return false
@@ -145,7 +145,7 @@ struct SidebarWallpaperSection: View {
         let url = item.fullImageURL
         wallpaperManager.removeCustomWallpaper(item)
 
-        if case .wallpaper(let selectedUrl) = state.backgroundStyle, selectedUrl == url {
+        if case let .wallpaper(selectedUrl) = state.backgroundStyle, selectedUrl == url {
             state.resetCanvasEffectsToNone()
         }
     }
@@ -163,16 +163,16 @@ struct SidebarBlurredSection: View {
             LazyVGrid(
                 columns: Array(
                     repeating: GridItem(.flexible(), spacing: GridConfig.gap),
-                    count: GridConfig.backgroundColumns,
+                    count: GridConfig.backgroundColumns
                 ),
-                spacing: GridConfig.gap,
+                spacing: GridConfig.gap
             ) {
                 ForEach(BlurredBackgroundEffect.allCases) { effect in
                     BlurredBackgroundEffectButton(
                         effect: effect,
                         backgroundStyle: state.backgroundStyle,
                         previewImage: previewImage,
-                        isSelected: isSelected(effect),
+                        isSelected: isSelected(effect)
                     ) {
                         select(effect)
                     }
@@ -189,7 +189,7 @@ struct SidebarBlurredSection: View {
     private func select(_ effect: BlurredBackgroundEffect) {
         guard state.backgroundStyle.supportsBlurredBackgroundEffect else { return }
         if isSelected(effect) {
-            if case .blurred(let url) = state.backgroundStyle {
+            if case let .blurred(url) = state.backgroundStyle {
                 state.backgroundStyle = .wallpaper(url)
             }
             state.isBlurredBackgroundEnabled = false
@@ -198,7 +198,7 @@ struct SidebarBlurredSection: View {
         if state.padding <= 0 {
             state.padding = 24
         }
-        if case .blurred(let url) = state.backgroundStyle {
+        if case let .blurred(url) = state.backgroundStyle {
             state.backgroundStyle = .wallpaper(url)
         }
         state.blurredBackgroundEffect = effect
@@ -226,7 +226,7 @@ struct SidebarColorSection: View {
     private var colorBinding: Binding<Color?> {
         Binding(
             get: {
-                if case .solidColor(let color) = state.backgroundStyle {
+                if case let .solidColor(color) = state.backgroundStyle {
                     return color
                 }
                 return nil
@@ -235,7 +235,7 @@ struct SidebarColorSection: View {
                 if let color = newColor {
                     state.backgroundStyle = .solidColor(color)
                 }
-            },
+            }
         )
     }
 }
@@ -253,7 +253,7 @@ struct SidebarSlidersSection: View {
                 range: 0 ... 100,
                 onDragging: { isDragging, value in
                     state.previewPadding = isDragging ? value : nil
-                },
+                }
             )
             SliderRow(
                 label: L10n.Common.inset,
@@ -261,7 +261,7 @@ struct SidebarSlidersSection: View {
                 range: 0 ... 50,
                 onDragging: { isDragging, value in
                     state.previewInset = isDragging ? value : nil
-                },
+                }
             )
 
             Toggle(L10n.AnnotateUI.autoBalance, isOn: $state.autoBalance)
@@ -275,7 +275,7 @@ struct SidebarSlidersSection: View {
                 range: 0 ... 1,
                 onDragging: { isDragging, value in
                     state.previewShadowIntensity = isDragging ? value : nil
-                },
+                }
             )
             SliderRow(
                 label: L10n.Common.corners,
@@ -283,7 +283,7 @@ struct SidebarSlidersSection: View {
                 range: 0 ... 32,
                 onDragging: { isDragging, value in
                     state.previewCornerRadius = isDragging ? value : nil
-                },
+                }
             )
         }
     }
@@ -298,7 +298,7 @@ struct BlurTypeSection: View {
         GridItem(.flexible(), spacing: Spacing.sm),
         GridItem(.flexible(), spacing: Spacing.sm),
         GridItem(.flexible(), spacing: Spacing.sm),
-        GridItem(.flexible(), spacing: Spacing.sm),
+        GridItem(.flexible(), spacing: Spacing.sm)
     ]
 
     var body: some View {
@@ -309,7 +309,7 @@ struct BlurTypeSection: View {
                 ForEach(BlurType.allCases) { blurType in
                     BlurTypeButton(
                         blurType: blurType,
-                        isSelected: state.blurType == blurType,
+                        isSelected: state.blurType == blurType
                     ) {
                         state.blurType = blurType
                     }
@@ -357,11 +357,11 @@ struct BlurTypeButton: View {
             .padding(.vertical, Spacing.sm)
             .background(
                 RoundedRectangle(cornerRadius: Size.radiusMd)
-                    .fill(backgroundColor),
+                    .fill(backgroundColor)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: Size.radiusMd)
-                    .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: Size.strokeDefault + 0.5),
+                    .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: Size.strokeDefault + 0.5)
             )
         }
         .buttonStyle(.plain)

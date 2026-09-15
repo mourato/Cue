@@ -125,7 +125,8 @@
             let format = AVAudioFormat(cmAudioFormatDescription: formatDesc)
             let frames = CMSampleBufferGetNumSamples(sampleBuffer)
             guard frames > 0,
-                  let pcm = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(frames)) else {
+                  let pcm = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(frames))
+            else {
                 return nil
             }
             pcm.frameLength = AVAudioFrameCount(frames)
@@ -133,7 +134,7 @@
                 sampleBuffer,
                 at: 0,
                 frameCount: Int32(frames),
-                into: pcm.mutableAudioBufferList,
+                into: pcm.mutableAudioBufferList
             ) == noErr else {
                 return nil
             }

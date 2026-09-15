@@ -88,7 +88,7 @@ private final class QuickAccessPinWindowController {
             image: image,
             thumbnail: item.thumbnail,
             baseSize: sizes.base,
-            maxSize: sizes.max,
+            maxSize: sizes.max
         )
 
         let frame = QuickAccessPinWindowSizing.centeredFrame(size: state.displaySize, on: screen)
@@ -122,7 +122,7 @@ private final class QuickAccessPinWindowController {
             image: image,
             thumbnail: item.thumbnail,
             baseSize: sizes.base,
-            maxSize: sizes.max,
+            maxSize: sizes.max
         )
         targetZoomFactor = state.zoomFactor
         resize(to: newSize, animated: false)
@@ -152,7 +152,7 @@ private final class QuickAccessPinWindowController {
             },
             onLockChanged: { [weak self] in
                 self?.window.updateMousePassthrough()
-            },
+            }
         )
         let hostingView = QuickAccessPinHostingView(rootView: view)
         hostingView.onMagnify = { [weak self] magnification in
@@ -175,7 +175,7 @@ private final class QuickAccessPinWindowController {
             x: center.x - size.width / 2,
             y: center.y - size.height / 2,
             width: size.width,
-            height: size.height,
+            height: size.height
         )
         let screen = window.screen ?? ScreenUtility.activeScreen()
         let targetFrame = QuickAccessPinWindowSizing.constrainedFrame(proposedFrame, on: screen)
@@ -263,7 +263,7 @@ private final class QuickAccessPinHostingView: NSHostingView<QuickAccessPinWindo
     private func setupGestureRecognizer() {
         let recognizer = NSMagnificationGestureRecognizer(
             target: self,
-            action: #selector(handleMagnificationGesture(_:)),
+            action: #selector(handleMagnificationGesture(_:))
         )
         addGestureRecognizer(recognizer)
     }

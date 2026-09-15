@@ -29,21 +29,21 @@ struct MockupControlsSection: View {
                 label: L10n.AnnotateUI.xAxis,
                 value: $state.mockupRotationX,
                 range: -45 ... 45,
-                format: "%.1f°",
+                format: "%.1f°"
             )
 
             MockupSlider(
                 label: L10n.AnnotateUI.yAxis,
                 value: $state.mockupRotationY,
                 range: -45 ... 45,
-                format: "%.1f°",
+                format: "%.1f°"
             )
 
             MockupSlider(
                 label: L10n.AnnotateUI.zAxis,
                 value: $state.mockupRotationZ,
                 range: -180 ... 180,
-                format: "%.1f°",
+                format: "%.1f°"
             )
         }
     }
@@ -58,7 +58,7 @@ struct MockupControlsSection: View {
                 label: L10n.AnnotateUI.depth,
                 value: $state.mockupPerspective,
                 range: 0.1 ... 1.0,
-                format: "%.2f",
+                format: "%.2f"
             )
         }
     }
@@ -76,7 +76,7 @@ struct MockupControlsSection: View {
                 .padding(.vertical, 6)
                 .background(
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(Color.primary.opacity(0.1)),
+                        .fill(Color.primary.opacity(0.1))
                 )
         }
         .buttonStyle(.plain)

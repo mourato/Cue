@@ -25,7 +25,7 @@ struct QuickAccessTextButton: View {
                 .padding(.vertical, 6)
                 .background(
                     RoundedRectangle(cornerRadius: 24)
-                        .fill(buttonBackgroundColor),
+                        .fill(buttonBackgroundColor)
                 )
         }
         .buttonStyle(.plain)

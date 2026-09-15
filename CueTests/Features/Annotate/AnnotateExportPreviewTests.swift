@@ -16,7 +16,7 @@ final class AnnotateExportPreviewTests: XCTestCase {
             text: text,
             target: .point(CGPoint(x: 50, y: 50)),
             color: RGBAColor(red: 1, green: 0, blue: 0, alpha: 1),
-            creationOrder: 1,
+            creationOrder: 1
         )
     }
 

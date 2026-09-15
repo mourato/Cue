@@ -23,13 +23,13 @@ enum CaptureFloatingToolbarPlacement {
         trailingSize: CGSize?,
         anchorRect: CGRect,
         screenFrame: CGRect,
-        gap: CGFloat = interToolbarGap,
+        gap: CGFloat = interToolbarGap
     ) -> PairedOrigins {
         guard let trailingSize else {
             let leading = frameOrigin(
                 toolbarSize: leadingSize,
                 anchorRect: anchorRect,
-                screenFrame: screenFrame,
+                screenFrame: screenFrame
             )
             return PairedOrigins(leading: leading, trailing: nil)
         }
@@ -41,12 +41,12 @@ enum CaptureFloatingToolbarPlacement {
         let pairOrigin = frameOrigin(
             toolbarSize: pairSize,
             anchorRect: anchorRect,
-            screenFrame: screenFrame,
+            screenFrame: screenFrame
         )
 
         let trailing = CGPoint(
             x: pairOrigin.x + leadingSize.width + gap,
-            y: pairOrigin.y,
+            y: pairOrigin.y
         )
 
         return PairedOrigins(leading: pairOrigin, trailing: trailing)
@@ -55,7 +55,7 @@ enum CaptureFloatingToolbarPlacement {
     static func frameOrigin(
         toolbarSize: CGSize,
         anchorRect rect: CGRect,
-        screenFrame: CGRect,
+        screenFrame: CGRect
     ) -> CGPoint {
         let x = rect.midX - toolbarSize.width / 2
         let minX = screenFrame.minX + screenEdgeInset

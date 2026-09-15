@@ -93,7 +93,7 @@ final class AppStatusBarController: ObservableObject {
                 x: (button.bounds.width - size) / 2,
                 y: (button.bounds.height - size) / 2,
                 width: size,
-                height: size,
+                height: size
             )
             spinner.autoresizingMask = [.minXMargin, .maxXMargin, .minYMargin, .maxYMargin]
             button.addSubview(spinner)
@@ -280,7 +280,7 @@ final class AppStatusBarController: ObservableObject {
         nonisolated static func menuBarTitleString(
             for state: RecordingState,
             duration: String,
-            showTime: Bool,
+            showTime: Bool
         ) -> String {
             guard showTime else { return "" }
             switch state {
@@ -301,7 +301,7 @@ final class AppStatusBarController: ObservableObject {
             let title = Self.menuBarTitleString(
                 for: state,
                 duration: recorder.formattedDuration,
-                showTime: showsRecordingTimeOnMenuBar,
+                showTime: showsRecordingTimeOnMenuBar
             )
 
             guard !title.isEmpty else {
@@ -311,15 +311,15 @@ final class AppStatusBarController: ObservableObject {
             let menuBarFont = NSFont.menuBarFont(ofSize: 0)
             let monospacedDigitsFont = NSFont.monospacedDigitSystemFont(
                 ofSize: menuBarFont.pointSize,
-                weight: .regular,
+                weight: .regular
             )
 
             return NSAttributedString(
                 string: title,
                 attributes: [
                     .font: monospacedDigitsFont,
-                    .foregroundColor: NSColor.labelColor,
-                ],
+                    .foregroundColor: NSColor.labelColor
+                ]
             )
         }
 
@@ -348,7 +348,7 @@ final class AppStatusBarController: ObservableObject {
             // Actionable a11y cue matching the icon's behavior (a click stops the recording).
             let image = NSImage(
                 systemSymbolName: "stop.circle.fill",
-                accessibilityDescription: L10n.RecordingToolbar.stopRecordingHint,
+                accessibilityDescription: L10n.RecordingToolbar.stopRecordingHint
             )?.withSymbolConfiguration(config)
             image?.isTemplate = true
             return image
@@ -382,13 +382,13 @@ final class AppStatusBarController: ObservableObject {
         let sourceVisibleOccupancy: CGFloat = 0.9429
         let drawSize = NSSize(
             width: canvasSize.width * targetVisibleOccupancy / sourceVisibleOccupancy,
-            height: canvasSize.height * targetVisibleOccupancy / sourceVisibleOccupancy,
+            height: canvasSize.height * targetVisibleOccupancy / sourceVisibleOccupancy
         )
         let drawRect = NSRect(
             x: (canvasSize.width - drawSize.width) / 2,
             y: (canvasSize.height - drawSize.height) / 2,
             width: drawSize.width,
-            height: drawSize.height,
+            height: drawSize.height
         )
 
         let resizedIcon = NSImage(size: canvasSize)
@@ -397,7 +397,7 @@ final class AppStatusBarController: ObservableObject {
             in: drawRect,
             from: NSRect(origin: .zero, size: appIcon.size),
             operation: .copy,
-            fraction: 1.0,
+            fraction: 1.0
         )
         resizedIcon.unlockFocus()
         // Template images let AppKit adapt the glyph color to the current menu bar material.
@@ -422,11 +422,11 @@ final class AppStatusBarController: ObservableObject {
             let permissionItem = NSMenuItem(
                 title: L10n.Menu.grantPermission,
                 action: #selector(grantPermissionAction),
-                keyEquivalent: "",
+                keyEquivalent: ""
             )
             permissionItem.target = self
             permissionItem.image = NSImage(
-                systemSymbolName: "lock.shield", accessibilityDescription: nil,
+                systemSymbolName: "lock.shield", accessibilityDescription: nil
             )
             permissionItem.isEnabled = true
             menu?.addItem(permissionItem)
@@ -439,7 +439,7 @@ final class AppStatusBarController: ObservableObject {
                 let stopItem = NSMenuItem(
                     title: L10n.Menu.stopRecording(recorder.formattedDuration),
                     action: #selector(stopRecordingAction),
-                    keyEquivalent: "",
+                    keyEquivalent: ""
                 )
                 stopItem.target = self
                 stopItem.image = NSImage(systemSymbolName: "stop.fill", accessibilityDescription: nil)
@@ -450,12 +450,12 @@ final class AppStatusBarController: ObservableObject {
                     title: recorder.isPaused ? L10n.RecordingToolbar.resumeRecording : L10n.RecordingToolbar
                         .pauseRecording,
                     action: #selector(togglePauseRecordingAction),
-                    keyEquivalent: "",
+                    keyEquivalent: ""
                 )
                 pauseResumeItem.target = self
                 pauseResumeItem.image = NSImage(
                     systemSymbolName: recorder.isPaused ? "play.fill" : "pause.fill",
-                    accessibilityDescription: nil,
+                    accessibilityDescription: nil
                 )
                 pauseResumeItem.isEnabled = recorder.state == .recording || recorder.state == .paused
                 menu?.addItem(pauseResumeItem)
@@ -468,7 +468,7 @@ final class AppStatusBarController: ObservableObject {
         let captureAllInOneItem = NSMenuItem(
             title: L10n.Actions.captureAllInOne,
             action: #selector(captureAllInOneAction),
-            keyEquivalent: "",
+            keyEquivalent: ""
         )
         applyConfiguredShortcut(captureAllInOneItem, for: .allInOne, using: shortcutManager)
         captureAllInOneItem.target = self
@@ -480,7 +480,7 @@ final class AppStatusBarController: ObservableObject {
         let captureAreaItem = NSMenuItem(
             title: L10n.Actions.captureArea,
             action: #selector(captureAreaAction),
-            keyEquivalent: "",
+            keyEquivalent: ""
         )
         applyConfiguredShortcut(captureAreaItem, for: .area, using: shortcutManager)
         captureAreaItem.target = self
@@ -493,7 +493,7 @@ final class AppStatusBarController: ObservableObject {
                 let recordItem = NSMenuItem(
                     title: L10n.Menu.recordScreen,
                     action: #selector(recordScreenAction),
-                    keyEquivalent: "",
+                    keyEquivalent: ""
                 )
                 applyConfiguredShortcut(recordItem, for: .recording, using: shortcutManager)
                 recordItem.target = self
@@ -506,7 +506,7 @@ final class AppStatusBarController: ObservableObject {
         let captureOCRItem = NSMenuItem(
             title: L10n.Actions.captureTextOCR,
             action: #selector(captureOCRAction),
-            keyEquivalent: "",
+            keyEquivalent: ""
         )
         applyConfiguredShortcut(captureOCRItem, for: .ocr, using: shortcutManager)
         captureOCRItem.target = self
@@ -521,7 +521,7 @@ final class AppStatusBarController: ObservableObject {
         let applicationCaptureItem = NSMenuItem(
             title: L10n.Menu.chooseApplicationWindow,
             action: #selector(captureApplicationAction),
-            keyEquivalent: "",
+            keyEquivalent: ""
         )
         applicationCaptureItem.target = self
         applicationCaptureItem.image = NSImage(systemSymbolName: "macwindow", accessibilityDescription: nil)
@@ -531,12 +531,12 @@ final class AppStatusBarController: ObservableObject {
         let captureFullscreenItem = NSMenuItem(
             title: L10n.Actions.captureFullscreen,
             action: #selector(captureFullscreenAction),
-            keyEquivalent: "",
+            keyEquivalent: ""
         )
         applyConfiguredShortcut(captureFullscreenItem, for: .fullscreen, using: shortcutManager)
         captureFullscreenItem.target = self
         captureFullscreenItem.image = NSImage(
-            systemSymbolName: "rectangle.dashed", accessibilityDescription: nil,
+            systemSymbolName: "rectangle.dashed", accessibilityDescription: nil
         )
         captureFullscreenItem.isEnabled = viewModel.hasPermission
         captureMenu.addItem(captureFullscreenItem)
@@ -544,7 +544,7 @@ final class AppStatusBarController: ObservableObject {
         let scrollingCaptureItem = NSMenuItem(
             title: L10n.Actions.scrollingCapture,
             action: #selector(captureScrollingAction),
-            keyEquivalent: "",
+            keyEquivalent: ""
         )
         applyConfiguredShortcut(scrollingCaptureItem, for: .scrollingCapture, using: shortcutManager)
         scrollingCaptureItem.target = self
@@ -555,7 +555,7 @@ final class AppStatusBarController: ObservableObject {
         let captureSmartElementItem = NSMenuItem(
             title: L10n.Actions.captureSmartElement,
             action: #selector(captureSmartElementAction),
-            keyEquivalent: "",
+            keyEquivalent: ""
         )
         applyConfiguredShortcut(captureSmartElementItem, for: .smartElement, using: shortcutManager)
         captureSmartElementItem.target = self
@@ -566,13 +566,13 @@ final class AppStatusBarController: ObservableObject {
         let captureObjectCutoutItem = NSMenuItem(
             title: GlobalShortcutKind.objectCutout.displayName,
             action: #selector(captureObjectCutoutAction),
-            keyEquivalent: "",
+            keyEquivalent: ""
         )
         applyConfiguredShortcut(captureObjectCutoutItem, for: .objectCutout, using: shortcutManager)
         captureObjectCutoutItem.target = self
         captureObjectCutoutItem.image = NSImage(
             systemSymbolName: "person.crop.rectangle",
-            accessibilityDescription: nil,
+            accessibilityDescription: nil
         )
         captureObjectCutoutItem.isEnabled = viewModel.hasPermission
         captureMenu.addItem(captureObjectCutoutItem)
@@ -586,19 +586,19 @@ final class AppStatusBarController: ObservableObject {
                 let applicationRecordingItem = NSMenuItem(
                     title: L10n.Menu.recordApplication,
                     action: #selector(recordApplicationAction),
-                    keyEquivalent: "",
+                    keyEquivalent: ""
                 )
                 configureOverlayMenuItem(
                     applicationRecordingItem,
                     base: L10n.Menu.recordApplication,
                     shortcut: applicationRecordingShortcut,
                     parentKind: .recording,
-                    using: shortcutManager,
+                    using: shortcutManager
                 )
                 applicationRecordingItem.target = self
                 applicationRecordingItem.image = NSImage(
                     systemSymbolName: "square.on.square",
-                    accessibilityDescription: nil,
+                    accessibilityDescription: nil
                 )
                 applicationRecordingItem.isEnabled = viewModel.hasPermission && !recorder.isActive
                 captureMenu.addItem(applicationRecordingItem)
@@ -608,7 +608,7 @@ final class AppStatusBarController: ObservableObject {
         let captureMenuItem = NSMenuItem(
             title: L10n.Preferences.captureTab,
             action: nil,
-            keyEquivalent: "",
+            keyEquivalent: ""
         )
         captureMenuItem.submenu = captureMenu
         menu?.addItem(captureMenuItem)
@@ -618,12 +618,12 @@ final class AppStatusBarController: ObservableObject {
         let annotateItem = NSMenuItem(
             title: L10n.Preferences.annotateTab,
             action: #selector(openAnnotateAction),
-            keyEquivalent: "",
+            keyEquivalent: ""
         )
         applyConfiguredShortcut(annotateItem, for: .annotate, using: shortcutManager)
         annotateItem.target = self
         annotateItem.image = NSImage(
-            systemSymbolName: "pencil.and.outline", accessibilityDescription: nil,
+            systemSymbolName: "pencil.and.outline", accessibilityDescription: nil
         )
         annotateItem.isEnabled = true
         menu?.addItem(annotateItem)
@@ -633,7 +633,7 @@ final class AppStatusBarController: ObservableObject {
                 let editVideoItem = NSMenuItem(
                     title: L10n.Menu.editVideo,
                     action: #selector(editVideoAction),
-                    keyEquivalent: "",
+                    keyEquivalent: ""
                 )
                 applyConfiguredShortcut(editVideoItem, for: .videoEditor, using: shortcutManager)
                 editVideoItem.target = self
@@ -649,7 +649,7 @@ final class AppStatusBarController: ObservableObject {
         let historyItem = NSMenuItem(
             title: L10n.Actions.openHistory,
             action: #selector(openHistoryAction),
-            keyEquivalent: "",
+            keyEquivalent: ""
         )
         applyConfiguredShortcut(historyItem, for: .history, using: shortcutManager)
         historyItem.target = self
@@ -663,7 +663,7 @@ final class AppStatusBarController: ObservableObject {
         let prefsItem = NSMenuItem(
             title: L10n.Menu.preferences,
             action: #selector(openPreferencesAction),
-            keyEquivalent: ",",
+            keyEquivalent: ","
         )
         prefsItem.keyEquivalentModifierMask = .command
         prefsItem.target = self
@@ -677,7 +677,7 @@ final class AppStatusBarController: ObservableObject {
         let quitItem = NSMenuItem(
             title: L10n.Menu.quitCue,
             action: #selector(quitAction),
-            keyEquivalent: "q",
+            keyEquivalent: "q"
         )
         quitItem.keyEquivalentModifierMask = .command
         quitItem.target = self
@@ -797,7 +797,7 @@ final class AppStatusBarController: ObservableObject {
             .info,
             .preferences,
             "Preferences window requested",
-            context: ["tab": tab.map { "\($0)" } ?? "current"],
+            context: ["tab": tab.map { "\($0)" } ?? "current"]
         )
         presentPreferencesWindow()
     }
@@ -816,7 +816,7 @@ final class AppStatusBarController: ObservableObject {
                 self,
                 selector: #selector(windowDidClose(_:)),
                 name: NSWindow.willCloseNotification,
-                object: nil,
+                object: nil
             )
         }
 
@@ -833,7 +833,7 @@ final class AppStatusBarController: ObservableObject {
             characters: ",",
             charactersIgnoringModifiers: ",",
             isARepeat: false,
-            keyCode: 43,
+            keyCode: 43
         ) {
             NSApp.mainMenu?.performKeyEquivalent(with: keyEvent)
         }
@@ -865,7 +865,7 @@ final class AppStatusBarController: ObservableObject {
             NotificationCenter.default.removeObserver(
                 self,
                 name: NSWindow.willCloseNotification,
-                object: nil,
+                object: nil
             )
         }
     }
@@ -884,14 +884,14 @@ final class AppStatusBarController: ObservableObject {
                 var values = context ?? [:]
                 values["action"] = action
                 return values
-            }(),
+            }()
         )
     }
 
     private func applyConfiguredShortcut(
         _ item: NSMenuItem,
         for kind: GlobalShortcutKind,
-        using manager: KeyboardShortcutManager,
+        using manager: KeyboardShortcutManager
     ) {
         guard manager.isShortcutEnabled(for: kind) else {
             item.keyEquivalent = ""
@@ -915,7 +915,7 @@ final class AppStatusBarController: ObservableObject {
         base: String,
         shortcut: CaptureOverlayShortcut?,
         parentKind: GlobalShortcutKind,
-        using manager: KeyboardShortcutManager,
+        using manager: KeyboardShortcutManager
     ) {
         guard let shortcut else {
             item.title = base
@@ -927,7 +927,8 @@ final class AppStatusBarController: ObservableObject {
         if shortcut.isIndependent {
             item.title = base
             guard let config = shortcut.independentShortcutConfig,
-                  let keyEquivalent = config.menuKeyEquivalent else {
+                  let keyEquivalent = config.menuKeyEquivalent
+            else {
                 item.keyEquivalent = ""
                 item.keyEquivalentModifierMask = []
                 return
@@ -941,7 +942,8 @@ final class AppStatusBarController: ObservableObject {
         let childDisplay = CaptureOverlayShortcut.inlineDisplay(parts: shortcut.displayParts)
         guard manager.isShortcutEnabled(for: parentKind),
               let parentConfig = manager.shortcut(for: parentKind),
-              let parentKeyEquivalent = parentConfig.menuKeyEquivalent else {
+              let parentKeyEquivalent = parentConfig.menuKeyEquivalent
+        else {
             item.title = base
             item.keyEquivalent = ""
             item.keyEquivalentModifierMask = []
@@ -959,7 +961,7 @@ final class AppStatusBarController: ObservableObject {
             .debug,
             .preferences,
             "Preferences window tracking scheduled",
-            context: ["existingWindows": "\(existingWindowNumbers.count)"],
+            context: ["existingWindows": "\(existingWindowNumbers.count)"]
         )
 
         let workItem = DispatchWorkItem { [weak self] in
@@ -969,8 +971,10 @@ final class AppStatusBarController: ObservableObject {
         DispatchQueue.main.async(execute: workItem)
     }
 
-    private func trackPreferencesWindow(excludingWindowNumbers existingWindowNumbers: Set<Int>,
-                                        remainingAttempts: Int) {
+    private func trackPreferencesWindow(
+        excludingWindowNumbers existingWindowNumbers: Set<Int>,
+        remainingAttempts: Int
+    ) {
         pendingPreferencesWindowTrackingWorkItem = nil
 
         if let trackedPreferencesWindow, trackedPreferencesWindow.isVisible {
@@ -990,7 +994,7 @@ final class AppStatusBarController: ObservableObject {
                 .debug,
                 .preferences,
                 "Preferences window tracked",
-                context: ["windowNumber": "\(candidate.windowNumber)"],
+                context: ["windowNumber": "\(candidate.windowNumber)"]
             )
             syncTrackedPreferencesWindowExclusion()
             return
@@ -1004,7 +1008,7 @@ final class AppStatusBarController: ObservableObject {
         let workItem = DispatchWorkItem { [weak self] in
             self?.trackPreferencesWindow(
                 excludingWindowNumbers: existingWindowNumbers,
-                remainingAttempts: remainingAttempts - 1,
+                remainingAttempts: remainingAttempts - 1
             )
         }
         pendingPreferencesWindowTrackingWorkItem = workItem
@@ -1016,7 +1020,7 @@ final class AppStatusBarController: ObservableObject {
             self,
             selector: #selector(preferencesContentDidAppear(_:)),
             name: .cuePreferencesContentDidAppear,
-            object: nil,
+            object: nil
         )
     }
 
@@ -1050,7 +1054,7 @@ final class AppStatusBarController: ObservableObject {
                 .debug,
                 .recording,
                 "Preferences window added to runtime recording exclusion",
-                context: ["windowID": "\(windowID)"],
+                context: ["windowID": "\(windowID)"]
             )
 
             Task { @MainActor [weak self] in
@@ -1071,7 +1075,7 @@ final class AppStatusBarController: ObservableObject {
                 .debug,
                 .recording,
                 "Preferences window removed from runtime recording exclusion",
-                context: ["windowID": "\(windowID)"],
+                context: ["windowID": "\(windowID)"]
             )
 
             Task { @MainActor [weak self] in

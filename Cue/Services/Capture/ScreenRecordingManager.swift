@@ -113,7 +113,7 @@
             displayScale: CGFloat,
             scaleRetinaTo1x: Bool,
             maxResolution: String,
-            pointSize: CGSize,
+            pointSize: CGSize
         ) -> CGFloat {
             let base = scaleRetinaTo1x ? 1.0 : max(displayScale, 1.0)
             guard let cap = longEdgeCap(for: maxResolution) else { return base }
@@ -127,11 +127,12 @@
         static func cameraDimensions(
             cameraSize: CGSize?,
             fallbackWidth: Int,
-            fallbackHeight: Int,
+            fallbackHeight: Int
         ) -> (width: Int, height: Int) {
             guard let cameraSize,
                   cameraSize.width.isFinite, cameraSize.width > 0,
-                  cameraSize.height.isFinite, cameraSize.height > 0 else {
+                  cameraSize.height.isFinite, cameraSize.height > 0
+            else {
                 return (fallbackWidth, fallbackHeight)
             }
             return (Int(cameraSize.width.rounded()), Int(cameraSize.height.rounded()))
@@ -152,7 +153,7 @@
             height: Int,
             fps: Int,
             quality: VideoQuality,
-            codec: AVVideoCodecType,
+            codec: AVVideoCodecType
         ) -> Int {
             let base = Double(width) * Double(height) * Double(fps) * quality.bitsPerPixelPerFrame
             let codecAdjusted = codec == .hevc ? base * 0.90 : base
@@ -166,12 +167,12 @@
             fps: Int,
             quality: VideoQuality,
             codec: AVVideoCodecType,
-            bitrate: Int,
+            bitrate: Int
         ) -> [String: Any] {
             var compression: [String: Any] = [
                 AVVideoAverageBitRateKey: bitrate,
                 AVVideoExpectedSourceFrameRateKey: fps,
-                AVVideoMaxKeyFrameIntervalKey: fps,
+                AVVideoMaxKeyFrameIntervalKey: fps
             ]
 
             if codec == .h264 {
@@ -181,7 +182,7 @@
             let colorProperties: [String: Any] = [
                 AVVideoColorPrimariesKey: AVVideoColorPrimaries_ITU_R_709_2,
                 AVVideoTransferFunctionKey: AVVideoTransferFunction_ITU_R_709_2,
-                AVVideoYCbCrMatrixKey: AVVideoYCbCrMatrix_ITU_R_709_2,
+                AVVideoYCbCrMatrixKey: AVVideoYCbCrMatrix_ITU_R_709_2
             ]
 
             return [
@@ -189,13 +190,13 @@
                 AVVideoWidthKey: width,
                 AVVideoHeightKey: height,
                 AVVideoCompressionPropertiesKey: compression,
-                AVVideoColorPropertiesKey: colorProperties,
+                AVVideoColorPropertiesKey: colorProperties
             ]
         }
     }
 
     enum RecordingAudioEncodingSettings {
-        static let sampleRate = 48_000
+        static let sampleRate = 48000
         static let channelCount = 2
         static let systemAudioBitrate = 128_000
         static let microphoneAudioBitrate = 128_000
@@ -230,7 +231,7 @@
                 AVLinearPCMBitDepthKey: 32,
                 AVLinearPCMIsFloatKey: true,
                 AVLinearPCMIsBigEndianKey: false,
-                AVLinearPCMIsNonInterleaved: false,
+                AVLinearPCMIsNonInterleaved: false
             ]
         }
 
@@ -240,7 +241,7 @@
                 AVSampleRateKey: sampleRate,
                 AVNumberOfChannelsKey: mono ? 1 : channelCount,
                 AVEncoderBitRateKey: bitrate,
-                AVChannelLayoutKey: mono ? monoChannelLayoutData() : stereoChannelLayoutData(),
+                AVChannelLayoutKey: mono ? monoChannelLayoutData() : stereoChannelLayoutData()
             ]
         }
 
@@ -283,19 +284,19 @@
                 switch self {
                 case .missingVideoTrack:
                     "Recording audio normalization requires a video track."
-                case .cannotAddReaderOutput(let mediaType):
+                case let .cannotAddReaderOutput(mediaType):
                     "Cannot add \(mediaType) reader output."
-                case .cannotAddWriterInput(let mediaType):
+                case let .cannotAddWriterInput(mediaType):
                     "Cannot add \(mediaType) writer input."
-                case .readerStartFailed(let message):
+                case let .readerStartFailed(message):
                     "Audio normalization reader failed to start: \(message)"
-                case .writerStartFailed(let message):
+                case let .writerStartFailed(message):
                     "Audio normalization writer failed to start: \(message)"
-                case .appendFailed(let mediaType):
+                case let .appendFailed(mediaType):
                     "Audio normalization failed while appending \(mediaType) samples."
-                case .readerFailed(let message):
+                case let .readerFailed(message):
                     "Audio normalization reader failed: \(message)"
-                case .writerFailed(let message):
+                case let .writerFailed(message):
                     "Audio normalization writer failed: \(message)"
                 }
             }
@@ -316,7 +317,7 @@
             preservesAudioSource: Bool = true,
             appliesMixdownHeadroom: Bool = false,
             recordMono: Bool = false,
-            keepSeparateAudioTracks: Bool = false,
+            keepSeparateAudioTracks: Bool = false
         ) async throws -> Result {
             let asset = AVURLAsset(url: sourceURL)
             let audioTracks = try await asset.loadTracks(withMediaType: .audio)
@@ -329,7 +330,7 @@
                     outputURL: sourceURL,
                     audioTrackCount: audioTracks.count,
                     didNormalize: false,
-                    audioSourceURL: nil,
+                    audioSourceURL: nil
                 )
             }
             if videoTracks.count > 1 {
@@ -338,7 +339,7 @@
                     outputURL: sourceURL,
                     audioTrackCount: audioTracks.count,
                     didNormalize: false,
-                    audioSourceURL: nil,
+                    audioSourceURL: nil
                 )
             }
             guard requiresMixDown(audioTrackCount: audioTracks.count) else {
@@ -346,7 +347,7 @@
                     outputURL: sourceURL,
                     audioTrackCount: audioTracks.count,
                     didNormalize: false,
-                    audioSourceURL: nil,
+                    audioSourceURL: nil
                 )
             }
 
@@ -372,7 +373,7 @@
                     outputURL: normalizedURL,
                     fileType: fileType,
                     audioInputVolume: inputVolume,
-                    recordMono: recordMono,
+                    recordMono: recordMono
                 )
                 if let preservedSourceURL {
                     try? FileManager.default.removeItem(at: preservedSourceURL)
@@ -382,13 +383,13 @@
                     sourceURL,
                     withItemAt: normalizedURL,
                     backupItemName: nil,
-                    options: [],
+                    options: []
                 )
                 return Result(
                     outputURL: sourceURL,
                     audioTrackCount: audioTracks.count,
                     didNormalize: true,
-                    audioSourceURL: preservedSourceURL,
+                    audioSourceURL: preservedSourceURL
                 )
             } catch {
                 try? FileManager.default.removeItem(at: normalizedURL)
@@ -425,7 +426,7 @@
                 AVLinearPCMBitDepthKey: 32,
                 AVLinearPCMIsFloatKey: true,
                 AVLinearPCMIsBigEndianKey: false,
-                AVLinearPCMIsNonInterleaved: false,
+                AVLinearPCMIsNonInterleaved: false
             ]
         }
 
@@ -439,14 +440,14 @@
             outputURL: URL,
             fileType: AVFileType,
             audioInputVolume: Float,
-            recordMono: Bool = false,
+            recordMono: Bool = false
         ) async throws {
             try? FileManager.default.removeItem(at: outputURL)
 
             try await withCheckedThrowingContinuation { continuation in
                 let workerQueue = DispatchQueue(
                     label: "com.mourato.notinhas.recording.audio-compatibility",
-                    qos: .utility,
+                    qos: .utility
                 )
                 workerQueue.async {
                     do {
@@ -460,7 +461,7 @@
                             outputURL: outputURL,
                             fileType: fileType,
                             audioInputVolume: audioInputVolume,
-                            recordMono: recordMono,
+                            recordMono: recordMono
                         )
                         continuation.resume()
                     } catch {
@@ -480,7 +481,7 @@
             outputURL: URL,
             fileType: AVFileType,
             audioInputVolume: Float,
-            recordMono: Bool = false,
+            recordMono: Bool = false
         ) throws {
             let reader = try AVAssetReader(asset: asset)
             reader.timeRange = CMTimeRange(start: .zero, duration: duration)
@@ -498,7 +499,7 @@
             let videoInput = AVAssetWriterInput(
                 mediaType: .video,
                 outputSettings: nil,
-                sourceFormatHint: sourceFormatHint,
+                sourceFormatHint: sourceFormatHint
             )
             videoInput.expectsMediaDataInRealTime = false
             videoInput.transform = preferredTransform
@@ -509,7 +510,7 @@
 
             let audioOutput = AVAssetReaderAudioMixOutput(
                 audioTracks: audioTracks,
-                audioSettings: makeReaderAudioSettings(),
+                audioSettings: makeReaderAudioSettings()
             )
             audioOutput.audioMix = makeAudioMix(for: audioTracks, inputVolume: audioInputVolume)
             guard reader.canAdd(audioOutput) else {
@@ -519,7 +520,7 @@
 
             let audioInput = AVAssetWriterInput(
                 mediaType: .audio,
-                outputSettings: RecordingAudioEncodingSettings.makeMixedAudioSettings(mono: recordMono),
+                outputSettings: RecordingAudioEncodingSettings.makeMixedAudioSettings(mono: recordMono)
             )
             audioInput.expectsMediaDataInRealTime = false
             guard writer.canAdd(audioInput) else {
@@ -541,8 +542,8 @@
                 writer: writer,
                 outputsAndInputs: [
                     ("video", videoOutput, videoInput),
-                    ("audio", audioOutput, audioInput),
-                ],
+                    ("audio", audioOutput, audioInput)
+                ]
             )
 
             if reader.status == .failed {
@@ -576,7 +577,7 @@
         private static func copySamples(
             reader: AVAssetReader,
             writer: AVAssetWriter,
-            outputsAndInputs: [(String, AVAssetReaderOutput, AVAssetWriterInput)],
+            outputsAndInputs: [(String, AVAssetReaderOutput, AVAssetWriterInput)]
         ) throws {
             let group = DispatchGroup()
             let errorLock = NSLock()
@@ -668,8 +669,8 @@
             case .permissionDenied: L10n.Recording.screenPermissionDenied
             case .microphonePermissionDenied: L10n.Recording.microphonePermissionDenied
             case .noDisplayFound: L10n.Recording.noDisplayFound
-            case .setupFailed(let msg): L10n.Recording.setupFailed(msg)
-            case .writeFailed(let msg): L10n.Recording.writeFailed(msg)
+            case let .setupFailed(msg): L10n.Recording.setupFailed(msg)
+            case let .writeFailed(msg): L10n.Recording.writeFailed(msg)
             case .cancelled: L10n.Recording.cancelled
             case .alreadyActive: L10n.RecordingToolbar.recordingInProgress
             }
@@ -682,7 +683,7 @@
     final class ScreenRecordingManager: NSObject, ObservableObject {
         nonisolated static func videoTrackRoles(
             trackCount: Int,
-            cameraFramesAppended: Int,
+            cameraFramesAppended: Int
         ) -> [RecordingVideoSourceTrackRole] {
             guard trackCount > 0 else { return [] }
             guard cameraFramesAppended > 0 else { return [.screen] }
@@ -784,19 +785,19 @@
         /// Dedicated queues to avoid audio starvation behind video processing work.
         private let videoProcessingQueue = DispatchQueue(
             label: "com.mourato.notinhas.recording.video",
-            qos: .userInitiated,
+            qos: .userInitiated
         )
         private let audioProcessingQueue = DispatchQueue(
             label: "com.mourato.notinhas.recording.audio",
-            qos: .userInteractive,
+            qos: .userInteractive
         )
         private let microphoneProcessingQueue = DispatchQueue(
             label: "com.mourato.notinhas.recording.microphone",
-            qos: .userInteractive,
+            qos: .userInteractive
         )
         private let cameraProcessingQueue = DispatchQueue(
             label: "com.mourato.notinhas.recording.camera",
-            qos: .userInteractive,
+            qos: .userInteractive
         )
 
         private struct RecordingAudioNormalizationResult {
@@ -838,11 +839,11 @@
             excludeDesktopWidgets: Bool = false,
             excludeOwnApplication: Bool = true,
             excludedWindowIDs: [CGWindowID] = [],
-            context: CaptureContext = .empty,
+            context: CaptureContext = .empty
         ) async throws {
             guard state == .idle else {
                 DiagnosticLogger.shared.log(.debug, .recording, "prepareRecording blocked: recorder busy", context: [
-                    "state": "\(state)",
+                    "state": "\(state)"
                 ])
                 throw RecordingError.alreadyActive
             }
@@ -869,7 +870,7 @@
                 "excludeDesktopWidgets": "\(excludeDesktopWidgets)",
                 "excludedWindows": "\(excludedWindowIDs.count)",
                 "saveDirectory": saveDirectory.lastPathComponent,
-                "processingDirectory": processingDirectory?.lastPathComponent ?? "same-as-final",
+                "processingDirectory": processingDirectory?.lastPathComponent ?? "same-as-final"
             ])
 
             videoFormat = format
@@ -909,14 +910,14 @@
                 state = .idle
                 error = .permissionDenied
                 throw RecordingError.permissionDenied
-            case .grantedButUnavailableDueToAppIdentity(let reason):
+            case let .grantedButUnavailableDueToAppIdentity(reason):
                 DiagnosticLogger.shared.log(
                     .warning,
                     .recording,
                     "Recording permission unavailable for app identity",
                     context: [
-                        "reason": reason,
-                    ],
+                        "reason": reason
+                    ]
                 )
                 state = .idle
                 error = .setupFailed(reason)
@@ -960,8 +961,9 @@
             let targetDisplayID: CGDirectDisplayID = if let screen = targetScreen,
                                                         let displayID = screen
                                                         .deviceDescription[
-                                                            NSDeviceDescriptionKey("NSScreenNumber"),
-                                                        ] as? CGDirectDisplayID {
+                                                            NSDeviceDescriptionKey("NSScreenNumber")
+                                                        ] as? CGDirectDisplayID
+            {
                 displayID
             } else {
                 CGMainDisplayID()
@@ -972,7 +974,7 @@
                 "bestOverlap": String(format: "%.0f", bestOverlap),
                 "screenCount": "\(NSScreen.screens.count)",
                 "requestedRect": "\(Int(requestedRect.origin.x)),\(Int(requestedRect.origin.y)) \(Int(requestedRect.width))x\(Int(requestedRect.height))",
-                "usedFallback": "\(targetScreen == nil)",
+                "usedFallback": "\(targetScreen == nil)"
             ])
 
             // Find matching SCDisplay
@@ -982,7 +984,7 @@
                 DiagnosticLogger.shared.log(.error, .recording, "Recording display resolution failed", context: [
                     "targetDisplayID": "\(targetDisplayID)",
                     "availableDisplays": "\(content.displays.count)",
-                    "screens": "\(NSScreen.screens.count)",
+                    "screens": "\(NSScreen.screens.count)"
                 ])
                 state = .idle
                 error = .noDisplayFound
@@ -1005,7 +1007,7 @@
                 displayScale: displayScaleFactor,
                 scaleRetinaTo1x: scaleRetinaVideosTo1x,
                 maxResolution: maxRecordingResolution,
-                pointSize: requestedRect.size,
+                pointSize: requestedRect.size
             )
 
             let captureGeometry: CaptureGeometry
@@ -1013,7 +1015,7 @@
                 captureGeometry = try resolveCaptureGeometry(
                     display: display,
                     rect: requestedRect,
-                    scaleFactor: scaleFactor,
+                    scaleFactor: scaleFactor
                 )
             } catch {
                 DiagnosticLogger.shared.logError(.recording, error, "Recording geometry resolution failed", context: [
@@ -1021,7 +1023,7 @@
                     "displayScaleFactor": String(format: "%.2f", displayScaleFactor),
                     "scaleFactor": String(format: "%.2f", scaleFactor),
                     "maxResolution": maxRecordingResolution,
-                    "requestedRect": "\(Int(requestedRect.width))x\(Int(requestedRect.height))",
+                    "requestedRect": "\(Int(requestedRect.width))x\(Int(requestedRect.height))"
                 ])
                 cleanup()
                 throw error
@@ -1034,16 +1036,16 @@
                     captureGeometry.sourceRect.origin.x,
                     captureGeometry.sourceRect.origin.y,
                     captureGeometry.sourceRect.size.width,
-                    captureGeometry.sourceRect.size.height,
+                    captureGeometry.sourceRect.size.height
                 ),
-                "outputSize": "\(captureGeometry.outputWidth)x\(captureGeometry.outputHeight)",
+                "outputSize": "\(captureGeometry.outputWidth)x\(captureGeometry.outputHeight)"
             ])
 
             // Generate output URL using user-configurable template (with legacy fallback).
             let resolvedFileName = CaptureOutputNaming.resolveBaseName(
                 customName: fileName,
                 kind: .recording,
-                context: context,
+                context: context
             )
             exportDirectoryAccess?.stop()
             let directoryAccess = SandboxFileAccessManager.shared.beginAccessingURL(saveDirectory)
@@ -1069,19 +1071,19 @@
             finalOutputURL = CaptureOutputNaming.makeUniqueFileURL(
                 in: scopedSaveDirectory,
                 baseName: resolvedFileName,
-                fileExtension: format.fileExtension,
+                fileExtension: format.fileExtension
             )
             if let finalOutputURL {
                 do {
                     try FileManager.default.createDirectory(
                         at: finalOutputURL.deletingLastPathComponent(),
-                        withIntermediateDirectories: true,
+                        withIntermediateDirectories: true
                     )
                 } catch {
                     DiagnosticLogger.shared.logError(
                         .recording,
                         error,
-                        "Failed to create recording output subdirectory",
+                        "Failed to create recording output subdirectory"
                     )
                     cleanupRecordingProcessingDirectoryIfNeeded()
                     exportDirectoryAccess?.stop()
@@ -1095,17 +1097,17 @@
             outputURL = CaptureOutputNaming.makeUniqueFileURL(
                 in: writerDirectory,
                 baseName: writerBaseName,
-                fileExtension: format.fileExtension,
+                fileExtension: format.fileExtension
             )
             DiagnosticLogger.shared.log(.debug, .recording, "Recording output file prepared", context: [
                 "file": finalOutputURL?.lastPathComponent ?? "nil",
                 "writerFile": outputURL?.lastPathComponent ?? "nil",
-                "processingDirectory": writerDirectory.lastPathComponent,
+                "processingDirectory": writerDirectory.lastPathComponent
             ])
             TempCaptureManager.shared.updateRecordingManifest(
                 for: writerDirectory,
                 writerURL: outputURL,
-                state: "prepared",
+                state: "prepared"
             )
 
             do {
@@ -1119,7 +1121,7 @@
                     captureCamera: self.captureCamera,
                     cameraSize: self.captureCamera
                         ? RecordingCameraDeviceProvider.captureSize(matching: cameraDeviceID)
-                        : nil,
+                        : nil
                 )
 
                 try await setupStream(
@@ -1127,7 +1129,7 @@
                     captureGeometry: captureGeometry,
                     captureSystemAudio: captureSystemAudio,
                     captureMicrophone: captureMicrophone,
-                    content: content,
+                    content: content
                 )
 
                 // Setup independent microphone capture if requested
@@ -1146,18 +1148,18 @@
                     let inputMapping = RecordingInputMapping.fromNotinhasCapture(
                         globalCaptureRect: captureGeometry.globalCaptureRect,
                         pixelWidth: captureGeometry.outputWidth,
-                        pixelHeight: captureGeometry.outputHeight,
+                        pixelHeight: captureGeometry.outputHeight
                     )
                     pointerActivityRecorder = RecordingPointerActivityRecorder()
                     pointerRecorderForFrames = pointerActivityRecorder
                     pointerActivityRecorder?.start(
                         mapping: inputMapping,
-                        tracksDynamicGeometry: captureWindowTarget != nil,
+                        tracksDynamicGeometry: captureWindowTarget != nil
                     )
                 } else {
                     mouseTracker = RecordingMouseTracker(
                         recordingRect: captureGeometry.globalCaptureRect,
-                        fps: fps,
+                        fps: fps
                     )
                 }
                 if shouldRecordKeystrokes(smartPointerEnabled: smartPointerEnabled) {
@@ -1165,11 +1167,11 @@
                 }
                 DiagnosticLogger.shared.log(.info, .recording, "Recording prepare completed", context: [
                     "file": outputURL?.lastPathComponent ?? "nil",
-                    "outputSize": "\(captureGeometry.outputWidth)x\(captureGeometry.outputHeight)",
+                    "outputSize": "\(captureGeometry.outputWidth)x\(captureGeometry.outputHeight)"
                 ])
             } catch {
                 DiagnosticLogger.shared.logError(.recording, error, "Recording preparation failed", context: [
-                    "stage": "writer-or-stream",
+                    "stage": "writer-or-stream"
                 ])
                 cleanup()
                 throw error
@@ -1184,8 +1186,8 @@
                     .recording,
                     "startRecording blocked: recorder not prepared",
                     context: [
-                        "state": "\(state)",
-                    ],
+                        "state": "\(state)"
+                    ]
                 )
                 throw RecordingError.alreadyActive
             }
@@ -1200,7 +1202,7 @@
                     DiagnosticLogger.shared.logError(.recording, writerError, "Recording writer failed to start")
                 } else {
                     DiagnosticLogger.shared.log(.error, .recording, "Recording writer failed to start", context: [
-                        "writerStatus": "\(session.assetWriter?.status.rawValue ?? -1)",
+                        "writerStatus": "\(session.assetWriter?.status.rawValue ?? -1)"
                     ])
                 }
                 state = .idle
@@ -1244,7 +1246,7 @@
 
             recordingActivity = ProcessInfo.processInfo.beginActivity(
                 options: [.userInitiated, .latencyCritical],
-                reason: "Keep the active recording writer alive",
+                reason: "Keep the active recording writer alive"
             )
             if let recordingProcessingDirectory {
                 TempCaptureManager.shared.updateRecordingManifest(
@@ -1255,7 +1257,7 @@
                     codec: RecordingVideoEncodingSettings.preferredCodec(format: videoFormat, quality: videoQuality)
                         .rawValue,
                     width: Int(recordingRect.width),
-                    height: Int(recordingRect.height),
+                    height: Int(recordingRect.height)
                 )
             }
 
@@ -1266,7 +1268,7 @@
                 "format": videoFormat.rawValue,
                 "systemAudio": "\(captureSystemAudio)",
                 "microphone": "\(captureMicrophone)",
-                "microphoneDevice": microphoneDeviceID ?? RecordingMicrophoneDevice.systemDefaultID,
+                "microphoneDevice": microphoneDeviceID ?? RecordingMicrophoneDevice.systemDefaultID
             ])
             startTime = Date()
             elapsedSeconds = 0
@@ -1281,7 +1283,7 @@
                     .debug,
                     .recording,
                     "pauseRecording ignored",
-                    context: ["state": "\(state)"],
+                    context: ["state": "\(state)"]
                 )
                 return
             }
@@ -1296,7 +1298,7 @@
                 TempCaptureManager.shared.updateRecordingManifest(
                     for: recordingProcessingDirectory,
                     writerURL: outputURL,
-                    state: "paused",
+                    state: "paused"
                 )
             }
             DiagnosticLogger.shared.log(.info, .recording, "Recording paused")
@@ -1309,7 +1311,7 @@
                     .debug,
                     .recording,
                     "resumeRecording ignored",
-                    context: ["state": "\(state)"],
+                    context: ["state": "\(state)"]
                 )
                 return
             }
@@ -1330,11 +1332,11 @@
                 TempCaptureManager.shared.updateRecordingManifest(
                     for: recordingProcessingDirectory,
                     writerURL: outputURL,
-                    state: "recording",
+                    state: "recording"
                 )
             }
             DiagnosticLogger.shared.log(.info, .recording, "Recording resumed", context: [
-                "pauseOffsetSeconds": String(format: "%.3f", pausedDuration),
+                "pauseOffsetSeconds": String(format: "%.3f", pausedDuration)
             ])
         }
 
@@ -1354,14 +1356,14 @@
                     .recording,
                     "Runtime window exclusion ignored: recorder idle",
                     context: [
-                        "windowID": "\(windowID)",
-                    ],
+                        "windowID": "\(windowID)"
+                    ]
                 )
                 return
             }
             guard excludedWindowIDs.insert(windowID).inserted else {
                 DiagnosticLogger.shared.log(.debug, .recording, "Runtime window exclusion already present", context: [
-                    "windowID": "\(windowID)",
+                    "windowID": "\(windowID)"
                 ])
                 return
             }
@@ -1372,14 +1374,14 @@
                     "Runtime window exclusion skipped: no active stream",
                     context: [
                         "windowID": "\(windowID)",
-                        "state": "\(state)",
-                    ],
+                        "state": "\(state)"
+                    ]
                 )
                 return
             }
             DiagnosticLogger.shared.log(.debug, .recording, "Runtime window exclusion added", context: [
                 "windowID": "\(windowID)",
-                "excludedWindows": "\(excludedWindowIDs.count)",
+                "excludedWindows": "\(excludedWindowIDs.count)"
             ])
             await updateContentFilter(for: activeStream)
         }
@@ -1391,8 +1393,8 @@
                     .recording,
                     "Runtime window exclusion removal ignored: recorder idle",
                     context: [
-                        "windowID": "\(windowID)",
-                    ],
+                        "windowID": "\(windowID)"
+                    ]
                 )
                 return
             }
@@ -1402,8 +1404,8 @@
                     .recording,
                     "Runtime window exclusion removal skipped: unknown window",
                     context: [
-                        "windowID": "\(windowID)",
-                    ],
+                        "windowID": "\(windowID)"
+                    ]
                 )
                 return
             }
@@ -1414,14 +1416,14 @@
                     "Runtime window exclusion removal skipped: no active stream",
                     context: [
                         "windowID": "\(windowID)",
-                        "state": "\(state)",
-                    ],
+                        "state": "\(state)"
+                    ]
                 )
                 return
             }
             DiagnosticLogger.shared.log(.debug, .recording, "Runtime window exclusion removed", context: [
                 "windowID": "\(windowID)",
-                "excludedWindows": "\(excludedWindowIDs.count)",
+                "excludedWindows": "\(excludedWindowIDs.count)"
             ])
             await updateContentFilter(for: activeStream)
         }
@@ -1435,7 +1437,7 @@
             DiagnosticLogger.shared.log(.info, .recording, "Recording stop requested", context: [
                 "state": "\(state)",
                 "elapsedSeconds": "\(elapsedSeconds)",
-                "outputFile": outputURL?.lastPathComponent ?? "nil",
+                "outputFile": outputURL?.lastPathComponent ?? "nil"
             ])
 
             session.isCapturing = false
@@ -1470,7 +1472,7 @@
                 let duration = max(TimeInterval(elapsedSeconds), 0.001)
                 let captureResult = pointerActivityRecorder.finish(
                     sessionStartUptime: sessionStart,
-                    duration: duration,
+                    duration: duration
                 )
                 mouseSamples = captureResult.samples
                 mousePresses = captureResult.presses
@@ -1507,7 +1509,7 @@
                     switch finishResult {
                     case .cancelled:
                         result = .cancelled
-                    case .failed(let message):
+                    case let .failed(message):
                         result = .failed(message)
                     case .missingWriter:
                         result = .failed("missing writer")
@@ -1531,14 +1533,15 @@
             if let url {
                 let audioSourceTrackRoles = editorAudioSourceURL == nil ? [] : RecordingAudioSourceTrackRole.roles(
                     capturesSystemAudio: captureSystemAudio,
-                    capturesMicrophone: captureMicrophone,
+                    capturesMicrophone: captureMicrophone
                 )
                 let audioSourceTracks = await recordingAudioSourceTracks(
                     for: editorAudioSourceURL,
-                    roles: audioSourceTrackRoles,
+                    roles: audioSourceTrackRoles
                 )
                 if mouseSamples.count >= 2 || !mousePresses.isEmpty || !recordedKeystrokes.isEmpty
-                    || pointerSynthesizedInRecording || editorAudioSourceURL != nil || captureCamera {
+                    || pointerSynthesizedInRecording || editorAudioSourceURL != nil || captureCamera
+                {
                     do {
                         let metadata = await RecordingMetadata(
                             coordinateSpace: .topLeftNormalized,
@@ -1555,7 +1558,7 @@
                             videoSourceTracks: recordingVideoSourceTracks(for: url, stats: videoWriteStats),
                             cameraOverlayLayout: recordedCameraOverlayLayout,
                             clickHighlightsWereBaked: clickHighlightsWereBaked,
-                            keystrokesWereBaked: keystrokesWereBaked,
+                            keystrokesWereBaked: keystrokesWereBaked
                         )
                         try RecordingMetadataStore.save(metadata, for: url)
                         DiagnosticLogger.shared.log(.info, .recording, "Recording metadata saved", context: [
@@ -1565,7 +1568,7 @@
                             "hasEditorAudioSource": editorAudioSourceURL == nil ? "false" : "true",
                             "editorAudioSourceRoles": audioSourceTrackRoles.map(\.rawValue).joined(separator: ","),
                             "editorAudioSourceTrackIDs": audioSourceTracks.map { "\($0.trackID):\($0.role.rawValue)" }
-                                .joined(separator: ","),
+                                .joined(separator: ",")
                         ])
                     } catch {
                         DiagnosticLogger.shared.logError(.recording, error, "Failed to save recording metadata")
@@ -1573,7 +1576,7 @@
                     }
                 } else {
                     DiagnosticLogger.shared.log(.debug, .recording, "Recording metadata skipped", context: [
-                        "samples": "\(mouseSamples.count)",
+                        "samples": "\(mouseSamples.count)"
                     ])
                 }
                 if let diagnostics = mouseTracker?.diagnostics {
@@ -1582,13 +1585,13 @@
                         "durationSeconds": String(format: "%.3f", diagnostics.duration),
                         "effectiveSamplesPerSecond": String(format: "%.2f", diagnostics.effectiveSamplesPerSecond),
                         "averageIntervalMs": String(format: "%.2f", diagnostics.averageIntervalMs),
-                        "p95IntervalMs": String(format: "%.2f", diagnostics.p95IntervalMs),
+                        "p95IntervalMs": String(format: "%.2f", diagnostics.p95IntervalMs)
                     ])
                 }
                 DiagnosticLogger.shared.log(
                     .info,
                     .recording,
-                    "Recording stopped: \(url.lastPathComponent) (\(elapsedSeconds)s)",
+                    "Recording stopped: \(url.lastPathComponent) (\(elapsedSeconds)s)"
                 )
             } else {
                 deleteStoredRecordingAudioSourceIfUnused(editorAudioSourceURL)
@@ -1636,7 +1639,7 @@
                 _ = TempCaptureManager.shared.updateRecordingManifest(
                     for: recordingProcessingDirectory,
                     writerURL: outputURL,
-                    state: "abandoned",
+                    state: "abandoned"
                 )
             }
             endRecordingActivityIfNeeded()
@@ -1650,7 +1653,7 @@
             }
             DiagnosticLogger.shared.log(.info, .recording, "Recording cancel requested", context: [
                 "state": "\(state)",
-                "outputFile": outputURL?.lastPathComponent ?? "nil",
+                "outputFile": outputURL?.lastPathComponent ?? "nil"
             ])
 
             timer?.invalidate()
@@ -1670,7 +1673,7 @@
                     for: recordingProcessingDirectory,
                     writerURL: outputURL,
                     state: "cancelled",
-                    isFinalized: true,
+                    isFinalized: true
                 )
             }
             mouseTracker?.reset()
@@ -1683,8 +1686,8 @@
                         .recording,
                         "Cancelled recording output was not created",
                         context: [
-                            "file": url.lastPathComponent,
-                        ],
+                            "file": url.lastPathComponent
+                        ]
                     )
                     cleanup()
                     return
@@ -1692,7 +1695,7 @@
                 do {
                     try FileManager.default.removeItem(at: url)
                     DiagnosticLogger.shared.log(.debug, .recording, "Cancelled recording output removed", context: [
-                        "file": url.lastPathComponent,
+                        "file": url.lastPathComponent
                     ])
                 } catch {
                     DiagnosticLogger.shared.logError(
@@ -1700,8 +1703,8 @@
                         error,
                         "Failed to remove cancelled recording output",
                         context: [
-                            "file": url.lastPathComponent,
-                        ],
+                            "file": url.lastPathComponent
+                        ]
                     )
                 }
             }
@@ -1712,7 +1715,7 @@
         // MARK: - Private Methods
 
         private func normalizeRecordingAudioForCompatibilityIfNeeded(
-            writerURL: URL?,
+            writerURL: URL?
         ) async -> RecordingAudioNormalizationResult {
             guard let writerURL else {
                 return RecordingAudioNormalizationResult(outputURL: nil, audioSourceURL: nil)
@@ -1724,7 +1727,7 @@
                     fileType: videoFormat.fileType,
                     appliesMixdownHeadroom: true,
                     recordMono: recordAudioInMono,
-                    keepSeparateAudioTracks: keepSeparateAudioTracks,
+                    keepSeparateAudioTracks: keepSeparateAudioTracks
                 )
                 if result.didNormalize {
                     DiagnosticLogger.shared.log(
@@ -1741,20 +1744,20 @@
                             "mixdownInputVolume": String(
                                 format: "%.3f",
                                 RecordingAudioCompatibilityExporter
-                                    .mixdownInputVolume(audioTrackCount: result.audioTrackCount),
+                                    .mixdownInputVolume(audioTrackCount: result.audioTrackCount)
                             ),
-                            "editorAudioSource": result.audioSourceURL?.lastPathComponent ?? "nil",
-                        ],
+                            "editorAudioSource": result.audioSourceURL?.lastPathComponent ?? "nil"
+                        ]
                     )
                 } else {
                     DiagnosticLogger.shared.log(.debug, .recording, "Recording audio normalization skipped", context: [
                         "file": writerURL.lastPathComponent,
-                        "audioTracks": "\(result.audioTrackCount)",
+                        "audioTracks": "\(result.audioTrackCount)"
                     ])
                 }
                 return RecordingAudioNormalizationResult(
                     outputURL: result.outputURL,
-                    audioSourceURL: result.audioSourceURL,
+                    audioSourceURL: result.audioSourceURL
                 )
             } catch {
                 DiagnosticLogger.shared.log(
@@ -1763,8 +1766,8 @@
                     "Recording audio normalization failed; preserving original file",
                     context: [
                         "file": writerURL.lastPathComponent,
-                        "error": error.localizedDescription,
-                    ],
+                        "error": error.localizedDescription
+                    ]
                 )
                 return RecordingAudioNormalizationResult(outputURL: writerURL, audioSourceURL: nil)
             }
@@ -1779,13 +1782,13 @@
             do {
                 let storedURL = try RecordingMetadataStore.storeAudioSource(from: sourceURL)
                 DiagnosticLogger.shared.log(.info, .recording, "Stored editor audio source", context: [
-                    "file": storedURL.lastPathComponent,
+                    "file": storedURL.lastPathComponent
                 ])
                 return storedURL
             } catch {
                 DiagnosticLogger.shared.log(.warning, .recording, "Failed to store editor audio source", context: [
                     "file": sourceURL.lastPathComponent,
-                    "error": error.localizedDescription,
+                    "error": error.localizedDescription
                 ])
                 return nil
             }
@@ -1796,7 +1799,7 @@
             do {
                 try FileManager.default.removeItem(at: sourceURL)
                 DiagnosticLogger.shared.log(.debug, .recording, "Removed unused editor audio source", context: [
-                    "file": sourceURL.lastPathComponent,
+                    "file": sourceURL.lastPathComponent
                 ])
             } catch {
                 DiagnosticLogger.shared.log(
@@ -1805,15 +1808,15 @@
                     "Failed to remove unused editor audio source",
                     context: [
                         "file": sourceURL.lastPathComponent,
-                        "error": error.localizedDescription,
-                    ],
+                        "error": error.localizedDescription
+                    ]
                 )
             }
         }
 
         private func recordingAudioSourceTracks(
             for sourceURL: URL?,
-            roles: [RecordingAudioSourceTrackRole],
+            roles: [RecordingAudioSourceTrackRole]
         ) async -> [RecordingAudioSourceTrack] {
             guard let sourceURL, !roles.isEmpty else { return [] }
 
@@ -1829,8 +1832,8 @@
                         context: [
                             "file": sourceURL.lastPathComponent,
                             "audioTracks": "\(audioTracks.count)",
-                            "roles": "\(roles.count)",
-                        ],
+                            "roles": "\(roles.count)"
+                        ]
                     )
                     return []
                 }
@@ -1845,8 +1848,8 @@
                     "Failed to inspect editor audio source tracks",
                     context: [
                         "file": sourceURL.lastPathComponent,
-                        "error": error.localizedDescription,
-                    ],
+                        "error": error.localizedDescription
+                    ]
                 )
                 return []
             }
@@ -1854,13 +1857,13 @@
 
         private func recordingVideoSourceTracks(
             for sourceURL: URL,
-            stats: RecordingSession.VideoWriteStats,
+            stats: RecordingSession.VideoWriteStats
         ) async -> [RecordingVideoSourceTrack] {
             guard let tracks = try? await AVURLAsset(url: sourceURL).loadTracks(withMediaType: .video)
             else { return [] }
             let roles = Self.videoTrackRoles(
                 trackCount: tracks.count,
-                cameraFramesAppended: stats.cameraFramesAppended,
+                cameraFramesAppended: stats.cameraFramesAppended
             )
             var sourceTracks: [RecordingVideoSourceTrack] = []
             for (index, track) in tracks.enumerated() {
@@ -1870,8 +1873,8 @@
                     RecordingVideoSourceTrack(
                         trackID: Int(track.trackID),
                         role: roles[index],
-                        captureSize: captureSize,
-                    ),
+                        captureSize: captureSize
+                    )
                 )
             }
             return sourceTracks
@@ -1885,7 +1888,7 @@
                     .error,
                     .recording,
                     "Recording writer output missing before final move",
-                    context: ["file": writerURL.lastPathComponent],
+                    context: ["file": writerURL.lastPathComponent]
                 )
                 cleanupRecordingProcessingDirectoryIfNeeded()
                 return nil
@@ -1907,7 +1910,7 @@
                 DiagnosticLogger.shared.log(.info, .recording, "Recording output moved to final directory", context: [
                     "file": movedURL.lastPathComponent,
                     "processingDirectory": writerURL.deletingLastPathComponent().lastPathComponent,
-                    "finalDirectory": movedURL.deletingLastPathComponent().lastPathComponent,
+                    "finalDirectory": movedURL.deletingLastPathComponent().lastPathComponent
                 ])
                 return movedURL
             } catch {
@@ -1915,7 +1918,7 @@
                     .recording,
                     error,
                     "Recording final move failed; attempting temp recovery",
-                    context: ["file": writerURL.lastPathComponent],
+                    context: ["file": writerURL.lastPathComponent]
                 )
             }
 
@@ -1924,7 +1927,7 @@
                 let movedURL = try moveRecordingOutput(from: writerURL, to: recoveredURL)
                 cleanupRecordingProcessingDirectoryIfNeeded()
                 DiagnosticLogger.shared.log(.info, .recording, "Recording output recovered to temp captures", context: [
-                    "file": movedURL.lastPathComponent,
+                    "file": movedURL.lastPathComponent
                 ])
                 return movedURL
             } catch {
@@ -1933,7 +1936,7 @@
                     .recording,
                     error,
                     "Recording temp recovery failed; preserving writer output",
-                    context: ["file": writerURL.lastPathComponent],
+                    context: ["file": writerURL.lastPathComponent]
                 )
                 return writerURL
             }
@@ -1943,7 +1946,7 @@
             let destinationURL = uniqueDestinationURL(for: proposedDestinationURL)
             try FileManager.default.createDirectory(
                 at: destinationURL.deletingLastPathComponent(),
-                withIntermediateDirectories: true,
+                withIntermediateDirectories: true
             )
             try FileManager.default.moveItem(at: sourceURL, to: destinationURL)
             return destinationURL
@@ -1960,7 +1963,7 @@
             return CaptureOutputNaming.makeUniqueFileURL(
                 in: directory,
                 baseName: baseName,
-                fileExtension: fileExtension,
+                fileExtension: fileExtension
             )
         }
 
@@ -1982,7 +1985,7 @@
                     .warning,
                     .recording,
                     "Recording processing directory preserved because output may still be in flight",
-                    context: context,
+                    context: context
                 )
                 return
             }
@@ -2008,7 +2011,7 @@
             captureMicrophone: Bool,
             recordAudioInMono: Bool = false,
             captureCamera: Bool = false,
-            cameraSize: CGSize? = nil,
+            cameraSize: CGSize? = nil
         ) throws {
             guard let url = outputURL else {
                 DiagnosticLogger.shared.log(.error, .recording, "Asset writer setup failed: missing output URL")
@@ -2025,8 +2028,8 @@
                         error,
                         "Failed to remove existing recording output",
                         context: [
-                            "file": url.lastPathComponent,
-                        ],
+                            "file": url.lastPathComponent
+                        ]
                     )
                 }
             }
@@ -2042,7 +2045,7 @@
                 width: width,
                 height: height,
                 codec: selectedCodec,
-                bitrate: selectedBitrate,
+                bitrate: selectedBitrate
             )
 
             var videoIn = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
@@ -2054,8 +2057,8 @@
                     "HEVC writer input unavailable; falling back to H.264",
                     context: [
                         "outputSize": "\(width)x\(height)",
-                        "format": videoFormat.rawValue,
-                    ],
+                        "format": videoFormat.rawValue
+                    ]
                 )
                 selectedCodec = .h264
                 selectedBitrate = calculatedVideoBitrate(width: width, height: height, codec: selectedCodec)
@@ -2063,7 +2066,7 @@
                     width: width,
                     height: height,
                     codec: selectedCodec,
-                    bitrate: selectedBitrate,
+                    bitrate: selectedBitrate
                 )
                 videoIn = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
             }
@@ -2071,7 +2074,7 @@
             guard writer.canAdd(videoIn) else {
                 DiagnosticLogger.shared.log(.error, .recording, "Cannot add recording video writer input", context: [
                     "outputSize": "\(width)x\(height)",
-                    "format": videoFormat.rawValue,
+                    "format": videoFormat.rawValue
                 ])
                 throw RecordingError.setupFailed(L10n.Recording.cannotAddVideoWriterInput)
             }
@@ -2084,18 +2087,18 @@
                 "qualityPreset": videoQuality.rawValue,
                 "bitrateBps": "\(selectedBitrate)",
                 "fps": "\(fps)",
-                "outputSize": "\(width)x\(height)",
+                "outputSize": "\(width)x\(height)"
             ])
 
             // Create pixel buffer adaptor for BGRA input from ScreenCaptureKit
             let sourcePixelBufferAttributes: [String: Any] = [
                 kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
                 kCVPixelBufferWidthKey as String: width,
-                kCVPixelBufferHeightKey as String: height,
+                kCVPixelBufferHeightKey as String: height
             ]
             let adaptor = AVAssetWriterInputPixelBufferAdaptor(
                 assetWriterInput: videoIn,
-                sourcePixelBufferAttributes: sourcePixelBufferAttributes,
+                sourcePixelBufferAttributes: sourcePixelBufferAttributes
             )
             session.pixelBufferAdaptor = adaptor
 
@@ -2103,18 +2106,18 @@
                 let cameraDimensions = RecordingVideoEncodingSettings.cameraDimensions(
                     cameraSize: cameraSize,
                     fallbackWidth: width,
-                    fallbackHeight: height,
+                    fallbackHeight: height
                 )
                 let cameraBitrate = calculatedVideoBitrate(
                     width: cameraDimensions.width,
                     height: cameraDimensions.height,
-                    codec: selectedCodec,
+                    codec: selectedCodec
                 )
                 let cameraSettings = makeVideoSettings(
                     width: cameraDimensions.width,
                     height: cameraDimensions.height,
                     codec: selectedCodec,
-                    bitrate: cameraBitrate,
+                    bitrate: cameraBitrate
                 )
                 let cameraIn = AVAssetWriterInput(mediaType: .video, outputSettings: cameraSettings)
                 cameraIn.expectsMediaDataInRealTime = true
@@ -2127,8 +2130,8 @@
                     sourcePixelBufferAttributes: [
                         kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
                         kCVPixelBufferWidthKey as String: cameraDimensions.width,
-                        kCVPixelBufferHeightKey as String: cameraDimensions.height,
-                    ],
+                        kCVPixelBufferHeightKey as String: cameraDimensions.height
+                    ]
                 )
             }
 
@@ -2169,7 +2172,7 @@
                 height: height,
                 fps: fps,
                 quality: videoQuality,
-                codec: codec,
+                codec: codec
             )
         }
 
@@ -2177,7 +2180,7 @@
             width: Int,
             height: Int,
             codec: AVVideoCodecType,
-            bitrate: Int,
+            bitrate: Int
         ) -> [String: Any] {
             RecordingVideoEncodingSettings.makeVideoSettings(
                 width: width,
@@ -2185,14 +2188,14 @@
                 fps: fps,
                 quality: videoQuality,
                 codec: codec,
-                bitrate: bitrate,
+                bitrate: bitrate
             )
         }
 
         private func resolveCaptureGeometry(
             display: SCDisplay,
             rect: CGRect,
-            scaleFactor: CGFloat,
+            scaleFactor: CGFloat
         ) throws -> CaptureGeometry {
             guard let matchingScreen = NSScreen.screens.first(where: {
                 Int($0.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? CGDirectDisplayID ?? 0)
@@ -2204,8 +2207,8 @@
                     "Recording geometry failed: no matching NSScreen",
                     context: [
                         "displayID": "\(display.displayID)",
-                        "screens": "\(NSScreen.screens.count)",
-                    ],
+                        "screens": "\(NSScreen.screens.count)"
+                    ]
                 )
                 throw RecordingError.noDisplayFound
             }
@@ -2215,7 +2218,7 @@
                 x: rect.origin.x - screenFrame.origin.x,
                 y: rect.origin.y - screenFrame.origin.y,
                 width: rect.width,
-                height: rect.height,
+                height: rect.height
             )
 
             let screenBounds = CGRect(x: 0, y: 0, width: screenFrame.width, height: screenFrame.height)
@@ -2228,8 +2231,8 @@
                     context: [
                         "displayID": "\(display.displayID)",
                         "relativeRect": "\(Int(relativeRect.width))x\(Int(relativeRect.height))",
-                        "screenBounds": "\(Int(screenBounds.width))x\(Int(screenBounds.height))",
-                    ],
+                        "screenBounds": "\(Int(screenBounds.width))x\(Int(screenBounds.height))"
+                    ]
                 )
                 throw RecordingError.setupFailed(L10n.Recording.selectionOutsideDisplayBounds)
             }
@@ -2242,8 +2245,8 @@
                     "Recording geometry failed: pixel-aligned rect empty",
                     context: [
                         "displayID": "\(display.displayID)",
-                        "scaleFactor": String(format: "%.2f", scaleFactor),
-                    ],
+                        "scaleFactor": String(format: "%.2f", scaleFactor)
+                    ]
                 )
                 throw RecordingError.setupFailed(L10n.Recording.selectionOutsideDisplayBounds)
             }
@@ -2254,20 +2257,20 @@
                 x: alignedRect.origin.x,
                 y: flippedY,
                 width: alignedRect.width,
-                height: alignedRect.height,
+                height: alignedRect.height
             )
             let globalCaptureRect = CGRect(
                 x: alignedRect.origin.x + screenFrame.origin.x,
                 y: alignedRect.origin.y + screenFrame.origin.y,
                 width: alignedRect.width,
-                height: alignedRect.height,
+                height: alignedRect.height
             )
 
             return CaptureGeometry(
                 sourceRect: sourceRect,
                 globalCaptureRect: globalCaptureRect,
                 outputWidth: max(1, Int((alignedRect.width * scaleFactor).rounded())),
-                outputHeight: max(1, Int((alignedRect.height * scaleFactor).rounded())),
+                outputHeight: max(1, Int((alignedRect.height * scaleFactor).rounded()))
             )
         }
 
@@ -2283,7 +2286,7 @@
                 x: minX,
                 y: minY,
                 width: max(0, maxX - minX),
-                height: max(0, maxY - minY),
+                height: max(0, maxY - minY)
             )
 
             return aligned.intersection(bounds)
@@ -2294,7 +2297,7 @@
             captureGeometry: CaptureGeometry,
             captureSystemAudio: Bool,
             captureMicrophone: Bool,
-            content: SCShareableContent,
+            content: SCShareableContent
         ) async throws {
             let filter = makeContentFilter(display: display, content: content)
 
@@ -2331,7 +2334,7 @@
                     }
                 case .denied, .restricted:
                     DiagnosticLogger.shared.log(.warning, .recording, "Microphone permission unavailable", context: [
-                        "status": audioAuthorizationStatusLabel(micStatus),
+                        "status": audioAuthorizationStatusLabel(micStatus)
                     ])
                     throw RecordingError.microphonePermissionDenied
                 case .authorized:
@@ -2360,11 +2363,11 @@
                     captureGeometry.sourceRect.origin.x,
                     captureGeometry.sourceRect.origin.y,
                     captureGeometry.sourceRect.size.width,
-                    captureGeometry.sourceRect.size.height,
+                    captureGeometry.sourceRect.size.height
                 ),
                 "systemAudio": "\(captureSystemAudio)",
                 "microphone": "\(captureMicrophone)",
-                "outputTypes": registeredOutputTypes.map { streamOutputTypeLabel($0) }.sorted().joined(separator: "+"),
+                "outputTypes": registeredOutputTypes.map { streamOutputTypeLabel($0) }.sorted().joined(separator: "+")
             ])
         }
 
@@ -2372,12 +2375,13 @@
             if let captureWindowTarget,
                let primaryWindow = content.windows.first(where: {
                    $0.windowID == captureWindowTarget.windowID && $0.isOnScreen
-               }) {
+               })
+            {
                 var includedWindows = [primaryWindow]
                 includedWindows += content.windows.filter { exceptedWindowIDs.contains($0.windowID) }
                 return SCContentFilter(
                     display: display,
-                    including: uniqueWindows(includedWindows),
+                    including: uniqueWindows(includedWindows)
                 )
             }
 
@@ -2386,7 +2390,7 @@
                     .warning,
                     .recording,
                     "Recording application window missing from shareable content; falling back to rect filter",
-                    context: ["windowID": "\(captureWindowTarget.windowID)"],
+                    context: ["windowID": "\(captureWindowTarget.windowID)"]
                 )
             }
 
@@ -2410,7 +2414,7 @@
                 return SCContentFilter(
                     display: display,
                     excludingApplications: uniqueApplications(excludedApps),
-                    exceptingWindows: uniqueWindows(exceptedWindows),
+                    exceptingWindows: uniqueWindows(exceptedWindows)
                 )
             }
 
@@ -2432,7 +2436,7 @@
                     return SCContentFilter(
                         display: display,
                         excludingApplications: uniqueApplications(excludedApps),
-                        exceptingWindows: uniqueWindows(exceptedWindows),
+                        exceptingWindows: uniqueWindows(exceptedWindows)
                     )
                 }
             }
@@ -2447,7 +2451,7 @@
 
             return SCContentFilter(
                 display: display,
-                excludingWindows: uniqueWindows(excludedWindows),
+                excludingWindows: uniqueWindows(excludedWindows)
             )
         }
 
@@ -2473,7 +2477,8 @@
             let targetDisplayID: CGDirectDisplayID = if let screen = NSScreen.screens
                 .first(where: { $0.frame.intersects(recordingRect) }),
                 let displayID = screen
-                .deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? CGDirectDisplayID {
+                .deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? CGDirectDisplayID
+            {
                 displayID
             } else {
                 CGMainDisplayID()
@@ -2503,8 +2508,8 @@
                         "Recording content filter update skipped: no current display",
                         context: [
                             "displays": "\(content.displays.count)",
-                            "windows": "\(content.windows.count)",
-                        ],
+                            "windows": "\(content.windows.count)"
+                        ]
                     )
                     return
                 }
@@ -2513,7 +2518,7 @@
                 DiagnosticLogger.shared.log(.debug, .recording, "Recording content filter updated", context: [
                     "displayID": "\(display.displayID)",
                     "excludedWindows": "\(excludedWindowIDs.count)",
-                    "exceptedWindows": "\(exceptedWindowIDs.count)",
+                    "exceptedWindows": "\(exceptedWindowIDs.count)"
                 ])
             } catch {
                 DiagnosticLogger.shared.logError(.recording, error, "Failed to update recording content filter")
@@ -2552,7 +2557,7 @@
                 "microphoneSamplesAppended": "\(stats.microphoneSamplesAppended)",
                 "cameraFramesReceived": "\(stats.cameraFramesReceived)",
                 "cameraFramesAppended": "\(stats.cameraFramesAppended)",
-                "cameraFramesDropped": "\(stats.cameraFramesDropped)",
+                "cameraFramesDropped": "\(stats.cameraFramesDropped)"
             ]
 
             if let outputURL {
@@ -2571,7 +2576,8 @@
                     let minFrameDuration = try? await track.load(.minFrameDuration)
                     if let minFrameDuration,
                        minFrameDuration.isValid,
-                       minFrameDuration.seconds > 0 {
+                       minFrameDuration.seconds > 0
+                    {
                         context["outputFrameDurationMs"] = String(format: "%.2f", minFrameDuration.seconds * 1000)
                     }
                 }
@@ -2624,7 +2630,7 @@
                     for: recordingProcessingDirectory,
                     writerURL: outputURL,
                     state: shouldPreserveProcessingOutputOnCleanup ? "abandoned" : "finished",
-                    isFinalized: !shouldPreserveProcessingOutputOnCleanup,
+                    isFinalized: !shouldPreserveProcessingOutputOnCleanup
                 )
             }
             session.reset()
@@ -2665,8 +2671,8 @@
                         error,
                         "Failed to remove recording stream output",
                         context: [
-                            "type": streamOutputTypeLabel(outputType),
-                        ],
+                            "type": streamOutputTypeLabel(outputType)
+                        ]
                     )
                 }
             }
@@ -2691,8 +2697,8 @@
                     .recording,
                     "Excepted recording window skipped: no active stream",
                     context: [
-                        "windowID": "\(windowID)",
-                    ],
+                        "windowID": "\(windowID)"
+                    ]
                 )
                 return
             }
@@ -2702,8 +2708,8 @@
                     .recording,
                     "Excepted recording window skipped: own app is included",
                     context: [
-                        "windowID": "\(windowID)",
-                    ],
+                        "windowID": "\(windowID)"
+                    ]
                 )
                 return
             }
@@ -2711,7 +2717,7 @@
             exceptedWindowIDs.insert(windowID)
             DiagnosticLogger.shared.log(.debug, .recording, "Excepted recording window added", context: [
                 "windowID": "\(windowID)",
-                "exceptedWindows": "\(exceptedWindowIDs.count)",
+                "exceptedWindows": "\(exceptedWindowIDs.count)"
             ])
             await updateContentFilter(for: activeStream)
         }
@@ -2765,7 +2771,7 @@
         nonisolated func stream(
             _: SCStream,
             didOutputSampleBuffer sampleBuffer: CMSampleBuffer,
-            of type: SCStreamOutputType,
+            of type: SCStreamOutputType
         ) {
             autoreleasepool {
                 guard sampleBuffer.isValid else { return }

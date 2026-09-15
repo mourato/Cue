@@ -56,7 +56,7 @@ struct ScrollingCapturePreviewView: View {
     var body: some View {
         let previewHeight = ScrollingCapturePreviewLayout.previewHeight(
             for: displayedPreviewImage,
-            maxAvailableHeight: maxImageHeight,
+            maxAvailableHeight: maxImageHeight
         )
 
         Group {
@@ -64,18 +64,18 @@ struct ScrollingCapturePreviewView: View {
                 GeometryReader { geometry in
                     ScrollingCapturePreviewRenderer(
                         image: previewImage,
-                        scaling: previewScaling,
+                        scaling: previewScaling
                     )
                     .frame(
                         width: geometry.size.width,
                         height: geometry.size.height,
-                        alignment: .top,
+                        alignment: .top
                     )
                     .clipShape(
                         RoundedRectangle(
                             cornerRadius: ScrollingCapturePreviewLayout.cardCornerRadius,
-                            style: .continuous,
-                        ),
+                            style: .continuous
+                        )
                     )
                     .shadow(color: Color.black.opacity(0.22), radius: 12, x: 0, y: 4)
                     .shadow(color: Color.black.opacity(0.10), radius: 2, x: 0, y: 1)

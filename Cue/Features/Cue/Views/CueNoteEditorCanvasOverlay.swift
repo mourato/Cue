@@ -20,13 +20,14 @@ struct CueNoteEditorCanvasOverlay: View {
 
     var body: some View {
         if let editingID = state.notinhasEditingNoteID,
-           let note = state.cueNotes.first(where: { $0.id == editingID }) {
+           let note = state.cueNotes.first(where: { $0.id == editingID })
+        {
             let workArea = CGRect(origin: .zero, size: hostSize)
             let selectionInForeground = CueNoteGeometry.selectionDisplayBounds(
                 for: note.target,
                 canvasBounds: canvasBounds,
                 displayScale: scale,
-                pinDiameter: note.pinDiameter,
+                pinDiameter: note.pinDiameter
             )
             let selectionInWorkArea = CueNoteGeometry.selectionBoundsInEditorWorkArea(
                 selectionInForeground: selectionInForeground,
@@ -34,16 +35,16 @@ struct CueNoteEditorCanvasOverlay: View {
                 backgroundDisplaySize: backgroundDisplaySize,
                 workAreaSize: hostSize,
                 zoomLevel: zoomLevel,
-                panOffset: panOffset,
+                panOffset: panOffset
             )
             let panelSize = CueNoteGeometry.editorPanelSize(
                 isRectangular: note.target.isRectangular,
-                in: workArea,
+                in: workArea
             )
             let origin = panelPlacement.displayOrigin(
                 selectionBounds: selectionInWorkArea,
                 panelSize: panelSize,
-                in: workArea,
+                in: workArea
             )
             let displayNumber = state.notinhasDisplayNumber(for: editingID) ?? 1
 
@@ -66,12 +67,12 @@ struct CueNoteEditorCanvasOverlay: View {
                             translation,
                             selectionBounds: selectionInWorkArea,
                             panelSize: panelSize,
-                            workArea: workArea,
+                            workArea: workArea
                         )
                     },
                     onPanelDragEnded: {
                         endPanelDrag(panelSize: panelSize, workArea: workArea)
-                    },
+                    }
                 )
                 .offset(x: origin.x, y: origin.y)
             }
@@ -80,7 +81,7 @@ struct CueNoteEditorCanvasOverlay: View {
                 panelPlacement.ensureSeeded(
                     selectionBounds: selectionInWorkArea,
                     panelSize: panelSize,
-                    in: workArea,
+                    in: workArea
                 )
                 lastTrackedPanelSize = panelSize
                 lastTrackedHostSize = hostSize
@@ -92,7 +93,7 @@ struct CueNoteEditorCanvasOverlay: View {
                 reconcilePlacementIfNeeded(
                     panelSize: newPanelSize,
                     hostSize: hostSize,
-                    workArea: workArea,
+                    workArea: workArea
                 )
             }
             .onChange(of: hostSize) { newHostSize in
@@ -100,7 +101,7 @@ struct CueNoteEditorCanvasOverlay: View {
                 reconcilePlacementIfNeeded(
                     panelSize: panelSize,
                     hostSize: newHostSize,
-                    workArea: updatedWorkArea,
+                    workArea: updatedWorkArea
                 )
             }
             .onDisappear {
@@ -114,7 +115,7 @@ struct CueNoteEditorCanvasOverlay: View {
     private func reconcilePlacementIfNeeded(
         panelSize: CGSize,
         hostSize: CGSize,
-        workArea: CGRect,
+        workArea: CGRect
     ) {
         guard !panelPlacement.isDragging else { return }
 
@@ -135,17 +136,17 @@ struct CueNoteEditorCanvasOverlay: View {
         _ translation: CGSize,
         selectionBounds: CGRect,
         panelSize: CGSize,
-        workArea: CGRect,
+        workArea: CGRect
     ) {
         panelPlacement.beginDrag(
             selectionBounds: selectionBounds,
             panelSize: panelSize,
-            in: workArea,
+            in: workArea
         )
         panelPlacement.updateDrag(
             translation: translation,
             panelSize: panelSize,
-            in: workArea,
+            in: workArea
         )
     }
 
@@ -163,7 +164,7 @@ struct CueNoteEditorCanvasOverlay: View {
             get: { activeDraft(for: note).text },
             set: { newValue in
                 updateDraft(from: note) { $0.text = newValue }
-            },
+            }
         )
     }
 
@@ -172,7 +173,7 @@ struct CueNoteEditorCanvasOverlay: View {
             get: { activeDraft(for: note).color },
             set: { newValue in
                 applyLiveAppearance(from: note, color: newValue, areaStyle: nil, areaStrokeWidth: nil)
-            },
+            }
         )
     }
 
@@ -181,7 +182,7 @@ struct CueNoteEditorCanvasOverlay: View {
             get: { activeDraft(for: note).areaStyle },
             set: { newValue in
                 applyLiveAppearance(from: note, color: nil, areaStyle: newValue, areaStrokeWidth: nil)
-            },
+            }
         )
     }
 
@@ -190,7 +191,7 @@ struct CueNoteEditorCanvasOverlay: View {
             get: { activeDraft(for: note).areaStrokeWidth },
             set: { newValue in
                 applyLiveAppearance(from: note, color: nil, areaStyle: nil, areaStrokeWidth: newValue)
-            },
+            }
         )
     }
 
@@ -239,7 +240,7 @@ struct CueNoteEditorCanvasOverlay: View {
         from note: CueVisualNote,
         color: RGBAColor?,
         areaStyle: CueAreaStyle?,
-        areaStrokeWidth: CGFloat?,
+        areaStrokeWidth: CGFloat?
     ) {
         updateDraft(from: note) { updated in
             if let color {

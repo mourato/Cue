@@ -57,7 +57,7 @@ final class CaptureLastSelectionStoreTests: XCTestCase {
         let screens = [CGRect(x: 0, y: 0, width: 1440, height: 900)]
         defaults.set(
             ["x": CGFloat.infinity, "y": 100, "width": 0, "height": 200],
-            forKey: PreferencesKeys.captureAllInOneLastAreaRect,
+            forKey: PreferencesKeys.captureAllInOneLastAreaRect
         )
 
         XCTAssertNil(CaptureLastSelectionStore.load(userDefaults: defaults, screens: screens))

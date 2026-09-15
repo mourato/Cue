@@ -33,14 +33,14 @@ struct StatusBadge: View {
         systemImage: String? = nil,
         tint: Color,
         style: Style = .pill,
-        showsProgress: Bool = false,
+        showsProgress: Bool = false
     ) {
         configuration = Configuration(
             label: label,
             systemImage: systemImage,
             tint: tint,
             style: style,
-            showsProgress: showsProgress,
+            showsProgress: showsProgress
         )
     }
 
@@ -48,7 +48,7 @@ struct StatusBadge: View {
         switch configuration.style {
         case .pill:
             pillBadge
-        case .circle(let size):
+        case let .circle(size):
             circleBadge(size: size)
         }
     }

@@ -10,7 +10,7 @@ import os.log
 
 private let sandboxOffMigrationLogger = Logger(
     subsystem: "Notinhas",
-    category: "SandboxOffMigration",
+    category: "SandboxOffMigration"
 )
 
 struct SandboxOffDataMigrationResult: Equatable {
@@ -29,7 +29,7 @@ struct SandboxOffDataMigrationResult: Equatable {
         errorSkippedApplicationSupportItems: 0,
         importedPreferenceKeys: 0,
         skippedPreferenceKeys: 0,
-        copiedLogItems: 0,
+        copiedLogItems: 0
     )
 }
 
@@ -48,11 +48,11 @@ final class SandboxOffDataMigrationService {
             guard
                 let applicationSupportDirectory = FileManager.default.urls(
                     for: .applicationSupportDirectory,
-                    in: .userDomainMask,
+                    in: .userDomainMask
                 ).first,
                 let libraryDirectory = FileManager.default.urls(
                     for: .libraryDirectory,
-                    in: .userDomainMask,
+                    in: .userDomainMask
                 ).first
             else {
                 return nil
@@ -65,7 +65,7 @@ final class SandboxOffDataMigrationService {
                 libraryDirectory: libraryDirectory,
                 userDefaults: .standard,
                 fileManager: .default,
-                isRunningSandboxed: ProcessInfo.processInfo.environment["APP_SANDBOX_CONTAINER_ID"] != nil,
+                isRunningSandboxed: ProcessInfo.processInfo.environment["APP_SANDBOX_CONTAINER_ID"] != nil
             )
         }
     }
@@ -116,7 +116,7 @@ final class SandboxOffDataMigrationService {
 
         let sourceDataDirectory = sandboxDataDirectory(
             homeDirectory: configuration.homeDirectory,
-            bundleIdentifier: bundleIdentifier,
+            bundleIdentifier: bundleIdentifier
         )
         guard configuration.fileManager.fileExists(atPath: sourceDataDirectory.path) else {
             markCompleted(configuration, sourceDataDirectory: sourceDataDirectory)
@@ -127,7 +127,7 @@ final class SandboxOffDataMigrationService {
                 errorSkippedApplicationSupportItems: 0,
                 importedPreferenceKeys: 0,
                 skippedPreferenceKeys: 0,
-                copiedLogItems: 0,
+                copiedLogItems: 0
             )
         }
 
@@ -140,14 +140,14 @@ final class SandboxOffDataMigrationService {
                     .appendingPathComponent(appSupportFolderName, isDirectory: true),
                 to: destinationAppSupportDirectory(configuration),
                 configuration: configuration,
-                summary: &applicationSupportSummary,
+                summary: &applicationSupportSummary
             )
         }
 
         let preferencesSummary = migratePreferences(
             sourceDataDirectory: sourceDataDirectory,
             bundleIdentifier: bundleIdentifier,
-            configuration: configuration,
+            configuration: configuration
         )
 
         var logSummary = DirectoryMergeSummary()
@@ -162,11 +162,11 @@ final class SandboxOffDataMigrationService {
                         .appendingPathComponent("Logs", isDirectory: true)
                         .appendingPathComponent(currentAppSupportFolderName, isDirectory: true),
                     configuration: configuration,
-                    summary: &logSummary,
+                    summary: &logSummary
                 )
             } catch {
                 sandboxOffMigrationLogger.warning(
-                    "Log migration skipped: \(error.localizedDescription, privacy: .public)",
+                    "Log migration skipped: \(error.localizedDescription, privacy: .public)"
                 )
             }
         }
@@ -176,7 +176,7 @@ final class SandboxOffDataMigrationService {
         cleanupLegacySandboxData(
             sourceDataDirectory: sourceDataDirectory,
             bundleIdentifier: bundleIdentifier,
-            configuration: configuration,
+            configuration: configuration
         )
 
         let result = SandboxOffDataMigrationResult(
@@ -186,10 +186,10 @@ final class SandboxOffDataMigrationService {
             errorSkippedApplicationSupportItems: applicationSupportSummary.errorSkippedItems,
             importedPreferenceKeys: preferencesSummary.importedKeys,
             skippedPreferenceKeys: preferencesSummary.skippedKeys,
-            copiedLogItems: logSummary.copiedItems,
+            copiedLogItems: logSummary.copiedItems
         )
         sandboxOffMigrationLogger.info(
-            "Sandbox data migration completed: appSupportCopied=\(result.copiedApplicationSupportItems), appSupportSkipped=\(result.skippedApplicationSupportItems), appSupportErrorSkipped=\(result.errorSkippedApplicationSupportItems), prefsImported=\(result.importedPreferenceKeys), logsCopied=\(result.copiedLogItems)",
+            "Sandbox data migration completed: appSupportCopied=\(result.copiedApplicationSupportItems), appSupportSkipped=\(result.skippedApplicationSupportItems), appSupportErrorSkipped=\(result.errorSkippedApplicationSupportItems), prefsImported=\(result.importedPreferenceKeys), logsCopied=\(result.copiedLogItems)"
         )
         return result
     }
@@ -202,17 +202,18 @@ final class SandboxOffDataMigrationService {
             throw MigrationError.configurationUnavailable
         }
         guard let bundleIdentifier = configuration.bundleIdentifier,
-              !bundleIdentifier.isEmpty else {
+              !bundleIdentifier.isEmpty
+        else {
             throw MigrationError.missingBundleIdentifier
         }
 
         let sourceDataDirectory = sandboxDataDirectory(
             homeDirectory: configuration.homeDirectory,
-            bundleIdentifier: bundleIdentifier,
+            bundleIdentifier: bundleIdentifier
         )
 
         sandboxOffMigrationLogger.info(
-            "Migration skipped by user (Start Fresh). Old data preserved at: \(sourceDataDirectory.path, privacy: .public)",
+            "Migration skipped by user (Start Fresh). Old data preserved at: \(sourceDataDirectory.path, privacy: .public)"
         )
 
         markCompleted(configuration, sourceDataDirectory: sourceDataDirectory)
@@ -254,7 +255,7 @@ final class SandboxOffDataMigrationService {
 
     private func markCompleted(
         _ configuration: Configuration,
-        sourceDataDirectory: URL,
+        sourceDataDirectory: URL
     ) {
         let destinationDirectory = destinationAppSupportDirectory(configuration)
         let markerURL = markerFileURL(configuration)
@@ -266,12 +267,12 @@ final class SandboxOffDataMigrationService {
         do {
             try configuration.fileManager.createDirectory(
                 at: destinationDirectory,
-                withIntermediateDirectories: true,
+                withIntermediateDirectories: true
             )
             try marker.write(to: markerURL, atomically: true, encoding: .utf8)
         } catch {
             sandboxOffMigrationLogger.error(
-                "Sandbox migration marker write failed: \(error.localizedDescription, privacy: .public)",
+                "Sandbox migration marker write failed: \(error.localizedDescription, privacy: .public)"
             )
         }
 
@@ -283,7 +284,7 @@ final class SandboxOffDataMigrationService {
         from sourceDirectory: URL,
         to destinationDirectory: URL,
         configuration: Configuration,
-        summary: inout DirectoryMergeSummary,
+        summary: inout DirectoryMergeSummary
     ) throws {
         let fileManager = configuration.fileManager
         guard fileManager.fileExists(atPath: sourceDirectory.path) else {
@@ -292,7 +293,7 @@ final class SandboxOffDataMigrationService {
 
         try fileManager.createDirectory(
             at: destinationDirectory,
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
 
         let sourceItems: [URL]
@@ -300,12 +301,12 @@ final class SandboxOffDataMigrationService {
             sourceItems = try fileManager.contentsOfDirectory(
                 at: sourceDirectory,
                 includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey],
-                options: [],
+                options: []
             )
         } catch {
             if error.isPermissionDenied {
                 sandboxOffMigrationLogger.warning(
-                    "Cannot list directory (permission denied), skipping: \(sourceDirectory.lastPathComponent, privacy: .public)",
+                    "Cannot list directory (permission denied), skipping: \(sourceDirectory.lastPathComponent, privacy: .public)"
                 )
                 summary.errorSkippedItems += 1
                 return
@@ -323,12 +324,13 @@ final class SandboxOffDataMigrationService {
                     if fileManager.fileExists(atPath: destinationItem.path) {
                         var isDestinationDirectory: ObjCBool = false
                         if fileManager.fileExists(atPath: destinationItem.path, isDirectory: &isDestinationDirectory),
-                           isDestinationDirectory.boolValue {
+                           isDestinationDirectory.boolValue
+                        {
                             try mergeDirectoryIfPresent(
                                 from: sourceItem,
                                 to: destinationItem,
                                 configuration: configuration,
-                                summary: &summary,
+                                summary: &summary
                             )
                         } else {
                             summary.skippedItems += 1
@@ -338,7 +340,7 @@ final class SandboxOffDataMigrationService {
                             from: sourceItem,
                             to: destinationItem,
                             configuration: configuration,
-                            summary: &summary,
+                            summary: &summary
                         )
                     }
                     continue
@@ -352,17 +354,17 @@ final class SandboxOffDataMigrationService {
                 try copyItemAtomically(
                     from: sourceItem,
                     to: destinationItem,
-                    fileManager: fileManager,
+                    fileManager: fileManager
                 )
                 summary.copiedItems += 1
             } catch {
                 if error.isPermissionDenied {
                     sandboxOffMigrationLogger.warning(
-                        "Skipping item (permission denied): \(sourceItem.lastPathComponent, privacy: .public)",
+                        "Skipping item (permission denied): \(sourceItem.lastPathComponent, privacy: .public)"
                     )
                 } else {
                     sandboxOffMigrationLogger.error(
-                        "Skipping item (unexpected error): \(sourceItem.lastPathComponent, privacy: .public) — \(error.localizedDescription, privacy: .public)",
+                        "Skipping item (unexpected error): \(sourceItem.lastPathComponent, privacy: .public) — \(error.localizedDescription, privacy: .public)"
                     )
                 }
                 summary.errorSkippedItems += 1
@@ -373,11 +375,11 @@ final class SandboxOffDataMigrationService {
     private func copyItemAtomically(
         from sourceURL: URL,
         to destinationURL: URL,
-        fileManager: FileManager,
+        fileManager: FileManager
     ) throws {
         try fileManager.createDirectory(
             at: destinationURL.deletingLastPathComponent(),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
 
         let temporaryURL = destinationURL.deletingLastPathComponent()
@@ -395,7 +397,7 @@ final class SandboxOffDataMigrationService {
     private func migratePreferences(
         sourceDataDirectory: URL,
         bundleIdentifier: String,
-        configuration: Configuration,
+        configuration: Configuration
     ) -> PreferencesMigrationSummary {
         let sourcePreferencesURL = sourceDataDirectory
             .appendingPathComponent("Library", isDirectory: true)
@@ -436,7 +438,7 @@ final class SandboxOffDataMigrationService {
     private func cleanupLegacySandboxData(
         sourceDataDirectory: URL,
         bundleIdentifier: String,
-        configuration: Configuration,
+        configuration: Configuration
     ) {
         let fileManager = configuration.fileManager
 
@@ -454,7 +456,7 @@ final class SandboxOffDataMigrationService {
                 sourceDataDirectory
                     .appendingPathComponent("Library", isDirectory: true)
                     .appendingPathComponent("Logs", isDirectory: true)
-                    .appendingPathComponent(folderName, isDirectory: true),
+                    .appendingPathComponent(folderName, isDirectory: true)
             ]
         }
 
@@ -467,7 +469,7 @@ final class SandboxOffDataMigrationService {
             } catch {
                 sandboxOffMigrationLogger
                     .error(
-                        "Failed to clean up legacy data at \(url.path, privacy: .public): \(error.localizedDescription, privacy: .public)",
+                        "Failed to clean up legacy data at \(url.path, privacy: .public): \(error.localizedDescription, privacy: .public)"
                     )
             }
         }

@@ -33,7 +33,7 @@ struct HistoryFloatingContentView: View {
         manager: HistoryFloatingManager,
         store: CaptureHistoryStore = .shared,
         thumbnailOverrides: [UUID: NSImage] = [:],
-        panelWidthOverride: CGFloat? = nil,
+        panelWidthOverride: CGFloat? = nil
     ) {
         self.manager = manager
         self.thumbnailOverrides = thumbnailOverrides
@@ -42,7 +42,7 @@ struct HistoryFloatingContentView: View {
             store: store,
             searchTextPublisher: manager.$searchText.eraseToAnyPublisher(),
             selectedFilterPublisher: manager.$expandedFilter.eraseToAnyPublisher(),
-            selectedTimeFilterPublisher: manager.$expandedTimeFilter.eraseToAnyPublisher(),
+            selectedTimeFilterPublisher: manager.$expandedTimeFilter.eraseToAnyPublisher()
         ))
     }
 
@@ -104,7 +104,7 @@ struct HistoryFloatingContentView: View {
     private var panelShape: RoundedRectangle {
         RoundedRectangle(
             cornerRadius: HistoryFloatingLayout.baseCornerRadius,
-            style: .continuous,
+            style: .continuous
         )
     }
 
@@ -114,7 +114,7 @@ struct HistoryFloatingContentView: View {
                 colorScheme == .dark
                     ? Color.white.opacity(0.1)
                     : Color.white.opacity(0.72),
-                lineWidth: 1,
+                lineWidth: 1
             )
     }
 
@@ -175,7 +175,7 @@ struct HistoryFloatingContentView: View {
                         withAnimation(.spring(response: 0.24, dampingFraction: 0.9)) {
                             manager.expandedFilter = filter.type
                         }
-                    },
+                    }
                 )
             }
         }
@@ -206,7 +206,7 @@ struct HistoryFloatingContentView: View {
         .background(chromeSurfaceFill, in: Capsule())
         .overlay(
             Capsule()
-                .stroke(chromeSurfaceBorder, lineWidth: 1),
+                .stroke(chromeSurfaceBorder, lineWidth: 1)
         )
         .shadow(color: chromeSurfaceShadow, radius: 7, x: 0, y: 3)
     }
@@ -225,7 +225,7 @@ struct HistoryFloatingContentView: View {
                         withAnimation(.spring(response: 0.24, dampingFraction: 0.9)) {
                             manager.expandedTimeFilter = filter
                         }
-                    },
+                    }
                 )
             }
         }
@@ -239,7 +239,7 @@ struct HistoryFloatingContentView: View {
                 systemName: "xmark",
                 help: L10n.Common.close,
                 size: 34,
-                action: manager.hide,
+                action: manager.hide
             )
         }
     }
@@ -248,7 +248,7 @@ struct HistoryFloatingContentView: View {
         HStack(spacing: 10) {
             Label(
                 L10n.PreferencesHistory.selectedCaptures(expandedSelectedRecords.count),
-                systemImage: "checkmark.circle.fill",
+                systemImage: "checkmark.circle.fill"
             )
             .font(.system(size: 11, weight: .semibold))
             .foregroundColor(.primary.opacity(0.84))
@@ -257,21 +257,21 @@ struct HistoryFloatingContentView: View {
                 selectionControlButton(
                     title: L10n.PreferencesHistory.selectAll,
                     systemName: "checkmark.circle",
-                    action: selectAllExpandedRecords,
+                    action: selectAllExpandedRecords
                 )
             }
 
             selectionControlButton(
                 title: L10n.PreferencesHistory.clearSelection,
                 systemName: "xmark.circle",
-                action: clearExpandedSelection,
+                action: clearExpandedSelection
             )
 
             selectionControlButton(
                 title: L10n.Common.deleteAction,
                 systemName: "trash",
                 isDestructive: true,
-                action: deleteSelectedRecords,
+                action: deleteSelectedRecords
             )
         }
         .padding(.horizontal, 14)
@@ -280,7 +280,7 @@ struct HistoryFloatingContentView: View {
         .background(selectionBarTint, in: Capsule())
         .overlay(
             Capsule()
-                .stroke(selectionBarBorder, lineWidth: 1),
+                .stroke(selectionBarBorder, lineWidth: 1)
         )
         .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.32 : 0.14), radius: 18, x: 0, y: 8)
         .fixedSize(horizontal: true, vertical: false)
@@ -295,7 +295,7 @@ struct HistoryFloatingContentView: View {
         GeometryReader { geometry in
             let metrics = RowMetrics(
                 viewportWidth: geometry.size.width,
-                contentWidth: rowContentWidth,
+                contentWidth: rowContentWidth
             )
             let visibleOffset = clampedRowOffset(rowScrollOffset - dragTranslation, metrics: metrics)
             let centeredOffset = max((metrics.viewportWidth - metrics.contentWidth) / 2, 0)
@@ -309,7 +309,7 @@ struct HistoryFloatingContentView: View {
                         onTap: {
                             selectExpandedRecord(record)
                         },
-                        thumbnailOverride: thumbnailOverrides[record.id],
+                        thumbnailOverride: thumbnailOverrides[record.id]
                     )
                     .equatable()
                     .frame(width: HistoryFloatingLayout.cardWidth)
@@ -329,7 +329,7 @@ struct HistoryFloatingContentView: View {
             .background(
                 HistoryRowTrackpadScrollObserver(isEnabled: metrics.isScrollable) { delta in
                     rowScrollOffset = clampedRowOffset(rowScrollOffset - delta, metrics: metrics)
-                },
+                }
             )
             .clipped()
             .onAppear {
@@ -387,7 +387,7 @@ struct HistoryFloatingContentView: View {
                 .background(placeholderCardFill, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .stroke(placeholderStroke, lineWidth: 1),
+                        .stroke(placeholderStroke, lineWidth: 1)
                 )
                 .frame(width: HistoryFloatingLayout.cardWidth)
                 .frame(height: HistoryFloatingLayout.cardHeight, alignment: .top)
@@ -402,7 +402,7 @@ struct HistoryFloatingContentView: View {
     private var expandedEmptyState: some View {
         HistoryEmptyStateView(
             filter: manager.expandedFilter,
-            hasSearch: !manager.searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+            hasSearch: !manager.searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         )
         .padding(.horizontal, 160)
     }
@@ -504,7 +504,7 @@ struct HistoryFloatingContentView: View {
             ("All", nil),
             ("Screenshots", .screenshot),
             ("Videos", .video),
-            ("GIFs", .gif),
+            ("GIFs", .gif)
         ]
     }
 
@@ -513,11 +513,11 @@ struct HistoryFloatingContentView: View {
             LinearGradient(
                 colors: [
                     Color.accentColor.opacity(colorScheme == .dark ? 0.95 : 0.98),
-                    Color.accentColor.opacity(colorScheme == .dark ? 0.82 : 0.9),
+                    Color.accentColor.opacity(colorScheme == .dark ? 0.82 : 0.9)
                 ],
                 startPoint: .top,
-                endPoint: .bottom,
-            ),
+                endPoint: .bottom
+            )
         )
     }
 
@@ -582,7 +582,7 @@ struct HistoryFloatingContentView: View {
         verticalPadding: CGFloat = 7,
         fontSize: CGFloat = 12,
         minWidth: CGFloat? = nil,
-        action: @escaping () -> Void,
+        action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
             Text(title)
@@ -600,8 +600,8 @@ struct HistoryFloatingContentView: View {
                             isSelected
                                 ? Color.white.opacity(0.08)
                                 : chromeSurfaceBorder.opacity(colorScheme == .dark ? 0.45 : 0.7),
-                            lineWidth: 1,
-                        ),
+                            lineWidth: 1
+                        )
                 )
                 .clipShape(Capsule())
         }
@@ -612,7 +612,7 @@ struct HistoryFloatingContentView: View {
         systemName: String,
         help: String,
         size: CGFloat = 30,
-        action: @escaping () -> Void,
+        action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
             Image(systemName: systemName)
@@ -630,7 +630,7 @@ struct HistoryFloatingContentView: View {
         title: String,
         systemName: String,
         isDestructive: Bool = false,
-        action: @escaping () -> Void,
+        action: @escaping () -> Void
     ) -> some View {
         Button(role: isDestructive ? .destructive : nil, action: action) {
             Label(title, systemImage: systemName)
@@ -648,7 +648,8 @@ struct HistoryFloatingContentView: View {
         if flags.contains(.shift) {
             if let expandedLastSelectedId,
                let startIndex = expandedRecords.firstIndex(where: { $0.id == expandedLastSelectedId }),
-               let endIndex = expandedRecords.firstIndex(where: { $0.id == record.id }) {
+               let endIndex = expandedRecords.firstIndex(where: { $0.id == record.id })
+            {
                 let range = min(startIndex, endIndex) ... max(startIndex, endIndex)
                 expandedSelectedIds.formUnion(expandedRecords[range].map(\.id))
             } else {
@@ -705,7 +706,7 @@ struct HistoryFloatingContentView: View {
     private func deleteSelectedRecords() {
         let deletedCount = HistoryWindowController.shared.deleteRecords(
             expandedSelectedRecords,
-            asksConfirmation: true,
+            asksConfirmation: true
         )
         guard deletedCount > 0 else { return }
 
@@ -769,7 +770,7 @@ struct HistoryFloatingContentView: View {
         manager: HistoryFloatingManager(preview: true),
         store: .preview(records: fixtures.records),
         thumbnailOverrides: fixtures.thumbnails,
-        panelWidthOverride: 1_100,
+        panelWidthOverride: 1100
     )
 }
 

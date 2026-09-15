@@ -58,7 +58,7 @@
             mouseLocationProvider: @escaping () -> CGPoint = { NSEvent.mouseLocation },
             mouseMonitorInstaller: @escaping (@escaping () -> Void) -> Any? = { onMouseEvent in
                 NSEvent.addGlobalMonitorForEvents(
-                    matching: [.mouseMoved, .leftMouseDragged, .rightMouseDragged, .otherMouseDragged],
+                    matching: [.mouseMoved, .leftMouseDragged, .rightMouseDragged, .otherMouseDragged]
                 ) { _ in
                     onMouseEvent()
                 }
@@ -66,12 +66,12 @@
             mouseMonitorRemover: @escaping (Any) -> Void = { NSEvent.removeMonitor($0) },
             pressMonitorInstaller: @escaping (@escaping (NSEvent) -> Void) -> Any? = { handler in
                 NSEvent.addGlobalMonitorForEvents(
-                    matching: [.leftMouseDown, .rightMouseDown, .leftMouseUp, .rightMouseUp],
+                    matching: [.leftMouseDown, .rightMouseDown, .leftMouseUp, .rightMouseUp]
                 ) { event in
                     handler(event)
                 }
             },
-            pressMonitorRemover: @escaping (Any) -> Void = { NSEvent.removeMonitor($0) },
+            pressMonitorRemover: @escaping (Any) -> Void = { NSEvent.removeMonitor($0) }
         ) {
             self.recordingRect = recordingRect
             let samplesPerSecond = Self.resolvedSamplesPerSecond(for: fps)
@@ -183,7 +183,7 @@
                 time: elapsedTime,
                 normalizedX: normalized.x,
                 normalizedY: normalized.y,
-                isInsideCapture: recordingRect.contains(cursorLocation),
+                isInsideCapture: recordingRect.contains(cursorLocation)
             )
 
             if !force, let lastSample = samples.last {
@@ -191,7 +191,8 @@
                 if sample.time - lastSample.time < minimumDelta,
                    sample.normalizedX == lastSample.normalizedX,
                    sample.normalizedY == lastSample.normalizedY,
-                   sample.isInsideCapture == lastSample.isInsideCapture {
+                   sample.isInsideCapture == lastSample.isInsideCapture
+                {
                     return
                 }
             }
@@ -246,7 +247,7 @@
                 normalizedX: normalized.x,
                 normalizedY: normalized.y,
                 button: button,
-                phase: phase,
+                phase: phase
             )
 
             if let lastPress = presses.last {
@@ -255,7 +256,8 @@
                    press.button == lastPress.button,
                    press.time - lastPress.time < duplicateWindow,
                    press.normalizedX == lastPress.normalizedX,
-                   press.normalizedY == lastPress.normalizedY {
+                   press.normalizedY == lastPress.normalizedY
+                {
                     return
                 }
             }
@@ -269,7 +271,7 @@
             let topLeftY = 1 - rawY
             return (
                 x: rawX.clamped(to: 0 ... 1),
-                y: topLeftY.clamped(to: 0 ... 1),
+                y: topLeftY.clamped(to: 0 ... 1)
             )
         }
 
@@ -292,7 +294,7 @@
                 }
             }
             localPressMonitor = NSEvent.addLocalMonitorForEvents(
-                matching: [.leftMouseDown, .rightMouseDown, .leftMouseUp, .rightMouseUp],
+                matching: [.leftMouseDown, .rightMouseDown, .leftMouseUp, .rightMouseUp]
             ) { [weak self] event in
                 MainActor.assumeIsolated {
                     self?.appendPress(from: event)
@@ -316,7 +318,7 @@
                     duration: 0,
                     effectiveSamplesPerSecond: 0,
                     averageIntervalMs: 0,
-                    p95IntervalMs: 0,
+                    p95IntervalMs: 0
                 )
             }
 
@@ -336,7 +338,7 @@
                 duration: duration,
                 effectiveSamplesPerSecond: Double(samples.count - 1) / duration,
                 averageIntervalMs: averageIntervalMs,
-                p95IntervalMs: p95IntervalMs,
+                p95IntervalMs: p95IntervalMs
             )
         }
 

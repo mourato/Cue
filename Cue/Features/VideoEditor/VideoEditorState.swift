@@ -28,7 +28,7 @@
             oldStyle: BackgroundStyle, newStyle: BackgroundStyle,
             oldPadding: CGFloat, newPadding: CGFloat,
             oldShadow: CGFloat, newShadow: CGFloat,
-            oldCorner: CGFloat, newCorner: CGFloat,
+            oldCorner: CGFloat, newCorner: CGFloat
         )
         case replaceClipTimeline(old: VideoEditorClipTimeline, new: VideoEditorClipTimeline)
     }
@@ -140,7 +140,7 @@
             didSet { invalidateSpeedMap() }
         }
 
-        @Published var selectedSpeedId: UUID? = nil
+        @Published var selectedSpeedId: UUID?
 
         // MARK: - Clip Timeline (Plan 110 / Phase C)
 
@@ -163,7 +163,7 @@
             let map = SpeedTimeMap(
                 speedSegments: speedSegments,
                 trimStart: CMTimeGetSeconds(trimStart),
-                trimEnd: CMTimeGetSeconds(trimEnd),
+                trimEnd: CMTimeGetSeconds(trimEnd)
             )
             cachedSpeedTimeMap = map
             return map
@@ -238,12 +238,12 @@
             if let reframe = makeReframeTrack(
                 viewportTimeline: viewportTimeline,
                 pointerTimeline: pointerTimeline,
-                duration: CMTimeGetSeconds(playbackDuration),
+                duration: CMTimeGetSeconds(playbackDuration)
             ) {
                 let frame = reframe.frame(at: editorSeconds)
                 return VideoEditorCameraState(
                     zoomLevel: CGFloat(frame.magnification),
-                    center: frame.anchor,
+                    center: frame.anchor
                 )
             }
             return cameraState(at: sourceTime(atPlayhead: time))
@@ -252,13 +252,14 @@
         func makeReframeTrack(
             viewportTimeline: VideoEditorViewportTimeline,
             pointerTimeline: VideoEditorPointerTimeline,
-            duration: TimeInterval,
+            duration: TimeInterval
         ) -> VideoEditorReframeTrack? {
             guard usesReframeExport,
                   naturalSize.width > 0,
                   naturalSize.height > 0,
                   duration.isFinite,
-                  duration > 0 else {
+                  duration > 0
+            else {
                 return nil
             }
             return VideoEditorReframeTrack.build(
@@ -271,7 +272,7 @@
                         return pointer.location
                     }
                     return viewportTimeline.frame(at: editorTime).anchor
-                },
+                }
             )
         }
 
@@ -315,7 +316,7 @@
                     player.currentItem?.audioMix = VideoEditorAudioMixFactory.makeAudioMix(
                         for: audioTracks,
                         settings: settingsSnapshot,
-                        roles: audioTrackRolesSnapshot,
+                        roles: audioTrackRolesSnapshot
                     )
                 } catch {
                     DiagnosticLogger.shared.logError(.editor, error, "Preview audio mix failed")
@@ -331,7 +332,7 @@
         // MARK: - Zoom Segments
 
         @Published var zoomSegments: [ZoomSegment] = []
-        @Published var selectedZoomId: UUID? = nil
+        @Published var selectedZoomId: UUID?
         @Published var isZoomTrackVisible: Bool = true
         @Published var isSpeedTrackVisible: Bool = true
         @Published var isClipTrackVisible: Bool = true
@@ -661,16 +662,19 @@
             return audioSourceURL
         }
 
-        static func audioTrackRoles(for audioTracks: [AVAssetTrack],
-                                    metadata: RecordingMetadata?) -> [VideoEditorAudioTrackRole] {
+        static func audioTrackRoles(
+            for audioTracks: [AVAssetTrack],
+            metadata: RecordingMetadata?
+        ) -> [VideoEditorAudioTrackRole] {
             let count = audioTracks.count
             guard count > 0 else { return [] }
 
             if let metadata,
                metadata.audioSourceURL != nil,
-               !metadata.audioSourceTracks.isEmpty {
+               !metadata.audioSourceTracks.isEmpty
+            {
                 let rolesByTrackID = Dictionary(
-                    uniqueKeysWithValues: metadata.audioSourceTracks.map { ($0.trackID, $0.role) },
+                    uniqueKeysWithValues: metadata.audioSourceTracks.map { ($0.trackID, $0.role) }
                 )
                 let resolvedRoles = audioTracks.compactMap { track in
                     rolesByTrackID[Int(track.trackID)].map(Self.videoEditorAudioTrackRole)
@@ -682,18 +686,22 @@
 
             if let metadata,
                metadata.audioSourceURL != nil,
-               metadata.audioSourceTrackRoles.count == count {
+               metadata.audioSourceTrackRoles.count == count
+            {
                 return metadata.audioSourceTrackRoles.map(Self.videoEditorAudioTrackRole)
             }
 
             return VideoEditorAudioTrackRole.roles(forAudioTrackCount: count)
         }
 
-        static func audioTrackRoles(forAudioTrackCount count: Int,
-                                    metadata: RecordingMetadata?) -> [VideoEditorAudioTrackRole] {
+        static func audioTrackRoles(
+            forAudioTrackCount count: Int,
+            metadata: RecordingMetadata?
+        ) -> [VideoEditorAudioTrackRole] {
             if let metadata,
                metadata.audioSourceURL != nil,
-               metadata.audioSourceTrackRoles.count == count {
+               metadata.audioSourceTrackRoles.count == count
+            {
                 return metadata.audioSourceTrackRoles.map(videoEditorAudioTrackRole)
             }
 
@@ -701,57 +709,87 @@
         }
 
         static func resolveVideoTracks(
-            _ videoTracks: [AVAssetTrack], metadata: RecordingMetadata?,
+            _ videoTracks: [AVAssetTrack], metadata: RecordingMetadata?
         ) async throws -> VideoEditorVideoTrackResolution? {
             guard let first = videoTracks.first else { return nil }
             let ids = Set(videoTracks.map(\.trackID))
             guard let metadataTracks = metadata?.videoSourceTracks, !metadataTracks.isEmpty else {
-                return VideoEditorVideoTrackResolution(screenTrackID: first.trackID, cameraTrackID: nil,
-                                                       cameraSize: nil, cameraIsMirrored: false,
-                                                       cameraMetadataWasInvalid: false)
+                return VideoEditorVideoTrackResolution(
+                    screenTrackID: first.trackID,
+                    cameraTrackID: nil,
+                    cameraSize: nil,
+                    cameraIsMirrored: false,
+                    cameraMetadataWasInvalid: false
+                )
             }
             let screenEntries = metadataTracks.filter { $0.role == .screen }
             let cameraEntries = metadataTracks.filter { $0.role == .camera }
             let cameraWasDeclared = !cameraEntries.isEmpty || metadataTracks.count > 1
             guard screenEntries.count == 1, cameraEntries.count <= 1,
-                  !cameraWasDeclared || cameraEntries.count == 1 else {
-                return VideoEditorVideoTrackResolution(screenTrackID: first.trackID, cameraTrackID: nil,
-                                                       cameraSize: nil, cameraIsMirrored: false,
-                                                       cameraMetadataWasInvalid: true)
+                  !cameraWasDeclared || cameraEntries.count == 1
+            else {
+                return VideoEditorVideoTrackResolution(
+                    screenTrackID: first.trackID,
+                    cameraTrackID: nil,
+                    cameraSize: nil,
+                    cameraIsMirrored: false,
+                    cameraMetadataWasInvalid: true
+                )
             }
             let screenEntry = screenEntries[0]
             guard ids.contains(CMPersistentTrackID(screenEntry.trackID)) else {
-                return VideoEditorVideoTrackResolution(screenTrackID: first.trackID, cameraTrackID: nil,
-                                                       cameraSize: nil, cameraIsMirrored: false,
-                                                       cameraMetadataWasInvalid: true)
+                return VideoEditorVideoTrackResolution(
+                    screenTrackID: first.trackID,
+                    cameraTrackID: nil,
+                    cameraSize: nil,
+                    cameraIsMirrored: false,
+                    cameraMetadataWasInvalid: true
+                )
             }
             let screen = videoTracks.first(where: { $0.trackID == CMPersistentTrackID(screenEntry.trackID) }) ?? first
             guard let camera = cameraEntries.first else {
-                return VideoEditorVideoTrackResolution(screenTrackID: screen.trackID, cameraTrackID: nil,
-                                                       cameraSize: nil, cameraIsMirrored: false,
-                                                       cameraMetadataWasInvalid: false)
+                return VideoEditorVideoTrackResolution(
+                    screenTrackID: screen.trackID,
+                    cameraTrackID: nil,
+                    cameraSize: nil,
+                    cameraIsMirrored: false,
+                    cameraMetadataWasInvalid: false
+                )
             }
             guard camera.trackID != screenEntry.trackID,
-                  ids.contains(CMPersistentTrackID(camera.trackID)) else {
-                return VideoEditorVideoTrackResolution(screenTrackID: screen.trackID, cameraTrackID: nil,
-                                                       cameraSize: nil, cameraIsMirrored: camera.isMirrored,
-                                                       cameraMetadataWasInvalid: true)
+                  ids.contains(CMPersistentTrackID(camera.trackID))
+            else {
+                return VideoEditorVideoTrackResolution(
+                    screenTrackID: screen.trackID,
+                    cameraTrackID: nil,
+                    cameraSize: nil,
+                    cameraIsMirrored: camera.isMirrored,
+                    cameraMetadataWasInvalid: true
+                )
             }
             guard let cameraTrack = videoTracks.first(where: { $0.trackID == CMPersistentTrackID(camera.trackID) })
             else {
-                return VideoEditorVideoTrackResolution(screenTrackID: screen.trackID, cameraTrackID: nil,
-                                                       cameraSize: nil, cameraIsMirrored: camera.isMirrored,
-                                                       cameraMetadataWasInvalid: true)
+                return VideoEditorVideoTrackResolution(
+                    screenTrackID: screen.trackID,
+                    cameraTrackID: nil,
+                    cameraSize: nil,
+                    cameraIsMirrored: camera.isMirrored,
+                    cameraMetadataWasInvalid: true
+                )
             }
             let naturalSize = try await cameraTrack.load(.naturalSize)
-            return VideoEditorVideoTrackResolution(screenTrackID: screen.trackID, cameraTrackID: cameraTrack.trackID,
-                                                   cameraSize: camera.captureSize ?? naturalSize,
-                                                   cameraIsMirrored: camera.isMirrored,
-                                                   cameraMetadataWasInvalid: false)
+            return VideoEditorVideoTrackResolution(
+                screenTrackID: screen.trackID,
+                cameraTrackID: cameraTrack.trackID,
+                cameraSize: camera.captureSize ?? naturalSize,
+                cameraIsMirrored: camera.isMirrored,
+                cameraMetadataWasInvalid: false
+            )
         }
 
         private static func videoEditorAudioTrackRole(_ role: RecordingAudioSourceTrackRole)
-            -> VideoEditorAudioTrackRole {
+            -> VideoEditorAudioTrackRole
+        {
             switch role {
             case .systemAudio:
                 .systemAudio
@@ -787,15 +825,15 @@
                         "GIF metadata loaded",
                         context: [
                             "size": "\(Int(metadata.size.width))x\(Int(metadata.size.height))",
-                            "frames": "\(metadata.frameCount)",
-                        ],
+                            "frames": "\(metadata.frameCount)"
+                        ]
                     )
                 } else if let image = SandboxFileAccessManager.shared.withScopedAccess(to: sourceURL, {
                     NSImage(contentsOf: sourceURL)
                 }) {
                     naturalSize = CGSize(
                         width: image.representations.first?.pixelsWide ?? Int(image.size.width),
-                        height: image.representations.first?.pixelsHigh ?? Int(image.size.height),
+                        height: image.representations.first?.pixelsHigh ?? Int(image.size.height)
                     )
                 }
                 return
@@ -820,7 +858,7 @@
                     let transformedSize = size.applying(transform)
                     naturalSize = CGSize(
                         width: abs(transformedSize.width),
-                        height: abs(transformedSize.height),
+                        height: abs(transformedSize.height)
                     )
                 }
                 let videoTracks = try await asset.loadTracks(withMediaType: .video)
@@ -838,7 +876,8 @@
                     if cameraLayoutMutationCount == cameraLayoutMutationCountBeforeResolution
                         ||
                         (!hasCameraTrack && cameraLayoutMutationCount == cameraLayoutMutationCountBeforeResolution +
-                            1) {
+                            1)
+                    {
                         initialCameraOverlayLayout = cameraOverlayLayout
                     }
                     updateHasUnsavedChanges()
@@ -853,7 +892,7 @@
                     "duration": String(format: "%.1fs", CMTimeGetSeconds(loadedDuration)),
                     "size": "\(Int(naturalSize.width))x\(Int(naturalSize.height))",
                     "audioTracks": "\(audioTrackCount)",
-                    "audioTrackRoles": audioTrackRoles.map(\.id).joined(separator: ","),
+                    "audioTrackRoles": audioTrackRoles.map(\.id).joined(separator: ",")
                 ])
                 // Calculate initial file size estimate after metadata loads
                 recalculateEstimatedFileSize()
@@ -1007,7 +1046,7 @@
             let cgImages = await generateFrameThumbnails(
                 frameCount: profile.frameCount,
                 totalSeconds: totalSeconds,
-                tolerance: profile.tolerance,
+                tolerance: profile.tolerance
             )
 
             frameThumbnails = cgImages.map { image in
@@ -1018,7 +1057,7 @@
                 "strategy": profile.strategyLabel,
                 "requestedFrames": "\(profile.frameCount)",
                 "generatedFrames": "\(frameThumbnails.count)",
-                "elapsedMs": "\(Int(Date().timeIntervalSince(startedAt) * 1000))",
+                "elapsedMs": "\(Int(Date().timeIntervalSince(startedAt) * 1000))"
             ])
         }
 
@@ -1030,7 +1069,7 @@
                 sourceURL: assetURL,
                 requestedTime: CMTimeGetSeconds(playbackState.currentTime),
                 assetDuration: CMTimeGetSeconds(duration),
-                baseName: sourceURL.deletingPathExtension().lastPathComponent,
+                baseName: sourceURL.deletingPathExtension().lastPathComponent
             )
             guard request.clampedTime != nil else {
                 frameExtractionError = VideoFrameExtractionError.invalidRequestTime.localizedDescription
@@ -1044,7 +1083,7 @@
             do {
                 let result = try await VideoFrameExtractor.extract(
                     request: request,
-                    outputRoot: TempCaptureManager.shared.tempCaptureDirectory,
+                    outputRoot: TempCaptureManager.shared.tempCaptureDirectory
                 )
                 guard frameAnnotationAttemptID == attemptID, !Task.isCancelled else {
                     if result.url.pathExtension.lowercased() == "png" {
@@ -1056,7 +1095,7 @@
                     url: result.url,
                     sourceURL: request.sourceURL,
                     requestedTime: result.requestedTime,
-                    actualTime: result.actualTime,
+                    actualTime: result.actualTime
                 )
             } catch {
                 frameExtractionError = error.localizedDescription
@@ -1081,7 +1120,7 @@
                 return FrameExtractionProfile(
                     frameCount: 12,
                     tolerance: CMTime(value: 1, timescale: 20),
-                    strategyLabel: "very-heavy",
+                    strategyLabel: "very-heavy"
                 )
             }
 
@@ -1089,7 +1128,7 @@
                 return FrameExtractionProfile(
                     frameCount: 16,
                     tolerance: CMTime(value: 1, timescale: 30),
-                    strategyLabel: "heavy",
+                    strategyLabel: "heavy"
                 )
             }
 
@@ -1099,7 +1138,7 @@
         private func generateFrameThumbnails(
             frameCount: Int,
             totalSeconds: Double,
-            tolerance: CMTime,
+            tolerance: CMTime
         ) async -> [CGImage] {
             let safeCount = max(frameCount, 1)
             let targetSize = CGSize(width: 120, height: 68)
@@ -1188,65 +1227,65 @@
             }
 
             switch action {
-            case .trimStart(let old, let new):
+            case let .trimStart(old, new):
                 trimStart = old
                 redoStack.append(.trimStart(old: new, new: old))
 
-            case .trimEnd(let old, let new):
+            case let .trimEnd(old, new):
                 trimEnd = old
                 redoStack.append(.trimEnd(old: new, new: old))
 
-            case .addZoom(let segment):
+            case let .addZoom(segment):
                 zoomSegments.removeAll { $0.id == segment.id }
                 if selectedZoomId == segment.id {
                     selectedZoomId = nil
                 }
                 redoStack.append(.removeZoom(segment: segment))
 
-            case .removeZoom(let segment):
+            case let .removeZoom(segment):
                 zoomSegments.append(segment)
                 redoStack.append(.addZoom(segment: segment))
 
-            case .updateZoom(let old, let new):
+            case let .updateZoom(old, new):
                 if let index = zoomSegments.firstIndex(where: { $0.id == new.id }) {
                     zoomSegments[index] = old
                 }
                 redoStack.append(.updateZoom(old: new, new: old))
 
-            case .replaceImplicitZoomSegments(let old, let new):
+            case let .replaceImplicitZoomSegments(old, new):
                 zoomSegments = old
                 redoStack.append(.replaceImplicitZoomSegments(old: new, new: old))
 
-            case .addSpeed(let segment):
+            case let .addSpeed(segment):
                 speedSegments.removeAll { $0.id == segment.id }
                 if selectedSpeedId == segment.id {
                     selectedSpeedId = nil
                 }
                 redoStack.append(.removeSpeed(segment: segment))
 
-            case .removeSpeed(let segment):
+            case let .removeSpeed(segment):
                 speedSegments.append(segment)
                 redoStack.append(.addSpeed(segment: segment))
 
-            case .updateSpeed(let old, let new):
+            case let .updateSpeed(old, new):
                 if let index = speedSegments.firstIndex(where: { $0.id == new.id }) {
                     speedSegments[index] = old
                 }
                 redoStack.append(.updateSpeed(old: new, new: old))
 
-            case .toggleMute(let old, _):
+            case let .toggleMute(old, _):
                 isMuted = old
                 redoStack.append(.toggleMute(old: !old, new: old))
 
-            case .updateBackground(
-                let oldStyle,
-                let newStyle,
-                let oldPadding,
-                let newPadding,
-                let oldShadow,
-                let newShadow,
-                let oldCorner,
-                let newCorner,
+            case let .updateBackground(
+                oldStyle,
+                newStyle,
+                oldPadding,
+                newPadding,
+                oldShadow,
+                newShadow,
+                oldCorner,
+                newCorner
             ):
                 backgroundStyle = oldStyle
                 backgroundPadding = oldPadding
@@ -1260,15 +1299,15 @@
                     oldShadow: newShadow,
                     newShadow: oldShadow,
                     oldCorner: newCorner,
-                    newCorner: oldCorner,
+                    newCorner: oldCorner
                 ))
 
-            case .replaceClipTimeline(let old, let new):
+            case let .replaceClipTimeline(old, new):
                 applyClipTimeline(
                     old,
                     selectedID: old.segments.first?.id,
                     playheadTime: min(CMTimeGetSeconds(currentTime), old.duration),
-                    recordUndo: false,
+                    recordUndo: false
                 )
                 redoStack.append(.replaceClipTimeline(old: new, new: old))
             }
@@ -1285,65 +1324,65 @@
             }
 
             switch action {
-            case .trimStart(let old, let new):
+            case let .trimStart(old, new):
                 trimStart = old
                 undoStack.append(.trimStart(old: new, new: old))
 
-            case .trimEnd(let old, let new):
+            case let .trimEnd(old, new):
                 trimEnd = old
                 undoStack.append(.trimEnd(old: new, new: old))
 
-            case .addZoom(let segment):
+            case let .addZoom(segment):
                 zoomSegments.removeAll { $0.id == segment.id }
                 if selectedZoomId == segment.id {
                     selectedZoomId = nil
                 }
                 undoStack.append(.removeZoom(segment: segment))
 
-            case .removeZoom(let segment):
+            case let .removeZoom(segment):
                 zoomSegments.append(segment)
                 undoStack.append(.addZoom(segment: segment))
 
-            case .updateZoom(let old, let new):
+            case let .updateZoom(old, new):
                 if let index = zoomSegments.firstIndex(where: { $0.id == new.id }) {
                     zoomSegments[index] = old
                 }
                 undoStack.append(.updateZoom(old: new, new: old))
 
-            case .replaceImplicitZoomSegments(let old, let new):
+            case let .replaceImplicitZoomSegments(old, new):
                 zoomSegments = old
                 undoStack.append(.replaceImplicitZoomSegments(old: new, new: old))
 
-            case .addSpeed(let segment):
+            case let .addSpeed(segment):
                 speedSegments.removeAll { $0.id == segment.id }
                 if selectedSpeedId == segment.id {
                     selectedSpeedId = nil
                 }
                 undoStack.append(.removeSpeed(segment: segment))
 
-            case .removeSpeed(let segment):
+            case let .removeSpeed(segment):
                 speedSegments.append(segment)
                 undoStack.append(.addSpeed(segment: segment))
 
-            case .updateSpeed(let old, let new):
+            case let .updateSpeed(old, new):
                 if let index = speedSegments.firstIndex(where: { $0.id == new.id }) {
                     speedSegments[index] = old
                 }
                 undoStack.append(.updateSpeed(old: new, new: old))
 
-            case .toggleMute(let old, _):
+            case let .toggleMute(old, _):
                 isMuted = old
                 undoStack.append(.toggleMute(old: !old, new: old))
 
-            case .updateBackground(
-                let oldStyle,
-                let newStyle,
-                let oldPadding,
-                let newPadding,
-                let oldShadow,
-                let newShadow,
-                let oldCorner,
-                let newCorner,
+            case let .updateBackground(
+                oldStyle,
+                newStyle,
+                oldPadding,
+                newPadding,
+                oldShadow,
+                newShadow,
+                oldCorner,
+                newCorner
             ):
                 backgroundStyle = oldStyle
                 backgroundPadding = oldPadding
@@ -1357,15 +1396,15 @@
                     oldShadow: newShadow,
                     newShadow: oldShadow,
                     oldCorner: newCorner,
-                    newCorner: oldCorner,
+                    newCorner: oldCorner
                 ))
 
-            case .replaceClipTimeline(let old, let new):
+            case let .replaceClipTimeline(old, new):
                 applyClipTimeline(
                     old,
                     selectedID: old.segments.first?.id,
                     playheadTime: min(CMTimeGetSeconds(currentTime), old.duration),
-                    recordUndo: false,
+                    recordUndo: false
                 )
                 undoStack.append(.replaceClipTimeline(old: new, new: old))
             }
@@ -1397,7 +1436,7 @@
                 .info,
                 .editor,
                 "Renaming file",
-                context: ["from": sourceURL.lastPathComponent, "to": newName],
+                context: ["from": sourceURL.lastPathComponent, "to": newName]
             )
             let oldSourceURL = sourceURL
             let directory = sourceURL.deletingLastPathComponent()
@@ -1415,7 +1454,7 @@
                 throw NSError(
                     domain: "VideoEditor",
                     code: 1,
-                    userInfo: [NSLocalizedDescriptionKey: "Filename cannot be empty"],
+                    userInfo: [NSLocalizedDescriptionKey: "Filename cannot be empty"]
                 )
             }
 
@@ -1427,7 +1466,7 @@
                 throw NSError(
                     domain: "VideoEditor",
                     code: 2,
-                    userInfo: [NSLocalizedDescriptionKey: "A file with this name already exists"],
+                    userInfo: [NSLocalizedDescriptionKey: "A file with this name already exists"]
                 )
             }
 
@@ -1438,7 +1477,7 @@
             } catch {
                 DiagnosticLogger.shared.logError(.editor, error, "Metadata association move failed during rename")
                 print(
-                    "[RecordingMetadata] Failed to move metadata association during rename: \(error.localizedDescription)",
+                    "[RecordingMetadata] Failed to move metadata association during rename: \(error.localizedDescription)"
                 )
             }
 
@@ -1457,7 +1496,7 @@
                 .debug,
                 .editor,
                 "Adding zoom segment",
-                context: ["time": String(format: "%.2f", time), "type": hasMouseTrackingData ? "auto" : "manual"],
+                context: ["time": String(format: "%.2f", time), "type": hasMouseTrackingData ? "auto" : "manual"]
             )
             let videoDuration = CMTimeGetSeconds(duration)
             let defaultZoomType: ZoomType = hasMouseTrackingData ? .auto : .manual
@@ -1466,7 +1505,7 @@
                 duration: ZoomSegment.defaultDuration,
                 zoomLevel: ZoomSegment.defaultZoomLevel,
                 zoomCenter: CGPoint(x: 0.5, y: 0.5),
-                zoomType: defaultZoomType,
+                zoomType: defaultZoomType
             ).clamped(to: videoDuration)
 
             zoomSegments.append(segment)
@@ -1498,7 +1537,7 @@
             focusMargin: CGFloat? = nil,
             isEnabled: Bool? = nil,
             anchorMode: ZoomAnchorMode? = nil,
-            boundsBias: CGFloat? = nil,
+            boundsBias: CGFloat? = nil
         ) {
             guard let index = zoomSegments.firstIndex(where: { $0.id == id }) else { return }
 
@@ -1517,7 +1556,7 @@
             if let zoomCenter {
                 segment.zoomCenter = CGPoint(
                     x: max(0, min(zoomCenter.x, 1)),
-                    y: max(0, min(zoomCenter.y, 1)),
+                    y: max(0, min(zoomCenter.y, 1))
                 )
             }
             if let zoomType {
@@ -1554,17 +1593,17 @@
 
         func cameraState(
             at time: TimeInterval,
-            transitionDuration: TimeInterval? = nil,
+            transitionDuration: TimeInterval? = nil
         ) -> VideoEditorCameraState {
             let effectiveDuration = ZoomCalculator.clampTransitionDuration(
-                transitionDuration ?? zoomTransitionDuration,
+                transitionDuration ?? zoomTransitionDuration
             )
             return VideoEditorAutoFocusEngine.resolvedCameraState(
                 at: time,
                 segments: zoomSegments,
                 autoFocusPaths: autoFocusPaths,
                 transitionDuration: effectiveDuration,
-                viewportTimeline: viewportTimeline,
+                viewportTimeline: viewportTimeline
             )
         }
 
@@ -1583,7 +1622,7 @@
             let manualSegments = zoomSegments.filter { !$0.isImplicit }
             let synthesized = VideoEditorZoomSegmentSynthesizer.segments(
                 from: metadata.mousePresses,
-                duration: videoDuration,
+                duration: videoDuration
             )
             let merged = (manualSegments + synthesized).sorted { $0.startTime < $1.startTime }
             guard merged != previousSegments else { return }
@@ -1593,7 +1632,7 @@
             recordAction(.replaceImplicitZoomSegments(old: previousSegments, new: merged))
             DiagnosticLogger.shared.log(.info, .editor, "Resynthesized implicit zoom segments", context: [
                 "implicitCount": "\(synthesized.count)",
-                "manualPreserved": "\(manualSegments.count)",
+                "manualPreserved": "\(manualSegments.count)"
             ])
         }
 
@@ -1622,7 +1661,7 @@
         /// minimum segment duration.
         private func clampedSpeedRange(
             _ range: ClosedRange<TimeInterval>,
-            excluding id: UUID?,
+            excluding id: UUID?
         ) -> (start: TimeInterval, duration: TimeInterval)? {
             let lowerBound = CMTimeGetSeconds(trimStart)
             let upperBound = CMTimeGetSeconds(trimEnd)
@@ -1673,7 +1712,7 @@
                 .debug,
                 .editor,
                 "Adding speed segment",
-                context: ["start": String(format: "%.2f", start), "rate": String(format: "%.2f", segment.rate)],
+                context: ["start": String(format: "%.2f", start), "rate": String(format: "%.2f", segment.rate)]
             )
             speedSegments.append(segment)
             selectedSpeedId = segment.id
@@ -1698,7 +1737,7 @@
             id: UUID,
             rate: Double? = nil,
             startTime: TimeInterval? = nil,
-            duration: TimeInterval? = nil,
+            duration: TimeInterval? = nil
         ) {
             guard let index = speedSegments.firstIndex(where: { $0.id == id }) else { return }
             let old = speedSegments[index]
@@ -1713,7 +1752,7 @@
                 let desiredDuration = duration ?? old.duration
                 guard let (clampedStart, clampedDuration) = clampedSpeedRange(
                     desiredStart ... (desiredStart + desiredDuration),
-                    excluding: id,
+                    excluding: id
                 ) else { return }
                 new.startTime = clampedStart
                 new.duration = clampedDuration
@@ -1806,7 +1845,7 @@
         }
 
         /// Calculate estimated file size based on export settings
-        private func calculateEstimatedFileSize() async -> Int64 {
+        private func calculateEstimatedFileSize() -> Int64 {
             // Get source file size
             let sourceSize: Int64? = SandboxFileAccessManager.shared.withScopedAccess(to: sourceURL) {
                 guard let attrs = try? FileManager.default.attributesOfItem(atPath: sourceURL.path),
@@ -1870,7 +1909,7 @@
             let interval = CMTime(seconds: 1.0 / 30.0, preferredTimescale: 600)
             timeObserver = player.addPeriodicTimeObserver(
                 forInterval: interval,
-                queue: .main,
+                queue: .main
             ) { [weak self] time in
                 MainActor.assumeIsolated {
                     guard let self, !self.playbackState.isScrubbing else { return }
@@ -1914,7 +1953,7 @@
 
         private static func loadZoomTransitionDuration() -> TimeInterval {
             guard let stored = UserDefaults.standard.object(
-                forKey: PreferencesKeys.videoEditorZoomTransitionDuration,
+                forKey: PreferencesKeys.videoEditorZoomTransitionDuration
             ) as? Double else {
                 return ZoomCalculator.defaultTransitionDuration
             }
@@ -1944,7 +1983,7 @@
 
             let synthesized = VideoEditorZoomSegmentSynthesizer.segments(
                 from: metadata.mousePresses,
-                duration: videoDuration,
+                duration: videoDuration
             )
             guard !synthesized.isEmpty else { return }
 
@@ -1953,7 +1992,7 @@
             rebuildAutoFocusPaths(for: synthesized)
             DiagnosticLogger.shared.log(.info, .editor, "Applied initial implicit zoom segments", context: [
                 "count": "\(synthesized.count)",
-                "clicks": "\(recordedClickCount)",
+                "clicks": "\(recordedClickCount)"
             ])
         }
 
@@ -1961,7 +2000,7 @@
             endObserver = NotificationCenter.default.addObserver(
                 forName: .AVPlayerItemDidPlayToEndTime,
                 object: player.currentItem,
-                queue: .main,
+                queue: .main
             ) { [weak self] _ in
                 MainActor.assumeIsolated {
                     self?.pause()
@@ -2006,7 +2045,7 @@
                 $backgroundStyle,
                 $backgroundPadding,
                 $backgroundShadowIntensity,
-                $backgroundCornerRadius,
+                $backgroundCornerRadius
             )
             .dropFirst(4)
             .sink { [weak self] _, _, _, _ in
@@ -2034,7 +2073,7 @@
 
         private func updateHasUnsavedChanges(
             currentZoomSegments: [ZoomSegment]? = nil,
-            currentCameraOverlayLayout: VideoEditorCameraOverlayLayout? = nil,
+            currentCameraOverlayLayout: VideoEditorCameraOverlayLayout? = nil
         ) {
             // GIF mode: only track dimension changes
             if isGIF {
@@ -2120,10 +2159,10 @@
                 .debug,
                 .editor,
                 "Background style changed",
-                context: ["style": "\(backgroundStyle)"],
+                context: ["style": "\(backgroundStyle)"]
             )
             switch backgroundStyle {
-            case .wallpaper(let url), .blurred(let url):
+            case let .wallpaper(url), let .blurred(url):
                 loadBackgroundImage(from: url)
             default:
                 cachedBackgroundImage = nil
@@ -2149,7 +2188,7 @@
                     if case .blurred = self.backgroundStyle {
                         self.cachedBlurredImage = self.applyGaussianBlur(
                             to: image,
-                            radius: WallpaperQualityConfig.blurRadius,
+                            radius: WallpaperQualityConfig.blurRadius
                         )
                     } else {
                         self.cachedBlurredImage = nil
@@ -2202,28 +2241,29 @@
                 rebuiltInputs[segment.id] = input
 
                 if autoFocusPathInputs[segment.id] == input,
-                   let cachedPath = autoFocusPaths[segment.id] {
+                   let cachedPath = autoFocusPaths[segment.id]
+                {
                     rebuiltPaths[segment.id] = cachedPath
                     continue
                 }
 
                 let builtPath = VideoEditorAutoFocusEngine.buildPath(
                     from: recordingMetadata,
-                    segment: segment,
+                    segment: segment
                 )
                 rebuiltPaths[segment.id] = builtPath
 
                 let metrics = VideoEditorAutoFocusEngine.evaluatePathQuality(
                     metadata: recordingMetadata,
                     segment: segment,
-                    path: builtPath,
+                    path: builtPath
                 )
                 DiagnosticLogger.shared.log(.debug, .editor, "Auto-focus path rebuilt", context: [
                     "segmentId": segment.id.uuidString,
                     "sampleCount": "\(metrics.sampleCount)",
                     "lockAccuracy": String(format: "%.3f", metrics.lockAccuracy),
                     "visibilityRate": String(format: "%.3f", metrics.visibilityRate),
-                    "meanError": String(format: "%.4f", metrics.meanError),
+                    "meanError": String(format: "%.4f", metrics.meanError)
                 ])
             }
 
@@ -2247,7 +2287,7 @@
                 viewportTimeline = VideoEditorViewportTimeline.build(
                     segments: enabledSegments,
                     metadata: recordingMetadata,
-                    duration: videoDuration,
+                    duration: videoDuration
                 )
             }
             rebuildOverlayTimelines(duration: videoDuration)
@@ -2262,10 +2302,10 @@
             pointerTimeline = VideoEditorPointerTimeline.build(
                 metadata: recordingMetadata,
                 duration: duration,
-                smoothingPreset: cursorSmoothingPreset,
+                smoothingPreset: cursorSmoothingPreset
             )
             keystrokeCaptionTimeline = VideoEditorKeystrokeCaptionTimeline(
-                events: recordingMetadata?.keystrokes ?? [],
+                events: recordingMetadata?.keystrokes ?? []
             )
         }
 
@@ -2304,7 +2344,7 @@
                 result.timeline,
                 selectedID: result.selectedID,
                 playheadTime: min(max(editorTime, 0), result.timeline.duration),
-                recordUndo: true,
+                recordUndo: true
             )
         }
 
@@ -2315,7 +2355,8 @@
         func deleteSelectedClip() {
             guard let selectedClipId,
                   let deletedRange = clipTimeline.editorRange(for: selectedClipId),
-                  let next = clipTimeline.deleting(segmentID: selectedClipId) else {
+                  let next = clipTimeline.deleting(segmentID: selectedClipId)
+            else {
                 return
             }
             let seekTime = min(deletedRange.lowerBound, next.duration)
@@ -2324,7 +2365,7 @@
                 next,
                 selectedID: nextSelection,
                 playheadTime: seekTime,
-                recordUndo: true,
+                recordUndo: true
             )
         }
 
@@ -2332,7 +2373,7 @@
             guard let segment = clipTimeline.segments.first(where: { $0.id == id }) else { return }
             let clamped = min(
                 max(speed, VideoEditorClipSegment.minimumSpeed),
-                VideoEditorClipSegment.maximumSpeed,
+                VideoEditorClipSegment.maximumSpeed
             )
             guard abs(segment.speed - clamped) > 0.000_001 else { return }
             var replacement = segment
@@ -2342,7 +2383,7 @@
                 next,
                 selectedID: id,
                 playheadTime: min(CMTimeGetSeconds(currentTime), next.duration),
-                recordUndo: true,
+                recordUndo: true
             )
         }
 
@@ -2355,7 +2396,7 @@
                 full,
                 selectedID: full.segments.first?.id,
                 playheadTime: 0,
-                recordUndo: recordUndo,
+                recordUndo: recordUndo
             )
         }
 
@@ -2363,7 +2404,7 @@
             _ requestedTimeline: VideoEditorClipTimeline,
             selectedID: UUID?,
             playheadTime: TimeInterval,
-            recordUndo: Bool,
+            recordUndo: Bool
         ) {
             let sourceSeconds = CMTimeGetSeconds(duration)
             let next = requestedTimeline.normalized(to: sourceSeconds)
@@ -2421,7 +2462,7 @@
                         try VideoEditorCompositionBuilder.makeAsset(
                             from: asset,
                             clipTimeline: clipTimeline,
-                            sourceDuration: sourceSeconds,
+                            sourceDuration: sourceSeconds
                         )
                     } else {
                         asset

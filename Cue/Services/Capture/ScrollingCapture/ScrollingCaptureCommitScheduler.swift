@@ -26,7 +26,7 @@ final class ScrollingCaptureCommitScheduler {
 
     init(
         onRequestCoalesced: @escaping () -> Void = {},
-        operation: @escaping (Request) async -> Void,
+        operation: @escaping (Request) async -> Void
     ) {
         self.onRequestCoalesced = onRequestCoalesced
         self.operation = operation
@@ -58,7 +58,7 @@ final class ScrollingCaptureCommitScheduler {
             sequenceNumber: nextSequenceNumber,
             reason: reason,
             expectedSignedDeltaPixels: expectedSignedDeltaPixels,
-            requestedAt: ProcessInfo.processInfo.systemUptime,
+            requestedAt: ProcessInfo.processInfo.systemUptime
         )
 
         if pendingRequest != nil {

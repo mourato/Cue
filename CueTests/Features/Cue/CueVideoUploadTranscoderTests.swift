@@ -19,8 +19,8 @@ final class CueVideoUploadTranscoderTests: XCTestCase {
                 maximumDimension: 320,
                 quality: .compact,
                 frameRate: 24,
-                includesAudio: false,
-            ),
+                includesAudio: false
+            )
         )
         defer { prepared.cleanup() }
 
@@ -28,7 +28,7 @@ final class CueVideoUploadTranscoderTests: XCTestCase {
         XCTAssertEqual(prepared.url.pathExtension, "mp4")
         XCTAssertLessThanOrEqual(
             try XCTUnwrap(prepared.url.resourceValues(forKeys: [.fileSizeKey]).fileSize),
-            5 * 1_048_576,
+            5 * 1_048_576
         )
         XCTAssertGreaterThan(try Data(contentsOf: prepared.url).count, 0)
         let outputAsset = AVURLAsset(url: prepared.url)
@@ -46,7 +46,7 @@ final class CueVideoUploadTranscoderTests: XCTestCase {
         let input = AVAssetWriterInput(mediaType: .video, outputSettings: [
             AVVideoCodecKey: AVVideoCodecType.h264,
             AVVideoWidthKey: 16,
-            AVVideoHeightKey: 16,
+            AVVideoHeightKey: 16
         ])
         writer.add(input)
         let adaptor = AVAssetWriterInputPixelBufferAdaptor(
@@ -54,8 +54,8 @@ final class CueVideoUploadTranscoderTests: XCTestCase {
             sourcePixelBufferAttributes: [
                 kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
                 kCVPixelBufferWidthKey as String: 16,
-                kCVPixelBufferHeightKey as String: 16,
-            ],
+                kCVPixelBufferHeightKey as String: 16
+            ]
         )
         writer.startWriting()
         writer.startSession(atSourceTime: .zero)

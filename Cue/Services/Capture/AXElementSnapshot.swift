@@ -30,7 +30,7 @@ struct AXElementSnapshot {
         position: CGPoint,
         size: CGSize,
         containingWindowSize: CGSize? = nil,
-        parent: @escaping () -> AXElementSnapshot? = { nil },
+        parent: @escaping () -> AXElementSnapshot? = { nil }
     ) {
         self.role = role
         self.position = position
@@ -68,7 +68,7 @@ struct AXAccessibilitySnapshotProvider: AXSnapshotProviding {
                 .debug,
                 .capture,
                 "AXUIElementCopyElementAtPosition failed: \(error.rawValue)",
-                context: ["pid": pid.map(String.init) ?? "sys"],
+                context: ["pid": pid.map(String.init) ?? "sys"]
             )
             return nil
         }
@@ -85,7 +85,7 @@ struct AXAccessibilitySnapshotProvider: AXSnapshotProviding {
                 .debug,
                 .capture,
                 "AX element missing position or size",
-                context: ["role": role ?? "nil"],
+                context: ["role": role ?? "nil"]
             )
             return nil
         }
@@ -97,7 +97,7 @@ struct AXAccessibilitySnapshotProvider: AXSnapshotProviding {
             position: position,
             size: size,
             containingWindowSize: windowSize,
-            parent: { parentSnapshot(of: element) },
+            parent: { parentSnapshot(of: element) }
         )
     }
 
@@ -134,7 +134,7 @@ struct AXAccessibilitySnapshotProvider: AXSnapshotProviding {
         of element: AXUIElement,
         attribute: String,
         type: AXValueType,
-        default defaultValue: T,
+        default defaultValue: T
     ) -> T? {
         var raw: CFTypeRef?
         guard

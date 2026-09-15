@@ -8,7 +8,7 @@ import XCTest
 
 final class CaptureSelectionSnappingTests: XCTestCase {
     private let configuration = CaptureSelectionSnappingConfiguration(snapDistance: 5, colorSensitivity: 3)
-    private let desktop = CGRect(x: 0, y: 0, width: 1_000, height: 800)
+    private let desktop = CGRect(x: 0, y: 0, width: 1000, height: 800)
 
     func testConfigurationFromPreferences_clampsSharedSettings() throws {
         let suiteName = "CaptureSelectionSnappingTests.configuration"
@@ -19,7 +19,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
 
         XCTAssertEqual(
             CaptureSelectionSnappingConfiguration.fromPreferences(defaults),
-            CaptureSelectionSnappingConfiguration(snapDistance: 19, colorSensitivity: 4),
+            CaptureSelectionSnappingConfiguration(snapDistance: 19, colorSensitivity: 4)
         )
         defaults.removePersistentDomain(forName: suiteName)
     }
@@ -27,7 +27,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
     func testResolve_noCandidateOutsideRadius_returnsProposedRect() {
         let proposed = CGRect(x: 100, y: 100, width: 200, height: 120)
         let candidates = [
-            CaptureSelectionSnappingCandidate(edge: .minX, coordinate: 80, source: .semantic),
+            CaptureSelectionSnappingCandidate(edge: .minX, coordinate: 80, source: .semantic)
         ]
 
         let result = CaptureSelectionSnapping.resolve(
@@ -35,7 +35,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             handle: .left,
             candidates: candidates,
             configuration: configuration,
-            desktopBounds: desktop,
+            desktopBounds: desktop
         )
 
         XCTAssertEqual(result.rect, proposed)
@@ -46,7 +46,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
         let proposed = CGRect(x: 105, y: 100, width: 195, height: 120)
         let candidates = [
             CaptureSelectionSnappingCandidate(edge: .minX, coordinate: 104, source: .color),
-            CaptureSelectionSnappingCandidate(edge: .minX, coordinate: 103, source: .semantic),
+            CaptureSelectionSnappingCandidate(edge: .minX, coordinate: 103, source: .semantic)
         ]
 
         let result = CaptureSelectionSnapping.resolve(
@@ -54,7 +54,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             handle: .left,
             candidates: candidates,
             configuration: configuration,
-            desktopBounds: desktop,
+            desktopBounds: desktop
         )
 
         XCTAssertEqual(result.rect.minX, 103, accuracy: 0.001)
@@ -65,7 +65,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
         let proposed = CGRect(x: 100, y: 100, width: 195, height: 120)
         let candidates = [
             CaptureSelectionSnappingCandidate(edge: .maxX, coordinate: 302, source: .color),
-            CaptureSelectionSnappingCandidate(edge: .maxX, coordinate: 298, source: .visual),
+            CaptureSelectionSnappingCandidate(edge: .maxX, coordinate: 298, source: .visual)
         ]
 
         let result = CaptureSelectionSnapping.resolve(
@@ -73,7 +73,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             handle: .right,
             candidates: candidates,
             configuration: configuration,
-            desktopBounds: desktop,
+            desktopBounds: desktop
         )
 
         XCTAssertEqual(result.rect.maxX, 298, accuracy: 0.001)
@@ -93,14 +93,14 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             handle: .right,
             backdrop: backdrop,
             screenFrame: screenFrame,
-            configuration: strict,
+            configuration: strict
         )
         let looseCandidates = CaptureSelectionSnapping.imageCandidates(
             proposedRect: proposed,
             handle: .right,
             backdrop: backdrop,
             screenFrame: screenFrame,
-            configuration: loose,
+            configuration: loose
         )
 
         XCTAssertTrue(looseCandidates.count >= strictCandidates.count)
@@ -111,8 +111,8 @@ final class CaptureSelectionSnappingTests: XCTestCase {
         let index = try XCTUnwrap(
             CaptureSelectionBoundaryIndex(
                 image: backdrop.image,
-                drawRect: CGRect(x: 0, y: 0, width: 400, height: 300),
-            ),
+                drawRect: CGRect(x: 0, y: 0, width: 400, height: 300)
+            )
         )
         let proposed = CGRect(x: 175, y: 40, width: 20, height: 220)
         let candidates = CaptureSelectionSnapping.imageCandidates(
@@ -121,7 +121,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             backdrop: backdrop,
             screenFrame: CGRect(x: 0, y: 0, width: 400, height: 300),
             configuration: CaptureSelectionSnappingConfiguration(snapDistance: 20, colorSensitivity: 3),
-            boundaryIndex: index,
+            boundaryIndex: index
         )
 
         let result = CaptureSelectionSnapping.resolve(
@@ -129,7 +129,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             handle: .right,
             candidates: candidates,
             configuration: CaptureSelectionSnappingConfiguration(snapDistance: 20, colorSensitivity: 3),
-            minSize: 1,
+            minSize: 1
         )
 
         XCTAssertEqual(result.rect.maxX, 200, accuracy: 0.01)
@@ -141,8 +141,8 @@ final class CaptureSelectionSnappingTests: XCTestCase {
         let index = try XCTUnwrap(
             CaptureSelectionBoundaryIndex(
                 image: backdrop.image,
-                drawRect: CGRect(x: 0, y: 0, width: 400, height: 300),
-            ),
+                drawRect: CGRect(x: 0, y: 0, width: 400, height: 300)
+            )
         )
         let anchor = CGPoint(x: 120, y: 80)
         let moving = CGPoint(x: 188, y: 180)
@@ -150,7 +150,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             point: moving,
             anchor: anchor,
             boundaryIndex: index,
-            configuration: CaptureSelectionSnappingConfiguration(snapDistance: 20, colorSensitivity: 3),
+            configuration: CaptureSelectionSnappingConfiguration(snapDistance: 20, colorSensitivity: 3)
         )
 
         XCTAssertEqual(result.rect.maxX, 200, accuracy: 0.01)
@@ -160,7 +160,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
     func testResolve_leftEdgeSnapsWithinRadius() {
         let proposed = CGRect(x: 102, y: 100, width: 200, height: 120)
         let candidates = [
-            CaptureSelectionSnappingCandidate(edge: .minX, coordinate: 100, source: .semantic),
+            CaptureSelectionSnappingCandidate(edge: .minX, coordinate: 100, source: .semantic)
         ]
 
         let result = CaptureSelectionSnapping.resolve(
@@ -168,7 +168,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             handle: .left,
             candidates: candidates,
             configuration: configuration,
-            desktopBounds: desktop,
+            desktopBounds: desktop
         )
 
         XCTAssertEqual(result.rect.minX, 100, accuracy: 0.001)
@@ -179,7 +179,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
         let proposed = CGRect(x: 102, y: 98, width: 200, height: 120)
         let candidates = [
             CaptureSelectionSnappingCandidate(edge: .minX, coordinate: 100, source: .semantic),
-            CaptureSelectionSnappingCandidate(edge: .maxY, coordinate: 220, source: .visual),
+            CaptureSelectionSnappingCandidate(edge: .maxY, coordinate: 220, source: .visual)
         ]
 
         let result = CaptureSelectionSnapping.resolve(
@@ -187,7 +187,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             handle: .topLeft,
             candidates: candidates,
             configuration: configuration,
-            desktopBounds: desktop,
+            desktopBounds: desktop
         )
 
         XCTAssertEqual(result.rect.minX, 100, accuracy: 0.001)
@@ -202,7 +202,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
     func testResolve_rawPointerBeyondRadiusImmediatelyReturnsUnsnappedRect() {
         let first = CGRect(x: 100, y: 100, width: 200, height: 120)
         let candidates = [
-            CaptureSelectionSnappingCandidate(edge: .minX, coordinate: 100, source: .semantic),
+            CaptureSelectionSnappingCandidate(edge: .minX, coordinate: 100, source: .semantic)
         ]
 
         let snapped = CaptureSelectionSnapping.resolve(
@@ -210,7 +210,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             handle: .left,
             candidates: candidates,
             configuration: configuration,
-            desktopBounds: desktop,
+            desktopBounds: desktop
         )
         XCTAssertEqual(snapped.rect.minX, 100, accuracy: 0.001)
 
@@ -220,7 +220,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             handle: .left,
             candidates: candidates,
             configuration: configuration,
-            desktopBounds: desktop,
+            desktopBounds: desktop
         )
         XCTAssertEqual(unsnapped.rect, beyondRadius)
         XCTAssertTrue(unsnapped.appliedSources.isEmpty)
@@ -229,7 +229,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
     func testResolve_preservesMinimumSize() {
         let proposed = CGRect(x: 100, y: 100, width: 10, height: 10)
         let candidates = [
-            CaptureSelectionSnappingCandidate(edge: .maxX, coordinate: 104, source: .semantic),
+            CaptureSelectionSnappingCandidate(edge: .maxX, coordinate: 104, source: .semantic)
         ]
 
         let result = CaptureSelectionSnapping.resolve(
@@ -238,7 +238,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             candidates: candidates,
             configuration: configuration,
             desktopBounds: desktop,
-            minSize: 50,
+            minSize: 50
         )
 
         XCTAssertGreaterThanOrEqual(result.rect.width, 50)
@@ -253,7 +253,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             handle: .bottomRight,
             candidates: [],
             configuration: configuration,
-            desktopBounds: desktop,
+            desktopBounds: desktop
         ).rect
 
         let locked = CaptureSelectionGeometry.resizedRect(
@@ -261,11 +261,11 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             handle: .bottomRight,
             translation: CGPoint(
                 x: snapped.width - start.width,
-                y: snapped.minY - start.minY,
+                y: snapped.minY - start.minY
             ),
             aspectLocked: true,
             aspectRatio: 2,
-            minSize: CaptureSelectionSnapping.refinementMinimumSize,
+            minSize: CaptureSelectionSnapping.refinementMinimumSize
         )
 
         XCTAssertEqual(locked.width / locked.height, 2, accuracy: 0.01)
@@ -282,7 +282,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             backdrop: backdrop,
             screenFrame: screenFrame,
             configuration: CaptureSelectionSnappingConfiguration(snapDistance: 40, colorSensitivity: 4),
-            sampler: CaptureSelectionSnappingCGImageSampler(image: backdrop.image),
+            sampler: CaptureSelectionSnappingCGImageSampler(image: backdrop.image)
         )
 
         XCTAssertFalse(candidates.isEmpty)
@@ -294,7 +294,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             leftColor: (20, 20, 20),
             rightColor: (240, 240, 240),
             width: 200,
-            height: 100,
+            height: 100
         )
         let screenFrame = CGRect(x: 0, y: 0, width: 200, height: 100)
         let proposed = CGRect(x: 10, y: 10, width: 85, height: 80)
@@ -305,7 +305,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             backdrop: backdrop,
             screenFrame: screenFrame,
             configuration: CaptureSelectionSnappingConfiguration(snapDistance: 20, colorSensitivity: 4),
-            sampler: CaptureSelectionSnappingCGImageSampler(image: backdrop.image),
+            sampler: CaptureSelectionSnappingCGImageSampler(image: backdrop.image)
         )
 
         let candidate = candidates.first { $0.edge == .maxX }
@@ -315,7 +315,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
     func testResolve_crossingBoundaryImmediatelyDefeatsAttraction() {
         let proposed = CGRect(x: 100, y: 100, width: 202, height: 120)
         let candidates = [
-            CaptureSelectionSnappingCandidate(edge: .maxX, coordinate: 300, source: .color),
+            CaptureSelectionSnappingCandidate(edge: .maxX, coordinate: 300, source: .color)
         ]
 
         let result = CaptureSelectionSnapping.resolve(
@@ -323,7 +323,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             handle: .right,
             candidates: candidates,
             configuration: configuration,
-            desktopBounds: desktop,
+            desktopBounds: desktop
         )
 
         XCTAssertEqual(result.rect, proposed)
@@ -341,7 +341,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             backdrop: backdrop,
             screenFrame: screenFrame,
             configuration: CaptureSelectionSnappingConfiguration(snapDistance: 10, colorSensitivity: 1),
-            sampler: CaptureSelectionSnappingCGImageSampler(image: backdrop.image),
+            sampler: CaptureSelectionSnappingCGImageSampler(image: backdrop.image)
         )
 
         XCTAssertTrue(candidates.filter { $0.source == .visual }.isEmpty)
@@ -373,7 +373,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
     func testResolve_whenDisabled_doesNotSnap() {
         let proposed = CGRect(x: 100, y: 100, width: 200, height: 120)
         let candidates = [
-            CaptureSelectionSnappingCandidate(edge: .minX, coordinate: 102, source: .semantic),
+            CaptureSelectionSnappingCandidate(edge: .minX, coordinate: 102, source: .semantic)
         ]
         let disabledConfig = CaptureSelectionSnappingConfiguration(isEnabled: false, snapDistance: 10)
 
@@ -381,7 +381,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             proposedRect: proposed,
             handle: .left,
             candidates: candidates,
-            configuration: disabledConfig,
+            configuration: disabledConfig
         )
 
         XCTAssertEqual(result.rect, proposed)
@@ -423,13 +423,13 @@ final class CaptureSelectionSnappingTests: XCTestCase {
         let topEdgeAwayFromMid = CGPoint(x: rect.minX + 40, y: rect.maxY)
         XCTAssertEqual(
             RecordingResizeHandleCursorGeometry.handle(at: topEdgeAwayFromMid, in: rect, hitSize: hitSize),
-            .top,
+            .top
         )
 
         let leftEdgeAwayFromMid = CGPoint(x: rect.minX, y: rect.minY + 40)
         XCTAssertEqual(
             RecordingResizeHandleCursorGeometry.handle(at: leftEdgeAwayFromMid, in: rect, hitSize: hitSize),
-            .left,
+            .left
         )
 
         let topHit = RecordingResizeHandleCursorGeometry.hitRect(for: .top, in: rect, hitSize: hitSize)
@@ -445,7 +445,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
 
         XCTAssertLessThan(
             CaptureSelectionSnapping.perceptualDifference(low, near),
-            CaptureSelectionSnapping.perceptualDifference(low, far),
+            CaptureSelectionSnapping.perceptualDifference(low, far)
         )
     }
 
@@ -455,7 +455,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
         leftColor: (UInt8, UInt8, UInt8),
         rightColor: (UInt8, UInt8, UInt8),
         width: Int = 200,
-        height: Int = 100,
+        height: Int = 100
     ) -> AreaSelectionBackdrop {
         var pixels = [UInt8](repeating: 255, count: width * height * 4)
         let boundary = width / 2
@@ -483,7 +483,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             provider: provider,
             decode: nil,
             shouldInterpolate: false,
-            intent: .defaultIntent,
+            intent: .defaultIntent
         )!
 
         return AreaSelectionBackdrop(displayID: 1, image: image, scaleFactor: 1, isVisible: true)
@@ -513,7 +513,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             provider: provider,
             decode: nil,
             shouldInterpolate: false,
-            intent: .defaultIntent,
+            intent: .defaultIntent
         )!
 
         return AreaSelectionBackdrop(displayID: 1, image: image, scaleFactor: 1, isVisible: true)
@@ -537,7 +537,7 @@ final class CaptureSelectionSnappingTests: XCTestCase {
             translation: CGPoint(x: 20, y: 0),
             coordinateSpace: .topLeftOrigin,
             containerSize: container,
-            minSize: CaptureSelectionChromeMetrics.confirmedMinimumSize,
+            minSize: CaptureSelectionChromeMetrics.confirmedMinimumSize
         )
 
         XCTAssertEqual(resizedTopLeft.width, 140, accuracy: 0.001)

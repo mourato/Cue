@@ -22,7 +22,7 @@ struct HistorySettingsView: View {
         Form {
             Section(L10n.PreferencesHistory.floatingPanelSection) {
                 SettingRow(
-                    title: L10n.PreferencesHistory.floatingPanelTitle,
+                    title: L10n.PreferencesHistory.floatingPanelTitle
                 ) {
                     Toggle("", isOn: $manager.isEnabled)
                         .labelsHidden()
@@ -30,7 +30,7 @@ struct HistorySettingsView: View {
                 }
 
                 SettingRow(
-                    title: L10n.PreferencesHistory.panelPositionTitle,
+                    title: L10n.PreferencesHistory.panelPositionTitle
                 ) {
                     Picker("", selection: $manager.position) {
                         ForEach(HistoryPanelPosition.allCases, id: \.self) { position in
@@ -48,7 +48,7 @@ struct HistorySettingsView: View {
             Section(L10n.PreferencesHistory.displaySection) {
                 SettingRow(
                     title: L10n.PreferencesHistory.defaultFilterTitle,
-                    description: L10n.PreferencesHistory.defaultFilterDescription,
+                    description: L10n.PreferencesHistory.defaultFilterDescription
                 ) {
                     Picker("", selection: $manager.defaultFilter) {
                         Text(L10n.PreferencesHistory.defaultFilterAll).tag(CaptureHistoryType?.none)
@@ -68,7 +68,7 @@ struct HistorySettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesHistory.backgroundStyleTitle,
-                    description: L10n.PreferencesHistory.backgroundStyleDescription,
+                    description: L10n.PreferencesHistory.backgroundStyleDescription
                 ) {
                     HistoryBackgroundStylePicker(selection: $historyBackgroundStyle)
                         .frame(width: 190, alignment: .trailing)
@@ -78,7 +78,7 @@ struct HistorySettingsView: View {
             Section(L10n.PreferencesHistory.retentionSection) {
                 SettingRow(
                     title: L10n.PreferencesHistory.enableHistoryTitle,
-                    description: L10n.PreferencesHistory.enableHistoryDescription,
+                    description: L10n.PreferencesHistory.enableHistoryDescription
                 ) {
                     Toggle("", isOn: $historyEnabled)
                         .labelsHidden()
@@ -87,12 +87,12 @@ struct HistorySettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesHistory.retentionDaysTitle,
-                    description: retentionDaysDescription,
+                    description: retentionDaysDescription
                 ) {
                     PreferencesNumericPicker(
                         value: Binding(
                             get: { Double(historyRetentionDays) },
-                            set: { historyRetentionDays = Int($0.rounded()) },
+                            set: { historyRetentionDays = Int($0.rounded()) }
                         ),
                         range: 0 ... 90,
                         presets: [7, 30, 90],
@@ -101,18 +101,18 @@ struct HistorySettingsView: View {
                         unit: "days",
                         valueLabel: { "\(Int($0)) days" },
                         specialValue: 0,
-                        specialLabel: L10n.PreferencesHistory.keepForever,
+                        specialLabel: L10n.PreferencesHistory.keepForever
                     )
                 }
                 .disabled(!historyEnabled)
 
                 SettingRow(
-                    title: L10n.PreferencesHistory.maxCountTitle,
+                    title: L10n.PreferencesHistory.maxCountTitle
                 ) {
                     PreferencesNumericPicker(
                         value: Binding(
                             get: { Double(historyMaxCount) },
-                            set: { historyMaxCount = Int($0.rounded()) },
+                            set: { historyMaxCount = Int($0.rounded()) }
                         ),
                         range: 0 ... 1000,
                         presets: [100, 500, 1000],
@@ -121,7 +121,7 @@ struct HistorySettingsView: View {
                         unit: "items",
                         valueLabel: { "\(Int($0))" },
                         specialValue: 0,
-                        specialLabel: L10n.Common.unlimited,
+                        specialLabel: L10n.Common.unlimited
                     )
                 }
                 .disabled(!historyEnabled)
@@ -130,7 +130,7 @@ struct HistorySettingsView: View {
             Section(L10n.PreferencesHistory.storageSection) {
                 SettingRow(
                     title: L10n.PreferencesHistory.captureStorageTitle,
-                    description: captureStorageSizeText,
+                    description: captureStorageSizeText
                 ) {
                     Button(L10n.PreferencesHistory.openCaptureStorageButton) {
                         revealCaptureStorage()
@@ -141,7 +141,7 @@ struct HistorySettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesHistory.clearHistoryTitle,
-                    description: L10n.PreferencesHistory.clearHistoryDescription,
+                    description: L10n.PreferencesHistory.clearHistoryDescription
                 ) {
                     Button(L10n.PreferencesHistory.clearHistoryButton) {
                         clearHistoryWithConfirmation()
@@ -240,7 +240,7 @@ private struct HistoryBackgroundStyleThumbnail: View {
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .stroke(isSelected ? Color.accentColor : borderColor, lineWidth: isSelected ? 2 : 1),
+                    .stroke(isSelected ? Color.accentColor : borderColor, lineWidth: isSelected ? 2 : 1)
             )
             .shadow(color: .black.opacity(0.15), radius: 2, x: 0, y: 1)
     }

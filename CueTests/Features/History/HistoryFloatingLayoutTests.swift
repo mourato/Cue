@@ -25,7 +25,7 @@ final class HistoryFloatingLayoutTests: XCTestCase {
         XCTAssertEqual(
             width,
             screen.visibleFrame.width * HistoryFloatingLayout.panelWidthRatio,
-            accuracy: 0.0001,
+            accuracy: 0.0001
         )
     }
 
@@ -41,12 +41,12 @@ final class HistoryFloatingLayoutTests: XCTestCase {
         XCTAssertEqual(
             size.width,
             screen.visibleFrame.width * HistoryFloatingLayout.panelWidthRatio,
-            accuracy: 0.0001,
+            accuracy: 0.0001
         )
         XCTAssertEqual(
             size.height,
             min(HistoryFloatingLayout.panelHeight, safeFrame.height),
-            accuracy: 0.0001,
+            accuracy: 0.0001
         )
     }
 
@@ -101,7 +101,7 @@ final class HistoryFloatingLayoutTests: XCTestCase {
         XCTAssertTrue(HistoryFloatingTimeFilter.last24Hours.includes(now.addingTimeInterval(-3600), relativeTo: now))
         XCTAssertFalse(HistoryFloatingTimeFilter.last24Hours.includes(
             now.addingTimeInterval(-100_000),
-            relativeTo: now,
+            relativeTo: now
         ))
     }
 
@@ -110,7 +110,7 @@ final class HistoryFloatingLayoutTests: XCTestCase {
         XCTAssertTrue(HistoryFloatingTimeFilter.last7Days.includes(now.addingTimeInterval(-100_000), relativeTo: now))
         XCTAssertFalse(HistoryFloatingTimeFilter.last7Days.includes(
             now.addingTimeInterval(-1_000_000),
-            relativeTo: now,
+            relativeTo: now
         ))
     }
 
@@ -118,11 +118,11 @@ final class HistoryFloatingLayoutTests: XCTestCase {
         let now = Date()
         XCTAssertTrue(HistoryFloatingTimeFilter.last30Days.includes(
             now.addingTimeInterval(-1_000_000),
-            relativeTo: now,
+            relativeTo: now
         ))
         XCTAssertFalse(HistoryFloatingTimeFilter.last30Days.includes(
             now.addingTimeInterval(-10_000_000),
-            relativeTo: now,
+            relativeTo: now
         ))
     }
 
@@ -145,7 +145,7 @@ final class HistoryFloatingLayoutTests: XCTestCase {
             characters: "a",
             charactersIgnoringModifiers: "a",
             isARepeat: false,
-            keyCode: 0,
+            keyCode: 0
         )
 
         guard let event else {
@@ -170,7 +170,7 @@ final class HistoryFloatingLayoutTests: XCTestCase {
         let observer = NotificationCenter.default.addObserver(
             forName: .historySelectAll,
             object: panel,
-            queue: nil,
+            queue: nil
         ) { _ in
             XCTFail("Notification should not be posted when text input is active")
         }
@@ -188,7 +188,7 @@ final class HistoryFloatingLayoutTests: XCTestCase {
             characters: "a",
             charactersIgnoringModifiers: "a",
             isARepeat: false,
-            keyCode: 0,
+            keyCode: 0
         )
 
         guard let event else {

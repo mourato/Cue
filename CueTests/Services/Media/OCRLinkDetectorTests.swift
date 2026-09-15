@@ -82,7 +82,7 @@ final class OCRLinkDetectorTests: XCTestCase {
         XCTAssertEqual(OCRLinkDetector.displayString(for: url), "example.com/path")
         XCTAssertEqual(
             try OCRLinkDetector.displayString(for: XCTUnwrap(URL(string: "http://example.com"))),
-            "example.com",
+            "example.com"
         )
     }
 }

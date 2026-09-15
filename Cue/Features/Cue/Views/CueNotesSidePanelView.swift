@@ -65,8 +65,8 @@ struct CueNotesSidePanelView: View {
                 L10n.Cue.noteRowLabel(
                     number: displayNumber,
                     text: note.text.isEmpty ? CueL10n.emptyNoteLabel : note.text,
-                    target: note.target.kindLabel,
-                ),
+                    target: note.target.kindLabel
+                )
             )
             .accessibilityValue(isSelected ? CueL10n.selected : "")
             .accessibilityAddTraits(isSelected ? .isSelected : [])
@@ -83,7 +83,7 @@ struct CueNotesSidePanelView: View {
         .padding(8)
         .background(
             RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(isSelected ? Color.accentColor.opacity(0.15) : Color.clear),
+                .fill(isSelected ? Color.accentColor.opacity(0.15) : Color.clear)
         )
     }
 }

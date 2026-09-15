@@ -18,7 +18,7 @@ protocol AreaSelectionBackdropCapturing: Sendable {
         displayID: CGDirectDisplayID,
         captureRect: CGRect,
         scaleFactor: CGFloat,
-        isVisible: Bool,
+        isVisible: Bool
     ) async -> AreaSelectionBackdrop?
 }
 
@@ -28,7 +28,7 @@ struct LiveAreaSelectionBackdropCapturer: AreaSelectionBackdropCapturing {
         displayID: CGDirectDisplayID,
         captureRect _: CGRect,
         scaleFactor: CGFloat,
-        isVisible: Bool,
+        isVisible: Bool
     ) async -> AreaSelectionBackdrop? {
         do {
             let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
@@ -51,13 +51,13 @@ struct LiveAreaSelectionBackdropCapturer: AreaSelectionBackdropCapturing {
 
             let image = try await SCScreenshotManager.captureImage(
                 contentFilter: filter,
-                configuration: configuration,
+                configuration: configuration
             )
             return AreaSelectionBackdrop(
                 displayID: displayID,
                 image: image,
                 scaleFactor: pixelScale,
-                isVisible: isVisible,
+                isVisible: isVisible
             )
         } catch {
             return nil
@@ -74,8 +74,8 @@ struct SyntheticAreaSelectionBackdropCapturer: AreaSelectionBackdropCapturing {
         displayID: CGDirectDisplayID,
         captureRect _: CGRect,
         scaleFactor: CGFloat,
-        isVisible: Bool,
-    ) async -> AreaSelectionBackdrop? {
+        isVisible: Bool
+    ) -> AreaSelectionBackdrop? {
         let dimension = max(1, pixelSize)
         guard let image = Self.makeSolidImage(width: dimension, height: dimension) else {
             return nil
@@ -84,7 +84,7 @@ struct SyntheticAreaSelectionBackdropCapturer: AreaSelectionBackdropCapturing {
             displayID: displayID,
             image: image,
             scaleFactor: scaleFactor,
-            isVisible: isVisible,
+            isVisible: isVisible
         )
     }
 
@@ -111,7 +111,7 @@ struct SyntheticAreaSelectionBackdropCapturer: AreaSelectionBackdropCapturing {
             provider: provider,
             decode: nil,
             shouldInterpolate: false,
-            intent: .defaultIntent,
+            intent: .defaultIntent
         )
     }
 }
@@ -122,7 +122,7 @@ enum AreaSelectionBackdropCapturerPolicy {
     /// Live capturer outside XCTest; synthetic under XCTest unless explicitly opted in.
     static func makeDefault(
         environment: [String: String] = ProcessInfo.processInfo.environment,
-        xctestRuntimePresent: () -> Bool = { NSClassFromString("XCTestCase") != nil },
+        xctestRuntimePresent: () -> Bool = { NSClassFromString("XCTestCase") != nil }
     ) -> any AreaSelectionBackdropCapturing {
         if shouldUseLiveCapturer(environment: environment, xctestRuntimePresent: xctestRuntimePresent) {
             return LiveAreaSelectionBackdropCapturer()
@@ -132,7 +132,7 @@ enum AreaSelectionBackdropCapturerPolicy {
 
     static func shouldUseLiveCapturer(
         environment: [String: String] = ProcessInfo.processInfo.environment,
-        xctestRuntimePresent: () -> Bool = { NSClassFromString("XCTestCase") != nil },
+        xctestRuntimePresent: () -> Bool = { NSClassFromString("XCTestCase") != nil }
     ) -> Bool {
         let underXCTest = environment["XCTestConfigurationFilePath"] != nil || xctestRuntimePresent()
         guard underXCTest else { return true }

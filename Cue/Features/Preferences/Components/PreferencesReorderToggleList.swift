@@ -15,7 +15,7 @@ extension UTType {
 struct PreferencesReorderToggleList<
     Item: Identifiable & Hashable,
     Accessory: View,
-    BodyDragPreview: View,
+    BodyDragPreview: View
 >: View {
     let items: [Item]
     let title: (Item) -> String
@@ -70,7 +70,7 @@ struct PreferencesReorderToggleList<
                                 withAnimation(.default) {
                                     onMove(
                                         IndexSet(integer: sourceIndex),
-                                        index > sourceIndex ? index + 1 : index,
+                                        index > sourceIndex ? index + 1 : index
                                     )
                                 }
                             }
@@ -80,7 +80,7 @@ struct PreferencesReorderToggleList<
                                 draggedItem = nil
                                 onReorderStateChanged?(false)
                             }
-                        },
+                        }
                     )
 
                     if index < items.count - 1 {
@@ -128,7 +128,7 @@ struct PreferencesReorderToggleList<
         if let data {
             provider.registerDataRepresentation(
                 forTypeIdentifier: reorderUTType.identifier,
-                visibility: .all,
+                visibility: .all
             ) { completion in
                 completion(data, nil)
                 return nil
@@ -160,7 +160,7 @@ extension PreferencesReorderToggleList where BodyDragPreview == EmptyView {
         onReset: (() -> Void)? = nil,
         reorderUTType: UTType = .preferencesReorder,
         reorderPayload: @escaping (Item) -> String,
-        @ViewBuilder accessory: @escaping (Item) -> Accessory,
+        @ViewBuilder accessory: @escaping (Item) -> Accessory
     ) {
         self.items = items
         self.title = title
@@ -196,7 +196,7 @@ extension PreferencesReorderToggleList {
         bodyDragProvider: @escaping (Item) -> NSItemProvider,
         onBodyDragBegan: (() -> Void)? = nil,
         onReorderStateChanged: ((Bool) -> Void)? = nil,
-        @ViewBuilder bodyDragPreview: @escaping (Item) -> BodyDragPreview,
+        @ViewBuilder bodyDragPreview: @escaping (Item) -> BodyDragPreview
     ) {
         self.items = items
         self.title = title
@@ -248,8 +248,8 @@ struct PreferencesReorderToggleRow<Accessory: View, BodyDragPreview: View>: View
             delegate: PreferencesReorderDropDelegate(
                 canAcceptDrop: { isReorderDragActive },
                 onDropEntered: onDropEntered ?? {},
-                onDropPerformed: onDropPerformed ?? {},
-            ),
+                onDropPerformed: onDropPerformed ?? {}
+            )
         )
     }
 

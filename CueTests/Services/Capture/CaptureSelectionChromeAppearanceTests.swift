@@ -9,7 +9,7 @@ import XCTest
 final class CaptureSelectionChromeAppearanceTests: XCTestCase {
     func testColors_lightBackdrop_usesDarkStroke() {
         let colors = CaptureSelectionChromeAppearance.colors(
-            for: CaptureSelectionChromeAppearanceContext(backdropLuma: 0.9),
+            for: CaptureSelectionChromeAppearanceContext(backdropLuma: 0.9)
         )
 
         XCTAssertLessThan(colors.strokeRed, 0.2)
@@ -18,7 +18,7 @@ final class CaptureSelectionChromeAppearanceTests: XCTestCase {
 
     func testColors_darkBackdrop_usesLightStroke() {
         let colors = CaptureSelectionChromeAppearance.colors(
-            for: CaptureSelectionChromeAppearanceContext(backdropLuma: 0.1),
+            for: CaptureSelectionChromeAppearanceContext(backdropLuma: 0.1)
         )
 
         XCTAssertEqual(colors.strokeRed, 1)
@@ -28,15 +28,15 @@ final class CaptureSelectionChromeAppearanceTests: XCTestCase {
 
     func testColors_missingLuma_usesDeterministicFallback() {
         let colors = CaptureSelectionChromeAppearance.colors(
-            for: CaptureSelectionChromeAppearanceContext(backdropLuma: nil),
+            for: CaptureSelectionChromeAppearanceContext(backdropLuma: nil)
         )
 
         XCTAssertEqual(
             colors.strokeAlpha,
             CaptureSelectionChromeAppearance.colors(
                 for: CaptureSelectionChromeAppearanceContext(backdropLuma: CaptureSelectionChromeAppearanceContext
-                    .fallbackLuma),
-            ).strokeAlpha,
+                    .fallbackLuma)
+            ).strokeAlpha
         )
     }
 
@@ -47,7 +47,7 @@ final class CaptureSelectionChromeAppearanceTests: XCTestCase {
         XCTAssertEqual(luma, 1, accuracy: 0.001)
         XCTAssertNotEqual(
             CaptureSelectionSnappingConfiguration(colorSensitivity: 1).colorDifferenceThreshold,
-            CaptureSelectionSnappingConfiguration(colorSensitivity: 5).colorDifferenceThreshold,
+            CaptureSelectionSnappingConfiguration(colorSensitivity: 5).colorDifferenceThreshold
         )
     }
 }

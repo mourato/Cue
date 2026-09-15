@@ -33,7 +33,7 @@ struct QuickAccessProgressView: View {
         case .idle:
             EmptyView()
 
-        case .processing(let progress):
+        case let .processing(progress):
             if let progress {
                 determinateRing(progress: progress)
             } else {

@@ -163,7 +163,7 @@
                     cameraFramesReceived: _cameraFramesReceived,
                     cameraFramesAppended: _cameraFramesAppended,
                     cameraFramesDropped: _cameraFramesDropped,
-                    cameraFramesFailedAppend: _cameraFramesFailedAppend,
+                    cameraFramesFailedAppend: _cameraFramesFailedAppend
                 )
             }
         }
@@ -196,7 +196,7 @@
                 sampleBuffer: sampleBuffer,
                 sampleTimingEntryCount: 1,
                 sampleTimingArray: &timingInfo,
-                sampleBufferOut: &adjustedBuffer,
+                sampleBufferOut: &adjustedBuffer
             )
             return copyStatus == noErr ? adjustedBuffer : nil
         }
@@ -206,13 +206,16 @@
         func appendVideoSample(_ sampleBuffer: CMSampleBuffer) {
             // Check if this is a valid frame from ScreenCaptureKit
             // SCStream sends status updates as sample buffers without image data
-            guard let attachments = CMSampleBufferGetSampleAttachmentsArray(sampleBuffer,
-                                                                            createIfNecessary: false) as? [
+            guard let attachments = CMSampleBufferGetSampleAttachmentsArray(
+                sampleBuffer,
+                createIfNecessary: false
+            ) as? [
                 [SCStreamFrameInfo: Any]
             ],
                 let statusRawValue = attachments.first?[.status] as? Int,
                 let status = SCFrameStatus(rawValue: statusRawValue),
-                status == .complete else {
+                status == .complete
+            else {
                 // Not a complete frame - skip silently (these are status updates)
                 return
             }
@@ -230,7 +233,7 @@
                     DiagnosticLogger.shared.log(
                         .warning,
                         .recording,
-                        "Complete recording frame missing pixel buffer",
+                        "Complete recording frame missing pixel buffer"
                     )
                 }
                 return
@@ -260,7 +263,7 @@
                 let (writer, videoInput, adaptor): (
                     AVAssetWriter?,
                     AVAssetWriterInput?,
-                    AVAssetWriterInputPixelBufferAdaptor?,
+                    AVAssetWriterInputPixelBufferAdaptor?
                 ) = lock
                     .withLock {
                         guard _isCapturing, let writer = _assetWriter, writer.status == .writing else {
@@ -276,7 +279,8 @@
                         if let expectedWidth,
                            let expectedHeight,
                            w != expectedWidth || h != expectedHeight,
-                           !_didLogFrameDimensionMismatch {
+                           !_didLogFrameDimensionMismatch
+                        {
                             _didLogFrameDimensionMismatch = true
                             shouldLogDimensionMismatch = true
                         }
@@ -324,12 +328,12 @@
             if shouldLogDimensionMismatch, let expectedWidth, let expectedHeight {
                 DiagnosticLogger.shared.log(.warning, .recording, "Recording frame dimension mismatch", context: [
                     "expected": "\(expectedWidth)x\(expectedHeight)",
-                    "actual": "\(pixelWidth)x\(pixelHeight)",
+                    "actual": "\(pixelWidth)x\(pixelHeight)"
                 ])
             }
             if shouldStartSession {
                 DiagnosticLogger.shared.log(.debug, .recording, "Recording writer session started", context: [
-                    "firstFrameTimestampSeconds": String(format: "%.3f", adjustedTimestamp.seconds),
+                    "firstFrameTimestampSeconds": String(format: "%.3f", adjustedTimestamp.seconds)
                 ])
                 onFirstVideoFrame?()
             }
@@ -337,7 +341,7 @@
                 logWriterIssue(
                     "Failed to append recording video frame",
                     writer: writerForLog,
-                    context: ["timestampSeconds": String(format: "%.3f", adjustedTimestamp.seconds)],
+                    context: ["timestampSeconds": String(format: "%.3f", adjustedTimestamp.seconds)]
                 )
             }
         }
@@ -387,7 +391,7 @@
                 logWriterIssue(
                     "Failed to append recording system audio sample",
                     writer: writerForLog,
-                    context: ["timestampSeconds": String(format: "%.3f", adjustedTimestamp.seconds)],
+                    context: ["timestampSeconds": String(format: "%.3f", adjustedTimestamp.seconds)]
                 )
             }
         }
@@ -405,7 +409,7 @@
                 _cameraAdaptor,
                 _firstTimestamp,
                 _pauseOffsetAccumulator,
-                _cameraFinished,
+                _cameraFinished
             ) }
             guard values.0, let writer = values.1, writer.status == .writing, let input = values.2,
                   let adaptor = values.3, let first = values.4, !values.6 else { return false }
@@ -458,8 +462,12 @@
                 appendBoundary.lock()
                 defer { appendBoundary.unlock() }
 
-                let (writer, microphoneInput, firstTs, offset): (AVAssetWriter?, AVAssetWriterInput?, CMTime?,
-                                                                 CMTime) = lock.withLock {
+                let (writer, microphoneInput, firstTs, offset): (
+                    AVAssetWriter?,
+                    AVAssetWriterInput?,
+                    CMTime?,
+                    CMTime
+                ) = lock.withLock {
                     guard _isCapturing, let writer = _assetWriter, writer.status == .writing else {
                         return (nil, nil, nil, .zero)
                     }
@@ -493,7 +501,7 @@
                 logWriterIssue(
                     "Failed to append recording microphone sample",
                     writer: writerForLog,
-                    context: ["timestampSeconds": String(format: "%.3f", adjustedTimestamp.seconds)],
+                    context: ["timestampSeconds": String(format: "%.3f", adjustedTimestamp.seconds)]
                 )
             }
         }
@@ -541,7 +549,7 @@
             }
 
             DiagnosticLogger.shared.log(.debug, .recording, "Finishing recording writer", context: [
-                "writerStatus": writerStatusLabel(writer.status),
+                "writerStatus": writerStatusLabel(writer.status)
             ])
 
             if writer.status == .writing {
@@ -551,7 +559,7 @@
                     return .failed(error.localizedDescription)
                 } else if writer.status == .completed {
                     DiagnosticLogger.shared.log(.debug, .recording, "Recording writer finished", context: [
-                        "writerStatus": writerStatusLabel(writer.status),
+                        "writerStatus": writerStatusLabel(writer.status)
                     ])
                     return .finished
                 } else {
@@ -662,7 +670,8 @@
             if let formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer) {
                 context["mediaSubType"] = fourCC(CMFormatDescriptionGetMediaSubType(formatDescription))
                 if let streamDescription = CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription)?
-                    .pointee {
+                    .pointee
+                {
                     observedSampleRate = streamDescription.mSampleRate
                     context["sampleRate"] = String(format: "%.0f", streamDescription.mSampleRate)
                     context["channels"] = "\(streamDescription.mChannelsPerFrame)"
@@ -677,7 +686,7 @@
                 .info,
                 .recording,
                 "Recording audio sample format",
-                context: context,
+                context: context
             )
 
             // Surface a sample-rate mismatch proactively: a mic captured below the target rate
@@ -686,7 +695,8 @@
             if role == .microphone,
                let observedSampleRate,
                observedSampleRate > 0,
-               Int(observedSampleRate.rounded()) != RecordingAudioEncodingSettings.sampleRate {
+               Int(observedSampleRate.rounded()) != RecordingAudioEncodingSettings.sampleRate
+            {
                 DiagnosticLogger.shared.log(
                     .warning,
                     .recording,
@@ -694,18 +704,18 @@
                     context: [
                         "role": role.logValue,
                         "observedSampleRate": String(format: "%.0f", observedSampleRate),
-                        "expectedSampleRate": "\(RecordingAudioEncodingSettings.sampleRate)",
-                    ],
+                        "expectedSampleRate": "\(RecordingAudioEncodingSettings.sampleRate)"
+                    ]
                 )
             }
         }
 
         private func fourCC(_ value: FourCharCode) -> String {
             let bytes = [
-                UInt8((value >> 24) & 0xff),
-                UInt8((value >> 16) & 0xff),
-                UInt8((value >> 8) & 0xff),
-                UInt8(value & 0xff),
+                UInt8((value >> 24) & 0xFF),
+                UInt8((value >> 16) & 0xFF),
+                UInt8((value >> 8) & 0xFF),
+                UInt8(value & 0xFF)
             ]
             guard bytes.allSatisfy({ $0 >= 32 && $0 <= 126 }),
                   let string = String(bytes: bytes, encoding: .ascii)
@@ -718,7 +728,7 @@
         private func logWriterIssue(
             _ message: String,
             writer: AVAssetWriter?,
-            context: [String: String] = [:],
+            context: [String: String] = [:]
         ) {
             var context = context
             if let writer {

@@ -15,7 +15,7 @@
             let rect = ZoomCalculator.calculateCropRect(
                 center: CGPoint(x: 0.25, y: 0.25),
                 zoomLevel: 2,
-                frameSize: CGSize(width: 1920, height: 1080),
+                frameSize: CGSize(width: 1920, height: 1080)
             )
 
             assertEqual(rect.origin.x, 0)
@@ -30,7 +30,7 @@
             let rect = ZoomCalculator.calculateCropRect(
                 center: CGPoint(x: 0.9, y: 0.1),
                 zoomLevel: 1,
-                frameSize: frameSize,
+                frameSize: frameSize
             )
 
             XCTAssertEqual(rect, CGRect(origin: .zero, size: frameSize))
@@ -41,7 +41,7 @@
                 startTime: 10,
                 duration: 0.5,
                 zoomLevel: 3,
-                zoomCenter: CGPoint(x: 0.2, y: 0.8),
+                zoomCenter: CGPoint(x: 0.2, y: 0.8)
             )
 
             let start = ZoomCalculator.interpolateZoom(segment: segment, currentTime: 10, transitionDuration: 0.4)
@@ -80,7 +80,7 @@
             let transform = ZoomCalculator.calculateTransform(
                 zoomLevel: 2,
                 center: CGPoint(x: 0.75, y: 0.25),
-                viewSize: CGSize(width: 800, height: 600),
+                viewSize: CGSize(width: 800, height: 600)
             )
 
             assertEqual(transform.scale, 2)
@@ -93,17 +93,17 @@
                 captureSize: CGSize(width: 100, height: 100),
                 samplesPerSecond: 60,
                 mouseSamples: [
-                    RecordedMouseSample(time: 0, normalizedX: 0.5, normalizedY: 0.5, isInsideCapture: true),
-                ],
+                    RecordedMouseSample(time: 0, normalizedX: 0.5, normalizedY: 0.5, isInsideCapture: true)
+                ]
             )
 
             XCTAssertTrue(VideoEditorAutoFocusEngine.buildPath(
                 from: metadata,
-                segment: ZoomSegment(startTime: 0, zoomType: .manual),
+                segment: ZoomSegment(startTime: 0, zoomType: .manual)
             ).isEmpty)
             XCTAssertTrue(VideoEditorAutoFocusEngine.buildPath(
                 from: metadata,
-                segment: ZoomSegment(startTime: 0, zoomType: .auto),
+                segment: ZoomSegment(startTime: 0, zoomType: .auto)
             ).isEmpty)
         }
 
@@ -114,8 +114,8 @@
                 samplesPerSecond: 60,
                 mouseSamples: [
                     RecordedMouseSample(time: 0, normalizedX: 0.2, normalizedY: 0.2, isInsideCapture: true),
-                    RecordedMouseSample(time: 0.2, normalizedX: 0.8, normalizedY: 0.8, isInsideCapture: true),
-                ],
+                    RecordedMouseSample(time: 0.2, normalizedX: 0.8, normalizedY: 0.8, isInsideCapture: true)
+                ]
             )
             let segment = ZoomSegment(
                 startTime: 0,
@@ -123,7 +123,7 @@
                 zoomLevel: 2,
                 zoomType: .auto,
                 followSpeed: 1,
-                focusMargin: 0.2,
+                focusMargin: 0.2
             )
 
             let path = VideoEditorAutoFocusEngine.buildPath(from: metadata, segment: segment)
@@ -140,7 +140,7 @@
             let path = [
                 AutoFocusCameraSample(time: 0, center: CGPoint(x: 0.2, y: 0.2)),
                 AutoFocusCameraSample(time: 1, center: CGPoint(x: 0.4, y: 0.6)),
-                AutoFocusCameraSample(time: 2, center: CGPoint(x: 0.8, y: 0.4)),
+                AutoFocusCameraSample(time: 2, center: CGPoint(x: 0.8, y: 0.4))
             ]
 
             let trimmed = VideoEditorAutoFocusEngine.trimmedPath(path, trimStart: 0.5, trimEnd: 1.5)
@@ -163,18 +163,18 @@
                 duration: 3,
                 zoomLevel: 2,
                 zoomCenter: CGPoint(x: 0.1, y: 0.1),
-                zoomType: .auto,
+                zoomType: .auto
             )
             let path = [
                 AutoFocusCameraSample(time: 0, center: CGPoint(x: 0.5, y: 0.5)),
-                AutoFocusCameraSample(time: 1, center: CGPoint(x: 0.75, y: 0.25)),
+                AutoFocusCameraSample(time: 1, center: CGPoint(x: 0.75, y: 0.25))
             ]
 
             let state = VideoEditorAutoFocusEngine.cameraState(
                 at: 1,
                 segment: segment,
                 path: path,
-                transitionDuration: 0.2,
+                transitionDuration: 0.2
             )
 
             assertEqual(state.zoomLevel, 2)
@@ -187,7 +187,7 @@
             _ expected: CGFloat,
             accuracy: CGFloat = 0.0001,
             file: StaticString = #filePath,
-            line: UInt = #line,
+            line: UInt = #line
         ) {
             XCTAssertEqual(Double(actual), Double(expected), accuracy: Double(accuracy), file: file, line: line)
         }
@@ -197,7 +197,7 @@
             _ expected: TimeInterval,
             accuracy: TimeInterval = 0.0001,
             file: StaticString = #filePath,
-            line: UInt = #line,
+            line: UInt = #line
         ) {
             XCTAssertEqual(actual, expected, accuracy: accuracy, file: file, line: line)
         }

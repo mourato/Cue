@@ -32,7 +32,7 @@
                 id: systemDefaultID,
                 name: L10n.Microphone.systemDefault,
                 isSystemDefault: true,
-                isUnavailable: false,
+                isUnavailable: false
             )
         }
     }
@@ -58,7 +58,7 @@
                     id: $0.uniqueID,
                     name: $0.localizedName,
                     isSystemDefault: false,
-                    isUnavailable: false,
+                    isUnavailable: false
                 )
             }
 
@@ -68,14 +68,15 @@
             }
 
             if let selectedDeviceID = normalizedCaptureDeviceID(selectedDeviceID),
-               !seenIDs.contains(selectedDeviceID) {
+               !seenIDs.contains(selectedDeviceID)
+            {
                 devices.append(
                     RecordingMicrophoneDevice(
                         id: selectedDeviceID,
                         name: L10n.Microphone.unavailable,
                         isSystemDefault: false,
-                        isUnavailable: true,
-                    ),
+                        isUnavailable: true
+                    )
                 )
             }
 
@@ -84,7 +85,8 @@
 
         static func captureDevice(matching deviceID: String?) -> AVCaptureDevice? {
             if let deviceID = normalizedCaptureDeviceID(deviceID),
-               let device = captureDevices().first(where: { $0.uniqueID == deviceID }) {
+               let device = captureDevices().first(where: { $0.uniqueID == deviceID })
+            {
                 return device
             }
 
@@ -95,7 +97,7 @@
             let session = AVCaptureDevice.DiscoverySession(
                 deviceTypes: [.builtInMicrophone, .externalUnknown],
                 mediaType: .audio,
-                position: .unspecified,
+                position: .unspecified
             )
             return session.devices.sorted { lhs, rhs in
                 lhs.localizedName.localizedCaseInsensitiveCompare(rhs.localizedName) == .orderedAscending

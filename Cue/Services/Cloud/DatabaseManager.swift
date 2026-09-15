@@ -43,8 +43,8 @@ enum DatabaseInitializationError: LocalizedError {
             directoryURL.appendingPathComponent(
                 NotinhasStoragePaths.databaseFileName(
                     baseName: CueStoragePaths.destinationDatabaseBaseName,
-                    suffix: "",
-                ),
+                    suffix: ""
+                )
             )
         case let .openOrMigrationFailed(databaseURL, _):
             databaseURL
@@ -64,12 +64,12 @@ final class DatabaseManager: @unchecked Sendable {
         NotinhasStoragePaths.databaseFileName(baseName: CueStoragePaths.destinationDatabaseBaseName, suffix: ""),
         NotinhasStoragePaths.databaseFileName(
             baseName: CueStoragePaths.destinationDatabaseBaseName,
-            suffix: "-wal",
+            suffix: "-wal"
         ),
         NotinhasStoragePaths.databaseFileName(
             baseName: CueStoragePaths.destinationDatabaseBaseName,
-            suffix: "-shm",
-        ),
+            suffix: "-shm"
+        )
     ]
 
     let dbPool: DatabasePool
@@ -82,7 +82,7 @@ final class DatabaseManager: @unchecked Sendable {
         } catch {
             throw DatabaseInitializationError.directoryCreationFailed(
                 directoryURL: dir,
-                underlyingError: error,
+                underlyingError: error
             )
         }
 
@@ -94,7 +94,7 @@ final class DatabaseManager: @unchecked Sendable {
         } catch {
             throw DatabaseInitializationError.openOrMigrationFailed(
                 databaseURL: databaseURL,
-                underlyingError: error,
+                underlyingError: error
             )
         }
     }
@@ -122,7 +122,7 @@ final class DatabaseManager: @unchecked Sendable {
         } catch {
             let wrappedError = DatabaseInitializationError.openOrMigrationFailed(
                 databaseURL: defaultDatabaseURL,
-                underlyingError: error,
+                underlyingError: error
             )
             sharedFailure = wrappedError
             logger.error("Database initialization failed: \(wrappedError.localizedDescription)")
@@ -166,8 +166,8 @@ final class DatabaseManager: @unchecked Sendable {
         databaseDirectory().appendingPathComponent(
             NotinhasStoragePaths.databaseFileName(
                 baseName: CueStoragePaths.destinationDatabaseBaseName,
-                suffix: "",
-            ),
+                suffix: ""
+            )
         )
     }
 
@@ -183,11 +183,11 @@ final class DatabaseManager: @unchecked Sendable {
         #endif
 
         let appSupport = FileManager.default.urls(
-            for: .applicationSupportDirectory, in: .userDomainMask,
+            for: .applicationSupportDirectory, in: .userDomainMask
         ).first!
         return appSupport.appendingPathComponent(
             CueStoragePaths.destinationAppSupportFolderName,
-            isDirectory: true,
+            isDirectory: true
         )
     }
 
@@ -220,12 +220,12 @@ final class DatabaseManager: @unchecked Sendable {
             try db.create(
                 index: "idx_cloudUploadRecord_uploadedAt",
                 on: "cloudUploadRecord",
-                columns: ["uploadedAt"],
+                columns: ["uploadedAt"]
             )
             try db.create(
                 index: "idx_cloudUploadRecord_key",
                 on: "cloudUploadRecord",
-                columns: ["key"],
+                columns: ["key"]
             )
         }
 
@@ -246,17 +246,17 @@ final class DatabaseManager: @unchecked Sendable {
             try db.create(
                 index: "idx_captureHistory_type",
                 on: "captureHistoryRecord",
-                columns: ["captureType"],
+                columns: ["captureType"]
             )
             try db.create(
                 index: "idx_captureHistory_capturedAt",
                 on: "captureHistoryRecord",
-                columns: ["capturedAt"],
+                columns: ["capturedAt"]
             )
             try db.create(
                 index: "idx_captureHistory_deleted",
                 on: "captureHistoryRecord",
-                columns: ["isDeleted"],
+                columns: ["isDeleted"]
             )
         }
 
@@ -282,14 +282,14 @@ final class DatabaseManager: @unchecked Sendable {
         try archiveDatabaseFiles(
             in: databaseDirectory(),
             fileNames: fileNames,
-            timestamp: recoveryTimestamp(),
+            timestamp: recoveryTimestamp()
         )
     }
 
     private static func archiveDatabaseFiles(
         in directoryURL: URL,
         fileNames: [String],
-        timestamp: String,
+        timestamp: String
     ) throws -> DatabaseRecoveryArchive {
         let fileManager = FileManager.default
         try fileManager.createDirectory(at: directoryURL, withIntermediateDirectories: true)
@@ -305,7 +305,7 @@ final class DatabaseManager: @unchecked Sendable {
         let archiveDirectoryURL = uniqueArchiveDirectoryURL(
             in: directoryURL,
             timestamp: timestamp,
-            fileManager: fileManager,
+            fileManager: fileManager
         )
         try fileManager.createDirectory(at: archiveDirectoryURL, withIntermediateDirectories: true)
 
@@ -319,7 +319,7 @@ final class DatabaseManager: @unchecked Sendable {
         logger.warning("Archived database files in \(archiveDirectoryURL.path)")
         return DatabaseRecoveryArchive(
             archiveDirectoryURL: archiveDirectoryURL,
-            archivedFileURLs: archivedFileURLs,
+            archivedFileURLs: archivedFileURLs
         )
     }
 
@@ -333,7 +333,7 @@ final class DatabaseManager: @unchecked Sendable {
     private static func uniqueArchiveDirectoryURL(
         in directoryURL: URL,
         timestamp: String,
-        fileManager: FileManager,
+        fileManager: FileManager
     ) -> URL {
         let baseName = "DatabaseRecovery-\(timestamp)"
         var candidateURL = directoryURL.appendingPathComponent(baseName, isDirectory: true)
@@ -351,7 +351,7 @@ final class DatabaseManager: @unchecked Sendable {
         static func archiveDatabaseFilesForTesting(
             in directoryURL: URL,
             fileNames: [String],
-            timestamp: String = "20260605-000000",
+            timestamp: String = "20260605-000000"
         ) throws -> DatabaseRecoveryArchive {
             try archiveDatabaseFiles(in: directoryURL, fileNames: fileNames, timestamp: timestamp)
         }

@@ -30,21 +30,21 @@ nonisolated enum CueNoteGeometry {
     static func translated(
         _ target: CueNoteTarget,
         by delta: CGPoint,
-        within bounds: CGRect,
+        within bounds: CGRect
     ) -> CueNoteTarget {
         switch target {
-        case .point(let center):
+        case let .point(center):
             return .point(clampedPoint(
                 CGPoint(x: center.x + delta.x, y: center.y + delta.y),
-                within: bounds,
+                within: bounds
             ))
-        case .rect(let rect, let pinCorner):
+        case let .rect(rect, pinCorner):
             let standardized = rect.standardized
             var translated = CGRect(
                 x: standardized.origin.x + delta.x,
                 y: standardized.origin.y + delta.y,
                 width: standardized.width,
-                height: standardized.height,
+                height: standardized.height
             )
             if translated.width > bounds.width {
                 translated.origin.x = bounds.minX
@@ -70,7 +70,7 @@ nonisolated enum CueNoteGeometry {
             (.right, CGPoint(x: standardized.maxX, y: standardized.midY)),
             (.bottomLeft, CGPoint(x: standardized.minX, y: standardized.minY)),
             (.bottom, CGPoint(x: standardized.midX, y: standardized.minY)),
-            (.bottomRight, CGPoint(x: standardized.maxX, y: standardized.minY)),
+            (.bottomRight, CGPoint(x: standardized.maxX, y: standardized.minY))
         ]
     }
 
@@ -78,9 +78,9 @@ nonisolated enum CueNoteGeometry {
         _ target: CueNoteTarget,
         handle: ResizeHandle,
         to point: CGPoint,
-        within bounds: CGRect,
+        within bounds: CGRect
     ) -> CueNoteTarget {
-        guard case .rect(let rect, let pinCorner) = target else { return target }
+        guard case let .rect(rect, pinCorner) = target else { return target }
 
         let original = rect.standardized
         let imageBounds = bounds.standardized
@@ -117,7 +117,7 @@ nonisolated enum CueNoteGeometry {
 
         return .rect(
             CGRect(x: minX, y: minY, width: maxX - minX, height: maxY - minY),
-            pinCorner,
+            pinCorner
         )
     }
 
@@ -126,7 +126,7 @@ nonisolated enum CueNoteGeometry {
             x: min(start.x, end.x),
             y: min(start.y, end.y),
             width: abs(end.x - start.x),
-            height: abs(end.y - start.y),
+            height: abs(end.y - start.y)
         ).standardized
 
         let minSizeRect = minimumSizedRect(standardized)
@@ -136,14 +136,14 @@ nonisolated enum CueNoteGeometry {
     static func clampedPoint(_ point: CGPoint, within bounds: CGRect) -> CGPoint {
         CGPoint(
             x: max(bounds.minX, min(point.x, bounds.maxX)),
-            y: max(bounds.minY, min(point.y, bounds.maxY)),
+            y: max(bounds.minY, min(point.y, bounds.maxY))
         )
     }
 
     /// Badge center sits exactly on the chosen vertex of `rect` (image space, y-up).
     static func pinCenter(
         for rect: CGRect,
-        pinCorner: CueRectPinCorner = .legacyFallback,
+        pinCorner: CueRectPinCorner = .legacyFallback
     ) -> CGPoint {
         let standardized = rect.standardized
         switch pinCorner {
@@ -167,7 +167,7 @@ nonisolated enum CueNoteGeometry {
         for target: CueNoteTarget,
         canvasBounds: CGRect,
         displayScale: CGFloat,
-        pinDiameter: CGFloat = pinDiameter,
+        pinDiameter: CGFloat = pinDiameter
     ) -> CGRect {
         let imageBounds = selectionBounds(for: target, pinDiameter: pinDiameter)
         let scaledX = (imageBounds.origin.x - canvasBounds.minX) * displayScale
@@ -183,7 +183,7 @@ nonisolated enum CueNoteGeometry {
         panelSize: CGSize,
         in containerBounds: CGRect,
         gap: CGFloat = 24,
-        margin: CGFloat = 12,
+        margin: CGFloat = 12
     ) -> CGPoint {
         let rightX = bounds.maxX + gap
         let leftX = bounds.minX - panelSize.width - gap
@@ -197,7 +197,7 @@ nonisolated enum CueNoteGeometry {
         } else {
             max(
                 containerBounds.minX + margin,
-                min(rightX, containerBounds.maxX - panelSize.width - margin),
+                min(rightX, containerBounds.maxX - panelSize.width - margin)
             )
         }
 
@@ -219,7 +219,7 @@ nonisolated enum CueNoteGeometry {
         margin: CGFloat = 12,
         preferredWidth: CGFloat = 300,
         preferredPointHeight: CGFloat = 200,
-        preferredRectHeight: CGFloat = 280,
+        preferredRectHeight: CGFloat = 280
     ) -> CGSize {
         let maxWidth = max(0, containerBounds.width - 2 * margin)
         let maxHeight = max(0, containerBounds.height - 2 * margin)
@@ -233,7 +233,7 @@ nonisolated enum CueNoteGeometry {
     static func sizesAreEffectivelyEqual(
         _ lhs: CGSize,
         _ rhs: CGSize,
-        epsilon: CGFloat = 0.5,
+        epsilon: CGFloat = 0.5
     ) -> Bool {
         abs(lhs.width - rhs.width) <= epsilon && abs(lhs.height - rhs.height) <= epsilon
     }
@@ -243,7 +243,7 @@ nonisolated enum CueNoteGeometry {
         _ proposedOrigin: CGPoint,
         panelSize: CGSize,
         in containerBounds: CGRect,
-        margin: CGFloat = 12,
+        margin: CGFloat = 12
     ) -> CGPoint {
         let minX = containerBounds.minX + margin
         let minY = containerBounds.minY + margin
@@ -262,26 +262,26 @@ nonisolated enum CueNoteGeometry {
         backgroundDisplaySize: CGSize,
         workAreaSize: CGSize,
         zoomLevel: CGFloat,
-        panOffset: CGSize,
+        panOffset: CGSize
     ) -> CGRect {
         let selectionInBackground = selectionInForeground.offsetBy(
             dx: foregroundOffsetInBackground.x,
-            dy: foregroundOffsetInBackground.y,
+            dy: foregroundOffsetInBackground.y
         )
         let backgroundOrigin = CGPoint(
             x: (workAreaSize.width - backgroundDisplaySize.width) / 2,
-            y: (workAreaSize.height - backgroundDisplaySize.height) / 2,
+            y: (workAreaSize.height - backgroundDisplaySize.height) / 2
         )
         let selectionInWorkArea = selectionInBackground.offsetBy(
             dx: backgroundOrigin.x,
-            dy: backgroundOrigin.y,
+            dy: backgroundOrigin.y
         )
         let pivot = CGPoint(x: workAreaSize.width / 2, y: workAreaSize.height / 2)
         return rectTransformedForViewport(
             selectionInWorkArea,
             zoom: zoomLevel,
             pan: panOffset,
-            around: pivot,
+            around: pivot
         )
     }
 
@@ -289,12 +289,12 @@ nonisolated enum CueNoteGeometry {
         _ rect: CGRect,
         zoom: CGFloat,
         pan: CGSize,
-        around pivot: CGPoint,
+        around pivot: CGPoint
     ) -> CGRect {
         let mapPoint: (CGPoint) -> CGPoint = { point in
             CGPoint(
                 x: pivot.x + (point.x - pivot.x) * zoom + pan.width,
-                y: pivot.y + (point.y - pivot.y) * zoom + pan.height,
+                y: pivot.y + (point.y - pivot.y) * zoom + pan.height
             )
         }
 
@@ -304,7 +304,7 @@ nonisolated enum CueNoteGeometry {
             x: min(topLeft.x, bottomRight.x),
             y: min(topLeft.y, bottomRight.y),
             width: abs(bottomRight.x - topLeft.x),
-            height: abs(bottomRight.y - topLeft.y),
+            height: abs(bottomRight.y - topLeft.y)
         )
     }
 
@@ -322,7 +322,7 @@ nonisolated enum CueNoteGeometry {
 
     static func notesAfterDeletion(
         removing id: UUID,
-        from notes: [CueVisualNote],
+        from notes: [CueVisualNote]
     ) -> [CueVisualNote] {
         notes.filter { $0.id != id }
     }
@@ -350,24 +350,24 @@ nonisolated enum CueNoteGeometry {
 
     static func selectionBounds(
         for target: CueNoteTarget,
-        pinDiameter: CGFloat = pinDiameter,
+        pinDiameter: CGFloat = pinDiameter
     ) -> CGRect {
         switch target {
-        case .point(let point):
+        case let .point(point):
             return CGRect(
                 x: point.x - pinDiameter / 2,
                 y: point.y - pinDiameter / 2,
                 width: pinDiameter,
-                height: pinDiameter,
+                height: pinDiameter
             )
-        case .rect(let rect, let pinCorner):
+        case let .rect(rect, pinCorner):
             let standardized = rect.standardized
             let center = pinCenter(for: standardized, pinCorner: pinCorner)
             let pinBounds = CGRect(
                 x: center.x - pinDiameter / 2,
                 y: center.y - pinDiameter / 2,
                 width: pinDiameter,
-                height: pinDiameter,
+                height: pinDiameter
             )
             return standardized.union(pinBounds)
         }
@@ -376,24 +376,24 @@ nonisolated enum CueNoteGeometry {
     static func exportTransformed(
         _ note: CueVisualNote,
         cropOrigin: CGPoint,
-        destinationOffset: CGPoint,
+        destinationOffset: CGPoint
     ) -> CueVisualNote {
         var transformed = note
         switch note.target {
-        case .point(let point):
+        case let .point(point):
             transformed.target = .point(CGPoint(
                 x: point.x - cropOrigin.x + destinationOffset.x,
-                y: point.y - cropOrigin.y + destinationOffset.y,
+                y: point.y - cropOrigin.y + destinationOffset.y
             ))
-        case .rect(let rect, let pinCorner):
+        case let .rect(rect, pinCorner):
             transformed.target = .rect(
                 CGRect(
                     x: rect.origin.x - cropOrigin.x + destinationOffset.x,
                     y: rect.origin.y - cropOrigin.y + destinationOffset.y,
                     width: rect.width,
-                    height: rect.height,
+                    height: rect.height
                 ),
-                pinCorner,
+                pinCorner
             )
         }
         return transformed
@@ -418,7 +418,7 @@ nonisolated enum CueNoteGeometry {
             x: rect.origin.x,
             y: rect.origin.y,
             width: max(rect.width, minimumRectSize),
-            height: max(rect.height, minimumRectSize),
+            height: max(rect.height, minimumRectSize)
         )
     }
 }

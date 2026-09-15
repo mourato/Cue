@@ -31,12 +31,12 @@
             ToolbarIconButton(
                 systemName: "xmark",
                 action: {},
-                accessibilityLabel: L10n.Common.close,
+                accessibilityLabel: L10n.Common.close
             )
             ToolbarIconButton(
                 systemName: "gearshape",
                 action: {},
-                accessibilityLabel: L10n.Common.preferences,
+                accessibilityLabel: L10n.Common.preferences
             )
         }
         .padding(10)

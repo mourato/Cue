@@ -11,7 +11,7 @@ import Security
 
 private let identityMigrationLogger = Logger(
     subsystem: "Notinhas",
-    category: "NotinhasIdentityMigration",
+    category: "NotinhasIdentityMigration"
 )
 
 enum NotinhasStoragePaths {
@@ -34,7 +34,7 @@ enum NotinhasStoragePaths {
 
     static let legacyPreferenceBundleIdentifiers = [
         legacyReleaseBundleIdentifier,
-        legacyDebugBundleIdentifier,
+        legacyDebugBundleIdentifier
     ]
 
     static let databaseCompanionSuffixes = ["", "-wal", "-shm"]
@@ -66,7 +66,7 @@ struct NotinhasIdentityMigrationResult: Equatable {
         skippedPreferenceKeys: 0,
         copiedLogItems: 0,
         copiedConfigItems: 0,
-        migratedKeychainItems: 0,
+        migratedKeychainItems: 0
     )
 }
 
@@ -83,7 +83,7 @@ struct LiveNotinhasIdentityKeychainAdapter: NotinhasIdentityKeychainAdapting {
             kSecAttrAccount as String: account,
             kSecAttrService as String: service,
             kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne,
+            kSecMatchLimit as String: kSecMatchLimitOne
         ]
         query[kSecUseDataProtectionKeychain as String] = true
 
@@ -98,12 +98,12 @@ struct LiveNotinhasIdentityKeychainAdapter: NotinhasIdentityKeychainAdapting {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: account,
             kSecAttrService as String: service,
-            kSecUseDataProtectionKeychain as String: true,
+            kSecUseDataProtectionKeychain as String: true
         ]
 
         let attributes: [String: Any] = [
             kSecValueData as String: value,
-            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlocked,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlocked
         ]
 
         let updateStatus = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
@@ -127,7 +127,7 @@ struct LiveNotinhasIdentityKeychainAdapter: NotinhasIdentityKeychainAdapting {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: account,
             kSecAttrService as String: service,
-            kSecUseDataProtectionKeychain as String: true,
+            kSecUseDataProtectionKeychain as String: true
         ]
         SecItemDelete(query as CFDictionary)
     }
@@ -146,11 +146,11 @@ final class NotinhasIdentityMigrationService {
             guard
                 let applicationSupportDirectory = FileManager.default.urls(
                     for: .applicationSupportDirectory,
-                    in: .userDomainMask,
+                    in: .userDomainMask
                 ).first,
                 let libraryDirectory = FileManager.default.urls(
                     for: .libraryDirectory,
-                    in: .userDomainMask,
+                    in: .userDomainMask
                 ).first
             else {
                 return nil
@@ -162,7 +162,7 @@ final class NotinhasIdentityMigrationService {
                 libraryDirectory: libraryDirectory,
                 userDefaults: .standard,
                 fileManager: .default,
-                keychainAdapter: LiveNotinhasIdentityKeychainAdapter(),
+                keychainAdapter: LiveNotinhasIdentityKeychainAdapter()
             )
         }
     }
@@ -217,7 +217,7 @@ final class NotinhasIdentityMigrationService {
             configuration.fileManager.fileExists(atPath: $0.path)
         }
         let hasLegacyConfig = configuration.fileManager.fileExists(
-            atPath: legacyConfigDirectory(configuration).path,
+            atPath: legacyConfigDirectory(configuration).path
         )
         let hasLegacyPreferences = legacyPreferenceURLs(configuration).contains {
             configuration.fileManager.fileExists(atPath: $0.path)
@@ -238,28 +238,30 @@ final class NotinhasIdentityMigrationService {
                 skippedPreferenceKeys: 0,
                 copiedLogItems: 0,
                 copiedConfigItems: 0,
-                migratedKeychainItems: 0,
+                migratedKeychainItems: 0
             )
         }
 
         var applicationSupportSummary = DirectoryMergeSummary()
         for legacyAppSupport in legacyAppSupportDirectories
-            where configuration.fileManager.fileExists(atPath: legacyAppSupport.path) {
+            where configuration.fileManager.fileExists(atPath: legacyAppSupport.path)
+        {
             try mergeApplicationSupport(
                 from: legacyAppSupport,
                 to: destinationAppSupport,
                 configuration: configuration,
-                summary: &applicationSupportSummary,
+                summary: &applicationSupportSummary
             )
         }
 
         var migratedDatabaseFiles = 0
         for legacyAppSupport in legacyAppSupportDirectories
-            where configuration.fileManager.fileExists(atPath: legacyAppSupport.path) {
+            where configuration.fileManager.fileExists(atPath: legacyAppSupport.path)
+        {
             migratedDatabaseFiles += try migrateDatabaseFiles(
                 from: legacyAppSupport,
                 to: destinationAppSupport,
-                configuration: configuration,
+                configuration: configuration
             )
         }
 
@@ -269,7 +271,7 @@ final class NotinhasIdentityMigrationService {
                 from: legacyLogs,
                 to: destinationLogsDirectory(configuration),
                 configuration: configuration,
-                summary: &logSummary,
+                summary: &logSummary
             )
         }
 
@@ -281,7 +283,7 @@ final class NotinhasIdentityMigrationService {
                 from: legacyConfigDirectory(configuration),
                 to: destinationConfigDirectory(configuration),
                 configuration: configuration,
-                summary: &configSummary,
+                summary: &configSummary
             )
         }
 
@@ -299,10 +301,10 @@ final class NotinhasIdentityMigrationService {
             skippedPreferenceKeys: preferencesSummary.skippedKeys,
             copiedLogItems: logSummary.copiedItems,
             copiedConfigItems: configSummary.copiedItems,
-            migratedKeychainItems: migratedKeychainItems,
+            migratedKeychainItems: migratedKeychainItems
         )
         identityMigrationLogger.info(
-            "Notinhas identity migration completed: appSupportCopied=\(result.copiedApplicationSupportItems), databaseFiles=\(result.migratedDatabaseFiles), prefsImported=\(result.importedPreferenceKeys), logsCopied=\(result.copiedLogItems), configCopied=\(result.copiedConfigItems), keychainMigrated=\(result.migratedKeychainItems)",
+            "Notinhas identity migration completed: appSupportCopied=\(result.copiedApplicationSupportItems), databaseFiles=\(result.migratedDatabaseFiles), prefsImported=\(result.importedPreferenceKeys), logsCopied=\(result.copiedLogItems), configCopied=\(result.copiedConfigItems), keychainMigrated=\(result.migratedKeychainItems)"
         )
         return result
     }
@@ -433,7 +435,7 @@ final class NotinhasIdentityMigrationService {
 
         try configuration.fileManager.createDirectory(
             at: destinationDirectory,
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         try marker.write(to: markerURL, atomically: true, encoding: .utf8)
 
@@ -445,15 +447,15 @@ final class NotinhasIdentityMigrationService {
         from sourceDirectory: URL,
         to destinationDirectory: URL,
         configuration: Configuration,
-        summary: inout DirectoryMergeSummary,
+        summary: inout DirectoryMergeSummary
     ) throws {
         let databaseFileNames = Set(
             NotinhasStoragePaths.databaseCompanionSuffixes.map {
                 NotinhasStoragePaths.databaseFileName(
                     baseName: NotinhasStoragePaths.legacyDatabaseBaseName,
-                    suffix: $0,
+                    suffix: $0
                 )
-            },
+            }
         )
 
         let fileManager = configuration.fileManager
@@ -466,7 +468,7 @@ final class NotinhasIdentityMigrationService {
             sourceItems = try fileManager.contentsOfDirectory(
                 at: sourceDirectory,
                 includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey],
-                options: [],
+                options: []
             )
         } catch {
             throw MigrationError.applicationSupportMigrationFailed(underlyingDescription: error.localizedDescription)
@@ -481,7 +483,7 @@ final class NotinhasIdentityMigrationService {
                 from: sourceItem,
                 to: destinationDirectory.appendingPathComponent(sourceItem.lastPathComponent),
                 configuration: configuration,
-                summary: &summary,
+                summary: &summary
             )
         }
     }
@@ -489,19 +491,19 @@ final class NotinhasIdentityMigrationService {
     private func migrateDatabaseFiles(
         from sourceDirectory: URL,
         to destinationDirectory: URL,
-        configuration: Configuration,
+        configuration: Configuration
     ) throws -> Int {
         let fileManager = configuration.fileManager
         let legacyNames = NotinhasStoragePaths.databaseCompanionSuffixes.map {
             NotinhasStoragePaths.databaseFileName(
                 baseName: NotinhasStoragePaths.legacyDatabaseBaseName,
-                suffix: $0,
+                suffix: $0
             )
         }
         let destinationNames = NotinhasStoragePaths.databaseCompanionSuffixes.map {
             NotinhasStoragePaths.databaseFileName(
                 baseName: NotinhasStoragePaths.destinationDatabaseBaseName,
-                suffix: $0,
+                suffix: $0
             )
         }
 
@@ -528,7 +530,7 @@ final class NotinhasIdentityMigrationService {
 
         if existingDestinationFiles.contains(where: { $0.0 == 0 }) {
             throw MigrationError.unsafeSQLiteDestinationCollision(
-                existing: existingDestinationFiles.map(\.1.lastPathComponent),
+                existing: existingDestinationFiles.map(\.1.lastPathComponent)
             )
         }
 
@@ -553,7 +555,7 @@ final class NotinhasIdentityMigrationService {
         from sourceDirectory: URL,
         to destinationDirectory: URL,
         configuration: Configuration,
-        summary: inout DirectoryMergeSummary,
+        summary: inout DirectoryMergeSummary
     ) throws {
         let fileManager = configuration.fileManager
         guard fileManager.fileExists(atPath: sourceDirectory.path) else { return }
@@ -563,7 +565,7 @@ final class NotinhasIdentityMigrationService {
         let sourceItems = try fileManager.contentsOfDirectory(
             at: sourceDirectory,
             includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey],
-            options: [],
+            options: []
         )
 
         for sourceItem in sourceItems {
@@ -571,7 +573,7 @@ final class NotinhasIdentityMigrationService {
                 from: sourceItem,
                 to: destinationDirectory.appendingPathComponent(sourceItem.lastPathComponent),
                 configuration: configuration,
-                summary: &summary,
+                summary: &summary
             )
         }
     }
@@ -580,7 +582,7 @@ final class NotinhasIdentityMigrationService {
         from sourceItem: URL,
         to destinationItem: URL,
         configuration: Configuration,
-        summary: inout DirectoryMergeSummary,
+        summary: inout DirectoryMergeSummary
     ) throws {
         let fileManager = configuration.fileManager
         let values = try sourceItem.resourceValues(forKeys: [.isDirectoryKey, .isSymbolicLinkKey])
@@ -590,12 +592,13 @@ final class NotinhasIdentityMigrationService {
             if fileManager.fileExists(atPath: destinationItem.path) {
                 var isDestinationDirectory: ObjCBool = false
                 if fileManager.fileExists(atPath: destinationItem.path, isDirectory: &isDestinationDirectory),
-                   isDestinationDirectory.boolValue {
+                   isDestinationDirectory.boolValue
+                {
                     try mergeDirectoryIfPresent(
                         from: sourceItem,
                         to: destinationItem,
                         configuration: configuration,
-                        summary: &summary,
+                        summary: &summary
                     )
                 } else {
                     summary.skippedItems += 1
@@ -605,7 +608,7 @@ final class NotinhasIdentityMigrationService {
                     from: sourceItem,
                     to: destinationItem,
                     configuration: configuration,
-                    summary: &summary,
+                    summary: &summary
                 )
             }
             return
@@ -623,11 +626,11 @@ final class NotinhasIdentityMigrationService {
     private func copyItemAtomically(
         from sourceURL: URL,
         to destinationURL: URL,
-        fileManager: FileManager,
+        fileManager: FileManager
     ) throws {
         try fileManager.createDirectory(
             at: destinationURL.deletingLastPathComponent(),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
 
         let temporaryURL = destinationURL.deletingLastPathComponent()
@@ -655,7 +658,8 @@ final class NotinhasIdentityMigrationService {
             }
 
             for (key, value) in sourcePreferences
-                where key != completedKey && key != PreferencesKeys.sandboxOffMigrationCompleted {
+                where key != completedKey && key != PreferencesKeys.sandboxOffMigrationCompleted
+            {
                 guard existingPreferences[key] == nil else {
                     summary.skippedKeys += 1
                     continue
@@ -681,7 +685,7 @@ final class NotinhasIdentityMigrationService {
             let destinationAccount = item.destinationAccount
             if configuration.keychainAdapter.read(
                 service: NotinhasStoragePaths.destinationKeychainService,
-                account: destinationAccount,
+                account: destinationAccount
             ) != nil {
                 continue
             }
@@ -694,11 +698,11 @@ final class NotinhasIdentityMigrationService {
                 try configuration.keychainAdapter.write(
                     service: NotinhasStoragePaths.destinationKeychainService,
                     account: destinationAccount,
-                    value: legacyMatch.value,
+                    value: legacyMatch.value
                 )
                 configuration.keychainAdapter.delete(
                     service: legacyMatch.service,
-                    account: legacyMatch.account,
+                    account: legacyMatch.account
                 )
                 migratedCount += 1
                 identityMigrationLogger.info("Migrated keychain item: \(item.diagnosticName, privacy: .public)")
@@ -718,7 +722,7 @@ final class NotinhasIdentityMigrationService {
 
     private func findLegacyKeychainValue(
         for item: CloudKeychainItem,
-        configuration: Configuration,
+        configuration: Configuration
     ) -> LegacyKeychainMatch? {
         for location in item.legacyKeychainLocations {
             if let value = configuration.keychainAdapter.read(service: location.service, account: location.account) {
@@ -766,54 +770,66 @@ private extension CloudKeychainItem {
     var legacyKeychainLocations: [KeychainLocation] {
         let transitionalLocation = KeychainLocation(
             service: NotinhasStoragePaths.legacyCurrentKeychainService,
-            account: destinationAccount,
+            account: destinationAccount
         )
 
         switch self {
         case .accessKey:
-            return [transitionalLocation,
-                    KeychainLocation(
-                        service: NotinhasStoragePaths.legacyCurrentKeychainService,
-                        account: "com.trongduong.snapzy.cloud.accessKey",
-                    ),
-                    KeychainLocation(
-                        service: NotinhasStoragePaths.legacyOlderKeychainService,
-                        account: "com.snapzy.cloud.accessKey",
-                    )]
+            return [
+                transitionalLocation,
+                KeychainLocation(
+                    service: NotinhasStoragePaths.legacyCurrentKeychainService,
+                    account: "com.trongduong.snapzy.cloud.accessKey"
+                ),
+                KeychainLocation(
+                    service: NotinhasStoragePaths.legacyOlderKeychainService,
+                    account: "com.snapzy.cloud.accessKey"
+                )
+            ]
         case .secretKey:
-            return [transitionalLocation,
-                    KeychainLocation(
-                        service: NotinhasStoragePaths.legacyCurrentKeychainService,
-                        account: "com.trongduong.snapzy.cloud.secretKey",
-                    ),
-                    KeychainLocation(
-                        service: NotinhasStoragePaths.legacyOlderKeychainService,
-                        account: "com.snapzy.cloud.secretKey",
-                    )]
+            return [
+                transitionalLocation,
+                KeychainLocation(
+                    service: NotinhasStoragePaths.legacyCurrentKeychainService,
+                    account: "com.trongduong.snapzy.cloud.secretKey"
+                ),
+                KeychainLocation(
+                    service: NotinhasStoragePaths.legacyOlderKeychainService,
+                    account: "com.snapzy.cloud.secretKey"
+                )
+            ]
         case .passwordHash:
-            return [transitionalLocation,
-                    KeychainLocation(
-                        service: NotinhasStoragePaths.legacyCurrentKeychainService,
-                        account: "com.trongduong.snapzy.cloud.passwordHash",
-                    )]
+            return [
+                transitionalLocation,
+                KeychainLocation(
+                    service: NotinhasStoragePaths.legacyCurrentKeychainService,
+                    account: "com.trongduong.snapzy.cloud.passwordHash"
+                )
+            ]
         case .googleRefreshToken:
-            return [transitionalLocation,
-                    KeychainLocation(
-                        service: NotinhasStoragePaths.legacyCurrentKeychainService,
-                        account: "com.trongduong.snapzy.cloud.google.refreshToken",
-                    )]
+            return [
+                transitionalLocation,
+                KeychainLocation(
+                    service: NotinhasStoragePaths.legacyCurrentKeychainService,
+                    account: "com.trongduong.snapzy.cloud.google.refreshToken"
+                )
+            ]
         case .googleClientId:
-            return [transitionalLocation,
-                    KeychainLocation(
-                        service: NotinhasStoragePaths.legacyCurrentKeychainService,
-                        account: "com.trongduong.snapzy.cloud.google.clientId",
-                    )]
+            return [
+                transitionalLocation,
+                KeychainLocation(
+                    service: NotinhasStoragePaths.legacyCurrentKeychainService,
+                    account: "com.trongduong.snapzy.cloud.google.clientId"
+                )
+            ]
         case .googleClientSecret:
-            return [transitionalLocation,
-                    KeychainLocation(
-                        service: NotinhasStoragePaths.legacyCurrentKeychainService,
-                        account: "com.trongduong.snapzy.cloud.google.clientSecret",
-                    )]
+            return [
+                transitionalLocation,
+                KeychainLocation(
+                    service: NotinhasStoragePaths.legacyCurrentKeychainService,
+                    account: "com.trongduong.snapzy.cloud.google.clientSecret"
+                )
+            ]
         case .imgbbAPIKey:
             return []
         case .imageKitPrivateKey:

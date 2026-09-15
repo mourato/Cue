@@ -26,7 +26,7 @@
 
             XCTAssertTrue(
                 waitForLevel(meter) { $0 > 0.3 },
-                "Loud sine tone should drive the level well above zero (was \(meter.level))",
+                "Loud sine tone should drive the level well above zero (was \(meter.level))"
             )
             XCTAssertLessThanOrEqual(meter.level, 1.0, "Level must stay normalized within 0...1")
         }
@@ -116,7 +116,7 @@
         private func waitForLevel(
             _ meter: RecordingAudioLevelMeter,
             timeout: TimeInterval = 2,
-            predicate: @escaping (Float) -> Bool,
+            predicate: @escaping (Float) -> Bool
         ) -> Bool {
             let deadline = Date().addingTimeInterval(timeout)
             while Date() < deadline {
@@ -131,7 +131,7 @@
         /// Builds a real mono Float32 48kHz PCM `CMSampleBuffer` containing a 440Hz sine
         /// at the given peak amplitude (0 = silence).
         private static func makeSineBuffer(amplitude: Float, frames: Int = 1024) -> CMSampleBuffer {
-            let sampleRate = 48_000.0
+            let sampleRate = 48000.0
             let format = AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1)!
             let pcm = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(frames))!
             pcm.frameLength = AVAudioFrameCount(frames)
@@ -152,7 +152,7 @@
             var timing = CMSampleTimingInfo(
                 duration: CMTime(value: 1, timescale: CMTimeScale(pcm.format.streamDescription.pointee.mSampleRate)),
                 presentationTimeStamp: .zero,
-                decodeTimeStamp: .invalid,
+                decodeTimeStamp: .invalid
             )
             guard CMSampleBufferCreate(
                 allocator: kCFAllocatorDefault,
@@ -166,7 +166,7 @@
                 sampleTimingArray: &timing,
                 sampleSizeEntryCount: 0,
                 sampleSizeArray: nil,
-                sampleBufferOut: &sampleBuffer,
+                sampleBufferOut: &sampleBuffer
             ) == noErr, let sampleBuffer else {
                 return nil
             }
@@ -176,7 +176,7 @@
                 blockBufferAllocator: kCFAllocatorDefault,
                 blockBufferMemoryAllocator: kCFAllocatorDefault,
                 flags: 0,
-                bufferList: pcm.mutableAudioBufferList,
+                bufferList: pcm.mutableAudioBufferList
             ) == noErr else {
                 return nil
             }

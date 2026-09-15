@@ -13,14 +13,14 @@
             let viewport = VideoEditorViewportTimeline.build(
                 segments: [],
                 metadata: nil,
-                duration: 2,
+                duration: 2
             )
             let track = VideoEditorReframeTrack.build(
                 preset: .ratio9x16,
                 sourceSize: CGSize(width: 1920, height: 1080),
                 viewportTimeline: viewport,
                 duration: 2,
-                focus: { _ in CGPoint(x: 0.5, y: 0.5) },
+                focus: { _ in CGPoint(x: 0.5, y: 0.5) }
             )
             XCTAssertNotNil(track)
             let frame = track?.frame(at: 1)
@@ -35,7 +35,7 @@
                 sourceSize: CGSize(width: 1280, height: 720),
                 viewportTimeline: viewport,
                 duration: 1,
-                focus: { _ in nil },
+                focus: { _ in nil }
             )
             XCTAssertNil(track)
         }

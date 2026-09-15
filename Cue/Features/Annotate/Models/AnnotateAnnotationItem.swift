@@ -133,7 +133,7 @@ nonisolated enum TextBubbleGeometry {
         guard presentation != .plain else { return CGSize(width: 4, height: 4) }
         return CGSize(
             width: max(9, min(fontSize * 0.55, 18)),
-            height: max(5, min(fontSize * 0.32, 10)),
+            height: max(5, min(fontSize * 0.32, 10))
         )
     }
 
@@ -144,7 +144,7 @@ nonisolated enum TextBubbleGeometry {
     static func defaultTailTarget(for bounds: CGRect, fontSize _: CGFloat) -> CGPoint {
         CGPoint(
             x: bounds.minX + bounds.width * 0.795,
-            y: bounds.minY - bounds.height * 0.35,
+            y: bounds.minY - bounds.height * 0.35
         )
     }
 
@@ -164,17 +164,18 @@ nonisolated enum TextBubbleGeometry {
         in rect: CGRect,
         cornerRadius: CGFloat,
         tailTarget: CGPoint?,
-        fontSize: CGFloat,
+        fontSize: CGFloat
     ) -> CGPath {
         let rect = rect.standardized
         guard rect.width > 0, rect.height > 0 else { return CGMutablePath() }
         guard let tailTarget,
-              let tail = tailGeometry(in: rect, requestedTarget: tailTarget, fontSize: fontSize) else {
+              let tail = tailGeometry(in: rect, requestedTarget: tailTarget, fontSize: fontSize)
+        else {
             return CGPath(
                 roundedRect: rect,
                 cornerWidth: cornerRadius * 2,
                 cornerHeight: cornerRadius * 2,
-                transform: nil,
+                transform: nil
             )
         }
 
@@ -197,7 +198,7 @@ nonisolated enum TextBubbleGeometry {
             radius: radius,
             startAngle: .pi / 2,
             endAngle: 0,
-            clockwise: true,
+            clockwise: true
         )
         appendEdge(from: rightTop, to: rightBottom, side: .maxX, tail: tail, path: path)
         path.addArc(
@@ -205,7 +206,7 @@ nonisolated enum TextBubbleGeometry {
             radius: radius,
             startAngle: 0,
             endAngle: -.pi / 2,
-            clockwise: true,
+            clockwise: true
         )
         appendEdge(from: bottomRight, to: bottomLeft, side: .minY, tail: tail, path: path)
         path.addArc(
@@ -213,7 +214,7 @@ nonisolated enum TextBubbleGeometry {
             radius: radius,
             startAngle: -.pi / 2,
             endAngle: -.pi,
-            clockwise: true,
+            clockwise: true
         )
         appendEdge(from: leftBottom, to: leftTop, side: .minX, tail: tail, path: path)
         path.addArc(
@@ -221,7 +222,7 @@ nonisolated enum TextBubbleGeometry {
             radius: radius,
             startAngle: .pi,
             endAngle: .pi / 2,
-            clockwise: true,
+            clockwise: true
         )
         path.closeSubpath()
         return path
@@ -243,7 +244,7 @@ nonisolated enum TextBubbleGeometry {
     private static func tailGeometry(
         in rect: CGRect,
         requestedTarget: CGPoint,
-        fontSize: CGFloat,
+        fontSize: CGFloat
     ) -> TailGeometry? {
         guard rect.width > 0, rect.height > 0 else { return nil }
 
@@ -267,7 +268,7 @@ nonisolated enum TextBubbleGeometry {
             entry: anchor - basis.tangent * rootHalfWidth,
             exit: anchor + basis.tangent * rootHalfWidth,
             tangent: basis.tangent,
-            rootHalfWidth: rootHalfWidth,
+            rootHalfWidth: rootHalfWidth
         )
     }
 
@@ -276,7 +277,7 @@ nonisolated enum TextBubbleGeometry {
         to end: CGPoint,
         side: TailSide,
         tail: TailGeometry,
-        path: CGMutablePath,
+        path: CGMutablePath
     ) {
         guard tail.side == side else {
             path.addLine(to: end)
@@ -292,22 +293,22 @@ nonisolated enum TextBubbleGeometry {
         let outOfTip = normalized(tail.exit - tail.target)
         let tipInset = min(
             max(tail.rootHalfWidth * 0.7, 2),
-            hypot(tail.target.x - tail.entry.x, tail.target.y - tail.entry.y) * 0.24,
+            hypot(tail.target.x - tail.entry.x, tail.target.y - tail.entry.y) * 0.24
         )
         let rootControl = min(
             tail.rootHalfWidth * 0.9,
-            hypot(tail.target.x - tail.entry.x, tail.target.y - tail.entry.y) * 0.3,
+            hypot(tail.target.x - tail.entry.x, tail.target.y - tail.entry.y) * 0.3
         )
 
         path.addCurve(
             to: tail.target,
             control1: tail.entry + tail.tangent * rootControl,
-            control2: tail.target - intoTip * tipInset,
+            control2: tail.target - intoTip * tipInset
         )
         path.addCurve(
             to: tail.exit,
             control1: tail.target + outOfTip * tipInset,
-            control2: tail.exit - tail.tangent * rootControl,
+            control2: tail.exit - tail.tangent * rootControl
         )
     }
 
@@ -324,11 +325,11 @@ nonisolated enum TextBubbleGeometry {
         for target: CGPoint,
         on side: TailSide,
         in rect: CGRect,
-        baseHalfWidth: CGFloat,
+        baseHalfWidth: CGFloat
     ) -> CGPoint {
         let inset = min(
             max(baseHalfWidth + 2, cornerRadius(in: rect, fontSize: baseHalfWidth * 2)),
-            min(rect.width, rect.height) * 0.42,
+            min(rect.width, rect.height) * 0.42
         )
         switch side {
         case .minX:
@@ -587,7 +588,7 @@ nonisolated struct ArrowGeometry: Equatable {
             headWidth: headWidth,
             headLength: headLength,
             outlineWidth: outlineWidth,
-            sweepBack: sweepBack,
+            sweepBack: sweepBack
         )
     }
 
@@ -605,7 +606,7 @@ nonisolated struct ArrowGeometry: Equatable {
         controlPoint: CGPoint? = nil,
         arrowType: ArrowType = .tapered,
         startHead: ArrowEndpointStyle = .none,
-        endHead: ArrowEndpointStyle = .arrow,
+        endHead: ArrowEndpointStyle = .arrow
     ) {
         self.start = start
         self.end = end
@@ -622,7 +623,7 @@ nonisolated struct ArrowGeometry: Equatable {
             end: end,
             style: style,
             bendDirection: resolvedDirection,
-            current: controlPoint,
+            current: controlPoint
         )
     }
 
@@ -633,7 +634,7 @@ nonisolated struct ArrowGeometry: Equatable {
             end: end,
             style: style,
             bendDirection: resolvedDirection,
-            current: controlPoint,
+            current: controlPoint
         )
     }
 
@@ -705,7 +706,7 @@ nonisolated struct ArrowGeometry: Equatable {
                 let oneMinusT = 1.0 - t
                 p = CGPoint(
                     x: oneMinusT * oneMinusT * start.x + 2 * oneMinusT * t * control.x + t * t * end.x,
-                    y: oneMinusT * oneMinusT * start.y + 2 * oneMinusT * t * control.y + t * t * end.y,
+                    y: oneMinusT * oneMinusT * start.y + 2 * oneMinusT * t * control.y + t * t * end.y
                 )
                 let tx = 2 * oneMinusT * (control.x - start.x) + 2 * t * (end.x - control.x)
                 let ty = 2 * oneMinusT * (control.y - start.y) + 2 * t * (end.y - control.y)
@@ -748,15 +749,15 @@ nonisolated struct ArrowGeometry: Equatable {
         // Head base is swept slightly behind the neck so the shaft forms clear shoulders.
         let arrowheadBaseCenter = CGPoint(
             x: neckPoint.x - neckTangent.x * metrics.sweepBack,
-            y: neckPoint.y - neckTangent.y * metrics.sweepBack,
+            y: neckPoint.y - neckTangent.y * metrics.sweepBack
         )
         let headLeft = CGPoint(
             x: arrowheadBaseCenter.x + neckNormal.x * (wHead / 2),
-            y: arrowheadBaseCenter.y + neckNormal.y * (wHead / 2),
+            y: arrowheadBaseCenter.y + neckNormal.y * (wHead / 2)
         )
         let headRight = CGPoint(
             x: arrowheadBaseCenter.x - neckNormal.x * (wHead / 2),
-            y: arrowheadBaseCenter.y - neckNormal.y * (wHead / 2),
+            y: arrowheadBaseCenter.y - neckNormal.y * (wHead / 2)
         )
 
         /// Smooth ease for shaft taper (matches solid presentation look, not a linear wedge).
@@ -794,7 +795,7 @@ nonisolated struct ArrowGeometry: Equatable {
             radius: wStart / 2,
             startAngle: startAngle,
             endAngle: startAngle + .pi,
-            clockwise: false,
+            clockwise: false
         )
 
         for i in 0 ... neckIndex {
@@ -824,7 +825,7 @@ nonisolated struct ArrowGeometry: Equatable {
                 let oneMinusT = 1 - t
                 let point = CGPoint(
                     x: oneMinusT * oneMinusT * start.x + 2 * oneMinusT * t * control.x + t * t * end.x,
-                    y: oneMinusT * oneMinusT * start.y + 2 * oneMinusT * t * control.y + t * t * end.y,
+                    y: oneMinusT * oneMinusT * start.y + 2 * oneMinusT * t * control.y + t * t * end.y
                 )
                 points.append(point)
             }
@@ -896,7 +897,7 @@ nonisolated struct ArrowGeometry: Equatable {
             controlPoint: resolvedControlPoint.map { CGPoint(x: $0.x + dx, y: $0.y + dy) },
             arrowType: arrowType,
             startHead: startHead,
-            endHead: endHead,
+            endHead: endHead
         )
     }
 
@@ -908,7 +909,7 @@ nonisolated struct ArrowGeometry: Equatable {
             controlPoint: resolvedControlPoint.map { Self.remap(point: $0, from: oldBounds, to: newBounds) },
             arrowType: arrowType,
             startHead: startHead,
-            endHead: endHead,
+            endHead: endHead
         )
     }
 
@@ -936,7 +937,7 @@ nonisolated struct ArrowGeometry: Equatable {
             controlPoint: newControlPoint,
             arrowType: arrowType,
             startHead: startHead,
-            endHead: endHead,
+            endHead: endHead
         )
     }
 
@@ -963,7 +964,7 @@ nonisolated struct ArrowGeometry: Equatable {
             controlPoint: newControlPoint,
             arrowType: arrowType,
             startHead: startHead,
-            endHead: endHead,
+            endHead: endHead
         )
     }
 
@@ -976,7 +977,7 @@ nonisolated struct ArrowGeometry: Equatable {
             controlPoint: controlPoint,
             arrowType: newType,
             startHead: startHead,
-            endHead: endHead,
+            endHead: endHead
         )
     }
 
@@ -989,7 +990,7 @@ nonisolated struct ArrowGeometry: Equatable {
             controlPoint: controlPoint,
             arrowType: arrowType,
             startHead: newHead,
-            endHead: endHead,
+            endHead: endHead
         )
     }
 
@@ -1002,7 +1003,7 @@ nonisolated struct ArrowGeometry: Equatable {
             controlPoint: controlPoint,
             arrowType: arrowType,
             startHead: startHead,
-            endHead: newHead,
+            endHead: newHead
         )
     }
 
@@ -1011,7 +1012,7 @@ nonisolated struct ArrowGeometry: Equatable {
         end: CGPoint,
         style: ArrowStyle,
         bendDirection: ArrowBendDirection,
-        current: CGPoint?,
+        current: CGPoint?
     ) -> CGPoint? {
         switch style {
         case .straight:
@@ -1025,10 +1026,11 @@ nonisolated struct ArrowGeometry: Equatable {
         start: CGPoint,
         end: CGPoint,
         style: ArrowStyle,
-        controlPoint: CGPoint?,
+        controlPoint: CGPoint?
     ) -> ArrowBendDirection {
         guard style.supportsBendDirection,
-              let controlPoint else {
+              let controlPoint
+        else {
             return .primary
         }
 
@@ -1053,7 +1055,7 @@ nonisolated struct ArrowGeometry: Equatable {
     private static func defaultCurveControlPoint(
         start: CGPoint,
         end: CGPoint,
-        bendDirection: ArrowBendDirection,
+        bendDirection: ArrowBendDirection
     ) -> CGPoint {
         let mid = CGPoint(x: (start.x + end.x) / 2, y: (start.y + end.y) / 2)
         let dx = end.x - start.x
@@ -1064,7 +1066,7 @@ nonisolated struct ArrowGeometry: Equatable {
         let offset = bendDirection == .primary ? offsetMagnitude : -offsetMagnitude
         return CGPoint(
             x: mid.x + normal.x * offset,
-            y: mid.y + normal.y * offset,
+            y: mid.y + normal.y * offset
         )
     }
 
@@ -1086,7 +1088,7 @@ nonisolated struct ArrowGeometry: Equatable {
         let projectedPoint = CGPoint(x: start.x + progress * dx, y: start.y + progress * dy)
         return CGPoint(
             x: projectedPoint.x * 2 - controlPoint.x,
-            y: projectedPoint.y * 2 - controlPoint.y,
+            y: projectedPoint.y * 2 - controlPoint.y
         )
     }
 
@@ -1097,15 +1099,15 @@ nonisolated struct ArrowGeometry: Equatable {
                 oldMin: oldBounds.minX,
                 oldSize: oldBounds.width,
                 newMin: newBounds.minX,
-                newSize: newBounds.width,
+                newSize: newBounds.width
             ),
             y: remapCoordinate(
                 point.y,
                 oldMin: oldBounds.minY,
                 oldSize: oldBounds.height,
                 newMin: newBounds.minY,
-                newSize: newBounds.height,
-            ),
+                newSize: newBounds.height
+            )
         )
     }
 
@@ -1114,7 +1116,7 @@ nonisolated struct ArrowGeometry: Equatable {
         oldMin: CGFloat,
         oldSize: CGFloat,
         newMin: CGFloat,
-        newSize: CGFloat,
+        newSize: CGFloat
     ) -> CGFloat {
         guard oldSize != 0 else {
             return newMin + newSize / 2
@@ -1153,7 +1155,7 @@ nonisolated enum MagnifyGeometry {
                 x: start.x - defaultDiameter / 2,
                 y: start.y - defaultDiameter / 2,
                 width: defaultDiameter,
-                height: defaultDiameter,
+                height: defaultDiameter
             )
         }
 
@@ -1162,7 +1164,7 @@ nonisolated enum MagnifyGeometry {
             x: deltaX < 0 ? start.x - diameter : start.x,
             y: deltaY < 0 ? start.y - diameter : start.y,
             width: diameter,
-            height: diameter,
+            height: diameter
         )
     }
 
@@ -1172,7 +1174,7 @@ nonisolated enum MagnifyGeometry {
             x: bounds.midX - squareSize / 2,
             y: bounds.midY - squareSize / 2,
             width: squareSize,
-            height: squareSize,
+            height: squareSize
         )
     }
 
@@ -1186,14 +1188,14 @@ nonisolated enum MagnifyGeometry {
             x: center.x - resolvedDiameter / 2,
             y: center.y - resolvedDiameter / 2,
             width: resolvedDiameter,
-            height: resolvedDiameter,
+            height: resolvedDiameter
         )
     }
 
     static func sourceDisplayBounds(
         lensBounds: CGRect,
         sourceCenter: CGPoint,
-        magnification: CGFloat,
+        magnification: CGFloat
     ) -> CGRect {
         let diameter = lensSquare(in: lensBounds).width / max(magnification, 1)
         let resolvedDiameter = max(1, diameter)
@@ -1201,7 +1203,7 @@ nonisolated enum MagnifyGeometry {
             x: sourceCenter.x - resolvedDiameter / 2,
             y: sourceCenter.y - resolvedDiameter / 2,
             width: resolvedDiameter,
-            height: resolvedDiameter,
+            height: resolvedDiameter
         )
     }
 
@@ -1209,17 +1211,17 @@ nonisolated enum MagnifyGeometry {
         lensBounds: CGRect,
         sourceCenter: CGPoint,
         sourceBounds: CGRect,
-        magnification: CGFloat = defaultMagnification,
+        magnification: CGFloat = defaultMagnification
     ) -> CGRect {
         guard !sourceBounds.isEmpty else { return .zero }
         let side = min(
             sourceBounds.width,
             sourceBounds.height,
-            max(lensSquare(in: lensBounds).width / max(magnification, 1), 1),
+            max(lensSquare(in: lensBounds).width / max(magnification, 1), 1)
         )
         let origin = CGPoint(
             x: min(max(sourceCenter.x - side / 2, sourceBounds.minX), sourceBounds.maxX - side),
-            y: min(max(sourceCenter.y - side / 2, sourceBounds.minY), sourceBounds.maxY - side),
+            y: min(max(sourceCenter.y - side / 2, sourceBounds.minY), sourceBounds.maxY - side)
         )
         return CGRect(origin: origin, size: CGSize(width: side, height: side))
     }
@@ -1236,7 +1238,7 @@ nonisolated enum AnnotationAngleSnapping {
         let snappedAngle = (atan2(dy, dx) / (.pi / 4)).rounded() * (.pi / 4)
         return CGPoint(
             x: start.x + cos(snappedAngle) * distance,
-            y: start.y + sin(snappedAngle) * distance,
+            y: start.y + sin(snappedAngle) * distance
         )
     }
 
@@ -1249,7 +1251,7 @@ nonisolated enum AnnotationAngleSnapping {
 
         return CGPoint(
             x: start.x + (dx < 0 ? -side : side),
-            y: start.y + (dy < 0 ? -side : side),
+            y: start.y + (dy < 0 ? -side : side)
         )
     }
 }
@@ -1287,16 +1289,17 @@ extension AnnotationItem {
 
         if case .text = copy.type,
            copy.properties.textPresentation == .callout,
-           let tailTarget = copy.properties.calloutTailTarget {
+           let tailTarget = copy.properties.calloutTailTarget
+        {
             if TextBubbleGeometry.isDefaultTail(tailTarget, for: oldBounds, fontSize: copy.properties.fontSize) {
                 copy.properties.calloutTailTarget = TextBubbleGeometry.defaultTailTarget(
                     for: normalizedBounds,
-                    fontSize: copy.properties.fontSize,
+                    fontSize: copy.properties.fontSize
                 )
             } else if oldBounds.size == normalizedBounds.size {
                 copy.properties.calloutTailTarget = CGPoint(
                     x: tailTarget.x + normalizedBounds.minX - oldBounds.minX,
-                    y: tailTarget.y + normalizedBounds.minY - oldBounds.minY,
+                    y: tailTarget.y + normalizedBounds.minY - oldBounds.minY
                 )
             }
         }
@@ -1304,24 +1307,24 @@ extension AnnotationItem {
 
         // Also remap embedded coordinates for arrows/lines/paths
         switch copy.type {
-        case .arrow(let geometry):
+        case let .arrow(geometry):
             let updated = geometry.remapped(from: oldBounds, to: normalizedBounds)
             copy.type = .arrow(updated)
             copy.bounds = updated.bounds()
-        case .line(let start, let end):
+        case let .line(start, end):
             copy.type = .line(
                 start: Self.remapPoint(start, from: oldBounds, to: normalizedBounds),
-                end: Self.remapPoint(end, from: oldBounds, to: normalizedBounds),
+                end: Self.remapPoint(end, from: oldBounds, to: normalizedBounds)
             )
-        case .path(let points):
+        case let .path(points):
             copy.type = .path(points.map { Self.remapPoint($0, from: oldBounds, to: normalizedBounds) })
-        case .highlight(let points):
+        case let .highlight(points):
             copy.type = .highlight(points.map { Self.remapPoint($0, from: oldBounds, to: normalizedBounds) })
-        case .magnify(let sourceCenter, let showsSourceCircle):
+        case let .magnify(sourceCenter, showsSourceCircle):
             let squareBounds = MagnifyGeometry.squareBounds(in: normalizedBounds)
             copy.type = .magnify(
                 sourceCenter: Self.remapPoint(sourceCenter, from: oldBounds, to: squareBounds),
-                showsSourceCircle: showsSourceCircle,
+                showsSourceCircle: showsSourceCircle
             )
             copy.bounds = squareBounds
         case .counter:
@@ -1332,7 +1335,7 @@ extension AnnotationItem {
                 x: normalizedBounds.midX - counterDiameter / 2,
                 y: normalizedBounds.midY - counterDiameter / 2,
                 width: counterDiameter,
-                height: counterDiameter,
+                height: counterDiameter
             )
             copy.properties.strokeWidth = controlValue
         default:
@@ -1346,7 +1349,7 @@ extension AnnotationItem {
         guard dx != 0 || dy != 0 else { return self }
         let translatedBounds = CGRect(
             origin: CGPoint(x: bounds.origin.x + dx, y: bounds.origin.y + dy),
-            size: bounds.size,
+            size: bounds.size
         )
         return applyingResizeBounds(translatedBounds)
     }
@@ -1358,15 +1361,15 @@ extension AnnotationItem {
                 oldMin: oldBounds.minX,
                 oldSize: oldBounds.width,
                 newMin: newBounds.minX,
-                newSize: newBounds.width,
+                newSize: newBounds.width
             ),
             y: remapCoordinate(
                 point.y,
                 oldMin: oldBounds.minY,
                 oldSize: oldBounds.height,
                 newMin: newBounds.minY,
-                newSize: newBounds.height,
-            ),
+                newSize: newBounds.height
+            )
         )
     }
 
@@ -1375,7 +1378,7 @@ extension AnnotationItem {
         oldMin: CGFloat,
         oldSize: CGFloat,
         newMin: CGFloat,
-        newSize: CGFloat,
+        newSize: CGFloat
     ) -> CGFloat {
         guard oldSize != 0 else {
             return newMin + newSize / 2
@@ -1514,7 +1517,7 @@ nonisolated struct AnnotationProperties: Equatable {
         textPresentation: TextPresentation = .plain,
         calloutTailTarget: CGPoint? = nil,
         magnification: CGFloat = MagnifyGeometry.defaultMagnification,
-        shapeFillStyle: AnnotationShapeFillStyle = .outline,
+        shapeFillStyle: AnnotationShapeFillStyle = .outline
     ) {
         self.strokeColor = strokeColor
         self.fillColor = fillColor
@@ -1607,11 +1610,11 @@ extension AnnotationItem {
 
     var resizeBounds: CGRect {
         switch type {
-        case .arrow(let geometry):
+        case let .arrow(geometry):
             return geometry.bounds()
-        case .line(let start, let end):
+        case let .line(start, end):
             return Self.normalizedBounds(Self.bounds(containing: [start, end]) ?? bounds)
-        case .path(let points), .highlight(let points):
+        case let .path(points), let .highlight(points):
             return Self.normalizedBounds(Self.bounds(containing: points) ?? bounds)
         case .counter:
             let counterBounds = bounds.isEmpty ? Self
@@ -1640,17 +1643,18 @@ extension AnnotationItem {
                 MagnifyGeometry.sourceDisplayBounds(
                     lensBounds: resizeBounds,
                     sourceCenter: sourceCenter,
-                    magnification: properties.magnification,
-                ).insetBy(dx: -padding, dy: -padding),
+                    magnification: properties.magnification
+                ).insetBy(dx: -padding, dy: -padding)
             )
         }
         if case .text = type,
            properties.textPresentation == .callout,
-           let tailTarget = properties.calloutTailTarget {
+           let tailTarget = properties.calloutTailTarget
+        {
             let tailBounds = TextBubbleGeometry.tailPath(
                 in: bounds,
                 to: tailTarget,
-                fontSize: properties.fontSize,
+                fontSize: properties.fontSize
             ).boundingBoxOfPath
             if !tailBounds.isNull {
                 result = result.union(tailBounds.insetBy(dx: -padding, dy: -padding))
@@ -1661,11 +1665,11 @@ extension AnnotationItem {
 
     var selectionDecorationBounds: CGRect {
         switch type {
-        case .highlight(let points):
+        case let .highlight(points):
             Self.highlighterSelectionBounds(
                 containing: points,
                 strokeWidth: properties.strokeWidth,
-                fallback: resizeBounds,
+                fallback: resizeBounds
             )
         default:
             resizeBounds
@@ -1677,21 +1681,21 @@ extension AnnotationItem {
         let tolerance = baseTolerance + properties.strokeWidth / 2
 
         switch type {
-        case .rectangle, .blur(_), .watermark, .embeddedImage, .spotlight:
+        case .rectangle, .blur, .watermark, .embeddedImage, .spotlight:
             return bounds.contains(point)
 
         case .circle:
             return pointInEllipse(point, in: bounds)
 
-        case .arrow(let geometry):
+        case let .arrow(geometry):
             let maxArrowWidth = (3.2 + properties.strokeWidth * 2.0) * 1.2
             let arrowTolerance = baseTolerance + maxArrowWidth / 2
             return distanceToPolyline(point, points: geometry.sampledPoints()) <= arrowTolerance
 
-        case .line(let start, let end):
+        case let .line(start, end):
             return distanceToSegment(point, from: start, to: end) <= tolerance
 
-        case .path(let points), .highlight(let points):
+        case let .path(points), let .highlight(points):
             let adjustedTolerance = type.isHighlight ? tolerance * 3 : tolerance
             return distanceToPolyline(point, points: points) <= adjustedTolerance
 
@@ -1700,13 +1704,14 @@ extension AnnotationItem {
                 return true
             }
             if properties.textPresentation == .callout,
-               let tailTarget = properties.calloutTailTarget {
+               let tailTarget = properties.calloutTailTarget
+            {
                 return bounds.union(
                     TextBubbleGeometry.tailPath(
                         in: bounds,
                         to: tailTarget,
-                        fontSize: properties.fontSize,
-                    ).boundingBoxOfPath.insetBy(dx: -tolerance, dy: -tolerance),
+                        fontSize: properties.fontSize
+                    ).boundingBoxOfPath.insetBy(dx: -tolerance, dy: -tolerance)
                 ).contains(point)
             }
             return false
@@ -1716,10 +1721,10 @@ extension AnnotationItem {
                 .counterBounds(center: bounds.origin, properties: properties) : bounds
             return pointInEllipse(point, in: counterBounds.insetBy(dx: -baseTolerance, dy: -baseTolerance))
 
-        case .magnify(let sourceCenter, let showsSourceCircle):
+        case let .magnify(sourceCenter, showsSourceCircle):
             let lensHit = pointInEllipse(
                 point,
-                in: MagnifyGeometry.lensSquare(in: bounds).insetBy(dx: -baseTolerance, dy: -baseTolerance),
+                in: MagnifyGeometry.lensSquare(in: bounds).insetBy(dx: -baseTolerance, dy: -baseTolerance)
             )
             guard showsSourceCircle else { return lensHit }
             return lensHit || pointInEllipse(
@@ -1727,8 +1732,8 @@ extension AnnotationItem {
                 in: MagnifyGeometry.sourceDisplayBounds(
                     lensBounds: bounds,
                     sourceCenter: sourceCenter,
-                    magnification: properties.magnification,
-                ).insetBy(dx: -baseTolerance, dy: -baseTolerance),
+                    magnification: properties.magnification
+                ).insetBy(dx: -baseTolerance, dy: -baseTolerance)
             )
         }
     }
@@ -1772,7 +1777,7 @@ extension AnnotationItem {
     private static func highlighterSelectionBounds(
         containing points: [CGPoint],
         strokeWidth: CGFloat,
-        fallback: CGRect,
+        fallback: CGRect
     ) -> CGRect {
         let baseBounds = Self.normalizedBounds(Self.bounds(containing: points) ?? fallback)
         let visibleRadius = max(strokeWidth * 1.5, 1)
@@ -1816,7 +1821,7 @@ extension AnnotationItem {
             x: center.x - diameter / 2,
             y: center.y - diameter / 2,
             width: diameter,
-            height: diameter,
+            height: diameter
         )
     }
 

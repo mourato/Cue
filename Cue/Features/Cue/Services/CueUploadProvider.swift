@@ -51,7 +51,7 @@ final class CueUploadConfigurationStore: ObservableObject {
         imgbb: CueImgBBCredentialStore = .shared,
         imageKit: CueImageKitCredentialStore = .shared,
         cloudflare: CueCloudflareCredentialStore = .shared,
-        cloudflareService: CueCloudflareUploadService = .shared,
+        cloudflareService: CueCloudflareUploadService = .shared
     ) {
         self.defaults = defaults
         self.imgbb = imgbb
@@ -65,9 +65,9 @@ final class CueUploadConfigurationStore: ObservableObject {
         imageKitCustomVideoLimitMB = min(
             max(
                 defaults.integer(forKey: PreferencesKeys.uploadImageKitCustomVideoLimitMB),
-                CueImageKitUploadPlan.minimumCustomLimitMB,
+                CueImageKitUploadPlan.minimumCustomLimitMB
             ),
-            CueImageKitUploadPlan.maximumCustomLimitMB,
+            CueImageKitUploadPlan.maximumCustomLimitMB
         )
         if defaults.object(forKey: PreferencesKeys.uploadImageKitCustomVideoLimitMB) == nil {
             imageKitCustomVideoLimitMB = 100
@@ -137,7 +137,8 @@ final class CueUploadConfigurationStore: ObservableObject {
     func verifyCloudflareConnection() async {
         guard cloudflareConnectionState != .verifying else { return }
         guard let token = cloudflare.token,
-              CueCloudflareConfiguration.validWorkerURL(cloudflareWorkerURL) != nil else {
+              CueCloudflareConfiguration.validWorkerURL(cloudflareWorkerURL) != nil
+        else {
             cloudflareVerificationID = nil
             cloudflareConnectionState = .unconfigured
             return
@@ -167,7 +168,7 @@ final class CueUploadConfigurationStore: ObservableObject {
     func setImageKitCustomVideoLimitMB(_ megabytes: Int) {
         let value = min(
             max(megabytes, CueImageKitUploadPlan.minimumCustomLimitMB),
-            CueImageKitUploadPlan.maximumCustomLimitMB,
+            CueImageKitUploadPlan.maximumCustomLimitMB
         )
         guard imageKitCustomVideoLimitMB != value else { return }
         imageKitCustomVideoLimitMB = value

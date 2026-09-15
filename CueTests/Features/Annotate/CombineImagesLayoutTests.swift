@@ -9,10 +9,10 @@ final class CombineImagesLayoutTests: XCTestCase {
         let result = CombineImagesLayout.layout(
             items: [
                 CombineImagesLayoutItem(id: baseID, size: CGSize(width: 400, height: 300)),
-                CombineImagesLayoutItem(id: secondID, size: CGSize(width: 200, height: 100)),
+                CombineImagesLayoutItem(id: secondID, size: CGSize(width: 200, height: 100))
             ],
             direction: .horizontal,
-            gap: 12,
+            gap: 12
         )
 
         let base = try XCTUnwrap(result.boundsByID[baseID])
@@ -29,10 +29,10 @@ final class CombineImagesLayoutTests: XCTestCase {
         let result = CombineImagesLayout.layout(
             items: [
                 CombineImagesLayoutItem(id: baseID, size: CGSize(width: 300, height: 200)),
-                CombineImagesLayoutItem(id: secondID, size: CGSize(width: 600, height: 200)),
+                CombineImagesLayoutItem(id: secondID, size: CGSize(width: 600, height: 200))
             ],
             direction: .vertical,
-            gap: 0,
+            gap: 0
         )
 
         let base = try XCTUnwrap(result.boundsByID[baseID])

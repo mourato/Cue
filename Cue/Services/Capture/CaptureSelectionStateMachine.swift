@@ -21,7 +21,7 @@ enum CaptureSelectionPhase: Equatable, Sendable {
         currentRect: CGRect,
         handle: CaptureSelectionResizeHandle,
         aspectLocked: Bool,
-        aspectRatio: CGFloat?,
+        aspectRatio: CGFloat?
     )
 }
 
@@ -34,13 +34,13 @@ struct CaptureSelectionStateMachine: Equatable, Sendable {
         switch phase {
         case .idle:
             nil
-        case .selecting(_, _, let rect):
+        case let .selecting(_, _, rect):
             rect
-        case .selected(let rect):
+        case let .selected(rect):
             rect
-        case .moving(_, let currentRect, _, _):
+        case let .moving(_, currentRect, _, _):
             currentRect
-        case .resizing(_, let currentRect, _, _, _):
+        case let .resizing(_, currentRect, _, _, _):
             currentRect
         }
     }
@@ -90,9 +90,9 @@ struct CaptureSelectionStateMachine: Equatable, Sendable {
     mutating func updateSelection(
         to point: CGPoint,
         squareConstrained: Bool = false,
-        snappedRect: CGRect? = nil,
+        snappedRect: CGRect? = nil
     ) {
-        guard case .selecting(let startPoint, _, _) = phase else { return }
+        guard case let .selecting(startPoint, _, _) = phase else { return }
 
         let rect: CGRect
         if let snappedRect {
@@ -111,7 +111,7 @@ struct CaptureSelectionStateMachine: Equatable, Sendable {
                 x: min(startPoint.x, startPoint.x + width),
                 y: min(startPoint.y, startPoint.y + height),
                 width: abs(width),
-                height: abs(height),
+                height: abs(height)
             )
         }
 
@@ -124,7 +124,7 @@ struct CaptureSelectionStateMachine: Equatable, Sendable {
     /// - Returns: The committed rectangle if valid, or nil if discarded.
     @discardableResult
     mutating func commitSelection(minSize: CGFloat = CaptureSelectionChromeMetrics.creationMinimumSize) -> CGRect? {
-        guard case .selecting(_, _, let rect) = phase else {
+        guard case let .selecting(_, _, rect) = phase else {
             return currentRect
         }
 
@@ -154,7 +154,7 @@ struct CaptureSelectionStateMachine: Equatable, Sendable {
     ///   - point: The current mouse/pointer location.
     ///   - bounds: Optional bounding rectangle (e.g. desktop union frame) to clamp movement.
     mutating func updateMove(to point: CGPoint, clampedToBounds bounds: CGRect? = nil) {
-        guard case .moving(let initialRect, _, let startPoint, _) = phase else { return }
+        guard case let .moving(initialRect, _, startPoint, _) = phase else { return }
 
         let translation = CGPoint(x: point.x - startPoint.x, y: point.y - startPoint.y)
         var newRect = initialRect.offsetBy(dx: translation.x, dy: translation.y)
@@ -184,7 +184,7 @@ struct CaptureSelectionStateMachine: Equatable, Sendable {
     /// Completes the move gesture, settling into `.selected`.
     @discardableResult
     mutating func finishMove() -> CGRect? {
-        guard case .moving(_, let currentRect, _, _) = phase else { return currentRect }
+        guard case let .moving(_, currentRect, _, _) = phase else { return currentRect }
         let settled = currentRect.standardized
         phase = .selected(rect: settled)
         return settled
@@ -194,7 +194,7 @@ struct CaptureSelectionStateMachine: Equatable, Sendable {
     mutating func startResize(
         handle: CaptureSelectionResizeHandle,
         aspectLocked: Bool = false,
-        aspectRatio: CGFloat? = nil,
+        aspectRatio: CGFloat? = nil
     ) {
         guard let rect = currentRect else { return }
         let effectiveRatio = aspectLocked ? (aspectRatio ?? CaptureSelectionGeometry.aspectRatio(of: rect)) : nil
@@ -203,7 +203,7 @@ struct CaptureSelectionStateMachine: Equatable, Sendable {
             currentRect: rect,
             handle: handle,
             aspectLocked: aspectLocked,
-            aspectRatio: effectiveRatio,
+            aspectRatio: effectiveRatio
         )
     }
 
@@ -213,15 +213,15 @@ struct CaptureSelectionStateMachine: Equatable, Sendable {
     ///   - minSize: Minimum size constraint.
     mutating func updateResize(
         to proposedRect: CGRect,
-        minSize: CGFloat = CaptureSelectionGeometry.defaultMinSize,
+        minSize: CGFloat = CaptureSelectionGeometry.defaultMinSize
     ) {
-        guard case .resizing(let initialRect, _, let handle, let aspectLocked, let aspectRatio) = phase else { return }
+        guard case let .resizing(initialRect, _, handle, aspectLocked, aspectRatio) = phase else { return }
 
         let normalized: CGRect
         if aspectLocked, let ratio = aspectRatio, ratio > 0 {
             let translation = CGPoint(
                 x: proposedRect.origin.x - initialRect.origin.x,
-                y: proposedRect.origin.y - initialRect.origin.y,
+                y: proposedRect.origin.y - initialRect.origin.y
             )
             normalized = CaptureSelectionGeometry.resizedRect(
                 original: initialRect,
@@ -229,7 +229,7 @@ struct CaptureSelectionStateMachine: Equatable, Sendable {
                 translation: translation,
                 aspectLocked: true,
                 aspectRatio: ratio,
-                minSize: minSize,
+                minSize: minSize
             )
         } else {
             normalized = CaptureSelectionGeometry.normalized(proposedRect, minSize: minSize)
@@ -240,14 +240,14 @@ struct CaptureSelectionStateMachine: Equatable, Sendable {
             currentRect: normalized,
             handle: handle,
             aspectLocked: aspectLocked,
-            aspectRatio: aspectRatio,
+            aspectRatio: aspectRatio
         )
     }
 
     /// Completes the resize gesture, settling into `.selected`.
     @discardableResult
     mutating func finishResize() -> CGRect? {
-        guard case .resizing(_, let currentRect, _, _, _) = phase else { return currentRect }
+        guard case let .resizing(_, currentRect, _, _, _) = phase else { return currentRect }
         let settled = currentRect.standardized
         phase = .selected(rect: settled)
         return settled

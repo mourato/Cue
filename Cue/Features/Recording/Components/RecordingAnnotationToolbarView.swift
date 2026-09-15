@@ -32,13 +32,13 @@
                     .horizontal,
                     direction == .horizontal
                         ? PopoverTokens.annotationToolbarHorizontalInset
-                        : PopoverTokens.annotationToolbarCompactInset,
+                        : PopoverTokens.annotationToolbarCompactInset
                 )
                 .padding(
                     .vertical,
                     direction == .horizontal
                         ? PopoverTokens.annotationToolbarCompactInset
-                        : PopoverTokens.annotationToolbarAxisInset,
+                        : PopoverTokens.annotationToolbarAxisInset
                 )
         }
 
@@ -78,7 +78,7 @@
                 AnnotationToolbarIconButton(
                     systemName: tool.icon,
                     isSelected: state.selectedTool == tool,
-                    action: { state.selectedTool = tool },
+                    action: { state.selectedTool = tool }
                 )
                 .overlay(alignment: .bottomTrailing) {
                     if state.isShortcutModeActive, let shortcutLabel = shortcutLabel(for: tool) {
@@ -89,7 +89,7 @@
                             .padding(.vertical, 1)
                             .background(
                                 RoundedRectangle(cornerRadius: 3)
-                                    .fill(Color.accentColor),
+                                    .fill(Color.accentColor)
                             )
                             .offset(x: 4, y: 4)
                             .transition(.scale.combined(with: .opacity))
@@ -114,8 +114,8 @@
                             Circle()
                                 .strokeBorder(
                                     state.strokeColor == color ? Color.primary : Color.clear,
-                                    lineWidth: 2,
-                                ),
+                                    lineWidth: 2
+                                )
                         )
                 }
                 .buttonStyle(.plain)
@@ -130,7 +130,7 @@
                     style: style,
                     isSelected: state.shapeFillStyle == style,
                     color: state.strokeColor,
-                    action: { state.shapeFillStyle = style },
+                    action: { state.shapeFillStyle = style }
                 )
             }
         }
@@ -146,11 +146,11 @@
                         .fill(
                             AnnotationStrokeWidth.nearest(to: state.strokeWidth) == width
                                 ? Color.primary
-                                : Color.primary.opacity(0.4),
+                                : Color.primary.opacity(0.4)
                         )
                         .frame(
                             width: min(width.points + 2, 13),
-                            height: min(width.points + 2, 13),
+                            height: min(width.points + 2, 13)
                         )
                         .frame(width: 20, height: 20)
                 }
@@ -158,7 +158,7 @@
                 .help(L10n.Common.strokeWidthOption(Int(width.points)))
                 .accessibilityLabel(L10n.Common.strokeWidthOption(Int(width.points)))
                 .accessibilityAddTraits(
-                    AnnotationStrokeWidth.nearest(to: state.strokeWidth) == width ? .isSelected : [],
+                    AnnotationStrokeWidth.nearest(to: state.strokeWidth) == width ? .isSelected : []
                 )
             }
         }
@@ -169,7 +169,7 @@
             AnnotationToolbarIconButton(
                 systemName: "trash",
                 isSelected: false,
-                action: { state.clearAll() },
+                action: { state.clearAll() }
             )
         }
 
@@ -183,7 +183,7 @@
                     .frame(width: 28, height: 28)
                     .background(
                         RoundedRectangle(cornerRadius: 6)
-                            .fill(Color.clear),
+                            .fill(Color.clear)
                     )
             }
             .menuStyle(.borderlessButton)
@@ -218,7 +218,8 @@
 
         private func shortcutLabel(for tool: AnnotationToolType) -> String? {
             guard shortcutManager.isShortcutEnabled(for: tool),
-                  let key = shortcutManager.shortcut(for: tool) else {
+                  let key = shortcutManager.shortcut(for: tool)
+            else {
                 return nil
             }
             return String(key).uppercased()

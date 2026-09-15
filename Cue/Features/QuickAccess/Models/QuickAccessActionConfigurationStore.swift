@@ -22,10 +22,10 @@ final class QuickAccessActionConfigurationStore: ObservableObject {
         self.defaults = defaults
         actionOrder = Self.normalizedOrder(from: defaults.stringArray(forKey: PreferencesKeys.quickAccessActionOrder))
         enabledActions = Self.normalizedEnabledActions(
-            from: defaults.stringArray(forKey: PreferencesKeys.quickAccessEnabledActions),
+            from: defaults.stringArray(forKey: PreferencesKeys.quickAccessEnabledActions)
         )
         slotAssignments = Self.normalizedSlotAssignments(
-            from: defaults.dictionary(forKey: PreferencesKeys.quickAccessActionSlotAssignments) as? [String: String],
+            from: defaults.dictionary(forKey: PreferencesKeys.quickAccessActionSlotAssignments) as? [String: String]
         )
     }
 
@@ -101,7 +101,7 @@ final class QuickAccessActionConfigurationStore: ObservableObject {
     func applyConfiguration(
         order: [QuickAccessActionKind]?,
         enabledActions: Set<QuickAccessActionKind>?,
-        slotAssignments: [QuickAccessActionSlot: QuickAccessActionKind]?,
+        slotAssignments: [QuickAccessActionSlot: QuickAccessActionKind]?
     ) {
         if let order {
             actionOrder = Self.normalizedOrder(from: order.map(\.rawValue))
@@ -111,7 +111,7 @@ final class QuickAccessActionConfigurationStore: ObservableObject {
         }
         if let slotAssignments {
             self.slotAssignments = Self.normalizedSlotAssignments(
-                from: rawSlotAssignments(from: slotAssignments),
+                from: rawSlotAssignments(from: slotAssignments)
             )
         }
         save()
@@ -121,11 +121,11 @@ final class QuickAccessActionConfigurationStore: ObservableObject {
         defaults.set(actionOrder.map(\.rawValue), forKey: PreferencesKeys.quickAccessActionOrder)
         defaults.set(
             actionOrder.filter { enabledActions.contains($0) }.map(\.rawValue),
-            forKey: PreferencesKeys.quickAccessEnabledActions,
+            forKey: PreferencesKeys.quickAccessEnabledActions
         )
         defaults.set(
             rawSlotAssignments(from: slotAssignments),
-            forKey: PreferencesKeys.quickAccessActionSlotAssignments,
+            forKey: PreferencesKeys.quickAccessActionSlotAssignments
         )
     }
 
@@ -155,7 +155,7 @@ final class QuickAccessActionConfigurationStore: ObservableObject {
     }
 
     private static func normalizedSlotAssignments(
-        from rawAssignments: [String: String]?,
+        from rawAssignments: [String: String]?
     ) -> [QuickAccessActionSlot: QuickAccessActionKind] {
         guard let rawAssignments else {
             return QuickAccessActionSlot.defaultAssignments
@@ -172,7 +172,8 @@ final class QuickAccessActionConfigurationStore: ObservableObject {
             }
 
             guard let action,
-                  !seenActions.contains(action) else {
+                  !seenActions.contains(action)
+            else {
                 continue
             }
 
@@ -184,7 +185,7 @@ final class QuickAccessActionConfigurationStore: ObservableObject {
     }
 
     private func rawSlotAssignments(
-        from assignments: [QuickAccessActionSlot: QuickAccessActionKind],
+        from assignments: [QuickAccessActionSlot: QuickAccessActionKind]
     ) -> [String: String] {
         var rawAssignments: [String: String] = [:]
         for slot in QuickAccessActionSlot.allCases {

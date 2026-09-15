@@ -45,7 +45,7 @@ struct CaptureContext: Equatable {
         }
         return CaptureContext(
             appName: app.localizedName,
-            windowTitle: nil,
+            windowTitle: nil
         )
     }
 }
@@ -92,7 +92,7 @@ enum CaptureOutputNaming {
         date: Date = Date(),
         context: CaptureContext = .empty,
         defaults: UserDefaults = .standard,
-        scaleFactor: CGFloat? = nil,
+        scaleFactor: CGFloat? = nil
     ) -> String {
         if let customName {
             let sanitizedCustomName = sanitizeBaseName(customName)
@@ -101,7 +101,7 @@ enum CaptureOutputNaming {
                     sanitizedCustomName,
                     kind: kind,
                     scaleFactor: scaleFactor,
-                    defaults: defaults,
+                    defaults: defaults
                 )
             }
         }
@@ -111,7 +111,7 @@ enum CaptureOutputNaming {
             resolveTemplateBaseName(template, kind: kind, date: date, context: context),
             kind: kind,
             scaleFactor: scaleFactor,
-            defaults: defaults,
+            defaults: defaults
         )
     }
 
@@ -123,7 +123,7 @@ enum CaptureOutputNaming {
         return makeUniqueFileURL(
             in: sourceURL.deletingLastPathComponent(),
             baseName: baseName,
-            fileExtension: sourceURL.pathExtension,
+            fileExtension: sourceURL.pathExtension
         )
     }
 
@@ -140,7 +140,7 @@ enum CaptureOutputNaming {
         _ template: String,
         kind: CaptureOutputKind,
         date: Date = Date(),
-        context: CaptureContext = .empty,
+        context: CaptureContext = .empty
     ) -> String {
         let parsed = parseTemplate(template, kind: kind, date: date, context: context)
         let sanitizedParsed = sanitizeBaseName(parsed)
@@ -167,7 +167,7 @@ enum CaptureOutputNaming {
         _ template: String,
         kind: CaptureOutputKind,
         date: Date,
-        context: CaptureContext,
+        context: CaptureContext
     ) -> String {
         var resolved = template
         let replacements: [String: String] = [
@@ -188,7 +188,7 @@ enum CaptureOutputNaming {
             "{ms}": format(date, style: "SSS"),
             "{timestamp}": String(Int(date.timeIntervalSince1970)),
             "{appName}": context.appName ?? "",
-            "{app_name}": context.appName ?? "",
+            "{app_name}": context.appName ?? ""
         ]
 
         for (token, value) in replacements {
@@ -208,7 +208,7 @@ enum CaptureOutputNaming {
 
         var sanitizedComponents = components
         sanitizedComponents[sanitizedComponents.count - 1] = stripKnownExtension(
-            from: sanitizedComponents[sanitizedComponents.count - 1],
+            from: sanitizedComponents[sanitizedComponents.count - 1]
         )
         sanitizedComponents = sanitizedComponents.filter { !$0.isEmpty }
 
@@ -241,12 +241,13 @@ enum CaptureOutputNaming {
         _ baseName: String,
         kind: CaptureOutputKind,
         scaleFactor: CGFloat?,
-        defaults: UserDefaults,
+        defaults: UserDefaults
     ) -> String {
         guard kind == .screenshot,
               scaleFactor ?? 1 >= 1.5,
               defaults.object(forKey: PreferencesKeys.screenshotAddRetinaSuffix) as? Bool ?? true,
-              !baseName.hasSuffix("@2x") else {
+              !baseName.hasSuffix("@2x")
+        else {
             return baseName
         }
         return "\(baseName)@2x"

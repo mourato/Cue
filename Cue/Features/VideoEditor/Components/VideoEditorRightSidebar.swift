@@ -49,7 +49,8 @@
             Binding<Color>(
                 get: {
                     if let data = UserDefaults.standard.data(forKey: PreferencesKeys.mouseHighlightColor),
-                       let nsColor = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: data) {
+                       let nsColor = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: data)
+                    {
                         return Color(nsColor: nsColor)
                     }
                     return Color(nsColor: MouseHighlightConfiguration.defaultHighlightColor)
@@ -58,11 +59,11 @@
                     let nsColor = NSColor(newColor)
                     if let data = try? NSKeyedArchiver.archivedData(
                         withRootObject: nsColor,
-                        requiringSecureCoding: true,
+                        requiringSecureCoding: true
                     ) {
                         UserDefaults.standard.set(data, forKey: PreferencesKeys.mouseHighlightColor)
                     }
-                },
+                }
             )
         }
 
@@ -85,7 +86,7 @@
                 zoomType: segment.zoomType,
                 zoomLevel: segment.zoomLevel,
                 zoomCenter: segment.zoomCenter,
-                anchorMode: segment.anchorMode,
+                anchorMode: segment.anchorMode
             )
         }
 
@@ -197,7 +198,7 @@
                     VideoSliderRow(
                         label: L10n.VideoEditor.cursorScale,
                         value: $state.cursorScale,
-                        range: 1 ... 3,
+                        range: 1 ... 3
                     )
 
                     Picker(L10n.VideoEditor.cursorSmoothing, selection: $state.cursorSmoothingPreset) {
@@ -273,9 +274,9 @@
                                 label: L10n.PreferencesCapture.fontSizeTitle,
                                 value: Binding(
                                     get: { CGFloat(keystrokeFontSize) },
-                                    set: { keystrokeFontSize = Double($0) },
+                                    set: { keystrokeFontSize = Double($0) }
                                 ),
-                                range: 12 ... 32,
+                                range: 12 ... 32
                             )
                         }
                         .padding(.leading, 8)
@@ -292,7 +293,7 @@
 
                 Toggle(L10n.VideoEditor.mute, isOn: Binding(
                     get: { state.isMuted },
-                    set: { _ in state.toggleMute() },
+                    set: { _ in state.toggleMute() }
                 ))
                 .font(.system(size: 11))
             }
@@ -440,9 +441,9 @@
                     Slider(
                         value: $localZoomLevel.stepped(
                             by: 0.1,
-                            in: ZoomSegment.minZoomLevel ... ZoomSegment.maxZoomLevel,
+                            in: ZoomSegment.minZoomLevel ... ZoomSegment.maxZoomLevel
                         ),
-                        in: ZoomSegment.minZoomLevel ... ZoomSegment.maxZoomLevel,
+                        in: ZoomSegment.minZoomLevel ... ZoomSegment.maxZoomLevel
                     ) { isEditing in
                         if !isEditing {
                             applyZoomLevel()
@@ -467,7 +468,7 @@
                                 .background(
                                     abs(localZoomLevel - level) < 0.05
                                         ? ZoomColors.primary.opacity(0.3)
-                                        : Color.white.opacity(0.1),
+                                        : Color.white.opacity(0.1)
                                 )
                                 .cornerRadius(4)
                         }
@@ -485,7 +486,7 @@
 
                 ZoomCenterPicker(
                     center: $localCenter,
-                    previewImage: previewImage,
+                    previewImage: previewImage
                 )
                 .onChange(of: localCenter) {
                     applyCenter(localCenter)
@@ -503,7 +504,7 @@
                                 .background(
                                     isNearPreset(localCenter, preset.point)
                                         ? ZoomColors.primary.opacity(0.3)
-                                        : Color.white.opacity(0.1),
+                                        : Color.white.opacity(0.1)
                                 )
                                 .cornerRadius(4)
                         }
@@ -569,13 +570,13 @@
                 CenterPreset(
                     name: L10n.VideoEditor.bottomLeft,
                     icon: "arrow.down.left",
-                    point: CGPoint(x: 0.25, y: 0.75),
+                    point: CGPoint(x: 0.25, y: 0.75)
                 ),
                 CenterPreset(
                     name: L10n.VideoEditor.bottomRight,
                     icon: "arrow.down.right",
-                    point: CGPoint(x: 0.75, y: 0.75),
-                ),
+                    point: CGPoint(x: 0.75, y: 0.75)
+                )
             ]
         }
 

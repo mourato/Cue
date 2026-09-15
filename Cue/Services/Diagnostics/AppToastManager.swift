@@ -160,7 +160,7 @@ final class AppToastManager {
         position: AppToastPosition = .bottomCenter,
         duration: TimeInterval? = AppToastManager.defaultDuration,
         variant: AppToastVariant = .regular,
-        iconMode: AppToastIconMode = .symbol,
+        iconMode: AppToastIconMode = .symbol
     ) -> AppToastHandle? {
         let handle = AppToastHandle(id: UUID())
         guard present(
@@ -170,7 +170,7 @@ final class AppToastManager {
             duration: duration,
             variant: variant,
             iconMode: iconMode,
-            presentationID: handle.id,
+            presentationID: handle.id
         ) else {
             return nil
         }
@@ -184,7 +184,7 @@ final class AppToastManager {
         position: AppToastPosition? = nil,
         duration: TimeInterval? = AppToastManager.defaultDuration,
         variant: AppToastVariant? = nil,
-        iconMode: AppToastIconMode = .symbol,
+        iconMode: AppToastIconMode = .symbol
     ) {
         guard handle.id == activePresentationID else { return }
         let resolvedVariant = variant ?? viewModel?.presentation.variant ?? .regular
@@ -196,7 +196,7 @@ final class AppToastManager {
             duration: duration,
             variant: resolvedVariant,
             iconMode: iconMode,
-            presentationID: handle.id,
+            presentationID: handle.id
         )
     }
 
@@ -206,7 +206,7 @@ final class AppToastManager {
             message: L10n.Common.copiedToClipboard,
             style: .success,
             position: position,
-            variant: .compact,
+            variant: .compact
         )
     }
 
@@ -224,7 +224,7 @@ final class AppToastManager {
         duration: TimeInterval?,
         variant: AppToastVariant,
         iconMode: AppToastIconMode,
-        presentationID: UUID,
+        presentationID: UUID
     ) -> Bool {
         let trimmed = message.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return false }
@@ -239,7 +239,7 @@ final class AppToastManager {
             message: trimmed,
             style: style,
             variant: variant,
-            iconMode: iconMode,
+            iconMode: iconMode
         )
         let viewModel = resolveViewModel(for: presentation)
         let isExistingPanelVisible = panel?.isVisible == true
@@ -257,7 +257,7 @@ final class AppToastManager {
                 contentRect: frame,
                 styleMask: [.borderless, .nonactivatingPanel],
                 backing: .buffered,
-                defer: false,
+                defer: false
             )
             newPanel.level = .statusBar
             newPanel.isOpaque = false
@@ -277,7 +277,7 @@ final class AppToastManager {
         if let panel {
             NSAnimationContext.runAnimationGroup { context in
                 context.duration = FeedbackMotionPolicy.panelFadeDuration(
-                    reduceMotion: FeedbackMotionPolicy.appKitShouldReduceMotion,
+                    reduceMotion: FeedbackMotionPolicy.appKitShouldReduceMotion
                 )
                 panel.animator().alphaValue = 1
             }
@@ -309,7 +309,7 @@ final class AppToastManager {
 
         NSAnimationContext.runAnimationGroup { context in
             context.duration = FeedbackMotionPolicy.panelFadeDuration(
-                reduceMotion: FeedbackMotionPolicy.appKitShouldReduceMotion,
+                reduceMotion: FeedbackMotionPolicy.appKitShouldReduceMotion
             )
             panel.animator().alphaValue = 0
         } completionHandler: {
@@ -320,24 +320,24 @@ final class AppToastManager {
     private func frameForToast(
         message: String,
         position: AppToastPosition,
-        variant: AppToastVariant,
+        variant: AppToastVariant
     ) -> CGRect? {
         guard let screen = targetScreen() else { return nil }
         let visibleFrame = screen.visibleFrame
         let maxWidth = min(
             FeedbackToastMetrics.defaultMaxWidth,
-            visibleFrame.width - FeedbackToastMetrics.screenHorizontalInset,
+            visibleFrame.width - FeedbackToastMetrics.screenHorizontalInset
         )
         let size = FeedbackToastMetrics.measuredToastSize(
             for: message,
             maxWidth: maxWidth,
-            variant: variant,
+            variant: variant
         )
 
         return FeedbackPanelPlacement.frame(
             in: visibleFrame,
             panelSize: size,
-            slot: position.feedbackPanelSlot,
+            slot: position.feedbackPanelSlot
         )
     }
 
@@ -361,7 +361,7 @@ private struct AppToastView: View {
         let feedbackStyle = presentation.style.feedbackStyle
         let variant = presentation.variant
         let usesSolidFallback = FeedbackChromePolicy.usesSolidFallback(
-            reduceTransparency: reduceTransparency,
+            reduceTransparency: reduceTransparency
         )
         let isProgress = presentation.iconMode == .spinner
 
@@ -370,7 +370,7 @@ private struct AppToastView: View {
                 FeedbackIconView(
                     style: feedbackStyle,
                     iconMode: presentation.iconMode == .symbol ? .symbol : .spinner,
-                    fontSize: variant.iconFontSize,
+                    fontSize: variant.iconFontSize
                 )
 
                 Text(presentation.message)
@@ -388,8 +388,8 @@ private struct AppToastView: View {
             FeedbackAccessibilityPolicy.toastAccessibilityLabel(
                 message: presentation.message,
                 tone: feedbackStyle.tone,
-                isProgress: isProgress,
-            ),
+                isProgress: isProgress
+            )
         )
         .modifier(ToastAccessibilityValueModifier(message: presentation.message, isProgress: isProgress))
         .scaleEffect(FeedbackMotionPolicy.toastEntranceScale(reduceMotion: reduceMotion, appeared: appeared))

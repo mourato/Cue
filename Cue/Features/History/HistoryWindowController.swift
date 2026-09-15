@@ -74,7 +74,7 @@ final class HistoryWindowController {
                 .warning,
                 .clipboard,
                 "History clipboard copy skipped; no existing files",
-                context: ["requestedCount": "\(records.count)"],
+                context: ["requestedCount": "\(records.count)"]
             )
             return
         }
@@ -98,8 +98,8 @@ final class HistoryWindowController {
             context: [
                 "requestedCount": "\(records.count)",
                 "copiedCount": "\(existingRecords.count)",
-                "multiItem": existingRecords.count > 1 ? "true" : "false",
-            ],
+                "multiItem": existingRecords.count > 1 ? "true" : "false"
+            ]
         )
     }
 
@@ -109,7 +109,7 @@ final class HistoryWindowController {
                 .warning,
                 .history,
                 "History open skipped; file missing",
-                context: ["fileName": record.fileName, "type": record.captureType.rawValue],
+                context: ["fileName": record.fileName, "type": record.captureType.rawValue]
             )
             return
         }
@@ -135,7 +135,7 @@ final class HistoryWindowController {
                     .info,
                     .history,
                     "History opening screenshot through quick access",
-                    context: ["fileName": record.fileName, "itemId": item.id.uuidString],
+                    context: ["fileName": record.fileName, "itemId": item.id.uuidString]
                 )
                 AnnotateManager.shared.openAnnotation(for: item)
             case .videoEditor:
@@ -146,8 +146,8 @@ final class HistoryWindowController {
                     context: [
                         "fileName": record.fileName,
                         "type": record.captureType.rawValue,
-                        "itemId": item.id.uuidString,
-                    ],
+                        "itemId": item.id.uuidString
+                    ]
                 )
                 #if CUE_VIDEO_MODULE
                     VideoEditorManager.shared.openEditor(for: item)
@@ -166,7 +166,7 @@ final class HistoryWindowController {
             .info,
             .history,
             "History revealed media in Finder; video module disabled",
-            context: ["fileName": record.fileName, "type": record.captureType.rawValue],
+            context: ["fileName": record.fileName, "type": record.captureType.rawValue]
         )
     }
 
@@ -184,7 +184,7 @@ final class HistoryWindowController {
                     .debug,
                     .history,
                     "History delete cancelled by user",
-                    context: ["recordCount": "\(recordsToDelete.count)"],
+                    context: ["recordCount": "\(recordsToDelete.count)"]
                 )
                 return 0
             }
@@ -209,7 +209,7 @@ final class HistoryWindowController {
                     .fileAccess,
                     error,
                     "History recycle files failed",
-                    context: ["fileCount": "\(existingFileURLs.count)"],
+                    context: ["fileCount": "\(existingFileURLs.count)"]
                 )
             }
         }
@@ -225,7 +225,7 @@ final class HistoryWindowController {
             message: L10n.PreferencesHistory.deletedCaptures(recordsToDelete.count),
             style: .success,
             duration: AppToastManager.defaultDuration,
-            variant: .compact,
+            variant: .compact
         )
 
         DiagnosticLogger.shared.log(
@@ -234,8 +234,8 @@ final class HistoryWindowController {
             "History records deleted",
             context: [
                 "recordCount": "\(recordsToDelete.count)",
-                "fileCount": "\(existingFileURLs.count)",
-            ],
+                "fileCount": "\(existingFileURLs.count)"
+            ]
         )
         return recordsToDelete.count
     }

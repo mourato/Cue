@@ -15,7 +15,7 @@ struct HistoryFilterBar: View {
         ("All", "square.grid.2x2", nil),
         ("Screenshots", CaptureHistoryType.screenshot.systemIconName, .screenshot),
         ("Videos", CaptureHistoryType.video.systemIconName, .video),
-        ("GIFs", CaptureHistoryType.gif.systemIconName, .gif),
+        ("GIFs", CaptureHistoryType.gif.systemIconName, .gif)
     ]
 
     var body: some View {
@@ -25,7 +25,7 @@ struct HistoryFilterBar: View {
                     label: filter.label,
                     icon: filter.icon,
                     count: counts[filter.type] ?? 0,
-                    isSelected: selectedFilter == filter.type,
+                    isSelected: selectedFilter == filter.type
                 ) {
                     withAnimation(.easeInOut(duration: 0.15)) {
                         selectedFilter = filter.type
@@ -55,7 +55,7 @@ private struct FilterPill: View {
                     .font(.system(size: 11, weight: .semibold))
                 Text(label)
                     .font(.system(size: 12, weight: .semibold))
-                if count != 0 {
+                if !isEmpty {
                     Text("\(count)")
                         .font(.system(size: 10, weight: .bold))
                         .padding(.horizontal, 6)
@@ -71,7 +71,7 @@ private struct FilterPill: View {
             .clipShape(Capsule())
             .overlay(
                 Capsule()
-                    .stroke(borderColor, lineWidth: 1),
+                    .stroke(borderColor, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -83,11 +83,11 @@ private struct FilterPill: View {
                 LinearGradient(
                     colors: [
                         Color.accentColor.opacity(0.98),
-                        Color.accentColor.opacity(0.84),
+                        Color.accentColor.opacity(0.84)
                     ],
                     startPoint: .top,
-                    endPoint: .bottom,
-                ),
+                    endPoint: .bottom
+                )
             )
         }
 
@@ -116,7 +116,7 @@ private struct FilterPill: View {
 }
 
 #Preview("History filters") {
-    @Previewable @State var selectedFilter: CaptureHistoryType? = nil
+    @Previewable @State var selectedFilter: CaptureHistoryType?
 
     HistoryFilterBar(
         selectedFilter: $selectedFilter,
@@ -124,8 +124,8 @@ private struct FilterPill: View {
             nil: 12,
             .screenshot: 8,
             .video: 3,
-            .gif: 1,
-        ],
+            .gif: 1
+        ]
     )
     .padding()
 }

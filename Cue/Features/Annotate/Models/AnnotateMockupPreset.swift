@@ -25,7 +25,7 @@ struct MockupPreset: Identifiable, Codable, Equatable, Hashable {
         rotationY: Double = 0,
         rotationZ: Double = 0,
         perspective: Double = 0.5,
-        padding: CGFloat = 40,
+        padding: CGFloat = 40
     ) {
         self.id = id
         self.name = name
@@ -43,7 +43,7 @@ struct MockupPreset: Identifiable, Codable, Equatable, Hashable {
         rotationY: 0,
         rotationZ: 0,
         perspective: 0.5,
-        padding: 40,
+        padding: 40
     )
 
     /// Left tilt preset
@@ -53,7 +53,7 @@ struct MockupPreset: Identifiable, Codable, Equatable, Hashable {
         rotationY: -15,
         rotationZ: 0,
         perspective: 0.5,
-        padding: 60,
+        padding: 60
     )
 
     /// Right tilt preset
@@ -63,7 +63,7 @@ struct MockupPreset: Identifiable, Codable, Equatable, Hashable {
         rotationY: 15,
         rotationZ: 0,
         perspective: 0.5,
-        padding: 60,
+        padding: 60
     )
 
     /// Top view preset
@@ -73,7 +73,7 @@ struct MockupPreset: Identifiable, Codable, Equatable, Hashable {
         rotationY: 0,
         rotationZ: 0,
         perspective: 0.4,
-        padding: 60,
+        padding: 60
     )
 
     /// Isometric left preset
@@ -83,7 +83,7 @@ struct MockupPreset: Identifiable, Codable, Equatable, Hashable {
         rotationY: -20,
         rotationZ: 0,
         perspective: 0.3,
-        padding: 80,
+        padding: 80
     )
 
     /// Isometric right preset
@@ -93,7 +93,7 @@ struct MockupPreset: Identifiable, Codable, Equatable, Hashable {
         rotationY: 20,
         rotationZ: 0,
         perspective: 0.3,
-        padding: 80,
+        padding: 80
     )
 
     /// Hero shot preset - dramatic angle
@@ -103,7 +103,7 @@ struct MockupPreset: Identifiable, Codable, Equatable, Hashable {
         rotationY: -25,
         rotationZ: 2,
         perspective: 0.25,
-        padding: 100,
+        padding: 100
     )
 
     /// Dramatic preset - strong perspective
@@ -113,7 +113,7 @@ struct MockupPreset: Identifiable, Codable, Equatable, Hashable {
         rotationY: -30,
         rotationZ: 5,
         perspective: 0.2,
-        padding: 120,
+        padding: 120
     )
 
     /// All built-in presets
@@ -125,6 +125,6 @@ struct MockupPreset: Identifiable, Codable, Equatable, Hashable {
         .isometricLeft,
         .isometricRight,
         .heroShot,
-        .dramatic,
+        .dramatic
     ]
 }

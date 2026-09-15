@@ -52,7 +52,7 @@ final class ShortcutCoreTests: XCTestCase {
     func testShortcutConfigMenuModifierFlags_convertCarbonModifiers() {
         let config = ShortcutConfig(
             keyCode: UInt32(kVK_ANSI_A),
-            modifiers: UInt32(cmdKey | shiftKey | optionKey | controlKey),
+            modifiers: UInt32(cmdKey | shiftKey | optionKey | controlKey)
         )
 
         let flags = config.menuModifierFlags
@@ -96,7 +96,7 @@ final class ShortcutCoreTests: XCTestCase {
         for keyCode in [kVK_F13, kVK_F14, kVK_F15, kVK_F16, kVK_F17, kVK_F18, kVK_F19, kVK_F20] {
             XCTAssertNotNil(
                 ShortcutConfig(keyCode: UInt32(keyCode), modifiers: 0).menuKeyEquivalent,
-                "Expected menu key equivalent for keyCode \(keyCode)",
+                "Expected menu key equivalent for keyCode \(keyCode)"
             )
         }
     }
@@ -105,7 +105,7 @@ final class ShortcutCoreTests: XCTestCase {
 
     private func makeKeyEvent(
         keyCode: UInt16,
-        modifierFlags: NSEvent.ModifierFlags,
+        modifierFlags: NSEvent.ModifierFlags
     ) -> NSEvent? {
         NSEvent.keyEvent(
             with: .keyDown,
@@ -117,14 +117,14 @@ final class ShortcutCoreTests: XCTestCase {
             characters: "",
             charactersIgnoringModifiers: "",
             isARepeat: false,
-            keyCode: keyCode,
+            keyCode: keyCode
         )
     }
 
     func testMatches_fnOnlyShortcut_matchesOnlyWithFn() throws {
         let config = ShortcutConfig(
             keyCode: UInt32(kVK_F3),
-            modifiers: ShortcutConfig.functionCarbonModifier,
+            modifiers: ShortcutConfig.functionCarbonModifier
         )
 
         let withFn = try XCTUnwrap(makeKeyEvent(keyCode: UInt16(kVK_F3), modifierFlags: [.function]))
@@ -137,7 +137,7 @@ final class ShortcutCoreTests: XCTestCase {
     func testMatches_fnWithCommand_requiresExactModifierSet() throws {
         let config = ShortcutConfig(
             keyCode: UInt32(kVK_F3),
-            modifiers: UInt32(cmdKey) | ShortcutConfig.functionCarbonModifier,
+            modifiers: UInt32(cmdKey) | ShortcutConfig.functionCarbonModifier
         )
 
         let exact = try XCTUnwrap(makeKeyEvent(keyCode: UInt16(kVK_F3), modifierFlags: [.command, .function]))
@@ -147,7 +147,7 @@ final class ShortcutCoreTests: XCTestCase {
         XCTAssertFalse(config.matches(event: missingFn), "Fn+Cmd binding must not fire on plain Cmd combo")
 
         let extraShift = try XCTUnwrap(
-            makeKeyEvent(keyCode: UInt16(kVK_F3), modifierFlags: [.command, .function, .shift]),
+            makeKeyEvent(keyCode: UInt16(kVK_F3), modifierFlags: [.command, .function, .shift])
         )
         XCTAssertFalse(config.matches(event: extraShift))
     }
@@ -155,7 +155,7 @@ final class ShortcutCoreTests: XCTestCase {
     func testMatches_keyEventSnapshot_usesSameFnMatchingRules() {
         let config = ShortcutConfig(
             keyCode: UInt32(kVK_F3),
-            modifiers: UInt32(cmdKey) | ShortcutConfig.functionCarbonModifier,
+            modifiers: UInt32(cmdKey) | ShortcutConfig.functionCarbonModifier
         )
 
         XCTAssertTrue(config.matches(keyCode: UInt32(kVK_F3), modifierFlags: [.command, .function]))
@@ -166,7 +166,7 @@ final class ShortcutCoreTests: XCTestCase {
     func testMatches_wrongKeyCode_doesNotMatch() throws {
         let config = ShortcutConfig(
             keyCode: UInt32(kVK_F3),
-            modifiers: ShortcutConfig.functionCarbonModifier,
+            modifiers: ShortcutConfig.functionCarbonModifier
         )
 
         let otherKey = try XCTUnwrap(makeKeyEvent(keyCode: UInt16(kVK_F4), modifierFlags: [.function]))
@@ -176,11 +176,11 @@ final class ShortcutCoreTests: XCTestCase {
     func testMatches_capsLock_doesNotAffectMatching() throws {
         let config = ShortcutConfig(
             keyCode: UInt32(kVK_F13),
-            modifiers: ShortcutConfig.functionCarbonModifier,
+            modifiers: ShortcutConfig.functionCarbonModifier
         )
 
         let event = try XCTUnwrap(
-            makeKeyEvent(keyCode: UInt16(kVK_F13), modifierFlags: [.function, .capsLock]),
+            makeKeyEvent(keyCode: UInt16(kVK_F13), modifierFlags: [.function, .capsLock])
         )
         XCTAssertTrue(config.matches(event: event))
     }

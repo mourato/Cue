@@ -102,7 +102,7 @@ extension AnnotateState {
     func notinhasUpdateMovingNote(
         to imagePoint: CGPoint,
         imageBounds: CGRect,
-        from startPoint: CGPoint,
+        from startPoint: CGPoint
     ) {
         guard notinhasMovingNoteID != nil,
               let original = notinhasMoveOriginalTarget else { return }
@@ -110,14 +110,14 @@ extension AnnotateState {
         cueMovePreviewTarget = CueNoteGeometry.translated(
             original,
             by: delta,
-            within: imageBounds,
+            within: imageBounds
         )
     }
 
     func notinhasUpdateResizingNote(
         to imagePoint: CGPoint,
         imageBounds: CGRect,
-        handle: CueNoteGeometry.ResizeHandle,
+        handle: CueNoteGeometry.ResizeHandle
     ) {
         guard notinhasMovingNoteID != nil,
               let original = notinhasMoveOriginalTarget else { return }
@@ -125,7 +125,7 @@ extension AnnotateState {
             original,
             handle: handle,
             to: imagePoint,
-            within: imageBounds,
+            within: imageBounds
         )
     }
 
@@ -141,7 +141,8 @@ extension AnnotateState {
     func notinhasCommitMovingNote() {
         guard let id = notinhasMovingNoteID,
               let original = notinhasMoveOriginalTarget,
-              let index = cueNotes.firstIndex(where: { $0.id == id }) else {
+              let index = cueNotes.firstIndex(where: { $0.id == id })
+        else {
             notinhasCancelMovingNote()
             return
         }
@@ -175,7 +176,8 @@ extension AnnotateState {
         if discardIfEmpty,
            let editingID = notinhasEditingNoteID,
            let note = cueNotes.first(where: { $0.id == editingID }),
-           note.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+           note.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        {
             cueNotes.removeAll { $0.id == editingID }
         }
         notinhasEditingNoteID = nil
@@ -227,7 +229,7 @@ extension AnnotateState {
             target: .point(point),
             color: color,
             pinControlValue: defaultNotinhasPinControlValue(),
-            creationOrder: CueNoteGeometry.nextCreationOrder(in: cueNotes),
+            creationOrder: CueNoteGeometry.nextCreationOrder(in: cueNotes)
         )
     }
 
@@ -238,7 +240,7 @@ extension AnnotateState {
             let pinCorner = CueRectPinCorner.fromDrag(start: start, end: point)
             draft.target = .rect(
                 CueNoteGeometry.clampedRect(from: start, to: point, within: imageBounds),
-                pinCorner,
+                pinCorner
             )
         } else {
             draft.target = .point(CueNoteGeometry.clampedPoint(start, within: imageBounds))

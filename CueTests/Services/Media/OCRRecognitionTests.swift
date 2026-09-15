@@ -22,15 +22,15 @@ final class OCRRecognitionTests: XCTestCase {
             ("ko", "ko-KR", "korean-interface"),
             ("ru", "ru-RU", "russian-interface"),
             ("fr", "fr-FR", "french-interface"),
-            ("de", "de-DE", "german-interface"),
+            ("de", "de-DE", "german-interface")
         ]
 
         for testCase in cases {
             let profile = try VisionOCRProfile.resolve(
                 for: OCRRequest(
                     image: OCRTestImageRenderer.renderImage(text: "Notinhas OCR"),
-                    preferredLanguageIdentifier: testCase.language,
-                ),
+                    preferredLanguageIdentifier: testCase.language
+                )
             )
 
             XCTAssertEqual(profile.id, testCase.profileID, testCase.language)
@@ -38,7 +38,7 @@ final class OCRRecognitionTests: XCTestCase {
             XCTAssertEqual(
                 profile.automaticallyDetectsLanguage,
                 testCase.primaryVisionLanguage == nil,
-                testCase.language,
+                testCase.language
             )
             XCTAssertTrue(profile.usesLanguageCorrection, testCase.language)
         }
@@ -51,8 +51,8 @@ final class OCRRecognitionTests: XCTestCase {
             OCRRequest(
                 image: OCRTestImageRenderer.renderImage(text: "Tài sản"),
                 preferredLanguageIdentifier: "vi",
-                contentType: .interfaceText,
-            ),
+                contentType: .interfaceText
+            )
         )
 
         XCTAssertTrue(result.text.contains("Tài sản"), result.text)
@@ -69,7 +69,7 @@ final class OCRRecognitionTests: XCTestCase {
             "Đường dẫn đã sao chép",
             "Ưu đãi đặc biệt",
             "Chỉnh sửa thủ công",
-            "Cộng hòa xã hội",
+            "Cộng hòa xã hội"
         ]
 
         for phrase in phrases {
@@ -77,13 +77,13 @@ final class OCRRecognitionTests: XCTestCase {
                 OCRRequest(
                     image: OCRTestImageRenderer.renderImage(text: phrase),
                     preferredLanguageIdentifier: "vi",
-                    contentType: .interfaceText,
-                ),
+                    contentType: .interfaceText
+                )
             )
 
             XCTAssertTrue(
                 normalizedForDiacriticRegression(result.text).contains(normalizedForDiacriticRegression(phrase)),
-                "expected \(phrase), got \(result.text)",
+                "expected \(phrase), got \(result.text)"
             )
         }
     }
@@ -95,13 +95,13 @@ final class OCRRecognitionTests: XCTestCase {
             OCRRequest(
                 image: OCRTestImageRenderer.renderImage(textChunks: ["Ưu đãi", "đặc", "biệt"], horizontalGap: 100),
                 preferredLanguageIdentifier: "vi",
-                contentType: .interfaceText,
-            ),
+                contentType: .interfaceText
+            )
         )
 
         XCTAssertTrue(
             OCRBenchmarkMetrics.normalized(result.text).contains("Ưu đãi đặc biệt"),
-            "expected same-row fragments to reflow, got \(result.text)",
+            "expected same-row fragments to reflow, got \(result.text)"
         )
     }
 
@@ -116,27 +116,27 @@ final class OCRRecognitionTests: XCTestCase {
             ("ko", "ko-KR", "설정 화면"),
             ("ru", "ru-RU", "Точные заметки"),
             ("fr", "fr-FR", "Texte précis"),
-            ("de", "de-DE", "Überschriften"),
+            ("de", "de-DE", "Überschriften")
         ]
         let supportedLanguages = try supportedVisionLanguages()
 
         for testCase in cases {
             try XCTSkipIf(
                 !supportedLanguages.contains(testCase.visionLanguage),
-                "Vision OCR language \(testCase.visionLanguage) unavailable",
+                "Vision OCR language \(testCase.visionLanguage) unavailable"
             )
 
             let result = try await OCRService.shared.recognize(
                 OCRRequest(
                     image: OCRTestImageRenderer.renderImage(text: testCase.text),
                     preferredLanguageIdentifier: testCase.language,
-                    contentType: .interfaceText,
-                ),
+                    contentType: .interfaceText
+                )
             )
 
             XCTAssertTrue(
                 OCRBenchmarkMetrics.normalized(result.text).contains(testCase.text),
-                "\(testCase.language): expected \(testCase.text), got \(result.text)",
+                "\(testCase.language): expected \(testCase.text), got \(result.text)"
             )
         }
     }
@@ -148,13 +148,13 @@ final class OCRRecognitionTests: XCTestCase {
             OCRRequest(
                 image: OCRTestImageRenderer.renderVerticalCJKImage(text: "龙沄路"),
                 preferredLanguageIdentifier: "zh-Hans",
-                contentType: .interfaceText,
-            ),
+                contentType: .interfaceText
+            )
         )
 
         XCTAssertTrue(
             normalizedForCJKRegression(result.text).contains("龙沄路"),
-            "expected vertical Chinese text to be recognized in reading order, got \(result.text)",
+            "expected vertical Chinese text to be recognized in reading order, got \(result.text)"
         )
     }
 

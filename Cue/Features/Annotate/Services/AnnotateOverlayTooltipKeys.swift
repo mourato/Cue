@@ -11,7 +11,7 @@ import Foundation
 enum AnnotateOverlayTooltipKeys {
     static func toolKeys(
         for tool: AnnotationToolType,
-        manager: AnnotateShortcutManager = .shared,
+        manager: AnnotateShortcutManager = .shared
     ) -> [String] {
         guard manager.isShortcutEnabled(for: tool),
               let key = manager.shortcut(for: tool)
@@ -21,7 +21,7 @@ enum AnnotateOverlayTooltipKeys {
 
     static func actionKeys(
         for kind: AnnotateActionShortcutKind,
-        manager: AnnotateShortcutManager = .shared,
+        manager: AnnotateShortcutManager = .shared
     ) -> [String] {
         guard manager.isActionShortcutEnabled(for: kind),
               let config = manager.shortcut(for: kind)

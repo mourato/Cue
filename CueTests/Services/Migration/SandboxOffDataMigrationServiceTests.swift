@@ -53,12 +53,12 @@ final class SandboxOffDataMigrationServiceTests: XCTestCase {
         try FileManager.default.createDirectory(at: sourceAppSupport, withIntermediateDirectories: true)
         try FileManager.default.createDirectory(
             at: sourceAppSupport.appendingPathComponent("Captures", isDirectory: true),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         try FileManager.default.createDirectory(at: sourceLogs, withIntermediateDirectories: true)
         try FileManager.default.createDirectory(
             at: sourcePreferences.deletingLastPathComponent(),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
 
         try Data("database".utf8).write(to: sourceAppSupport.appendingPathComponent("snapzy.db"))
@@ -67,8 +67,8 @@ final class SandboxOffDataMigrationServiceTests: XCTestCase {
         XCTAssertTrue(
             ([
                 PreferencesKeys.screenshotFormat: "webp",
-                PreferencesKeys.historyEnabled: false,
-            ] as NSDictionary).write(to: sourcePreferences, atomically: true),
+                PreferencesKeys.historyEnabled: false
+            ] as NSDictionary).write(to: sourcePreferences, atomically: true)
         )
 
         let firstResult = try makeService().runIfNeeded()
@@ -83,18 +83,18 @@ final class SandboxOffDataMigrationServiceTests: XCTestCase {
             .fileExists(atPath: destinationAppSupport().appendingPathComponent("snapzy.db").path))
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: destinationAppSupport().appendingPathComponent("Captures/capture.png").path,
-            ),
+                atPath: destinationAppSupport().appendingPathComponent("Captures/capture.png").path
+            )
         )
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: libraryDirectory.appendingPathComponent("Logs/Notinhas/snapzy_2026-06-21.txt").path,
-            ),
+                atPath: libraryDirectory.appendingPathComponent("Logs/Notinhas/snapzy_2026-06-21.txt").path
+            )
         )
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: destinationAppSupport().appendingPathComponent(".sandbox-off-migration-completed").path,
-            ),
+                atPath: destinationAppSupport().appendingPathComponent(".sandbox-off-migration-completed").path
+            )
         )
 
         let secondResult = try makeService().runIfNeeded()
@@ -108,14 +108,14 @@ final class SandboxOffDataMigrationServiceTests: XCTestCase {
             .appendingPathComponent("Library/Application Support/Notinhas", isDirectory: true)
         try FileManager.default.createDirectory(
             at: sourceAppSupport.appendingPathComponent("Captures", isDirectory: true),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         try Data("sandbox database".utf8).write(to: sourceAppSupport.appendingPathComponent("snapzy.db"))
         try Data("sandbox capture".utf8).write(to: sourceAppSupport.appendingPathComponent("Captures/capture.png"))
 
         try FileManager.default.createDirectory(
             at: destinationAppSupport().appendingPathComponent("Captures", isDirectory: true),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         try Data("current database".utf8).write(to: destinationAppSupport().appendingPathComponent("snapzy.db"))
 
@@ -124,13 +124,13 @@ final class SandboxOffDataMigrationServiceTests: XCTestCase {
             .appendingPathComponent("\(bundleIdentifier!).plist")
         try FileManager.default.createDirectory(
             at: sourcePreferences.deletingLastPathComponent(),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         XCTAssertTrue(
             ([
                 PreferencesKeys.historyEnabled: false,
-                PreferencesKeys.screenshotFormat: "webp",
-            ] as NSDictionary).write(to: sourcePreferences, atomically: true),
+                PreferencesKeys.screenshotFormat: "webp"
+            ] as NSDictionary).write(to: sourcePreferences, atomically: true)
         )
 
         let destinationPreferences = libraryDirectory
@@ -138,11 +138,11 @@ final class SandboxOffDataMigrationServiceTests: XCTestCase {
             .appendingPathComponent("\(bundleIdentifier!).plist")
         try FileManager.default.createDirectory(
             at: destinationPreferences.deletingLastPathComponent(),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         XCTAssertTrue(([PreferencesKeys.historyEnabled: true] as NSDictionary).write(
             to: destinationPreferences,
-            atomically: true,
+            atomically: true
         ))
         defaults.set(true, forKey: PreferencesKeys.historyEnabled)
 
@@ -152,11 +152,11 @@ final class SandboxOffDataMigrationServiceTests: XCTestCase {
         XCTAssertEqual(result.skippedApplicationSupportItems, 1)
         XCTAssertEqual(
             try String(contentsOf: destinationAppSupport().appendingPathComponent("snapzy.db")),
-            "current database",
+            "current database"
         )
         XCTAssertEqual(
             try String(contentsOf: destinationAppSupport().appendingPathComponent("Captures/capture.png")),
-            "sandbox capture",
+            "sandbox capture"
         )
         XCTAssertTrue(defaults.bool(forKey: PreferencesKeys.historyEnabled))
         XCTAssertEqual(defaults.string(forKey: PreferencesKeys.screenshotFormat), "webp")
@@ -178,8 +178,8 @@ final class SandboxOffDataMigrationServiceTests: XCTestCase {
         XCTAssertTrue(defaults.bool(forKey: PreferencesKeys.sandboxOffMigrationCompleted))
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: destinationAppSupport().appendingPathComponent(".sandbox-off-migration-completed").path,
-            ),
+                atPath: destinationAppSupport().appendingPathComponent(".sandbox-off-migration-completed").path
+            )
         )
     }
 
@@ -213,15 +213,15 @@ final class SandboxOffDataMigrationServiceTests: XCTestCase {
         XCTAssertTrue(
             FileManager.default.fileExists(
                 atPath: destinationAppSupport()
-                    .appendingPathComponent(".sandbox-off-migration-completed").path,
-            ),
+                    .appendingPathComponent(".sandbox-off-migration-completed").path
+            )
         )
 
         // Assert: NO data copied
         XCTAssertFalse(
             FileManager.default.fileExists(
-                atPath: destinationAppSupport().appendingPathComponent("snapzy.db").path,
-            ),
+                atPath: destinationAppSupport().appendingPathComponent("snapzy.db").path
+            )
         )
 
         // Assert: runIfNeeded now skips
@@ -240,8 +240,8 @@ final class SandboxOffDataMigrationServiceTests: XCTestCase {
         // Old data still exists
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: sourceAppSupport.appendingPathComponent("snapzy.db").path,
-            ),
+                atPath: sourceAppSupport.appendingPathComponent("snapzy.db").path
+            )
         )
     }
 
@@ -258,7 +258,7 @@ final class SandboxOffDataMigrationServiceTests: XCTestCase {
 
         // Make one file unreadable
         try FileManager.default.setAttributes(
-            [.posixPermissions: 0o000], ofItemAtPath: unreadableFile.path,
+            [.posixPermissions: 0o000], ofItemAtPath: unreadableFile.path
         )
 
         // Act
@@ -270,18 +270,18 @@ final class SandboxOffDataMigrationServiceTests: XCTestCase {
         XCTAssertEqual(result.errorSkippedApplicationSupportItems, 1)
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: destinationAppSupport().appendingPathComponent("readable.txt").path,
-            ),
+                atPath: destinationAppSupport().appendingPathComponent("readable.txt").path
+            )
         )
         XCTAssertFalse(
             FileManager.default.fileExists(
-                atPath: destinationAppSupport().appendingPathComponent("unreadable.txt").path,
-            ),
+                atPath: destinationAppSupport().appendingPathComponent("unreadable.txt").path
+            )
         )
 
         // Cleanup: restore permissions so tearDown can delete
         try? FileManager.default.setAttributes(
-            [.posixPermissions: 0o644], ofItemAtPath: unreadableFile.path,
+            [.posixPermissions: 0o644], ofItemAtPath: unreadableFile.path
         )
     }
 
@@ -298,7 +298,7 @@ final class SandboxOffDataMigrationServiceTests: XCTestCase {
 
         // Make subdir unreadable (contentsOfDirectory will throw)
         try FileManager.default.setAttributes(
-            [.posixPermissions: 0o000], ofItemAtPath: unreadableSubdir.path,
+            [.posixPermissions: 0o000], ofItemAtPath: unreadableSubdir.path
         )
 
         let result = try makeService().runIfNeeded()
@@ -309,7 +309,7 @@ final class SandboxOffDataMigrationServiceTests: XCTestCase {
 
         // Cleanup
         try? FileManager.default.setAttributes(
-            [.posixPermissions: 0o755], ofItemAtPath: unreadableSubdir.path,
+            [.posixPermissions: 0o755], ofItemAtPath: unreadableSubdir.path
         )
     }
 
@@ -322,7 +322,7 @@ final class SandboxOffDataMigrationServiceTests: XCTestCase {
                 libraryDirectory: self.libraryDirectory,
                 userDefaults: self.defaults,
                 fileManager: .default,
-                isRunningSandboxed: isRunningSandboxed,
+                isRunningSandboxed: isRunningSandboxed
             )
         }
     }

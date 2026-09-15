@@ -44,7 +44,7 @@ final class ShortcutOverlayManager {
             },
             onOpenSettings: { [weak self] in
                 self?.openShortcutsSettings()
-            },
+            }
         )
 
         let panel = panel ?? ShortcutOverlayPanel(screen: screen)
@@ -105,7 +105,7 @@ private final class ShortcutOverlayPanel: NSPanel {
             contentRect: screen.frame,
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
-            defer: false,
+            defer: false
         )
         configurePanel()
     }

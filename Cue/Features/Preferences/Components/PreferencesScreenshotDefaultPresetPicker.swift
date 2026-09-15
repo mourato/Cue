@@ -16,7 +16,7 @@ struct PreferencesScreenshotDefaultPresetPicker: View {
     var body: some View {
         SettingRow(
             title: L10n.PreferencesCapture.defaultPresetTitle,
-            description: L10n.PreferencesCapture.defaultPresetDescription,
+            description: L10n.PreferencesCapture.defaultPresetDescription
         ) {
             Picker("", selection: presetSelection) {
                 Text(L10n.Common.none).tag("")
@@ -45,12 +45,13 @@ struct PreferencesScreenshotDefaultPresetPicker: View {
                     return
                 }
                 guard let id = UUID(uuidString: rawValue),
-                      presets.contains(where: { $0.id == id }) else {
+                      presets.contains(where: { $0.id == id })
+                else {
                     reloadPresets()
                     return
                 }
                 presetStore.saveDefaultPresetId(id)
-            },
+            }
         )
     }
 

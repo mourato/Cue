@@ -42,7 +42,7 @@ enum ClipboardHelper {
             .info,
             .clipboard,
             "Copy file URLs",
-            context: ["count": "\(urls.count)"],
+            context: ["count": "\(urls.count)"]
         )
     }
 
@@ -63,7 +63,7 @@ enum ClipboardHelper {
                 .error,
                 .clipboard,
                 "Media file not found",
-                context: ["file": url.lastPathComponent],
+                context: ["file": url.lastPathComponent]
             )
             return
         }
@@ -82,8 +82,8 @@ enum ClipboardHelper {
                 "writeObjects": didWrite ? "true" : "false",
                 "readbackCount": "\(readbackCount)",
                 "types": pasteboard.types?.map(\.rawValue).joined(separator: ",") ?? "none",
-                "itemTypes": pasteboard.pasteboardItems?.first?.types.map(\.rawValue).joined(separator: ",") ?? "none",
-            ],
+                "itemTypes": pasteboard.pasteboardItems?.first?.types.map(\.rawValue).joined(separator: ",") ?? "none"
+            ]
         )
     }
 
@@ -118,7 +118,7 @@ enum ClipboardHelper {
             image: image,
             tiffData: image?.tiffRepresentation,
             encodedData: encodedData,
-            encodedType: encodedType,
+            encodedType: encodedType
         )
 
         if image == nil {
@@ -126,13 +126,13 @@ enum ClipboardHelper {
             // The pasteboard item still exposes the file URL and original encoded data.
             logger
                 .warning(
-                    "ClipboardHelper: could not decode image, file/data-only clipboard for \(url.lastPathComponent)",
+                    "ClipboardHelper: could not decode image, file/data-only clipboard for \(url.lastPathComponent)"
                 )
             DiagnosticLogger.shared.log(
                 .warning,
                 .clipboard,
                 "Image decode failed, file/data-only",
-                context: ["file": url.lastPathComponent],
+                context: ["file": url.lastPathComponent]
             )
         }
 
@@ -166,7 +166,8 @@ enum ClipboardHelper {
         for (index, url) in urls.enumerated() where index < items.count {
             let image = NSImage(contentsOf: url)
             if let encodedData = try? Data(contentsOf: url),
-               let encodedType = pasteboardImageType(for: url.pathExtension) {
+               let encodedType = pasteboardImageType(for: url.pathExtension)
+            {
                 items[index].setData(encodedData, forType: encodedType)
             }
             if let tiffData = image?.tiffRepresentation {
@@ -186,7 +187,7 @@ enum ClipboardHelper {
             .info,
             .clipboard,
             "Copy image from file (off-main)",
-            context: ["file": url.lastPathComponent],
+            context: ["file": url.lastPathComponent]
         )
 
         guard FileManager.default.fileExists(atPath: url.path) else {
@@ -213,19 +214,19 @@ enum ClipboardHelper {
                 image: image,
                 tiffData: tiffData,
                 encodedData: encodedData,
-                encodedType: encodedType,
+                encodedType: encodedType
             )
 
             if image == nil {
                 logger
                     .warning(
-                        "ClipboardHelper: could not decode image, file/data-only clipboard for \(url.lastPathComponent)",
+                        "ClipboardHelper: could not decode image, file/data-only clipboard for \(url.lastPathComponent)"
                     )
                 DiagnosticLogger.shared.log(
                     .warning,
                     .clipboard,
                     "Image decode failed, file/data-only",
-                    context: ["file": url.lastPathComponent],
+                    context: ["file": url.lastPathComponent]
                 )
             }
         }
@@ -242,13 +243,13 @@ enum ClipboardHelper {
     static func copyImage(
         _ image: NSImage,
         format: ImageFormatOption? = nil,
-        to pasteboard: NSPasteboard = .general,
+        to pasteboard: NSPasteboard = .general
     ) {
         DiagnosticLogger.shared.log(
             .info,
             .clipboard,
             "Copy rendered image",
-            context: ["format": (format ?? currentFormat()).rawValue],
+            context: ["format": (format ?? currentFormat()).rawValue]
         )
         let resolvedFormat = format ?? currentFormat()
         let ext = resolvedFormat.format.fileExtension
@@ -259,7 +260,7 @@ enum ClipboardHelper {
                 .error,
                 .clipboard,
                 "Image encode failed",
-                context: ["format": resolvedFormat.rawValue],
+                context: ["format": resolvedFormat.rawValue]
             )
             // Fallback: write NSImage directly (will produce PNG but at least something lands)
             pasteboard.clearContents()
@@ -291,7 +292,7 @@ enum ClipboardHelper {
             image: image,
             tiffData: image.tiffRepresentation,
             encodedData: data,
-            encodedType: pasteboardImageType(for: ext),
+            encodedType: pasteboardImageType(for: ext)
         )
 
         logger.info("Clipboard: copied rendered image as \(ext) via temp file")
@@ -305,7 +306,7 @@ enum ClipboardHelper {
         image: NSImage?,
         tiffData: Data?,
         encodedData: Data?,
-        encodedType: NSPasteboard.PasteboardType?,
+        encodedType: NSPasteboard.PasteboardType?
     ) {
         // Use writeObjects with NSURL to ensure macOS grants a sandbox extension
         // to the receiving app. NSPasteboardItem.setString(url, forType: .fileURL)
@@ -338,7 +339,7 @@ enum ClipboardHelper {
 
     private static func addFileURLFallbackRepresentations(
         to pasteboard: NSPasteboard,
-        fileURL: URL,
+        fileURL: URL
     ) {
         pasteboard.addTypes([.URL, .string], owner: nil)
         pasteboard.setString(fileURL.absoluteString, forType: .URL)
@@ -367,7 +368,8 @@ enum ClipboardHelper {
     /// Read the user's preferred screenshot format from UserDefaults
     private static func currentFormat() -> ImageFormatOption {
         if let raw = UserDefaults.standard.string(forKey: PreferencesKeys.screenshotFormat),
-           let option = ImageFormatOption(rawValue: raw) {
+           let option = ImageFormatOption(rawValue: raw)
+        {
             return option
         }
         return .png

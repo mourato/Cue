@@ -36,11 +36,11 @@
                 let compositeSize = calculateCompositeSize(containerSize: geometry.size)
                 let videoCanvasSize = calculateVideoFrameSize(
                     compositeSize: compositeSize,
-                    scaledPadding: scaledPadding,
+                    scaledPadding: scaledPadding
                 )
                 let displayedVideoRect = VideoEditorExportLayout.aspectFitRect(
                     sourceSize: state.naturalSize,
-                    in: videoCanvasSize,
+                    in: videoCanvasSize
                 )
 
                 ZStack {
@@ -57,18 +57,18 @@
                         displayedVideoRect: displayedVideoRect,
                         cornerRadius: scaledCornerRadius,
                         shadowRadius: scaledShadowRadius,
-                        shadowY: scaledShadowY,
+                        shadowY: scaledShadowY
                     )
                     .frame(width: videoCanvasSize.width, height: videoCanvasSize.height)
                     .padding(scaledPadding)
                     if state.hasSyntheticOverlays {
                         VideoEditorSyntheticOverlayView(
                             pointerFrame: state.pointerTimeline.frame(
-                                at: state.sourceTime(atPlayhead: playbackState.currentTime),
+                                at: state.sourceTime(atPlayhead: playbackState.currentTime)
                             ),
                             pointerTimeline: state.pointerTimeline,
                             keystrokeFrame: state.keystrokeCaptionTimeline.frame(
-                                at: state.sourceTime(atPlayhead: playbackState.currentTime),
+                                at: state.sourceTime(atPlayhead: playbackState.currentTime)
                             ),
                             contentRect: displayedVideoRect,
                             showsSyntheticCursor: state.shouldRenderSyntheticCursor,
@@ -77,7 +77,7 @@
                             keystrokePlacement: KeystrokeOverlayPosition(rawValue: keystrokePosition) ?? .bottomCenter,
                             cursorScale: state.cursorScale,
                             zoomLevel: currentZoomLevel,
-                            zoomCenter: currentZoomCenter,
+                            zoomCenter: currentZoomCenter
                         )
                         .frame(width: videoCanvasSize.width, height: videoCanvasSize.height)
                         .padding(scaledPadding)
@@ -125,11 +125,11 @@
             let frame = layout.cameraFrame(
                 in: canvasSize,
                 cameraSize: state.cameraSize,
-                zoomLevel: currentZoomLevel,
+                zoomLevel: currentZoomLevel
             )
             let cameraView = VideoPlayerSection(
                 player: player,
-                videoGravity: .resizeAspectFill,
+                videoGravity: .resizeAspectFill
             )
             .frame(width: frame.width, height: frame.height)
 
@@ -140,8 +140,8 @@
                     cameraView.clipShape(
                         RoundedRectangle(
                             cornerRadius: min(frame.width, frame.height) * 0.08,
-                            style: .continuous,
-                        ),
+                            style: .continuous
+                        )
                     )
                 }
             }
@@ -161,13 +161,13 @@
                     } else {
                         Color.clear
                     }
-                case .gradient(let preset):
+                case let .gradient(preset):
                     LinearGradient(
                         colors: preset.colors,
                         startPoint: .topLeading,
-                        endPoint: .bottomTrailing,
+                        endPoint: .bottomTrailing
                     )
-                case .solidColor(let color):
+                case let .solidColor(color):
                     color
                 case .wallpaper:
                     // Use cached image for 60fps performance (no disk I/O during render)
@@ -204,7 +204,7 @@
             displayedVideoRect: CGRect,
             cornerRadius: CGFloat,
             shadowRadius: CGFloat,
-            shadowY: CGFloat,
+            shadowY: CGFloat
         ) -> some View {
             VideoPlayerSection(player: state.player)
                 .frame(width: displayedVideoRect.width, height: displayedVideoRect.height)
@@ -216,7 +216,7 @@
                     color: .black.opacity(Double(state.backgroundShadowIntensity) * 0.5),
                     radius: shadowRadius,
                     x: 0,
-                    y: shadowY,
+                    y: shadowY
                 )
                 .overlay(alignment: .topTrailing) {
                     zoomIndicator
@@ -250,7 +250,7 @@
             let transform = ZoomCalculator.calculateTransform(
                 zoomLevel: currentZoomLevel,
                 center: currentZoomCenter,
-                viewSize: size,
+                viewSize: size
             )
 
             return transform.offset
@@ -274,13 +274,13 @@
                 // Container is wider - video height fills container
                 CGSize(
                     width: containerSize.height * videoAspect,
-                    height: containerSize.height,
+                    height: containerSize.height
                 )
             } else {
                 // Container is taller - video width fills container
                 CGSize(
                     width: containerSize.width,
-                    height: containerSize.width / videoAspect,
+                    height: containerSize.width / videoAspect
                 )
             }
 
@@ -297,7 +297,8 @@
             // Use export size for WYSIWYG preview
             let effectiveSize = state.exportSettings.exportSize(from: state.naturalSize)
             guard effectiveSize.width > 0, effectiveSize.height > 0,
-                  containerSize.width > 0, containerSize.height > 0 else {
+                  containerSize.width > 0, containerSize.height > 0
+            else {
                 return containerSize
             }
 
@@ -314,13 +315,13 @@
                 // Container is wider - composite height fills container
                 return CGSize(
                     width: containerSize.height * compositeAspect,
-                    height: containerSize.height,
+                    height: containerSize.height
                 )
             } else {
                 // Container is taller - composite width fills container
                 return CGSize(
                     width: containerSize.width,
-                    height: containerSize.width / compositeAspect,
+                    height: containerSize.width / compositeAspect
                 )
             }
         }
@@ -328,7 +329,7 @@
         private func calculateVideoFrameSize(compositeSize: CGSize, scaledPadding: CGFloat) -> CGSize {
             CGSize(
                 width: max(compositeSize.width - (scaledPadding * 2), 0),
-                height: max(compositeSize.height - (scaledPadding * 2), 0),
+                height: max(compositeSize.height - (scaledPadding * 2), 0)
             )
         }
 
@@ -338,7 +339,7 @@
             let exportSize = state.exportSettings.exportSize(from: state.naturalSize)
             let fittedRect = VideoEditorExportLayout.aspectFitRect(
                 sourceSize: state.naturalSize,
-                in: exportSize,
+                in: exportSize
             )
 
             return abs(fittedRect.width - exportSize.width) > 0.5
@@ -380,7 +381,7 @@
 
     #Preview {
         ZoomableVideoPlayerSection(
-            state: VideoEditorState(url: URL(fileURLWithPath: "/tmp/test.mov")),
+            state: VideoEditorState(url: URL(fileURLWithPath: "/tmp/test.mov"))
         )
         .frame(width: 640, height: 360)
         .background(Color.black)

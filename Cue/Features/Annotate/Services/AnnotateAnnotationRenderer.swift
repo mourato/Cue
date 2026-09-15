@@ -36,7 +36,7 @@ nonisolated struct AnnotationRenderer {
         interactiveEmbeddedImageAnnotationId: UUID? = nil,
         embeddedImageProvider: ((UUID) -> NSImage?)? = nil,
         embeddedCGImageProvider: ((UUID) -> CGImage?)? = nil,
-        sourceDisplayOffset: CGPoint = .zero,
+        sourceDisplayOffset: CGPoint = .zero
     ) {
         self.context = context
         self.editingTextId = editingTextId
@@ -77,7 +77,7 @@ nonisolated struct AnnotationRenderer {
                 style: annotation.properties.shapeFillStyle,
                 color: NSColor(annotation.properties.strokeColor),
                 strokeWidth: annotation.properties.strokeWidth,
-                in: context,
+                in: context
             )
 
         case .circle:
@@ -86,60 +86,60 @@ nonisolated struct AnnotationRenderer {
                 style: annotation.properties.shapeFillStyle,
                 color: NSColor(annotation.properties.strokeColor),
                 strokeWidth: annotation.properties.strokeWidth,
-                in: context,
+                in: context
             )
 
-        case .arrow(let geometry):
+        case let .arrow(geometry):
             drawArrow(
                 geometry,
                 strokeWidth: annotation.properties.strokeWidth,
-                strokeColor: annotation.properties.strokeColor,
+                strokeColor: annotation.properties.strokeColor
             )
 
-        case .line(let start, let end):
+        case let .line(start, end):
             context.move(to: start)
             context.addLine(to: end)
             context.strokePath()
 
-        case .path(let points), .highlight(let points):
+        case let .path(points), let .highlight(points):
             drawPath(
                 points: points,
                 isHighlight: annotation.type.isHighlight,
-                strokeWidth: annotation.properties.strokeWidth,
+                strokeWidth: annotation.properties.strokeWidth
             )
 
-        case .counter(let value):
+        case let .counter(value):
             drawCounter(value: value, in: annotation.bounds, properties: annotation.properties)
 
-        case .blur(let blurType):
+        case let .blur(blurType):
             drawBlur(
                 bounds: annotation.bounds,
                 annotationId: annotation.id,
                 blurType: blurType,
-                controlValue: annotation.properties.strokeWidth,
+                controlValue: annotation.properties.strokeWidth
             )
 
-        case .text(let content):
+        case let .text(content):
             drawText(content, in: annotation.bounds, properties: annotation.properties)
 
-        case .watermark(let content):
+        case let .watermark(content):
             drawWatermark(content, in: annotation.bounds, properties: annotation.properties)
 
-        case .embeddedImage(let assetId):
+        case let .embeddedImage(assetId):
             drawEmbeddedImage(assetId: assetId, annotationId: annotation.id, in: annotation.bounds)
 
         case .spotlight:
             // Spotlight is rendered as a unified overlay pass, skip per-item drawing
             break
 
-        case .magnify(let sourceCenter, let showsSourceCircle):
+        case let .magnify(sourceCenter, showsSourceCircle):
             drawMagnify(
                 bounds: annotation.bounds,
                 sourceCenter: sourceCenter,
                 showsSourceCircle: showsSourceCircle,
                 magnification: annotation.properties.magnification,
                 strokeWidth: annotation.properties.strokeWidth,
-                strokeColor: annotation.properties.strokeColor,
+                strokeColor: annotation.properties.strokeColor
             )
         }
     }
@@ -163,7 +163,7 @@ nonisolated struct AnnotationRenderer {
         watermarkOpacity: CGFloat = 0.22,
         watermarkRotationDegrees: CGFloat = -24,
         watermarkFontSize: CGFloat = 36,
-        magnification: CGFloat = MagnifyGeometry.defaultMagnification,
+        magnification: CGFloat = MagnifyGeometry.defaultMagnification
     ) {
         context.setStrokeColor(NSColor(strokeColor).cgColor)
         context.setLineWidth(strokeWidth)
@@ -192,7 +192,7 @@ nonisolated struct AnnotationRenderer {
                 style: shapeFillStyle,
                 color: NSColor(strokeColor),
                 strokeWidth: strokeWidth,
-                in: context,
+                in: context
             )
 
         case .circle:
@@ -203,7 +203,7 @@ nonisolated struct AnnotationRenderer {
                 style: shapeFillStyle,
                 color: NSColor(strokeColor),
                 strokeWidth: strokeWidth,
-                in: context,
+                in: context
             )
 
         case .line:
@@ -235,10 +235,10 @@ nonisolated struct AnnotationRenderer {
                     bendDirection: resolvedDirection,
                     arrowType: arrowType,
                     startHead: arrowStartHead,
-                    endHead: arrowEndHead,
+                    endHead: arrowEndHead
                 ),
                 strokeWidth: strokeWidth,
-                strokeColor: strokeColor,
+                strokeColor: strokeColor
             )
 
         case .magnify:
@@ -254,7 +254,7 @@ nonisolated struct AnnotationRenderer {
                 showsSourceCircle: isMagnifyDrag,
                 magnification: magnification,
                 strokeWidth: strokeWidth,
-                strokeColor: strokeColor,
+                strokeColor: strokeColor
             )
 
         case .watermark:
@@ -271,8 +271,8 @@ nonisolated struct AnnotationRenderer {
                     fontSize: watermarkFontSize,
                     opacity: watermarkOpacity,
                     rotationDegrees: watermarkRotationDegrees,
-                    watermarkStyle: watermarkStyle,
-                ),
+                    watermarkStyle: watermarkStyle
+                )
             )
 
         default:
@@ -307,7 +307,7 @@ nonisolated struct AnnotationRenderer {
             roundedRect: rect,
             cornerWidth: clampedCornerRadius,
             cornerHeight: clampedCornerRadius,
-            transform: nil,
+            transform: nil
         )
     }
 
@@ -321,7 +321,7 @@ nonisolated struct AnnotationRenderer {
             context.setShadow(
                 offset: CGSize(width: 0, height: -1.0),
                 blur: 2.0,
-                color: NSColor.black.withAlphaComponent(0.20).cgColor,
+                color: NSColor.black.withAlphaComponent(0.20).cgColor
             )
             context.setStrokeColor(cgStrokeColor)
             context.setFillColor(cgStrokeColor)
@@ -337,13 +337,13 @@ nonisolated struct AnnotationRenderer {
                 geometry.endHead,
                 at: geometry.end,
                 outwardAngle: geometry.tangentAngleAtEnd(),
-                strokeWidth: strokeWidth,
+                strokeWidth: strokeWidth
             )
             drawArrowEndpoint(
                 geometry.startHead,
                 at: geometry.start,
                 outwardAngle: geometry.tangentAngleAtStart(),
-                strokeWidth: strokeWidth,
+                strokeWidth: strokeWidth
             )
             context.restoreGState()
 
@@ -356,7 +356,7 @@ nonisolated struct AnnotationRenderer {
             context.setShadow(
                 offset: CGSize(width: 0, height: -2.0),
                 blur: 4.5,
-                color: NSColor.black.withAlphaComponent(0.30).cgColor,
+                color: NSColor.black.withAlphaComponent(0.30).cgColor
             )
 
             if geometry.arrowType == .outlined {
@@ -385,7 +385,7 @@ nonisolated struct AnnotationRenderer {
         _ style: ArrowEndpointStyle,
         at tip: CGPoint,
         outwardAngle angle: CGFloat,
-        strokeWidth: CGFloat,
+        strokeWidth: CGFloat
     ) {
         switch style {
         case .none:
@@ -397,11 +397,11 @@ nonisolated struct AnnotationRenderer {
 
             let point1 = CGPoint(
                 x: tip.x - arrowLength * cos(angle - arrowAngle),
-                y: tip.y - arrowLength * sin(angle - arrowAngle),
+                y: tip.y - arrowLength * sin(angle - arrowAngle)
             )
             let point2 = CGPoint(
                 x: tip.x - arrowLength * cos(angle + arrowAngle),
-                y: tip.y - arrowLength * sin(angle + arrowAngle),
+                y: tip.y - arrowLength * sin(angle + arrowAngle)
             )
 
             context.move(to: tip)
@@ -416,7 +416,7 @@ nonisolated struct AnnotationRenderer {
                 x: tip.x - radius,
                 y: tip.y - radius,
                 width: radius * 2,
-                height: radius * 2,
+                height: radius * 2
             )
             context.fillEllipse(in: rect)
         }
@@ -435,7 +435,7 @@ nonisolated struct AnnotationRenderer {
             value: value,
             in: rect,
             fillColor: NSColor(properties.strokeColor),
-            in: context,
+            in: context
         )
     }
 
@@ -456,8 +456,8 @@ nonisolated struct AnnotationRenderer {
                     in: bgRect,
                     cornerRadius: cornerRadius,
                     tailTarget: properties.textPresentation == .callout ? properties.calloutTailTarget : nil,
-                    fontSize: font.pointSize,
-                ),
+                    fontSize: font.pointSize
+                )
             )
             context.fillPath()
         }
@@ -469,7 +469,7 @@ nonisolated struct AnnotationRenderer {
         let attributes: [NSAttributedString.Key: Any] = [
             .font: font,
             .foregroundColor: NSColor(properties.strokeColor),
-            .paragraphStyle: paragraphStyle,
+            .paragraphStyle: paragraphStyle
         ]
 
         let textBounds = bounds.standardized
@@ -477,7 +477,7 @@ nonisolated struct AnnotationRenderer {
             for: content,
             font: font,
             in: textBounds,
-            presentation: properties.textPresentation,
+            presentation: properties.textPresentation
         )
         let text = displayText as NSString
         context.saveGState()
@@ -495,13 +495,13 @@ nonisolated struct AnnotationRenderer {
 
         let font = NSFontManager.shared.convert(
             AnnotateTextLayout.font(size: properties.fontSize, fontName: properties.fontName),
-            toHaveTrait: .boldFontMask,
+            toHaveTrait: .boldFontMask
         )
         let alpha = AnnotationProperties.clampedOpacity(properties.opacity)
         let text = resolvedText as NSString
         let attributes = watermarkAttributes(
             font: font,
-            color: NSColor(properties.strokeColor).withAlphaComponent(alpha),
+            color: NSColor(properties.strokeColor).withAlphaComponent(alpha)
         )
         let textSize = text.size(withAttributes: attributes)
 
@@ -515,7 +515,7 @@ nonisolated struct AnnotationRenderer {
                 textSize: textSize,
                 attributes: attributes,
                 in: visibleBounds,
-                rotationDegrees: properties.rotationDegrees,
+                rotationDegrees: properties.rotationDegrees
             )
 
         case .diagonal:
@@ -524,7 +524,7 @@ nonisolated struct AnnotationRenderer {
                 textSize: textSize,
                 attributes: attributes,
                 in: visibleBounds,
-                rotationDegrees: properties.rotationDegrees,
+                rotationDegrees: properties.rotationDegrees
             )
 
         case .tiled:
@@ -533,7 +533,7 @@ nonisolated struct AnnotationRenderer {
                 textSize: textSize,
                 attributes: attributes,
                 in: visibleBounds,
-                rotationDegrees: properties.rotationDegrees,
+                rotationDegrees: properties.rotationDegrees
             )
         }
 
@@ -550,7 +550,7 @@ nonisolated struct AnnotationRenderer {
             .font: font,
             .foregroundColor: color,
             .kern: font.pointSize * 0.04,
-            .shadow: shadow,
+            .shadow: shadow
         ]
     }
 
@@ -559,14 +559,14 @@ nonisolated struct AnnotationRenderer {
         textSize: CGSize,
         attributes: [NSAttributedString.Key: Any],
         in bounds: CGRect,
-        rotationDegrees: CGFloat,
+        rotationDegrees: CGFloat
     ) {
         context.saveGState()
         context.translateBy(x: bounds.midX, y: bounds.midY)
         context.rotate(by: rotationDegrees * .pi / 180)
         text.draw(
             at: CGPoint(x: -textSize.width / 2, y: -textSize.height / 2),
-            withAttributes: attributes,
+            withAttributes: attributes
         )
         context.restoreGState()
     }
@@ -576,7 +576,7 @@ nonisolated struct AnnotationRenderer {
         textSize: CGSize,
         attributes: [NSAttributedString.Key: Any],
         in bounds: CGRect,
-        rotationDegrees: CGFloat,
+        rotationDegrees: CGFloat
     ) {
         let span = hypot(bounds.width, bounds.height)
         let xStep = max(textSize.width + textSize.height * 2.4, 120)
@@ -592,7 +592,7 @@ nonisolated struct AnnotationRenderer {
             while x <= span {
                 text.draw(
                     at: CGPoint(x: x - textSize.width / 2, y: y - textSize.height / 2),
-                    withAttributes: attributes,
+                    withAttributes: attributes
                 )
                 x += xStep
             }
@@ -622,7 +622,7 @@ nonisolated struct AnnotationRenderer {
             in: bounds,
             from: sourceRect,
             operation: .sourceOver,
-            fraction: 1.0,
+            fraction: 1.0
         )
         context.restoreGState()
     }
@@ -633,7 +633,7 @@ nonisolated struct AnnotationRenderer {
         showsSourceCircle: Bool,
         magnification: CGFloat,
         strokeWidth: CGFloat,
-        strokeColor: Color,
+        strokeColor: Color
     ) {
         let lensRect = MagnifyGeometry.lensSquare(in: bounds)
         guard lensRect.width > 0, lensRect.height > 0 else { return }
@@ -641,27 +641,27 @@ nonisolated struct AnnotationRenderer {
         if showsSourceCircle {
             let displaySourceCenter = CGPoint(
                 x: sourceCenter.x + sourceDisplayOffset.x,
-                y: sourceCenter.y + sourceDisplayOffset.y,
+                y: sourceCenter.y + sourceDisplayOffset.y
             )
             let sourceDisplayRect = MagnifyGeometry.sourceDisplayBounds(
                 lensBounds: lensRect,
                 sourceCenter: displaySourceCenter,
-                magnification: magnification,
+                magnification: magnification
             )
             let sourceVector = CGPoint(
                 x: lensRect.midX - displaySourceCenter.x,
-                y: lensRect.midY - displaySourceCenter.y,
+                y: lensRect.midY - displaySourceCenter.y
             )
             let distance = hypot(sourceVector.x, sourceVector.y)
             if distance > 1 {
                 let unit = CGPoint(x: sourceVector.x / distance, y: sourceVector.y / distance)
                 let startPoint = CGPoint(
                     x: displaySourceCenter.x + unit.x * sourceDisplayRect.width / 2,
-                    y: displaySourceCenter.y + unit.y * sourceDisplayRect.height / 2,
+                    y: displaySourceCenter.y + unit.y * sourceDisplayRect.height / 2
                 )
                 let endPoint = CGPoint(
                     x: lensRect.midX - unit.x * lensRect.width / 2,
-                    y: lensRect.midY - unit.y * lensRect.height / 2,
+                    y: lensRect.midY - unit.y * lensRect.height / 2
                 )
                 context.saveGState()
                 context.setStrokeColor(NSColor(strokeColor).withAlphaComponent(0.7).cgColor)
@@ -681,8 +681,8 @@ nonisolated struct AnnotationRenderer {
             context.strokeEllipse(
                 in: sourceDisplayRect.insetBy(
                     dx: max(1, strokeWidth / 2),
-                    dy: max(1, strokeWidth / 2),
-                ),
+                    dy: max(1, strokeWidth / 2)
+                )
             )
             context.restoreGState()
         }
@@ -691,7 +691,7 @@ nonisolated struct AnnotationRenderer {
         context.setShadow(
             offset: CGSize(width: 0, height: -3),
             blur: 8,
-            color: NSColor.black.withAlphaComponent(0.32).cgColor,
+            color: NSColor.black.withAlphaComponent(0.32).cgColor
         )
         context.setFillColor(NSColor.white.withAlphaComponent(0.96).cgColor)
         context.fillEllipse(in: lensRect)
@@ -702,7 +702,7 @@ nonisolated struct AnnotationRenderer {
                 lensBounds: lensRect,
                 sourceCenter: sourceCenter,
                 sourceBounds: CGRect(origin: .zero, size: sourceImage.size),
-                magnification: magnification,
+                magnification: magnification
             )
             if !sourceRect.isEmpty {
                 context.saveGState()
@@ -713,7 +713,7 @@ nonisolated struct AnnotationRenderer {
                     in: lensRect,
                     from: sourceRect,
                     operation: .sourceOver,
-                    fraction: 1,
+                    fraction: 1
                 )
                 context.restoreGState()
             }
@@ -732,7 +732,7 @@ nonisolated struct AnnotationRenderer {
             x: min(start.x, end.x),
             y: min(start.y, end.y),
             width: abs(end.x - start.x),
-            height: abs(end.y - start.y),
+            height: abs(end.y - start.y)
         )
     }
 
@@ -745,7 +745,7 @@ nonisolated struct AnnotationRenderer {
             BlurEffectRenderer.drawBlurPreview(
                 in: context,
                 region: visibleBounds,
-                strokeColor: NSColor.gray.cgColor,
+                strokeColor: NSColor.gray.cgColor
             )
             return
         }
@@ -775,7 +775,7 @@ nonisolated struct AnnotationRenderer {
                     quality: shouldAllowApproximateReuse ? .interactive : .settled,
                     // The cache is main-actor isolated; resolving this copy there avoids
                     // transferring a Core Graphics reference across the actor boundary.
-                    resolvedSourceCGImage: nil,
+                    resolvedSourceCGImage: nil
                 )
             }
             if let cachedImage {
@@ -804,54 +804,54 @@ nonisolated struct AnnotationRenderer {
                 in: context,
                 sourceImage: sourceImage,
                 region: renderBounds,
-                pixelSize: effectValue,
+                pixelSize: effectValue
             )
         case .gaussian:
             BlurEffectRenderer.drawGaussianRegion(
                 in: context,
                 sourceImage: sourceImage,
                 region: renderBounds,
-                radius: Double(effectValue),
+                radius: Double(effectValue)
             )
         case .hexagonal:
             BlurEffectRenderer.drawHexagonalRegion(
                 in: context,
                 sourceImage: sourceImage,
                 region: renderBounds,
-                scale: Double(effectValue),
+                scale: Double(effectValue)
             )
         case .crystallized:
             BlurEffectRenderer.drawCrystallizedRegion(
                 in: context,
                 sourceImage: sourceImage,
                 region: renderBounds,
-                radius: Double(effectValue),
+                radius: Double(effectValue)
             )
         case .pointillism:
             BlurEffectRenderer.drawPointillismRegion(
                 in: context,
                 sourceImage: sourceImage,
                 region: renderBounds,
-                radius: Double(effectValue),
+                radius: Double(effectValue)
             )
         case .halftone:
             BlurEffectRenderer.drawHalftoneRegion(
                 in: context,
                 sourceImage: sourceImage,
                 region: renderBounds,
-                width: Double(effectValue),
+                width: Double(effectValue)
             )
         case .tape:
             BlurEffectRenderer.drawTapeRegion(
                 in: context,
                 region: renderBounds,
-                patternSpacing: effectValue,
+                patternSpacing: effectValue
             )
         case .washi:
             BlurEffectRenderer.drawWashiRegion(
                 in: context,
                 region: renderBounds,
-                patternSpacing: effectValue,
+                patternSpacing: effectValue
             )
         }
     }
@@ -862,7 +862,8 @@ nonisolated struct AnnotationRenderer {
               sourceImage.size.height > 0,
               let cgImage = resolvedCGImage,
               cgImage.width > 0,
-              cgImage.height > 0 else {
+              cgImage.height > 0
+        else {
             return rect
         }
 
@@ -882,7 +883,7 @@ nonisolated struct AnnotationRenderer {
         currentPoint: CGPoint,
         strokeColor: Color,
         blurType: BlurType,
-        controlValue: CGFloat,
+        controlValue: CGFloat
     ) {
         let rect = makeRect(from: start, to: currentPoint)
         guard rect.width > 0, rect.height > 0 else { return }
@@ -891,7 +892,7 @@ nonisolated struct AnnotationRenderer {
             BlurEffectRenderer.drawBlurPreview(
                 in: context,
                 region: rect,
-                strokeColor: NSColor(strokeColor).cgColor,
+                strokeColor: NSColor(strokeColor).cgColor
             )
             return
         }
@@ -905,54 +906,54 @@ nonisolated struct AnnotationRenderer {
                     in: context,
                     sourceImage: sourceImage,
                     region: rect,
-                    pixelSize: effectValue,
+                    pixelSize: effectValue
                 )
             case .gaussian:
                 BlurEffectRenderer.drawGaussianRegion(
                     in: context,
                     sourceImage: sourceImage,
                     region: rect,
-                    radius: Double(effectValue),
+                    radius: Double(effectValue)
                 )
             case .hexagonal:
                 BlurEffectRenderer.drawHexagonalRegion(
                     in: context,
                     sourceImage: sourceImage,
                     region: rect,
-                    scale: Double(effectValue),
+                    scale: Double(effectValue)
                 )
             case .crystallized:
                 BlurEffectRenderer.drawCrystallizedRegion(
                     in: context,
                     sourceImage: sourceImage,
                     region: rect,
-                    radius: Double(effectValue),
+                    radius: Double(effectValue)
                 )
             case .pointillism:
                 BlurEffectRenderer.drawPointillismRegion(
                     in: context,
                     sourceImage: sourceImage,
                     region: rect,
-                    radius: Double(effectValue),
+                    radius: Double(effectValue)
                 )
             case .halftone:
                 BlurEffectRenderer.drawHalftoneRegion(
                     in: context,
                     sourceImage: sourceImage,
                     region: rect,
-                    width: Double(effectValue),
+                    width: Double(effectValue)
                 )
             case .tape:
                 BlurEffectRenderer.drawTapeRegion(
                     in: context,
                     region: rect,
-                    patternSpacing: effectValue,
+                    patternSpacing: effectValue
                 )
             case .washi:
                 BlurEffectRenderer.drawWashiRegion(
                     in: context,
                     region: rect,
-                    patternSpacing: effectValue,
+                    patternSpacing: effectValue
                 )
             }
         }
@@ -961,7 +962,7 @@ nonisolated struct AnnotationRenderer {
         BlurEffectRenderer.drawBlurPreview(
             in: context,
             region: rect,
-            strokeColor: NSColor(strokeColor).cgColor,
+            strokeColor: NSColor(strokeColor).cgColor
         )
     }
 

@@ -23,7 +23,7 @@ struct QuickAccessSettingsPreviewThumbnail: View {
         [
             Bundle.main.url(forResource: resourceName, withExtension: "jpg", subdirectory: "Wallpapers"),
             Bundle.main.url(forResource: resourceName, withExtension: "jpg", subdirectory: "Resources/Wallpapers"),
-            Bundle.main.url(forResource: resourceName, withExtension: "jpg"),
+            Bundle.main.url(forResource: resourceName, withExtension: "jpg")
         ]
         .compactMap(\.self)
         .first
@@ -63,10 +63,10 @@ struct QuickAccessSettingsPreviewThumbnail: View {
             LinearGradient(
                 colors: [
                     Color.black.opacity(0.04),
-                    Color.black.opacity(0.22),
+                    Color.black.opacity(0.22)
                 ],
                 startPoint: .topLeading,
-                endPoint: .bottomTrailing,
+                endPoint: .bottomTrailing
             )
         }
         .frame(width: width, height: height)
@@ -94,7 +94,7 @@ struct QuickAccessSettingsPreviewThumbnail: View {
             LinearGradient(
                 colors: fallbackGradientColors,
                 startPoint: .topLeading,
-                endPoint: .bottomTrailing,
+                endPoint: .bottomTrailing
             )
 
             RoundedRectangle(cornerRadius: height * 0.7)
@@ -102,11 +102,11 @@ struct QuickAccessSettingsPreviewThumbnail: View {
                     LinearGradient(
                         colors: [
                             Color(red: 0.82, green: 0.72, blue: 1.0).opacity(0.52),
-                            Color(red: 0.14, green: 0.54, blue: 1.0).opacity(0.18),
+                            Color(red: 0.14, green: 0.54, blue: 1.0).opacity(0.18)
                         ],
                         startPoint: .topLeading,
-                        endPoint: .bottomTrailing,
-                    ),
+                        endPoint: .bottomTrailing
+                    )
                 )
                 .frame(width: width * 0.78, height: height * 1.34)
                 .rotationEffect(.degrees(-24))
@@ -121,19 +121,19 @@ struct QuickAccessSettingsPreviewThumbnail: View {
             return [
                 Color(red: 0.02, green: 0.03, blue: 0.24),
                 Color(red: 0.04, green: 0.26, blue: 0.78),
-                Color(red: 0.58, green: 0.42, blue: 0.94),
+                Color(red: 0.58, green: 0.42, blue: 0.94)
             ]
         case .light:
             return [
                 Color(red: 0.68, green: 0.84, blue: 0.98),
                 Color(red: 0.88, green: 0.94, blue: 0.98),
-                Color(red: 0.78, green: 0.74, blue: 0.96),
+                Color(red: 0.78, green: 0.74, blue: 0.96)
             ]
         @unknown default:
             return [
                 Color(red: 0.68, green: 0.84, blue: 0.98),
                 Color(red: 0.88, green: 0.94, blue: 0.98),
-                Color(red: 0.78, green: 0.74, blue: 0.96),
+                Color(red: 0.78, green: 0.74, blue: 0.96)
             ]
         }
     }

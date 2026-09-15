@@ -31,7 +31,7 @@ struct QuickAccessCardDragPolicy {
 
     func shouldDismiss(
         horizontalTranslation translation: CGFloat,
-        horizontalVelocity velocity: CGFloat,
+        horizontalVelocity velocity: CGFloat
     ) -> Bool {
         let hasDismissDirection =
             translation * dismissDirection > 0 || velocity * dismissDirection > 0
@@ -51,18 +51,20 @@ nonisolated enum QuickAccessTrackpadSwipeHelpers {
         scrollingDeltaX deltaX: CGFloat,
         scrollingDeltaY deltaY: CGFloat,
         hasPreciseScrollingDeltas: Bool,
-        sensitivityMultiplier: CGFloat,
+        sensitivityMultiplier: CGFloat
     ) -> CGFloat? {
         guard hasPreciseScrollingDeltas,
               deltaX.isFinite,
-              deltaY.isFinite else {
+              deltaY.isFinite
+        else {
             return nil
         }
 
         let horizontalMagnitude = abs(deltaX)
         let verticalMagnitude = abs(deltaY)
         guard horizontalMagnitude >= Self.minimumHorizontalDelta,
-              horizontalMagnitude > verticalMagnitude * Self.horizontalDominanceRatio else {
+              horizontalMagnitude > verticalMagnitude * Self.horizontalDominanceRatio
+        else {
             return nil
         }
 
@@ -71,7 +73,7 @@ nonisolated enum QuickAccessTrackpadSwipeHelpers {
 
     static func shouldDismiss(
         horizontalTranslation translation: CGFloat,
-        horizontalVelocity velocity: CGFloat,
+        horizontalVelocity velocity: CGFloat
     ) -> Bool {
         abs(translation) > dismissDistanceThreshold || abs(velocity) > dismissVelocityThreshold
     }
@@ -104,7 +106,7 @@ struct QuickAccessDraggableView: NSViewRepresentable {
             onDragStarted: onDragStarted,
             onDragEnded: onDragEnded,
             onSwipeChanged: onSwipeChanged,
-            onSwipeEnded: onSwipeEnded,
+            onSwipeEnded: onSwipeEnded
         )
     }
 
@@ -160,7 +162,7 @@ final class QuickAccessDragMonitorView: NSView, NSDraggingSource {
         onDragStarted: @escaping () -> Void,
         onDragEnded: @escaping (Bool) -> Void,
         onSwipeChanged: @escaping (CGFloat) -> Void,
-        onSwipeEnded: @escaping (CGFloat, CGFloat) -> Void,
+        onSwipeEnded: @escaping (CGFloat, CGFloat) -> Void
     ) {
         self.fileURL = fileURL
         self.thumbnail = thumbnail
@@ -205,7 +207,7 @@ final class QuickAccessDragMonitorView: NSView, NSDraggingSource {
         guard window != nil else { return }
 
         eventMonitor = NSEvent.addLocalMonitorForEvents(
-            matching: [.leftMouseDown, .leftMouseDragged, .leftMouseUp, .scrollWheel],
+            matching: [.leftMouseDown, .leftMouseDragged, .leftMouseUp, .scrollWheel]
         ) { [weak self] event in
             self?.handle(event) ?? event
         }
@@ -304,7 +306,8 @@ final class QuickAccessDragMonitorView: NSView, NSDraggingSource {
         }
 
         guard twoFingerSwipeToDismissEnabled,
-              !isDragging else {
+              !isDragging
+        else {
             finishTrackpadSwipe(cancelled: true)
             return
         }
@@ -328,7 +331,7 @@ final class QuickAccessDragMonitorView: NSView, NSDraggingSource {
             scrollingDeltaX: event.scrollingDeltaX,
             scrollingDeltaY: event.scrollingDeltaY,
             hasPreciseScrollingDeltas: event.hasPreciseScrollingDeltas,
-            sensitivityMultiplier: swipeSensitivity,
+            sensitivityMultiplier: swipeSensitivity
         ) else {
             if event.phase.contains(.ended) || event.phase.contains(.cancelled) {
                 finishTrackpadSwipe(cancelled: event.phase.contains(.cancelled))
@@ -348,7 +351,7 @@ final class QuickAccessDragMonitorView: NSView, NSDraggingSource {
         accumulatedTrackpadSwipeX += deltaX
         updateTrackpadSwipeVelocity(
             translation: accumulatedTrackpadSwipeX,
-            timestamp: event.timestamp,
+            timestamp: event.timestamp
         )
 
         // Report the live translation so the card follows the user's finger
@@ -372,8 +375,9 @@ final class QuickAccessDragMonitorView: NSView, NSDraggingSource {
         guard !cancelled,
               QuickAccessTrackpadSwipeHelpers.shouldDismiss(
                   horizontalTranslation: accumulatedTrackpadSwipeX,
-                  horizontalVelocity: latestTrackpadSwipeVelocity,
-              ) else {
+                  horizontalVelocity: latestTrackpadSwipeVelocity
+              )
+        else {
             onSwipeEnded(0, 0)
             return
         }
@@ -429,7 +433,7 @@ final class QuickAccessDragMonitorView: NSView, NSDraggingSource {
             in: NSRect(origin: .zero, size: imageSize),
             from: .zero,
             operation: .sourceOver,
-            fraction: 0.8,
+            fraction: 0.8
         )
         dragImage.unlockFocus()
 
@@ -439,9 +443,9 @@ final class QuickAccessDragMonitorView: NSView, NSDraggingSource {
                 x: mouseLocation.x - imageSize.width / 2,
                 y: mouseLocation.y - imageSize.height / 2,
                 width: imageSize.width,
-                height: imageSize.height,
+                height: imageSize.height
             ),
-            contents: dragImage,
+            contents: dragImage
         )
 
         let session = beginDraggingSession(with: [dragItem], event: event, source: self)
@@ -450,7 +454,7 @@ final class QuickAccessDragMonitorView: NSView, NSDraggingSource {
             .info,
             .action,
             "Quick access drag started",
-            context: ["fileName": fileURL.lastPathComponent],
+            context: ["fileName": fileURL.lastPathComponent]
         )
     }
 
@@ -458,7 +462,7 @@ final class QuickAccessDragMonitorView: NSView, NSDraggingSource {
 
     func draggingSession(
         _: NSDraggingSession,
-        sourceOperationMaskFor _: NSDraggingContext,
+        sourceOperationMaskFor _: NSDraggingContext
     ) -> NSDragOperation {
         .copy
     }
@@ -466,7 +470,7 @@ final class QuickAccessDragMonitorView: NSView, NSDraggingSource {
     func draggingSession(
         _: NSDraggingSession,
         endedAt _: NSPoint,
-        operation: NSDragOperation,
+        operation: NSDragOperation
     ) {
         isDragging = false
         let success = operation != []
@@ -479,8 +483,8 @@ final class QuickAccessDragMonitorView: NSView, NSDraggingSource {
             "Quick access drag ended",
             context: [
                 "operation": "\(operation.rawValue)",
-                "success": success ? "true" : "false",
-            ],
+                "success": success ? "true" : "false"
+            ]
         )
         onDragEnded(success)
     }

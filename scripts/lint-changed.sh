@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BASE_REF="${BASE_REF:-main}"
+STYLE_CONFIG_DIR="${AGENT_CONFIG_HOME:-${HOME}/.agents}/skills/swift-conventions/config"
 
 command -v swiftlint >/dev/null 2>&1 || { echo "error: swiftlint is required" >&2; exit 1; }
 
@@ -20,4 +21,8 @@ if [[ ${#files[@]} -eq 0 ]]; then
     exit 0
 fi
 
-swiftlint lint --config "$ROOT_DIR/.swiftlint.yml" "${files[@]}"
+SWIFTLINT_ARGS=(lint --strict --config "${STYLE_CONFIG_DIR}/.swiftlint.yml")
+if [[ -f "$ROOT_DIR/.swiftlint-baseline.json" ]]; then
+    SWIFTLINT_ARGS+=(--baseline "$ROOT_DIR/.swiftlint-baseline.json")
+fi
+swiftlint "${SWIFTLINT_ARGS[@]}" "${files[@]}"

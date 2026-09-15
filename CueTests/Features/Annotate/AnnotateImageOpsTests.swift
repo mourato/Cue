@@ -66,8 +66,8 @@ final class AnnotateImageOpsTests: XCTestCase {
             AnnotationItem(
                 type: .rectangle,
                 bounds: CGRect(x: 5, y: 5, width: 20, height: 20),
-                properties: AnnotationProperties(),
-            ),
+                properties: AnnotationProperties()
+            )
         ]
 
         try state.loadImage(makeImage(width: 120, height: 80))
@@ -113,7 +113,7 @@ final class AnnotateImageOpsTests: XCTestCase {
         let defaults = UserDefaultsFactory.make()
         defaults.set(
             CombineImagesMode.autoStitch.rawValue,
-            forKey: PreferencesKeys.annotateCombineLastMode,
+            forKey: PreferencesKeys.annotateCombineLastMode
         )
         let state = AnnotateState(defaults: defaults)
         Self.retainedAnnotateStates.append(state)
@@ -147,7 +147,7 @@ final class AnnotateImageOpsTests: XCTestCase {
         let defaults = UserDefaultsFactory.make()
         defaults.set(
             CombineImagesMode.autoStitch.rawValue,
-            forKey: PreferencesKeys.annotateCombineLastMode,
+            forKey: PreferencesKeys.annotateCombineLastMode
         )
         let state = AnnotateState(defaults: defaults)
         Self.retainedAnnotateStates.append(state)
@@ -167,13 +167,13 @@ final class AnnotateImageOpsTests: XCTestCase {
         state.setCombineMode(.autoStitch)
         XCTAssertEqual(
             defaults.string(forKey: PreferencesKeys.annotateCombineLastMode),
-            CombineImagesMode.autoStitch.rawValue,
+            CombineImagesMode.autoStitch.rawValue
         )
 
         state.setCombineMode(.freeCanvas)
         XCTAssertEqual(
             defaults.string(forKey: PreferencesKeys.annotateCombineLastMode),
-            CombineImagesMode.freeCanvas.rawValue,
+            CombineImagesMode.freeCanvas.rawValue
         )
     }
 
@@ -181,7 +181,7 @@ final class AnnotateImageOpsTests: XCTestCase {
         let defaults = UserDefaultsFactory.make()
         defaults.set(
             CombineImagesMode.freeCanvas.rawValue,
-            forKey: PreferencesKeys.annotateCombineLastMode,
+            forKey: PreferencesKeys.annotateCombineLastMode
         )
         let state = AnnotateState(defaults: defaults)
         Self.retainedAnnotateStates.append(state)
@@ -192,7 +192,7 @@ final class AnnotateImageOpsTests: XCTestCase {
         XCTAssertEqual(state.combineMode, .autoStitch)
         XCTAssertEqual(
             defaults.string(forKey: PreferencesKeys.annotateCombineLastMode),
-            CombineImagesMode.freeCanvas.rawValue,
+            CombineImagesMode.freeCanvas.rawValue
         )
     }
 
@@ -248,7 +248,7 @@ final class AnnotateImageOpsTests: XCTestCase {
         state.moveCombineImage(at: 1, by: -1)
 
         XCTAssertEqual(state.sourceImage?.size, NSSize(width: 200, height: 100))
-        guard case .embeddedImage(let assetID) = try XCTUnwrap(state.annotations.first).type else {
+        guard case let .embeddedImage(assetID) = try XCTUnwrap(state.annotations.first).type else {
             return XCTFail("Expected imported image layer")
         }
         XCTAssertEqual(state.embeddedImage(for: assetID)?.size, NSSize(width: 400, height: 300))
@@ -263,12 +263,12 @@ final class AnnotateImageOpsTests: XCTestCase {
         let embeddedLayer = AnnotationItem(
             type: .embeddedImage(UUID()),
             bounds: CGRect(x: 300, y: 0, width: 200, height: 300),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         let rectangle = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 10, y: 10, width: 40, height: 40),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
 
         XCTAssertTrue(DrawingCanvasNSView.shouldPrioritizeCanvasMarkup(over: embeddedLayer, selectedTool: .rectangle))

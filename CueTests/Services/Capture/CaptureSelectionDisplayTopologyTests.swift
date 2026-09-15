@@ -68,7 +68,7 @@ final class CaptureSelectionDisplayTopologyTests: XCTestCase {
             y: 20,
             width: 300,
             height: 150,
-            screenFrame: screenFrame,
+            screenFrame: screenFrame
         )
         XCTAssertEqual(rect.origin.x, 110)
         XCTAssertEqual(rect.origin.y, 200 + 1080 - 20 - 150)

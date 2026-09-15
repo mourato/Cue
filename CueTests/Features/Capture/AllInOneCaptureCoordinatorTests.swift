@@ -233,7 +233,7 @@ final class AllInOneCaptureCoordinatorTests: XCTestCase {
         let backdrop = AreaSelectionBackdrop(displayID: 1, image: image, scaleFactor: 2)
         let controller = AllInOneSelectionRefinementController(
             initialRect: CGRect(x: 10, y: 10, width: 120, height: 80),
-            frozenBackdrops: [1: backdrop],
+            frozenBackdrops: [1: backdrop]
         )
 
         defer { controller.tearDown() }
@@ -258,6 +258,6 @@ final class AllInOneCaptureCoordinatorTests: XCTestCase {
         let staleArea = staleDirty.width * staleDirty.height
         let collapsedArea = collapsedDirty.width * collapsedDirty.height
         XCTAssertGreaterThan(staleArea, 500_000, "stale union should cover most of the jump")
-        XCTAssertLessThan(collapsedArea, 30_000, "collapsed union must stay near the new selection")
+        XCTAssertLessThan(collapsedArea, 30000, "collapsed union must stay near the new selection")
     }
 }

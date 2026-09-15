@@ -48,7 +48,7 @@ final class QuickAccessCountdownTimer {
     init(
         duration: TimeInterval,
         clock: QuickAccessCountdownTimerClock? = nil,
-        onExpire: @escaping () -> Void,
+        onExpire: @escaping () -> Void
     ) {
         remainingTime = duration
         self.clock = clock ?? ContinuousQuickAccessCountdownTimerClock()

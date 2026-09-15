@@ -52,7 +52,7 @@
             frames: [],
             duration: 0,
             artworkByID: [:],
-            fallbackArtwork: nil,
+            fallbackArtwork: nil
         )
 
         func frame(at time: TimeInterval) -> VideoEditorPointerFrame? {
@@ -69,14 +69,14 @@
             return VideoEditorPointerFrame(
                 location: CGPoint(
                     x: a.location.x + (b.location.x - a.location.x) * fraction,
-                    y: a.location.y + (b.location.y - a.location.y) * fraction,
+                    y: a.location.y + (b.location.y - a.location.y) * fraction
                 ),
                 artworkID: fraction < 0.5 ? a.artworkID : b.artworkID,
                 magnification: a.magnification + (b.magnification - a.magnification) * fraction,
                 tiltDegrees: a.tiltDegrees + (b.tiltDegrees - a.tiltDegrees) * fraction,
                 opacity: a.opacity + (b.opacity - a.opacity) * fraction,
                 blurRadius: a.blurRadius + (b.blurRadius - a.blurRadius) * fraction,
-                press: fraction < 0.5 ? a.press : b.press,
+                press: fraction < 0.5 ? a.press : b.press
             )
         }
 
@@ -88,7 +88,7 @@
         static func build(
             metadata: RecordingMetadata?,
             duration: TimeInterval,
-            smoothingPreset: VideoEditorCursorSmoothingPreset = .original,
+            smoothingPreset: VideoEditorCursorSmoothingPreset = .original
         ) -> VideoEditorPointerTimeline {
             guard duration.isFinite, duration > 0 else { return .empty }
 
@@ -103,7 +103,7 @@
 
             let pressSamples = samples.filter { $0.kind == .press }
             let intervals = pressIntervals(from: samples, duration: duration)
-            let recordingWidth = max(metadata?.captureSize.width ?? 1_000, 1)
+            let recordingWidth = max(metadata?.captureSize.width ?? 1000, 1)
             let springs = PointerSpring.profile(for: smoothingPreset)
 
             let frameCount = max(2, Int((duration * stepRate).rounded(.up)) + 1)
@@ -129,7 +129,8 @@
                     currentArtworkID = samples[sampleIndex].artworkID
                 }
                 while latestPressIndex + 1 < pressSamples.count,
-                      pressSamples[latestPressIndex + 1].time <= time {
+                      pressSamples[latestPressIndex + 1].time <= time
+                {
                     latestPressIndex += 1
                 }
                 while pressIntervalIndex < intervals.count, intervals[pressIntervalIndex].end < time {
@@ -166,7 +167,7 @@
                     opacitySpring.step(
                         toward: latest.isInsideCapture ? 1 : 0,
                         using: springs.visibility,
-                        dt: dt,
+                        dt: dt
                     )
                     blurSpring.step(toward: 0, using: springs.settle, dt: dt)
                 }
@@ -178,7 +179,7 @@
                     press = event.isInsideCapture && elapsed <= pulseDuration
                         ? VideoEditorPointerPressFrame(
                             location: event.point,
-                            progress: min(max(elapsed / pulseDuration, 0), 1),
+                            progress: min(max(elapsed / pulseDuration, 0), 1)
                         )
                         : nil
                 } else {
@@ -193,8 +194,8 @@
                         tiltDegrees: 0,
                         opacity: min(max(opacitySpring.position, 0), 1),
                         blurRadius: max(0, blurSpring.position),
-                        press: press,
-                    ),
+                        press: press
+                    )
                 )
             }
 
@@ -205,7 +206,7 @@
                 let deltaInPoints = (current.x - previous.x) * recordingWidth
                 builtFrames[index].tiltDegrees = min(max(
                     deltaInPoints * tiltGain * tiltWeight,
-                    -20,
+                    -20
                 ), 20)
             }
 
@@ -213,7 +214,7 @@
                 frames: builtFrames,
                 duration: duration,
                 artworkByID: artworkByID,
-                fallbackArtwork: fallbackArtwork,
+                fallbackArtwork: fallbackArtwork
             )
         }
 
@@ -223,17 +224,17 @@
             trimStart: TimeInterval,
             trimEnd: TimeInterval,
             speedMap: SpeedTimeMap?,
-            smoothingPreset: VideoEditorCursorSmoothingPreset = .original,
+            smoothingPreset: VideoEditorCursorSmoothingPreset = .original
         ) -> VideoEditorPointerTimeline {
             build(
                 metadata: exportAdjustedMetadata(
                     metadata,
                     trimStart: trimStart,
                     trimEnd: trimEnd,
-                    speedMap: speedMap,
+                    speedMap: speedMap
                 ),
                 duration: duration,
-                smoothingPreset: smoothingPreset,
+                smoothingPreset: smoothingPreset
             )
         }
 
@@ -241,7 +242,7 @@
             _ metadata: RecordingMetadata?,
             trimStart: TimeInterval,
             trimEnd: TimeInterval,
-            speedMap: SpeedTimeMap?,
+            speedMap: SpeedTimeMap?
         ) -> RecordingMetadata? {
             guard var metadata else { return nil }
 
@@ -314,8 +315,8 @@
                         kind: .travel,
                         button: 0,
                         artworkID: sample.artworkID,
-                        isInsideCapture: sample.isInsideCapture,
-                    ),
+                        isInsideCapture: sample.isInsideCapture
+                    )
                 )
             }
             for press in metadata.mousePresses {
@@ -329,8 +330,8 @@
                         kind: press.phase == .down ? .press : .release,
                         button: press.button,
                         artworkID: press.artworkID,
-                        isInsideCapture: isInsideCapture,
-                    ),
+                        isInsideCapture: isInsideCapture
+                    )
                 )
             }
 
@@ -347,7 +348,7 @@
 
         private static func pressIntervals(
             from samples: [StreamEvent],
-            duration: TimeInterval,
+            duration: TimeInterval
         ) -> [PressInterval] {
             let presses = samples.filter { $0.kind == .press || $0.kind == .release }
             var result: [PressInterval] = []
@@ -362,8 +363,8 @@
                     result.append(
                         PressInterval(
                             start: max(0, press.time - pressAnticipation),
-                            end: min(max(sample.time, press.time), duration),
-                        ),
+                            end: min(max(sample.time, press.time), duration)
+                        )
                     )
                 }
             }
@@ -373,8 +374,8 @@
                     result.append(
                         PressInterval(
                             start: max(0, press.time - pressAnticipation),
-                            end: min(press.time + orphanPressHold, duration),
-                        ),
+                            end: min(press.time + orphanPressHold, duration)
+                        )
                     )
                 }
             }
@@ -416,9 +417,9 @@
                 Profile(
                     glide: VideoEditorSpringConstant(tension: 470, friction: 70, inertia: 3),
                     intercept: VideoEditorSpringConstant(tension: 538, friction: 40, inertia: 1),
-                    track: VideoEditorSpringConstant(tension: 1_000, friction: 40, inertia: 1),
+                    track: VideoEditorSpringConstant(tension: 1000, friction: 40, inertia: 1),
                     settle: VideoEditorSpringConstant(tension: 300, friction: 30, inertia: 0.3),
-                    visibility: VideoEditorSpringConstant(tension: 360, friction: 34, inertia: 0.4),
+                    visibility: VideoEditorSpringConstant(tension: 360, friction: 34, inertia: 0.4)
                 )
             case .smooth:
                 Profile(
@@ -426,15 +427,15 @@
                     intercept: VideoEditorSpringConstant(tension: 330, friction: 48, inertia: 1.2),
                     track: VideoEditorSpringConstant(tension: 650, friction: 44, inertia: 1.2),
                     settle: VideoEditorSpringConstant(tension: 220, friction: 34, inertia: 0.5),
-                    visibility: VideoEditorSpringConstant(tension: 300, friction: 38, inertia: 0.5),
+                    visibility: VideoEditorSpringConstant(tension: 300, friction: 38, inertia: 0.5)
                 )
             case .fast:
                 Profile(
                     glide: VideoEditorSpringConstant(tension: 700, friction: 82, inertia: 2.5),
                     intercept: VideoEditorSpringConstant(tension: 780, friction: 50, inertia: 0.8),
-                    track: VideoEditorSpringConstant(tension: 1_400, friction: 55, inertia: 0.8),
+                    track: VideoEditorSpringConstant(tension: 1400, friction: 55, inertia: 0.8),
                     settle: VideoEditorSpringConstant(tension: 420, friction: 34, inertia: 0.2),
-                    visibility: VideoEditorSpringConstant(tension: 460, friction: 38, inertia: 0.25),
+                    visibility: VideoEditorSpringConstant(tension: 460, friction: 38, inertia: 0.25)
                 )
             }
         }

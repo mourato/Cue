@@ -21,7 +21,7 @@ final class FakeQuickAccessManager: QuickAccessManaging {
     var onAddVideo: ((URL) -> Void)?
 
     @discardableResult
-    func addScreenshot(url: URL) async -> QuickAccessItem? {
+    func addScreenshot(url: URL) -> QuickAccessItem? {
         onAddScreenshot?(url)
         addedScreenshots.append(url)
         let item = QuickAccessItem(url: url, thumbnail: NSImage(size: NSSize(width: 1, height: 1)))
@@ -30,13 +30,13 @@ final class FakeQuickAccessManager: QuickAccessManaging {
     }
 
     @discardableResult
-    func addVideo(url: URL) async -> QuickAccessItem? {
+    func addVideo(url: URL) -> QuickAccessItem? {
         onAddVideo?(url)
         addedVideos.append(url)
         let item = QuickAccessItem(
             url: url,
             thumbnail: NSImage(size: NSSize(width: 1, height: 1)),
-            duration: 0,
+            duration: 0
         )
         createdVideoItems.append(item)
         return item
@@ -47,7 +47,7 @@ final class FakeQuickAccessManager: QuickAccessManaging {
     }
 
     @discardableResult
-    func pinScreenshot(url: URL) async -> QuickAccessItem? {
+    func pinScreenshot(url: URL) -> QuickAccessItem? {
         pinnedScreenshotURLs.append(url)
         let item = QuickAccessItem(url: url, thumbnail: NSImage(size: NSSize(width: 1, height: 1)))
         createdScreenshotItems.append(item)

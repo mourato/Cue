@@ -21,7 +21,7 @@ nonisolated struct FrozenDisplaySnapshot: Sendable {
         screenFrame: CGRect,
         scaleFactor: CGFloat,
         colorSpaceName: CFString?,
-        image: CGImage,
+        image: CGImage
     ) {
         self.displayID = displayID
         self.screenFrame = screenFrame
@@ -78,7 +78,7 @@ final nonisolated class FrozenAreaCaptureSession {
         excludeDesktopIcons: Bool,
         excludeDesktopWidgets: Bool,
         excludeOwnApplication: Bool,
-        prefetchedContentTask: ShareableContentPrefetchTask? = nil,
+        prefetchedContentTask: ShareableContentPrefetchTask? = nil
     ) async throws -> FrozenAreaCaptureSession {
         let captureManager = captureManager ?? .shared
         let snapshots = try await captureManager.captureDisplaySnapshots(
@@ -87,7 +87,7 @@ final nonisolated class FrozenAreaCaptureSession {
             excludeDesktopIcons: excludeDesktopIcons,
             excludeDesktopWidgets: excludeDesktopWidgets,
             excludeOwnApplication: excludeOwnApplication,
-            prefetchedContentTask: prefetchedContentTask,
+            prefetchedContentTask: prefetchedContentTask
         )
         return FrozenAreaCaptureSession(snapshots: snapshots)
     }
@@ -98,7 +98,7 @@ final nonisolated class FrozenAreaCaptureSession {
             result[displayID] = AreaSelectionBackdrop(
                 displayID: displayID,
                 image: snapshot.image,
-                scaleFactor: snapshot.pixelScaleFactor,
+                scaleFactor: snapshot.pixelScaleFactor
             )
         }
         return result
@@ -121,7 +121,7 @@ final nonisolated class FrozenAreaCaptureSession {
         return AreaSelectionBackdrop(
             displayID: displayID,
             image: snapshot.image,
-            scaleFactor: snapshot.pixelScaleFactor,
+            scaleFactor: snapshot.pixelScaleFactor
         )
     }
 
@@ -131,7 +131,7 @@ final nonisolated class FrozenAreaCaptureSession {
 
     func cropImage(
         for selection: AreaSelectionResult,
-        minimumOutputScaleFactor: CGFloat = 1,
+        minimumOutputScaleFactor: CGFloat = 1
     ) throws -> FrozenAreaCropResult {
         guard let snapshot = snapshots[selection.displayID] else {
             throw CaptureError.captureFailed(L10n.ScreenCapture.selectionOutsideDisplayBounds)
@@ -142,13 +142,13 @@ final nonisolated class FrozenAreaCaptureSession {
             x: selection.rect.origin.x - snapshot.screenFrame.origin.x,
             y: selection.rect.origin.y - snapshot.screenFrame.origin.y,
             width: selection.rect.width,
-            height: selection.rect.height,
+            height: selection.rect.height
         )
         let screenBounds = CGRect(
             x: 0,
             y: 0,
             width: snapshot.screenFrame.width,
-            height: snapshot.screenFrame.height,
+            height: snapshot.screenFrame.height
         )
         let clampedRect = relativeRect.intersection(screenBounds)
         guard !clampedRect.isEmpty else {
@@ -158,7 +158,7 @@ final nonisolated class FrozenAreaCaptureSession {
         let alignedRect = Self.pixelAlignedRect(
             clampedRect,
             scaleFactor: scaleFactor,
-            bounds: screenBounds,
+            bounds: screenBounds
         )
         guard !alignedRect.isEmpty else {
             throw CaptureError.captureFailed(L10n.ScreenCapture.selectionOutsideDisplayBounds)
@@ -169,14 +169,14 @@ final nonisolated class FrozenAreaCaptureSession {
             x: (alignedRect.origin.x * scaleFactor).rounded(),
             y: (flippedY * scaleFactor).rounded(),
             width: CGFloat(max(1, Int((alignedRect.width * scaleFactor).rounded()))),
-            height: CGFloat(max(1, Int((alignedRect.height * scaleFactor).rounded()))),
+            height: CGFloat(max(1, Int((alignedRect.height * scaleFactor).rounded())))
         ).intersection(
             CGRect(
                 x: 0,
                 y: 0,
                 width: snapshot.image.width,
-                height: snapshot.image.height,
-            ),
+                height: snapshot.image.height
+            )
         )
 
         guard let croppedImage = snapshot.image.cropping(to: pixelCropRect), !pixelCropRect.isEmpty else {
@@ -187,7 +187,7 @@ final nonisolated class FrozenAreaCaptureSession {
             x: snapshot.screenFrame.origin.x + alignedRect.origin.x,
             y: snapshot.screenFrame.origin.y + alignedRect.origin.y,
             width: alignedRect.width,
-            height: alignedRect.height,
+            height: alignedRect.height
         )
 
         let promotedImage = Self.imageByPromotingScaleIfNeeded(
@@ -195,19 +195,19 @@ final nonisolated class FrozenAreaCaptureSession {
             logicalSize: alignedScreenRect.size,
             sourceScaleFactor: scaleFactor,
             minimumOutputScaleFactor: minimumOutputScaleFactor,
-            colorSpaceName: snapshot.colorSpaceName as CFString?,
+            colorSpaceName: snapshot.colorSpaceName as CFString?
         )
 
         return FrozenAreaCropResult(
             image: promotedImage.image,
             scaleFactor: promotedImage.scaleFactor,
-            screenRect: alignedScreenRect,
+            screenRect: alignedScreenRect
         )
     }
 
     func cropCompositeImage(
         for selection: AreaSelectionResult,
-        minimumOutputScaleFactor: CGFloat = 1,
+        minimumOutputScaleFactor: CGFloat = 1
     ) throws -> FrozenAreaCropResult {
         let requestedSelectionRect = selection.rect
         let requestedDisplayIDs = selection.displayIDs.isEmpty ? [selection.displayID] : selection.displayIDs
@@ -227,7 +227,7 @@ final nonisolated class FrozenAreaCaptureSession {
         let selectionRect = Self.pixelAlignedRect(
             requestedSelectionRect.intersection(captureBounds),
             scaleFactor: outputScaleFactor,
-            bounds: captureBounds,
+            bounds: captureBounds
         )
         guard !selectionRect.isEmpty else {
             throw CaptureError.captureFailed(L10n.ScreenCapture.selectionOutsideDisplayBounds)
@@ -253,7 +253,7 @@ final nonisolated class FrozenAreaCaptureSession {
             bitsPerComponent: 8,
             bytesPerRow: 0,
             space: colorSpace,
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
         ) else {
             throw CaptureError.captureFailed(L10n.ScreenCapture.failedToCropCapturedImage)
         }
@@ -267,19 +267,19 @@ final nonisolated class FrozenAreaCaptureSession {
                 x: 0,
                 y: 0,
                 width: snapshot.screenFrame.width,
-                height: snapshot.screenFrame.height,
+                height: snapshot.screenFrame.height
             )
             let intersection = selectionRect.intersection(snapshot.screenFrame)
             let relativeRect = CGRect(
                 x: intersection.origin.x - snapshot.screenFrame.origin.x,
                 y: intersection.origin.y - snapshot.screenFrame.origin.y,
                 width: intersection.width,
-                height: intersection.height,
+                height: intersection.height
             )
             let alignedRect = Self.pixelAlignedRect(
                 relativeRect,
                 scaleFactor: snapshotScaleFactor,
-                bounds: screenBounds,
+                bounds: screenBounds
             )
             guard !alignedRect.isEmpty else { continue }
 
@@ -288,14 +288,14 @@ final nonisolated class FrozenAreaCaptureSession {
                 x: (alignedRect.origin.x * snapshotScaleFactor).rounded(),
                 y: (flippedY * snapshotScaleFactor).rounded(),
                 width: CGFloat(max(1, Int((alignedRect.width * snapshotScaleFactor).rounded()))),
-                height: CGFloat(max(1, Int((alignedRect.height * snapshotScaleFactor).rounded()))),
+                height: CGFloat(max(1, Int((alignedRect.height * snapshotScaleFactor).rounded())))
             ).intersection(
                 CGRect(
                     x: 0,
                     y: 0,
                     width: snapshot.image.width,
-                    height: snapshot.image.height,
-                ),
+                    height: snapshot.image.height
+                )
             )
 
             guard let croppedImage = snapshot.image.cropping(to: pixelCropRect), !pixelCropRect.isEmpty else {
@@ -306,13 +306,13 @@ final nonisolated class FrozenAreaCaptureSession {
                 x: snapshot.screenFrame.origin.x + alignedRect.origin.x,
                 y: snapshot.screenFrame.origin.y + alignedRect.origin.y,
                 width: alignedRect.width,
-                height: alignedRect.height,
+                height: alignedRect.height
             )
             let requestedDestinationRect = CGRect(
                 x: (alignedScreenRect.minX - selectionRect.minX) * outputScaleFactor,
                 y: (alignedScreenRect.minY - selectionRect.minY) * outputScaleFactor,
                 width: alignedScreenRect.width * outputScaleFactor,
-                height: alignedScreenRect.height * outputScaleFactor,
+                height: alignedScreenRect.height * outputScaleFactor
             ).integral
             let needsSnapshotPromotion = outputScaleFactor > snapshotScaleFactor + 0.0001
             let imageToDraw: CGImage
@@ -323,7 +323,7 @@ final nonisolated class FrozenAreaCaptureSession {
                     logicalSize: alignedScreenRect.size,
                     sourceScaleFactor: snapshotScaleFactor,
                     minimumOutputScaleFactor: outputScaleFactor,
-                    colorSpaceName: snapshot.colorSpaceName as CFString?,
+                    colorSpaceName: snapshot.colorSpaceName as CFString?
                 )
                 imageToDraw = promotedImage.image
                 didPromoteSnapshot = promotedImage.scaleFactor > snapshotScaleFactor + 0.0001
@@ -337,7 +337,7 @@ final nonisolated class FrozenAreaCaptureSession {
                     x: requestedDestinationRect.origin.x,
                     y: requestedDestinationRect.origin.y,
                     width: CGFloat(imageToDraw.width),
-                    height: CGFloat(imageToDraw.height),
+                    height: CGFloat(imageToDraw.height)
                 )
                 : requestedDestinationRect
             context.draw(imageToDraw, in: destinationRect)
@@ -350,7 +350,7 @@ final nonisolated class FrozenAreaCaptureSession {
         return FrozenAreaCropResult(
             image: renderedImage,
             scaleFactor: outputScaleFactor,
-            screenRect: selectionRect,
+            screenRect: selectionRect
         )
     }
 
@@ -361,7 +361,7 @@ final nonisolated class FrozenAreaCaptureSession {
     private static func pixelAlignedRect(
         _ rect: CGRect,
         scaleFactor: CGFloat,
-        bounds: CGRect,
+        bounds: CGRect
     ) -> CGRect {
         guard scaleFactor > 0 else { return rect.intersection(bounds) }
 
@@ -374,7 +374,7 @@ final nonisolated class FrozenAreaCaptureSession {
             x: minX,
             y: minY,
             width: max(0, maxX - minX),
-            height: max(0, maxY - minY),
+            height: max(0, maxY - minY)
         ).intersection(bounds)
     }
 
@@ -383,7 +383,7 @@ final nonisolated class FrozenAreaCaptureSession {
         logicalSize: CGSize,
         sourceScaleFactor: CGFloat,
         minimumOutputScaleFactor: CGFloat,
-        colorSpaceName: CFString?,
+        colorSpaceName: CFString?
     ) -> (image: CGImage, scaleFactor: CGFloat) {
         let outputScaleFactor = max(sourceScaleFactor, minimumOutputScaleFactor)
         let targetWidth = max(1, Int((logicalSize.width * outputScaleFactor).rounded()))
@@ -395,7 +395,7 @@ final nonisolated class FrozenAreaCaptureSession {
                   image,
                   width: targetWidth,
                   height: targetHeight,
-                  colorSpaceName: colorSpaceName,
+                  colorSpaceName: colorSpaceName
               )
         else {
             return (image, sourceScaleFactor)
@@ -406,7 +406,7 @@ final nonisolated class FrozenAreaCaptureSession {
 
     static func sharpenPromotedImageIfUseful(
         _ image: CGImage,
-        colorSpaceName: CFString?,
+        colorSpaceName: CFString?
     ) -> CGImage {
         let pixelCount = image.width * image.height
         guard pixelCount > 0,
@@ -423,7 +423,7 @@ final nonisolated class FrozenAreaCaptureSession {
         _ image: CGImage,
         width: Int,
         height: Int,
-        colorSpaceName: CFString?,
+        colorSpaceName: CFString?
     ) -> CGImage? {
         let colorSpace = colorSpace(from: colorSpaceName)
             ?? image.colorSpace
@@ -433,7 +433,7 @@ final nonisolated class FrozenAreaCaptureSession {
             image,
             width: width,
             height: height,
-            colorSpace: colorSpace,
+            colorSpace: colorSpace
         ) {
             return sharpenPromotedImageIfUseful(acceleratedImage, colorSpaceName: colorSpaceName)
         }
@@ -445,7 +445,7 @@ final nonisolated class FrozenAreaCaptureSession {
             bitsPerComponent: 8,
             bytesPerRow: 0,
             space: colorSpace,
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
         ) else {
             return nil
         }
@@ -460,7 +460,7 @@ final nonisolated class FrozenAreaCaptureSession {
         _ image: CGImage,
         width: Int,
         height: Int,
-        colorSpace: CGColorSpace,
+        colorSpace: CGColorSpace
     ) -> CGImage? {
         let format = vImage_CGImageFormat(
             bitsPerComponent: 8,
@@ -469,7 +469,7 @@ final nonisolated class FrozenAreaCaptureSession {
             bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue),
             version: 0,
             decode: nil,
-            renderingIntent: .defaultIntent,
+            renderingIntent: .defaultIntent
         )
 
         do {
@@ -479,7 +479,7 @@ final nonisolated class FrozenAreaCaptureSession {
             var destinationBuffer = try vImage_Buffer(
                 width: width,
                 height: height,
-                bitsPerPixel: format.bitsPerPixel,
+                bitsPerPixel: format.bitsPerPixel
             )
             defer { destinationBuffer.free() }
 
@@ -487,7 +487,7 @@ final nonisolated class FrozenAreaCaptureSession {
                 &sourceBuffer,
                 &destinationBuffer,
                 nil,
-                vImage_Flags(kvImageHighQualityResampling),
+                vImage_Flags(kvImageHighQualityResampling)
             )
             guard error == kvImageNoError else { return nil }
 
@@ -499,7 +499,7 @@ final nonisolated class FrozenAreaCaptureSession {
 
     private static func sharpenedImage(
         _ image: CGImage,
-        colorSpaceName: CFString?,
+        colorSpaceName: CFString?
     ) -> CGImage? {
         let colorSpace = colorSpace(from: colorSpaceName)
             ?? image.colorSpace
@@ -511,7 +511,7 @@ final nonisolated class FrozenAreaCaptureSession {
             bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue),
             version: 0,
             decode: nil,
-            renderingIntent: .defaultIntent,
+            renderingIntent: .defaultIntent
         )
 
         do {
@@ -521,14 +521,14 @@ final nonisolated class FrozenAreaCaptureSession {
             var destinationBuffer = try vImage_Buffer(
                 width: image.width,
                 height: image.height,
-                bitsPerPixel: format.bitsPerPixel,
+                bitsPerPixel: format.bitsPerPixel
             )
             defer { destinationBuffer.free() }
 
             var kernel: [Int16] = [
                 0, -1, 0,
                 -1, 10, -1,
-                0, -1, 0,
+                0, -1, 0
             ]
             let error = vImageConvolve_ARGB8888(
                 &sourceBuffer,
@@ -541,7 +541,7 @@ final nonisolated class FrozenAreaCaptureSession {
                 3,
                 6,
                 nil,
-                vImage_Flags(kvImageEdgeExtend),
+                vImage_Flags(kvImageEdgeExtend)
             )
             guard error == kvImageNoError else { return nil }
 

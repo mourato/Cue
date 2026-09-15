@@ -18,7 +18,7 @@ final class DiagnosticCoreTests: XCTestCase {
             file: "Notinhas/Services/Capture/ScreenCaptureManager.swift",
             function: "captureFullscreen()",
             line: 42,
-            timestamp: Date(timeIntervalSince1970: 0),
+            timestamp: Date(timeIntervalSince1970: 0)
         )
 
         let line = entry.toLogLine()
@@ -36,21 +36,21 @@ final class DiagnosticCoreTests: XCTestCase {
             day: 1,
             hour: 1,
             minute: 2,
-            second: 3,
+            second: 3
         )))
 
         let modern = try XCTUnwrap(DiagnosticLogEntry.parseTimestamp(
             from: "[12:34:56.789][INF][SYSTEM] Started",
-            referenceDate: reference,
+            referenceDate: reference
         ))
         let legacy = try XCTUnwrap(DiagnosticLogEntry.parseTimestamp(
             from: "[08:09:10][INF][SYSTEM] Started",
-            referenceDate: reference,
+            referenceDate: reference
         ))
 
         let modernComponents = Calendar.current.dateComponents(
             [.year, .month, .day, .hour, .minute, .second],
-            from: modern,
+            from: modern
         )
         XCTAssertEqual(modernComponents.year, 2026)
         XCTAssertEqual(modernComponents.month, 5)

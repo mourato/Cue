@@ -26,7 +26,7 @@ nonisolated enum ScrollingCaptureStitchOutcome {
 nonisolated enum ScrollingCaptureStitchSafety: Equatable {
     case confirmed
     case tentative(reason: String)
-    case unsafe (reason: String)
+    case unsafe(reason: String)
 
     var isUnsafe: Bool {
         if case .unsafe = self {
@@ -107,7 +107,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                         bitsPerComponent: 8,
                         bytesPerRow: bytesPerRow,
                         space: colorSpace,
-                        bitmapInfo: bitmapInfo,
+                        bitmapInfo: bitmapInfo
                     )
                 else {
                     return false
@@ -132,7 +132,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             otherRow: Int,
             xStart: Int,
             xEnd: Int,
-            columnStride: Int,
+            columnStride: Int
         ) -> Double {
             blockDifference(
                 comparedTo: other,
@@ -142,7 +142,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 xStart: xStart,
                 xEnd: xEnd,
                 columnStride: columnStride,
-                rowStride: 1,
+                rowStride: 1
             )
         }
 
@@ -154,7 +154,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             xStart: Int,
             xEnd: Int,
             columnStride: Int,
-            rowStride: Int,
+            rowStride: Int
         ) -> Double {
             guard rowCount > 0 else { return 255 }
             guard startRow >= 0, otherStartRow >= 0 else { return 255 }
@@ -188,7 +188,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             startRow: Int,
             rowCount: Int,
             into destination: inout [UInt8],
-            destinationRow: Int,
+            destinationRow: Int
         ) {
             guard rowCount > 0 else { return }
 
@@ -204,13 +204,13 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             let safeStartRow = max(0, startRow)
             let safeRowCount = min(rowCount, height - safeStartRow)
             let croppedPixels = Array(
-                pixels[(safeStartRow * bytesPerRow) ..< ((safeStartRow + safeRowCount) * bytesPerRow)],
+                pixels[(safeStartRow * bytesPerRow) ..< ((safeStartRow + safeRowCount) * bytesPerRow)]
             )
             return RasterImage(
                 width: width,
                 height: safeRowCount,
                 bytesPerRow: bytesPerRow,
-                pixels: croppedPixels,
+                pixels: croppedPixels
             )
         }
 
@@ -222,7 +222,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             xStart: Int,
             xEnd: Int,
             startRow: Int,
-            rowCount: Int,
+            rowCount: Int
         ) -> CGImage? {
             let safeXStart = max(0, xStart)
             let safeXEnd = min(width, xEnd)
@@ -246,7 +246,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 width: croppedWidth,
                 height: safeRowCount,
                 bytesPerRow: croppedBytesPerRow,
-                pixels: croppedPixels,
+                pixels: croppedPixels
             )
         }
 
@@ -254,7 +254,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             width: Int,
             height: Int,
             bytesPerRow: Int,
-            pixels: [UInt8],
+            pixels: [UInt8]
         ) -> CGImage? {
             let data = Data(pixels) as CFData
             guard let provider = CGDataProvider(data: data) else { return nil }
@@ -273,7 +273,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 provider: provider,
                 decode: nil,
                 shouldInterpolate: false,
-                intent: .defaultIntent,
+                intent: .defaultIntent
             )
         }
 
@@ -386,8 +386,8 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 pixelScore: nil,
                 totalScore: nil,
                 appendDeltaY: nil,
-                visionAgreementCount: 0,
-            ),
+                visionAgreementCount: 0
+            )
         )
     }
 
@@ -395,7 +395,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         _ image: CGImage,
         maxOutputHeight: Int,
         expectedSignedDeltaPixels: Int? = nil,
-        renderMergedImage: Bool = true,
+        renderMergedImage: Bool = true
     ) -> ScrollingCaptureStitchUpdate? {
         guard let lastRaster, let baseRaster else { return start(with: image) }
         guard let raster = RasterImage(cgImage: image) else { return nil }
@@ -412,8 +412,8 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                     pixelScore: nil,
                     totalScore: nil,
                     appendDeltaY: nil,
-                    visionAgreementCount: 0,
-                ),
+                    visionAgreementCount: 0
+                )
             )
         }
 
@@ -442,8 +442,8 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                     pixelScore: nil,
                     totalScore: nil,
                     appendDeltaY: nil,
-                    visionAgreementCount: 0,
-                ),
+                    visionAgreementCount: 0
+                )
             )
         }
         let frameDifference = contentDifference(
@@ -452,7 +452,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             headerHeight: inferredHeaderHeight,
             footerHeight: inferredFooterHeight,
             leadingStaticWidth: inferredLeadingStaticWidth,
-            trailingStaticWidth: inferredTrailingStaticWidth,
+            trailingStaticWidth: inferredTrailingStaticWidth
         )
         let fastGuidedMatch = bestMatch(
             previous: lastRaster,
@@ -463,7 +463,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             trailingStaticWidth: inferredTrailingStaticWidth,
             expectedSignedDeltaPixels: expectedSignedDeltaPixels,
             visionAlignmentEstimate: nil,
-            searchMode: .guided,
+            searchMode: .guided
         )
 
         if frameDifference < 8.5, fastGuidedMatch == nil {
@@ -478,8 +478,8 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                     pixelScore: nil,
                     totalScore: nil,
                     appendDeltaY: nil,
-                    visionAgreementCount: 0,
-                ),
+                    visionAgreementCount: 0
+                )
             )
         }
 
@@ -500,7 +500,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 headerHeight: inferredHeaderHeight,
                 footerHeight: inferredFooterHeight,
                 leadingStaticWidth: inferredLeadingStaticWidth,
-                trailingStaticWidth: inferredTrailingStaticWidth,
+                trailingStaticWidth: inferredTrailingStaticWidth
             )
         }
 
@@ -516,7 +516,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 trailingStaticWidth: inferredTrailingStaticWidth,
                 expectedSignedDeltaPixels: expectedSignedDeltaPixels,
                 visionAlignmentEstimate: visionAlignmentEstimate,
-                searchMode: .guided,
+                searchMode: .guided
             )
 
             if let guidedVisionMatch {
@@ -524,7 +524,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 alignmentPath = .guidedVision
             } else if match == nil || !fastGuidedMatchDisagreesWithVision(
                 match,
-                visionAlignmentEstimate: visionAlignmentEstimate,
+                visionAlignmentEstimate: visionAlignmentEstimate
             ) {
                 match = fastGuidedMatch
                 alignmentPath = .fastGuided
@@ -544,7 +544,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                     trailingStaticWidth: inferredTrailingStaticWidth,
                     expectedSignedDeltaPixels: nil,
                     visionAlignmentEstimate: visionAlignmentEstimate,
-                    searchMode: .recovery,
+                    searchMode: .recovery
                 )
                 alignmentPath = .recoveryVision
             } else {
@@ -556,7 +556,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             frameDifference: frameDifference,
             match: match,
             expectedDeltaPixels: expectedDeltaPixels,
-            visionAlignmentEstimate: visionAlignmentEstimate,
+            visionAlignmentEstimate: visionAlignmentEstimate
         ) {
             return currentUpdate(
                 outcome: .ignoredNoMovement,
@@ -569,8 +569,8 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                     pixelScore: match?.pixelScore,
                     totalScore: match?.totalScore,
                     appendDeltaY: nil,
-                    visionAgreementCount: visionAlignmentEstimate?.agreementCount ?? 0,
-                ),
+                    visionAgreementCount: visionAlignmentEstimate?.agreementCount ?? 0
+                )
             )
         }
 
@@ -586,8 +586,8 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                     pixelScore: nil,
                     totalScore: nil,
                     appendDeltaY: nil,
-                    visionAgreementCount: visionAlignmentEstimate?.agreementCount ?? 0,
-                ),
+                    visionAgreementCount: visionAlignmentEstimate?.agreementCount ?? 0
+                )
             )
         }
 
@@ -617,8 +617,8 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                     for: match,
                     path: .heightLimit,
                     usedVisionEstimate: visionAlignmentEstimate != nil,
-                    visionAlignmentEstimate: visionAlignmentEstimate,
-                ),
+                    visionAlignmentEstimate: visionAlignmentEstimate
+                )
             )
         }
 
@@ -628,7 +628,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             in: raster,
             deltaY: match.deltaY,
             headerHeight: candidateHeaderHeight,
-            footerHeight: candidateFooterHeight,
+            footerHeight: candidateFooterHeight
         ) else {
             matchNotFoundCount += 1
             return currentUpdate(
@@ -641,8 +641,8 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                     pixelScore: match.pixelScore,
                     totalScore: match.totalScore,
                     appendDeltaY: nil,
-                    visionAgreementCount: visionAlignmentEstimate?.agreementCount ?? 0,
-                ),
+                    visionAgreementCount: visionAlignmentEstimate?.agreementCount ?? 0
+                )
             )
         }
 
@@ -664,7 +664,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             strongBandCount: match.strongBandCount,
             bandCount: match.bandCount,
             worstBandScore: match.worstBandScore,
-            bandVariance: match.bandVariance,
+            bandVariance: match.bandVariance
         )
         matchNotFoundCount = 0
         acceptedFrameCount += 1
@@ -684,8 +684,8 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 path: acceptedDelta < match.deltaY ? .heightLimit : alignmentPath,
                 usedVisionEstimate: visionAlignmentEstimate != nil,
                 visionAlignmentEstimate: visionAlignmentEstimate,
-                appendDeltaY: acceptedDelta,
-            ),
+                appendDeltaY: acceptedDelta
+            )
         )
     }
 
@@ -708,7 +708,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 startRow: 0,
                 rowCount: slice.raster.height,
                 into: &mergedPixels,
-                destinationRow: destinationRow,
+                destinationRow: destinationRow
             )
             destinationRow += slice.raster.height
         }
@@ -717,7 +717,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             width: width,
             height: height,
             bytesPerRow: bytesPerRow,
-            pixels: mergedPixels,
+            pixels: mergedPixels
         )
         return cachedMergedImage
     }
@@ -727,13 +727,14 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         let safeMaxPixelWidth = max(1, maxPixelWidth)
         let safeMaxPixelHeight = max(1, maxPixelHeight)
         if cachedPreviewBounds?.width == safeMaxPixelWidth,
-           cachedPreviewBounds?.height == safeMaxPixelHeight {
+           cachedPreviewBounds?.height == safeMaxPixelHeight
+        {
             return cachedPreviewImage
         }
         let targetScale = min(
             1,
             Double(safeMaxPixelWidth) / Double(baseRaster.width),
-            Double(safeMaxPixelHeight) / Double(max(outputHeight, 1)),
+            Double(safeMaxPixelHeight) / Double(max(outputHeight, 1))
         )
 
         let targetWidth = max(1, Int((Double(baseRaster.width) * targetScale).rounded()))
@@ -750,7 +751,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 bitsPerComponent: 8,
                 bytesPerRow: bytesPerRow,
                 space: colorSpace,
-                bitmapInfo: bitmapInfo,
+                bitmapInfo: bitmapInfo
             )
         else {
             return nil
@@ -773,7 +774,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 x: 0,
                 y: destinationBottom,
                 width: CGFloat(targetWidth),
-                height: max(1, destinationTop - destinationBottom),
+                height: max(1, destinationTop - destinationBottom)
             )
             context.draw(sliceImage, in: destinationRect)
             destinationRow += slice.raster.height
@@ -790,7 +791,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         includeMergedImage: Bool = true,
         likelyReachedBoundary: Bool = false,
         safety: ScrollingCaptureStitchSafety? = nil,
-        alignmentDebug: ScrollingCaptureAlignmentDebugInfo? = nil,
+        alignmentDebug: ScrollingCaptureAlignmentDebugInfo? = nil
     ) -> ScrollingCaptureStitchUpdate {
         ScrollingCaptureStitchUpdate(
             outcome: outcome,
@@ -801,7 +802,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             mergeDirection: mergeDirection,
             likelyReachedBoundary: likelyReachedBoundary,
             safety: safety ?? defaultSafety(for: outcome),
-            alignmentDebug: alignmentDebug,
+            alignmentDebug: alignmentDebug
         )
     }
 
@@ -810,7 +811,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         case .initialized, .appended, .ignoredNoMovement, .reachedHeightLimit:
             .confirmed
         case .ignoredAlignmentFailed:
-            .unsafe (reason: "alignment-failed")
+            .unsafe(reason: "alignment-failed")
         }
     }
 
@@ -819,7 +820,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         path: ScrollingCaptureAlignmentPath,
         usedVisionEstimate: Bool,
         visionAlignmentEstimate: VisionAlignmentEstimate?,
-        appendDeltaY: Int? = nil,
+        appendDeltaY: Int? = nil
     ) -> ScrollingCaptureAlignmentDebugInfo {
         ScrollingCaptureAlignmentDebugInfo(
             path: path,
@@ -828,7 +829,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             pixelScore: match.pixelScore,
             totalScore: match.totalScore,
             appendDeltaY: appendDeltaY,
-            visionAgreementCount: visionAlignmentEstimate?.agreementCount ?? 0,
+            visionAgreementCount: visionAlignmentEstimate?.agreementCount ?? 0
         )
     }
 
@@ -843,7 +844,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         in raster: RasterImage,
         deltaY: Int,
         headerHeight: Int,
-        footerHeight: Int,
+        footerHeight: Int
     ) -> Int? {
         switch direction {
         case .appendFromBottom:
@@ -862,7 +863,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
     private func detectStaticBandHeight(
         previous: RasterImage,
         current: RasterImage,
-        fromTop: Bool,
+        fromTop: Bool
     ) -> Int {
         let maxBandHeight = min(previous.height / 5, 160)
         let step = max(2, min(8, previous.height / 180))
@@ -880,7 +881,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 otherRow: row,
                 xStart: xStart,
                 xEnd: xEnd,
-                columnStride: columnStride,
+                columnStride: columnStride
             )
 
             if difference < 5.0 {
@@ -899,7 +900,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         headerHeight: Int,
         footerHeight: Int,
         leadingStaticWidth: Int,
-        trailingStaticWidth: Int,
+        trailingStaticWidth: Int
     ) -> Double {
         let contentHeight = previous.height - headerHeight - footerHeight
         guard contentHeight > 24 else { return 255 }
@@ -907,7 +908,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         guard let (xStart, xEnd) = matchingColumnBounds(
             width: previous.width,
             leadingStaticWidth: leadingStaticWidth,
-            trailingStaticWidth: trailingStaticWidth,
+            trailingStaticWidth: trailingStaticWidth
         ) else {
             return 255
         }
@@ -922,7 +923,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             let ratio = Double(index + 1) / Double(bandCount + 1)
             let row = headerHeight + min(
                 max(0, contentHeight - bandHeight),
-                Int(Double(max(0, contentHeight - bandHeight)) * ratio),
+                Int(Double(max(0, contentHeight - bandHeight)) * ratio)
             )
 
             total += previous.blockDifference(
@@ -933,7 +934,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 xStart: xStart,
                 xEnd: xEnd,
                 columnStride: columnStride,
-                rowStride: 2,
+                rowStride: 2
             )
             count += 1
         }
@@ -950,7 +951,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         trailingStaticWidth: Int,
         expectedSignedDeltaPixels: Int?,
         visionAlignmentEstimate: VisionAlignmentEstimate?,
-        searchMode: MatchSearchMode,
+        searchMode: MatchSearchMode
     ) -> Match? {
         let contentHeight = previous.height - headerHeight - footerHeight
         let expectedDeltaPixels = expectedSignedDeltaPixels.map(abs)
@@ -958,7 +959,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             for: contentHeight,
             expectedDeltaPixels: expectedDeltaPixels,
             visionAlignmentEstimate: visionAlignmentEstimate,
-            searchMode: searchMode,
+            searchMode: searchMode
         ) else { return nil }
 
         let directions: [ScrollingCaptureMergeDirection] = if mergeDirection == .unresolved {
@@ -971,7 +972,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             inside: broadRange,
             expectedDeltaPixels: expectedDeltaPixels,
             visionAlignmentEstimate: visionAlignmentEstimate,
-            searchMode: searchMode,
+            searchMode: searchMode
         )
 
         var searchResult = searchBestMatch(
@@ -985,16 +986,17 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             deltaRange: focusedRange ?? broadRange,
             expectedDeltaPixels: expectedDeltaPixels,
             visionAlignmentEstimate: visionAlignmentEstimate,
-            searchMode: searchMode,
+            searchMode: searchMode
         )
 
         if !isAcceptable(
             searchResult?.best,
             expectedDeltaPixels: expectedDeltaPixels,
             visionAlignmentEstimate: visionAlignmentEstimate,
-            searchMode: searchMode,
+            searchMode: searchMode
         )
-            || isAmbiguous(searchResult, expectedDeltaPixels: expectedDeltaPixels) {
+            || isAmbiguous(searchResult, expectedDeltaPixels: expectedDeltaPixels)
+        {
             guard focusedRange != nil else { return nil }
 
             let broaderResult = searchBestMatch(
@@ -1008,11 +1010,12 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 deltaRange: broadRange,
                 expectedDeltaPixels: expectedDeltaPixels,
                 visionAlignmentEstimate: visionAlignmentEstimate,
-                searchMode: searchMode,
+                searchMode: searchMode
             )
 
             if broaderResult?.best.totalScore ?? .greatestFiniteMagnitude
-                < searchResult?.best.totalScore ?? .greatestFiniteMagnitude {
+                < searchResult?.best.totalScore ?? .greatestFiniteMagnitude
+            {
                 searchResult = broaderResult
             }
         }
@@ -1023,7 +1026,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 searchResult.best,
                 expectedDeltaPixels: expectedDeltaPixels,
                 visionAlignmentEstimate: visionAlignmentEstimate,
-                searchMode: searchMode,
+                searchMode: searchMode
             ),
             !isAmbiguous(searchResult, expectedDeltaPixels: expectedDeltaPixels)
         else {
@@ -1037,7 +1040,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         for contentHeight: Int,
         expectedDeltaPixels: Int?,
         visionAlignmentEstimate: VisionAlignmentEstimate?,
-        searchMode: MatchSearchMode,
+        searchMode: MatchSearchMode
     ) -> ClosedRange<Int>? {
         let defaultMinOverlap = max(160, Int(Double(contentHeight) * 0.26))
         let aggressiveMinOverlap = max(96, Int(Double(contentHeight) * 0.16))
@@ -1066,7 +1069,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             minimumOverlapFloor = min(minimumOverlapFloor, visionOverlapFloor)
             preferredMinimumOverlap = min(
                 preferredMinimumOverlap,
-                max(visionOverlapFloor, contentHeight - visionAlignmentEstimate.deltaY),
+                max(visionOverlapFloor, contentHeight - visionAlignmentEstimate.deltaY)
             )
         }
 
@@ -1080,7 +1083,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         inside broadRange: ClosedRange<Int>,
         expectedDeltaPixels: Int?,
         visionAlignmentEstimate: VisionAlignmentEstimate?,
-        searchMode: MatchSearchMode,
+        searchMode: MatchSearchMode
     ) -> ClosedRange<Int>? {
         guard searchMode == .guided || visionAlignmentEstimate != nil else { return nil }
 
@@ -1122,7 +1125,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         deltaRange: ClosedRange<Int>,
         expectedDeltaPixels: Int?,
         visionAlignmentEstimate: VisionAlignmentEstimate?,
-        searchMode: MatchSearchMode,
+        searchMode: MatchSearchMode
     ) -> MatchSearchResult? {
         let contentHeight = previous.height - headerHeight - footerHeight
         let coarseStep = max(2, min(10, contentHeight / 160))
@@ -1138,7 +1141,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                     headerHeight: headerHeight,
                     footerHeight: footerHeight,
                     leadingStaticWidth: leadingStaticWidth,
-                    trailingStaticWidth: trailingStaticWidth,
+                    trailingStaticWidth: trailingStaticWidth
                 ) else {
                     continue
                 }
@@ -1150,7 +1153,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                         expectedDeltaPixels: expectedDeltaPixels,
                         visionAlignmentEstimate: visionAlignmentEstimate,
                         direction: direction,
-                        searchMode: searchMode,
+                        searchMode: searchMode
                     )
 
                 let candidate = Match(
@@ -1161,7 +1164,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                     strongBandCount: metrics.strongBandCount,
                     bandCount: metrics.bandCount,
                     worstBandScore: metrics.worstDifference,
-                    bandVariance: metrics.variance,
+                    bandVariance: metrics.variance
                 )
 
                 coarseCandidates.append(candidate)
@@ -1188,7 +1191,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 headerHeight: headerHeight,
                 footerHeight: footerHeight,
                 leadingStaticWidth: leadingStaticWidth,
-                trailingStaticWidth: trailingStaticWidth,
+                trailingStaticWidth: trailingStaticWidth
             ) else {
                 continue
             }
@@ -1200,7 +1203,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                     expectedDeltaPixels: expectedDeltaPixels,
                     visionAlignmentEstimate: visionAlignmentEstimate,
                     direction: coarseBest.direction,
-                    searchMode: searchMode,
+                    searchMode: searchMode
                 )
 
             if totalScore < refinedBest.totalScore {
@@ -1212,7 +1215,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                     strongBandCount: metrics.strongBandCount,
                     bandCount: metrics.bandCount,
                     worstBandScore: metrics.worstDifference,
-                    bandVariance: metrics.variance,
+                    bandVariance: metrics.variance
                 )
             }
         }
@@ -1236,7 +1239,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         headerHeight: Int,
         footerHeight: Int,
         leadingStaticWidth: Int,
-        trailingStaticWidth: Int,
+        trailingStaticWidth: Int
     ) -> OverlapMetrics? {
         let contentHeight = previous.height - headerHeight - footerHeight
         let overlapHeight = contentHeight - deltaY
@@ -1245,7 +1248,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         guard let (xStart, xEnd) = matchingColumnBounds(
             width: previous.width,
             leadingStaticWidth: leadingStaticWidth,
-            trailingStaticWidth: trailingStaticWidth,
+            trailingStaticWidth: trailingStaticWidth
         ) else {
             return nil
         }
@@ -1260,7 +1263,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             let ratio = Double(index + 1) / Double(bandCount + 1)
             let rowOffset = min(
                 max(0, overlapHeight - bandHeight),
-                Int(Double(max(0, overlapHeight - bandHeight)) * ratio),
+                Int(Double(max(0, overlapHeight - bandHeight)) * ratio)
             )
 
             let previousRow: Int
@@ -1285,7 +1288,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 xStart: xStart,
                 xEnd: xEnd,
                 columnStride: columnStride,
-                rowStride: 2,
+                rowStride: 2
             )
             differences.append(difference)
         }
@@ -1306,13 +1309,13 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             strongBandCount: strongBandCount,
             bandCount: differences.count,
             worstDifference: worstDifference,
-            variance: variance,
+            variance: variance
         )
     }
 
     private func consistencyPenalty(
         for metrics: OverlapMetrics,
-        searchMode: MatchSearchMode,
+        searchMode: MatchSearchMode
     ) -> Double {
         guard metrics.bandCount > 0 else { return 255 }
 
@@ -1340,7 +1343,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         expectedDeltaPixels: Int?,
         visionAlignmentEstimate: VisionAlignmentEstimate?,
         direction: ScrollingCaptureMergeDirection,
-        searchMode: MatchSearchMode,
+        searchMode: MatchSearchMode
     ) -> Double {
         var penalty = 0.0
 
@@ -1370,7 +1373,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
 
             let largeLeapThreshold = max(
                 visionAlignmentEstimate.deltaY * 2,
-                visionAlignmentEstimate.deltaY + max(96, 148 - visionAlignmentEstimate.agreementCount * 18),
+                visionAlignmentEstimate.deltaY + max(96, 148 - visionAlignmentEstimate.agreementCount * 18)
             )
             if deltaY > largeLeapThreshold {
                 penalty += searchMode == .guided ? 8 : 12
@@ -1378,7 +1381,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         }
 
         if mergeDirection != .unresolved, direction != mergeDirection {
-            penalty += 1_000
+            penalty += 1000
         }
 
         return penalty
@@ -1394,7 +1397,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         _ match: Match?,
         expectedDeltaPixels: Int?,
         visionAlignmentEstimate: VisionAlignmentEstimate?,
-        searchMode: MatchSearchMode,
+        searchMode: MatchSearchMode
     ) -> Bool {
         guard let match else { return false }
 
@@ -1438,7 +1441,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
 
     private func isAmbiguous(
         _ searchResult: MatchSearchResult?,
-        expectedDeltaPixels: Int?,
+        expectedDeltaPixels: Int?
     ) -> Bool {
         guard
             let searchResult,
@@ -1495,7 +1498,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
     }
 
     private func shouldValidateFastGuidedMatch(
-        _ match: Match?,
+        _ match: Match?
     ) -> Bool {
         guard let match else { return true }
         return matcherConfidence(for: match) < 0.82
@@ -1503,7 +1506,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
 
     private func fastGuidedMatchDisagreesWithVision(
         _ match: Match?,
-        visionAlignmentEstimate: VisionAlignmentEstimate?,
+        visionAlignmentEstimate: VisionAlignmentEstimate?
     ) -> Bool {
         guard let match, let visionAlignmentEstimate, visionAlignmentEstimate.deltaY > 0 else { return false }
 
@@ -1525,7 +1528,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         frameDifference: Double,
         match: Match?,
         expectedDeltaPixels: Int?,
-        visionAlignmentEstimate: VisionAlignmentEstimate?,
+        visionAlignmentEstimate: VisionAlignmentEstimate?
     ) -> Bool {
         guard frameDifference < 8.5 else { return false }
         guard !hasStrongVisionMovement(visionAlignmentEstimate) else { return false }
@@ -1550,12 +1553,12 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         headerHeight: Int,
         footerHeight: Int,
         leadingStaticWidth: Int,
-        trailingStaticWidth: Int,
+        trailingStaticWidth: Int
     ) -> VisionAlignmentEstimate? {
         guard let (xStart, xEnd) = matchingColumnBounds(
             width: previous.width,
             leadingStaticWidth: leadingStaticWidth,
-            trailingStaticWidth: trailingStaticWidth,
+            trailingStaticWidth: trailingStaticWidth
         ) else {
             return nil
         }
@@ -1569,7 +1572,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         guard rowCount > 64 else { return nil }
 
         var regions: [(xStart: Int, xEnd: Int, startRow: Int, rowCount: Int)] = [
-            (xStart, xEnd, startRow, rowCount),
+            (xStart, xEnd, startRow, rowCount)
         ]
 
         let contentWidth = xEnd - xStart
@@ -1579,7 +1582,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 xStart + horizontalTrim,
                 xEnd - horizontalTrim,
                 startRow,
-                rowCount,
+                rowCount
             ))
         }
 
@@ -1598,7 +1601,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 xStart: region.xStart,
                 xEnd: region.xEnd,
                 startRow: region.startRow,
-                rowCount: region.rowCount,
+                rowCount: region.rowCount
             ) {
                 samples.append(delta)
             }
@@ -1626,7 +1629,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
             deltaY: deltaY,
             agreementCount: chosenSamples.count,
             observedCount: samples.count,
-            deltaSpread: deltaSpread,
+            deltaSpread: deltaSpread
         )
     }
 
@@ -1636,20 +1639,20 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         xStart: Int,
         xEnd: Int,
         startRow: Int,
-        rowCount: Int,
+        rowCount: Int
     ) -> Int? {
         guard
             let previousImage = previous.makeCroppedCGImage(
                 xStart: xStart,
                 xEnd: xEnd,
                 startRow: startRow,
-                rowCount: rowCount,
+                rowCount: rowCount
             ),
             let currentImage = current.makeCroppedCGImage(
                 xStart: xStart,
                 xEnd: xEnd,
                 startRow: startRow,
-                rowCount: rowCount,
+                rowCount: rowCount
             )
         else {
             return nil
@@ -1658,7 +1661,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
         let request = VNTranslationalImageRegistrationRequest(
             targetedCGImage: currentImage,
             options: [:],
-            completionHandler: nil,
+            completionHandler: nil
         )
         let handler = VNSequenceRequestHandler()
 
@@ -1690,7 +1693,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
     private func detectStaticSideBandWidth(
         previous: RasterImage,
         current: RasterImage,
-        fromLeading: Bool,
+        fromLeading: Bool
     ) -> Int {
         let maxBandWidth = min(previous.width / 6, 120)
         let step = max(2, min(8, previous.width / 220))
@@ -1714,7 +1717,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
                 xStart: xStart,
                 xEnd: xEnd,
                 columnStride: 2,
-                rowStride: 3,
+                rowStride: 3
             )
 
             if difference < 5.0 {
@@ -1730,7 +1733,7 @@ final nonisolated class ScrollingCaptureStitcher: @unchecked Sendable {
     private func matchingColumnBounds(
         width: Int,
         leadingStaticWidth: Int,
-        trailingStaticWidth: Int,
+        trailingStaticWidth: Int
     ) -> (Int, Int)? {
         let safetyInset = max(10, width / 48)
         let xStart = max(leadingStaticWidth, leadingStaticWidth + safetyInset)

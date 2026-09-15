@@ -19,7 +19,7 @@
 
         static func buildPath(
             from metadata: RecordingMetadata,
-            segment: ZoomSegment,
+            segment: ZoomSegment
         ) -> [AutoFocusCameraSample] {
             guard segment.isAutoMode else { return [] }
 
@@ -32,11 +32,11 @@
             let cropHalfHeight = 0.5 / zoomLevel
             let safeHalfWidth = max(
                 cropHalfWidth * settings.focusMargin.clamped(to: AutoFocusSettings.focusMarginRange),
-                0.02,
+                0.02
             )
             let safeHalfHeight = max(
                 cropHalfHeight * settings.focusMargin.clamped(to: AutoFocusSettings.focusMarginRange),
-                0.02,
+                0.02
             )
 
             var lastVisiblePoint = samples.first(where: \.isInsideCapture)?.point.clampedToUnitRect
@@ -44,13 +44,13 @@
             var currentCenter = clampCenter(
                 lastVisiblePoint,
                 cropHalfWidth: cropHalfWidth,
-                cropHalfHeight: cropHalfHeight,
+                cropHalfHeight: cropHalfHeight
             )
 
             let minimumDelta = 1.0 / Double(max(metadata.samplesPerSecond, 1))
             let maxResampleStep: TimeInterval = 1.0 / 60.0
             var path: [AutoFocusCameraSample] = [
-                AutoFocusCameraSample(time: samples[0].time, center: currentCenter),
+                AutoFocusCameraSample(time: samples[0].time, center: currentCenter)
             ]
 
             var previousTime = samples[0].time
@@ -67,13 +67,13 @@
                 let filteredCursorTarget = clampedCursorPoint(
                     from: previousCursorPoint,
                     to: cursorTarget,
-                    deltaTime: deltaTime,
+                    deltaTime: deltaTime
                 )
                 let stepCount = max(1, Int(ceil(deltaTime / maxResampleStep)))
                 let motion = motionIntensity(
                     from: previousCursorPoint,
                     to: filteredCursorTarget,
-                    deltaTime: deltaTime,
+                    deltaTime: deltaTime
                 )
 
                 for step in 1 ... stepCount {
@@ -81,7 +81,7 @@
                     let interpolatedCursor = interpolate(
                         from: previousCursorPoint,
                         to: filteredCursorTarget,
-                        progress: progress,
+                        progress: progress
                     )
                     let adaptiveSafeHalfWidth = max(safeHalfWidth * (1 - 0.45 * motion), 0.015)
                     let adaptiveSafeHalfHeight = max(safeHalfHeight * (1 - 0.45 * motion), 0.015)
@@ -92,29 +92,29 @@
                         safeHalfWidth: adaptiveSafeHalfWidth,
                         safeHalfHeight: adaptiveSafeHalfHeight,
                         cropHalfWidth: cropHalfWidth,
-                        cropHalfHeight: cropHalfHeight,
+                        cropHalfHeight: cropHalfHeight
                     )
 
                     let alpha = smoothingAlpha(
                         deltaTime: deltaTime / Double(stepCount),
                         followSpeed: settings.followSpeed.clamped(to: AutoFocusSettings.followSpeedRange),
-                        motionIntensity: motion,
+                        motionIntensity: motion
                     )
                     currentCenter = CGPoint(
                         x: currentCenter.x + (targetCenter.x - currentCenter.x) * alpha,
-                        y: currentCenter.y + (targetCenter.y - currentCenter.y) * alpha,
+                        y: currentCenter.y + (targetCenter.y - currentCenter.y) * alpha
                     )
                     currentCenter = clampCenter(
                         currentCenter,
                         cropHalfWidth: cropHalfWidth,
-                        cropHalfHeight: cropHalfHeight,
+                        cropHalfHeight: cropHalfHeight
                     )
 
                     path.append(
                         AutoFocusCameraSample(
                             time: previousTime + (deltaTime * Double(step) / Double(stepCount)),
-                            center: currentCenter,
-                        ),
+                            center: currentCenter
+                        )
                     )
                 }
 
@@ -129,7 +129,7 @@
             metadata: RecordingMetadata,
             segment: ZoomSegment,
             path: [AutoFocusCameraSample],
-            lockThreshold: CGFloat = 0.08,
+            lockThreshold: CGFloat = 0.08
         ) -> AutoFocusAccuracyMetrics {
             let samples = canonicalSamples(from: metadata)
                 .filter { $0.time >= segment.startTime && $0.time <= segment.endTime }
@@ -166,7 +166,7 @@
                 sampleCount: totalCount,
                 lockAccuracy: Double(lockedSamples) / Double(totalCount),
                 visibilityRate: Double(visibleSamples) / Double(totalCount),
-                meanError: totalError / Double(totalCount),
+                meanError: totalError / Double(totalCount)
             )
         }
 
@@ -174,12 +174,12 @@
             at time: TimeInterval,
             segment: ZoomSegment,
             path: [AutoFocusCameraSample],
-            transitionDuration: TimeInterval,
+            transitionDuration: TimeInterval
         ) -> VideoEditorCameraState {
             let interpolated = ZoomCalculator.interpolateZoom(
                 segment: segment,
                 currentTime: time,
-                transitionDuration: transitionDuration,
+                transitionDuration: transitionDuration
             )
 
             guard interpolated.level > 1.0 else {
@@ -190,7 +190,7 @@
             let blendedCenter = ZoomCalculator.interpolateCenter(
                 from: ZoomCalculator.neutralCenter,
                 to: targetCenter,
-                progress: interpolated.progress,
+                progress: interpolated.progress
             )
             return VideoEditorCameraState(zoomLevel: interpolated.level, center: blendedCenter)
         }
@@ -200,13 +200,13 @@
             segments: [ZoomSegment],
             autoFocusPaths: [UUID: [AutoFocusCameraSample]],
             transitionDuration: TimeInterval,
-            viewportTimeline: VideoEditorViewportTimeline = .identity,
+            viewportTimeline: VideoEditorViewportTimeline = .identity
         ) -> VideoEditorCameraState {
             if viewportTimeline != .identity {
                 let frame = viewportTimeline.frame(at: time)
                 return VideoEditorCameraState(
                     zoomLevel: CGFloat(frame.magnification),
-                    center: frame.anchor,
+                    center: frame.anchor
                 )
             }
 
@@ -219,23 +219,23 @@
                 let interpolated = ZoomCalculator.interpolateZoom(
                     segment: activeSegment,
                     currentTime: time,
-                    transitionDuration: transitionDuration,
+                    transitionDuration: transitionDuration
                 )
                 let blendedCenter = ZoomCalculator.interpolateCenter(
                     from: ZoomCalculator.neutralCenter,
                     to: interpolated.center,
-                    progress: interpolated.progress,
+                    progress: interpolated.progress
                 )
                 return VideoEditorCameraState(
                     zoomLevel: interpolated.level,
-                    center: blendedCenter,
+                    center: blendedCenter
                 )
             case .auto:
                 return cameraState(
                     at: time,
                     segment: activeSegment,
                     path: autoFocusPaths[activeSegment.id] ?? [],
-                    transitionDuration: transitionDuration,
+                    transitionDuration: transitionDuration
                 )
             }
         }
@@ -243,7 +243,7 @@
         static func trimmedPath(
             _ path: [AutoFocusCameraSample],
             trimStart: TimeInterval,
-            trimEnd: TimeInterval,
+            trimEnd: TimeInterval
         ) -> [AutoFocusCameraSample] {
             guard !path.isEmpty, trimEnd > trimStart else { return [] }
 
@@ -255,16 +255,16 @@
                 .map { sample in
                     AutoFocusCameraSample(
                         time: sample.time - trimStart,
-                        center: sample.center,
+                        center: sample.center
                     )
                 }
 
             trimmed.insert(
                 AutoFocusCameraSample(time: 0, center: startCenter),
-                at: 0,
+                at: 0
             )
             trimmed.append(
-                AutoFocusCameraSample(time: trimEnd - trimStart, center: endCenter),
+                AutoFocusCameraSample(time: trimEnd - trimStart, center: endCenter)
             )
 
             return deduplicated(trimmed)
@@ -274,7 +274,7 @@
         /// monotonic increasing so sample order is preserved.
         static func scaledPath(
             _ path: [AutoFocusCameraSample],
-            map: SpeedTimeMap,
+            map: SpeedTimeMap
         ) -> [AutoFocusCameraSample] {
             guard !path.isEmpty else { return [] }
             let scaled = path.map { sample in
@@ -317,14 +317,14 @@
 
             return CGPoint(
                 x: previous.center.x + (next.center.x - previous.center.x) * progress,
-                y: previous.center.y + (next.center.y - previous.center.y) * progress,
+                y: previous.center.y + (next.center.y - previous.center.y) * progress
             )
         }
 
         private static func smoothingAlpha(
             deltaTime: TimeInterval,
             followSpeed: Double,
-            motionIntensity: CGFloat,
+            motionIntensity: CGFloat
         ) -> CGFloat {
             let responseRate = 2.0 + (followSpeed * 10.0) + (Double(motionIntensity) * 6.0)
             let alpha = 1.0 - exp(-responseRate * deltaTime)
@@ -337,7 +337,7 @@
             safeHalfWidth: CGFloat,
             safeHalfHeight: CGFloat,
             cropHalfWidth: CGFloat,
-            cropHalfHeight: CGFloat,
+            cropHalfHeight: CGFloat
         ) -> CGPoint {
             var target = currentCenter
 
@@ -356,18 +356,18 @@
             return clampCenter(
                 target,
                 cropHalfWidth: cropHalfWidth,
-                cropHalfHeight: cropHalfHeight,
+                cropHalfHeight: cropHalfHeight
             )
         }
 
         private static func clampCenter(
             _ center: CGPoint,
             cropHalfWidth: CGFloat,
-            cropHalfHeight: CGFloat,
+            cropHalfHeight: CGFloat
         ) -> CGPoint {
             CGPoint(
                 x: center.x.clamped(to: cropHalfWidth ... (1 - cropHalfWidth)),
-                y: center.y.clamped(to: cropHalfHeight ... (1 - cropHalfHeight)),
+                y: center.y.clamped(to: cropHalfHeight ... (1 - cropHalfHeight))
             )
         }
 
@@ -376,7 +376,8 @@
 
             for sample in path {
                 if let lastSample = deduplicatedPath.last,
-                   abs(lastSample.time - sample.time) < 0.0001 {
+                   abs(lastSample.time - sample.time) < 0.0001
+                {
                     deduplicatedPath[deduplicatedPath.count - 1] = sample
                 } else {
                     deduplicatedPath.append(sample)
@@ -404,7 +405,7 @@
                 let canonicalSample = CanonicalCursorSample(
                     time: sample.time,
                     point: point.clampedToUnitRect,
-                    isInsideCapture: sample.isInsideCapture,
+                    isInsideCapture: sample.isInsideCapture
                 )
 
                 if let last = canonical.last, abs(last.time - canonicalSample.time) < 0.0001 {
@@ -419,7 +420,7 @@
 
         private static func canonicalPoint(
             for sample: RecordedMouseSample,
-            coordinateSpace: RecordingCoordinateSpace,
+            coordinateSpace: RecordingCoordinateSpace
         ) -> CGPoint {
             switch coordinateSpace {
             case .topLeftNormalized:
@@ -427,7 +428,7 @@
             case .bottomLeftNormalized:
                 CGPoint(
                     x: sample.normalizedX,
-                    y: 1 - sample.normalizedY,
+                    y: 1 - sample.normalizedY
                 )
             }
         }
@@ -435,7 +436,7 @@
         private static func clampedCursorPoint(
             from previous: CGPoint,
             to current: CGPoint,
-            deltaTime: TimeInterval,
+            deltaTime: TimeInterval
         ) -> CGPoint {
             let maxSpeed: CGFloat = 4.0 // normalized units per second
             let minDelta = max(deltaTime, 0.0001)
@@ -452,7 +453,7 @@
         private static func motionIntensity(
             from previous: CGPoint,
             to current: CGPoint,
-            deltaTime: TimeInterval,
+            deltaTime: TimeInterval
         ) -> CGFloat {
             let minDelta = max(deltaTime, 0.0001)
             let speed = hypot(current.x - previous.x, current.y - previous.y) / CGFloat(minDelta)
@@ -462,7 +463,7 @@
         private static func interpolate(from start: CGPoint, to end: CGPoint, progress: CGFloat) -> CGPoint {
             CGPoint(
                 x: start.x + (end.x - start.x) * progress,
-                y: start.y + (end.y - start.y) * progress,
+                y: start.y + (end.y - start.y) * progress
             )
         }
     }
@@ -471,7 +472,7 @@
         var clampedToUnitRect: CGPoint {
             CGPoint(
                 x: x.clamped(to: 0 ... 1),
-                y: y.clamped(to: 0 ... 1),
+                y: y.clamped(to: 0 ... 1)
             )
         }
     }

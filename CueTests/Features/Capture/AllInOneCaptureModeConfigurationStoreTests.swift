@@ -30,8 +30,8 @@ final class AllInOneCaptureModeConfigurationStoreTests: XCTestCase {
             store.modeOrder,
             [
                 .ocr, .area, .fullscreen, .window, .activeWindow, .annotate, .scrolling, .timer,
-                .objectCutout, .smartElement, .recording,
-            ],
+                .objectCutout, .smartElement, .recording
+            ]
         )
         XCTAssertEqual(store.enabledModes, [.area, .activeWindow, .objectCutout, .smartElement])
     }
@@ -39,7 +39,7 @@ final class AllInOneCaptureModeConfigurationStoreTests: XCTestCase {
     func testLegacyVisibility_enablesNewModesOnce() {
         defaults.set(
             ["area", "fullscreen", "window", "annotate", "scrolling", "timer", "ocr", "recording"],
-            forKey: PreferencesKeys.captureAllInOneModeOrder,
+            forKey: PreferencesKeys.captureAllInOneModeOrder
         )
         defaults.set(["area"], forKey: PreferencesKeys.captureAllInOneEnabledModes)
 
@@ -99,7 +99,7 @@ final class AllInOneCaptureModeConfigurationStoreTests: XCTestCase {
         let recordingIndex = try XCTUnwrap(store.modeOrder.firstIndex(of: .recording))
         store.moveMode(from: IndexSet(integer: recordingIndex), to: 2, videoEnabled: true)
         let annotateIndex = try XCTUnwrap(
-            store.orderedModes(videoEnabled: false, includeDisabled: true).firstIndex(of: .annotate),
+            store.orderedModes(videoEnabled: false, includeDisabled: true).firstIndex(of: .annotate)
         )
         store.moveMode(from: IndexSet(integer: annotateIndex), to: 0, videoEnabled: false)
         XCTAssertEqual(store.modeOrder[2], .recording)

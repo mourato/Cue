@@ -30,7 +30,7 @@
                 return
             }
             let acceleration = (
-                constant.tension * (target - position) - constant.friction * velocity,
+                constant.tension * (target - position) - constant.friction * velocity
             ) / constant.inertia
             velocity += acceleration * dt
             position += velocity * dt

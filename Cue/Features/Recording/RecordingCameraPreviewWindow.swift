@@ -74,7 +74,7 @@
 
         static func frame(
             in selectionRect: CGRect,
-            configuration: RecordingCameraPreviewConfiguration = .default,
+            configuration: RecordingCameraPreviewConfiguration = .default
         ) -> CGRect {
             guard !selectionRect.isEmpty else { return .zero }
 
@@ -85,7 +85,7 @@
             let scale = min(
                 1,
                 availableWidth / max(desiredWidth, 1),
-                availableHeight / max(desiredHeight, 1),
+                availableHeight / max(desiredHeight, 1)
             )
             let fittedWidth = desiredWidth * scale
             let fittedHeight = desiredHeight * scale
@@ -96,14 +96,14 @@
                 x: selectionRect.maxX - fittedWidth - inset,
                 y: selectionRect.minY + inset,
                 width: fittedWidth,
-                height: fittedHeight,
+                height: fittedHeight
             )
         }
 
         static func frame(
             in selectionRect: CGRect,
             configuration: RecordingCameraPreviewConfiguration,
-            normalizedCenter: CGPoint?,
+            normalizedCenter: CGPoint?
         ) -> CGRect {
             let fittedFrame = frame(in: selectionRect, configuration: configuration)
             guard let normalizedCenter, !fittedFrame.isEmpty else { return fittedFrame }
@@ -113,23 +113,23 @@
                     x: selectionRect.minX + normalizedCenter.x * selectionRect.width - fittedFrame.width / 2,
                     y: selectionRect.minY + normalizedCenter.y * selectionRect.height - fittedFrame.height / 2,
                     width: fittedFrame.width,
-                    height: fittedFrame.height,
+                    height: fittedFrame.height
                 ),
-                in: selectionRect,
+                in: selectionRect
             )
         }
 
         static func topLeftNormalizedRect(
             in selectionRect: CGRect,
             configuration: RecordingCameraPreviewConfiguration,
-            normalizedCenter: CGPoint?,
+            normalizedCenter: CGPoint?
         ) -> CGRect? {
             guard selectionRect.width > 0, selectionRect.height > 0 else { return nil }
 
             let previewFrame = frame(
                 in: selectionRect,
                 configuration: configuration,
-                normalizedCenter: normalizedCenter,
+                normalizedCenter: normalizedCenter
             )
             guard !previewFrame.isEmpty else { return nil }
 
@@ -142,7 +142,7 @@
                 x: normalizedX,
                 y: 1 - normalizedBottomY - normalizedHeight,
                 width: normalizedWidth,
-                height: normalizedHeight,
+                height: normalizedHeight
             )
         }
 
@@ -152,14 +152,14 @@
             let bounds = selectionRect.insetBy(dx: inset, dy: inset)
             return CGPoint(
                 x: min(max(origin.x, bounds.minX), max(bounds.minX, bounds.maxX - size.width)),
-                y: min(max(origin.y, bounds.minY), max(bounds.minY, bounds.maxY - size.height)),
+                y: min(max(origin.y, bounds.minY), max(bounds.minY, bounds.maxY - size.height))
             )
         }
 
         static func clampedFrame(_ frame: CGRect, in selectionRect: CGRect) -> CGRect {
             CGRect(
                 origin: clampedOrigin(frame.origin, size: frame.size, in: selectionRect),
-                size: frame.size,
+                size: frame.size
             )
         }
     }
@@ -176,7 +176,7 @@
         let session: AVCaptureSession
         private let sessionQueue = DispatchQueue(
             label: "com.mourato.notinhas.camera.preview",
-            qos: .userInteractive,
+            qos: .userInteractive
         )
 
         init(deviceID: String?) throws {
@@ -230,7 +230,7 @@
             deviceID: String?,
             selectionRect: CGRect,
             configuration: RecordingCameraPreviewConfiguration = .default,
-            normalizedCenter: CGPoint? = nil,
+            normalizedCenter: CGPoint? = nil
         ) {
             guard let cameraSession = try? RecordingCameraPreviewSession(deviceID: deviceID) else {
                 return nil
@@ -246,11 +246,11 @@
                 contentRect: RecordingCameraPreviewPlacement.frame(
                     in: selectionRect,
                     configuration: configuration,
-                    normalizedCenter: normalizedCenter,
+                    normalizedCenter: normalizedCenter
                 ),
                 styleMask: [.borderless, .nonactivatingPanel],
                 backing: .buffered,
-                defer: false,
+                defer: false
             )
 
             configureWindow()
@@ -280,7 +280,7 @@
                 },
                 NSAccessibilityCustomAction(name: L10n.Camera.moveDown) { [weak self] in
                     self?.movePreview(by: CGPoint(x: 0, y: -0.05)) ?? false
-                },
+                }
             ]
 
             previewLayer.videoGravity = .resizeAspectFill
@@ -306,7 +306,7 @@
             guard !selectionRect.isEmpty, !frame.isEmpty else { return nil }
             return CGPoint(
                 x: (frame.midX - selectionRect.minX) / max(selectionRect.width, 1),
-                y: (frame.midY - selectionRect.minY) / max(selectionRect.height, 1),
+                y: (frame.midY - selectionRect.minY) / max(selectionRect.height, 1)
             )
         }
 
@@ -317,7 +317,7 @@
             let previewFrame = RecordingCameraPreviewPlacement.frame(
                 in: selectionRect,
                 configuration: configuration,
-                normalizedCenter: currentCenter,
+                normalizedCenter: currentCenter
             )
 
             guard !previewFrame.isEmpty else {
@@ -337,7 +337,7 @@
             let resizedFrame = RecordingCameraPreviewPlacement.frame(
                 in: selectionRect,
                 configuration: configuration,
-                normalizedCenter: currentCenter,
+                normalizedCenter: currentCenter
             )
             applyFrame(resizedFrame)
         }
@@ -354,7 +354,7 @@
                 let item = NSMenuItem(
                     title: size.displayName,
                     action: #selector(selectPreviewSize(_:)),
-                    keyEquivalent: "",
+                    keyEquivalent: ""
                 )
                 item.target = self
                 item.representedObject = size.rawValue
@@ -372,7 +372,7 @@
                 let item = NSMenuItem(
                     title: shape.displayName,
                     action: #selector(selectPreviewShape(_:)),
-                    keyEquivalent: "",
+                    keyEquivalent: ""
                 )
                 item.target = self
                 item.representedObject = shape.rawValue
@@ -390,7 +390,7 @@
 
             let nextConfiguration = RecordingCameraPreviewConfiguration(
                 size: size,
-                shape: configuration.shape,
+                shape: configuration.shape
             )
             updateConfiguration(nextConfiguration)
             onConfigurationChanged?(nextConfiguration)
@@ -403,7 +403,7 @@
 
             let nextConfiguration = RecordingCameraPreviewConfiguration(
                 size: configuration.size,
-                shape: shape,
+                shape: shape
             )
             updateConfiguration(nextConfiguration)
             onConfigurationChanged?(nextConfiguration)
@@ -457,7 +457,7 @@
                 defaultValue: "Horizontal %d%%, vertical %d%%",
                 comment: "Accessibility value for the camera preview position",
                 Int(normalizedCenter.x * 100),
-                Int(normalizedCenter.y * 100),
+                Int(normalizedCenter.y * 100)
             )
         }
 
@@ -467,12 +467,12 @@
             let currentCenter = normalizedCenter ?? CGPoint(x: 0.5, y: 0.5)
             let nextCenter = CGPoint(
                 x: min(max(currentCenter.x + delta.x, 0), 1),
-                y: min(max(currentCenter.y + delta.y, 0), 1),
+                y: min(max(currentCenter.y + delta.y, 0), 1)
             )
             let nextFrame = RecordingCameraPreviewPlacement.frame(
                 in: selectionRect,
                 configuration: configuration,
-                normalizedCenter: nextCenter,
+                normalizedCenter: nextCenter
             )
             guard !nextFrame.isEmpty else { return false }
 
@@ -489,7 +489,7 @@
         private func continueDrag(with _: NSEvent) {
             let origin = CGPoint(
                 x: dragStartFrameOrigin.x + NSEvent.mouseLocation.x - dragStartMouseLocation.x,
-                y: dragStartFrameOrigin.y + NSEvent.mouseLocation.y - dragStartMouseLocation.y,
+                y: dragStartFrameOrigin.y + NSEvent.mouseLocation.y - dragStartMouseLocation.y
             )
             setFrameOrigin(RecordingCameraPreviewPlacement.clampedOrigin(origin, size: frame.size, in: selectionRect))
             updatePreviewAppearance()

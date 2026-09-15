@@ -33,7 +33,7 @@
                 contentRect: recordingRect,
                 styleMask: [.borderless],
                 backing: .buffered,
-                defer: false,
+                defer: false
             )
 
             configureWindow()

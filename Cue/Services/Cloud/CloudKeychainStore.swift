@@ -14,7 +14,7 @@ enum CloudError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .keychainError(let reason):
+        case let .keychainError(reason):
             L10n.CloudOperation.keychainError(reason)
         }
     }
@@ -60,13 +60,13 @@ enum CloudKeychainItem {
             [
                 "com.mourato.notinhas.cloud.accessKey",
                 "com.trongduong.snapzy.cloud.accessKey",
-                "com.snapzy.cloud.accessKey",
+                "com.snapzy.cloud.accessKey"
             ]
         case .secretKey:
             [
                 "com.mourato.notinhas.cloud.secretKey",
                 "com.trongduong.snapzy.cloud.secretKey",
-                "com.snapzy.cloud.secretKey",
+                "com.snapzy.cloud.secretKey"
             ]
         case .passwordHash:
             ["com.mourato.notinhas.cloud.passwordHash", "com.trongduong.snapzy.cloud.passwordHash"]
@@ -128,25 +128,25 @@ enum CloudKeychainStore {
     private static let legacyServices = [
         NotinhasStoragePaths.destinationKeychainService,
         NotinhasStoragePaths.legacyCurrentKeychainService,
-        NotinhasStoragePaths.legacyOlderKeychainService,
+        NotinhasStoragePaths.legacyOlderKeychainService
     ]
 
     static func read(item: CloudKeychainItem, context: String) -> CloudKeychainReadOutcome {
         let primaryLocation = Location(
             service: currentService,
             account: item.account,
-            usesDataProtection: true,
+            usesDataProtection: true
         )
         let primaryOutcome = readValue(at: primaryLocation)
 
         switch primaryOutcome {
-        case .success(let value):
+        case let .success(value):
             return .success(value)
         case .itemNotFound:
             break
-        case .error(let status) where status == errSecMissingEntitlement:
+        case let .error(status) where status == errSecMissingEntitlement:
             logger.notice(
-                "Data-protection keychain unavailable (\(status, privacy: .public)); falling back [\(context, privacy: .public)]",
+                "Data-protection keychain unavailable (\(status, privacy: .public)); falling back [\(context, privacy: .public)]"
             )
             DiagnosticLogger.shared.log(
                 .warning,
@@ -155,8 +155,8 @@ enum CloudKeychainStore {
                 context: [
                     "operation": context,
                     "item": itemDiagnosticName(item),
-                    "status": "\(status)",
-                ],
+                    "status": "\(status)"
+                ]
             )
         case .authRequired, .interactionNotAllowed, .error:
             return primaryOutcome
@@ -165,11 +165,11 @@ enum CloudKeychainStore {
         for legacyLocation in legacyLocations(for: item) {
             let legacyOutcome = readValue(at: legacyLocation)
             switch legacyOutcome {
-            case .success(let value):
+            case let .success(value):
                 if shouldMigrateLegacyValue(
                     from: legacyLocation,
                     item: item,
-                    primaryOutcome: primaryOutcome,
+                    primaryOutcome: primaryOutcome
                 ) {
                     migrateLegacyValue(value, item: item, from: legacyLocation, context: context)
                 }
@@ -190,7 +190,7 @@ enum CloudKeychainStore {
         let primaryLocation = Location(
             service: currentService,
             account: item.account,
-            usesDataProtection: true,
+            usesDataProtection: true
         )
         let primaryPresence = probeValue(at: primaryLocation)
 
@@ -199,9 +199,9 @@ enum CloudKeychainStore {
             return .present
         case .absent:
             break
-        case .error(let status) where status == errSecMissingEntitlement:
+        case let .error(status) where status == errSecMissingEntitlement:
             logger.notice(
-                "Data-protection keychain unavailable for presence probe (\(status, privacy: .public)); falling back [\(context, privacy: .public)]",
+                "Data-protection keychain unavailable for presence probe (\(status, privacy: .public)); falling back [\(context, privacy: .public)]"
             )
             DiagnosticLogger.shared.log(
                 .warning,
@@ -210,8 +210,8 @@ enum CloudKeychainStore {
                 context: [
                     "operation": context,
                     "item": itemDiagnosticName(item),
-                    "status": "\(status)",
-                ],
+                    "status": "\(status)"
+                ]
             )
         case .error:
             // Locked or otherwise inaccessible items still count as present so UI
@@ -240,14 +240,14 @@ enum CloudKeychainStore {
         let dataProtectionLocation = Location(
             service: currentService,
             account: item.account,
-            usesDataProtection: true,
+            usesDataProtection: true
         )
         let primaryAttempt = upsertValue(data, at: dataProtectionLocation)
         switch primaryAttempt {
         case .success:
             cleanupLegacyLocations(for: item)
             return dataProtectionLocation.description
-        case .updateFailed(let status), .addFailed(let status):
+        case let .updateFailed(status), let .addFailed(status):
             guard status == errSecMissingEntitlement else {
                 throw keychainError(for: primaryAttempt)
             }
@@ -256,19 +256,19 @@ enum CloudKeychainStore {
         let fileBasedLocation = Location(
             service: currentService,
             account: item.account,
-            usesDataProtection: false,
+            usesDataProtection: false
         )
         let fallbackAttempt = upsertValue(data, at: fileBasedLocation)
         switch fallbackAttempt {
         case .success:
             logger.notice(
-                "Stored cloud secret in file-based keychain due missing entitlement [\(item.account, privacy: .public)]",
+                "Stored cloud secret in file-based keychain due missing entitlement [\(item.account, privacy: .public)]"
             )
             DiagnosticLogger.shared.log(
                 .warning,
                 .cloud,
                 "Cloud secret stored in file-based keychain due missing data-protection entitlement",
-                context: ["item": itemDiagnosticName(item)],
+                context: ["item": itemDiagnosticName(item)]
             )
             cleanupLegacyLocations(for: item, excluding: fileBasedLocation)
             return fileBasedLocation.description
@@ -283,7 +283,7 @@ enum CloudKeychainStore {
         let primaryLocation = Location(
             service: currentService,
             account: item.account,
-            usesDataProtection: true,
+            usesDataProtection: true
         )
         collectDeleteIssue(at: primaryLocation, into: &issues)
 
@@ -297,7 +297,7 @@ enum CloudKeychainStore {
         _ value: String,
         item: CloudKeychainItem,
         from location: Location,
-        context: String,
+        context: String
     ) {
         do {
             let storedLocationDescription = try upsert(item: item, value: value)
@@ -308,18 +308,18 @@ enum CloudKeychainStore {
                 .info,
                 .cloud,
                 "Legacy keychain item migrated",
-                context: ["operation": context, "item": itemDiagnosticName(item)],
+                context: ["operation": context, "item": itemDiagnosticName(item)]
             )
         } catch {
             logger
                 .error(
-                    "Legacy keychain migration failed for \(context, privacy: .public): \(error.localizedDescription)",
+                    "Legacy keychain migration failed for \(context, privacy: .public): \(error.localizedDescription)"
                 )
             DiagnosticLogger.shared.logError(
                 .cloud,
                 error,
                 "Legacy keychain item migration failed",
-                context: ["operation": context, "item": itemDiagnosticName(item)],
+                context: ["operation": context, "item": itemDiagnosticName(item)]
             )
         }
     }
@@ -327,9 +327,9 @@ enum CloudKeychainStore {
     private static func shouldMigrateLegacyValue(
         from location: Location,
         item: CloudKeychainItem,
-        primaryOutcome: CloudKeychainReadOutcome,
+        primaryOutcome: CloudKeychainReadOutcome
     ) -> Bool {
-        guard case .error(let status) = primaryOutcome, status == errSecMissingEntitlement else {
+        guard case let .error(status) = primaryOutcome, status == errSecMissingEntitlement else {
             return true
         }
 
@@ -338,7 +338,7 @@ enum CloudKeychainStore {
 
     private static func legacyLocations(for item: CloudKeychainItem) -> [Location] {
         var locations = [
-            Location(service: currentService, account: item.account, usesDataProtection: false),
+            Location(service: currentService, account: item.account, usesDataProtection: false)
         ]
 
         for service in legacyServices {
@@ -411,14 +411,14 @@ enum CloudKeychainStore {
 
     private static func cleanupLegacyLocations(
         for item: CloudKeychainItem,
-        excluding preservedLocation: Location? = nil,
+        excluding preservedLocation: Location? = nil
     ) {
         for location in legacyLocations(for: item) {
             guard location != preservedLocation else { continue }
             let status = SecItemDelete(baseQuery(for: location) as CFDictionary)
             guard status != errSecSuccess, status != errSecItemNotFound else { continue }
             logger.error(
-                "Legacy cleanup failed at \(location.description, privacy: .public): \(status, privacy: .public)",
+                "Legacy cleanup failed at \(location.description, privacy: .public): \(status, privacy: .public)"
             )
             DiagnosticLogger.shared.log(
                 .error,
@@ -427,15 +427,15 @@ enum CloudKeychainStore {
                 context: [
                     "item": itemDiagnosticName(item),
                     "location": location.description,
-                    "status": "\(status)",
-                ],
+                    "status": "\(status)"
+                ]
             )
         }
     }
 
     private static func collectDeleteIssue(
         at location: Location,
-        into issues: inout [CloudKeychainDeleteIssue],
+        into issues: inout [CloudKeychainDeleteIssue]
     ) {
         let status = SecItemDelete(baseQuery(for: location) as CFDictionary)
         guard !(location.usesDataProtection && status == errSecMissingEntitlement) else { return }
@@ -444,13 +444,13 @@ enum CloudKeychainStore {
             .error,
             .cloud,
             "Cloud keychain delete issue collected",
-            context: ["location": location.description, "status": "\(status)"],
+            context: ["location": location.description, "status": "\(status)"]
         )
         issues.append(
             CloudKeychainDeleteIssue(
                 locationDescription: location.description,
-                status: status,
-            ),
+                status: status
+            )
         )
     }
 
@@ -458,7 +458,7 @@ enum CloudKeychainStore {
         var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: location.account,
-            kSecAttrService as String: location.service,
+            kSecAttrService as String: location.service
         ]
 
         if location.usesDataProtection {
@@ -472,7 +472,7 @@ enum CloudKeychainStore {
         let matchQuery = baseQuery(for: location)
         let updateStatus = SecItemUpdate(
             matchQuery as CFDictionary,
-            updateAttributes(for: location, data: data) as CFDictionary,
+            updateAttributes(for: location, data: data) as CFDictionary
         )
         if updateStatus == errSecSuccess {
             return .success
@@ -493,7 +493,7 @@ enum CloudKeychainStore {
 
     private static func updateAttributes(for location: Location, data: Data) -> [String: Any] {
         var attributes: [String: Any] = [
-            kSecValueData as String: data,
+            kSecValueData as String: data
         ]
         if location.usesDataProtection {
             attributes[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlocked
@@ -511,9 +511,9 @@ enum CloudKeychainStore {
         switch result {
         case .success:
             CloudError.keychainError(L10n.CloudOperation.secItemAddFailed(Int(errSecInternalError)))
-        case .updateFailed(let status):
+        case let .updateFailed(status):
             CloudError.keychainError(L10n.CloudOperation.secItemUpdateFailed(Int(status)))
-        case .addFailed(let status):
+        case let .addFailed(status):
             CloudError.keychainError(L10n.CloudOperation.secItemAddFailed(Int(status)))
         }
     }

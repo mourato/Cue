@@ -141,12 +141,12 @@ struct CueNoteEditorView: View {
                 .first { AnnotateColorPaletteStore.colorsMatch($0.color, color.color) }?
                 .accessibilityName
                 ?? CuePaletteColor.matching(color)?.localizedName
-                ?? CueL10n.selected,
+                ?? CueL10n.selected
         )
         .popover(isPresented: $showsColorPopover, arrowEdge: .bottom) {
             ColorPickerRow(
                 selectedColor: colorBinding,
-                colors: AnnotateBuiltInColorPalette.annotationColors,
+                colors: AnnotateBuiltInColorPalette.annotationColors
             )
             .padding(PopoverTokens.panelContentInset)
             .frame(width: PopoverTokens.noteColorPanelWidth)
@@ -162,7 +162,7 @@ struct CueNoteEditorView: View {
                     style: areaStyle,
                     color: color.color,
                     width: 16,
-                    height: 12,
+                    height: 12
                 )
             }
         }
@@ -183,7 +183,7 @@ struct CueNoteEditorView: View {
                             style: style,
                             isSelected: areaStyle == style,
                             color: color.color,
-                            action: { areaStyle = style },
+                            action: { areaStyle = style }
                         )
                     }
                 }
@@ -202,7 +202,7 @@ struct CueNoteEditorView: View {
                     .fill(Color.primary)
                     .frame(
                         width: 16,
-                        height: strokePreviewHeight(for: AnnotationStrokeWidth.nearest(to: areaStrokeWidth)),
+                        height: strokePreviewHeight(for: AnnotationStrokeWidth.nearest(to: areaStrokeWidth))
                     )
             }
         }
@@ -210,7 +210,7 @@ struct CueNoteEditorView: View {
         .help(CueL10n.areaStrokeWidthLabel)
         .accessibilityLabel(CueL10n.areaStrokeWidthLabel)
         .accessibilityValue(
-            L10n.Common.strokeWidthOption(Int(AnnotationStrokeWidth.nearest(to: areaStrokeWidth).points)),
+            L10n.Common.strokeWidthOption(Int(AnnotationStrokeWidth.nearest(to: areaStrokeWidth).points))
         )
         .popover(isPresented: $showsStrokeWidthPopover, arrowEdge: .bottom) {
             VStack(alignment: .leading, spacing: PopoverTokens.panelItemSpacing) {
@@ -227,7 +227,7 @@ struct CueNoteEditorView: View {
     }
 
     private func compactPopoverTriggerLabel(
-        @ViewBuilder content: () -> some View,
+        @ViewBuilder content: () -> some View
     ) -> some View {
         HStack(spacing: 5) {
             content()
@@ -238,11 +238,11 @@ struct CueNoteEditorView: View {
         .frame(width: 42, height: 26)
         .background(
             RoundedRectangle(cornerRadius: 7)
-                .fill(SidebarColors.itemDefault),
+                .fill(SidebarColors.itemDefault)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 7)
-                .stroke(Color.secondary.opacity(0.14), lineWidth: 1),
+                .stroke(Color.secondary.opacity(0.14), lineWidth: 1)
         )
     }
 
@@ -274,7 +274,7 @@ struct CueNoteEditorView: View {
             set: { newColor in
                 guard let rgba = RGBAColor(color: newColor) else { return }
                 color = rgba
-            },
+            }
         )
     }
 }

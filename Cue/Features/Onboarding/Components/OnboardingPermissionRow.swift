@@ -32,7 +32,7 @@ struct PermissionRow: View {
                 .frame(width: 44, height: 44)
                 .background(
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(VSDesignSystem.Colors.secondaryButtonFill),
+                        .fill(VSDesignSystem.Colors.secondaryButtonFill)
                 )
 
             // Title and Description
@@ -73,7 +73,7 @@ struct PermissionRow: View {
                     StatusBadge(
                         label: badge.label,
                         systemImage: badge.icon,
-                        tint: badge.color,
+                        tint: badge.color
                     )
                 }
 
@@ -89,11 +89,11 @@ struct PermissionRow: View {
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(VSDesignSystem.Colors.cardFill),
+                .fill(VSDesignSystem.Colors.cardFill)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(VSDesignSystem.Colors.cardStroke, lineWidth: 1),
+                .stroke(VSDesignSystem.Colors.cardStroke, lineWidth: 1)
         )
     }
 
@@ -103,7 +103,7 @@ struct PermissionRow: View {
             (grantedLabel, FeedbackStyle(tone: .success).iconColor, "checkmark.circle.fill")
         case .needsAction:
             nil
-        case .blocked(let label, _):
+        case let .blocked(label, _):
             (label, FeedbackStyle(tone: .warning).iconColor, "exclamationmark.triangle.fill")
         }
     }
@@ -116,7 +116,7 @@ struct PermissionRow: View {
         switch status {
         case .granted:
             nil
-        case .needsAction(let buttonTitle), .blocked(_, let buttonTitle):
+        case let .needsAction(buttonTitle), let .blocked(_, buttonTitle):
             buttonTitle
         }
     }
@@ -125,7 +125,7 @@ struct PermissionRow: View {
         onboardingLocalization.string(
             "permission-row.required",
             defaultValue: "Required",
-            comment: "Badge label shown on required permission rows",
+            comment: "Badge label shown on required permission rows"
         )
     }
 
@@ -133,7 +133,7 @@ struct PermissionRow: View {
         onboardingLocalization.string(
             "permission-row.optional",
             defaultValue: "Optional",
-            comment: "Badge label shown on optional permission rows",
+            comment: "Badge label shown on optional permission rows"
         )
     }
 
@@ -141,7 +141,7 @@ struct PermissionRow: View {
         onboardingLocalization.string(
             "permission-row.granted",
             defaultValue: "Granted",
-            comment: "Badge label shown when a permission has been granted",
+            comment: "Badge label shown when a permission has been granted"
         )
     }
 }
@@ -154,7 +154,7 @@ struct PermissionRow: View {
             description: "Required for screenshots",
             status: .needsAction(buttonTitle: "Grant Access"),
             isRequired: true,
-            onGrant: {},
+            onGrant: {}
         )
         PermissionRow(
             icon: "mic.fill",
@@ -162,7 +162,7 @@ struct PermissionRow: View {
             description: "Optional for voice recording",
             status: .granted,
             isRequired: false,
-            onGrant: {},
+            onGrant: {}
         )
     }
     .padding()

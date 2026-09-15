@@ -65,7 +65,7 @@
             cameraSize: CGSize = .zero,
             cameraIsMirrored: Bool = false,
             screenTrackID: CMPersistentTrackID? = nil,
-            cursorScale: CGFloat = VideoEditorStylePreset.defaultCursorScale,
+            cursorScale: CGFloat = VideoEditorStylePreset.defaultCursorScale
         ) {
             self.zooms = zooms.filter(\.isEnabled)
             self.autoFocusPaths = autoFocusPaths
@@ -94,7 +94,7 @@
             if backgroundStyle != .none, backgroundPadding > 0 {
                 paddedRenderSize = CGSize(
                     width: renderSize.width + (backgroundPadding * 2),
-                    height: renderSize.height + (backgroundPadding * 2),
+                    height: renderSize.height + (backgroundPadding * 2)
                 )
             } else {
                 paddedRenderSize = renderSize
@@ -106,12 +106,12 @@
         /// Create a video composition that applies zoom effects
         func createVideoComposition(
             for asset: AVAsset,
-            timeRange: CMTimeRange,
+            timeRange: CMTimeRange
         ) async throws -> AVMutableVideoComposition {
             print("🎬 [ZoomCompositor] Creating video composition")
             print("🎬 [ZoomCompositor] Render size: \(renderSize)")
             print(
-                "🎬 [ZoomCompositor] Time range: \(CMTimeGetSeconds(timeRange.start))s - \(CMTimeGetSeconds(timeRange.end))s",
+                "🎬 [ZoomCompositor] Time range: \(CMTimeGetSeconds(timeRange.start))s - \(CMTimeGetSeconds(timeRange.end))s"
             )
             print("🎬 [ZoomCompositor] Zooms to apply: \(zooms.count)")
 
@@ -138,7 +138,7 @@
             if cameraTrackID != nil, resolvedCameraID == nil {
                 throw ZoomCompositorError.trackMismatch(
                     expected: cameraTrackID!,
-                    available: videoTracks.map(\.trackID),
+                    available: videoTracks.map(\.trackID)
                 )
             }
             let instruction = ZoomVideoCompositionInstruction(
@@ -164,7 +164,7 @@
                 cameraLayout: cameraLayout,
                 cameraSize: cameraSize,
                 cameraIsMirrored: cameraIsMirrored,
-                cursorScale: cursorScale,
+                cursorScale: cursorScale
             )
             print("🎬 [ZoomCompositor] Created instruction with trackID: \(videoTrack.trackID)")
 
@@ -188,10 +188,10 @@
                     L10n.ZoomCompositor.noVideoTrack
                 case .compositionFailed:
                     L10n.ZoomCompositor.compositionFailed
-                case .trackMismatch(let expected, let available):
+                case let .trackMismatch(expected, available):
                     L10n.ZoomCompositor.trackMismatch(
                         String(expected),
-                        available.map(String.init(describing:)).joined(separator: ", "),
+                        available.map(String.init(describing:)).joined(separator: ", ")
                     )
                 }
             }
@@ -268,7 +268,7 @@
             cameraLayout: VideoEditorCameraOverlayLayout? = nil,
             cameraSize: CGSize = .zero,
             cameraIsMirrored: Bool = false,
-            cursorScale: CGFloat = VideoEditorStylePreset.defaultCursorScale,
+            cursorScale: CGFloat = VideoEditorStylePreset.defaultCursorScale
         ) {
             self.timeRange = timeRange
             self.zooms = zooms
@@ -313,14 +313,14 @@
         var sourcePixelBufferAttributes: [String: any Sendable]? {
             [
                 kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
-                kCVPixelBufferMetalCompatibilityKey as String: true,
+                kCVPixelBufferMetalCompatibilityKey as String: true
             ]
         }
 
         var requiredPixelBufferAttributesForRenderContext: [String: any Sendable] {
             [
                 kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
-                kCVPixelBufferMetalCompatibilityKey as String: true,
+                kCVPixelBufferMetalCompatibilityKey as String: true
             ]
         }
 
@@ -384,7 +384,7 @@
                     .error,
                     .export,
                     "Zoom compositor request failed; invalid instruction type",
-                    context: ["frame": "\(frameCount)"],
+                    context: ["frame": "\(frameCount)"]
                 )
                 request.finish(with: ZoomCompositor.ZoomCompositorError.compositionFailed)
                 return
@@ -402,13 +402,13 @@
                     context: [
                         "frame": "\(frameCount)",
                         "expectedTrackID": "\(instruction.trackID)",
-                        "availableTrackCount": "\(availableTrackIDs.count)",
-                    ],
+                        "availableTrackCount": "\(availableTrackIDs.count)"
+                    ]
                 )
 
                 request.finish(with: ZoomCompositor.ZoomCompositorError.trackMismatch(
                     expected: instruction.trackID,
-                    available: availableTrackIDs,
+                    available: availableTrackIDs
                 ))
                 return
             }
@@ -419,7 +419,7 @@
                     .warning,
                     .export,
                     "Camera compositor frame missing; preserved screen frame",
-                    context: ["frame": "\(frameCount)"],
+                    context: ["frame": "\(frameCount)"]
                 )
             }
 
@@ -432,7 +432,7 @@
                 let frame = reframeTrack.frame(at: currentTime)
                 cameraState = VideoEditorCameraState(
                     zoomLevel: CGFloat(frame.magnification),
-                    center: frame.anchor,
+                    center: frame.anchor
                 )
             } else {
                 cameraState = VideoEditorAutoFocusEngine.resolvedCameraState(
@@ -440,14 +440,14 @@
                     segments: instruction.zooms,
                     autoFocusPaths: instruction.autoFocusPaths,
                     transitionDuration: instruction.transitionDuration,
-                    viewportTimeline: instruction.viewportTimeline,
+                    viewportTimeline: instruction.viewportTimeline
                 )
             }
             let zoomLevel = cameraState.zoomLevel
             let zoomCenter = cameraState.center
             let sourceSize = CGSize(
                 width: CVPixelBufferGetWidth(sourceBuffer),
-                height: CVPixelBufferGetHeight(sourceBuffer),
+                height: CVPixelBufferGetHeight(sourceBuffer)
             )
             let needsCanvasFit = abs(sourceSize.width - instruction.renderSize.width) > 0.5
                 || abs(sourceSize.height - instruction.renderSize.height) > 0.5
@@ -457,7 +457,8 @@
                 || instruction.showsClickEffects
                 || instruction.showsKeystrokes
             if cameraBuffer == nil, zoomLevel <= minimumRenderableZoomLevel, !instruction.hasBackground,
-               !needsCanvasFit, !hasOverlays {
+               !needsCanvasFit, !hasOverlays
+            {
                 request.finish(withComposedVideoFrame: sourceBuffer)
                 return
             }
@@ -469,7 +470,7 @@
                 center: zoomCenter,
                 currentTime: currentTime,
                 instruction: instruction,
-                cameraBuffer: cameraBuffer,
+                cameraBuffer: cameraBuffer
             ) else {
                 print("❌ [Compositor] Frame \(frameCount): applyEffects returned nil, passing through")
                 if frameCount == 1 || frameCount % 30 == 0 {
@@ -477,7 +478,7 @@
                         .warning,
                         .export,
                         "Zoom compositor effects failed; passed through source frame",
-                        context: ["frame": "\(frameCount)"],
+                        context: ["frame": "\(frameCount)"]
                     )
                 }
                 request.finish(withComposedVideoFrame: sourceBuffer)
@@ -493,7 +494,7 @@
             center: CGPoint,
             currentTime: TimeInterval,
             instruction: ZoomVideoCompositionInstruction,
-            cameraBuffer: CVPixelBuffer? = nil,
+            cameraBuffer: CVPixelBuffer? = nil
         ) -> CVPixelBuffer? {
             // Create CIImage from source buffer
             var processedImage = CIImage(cvPixelBuffer: sourceBuffer)
@@ -504,7 +505,7 @@
                 let cropRect = ZoomCalculator.calculateCropRect(
                     center: center,
                     zoomLevel: zoomLevel,
-                    frameSize: CGSize(width: sourceExtent.width, height: sourceExtent.height),
+                    frameSize: CGSize(width: sourceExtent.width, height: sourceExtent.height)
                 )
                 let croppedImage = processedImage.cropped(to: cropRect)
                 let scaleX = sourceExtent.width / cropRect.width
@@ -516,7 +517,7 @@
 
             let fittedRect = VideoEditorExportLayout.aspectFitRect(
                 sourceSize: processedImage.extent.size,
-                in: instruction.renderSize,
+                in: instruction.renderSize
             )
             let needsCanvasFit = abs(fittedRect.origin.x) > 0.5
                 || abs(fittedRect.origin.y) > 0.5
@@ -527,7 +528,7 @@
                 processedImage = placeImageOnCanvas(
                     processedImage,
                     canvasSize: instruction.renderSize,
-                    fittedRect: fittedRect,
+                    fittedRect: fittedRect
                 )
             }
 
@@ -539,7 +540,7 @@
                         to: processedImage,
                         cornerRadius: instruction.cornerRadius,
                         roundedRect: fittedRect,
-                        canvasSize: instruction.renderSize,
+                        canvasSize: instruction.renderSize
                     )
                 }
 
@@ -547,14 +548,14 @@
                 let translatedVideo = processedImage.transformed(
                     by: CGAffineTransform(
                         translationX: instruction.backgroundPadding,
-                        y: instruction.backgroundPadding,
-                    ),
+                        y: instruction.backgroundPadding
+                    )
                 )
 
                 // Create background
                 let background = createBackgroundImage(
                     style: instruction.backgroundStyle,
-                    size: instruction.paddedRenderSize,
+                    size: instruction.paddedRenderSize
                 )
 
                 // Composite video over background
@@ -563,8 +564,10 @@
 
             if let cameraBuffer, let layout = instruction.cameraLayout {
                 var cameraImage = CIImage(cvPixelBuffer: cameraBuffer)
-                    .transformed(by: CGAffineTransform(translationX: -cameraImageExtent(cameraBuffer).origin.x,
-                                                       y: -cameraImageExtent(cameraBuffer).origin.y))
+                    .transformed(by: CGAffineTransform(
+                        translationX: -cameraImageExtent(cameraBuffer).origin.x,
+                        y: -cameraImageExtent(cameraBuffer).origin.y
+                    ))
                 if instruction.cameraIsMirrored {
                     cameraImage = cameraImage.transformed(by: CGAffineTransform(scaleX: -1, y: 1))
                         .transformed(by: CGAffineTransform(translationX: cameraImage.extent.width, y: 0))
@@ -572,23 +575,23 @@
                 let target = layout.cameraFrame(
                     in: instruction.renderSize,
                     cameraSize: instruction.cameraSize,
-                    zoomLevel: zoomLevel,
+                    zoomLevel: zoomLevel
                 )
                 .offsetBy(dx: instruction.backgroundPadding, dy: instruction.backgroundPadding)
                 let effectiveCanvasSize = instruction.paddedRenderSize
                 let cameraSourceRect = VideoEditorExportLayout.aspectFillRect(
                     sourceSize: cameraImage.extent.size,
-                    in: target.size,
+                    in: target.size
                 )
                 let placedCameraRect = cameraSourceRect.offsetBy(dx: target.minX, dy: target.minY)
                 let scale = min(
                     placedCameraRect.width / max(cameraImage.extent.width, 1),
-                    placedCameraRect.height / max(cameraImage.extent.height, 1),
+                    placedCameraRect.height / max(cameraImage.extent.height, 1)
                 )
                 cameraImage = cameraImage.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
                     .transformed(by: CGAffineTransform(
                         translationX: placedCameraRect.minX,
-                        y: effectiveCanvasSize.height - placedCameraRect.maxY,
+                        y: effectiveCanvasSize.height - placedCameraRect.maxY
                     ))
                 let maskRect = target
                 let mask = cameraMask(
@@ -596,14 +599,14 @@
                         x: maskRect.minX,
                         y: effectiveCanvasSize.height - maskRect.maxY,
                         width: maskRect.width,
-                        height: maskRect.height,
+                        height: maskRect.height
                     ),
                     canvasSize: effectiveCanvasSize,
-                    shape: layout.shape,
+                    shape: layout.shape
                 )
                 processedImage = cameraImage.applyingFilter(
                     "CIBlendWithAlphaMask",
-                    parameters: [kCIInputMaskImageKey: mask],
+                    parameters: [kCIInputMaskImageKey: mask]
                 )
                 .composited(over: processedImage)
             }
@@ -611,7 +614,7 @@
             let canvasSize = instruction.hasBackground ? instruction.paddedRenderSize : instruction.renderSize
             let contentRect = fittedRect.offsetBy(
                 dx: instruction.hasBackground ? instruction.backgroundPadding : 0,
-                dy: instruction.hasBackground ? instruction.backgroundPadding : 0,
+                dy: instruction.hasBackground ? instruction.backgroundPadding : 0
             )
             let pointerFrame = instruction.pointerTimeline.frame(at: currentTime)
             let keystrokeFrame = instruction.keystrokeCaptionTimeline.frame(at: currentTime)
@@ -628,7 +631,7 @@
                 keystrokePlacement: instruction.keystrokePlacement,
                 cursorScale: instruction.cursorScale,
                 zoomLevel: zoomLevel,
-                zoomCenter: center,
+                zoomCenter: center
             )
 
             // Create output buffer
@@ -646,7 +649,7 @@
             to image: CIImage,
             cornerRadius: CGFloat,
             roundedRect: CGRect,
-            canvasSize: CGSize,
+            canvasSize: CGSize
         ) -> CIImage {
             let extent = CGRect(origin: .zero, size: canvasSize)
 
@@ -659,7 +662,7 @@
                 bitsPerComponent: 8,
                 bytesPerRow: Int(maskSize.width) * 4,
                 space: CGColorSpaceCreateDeviceRGB(),
-                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
             ) else {
                 return image
             }
@@ -678,7 +681,7 @@
                 roundedRect: roundedRect,
                 cornerWidth: clampedCornerRadius,
                 cornerHeight: clampedCornerRadius,
-                transform: nil,
+                transform: nil
             )
             cgContext.addPath(path)
             cgContext.fillPath()
@@ -711,7 +714,7 @@
         private func cameraMask(
             rect: CGRect,
             canvasSize: CGSize,
-            shape: RecordingCameraPreviewShape?,
+            shape: RecordingCameraPreviewShape?
         ) -> CIImage {
             guard shape == .circle else {
                 return roundedMask(rect: rect, canvasSize: canvasSize)
@@ -725,7 +728,7 @@
                 bitsPerComponent: 8,
                 bytesPerRow: max(Int(canvasSize.width), 1) * 4,
                 space: CGColorSpaceCreateDeviceRGB(),
-                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
             ) else {
                 return CIImage(color: .white).cropped(to: rect)
             }
@@ -752,11 +755,11 @@
 
         private func placeImageOnCanvas(_ image: CIImage, canvasSize: CGSize, fittedRect: CGRect) -> CIImage {
             let normalized = image.transformed(
-                by: CGAffineTransform(translationX: -image.extent.origin.x, y: -image.extent.origin.y),
+                by: CGAffineTransform(translationX: -image.extent.origin.x, y: -image.extent.origin.y)
             )
             let scale = min(
                 fittedRect.width / max(image.extent.width, 1),
-                fittedRect.height / max(image.extent.height, 1),
+                fittedRect.height / max(image.extent.height, 1)
             )
             let transformed = normalized
                 .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
@@ -774,7 +777,7 @@
             case .none:
                 return CIImage(color: .clear).cropped(to: rect)
 
-            case .gradient(let preset):
+            case let .gradient(preset):
                 // Create gradient using CILinearGradient filter
                 guard let filter = CIFilter(name: "CILinearGradient") else {
                     return CIImage(color: .black).cropped(to: rect)
@@ -790,15 +793,16 @@
 
                 return filter.outputImage?.cropped(to: rect) ?? CIImage(color: .black).cropped(to: rect)
 
-            case .solidColor(let color):
+            case let .solidColor(color):
                 let ciColor = CIColor(color: NSColor(color)) ?? CIColor.white
                 return CIImage(color: ciColor).cropped(to: rect)
 
-            case .wallpaper(let url):
+            case let .wallpaper(url):
                 // Check if we have a cached version for this URL and size
                 if let cached = cachedScaledWallpaper,
                    cachedWallpaperURL == url,
-                   cachedWallpaperSize == size {
+                   cachedWallpaperSize == size
+                {
                     return cached
                 }
 
@@ -815,11 +819,12 @@
 
                 return scaled
 
-            case .blurred(let url):
+            case let .blurred(url):
                 // Check if we have a cached version for this URL and size
                 if let cached = cachedBlurredWallpaper,
                    cachedBlurredURL == url,
-                   cachedBlurredSize == size {
+                   cachedBlurredSize == size
+                {
                     return cached
                 }
 
@@ -860,7 +865,7 @@
                 x: offsetX,
                 y: offsetY,
                 width: targetSize.width,
-                height: targetSize.height,
+                height: targetSize.height
             ))
             .transformed(by: CGAffineTransform(translationX: -offsetX, y: -offsetY))
         }
@@ -869,7 +874,7 @@
             to sourceBuffer: CVPixelBuffer,
             zoomLevel: CGFloat,
             center: CGPoint,
-            renderSize _: CGSize,
+            renderSize _: CGSize
         ) -> CVPixelBuffer? {
             // Create CIImage from source buffer
             let sourceImage = CIImage(cvPixelBuffer: sourceBuffer)
@@ -879,7 +884,7 @@
             let cropRect = ZoomCalculator.calculateCropRect(
                 center: center,
                 zoomLevel: zoomLevel,
-                frameSize: CGSize(width: sourceExtent.width, height: sourceExtent.height),
+                frameSize: CGSize(width: sourceExtent.width, height: sourceExtent.height)
             )
 
             // Crop the image

@@ -29,7 +29,7 @@ enum AnnotationFactory {
         from start: CGPoint,
         to end: CGPoint,
         path: [CGPoint],
-        state: AnnotateState,
+        state: AnnotateState
     ) -> AnnotationItem? {
         createAnnotation(
             tool: tool,
@@ -46,8 +46,8 @@ enum AnnotationFactory {
                 blurType: state.blurType,
                 counterValue: state.nextCounterValue(),
                 watermarkText: state.watermarkText,
-                activeAnnotationBounds: state.activeAnnotationBounds,
-            ),
+                activeAnnotationBounds: state.activeAnnotationBounds
+            )
         )
     }
 
@@ -56,7 +56,7 @@ enum AnnotationFactory {
         from start: CGPoint,
         to end: CGPoint,
         path: [CGPoint],
-        context: CreationContext,
+        context: CreationContext
     ) -> AnnotationItem? {
         let properties = context.properties
         let isMagnifyDrag = hypot(end.x - start.x, end.y - start.y) > MagnifyGeometry.dragThreshold
@@ -94,7 +94,7 @@ enum AnnotationFactory {
                 bendDirection: resolvedDirection,
                 arrowType: context.arrowType,
                 startHead: context.arrowStartHead,
-                endHead: context.arrowEndHead,
+                endHead: context.arrowEndHead
             ))
 
         case .line:
@@ -103,7 +103,7 @@ enum AnnotationFactory {
         case .magnify:
             type = .magnify(
                 sourceCenter: isMagnifyDrag ? start : CGPoint(x: magnifyBounds.midX, y: magnifyBounds.midY),
-                showsSourceCircle: isMagnifyDrag,
+                showsSourceCircle: isMagnifyDrag
             )
 
         case .pencil:
@@ -137,7 +137,7 @@ enum AnnotationFactory {
         guard let annotationType = type else { return nil }
         let bounds: CGRect
         switch annotationType {
-        case .arrow(let geometry):
+        case let .arrow(geometry):
             bounds = geometry.bounds()
         case .counter:
             let diameter = AnnotationProperties.counterDiameter(for: properties.strokeWidth)
@@ -145,26 +145,26 @@ enum AnnotationFactory {
                 x: start.x - diameter / 2,
                 y: start.y - diameter / 2,
                 width: diameter,
-                height: diameter,
+                height: diameter
             )
         case .watermark:
             let drawnBounds = CGRect(
                 x: min(start.x, end.x),
                 y: min(start.y, end.y),
                 width: abs(end.x - start.x),
-                height: abs(end.y - start.y),
+                height: abs(end.y - start.y)
             )
             bounds = watermarkBounds(
                 drawnBounds: drawnBounds,
                 center: start,
-                canvasBounds: context.activeAnnotationBounds,
+                canvasBounds: context.activeAnnotationBounds
             )
-        case .highlight(let points):
+        case let .highlight(points):
             bounds = pathBounds(containing: points) ?? normalizedBounds(CGRect(
                 x: min(start.x, end.x),
                 y: min(start.y, end.y),
                 width: abs(end.x - start.x),
-                height: abs(end.y - start.y),
+                height: abs(end.y - start.y)
             ))
         case .magnify:
             bounds = magnifyBounds
@@ -173,7 +173,7 @@ enum AnnotationFactory {
                 x: min(start.x, end.x),
                 y: min(start.y, end.y),
                 width: abs(end.x - start.x),
-                height: abs(end.y - start.y),
+                height: abs(end.y - start.y)
             )
         }
         return AnnotationItem(type: annotationType, bounds: bounds, properties: properties)
@@ -182,7 +182,7 @@ enum AnnotationFactory {
     private static func watermarkBounds(
         drawnBounds: CGRect,
         center: CGPoint,
-        canvasBounds: CGRect,
+        canvasBounds: CGRect
     ) -> CGRect {
         guard drawnBounds.width >= 24, drawnBounds.height >= 24 else {
             let width = min(max(canvasBounds.width * 0.42, 220), max(canvasBounds.width, 1))
@@ -191,8 +191,8 @@ enum AnnotationFactory {
                 x: min(max(center.x - width / 2, canvasBounds.minX), max(canvasBounds.maxX - width, canvasBounds.minX)),
                 y: min(
                     max(center.y - height / 2, canvasBounds.minY),
-                    max(canvasBounds.maxY - height, canvasBounds.minY),
-                ),
+                    max(canvasBounds.maxY - height, canvasBounds.minY)
+                )
             )
             return CGRect(origin: origin, size: CGSize(width: width, height: height))
         }
@@ -203,7 +203,8 @@ enum AnnotationFactory {
     private static func normalizedHighlighterPath(_ path: [CGPoint], strokeWidth: CGFloat) -> [CGPoint] {
         guard path.count > 2,
               let first = path.first,
-              let last = path.last else {
+              let last = path.last
+        else {
             return path
         }
 
@@ -228,7 +229,7 @@ enum AnnotationFactory {
         let y = medianY(in: path)
         return [
             CGPoint(x: minX, y: y),
-            CGPoint(x: maxX, y: y),
+            CGPoint(x: maxX, y: y)
         ]
     }
 

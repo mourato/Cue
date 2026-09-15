@@ -25,7 +25,7 @@ final class AppCoordinator {
             .info,
             .lifecycle,
             "App launch sequence started",
-            context: ["previousCrash": didCrash ? "true" : "false"],
+            context: ["previousCrash": didCrash ? "true" : "false"]
         )
         LegacyLicenseCleanupService.shared.runIfNeeded()
 
@@ -106,7 +106,7 @@ final class AppCoordinator {
         let onboardingObserver = NotificationCenter.default.addObserver(
             forName: .showOnboarding,
             object: nil,
-            queue: .main,
+            queue: .main
         ) { _ in
             Task { @MainActor in
                 DiagnosticLogger.shared.log(.info, .ui, "Onboarding requested from notification")
@@ -119,7 +119,7 @@ final class AppCoordinator {
         let videoModuleObserver = NotificationCenter.default.addObserver(
             forName: .videoModuleAvailabilityDidChange,
             object: nil,
-            queue: .main,
+            queue: .main
         ) { [weak self] _ in
             Task { @MainActor in
                 self?.syncRecordingMetadataCleanupScheduler()
@@ -131,7 +131,7 @@ final class AppCoordinator {
             .debug,
             .lifecycle,
             "App notifications observed",
-            context: ["observerCount": "\(observers.count)"],
+            context: ["observerCount": "\(observers.count)"]
         )
     }
 
@@ -151,7 +151,7 @@ final class AppCoordinator {
             "file": result.fileURL.path,
             "changes": "\(result.appliedChangeCount)",
             "warnings": "\(result.warningCount)",
-            "errors": "\(result.errorCount)",
+            "errors": "\(result.errorCount)"
         ]
 
         switch result.status {
@@ -160,7 +160,7 @@ final class AppCoordinator {
                 .info,
                 .preferences,
                 "TOML configuration auto-applied",
-                context: context,
+                context: context
             )
         case .failed:
             var failedContext = context
@@ -171,28 +171,28 @@ final class AppCoordinator {
                 .warning,
                 .preferences,
                 "TOML configuration auto-apply failed",
-                context: failedContext,
+                context: failedContext
             )
         case .skippedMissingFile:
             DiagnosticLogger.shared.log(
                 .debug,
                 .preferences,
                 "TOML configuration auto-apply skipped; file missing",
-                context: ["file": result.fileURL.path],
+                context: ["file": result.fileURL.path]
             )
         case .skippedPermissionRequired:
             DiagnosticLogger.shared.log(
                 .debug,
                 .preferences,
                 "TOML configuration auto-apply skipped; folder access required",
-                context: ["file": result.fileURL.path],
+                context: ["file": result.fileURL.path]
             )
         case .skippedUnchanged:
             DiagnosticLogger.shared.log(
                 .debug,
                 .preferences,
                 "TOML configuration auto-apply skipped; file unchanged",
-                context: ["file": result.fileURL.path],
+                context: ["file": result.fileURL.path]
             )
         }
 
@@ -214,13 +214,13 @@ final class AppCoordinator {
             DiagnosticLogger.shared.logError(
                 .preferences,
                 error,
-                "TOML configuration sync before termination failed",
+                "TOML configuration sync before termination failed"
             )
         }
     }
 
     private func presentStartupExperience(
-        configurationAutoImportResult: CueConfigurationAutoImportResult,
+        configurationAutoImportResult: CueConfigurationAutoImportResult
     ) {
         if shouldPresentConfigurationAccessOnboarding(for: configurationAutoImportResult) {
             UserDefaults.standard.set(true, forKey: PreferencesKeys.configurationAccessOnboardingPrompted)
@@ -233,7 +233,7 @@ final class AppCoordinator {
     }
 
     private func shouldPresentConfigurationAccessOnboarding(
-        for result: CueConfigurationAutoImportResult,
+        for result: CueConfigurationAutoImportResult
     ) -> Bool {
         guard result.status == .skippedPermissionRequired else {
             return false

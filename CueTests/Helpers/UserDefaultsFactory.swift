@@ -10,7 +10,7 @@ import Foundation
 enum UserDefaultsFactory {
     static func make(
         file _: StaticString = #filePath,
-        line _: UInt = #line,
+        line _: UInt = #line
     ) -> UserDefaults {
         let suiteName = "NotinhasTests.\(UUID().uuidString)"
         guard let defaults = UserDefaults(suiteName: suiteName) else {

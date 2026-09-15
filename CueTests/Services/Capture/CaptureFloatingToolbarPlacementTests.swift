@@ -15,13 +15,13 @@ final class CaptureFloatingToolbarPlacementTests: XCTestCase {
         let origin = CaptureFloatingToolbarPlacement.frameOrigin(
             toolbarSize: toolbarSize,
             anchorRect: selectionRect,
-            screenFrame: screenFrame,
+            screenFrame: screenFrame
         )
 
         XCTAssertEqual(origin.x, selectionRect.midX - toolbarSize.width / 2)
         XCTAssertEqual(
             origin.y,
-            selectionRect.minY - toolbarSize.height - CaptureFloatingToolbarPlacement.outsideSelectionGap,
+            selectionRect.minY - toolbarSize.height - CaptureFloatingToolbarPlacement.outsideSelectionGap
         )
     }
 
@@ -33,12 +33,12 @@ final class CaptureFloatingToolbarPlacementTests: XCTestCase {
         let origin = CaptureFloatingToolbarPlacement.frameOrigin(
             toolbarSize: toolbarSize,
             anchorRect: selectionRect,
-            screenFrame: screenFrame,
+            screenFrame: screenFrame
         )
 
         XCTAssertEqual(
             origin.y,
-            selectionRect.minY + CaptureFloatingToolbarPlacement.insideSelectionBottomInset,
+            selectionRect.minY + CaptureFloatingToolbarPlacement.insideSelectionBottomInset
         )
     }
 
@@ -50,12 +50,12 @@ final class CaptureFloatingToolbarPlacementTests: XCTestCase {
         let origin = CaptureFloatingToolbarPlacement.frameOrigin(
             toolbarSize: toolbarSize,
             anchorRect: selectionRect,
-            screenFrame: screenFrame,
+            screenFrame: screenFrame
         )
 
         XCTAssertEqual(
             origin.y,
-            screenFrame.maxY - toolbarSize.height - CaptureFloatingToolbarPlacement.screenEdgeInset,
+            screenFrame.maxY - toolbarSize.height - CaptureFloatingToolbarPlacement.screenEdgeInset
         )
     }
 
@@ -67,7 +67,7 @@ final class CaptureFloatingToolbarPlacementTests: XCTestCase {
         let origin = CaptureFloatingToolbarPlacement.frameOrigin(
             toolbarSize: toolbarSize,
             anchorRect: selectionRect,
-            screenFrame: screenFrame,
+            screenFrame: screenFrame
         )
 
         XCTAssertEqual(origin.x, screenFrame.minX + CaptureFloatingToolbarPlacement.screenEdgeInset)
@@ -86,17 +86,17 @@ final class CaptureFloatingToolbarPlacementTests: XCTestCase {
             leadingSize: leadingSize,
             trailingSize: trailingSize,
             anchorRect: selectionRect,
-            screenFrame: screenFrame,
+            screenFrame: screenFrame
         )
 
         XCTAssertEqual(
             origins.leading.y,
-            selectionRect.minY - pairHeight - CaptureFloatingToolbarPlacement.outsideSelectionGap,
+            selectionRect.minY - pairHeight - CaptureFloatingToolbarPlacement.outsideSelectionGap
         )
         XCTAssertEqual(origins.leading.x, selectionRect.midX - pairWidth / 2)
         XCTAssertEqual(
             origins.trailing?.x,
-            origins.leading.x + leadingSize.width + CaptureFloatingToolbarPlacement.interToolbarGap,
+            origins.leading.x + leadingSize.width + CaptureFloatingToolbarPlacement.interToolbarGap
         )
         XCTAssertEqual(origins.trailing?.y, origins.leading.y)
     }
@@ -110,13 +110,13 @@ final class CaptureFloatingToolbarPlacementTests: XCTestCase {
             leadingSize: leadingSize,
             trailingSize: nil,
             anchorRect: selectionRect,
-            screenFrame: screenFrame,
+            screenFrame: screenFrame
         )
 
         let expected = CaptureFloatingToolbarPlacement.frameOrigin(
             toolbarSize: leadingSize,
             anchorRect: selectionRect,
-            screenFrame: screenFrame,
+            screenFrame: screenFrame
         )
 
         XCTAssertNil(origins.trailing)
@@ -133,16 +133,16 @@ final class CaptureFloatingToolbarPlacementTests: XCTestCase {
             leadingSize: leadingSize,
             trailingSize: trailingSize,
             anchorRect: selectionRect,
-            screenFrame: screenFrame,
+            screenFrame: screenFrame
         )
 
         XCTAssertGreaterThanOrEqual(
             origins.leading.x,
-            screenFrame.minX + CaptureFloatingToolbarPlacement.screenEdgeInset,
+            screenFrame.minX + CaptureFloatingToolbarPlacement.screenEdgeInset
         )
         XCTAssertEqual(
             origins.trailing?.x,
-            origins.leading.x + leadingSize.width + CaptureFloatingToolbarPlacement.interToolbarGap,
+            origins.leading.x + leadingSize.width + CaptureFloatingToolbarPlacement.interToolbarGap
         )
         XCTAssertGreaterThan(try XCTUnwrap(origins.trailing?.x), origins.leading.x)
     }
@@ -157,16 +157,16 @@ final class CaptureFloatingToolbarPlacementTests: XCTestCase {
             leadingSize: leadingSize,
             trailingSize: trailingSize,
             anchorRect: selectionRect,
-            screenFrame: screenFrame,
+            screenFrame: screenFrame
         )
 
         XCTAssertEqual(
             origins.leading.x,
-            screenFrame.minX + CaptureFloatingToolbarPlacement.screenEdgeInset,
+            screenFrame.minX + CaptureFloatingToolbarPlacement.screenEdgeInset
         )
         XCTAssertEqual(
             origins.trailing?.x,
-            origins.leading.x + leadingSize.width + CaptureFloatingToolbarPlacement.interToolbarGap,
+            origins.leading.x + leadingSize.width + CaptureFloatingToolbarPlacement.interToolbarGap
         )
         XCTAssertGreaterThan(try XCTUnwrap(origins.trailing?.x), origins.leading.x)
     }

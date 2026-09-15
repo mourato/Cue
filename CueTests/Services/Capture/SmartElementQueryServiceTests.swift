@@ -26,7 +26,7 @@ final class SmartElementQueryServiceTests: XCTestCase {
     func testQueryElement_permissionDenied_emitsNil_logsOnce() {
         let service = SmartElementQueryService(
             snapshotProvider: FakeAXSnapshotProvider(snapshotForCall: [nil]),
-            permissionChecker: { false },
+            permissionChecker: { false }
         )
         var received: [CGRect?] = []
         service.elementDetectedPublisher.sink { received.append($0) }.store(in: &cancellables)
@@ -44,7 +44,7 @@ final class SmartElementQueryServiceTests: XCTestCase {
         let snapshotProvider = CountingAXSnapshotProvider(snapshot: nil)
         let provider = CaptureSelectionSemanticBoundaryProvider(
             snapshotProvider: snapshotProvider,
-            isTrusted: { false },
+            isTrusted: { false }
         )
 
         XCTAssertNil(provider.semanticRect(at: CGPoint(x: 100, y: 100), ownerPID: nil))
@@ -60,24 +60,24 @@ final class SmartElementQueryServiceTests: XCTestCase {
             snapshot: AXElementSnapshot(
                 role: "AXButton",
                 position: CGPoint(x: 10, y: 10),
-                size: CGSize(width: 30, height: 30),
-            ),
+                size: CGSize(width: 30, height: 30)
+            )
         )
         let provider = CaptureSelectionSemanticBoundaryProvider(
             snapshotProvider: snapshotProvider,
             isTrusted: { true },
-            minimumSemanticQueryInterval: 1,
+            minimumSemanticQueryInterval: 1
         )
 
         _ = provider.semanticCandidates(
             at: CGPoint(x: 100, y: 100),
             ownerPID: nil,
-            handle: .topLeft,
+            handle: .topLeft
         )
         _ = provider.semanticCandidates(
             at: CGPoint(x: 101, y: 100),
             ownerPID: nil,
-            handle: .topLeft,
+            handle: .topLeft
         )
 
         XCTAssertEqual(snapshotProvider.callCount, 1)
@@ -86,7 +86,7 @@ final class SmartElementQueryServiceTests: XCTestCase {
         _ = provider.semanticCandidates(
             at: CGPoint(x: 101, y: 100),
             ownerPID: nil,
-            handle: .topLeft,
+            handle: .topLeft
         )
         XCTAssertEqual(snapshotProvider.callCount, 2)
     }
@@ -100,11 +100,11 @@ final class SmartElementQueryServiceTests: XCTestCase {
         let button = AXElementSnapshot(
             role: "AXButton",
             position: CGPoint(x: 50, y: 50),
-            size: CGSize(width: 40, height: 20),
+            size: CGSize(width: 40, height: 20)
         )
         let service = SmartElementQueryService(
             snapshotProvider: FakeAXSnapshotProvider(snapshotForCall: [button, button]),
-            permissionChecker: { true },
+            permissionChecker: { true }
         )
         var received: [CGRect?] = []
         service.elementDetectedPublisher.sink { received.append($0) }.store(in: &cancellables)
@@ -124,11 +124,11 @@ final class SmartElementQueryServiceTests: XCTestCase {
         let button = AXElementSnapshot(
             role: "AXButton",
             position: CGPoint(x: 50, y: 50),
-            size: CGSize(width: 40, height: 20),
+            size: CGSize(width: 40, height: 20)
         )
         let service = SmartElementQueryService(
             snapshotProvider: FakeAXSnapshotProvider(snapshotForCall: [button, button]),
-            permissionChecker: { true },
+            permissionChecker: { true }
         )
         var received: [CGRect?] = []
         service.elementDetectedPublisher.sink { received.append($0) }.store(in: &cancellables)
@@ -153,13 +153,13 @@ final class SmartElementQueryServiceTests: XCTestCase {
             snapshot: AXElementSnapshot(
                 role: "AXButton",
                 position: CGPoint(x: 10, y: 10),
-                size: CGSize(width: 30, height: 30),
-            ),
+                size: CGSize(width: 30, height: 30)
+            )
         )
         let service = SmartElementQueryService(
             snapshotProvider: provider,
             permissionChecker: { true },
-            debounceMilliseconds: 25,
+            debounceMilliseconds: 25
         )
 
         let expectation = expectation(description: "Debounced emission")
@@ -174,7 +174,7 @@ final class SmartElementQueryServiceTests: XCTestCase {
         for offset in 0 ..< 5 {
             service.pushInputForTesting(
                 point: CGPoint(x: 100 + Double(offset), y: 100),
-                pid: 1,
+                pid: 1
             )
         }
 

@@ -23,7 +23,7 @@ final class HistoryThumbnailGenerator {
     private let workerQueue = DispatchQueue(
         label: "com.mourato.notinhas.history-thumbnail-generator.worker",
         qos: .utility,
-        attributes: .concurrent,
+        attributes: .concurrent
     )
     private let thumbnailsDirectoryURL: URL
     private let state = HistoryThumbnailState()
@@ -36,13 +36,13 @@ final class HistoryThumbnailGenerator {
         thumbnailsDirectoryURL = thumbnailsDirectory ?? Self.defaultThumbnailsDirectory()
         workerConfiguration = ThumbnailWorkerConfiguration(
             maxDimension: 208,
-            compressionFactor: 0.58,
+            compressionFactor: 0.58
         )
         do {
             try workerQueue.sync {
                 try FileManager.default.createDirectory(
                     at: thumbnailsDirectoryURL,
-                    withIntermediateDirectories: true,
+                    withIntermediateDirectories: true
                 )
             }
         } catch {
@@ -52,7 +52,7 @@ final class HistoryThumbnailGenerator {
 
     private static func defaultThumbnailsDirectory() -> URL {
         let appSupport = FileManager.default.urls(
-            for: .applicationSupportDirectory, in: .userDomainMask,
+            for: .applicationSupportDirectory, in: .userDomainMask
         ).first!
         return appSupport
             .appendingPathComponent(CueStoragePaths.destinationAppSupportFolderName, isDirectory: true)
@@ -71,7 +71,7 @@ final class HistoryThumbnailGenerator {
 
     func loadThumbnailImage(
         for record: CaptureHistoryRecord,
-        completion: @escaping @MainActor @Sendable (NSImage?) -> Void,
+        completion: @escaping @MainActor @Sendable (NSImage?) -> Void
     ) {
         let identity = cacheIdentity(for: record)
 
@@ -91,7 +91,7 @@ final class HistoryThumbnailGenerator {
             let result = Self.resolveThumbnailImage(
                 for: workerRecord,
                 identity: identity,
-                configuration: workerConfigurationSnapshot,
+                configuration: workerConfigurationSnapshot
             )
 
             Task { @MainActor in
@@ -167,7 +167,7 @@ final class HistoryThumbnailGenerator {
                 .info,
                 .history,
                 "All history thumbnails cleared",
-                context: ["thumbnailCount": "\(thumbnailCount)"],
+                context: ["thumbnailCount": "\(thumbnailCount)"]
             )
         }
     }
@@ -185,7 +185,7 @@ final class HistoryThumbnailGenerator {
 
     private static func deliver(
         _ snapshot: ThumbnailImageSnapshot,
-        to completion: @escaping @MainActor @Sendable (NSImage?) -> Void,
+        to completion: @escaping @MainActor @Sendable (NSImage?) -> Void
     ) {
         Task { @MainActor in
             completion(makeNSImage(from: snapshot))
@@ -195,21 +195,22 @@ final class HistoryThumbnailGenerator {
     private static func makeNSImage(from snapshot: ThumbnailImageSnapshot) -> NSImage {
         NSImage(
             cgImage: snapshot.cgImage,
-            size: NSSize(width: snapshot.cgImage.width, height: snapshot.cgImage.height),
+            size: NSSize(width: snapshot.cgImage.width, height: snapshot.cgImage.height)
         )
     }
 
     private nonisolated static func resolveThumbnailImage(
         for record: ThumbnailWorkerRecord,
         identity: ThumbnailCacheIdentity,
-        configuration: ThumbnailWorkerConfiguration,
+        configuration: ThumbnailWorkerConfiguration
     ) -> GeneratedThumbnail? {
         if let cachedURL = existingThumbnailURL(for: record, identity: identity),
-           let cachedImage = decodeThumbnail(at: cachedURL) {
+           let cachedImage = decodeThumbnail(at: cachedURL)
+        {
             return GeneratedThumbnail(
                 url: cachedURL,
                 image: cachedImage,
-                cacheCost: max(cachedImage.cgImage.width * cachedImage.cgImage.height * 4, 1),
+                cacheCost: max(cachedImage.cgImage.width * cachedImage.cgImage.height * 4, 1)
             )
         }
 
@@ -219,7 +220,7 @@ final class HistoryThumbnailGenerator {
                 .debug,
                 .history,
                 "History thumbnail skipped; source file missing",
-                context: ["fileName": record.fileName, "type": record.captureType.rawValue],
+                context: ["fileName": record.fileName, "type": record.captureType.rawValue]
             )
             return nil
         }
@@ -243,7 +244,7 @@ final class HistoryThumbnailGenerator {
     private nonisolated static func generateImageThumbnail(
         for record: ThumbnailWorkerRecord,
         identity: ThumbnailCacheIdentity,
-        configuration: ThumbnailWorkerConfiguration,
+        configuration: ThumbnailWorkerConfiguration
     ) -> GeneratedThumbnail? {
         let url = record.fileURL
         let scopedAccess = beginScopedAccess(for: url)
@@ -255,7 +256,7 @@ final class HistoryThumbnailGenerator {
                 .warning,
                 .history,
                 "History image thumbnail generation failed",
-                context: ["fileName": record.fileName],
+                context: ["fileName": record.fileName]
             )
             return nil
         }
@@ -266,7 +267,7 @@ final class HistoryThumbnailGenerator {
     private nonisolated static func generateVideoThumbnail(
         for record: ThumbnailWorkerRecord,
         identity: ThumbnailCacheIdentity,
-        configuration: ThumbnailWorkerConfiguration,
+        configuration: ThumbnailWorkerConfiguration
     ) -> GeneratedThumbnail? {
         let url = record.fileURL
         let scopedAccess = beginScopedAccess(for: url)
@@ -278,7 +279,7 @@ final class HistoryThumbnailGenerator {
         imageGenerator.appliesPreferredTrackTransform = true
         imageGenerator.maximumSize = CGSize(
             width: configuration.maxDimension * 2,
-            height: configuration.maxDimension * 2,
+            height: configuration.maxDimension * 2
         )
 
         // Extract at mid-point or 1s, whichever is smaller
@@ -299,7 +300,7 @@ final class HistoryThumbnailGenerator {
                 .history,
                 error,
                 "History video thumbnail generation failed",
-                context: ["fileName": record.fileName],
+                context: ["fileName": record.fileName]
             )
             return nil
         }
@@ -308,7 +309,7 @@ final class HistoryThumbnailGenerator {
     /// Security-scoped access is owned by the MainActor service, while thumbnail
     /// decoding/generation remains on the history worker queue.
     private nonisolated static func beginScopedAccess(
-        for url: URL,
+        for url: URL
     ) -> SandboxFileAccessManager.ScopedAccess {
         DispatchQueue.main.sync {
             SandboxFileAccessManager.shared.beginAccessingURL(url)
@@ -317,7 +318,7 @@ final class HistoryThumbnailGenerator {
 
     private nonisolated static func existingThumbnailURL(
         for record: ThumbnailWorkerRecord,
-        identity: ThumbnailCacheIdentity,
+        identity: ThumbnailCacheIdentity
     ) -> URL? {
         let currentURL = identity.thumbnailURL
 
@@ -343,7 +344,7 @@ final class HistoryThumbnailGenerator {
         return ThumbnailCacheIdentity(
             recordId: record.id,
             cacheKey: cacheKey,
-            thumbnailURL: thumbnailsDirectoryURL.appendingPathComponent("\(cacheKey).jpg"),
+            thumbnailURL: thumbnailsDirectoryURL.appendingPathComponent("\(cacheKey).jpg")
         )
     }
 
@@ -351,13 +352,14 @@ final class HistoryThumbnailGenerator {
         let fm = FileManager.default
         guard let contents = try? fm.contentsOfDirectory(
             at: directoryURL,
-            includingPropertiesForKeys: [.fileSizeKey],
+            includingPropertiesForKeys: [.fileSizeKey]
         ) else { return 0 }
 
         var total: Int64 = 0
         for url in contents {
             if let attrs = try? fm.attributesOfItem(atPath: url.path),
-               let size = attrs[.size] as? Int64 {
+               let size = attrs[.size] as? Int64
+            {
                 total += size
             }
         }
@@ -370,7 +372,7 @@ final class HistoryThumbnailGenerator {
         do {
             contents = try fm.contentsOfDirectory(
                 at: directoryURL,
-                includingPropertiesForKeys: nil,
+                includingPropertiesForKeys: nil
             )
         } catch {
             DiagnosticLogger.shared.logError(.history, error, "History thumbnails clear failed to list directory")
@@ -385,7 +387,7 @@ final class HistoryThumbnailGenerator {
                     .history,
                     error,
                     "History thumbnail delete failed during clear all",
-                    context: ["fileName": url.lastPathComponent],
+                    context: ["fileName": url.lastPathComponent]
                 )
             }
         }
@@ -396,12 +398,12 @@ final class HistoryThumbnailGenerator {
     private nonisolated static func deleteThumbnailFiles(
         in directoryURL: URL,
         for recordId: UUID,
-        keeping keptURL: URL? = nil,
+        keeping keptURL: URL? = nil
     ) {
         let prefix = "\(recordId.uuidString)-"
         let contents = (try? FileManager.default.contentsOfDirectory(
             at: directoryURL,
-            includingPropertiesForKeys: nil,
+            includingPropertiesForKeys: nil
         )) ?? []
 
         for url in contents where url.lastPathComponent.hasPrefix(prefix) {
@@ -415,7 +417,7 @@ final class HistoryThumbnailGenerator {
                     .history,
                     error,
                     "History thumbnail old cache delete failed",
-                    context: ["fileName": url.lastPathComponent],
+                    context: ["fileName": url.lastPathComponent]
                 )
             }
         }
@@ -430,7 +432,7 @@ final class HistoryThumbnailGenerator {
                     .history,
                     error,
                     "History thumbnail legacy cache delete failed",
-                    context: ["fileName": legacyURL.lastPathComponent],
+                    context: ["fileName": legacyURL.lastPathComponent]
                 )
             }
         }
@@ -438,7 +440,7 @@ final class HistoryThumbnailGenerator {
 
     private nonisolated static func downsampledImage(at url: URL, maxDimension: CGFloat) -> CGImage? {
         let sourceOptions: [CFString: Any] = [
-            kCGImageSourceShouldCache: false,
+            kCGImageSourceShouldCache: false
         ]
 
         guard let imageSource = CGImageSourceCreateWithURL(url as CFURL, sourceOptions as CFDictionary) else {
@@ -450,7 +452,7 @@ final class HistoryThumbnailGenerator {
             kCGImageSourceCreateThumbnailFromImageAlways: true,
             kCGImageSourceShouldCacheImmediately: true,
             kCGImageSourceCreateThumbnailWithTransform: true,
-            kCGImageSourceThumbnailMaxPixelSize: maxPixelSize,
+            kCGImageSourceThumbnailMaxPixelSize: maxPixelSize
         ]
 
         return CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions as CFDictionary)
@@ -458,7 +460,7 @@ final class HistoryThumbnailGenerator {
 
     private nonisolated static func decodeThumbnail(at url: URL) -> ThumbnailImageSnapshot? {
         let options: [CFString: Any] = [
-            kCGImageSourceShouldCacheImmediately: true,
+            kCGImageSourceShouldCacheImmediately: true
         ]
         guard let imageSource = CGImageSourceCreateWithURL(url as CFURL, options as CFDictionary),
               let cgImage = CGImageSourceCreateImageAtIndex(imageSource, 0, nil)
@@ -472,7 +474,7 @@ final class HistoryThumbnailGenerator {
     private nonisolated static func saveThumbnail(
         _ image: CGImage,
         identity: ThumbnailCacheIdentity,
-        configuration: ThumbnailWorkerConfiguration,
+        configuration: ThumbnailWorkerConfiguration
     ) -> GeneratedThumbnail? {
         let url = identity.thumbnailURL
 
@@ -480,20 +482,20 @@ final class HistoryThumbnailGenerator {
             url as CFURL,
             UTType.jpeg.identifier as CFString,
             1,
-            nil,
+            nil
         ) else {
             logger.warning("Failed to create thumbnail destination for \(identity.recordId)")
             DiagnosticLogger.shared.log(
                 .warning,
                 .history,
                 "History thumbnail destination creation failed",
-                context: ["recordId": identity.recordId.uuidString],
+                context: ["recordId": identity.recordId.uuidString]
             )
             return nil
         }
 
         let properties: [CFString: Any] = [
-            kCGImageDestinationLossyCompressionQuality: configuration.compressionFactor,
+            kCGImageDestinationLossyCompressionQuality: configuration.compressionFactor
         ]
         CGImageDestinationAddImage(destination, image, properties as CFDictionary)
 
@@ -503,7 +505,7 @@ final class HistoryThumbnailGenerator {
                 .warning,
                 .history,
                 "History thumbnail JPEG encode failed",
-                context: ["recordId": identity.recordId.uuidString],
+                context: ["recordId": identity.recordId.uuidString]
             )
             return nil
         }
@@ -516,7 +518,7 @@ final class HistoryThumbnailGenerator {
             return GeneratedThumbnail(
                 url: url,
                 image: ThumbnailImageSnapshot(cgImage: image),
-                cacheCost: max(fileSize, 1),
+                cacheCost: max(fileSize, 1)
             )
         } catch {
             logger.error("Failed to read thumbnail metadata: \(error.localizedDescription)")
@@ -524,7 +526,7 @@ final class HistoryThumbnailGenerator {
                 .history,
                 error,
                 "History thumbnail metadata read failed",
-                context: ["recordId": identity.recordId.uuidString],
+                context: ["recordId": identity.recordId.uuidString]
             )
             return nil
         }
@@ -631,7 +633,7 @@ private final class HistoryThumbnailState: @unchecked Sendable {
 
     func enqueue(
         _ completion: @escaping @MainActor @Sendable (NSImage?) -> Void,
-        for cacheKey: String,
+        for cacheKey: String
     ) -> Bool {
         lock.lock()
         defer { lock.unlock() }

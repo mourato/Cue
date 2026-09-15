@@ -92,7 +92,7 @@ final class AreaSelectionSessionLifecycleTests: XCTestCase {
         controller.startSelection(mode: .screenshot, backdrops: [:], dismissesAfterSelection: false) { _ in }
         XCTAssertFalse(
             controller.dismissesAfterSelection,
-            "a false dismiss policy must be applied after session-start teardown",
+            "a false dismiss policy must be applied after session-start teardown"
         )
         controller.cancelSelection()
         XCTAssertTrue(controller.dismissesAfterSelection, "teardown must restore the default policy")
@@ -106,7 +106,7 @@ final class AreaSelectionSessionLifecycleTests: XCTestCase {
         controller.startSelection(mode: .recording, backdrops: [:]) { _ in }
         XCTAssertTrue(
             controller.dismissesAfterSelection,
-            "a replaced live session must not leak its dismiss policy into the next session",
+            "a replaced live session must not leak its dismiss policy into the next session"
         )
         controller.cancelSelection()
     }
@@ -136,7 +136,7 @@ final class AreaSelectionSessionLifecycleTests: XCTestCase {
 
         NotificationCenter.default.post(
             name: NSApplication.didChangeScreenParametersNotification,
-            object: nil,
+            object: nil
         )
 
         for window in pooledWindows() {
@@ -152,7 +152,8 @@ final class AreaSelectionSessionLifecycleTests: XCTestCase {
     private func pooledWindows() -> [AreaSelectionWindow] {
         let mirror = Mirror(reflecting: AreaSelectionController.shared)
         if let pool = mirror.children.first(where: { $0.label == "windowPool" })?.value
-            as? [CGDirectDisplayID: AreaSelectionWindow] {
+            as? [CGDirectDisplayID: AreaSelectionWindow]
+        {
             return Array(pool.values)
         }
         return []

@@ -32,7 +32,7 @@ enum CueConfigurationImporter {
 
         return CueConfigurationImportResult(
             appliedChangeCount: preparedImport.mutations.count,
-            issues: preparedImport.issues,
+            issues: preparedImport.issues
         )
     }
 
@@ -43,7 +43,7 @@ enum CueConfigurationImporter {
         } catch {
             return PreparedImport(
                 issues: [CueConfigurationIssue(severity: .error, message: error.localizedDescription)],
-                mutations: [],
+                mutations: []
             )
         }
 
@@ -75,7 +75,7 @@ enum CueConfigurationImporter {
     private static func collectGeneral(
         _ reader: inout CueConfigurationReader,
         defaults: UserDefaults,
-        mutations: inout [() -> Void],
+        mutations: inout [() -> Void]
     ) {
         if let language = reader.string("general", "language") {
             let normalized = language == "system" ? "" : AppLanguageManager.normalizedLanguageIdentifier(from: language)
@@ -118,7 +118,7 @@ enum CueConfigurationImporter {
             "diagnostics",
             "retention_days",
             range: LogCleanupScheduler.retentionDaysRange,
-            mutations: &mutations,
+            mutations: &mutations
         ) {
             defaults.set($0, forKey: PreferencesKeys.diagnosticsRetentionDays)
         }
@@ -127,7 +127,7 @@ enum CueConfigurationImporter {
     private static func collectCapture(
         _ reader: inout CueConfigurationReader,
         defaults: UserDefaults,
-        mutations: inout [() -> Void],
+        mutations: inout [() -> Void]
     ) {
         collectBool(&reader, "capture", "hide_desktop_icons", mutations: &mutations) {
             defaults.set($0, forKey: PreferencesKeys.hideDesktopIcons)
@@ -153,7 +153,7 @@ enum CueConfigurationImporter {
             "clipboard",
             "copy_mode",
             allowed: ClipboardCopyMode.allCases.map(\.rawValue),
-            mutations: &mutations,
+            mutations: &mutations
         ) {
             defaults.set($0, forKey: PreferencesKeys.clipboardCopyMode)
         }
@@ -171,7 +171,7 @@ enum CueConfigurationImporter {
             &reader,
             newKeyPath: ["capture", "screenshot", "include_own_app"],
             legacyKeyPath: ["capture", "screenshot", "include_snapzy"],
-            mutations: &mutations,
+            mutations: &mutations
         ) {
             defaults.set($0, forKey: PreferencesKeys.screenshotIncludeOwnApp)
         }
@@ -193,7 +193,7 @@ enum CueConfigurationImporter {
             "screenshot",
             "selection_snap_distance",
             range: CaptureSelectionSnappingConfiguration.snapDistanceRange,
-            mutations: &mutations,
+            mutations: &mutations
         ) {
             defaults.set($0, forKey: PreferencesKeys.captureSelectionSnapDistance)
         }
@@ -203,7 +203,7 @@ enum CueConfigurationImporter {
             "screenshot",
             "selection_color_sensitivity",
             range: CaptureSelectionSnappingConfiguration.colorSensitivityRange,
-            mutations: &mutations,
+            mutations: &mutations
         ) {
             defaults.set($0, forKey: PreferencesKeys.captureSelectionColorSensitivity)
         }
@@ -242,14 +242,14 @@ enum CueConfigurationImporter {
         private static func collectRecording(
             _ reader: inout CueConfigurationReader,
             defaults: UserDefaults,
-            mutations: inout [() -> Void],
+            mutations: inout [() -> Void]
         ) {
             collectEnumString(
                 &reader,
                 "recording",
                 "format",
                 allowed: VideoFormat.allCases.map(\.rawValue),
-                mutations: &mutations,
+                mutations: &mutations
             ) {
                 defaults.set($0, forKey: PreferencesKeys.recordingFormat)
             }
@@ -258,7 +258,7 @@ enum CueConfigurationImporter {
                 "recording",
                 "quality",
                 allowed: VideoQuality.allCases.map(\.rawValue),
-                mutations: &mutations,
+                mutations: &mutations
             ) {
                 defaults.set($0, forKey: PreferencesKeys.recordingQuality)
             }
@@ -270,7 +270,7 @@ enum CueConfigurationImporter {
                 "recording",
                 "output_mode",
                 allowed: RecordingOutputMode.allCases.map(\.rawValue),
-                mutations: &mutations,
+                mutations: &mutations
             ) {
                 defaults.set($0, forKey: PreferencesKeys.recordingOutputMode)
             }
@@ -299,7 +299,7 @@ enum CueConfigurationImporter {
                 &reader,
                 newKeyPath: ["recording", "include_own_app"],
                 legacyKeyPath: ["recording", "include_snapzy"],
-                mutations: &mutations,
+                mutations: &mutations
             ) {
                 defaults.set($0, forKey: PreferencesKeys.recordingIncludeOwnApp)
             }
@@ -326,7 +326,7 @@ enum CueConfigurationImporter {
                 "recording",
                 "max_resolution",
                 allowed: ["720p", "1080p", "1440p", "2160p", "Original"],
-                mutations: &mutations,
+                mutations: &mutations
             ) {
                 defaults.set($0, forKey: PreferencesKeys.recordingMaxResolution)
             }
@@ -341,7 +341,7 @@ enum CueConfigurationImporter {
                 "recording",
                 "audio_tracks",
                 allowed: ["single", "separate"],
-                mutations: &mutations,
+                mutations: &mutations
             ) {
                 defaults.set($0, forKey: PreferencesKeys.recordingAudioTracks)
             }
@@ -366,7 +366,7 @@ enum CueConfigurationImporter {
                 "mouse_highlight",
                 "animation_duration",
                 range: 0.1 ... 3,
-                mutations: &mutations,
+                mutations: &mutations
             ) {
                 defaults.set($0, forKey: PreferencesKeys.mouseHighlightAnimationDuration)
             }
@@ -374,8 +374,9 @@ enum CueConfigurationImporter {
                 guard let color = CueConfigurationColor.color(from: colorHex),
                       let data = try? NSKeyedArchiver.archivedData(
                           withRootObject: color,
-                          requiringSecureCoding: false,
-                      ) else {
+                          requiringSecureCoding: false
+                      )
+                else {
                     reader.error("recording.mouse_highlight.color must be #RRGGBB or #RRGGBBAA")
                     return
                 }
@@ -396,7 +397,7 @@ enum CueConfigurationImporter {
                 "keystrokes",
                 "position",
                 allowed: KeystrokeOverlayPosition.allCases.map(\.rawValue),
-                mutations: &mutations,
+                mutations: &mutations
             ) {
                 defaults.set($0, forKey: PreferencesKeys.keystrokePosition)
             }
@@ -406,7 +407,7 @@ enum CueConfigurationImporter {
                 "keystrokes",
                 "display_duration",
                 range: 0.3 ... 10,
-                mutations: &mutations,
+                mutations: &mutations
             ) {
                 defaults.set($0, forKey: PreferencesKeys.keystrokeDisplayDuration)
             }
@@ -416,7 +417,7 @@ enum CueConfigurationImporter {
                 "annotation_shortcuts",
                 "modifier",
                 allowed: AnnotationShortcutModifier.allCases.map(\.rawValue),
-                mutations: &mutations,
+                mutations: &mutations
             ) {
                 defaults.set($0, forKey: PreferencesKeys.annotationShortcutModifier)
                 RecordingAnnotationShortcutConfig.shared.modifier = AnnotationShortcutModifier(rawValue: $0) ?? .shift
@@ -427,7 +428,7 @@ enum CueConfigurationImporter {
                 "annotation_shortcuts",
                 "hold_duration",
                 range: 0.1 ... 5,
-                mutations: &mutations,
+                mutations: &mutations
             ) {
                 defaults.set($0, forKey: PreferencesKeys.annotationShortcutHoldDuration)
                 RecordingAnnotationShortcutConfig.shared.holdDuration = $0
@@ -437,7 +438,7 @@ enum CueConfigurationImporter {
                 "recording",
                 "video_editor_zoom_transition_duration",
                 range: 0.15 ... 0.75,
-                mutations: &mutations,
+                mutations: &mutations
             ) {
                 defaults.set($0, forKey: PreferencesKeys.videoEditorZoomTransitionDuration)
             }
@@ -446,7 +447,7 @@ enum CueConfigurationImporter {
 
     private static func collectQuickAccess(
         _ reader: inout CueConfigurationReader,
-        mutations: inout [() -> Void],
+        mutations: inout [() -> Void]
     ) {
         let manager = QuickAccessManager.shared
         collectBool(&reader, "quick_access", "enabled", mutations: &mutations) { manager.isEnabled = $0 }
@@ -472,7 +473,7 @@ enum CueConfigurationImporter {
             "quick_access",
             "corner_button_scale",
             range: QuickAccessCornerButtonMetrics.scaleRange,
-            mutations: &mutations,
+            mutations: &mutations
         ) { manager.cornerButtonScale = $0 }
         collectBool(&reader, "quick_access", "drag_drop", mutations: &mutations) { manager.dragDropEnabled = $0 }
         collectBool(&reader, "quick_access", "two_finger_swipe_to_dismiss", mutations: &mutations) {
@@ -555,7 +556,7 @@ enum CueConfigurationImporter {
                 QuickAccessActionConfigurationStore.shared.applyConfiguration(
                     order: order,
                     enabledActions: enabledActions,
-                    slotAssignments: slots,
+                    slotAssignments: slots
                 )
             }
         }
@@ -564,7 +565,7 @@ enum CueConfigurationImporter {
     private static func collectHistory(
         _ reader: inout CueConfigurationReader,
         defaults: UserDefaults,
-        mutations: inout [() -> Void],
+        mutations: inout [() -> Void]
     ) {
         collectBool(&reader, "history", "enabled", mutations: &mutations) {
             defaults.set($0, forKey: PreferencesKeys.historyEnabled)
@@ -580,7 +581,7 @@ enum CueConfigurationImporter {
             "history",
             "background_style",
             allowed: HistoryBackgroundStyle.allCases.map(\.rawValue),
-            mutations: &mutations,
+            mutations: &mutations
         ) {
             defaults.set($0, forKey: PreferencesKeys.historyBackgroundStyle)
         }
@@ -596,7 +597,7 @@ enum CueConfigurationImporter {
             "floating",
             "position",
             allowed: ["topCenter", "bottomCenter", "center"],
-            mutations: &mutations,
+            mutations: &mutations
         ) {
             manager.position = HistoryPanelPosition(rawValue: $0) ?? .topCenter
         }
@@ -616,7 +617,7 @@ enum CueConfigurationImporter {
     private static func collectUploads(
         _ reader: inout CueConfigurationReader,
         defaults: UserDefaults,
-        mutations: inout [() -> Void],
+        mutations: inout [() -> Void]
     ) {
         collectBool(&reader, "uploads", "optimize_images", mutations: &mutations) {
             defaults.set($0, forKey: PreferencesKeys.uploadOptimizeImages)
@@ -626,7 +627,7 @@ enum CueConfigurationImporter {
             "uploads",
             "image_format",
             allowed: CueUploadImageFormat.allCases.map(\.rawValue),
-            mutations: &mutations,
+            mutations: &mutations
         ) {
             defaults.set($0, forKey: PreferencesKeys.uploadImageFormat)
         }
@@ -635,7 +636,7 @@ enum CueConfigurationImporter {
             "uploads",
             "maximum_dimension",
             range: 512 ... 8192,
-            mutations: &mutations,
+            mutations: &mutations
         ) {
             defaults.set($0, forKey: PreferencesKeys.uploadMaximumDimension)
         }
@@ -644,7 +645,7 @@ enum CueConfigurationImporter {
             "uploads",
             "jpeg_quality",
             range: 0.5 ... 1.0,
-            mutations: &mutations,
+            mutations: &mutations
         ) {
             defaults.set($0, forKey: PreferencesKeys.uploadJPEGQuality)
         }
@@ -653,14 +654,14 @@ enum CueConfigurationImporter {
     private static func collectAnnotate(
         _ reader: inout CueConfigurationReader,
         defaults: UserDefaults,
-        mutations: inout [() -> Void],
+        mutations: inout [() -> Void]
     ) {
         collectEnumString(
             &reader,
             "annotate",
             "clipboard_image_open_behavior",
             allowed: AnnotateClipboardImageBehavior.allCases.map(\.rawValue),
-            mutations: &mutations,
+            mutations: &mutations
         ) {
             defaults.set($0, forKey: PreferencesKeys.annotateClipboardImageOpenBehavior)
         }
@@ -688,7 +689,7 @@ enum CueConfigurationImporter {
                 AnnotateChromeConfigurationStore.shared.applyConfiguration(
                     toolbarOrder: toolbarOrder,
                     bottomOrder: bottomOrder,
-                    enabledItems: enabledChrome.map(Set.init),
+                    enabledItems: enabledChrome.map(Set.init)
                 )
             }
         }
@@ -697,7 +698,7 @@ enum CueConfigurationImporter {
     private static func collectAfterCapture(
         _ reader: inout CueConfigurationReader,
         type: CaptureType,
-        mutations: inout [() -> Void],
+        mutations: inout [() -> Void]
     ) {
         let mapping: [(String, AfterCaptureAction)] = [
             ("save", .save),
@@ -706,7 +707,7 @@ enum CueConfigurationImporter {
             ("upload_to_cloud", .uploadToCloud),
             ("open_annotate", .openAnnotate),
             ("pin_to_screen", .pinToScreen),
-            ("open_video_editor", .openVideoEditor),
+            ("open_video_editor", .openVideoEditor)
         ]
 
         for (key, action) in mapping {
@@ -721,7 +722,7 @@ enum CueConfigurationImporter {
         newKeyPath: [String],
         legacyKeyPath: [String],
         mutations: inout [() -> Void],
-        apply: @escaping (Bool) -> Void,
+        apply: @escaping (Bool) -> Void
     ) {
         guard let value = reader.bool(newKeyPath) ?? reader.bool(legacyKeyPath) else { return }
         mutations.append { apply(value) }
@@ -731,7 +732,7 @@ enum CueConfigurationImporter {
         _ reader: inout CueConfigurationReader,
         _ path: String...,
         mutations: inout [() -> Void],
-        apply: @escaping (Bool) -> Void,
+        apply: @escaping (Bool) -> Void
     ) {
         guard let value = reader.bool(path) else { return }
         mutations.append { apply(value) }
@@ -741,7 +742,7 @@ enum CueConfigurationImporter {
         _ reader: inout CueConfigurationReader,
         _ path: String...,
         mutations: inout [() -> Void],
-        apply: @escaping (String) -> Void,
+        apply: @escaping (String) -> Void
     ) {
         guard let value = reader.string(path) else { return }
         mutations.append { apply(value) }
@@ -752,7 +753,7 @@ enum CueConfigurationImporter {
         _ path: String...,
         allowed: [String],
         mutations: inout [() -> Void],
-        apply: @escaping (String) -> Void,
+        apply: @escaping (String) -> Void
     ) {
         guard let value = reader.string(path) else { return }
         guard allowed.contains(value) else {
@@ -767,7 +768,7 @@ enum CueConfigurationImporter {
         _ path: String...,
         range: ClosedRange<Int>,
         mutations: inout [() -> Void],
-        apply: @escaping (Int) -> Void,
+        apply: @escaping (Int) -> Void
     ) {
         guard let value = reader.int(path) else { return }
         guard range.contains(value) else {
@@ -782,7 +783,7 @@ enum CueConfigurationImporter {
         _ path: String...,
         range: ClosedRange<Double>,
         mutations: inout [() -> Void],
-        apply: @escaping (Double) -> Void,
+        apply: @escaping (Double) -> Void
     ) {
         guard let value = reader.double(path) else { return }
         guard range.contains(value) else {

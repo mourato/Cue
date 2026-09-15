@@ -59,7 +59,7 @@ final class QuickAccessPinWindowState: ObservableObject {
         let interactiveSize = QuickAccessPinWindowSizing.minimumInteractiveSize
         let interactiveFloor = max(
             interactiveSize.width / baseSize.width,
-            interactiveSize.height / baseSize.height,
+            interactiveSize.height / baseSize.height
         )
         let floor = max(absoluteMinimumZoomFactor, interactiveFloor)
         return min(floor, maximumZoomFactor)

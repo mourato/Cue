@@ -55,7 +55,7 @@ final class CaptureHistoryRetentionService {
             DiagnosticLogger.shared.log(
                 .warning,
                 .history,
-                "Capture history retention sweep skipped; database unavailable",
+                "Capture history retention sweep skipped; database unavailable"
             )
             return
         }
@@ -68,19 +68,19 @@ final class CaptureHistoryRetentionService {
             .info,
             .history,
             "Capture history retention sweep started",
-            context: ["days": "\(retentionDays)", "maxCount": "\(maxCount)"],
+            context: ["days": "\(retentionDays)", "maxCount": "\(maxCount)"]
         )
 
         // Collect temp file paths before deleting records so we can clean them up afterward
         let tempPathsToDelete = collectTempFilePathsForRecordsToDelete(
             retentionDays: retentionDays,
-            maxCount: maxCount,
+            maxCount: maxCount
         )
         DiagnosticLogger.shared.log(
             .debug,
             .history,
             "Capture history retention collected temp files",
-            context: ["fileCount": "\(tempPathsToDelete.count)"],
+            context: ["fileCount": "\(tempPathsToDelete.count)"]
         )
 
         // Age-based cleanup
@@ -105,7 +105,7 @@ final class CaptureHistoryRetentionService {
             .info,
             .history,
             "Capture history retention sweep completed",
-            context: ["tempFileCandidates": "\(tempPathsToDelete.count)"],
+            context: ["tempFileCandidates": "\(tempPathsToDelete.count)"]
         )
     }
 
@@ -113,7 +113,7 @@ final class CaptureHistoryRetentionService {
     /// Returns paths that are in the temp directory and will be removed.
     private func collectTempFilePathsForRecordsToDelete(
         retentionDays: Int,
-        maxCount: Int,
+        maxCount: Int
     ) -> [String] {
         let store = CaptureHistoryStore.shared
         guard store.isDatabaseAvailable else { return [] }
@@ -169,7 +169,7 @@ final class CaptureHistoryRetentionService {
                     .debug,
                     .history,
                     "Capture history retention deleted temp file",
-                    context: ["fileName": (path as NSString).lastPathComponent],
+                    context: ["fileName": (path as NSString).lastPathComponent]
                 )
             } catch {
                 logger.error("Failed to delete temp file \(path): \(error.localizedDescription)")
@@ -177,7 +177,7 @@ final class CaptureHistoryRetentionService {
                     .history,
                     error,
                     "Capture history retention temp file delete failed",
-                    context: ["fileName": (path as NSString).lastPathComponent],
+                    context: ["fileName": (path as NSString).lastPathComponent]
                 )
             }
         }
@@ -190,7 +190,7 @@ final class CaptureHistoryRetentionService {
             DiagnosticLogger.shared.log(
                 .warning,
                 .history,
-                "Clear all history skipped sidecar cleanup; database rows were not removed",
+                "Clear all history skipped sidecar cleanup; database rows were not removed"
             )
             return
         }
@@ -204,14 +204,14 @@ final class CaptureHistoryRetentionService {
     // MARK: - Private
 
     /// Remove thumbnails that no longer have a corresponding history record
-    private func cleanupOrphanedThumbnails() async {
+    private func cleanupOrphanedThumbnails() {
         let generator = HistoryThumbnailGenerator.shared
         let store = CaptureHistoryStore.shared
         guard store.isDatabaseAvailable else {
             DiagnosticLogger.shared.log(
                 .warning,
                 .history,
-                "Capture history orphan thumbnail cleanup skipped; database unavailable",
+                "Capture history orphan thumbnail cleanup skipped; database unavailable"
             )
             return
         }
@@ -240,7 +240,7 @@ final class CaptureHistoryRetentionService {
                         .history,
                         error,
                         "Capture history orphan thumbnail delete failed",
-                        context: ["fileName": url.lastPathComponent],
+                        context: ["fileName": url.lastPathComponent]
                     )
                 }
             }
@@ -252,7 +252,7 @@ final class CaptureHistoryRetentionService {
                 .info,
                 .history,
                 "Capture history orphan thumbnails cleaned",
-                context: ["thumbnailCount": "\(removedCount)"],
+                context: ["thumbnailCount": "\(removedCount)"]
             )
         }
     }
@@ -262,7 +262,7 @@ final class CaptureHistoryRetentionService {
             DiagnosticLogger.shared.log(
                 .warning,
                 .history,
-                "Capture history annotation session cleanup skipped; database unavailable",
+                "Capture history annotation session cleanup skipped; database unavailable"
             )
             return
         }
@@ -270,7 +270,7 @@ final class CaptureHistoryRetentionService {
         let activeScreenshotPaths = Set(
             CaptureHistoryStore.shared.records
                 .filter { $0.captureType == .screenshot }
-                .map(\.filePath),
+                .map(\.filePath)
         )
         annotationSessionStore.cleanup(keepingScreenshotFilePaths: activeScreenshotPaths)
     }

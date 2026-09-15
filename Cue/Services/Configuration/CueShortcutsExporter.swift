@@ -22,13 +22,13 @@ extension CueConfigurationExporter {
             writeOverlayShortcut(
                 &writer,
                 section: "shortcuts.overlay.all_in_one.\(mode.rawValue)",
-                shortcut: AllInOneModeShortcutSettings.shortcut(for: mode),
+                shortcut: AllInOneModeShortcutSettings.shortcut(for: mode)
             )
         }
         writeOverlayShortcut(
             &writer,
             section: "shortcuts.overlay.recording_application_capture",
-            shortcut: CaptureOverlayShortcutSettings.recordingApplicationCaptureShortcut,
+            shortcut: CaptureOverlayShortcutSettings.recordingApplicationCaptureShortcut
         )
 
         writeQuickAccessShortcut(&writer)
@@ -52,7 +52,7 @@ extension CueConfigurationExporter {
     private static func writeGlobalShortcut(
         _ writer: inout SimpleTOMLWriter,
         kind: GlobalShortcutKind,
-        manager: KeyboardShortcutManager,
+        manager: KeyboardShortcutManager
     ) {
         writer.section("shortcuts.global.\(kind.configKey)")
         writer.value("enabled", manager.isShortcutEnabled(for: kind))
@@ -70,7 +70,7 @@ extension CueConfigurationExporter {
     private static func writeOverlayShortcut(
         _ writer: inout SimpleTOMLWriter,
         section: String,
-        shortcut: CaptureOverlayShortcut?,
+        shortcut: CaptureOverlayShortcut?
     ) {
         writer.section(section)
         guard let shortcut else {
@@ -94,7 +94,7 @@ extension CueConfigurationExporter {
             AnnotateShortcutManager.configurableTools
                 .filter { !manager.isShortcutEnabled(for: $0) }
                 .map(\.rawValue)
-                .sorted(),
+                .sorted()
         )
         for tool in AnnotateShortcutManager.configurableTools {
             writer.value(String(tool.rawValue), manager.shortcut(for: tool).map(String.init) ?? "")
@@ -109,7 +109,7 @@ extension CueConfigurationExporter {
             AnnotateActionShortcutKind.allCases
                 .filter { !manager.isActionShortcutEnabled(for: $0) }
                 .map(\.rawValue)
-                .sorted(),
+                .sorted()
         )
 
         for kind in AnnotateActionShortcutKind.allCases {

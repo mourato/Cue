@@ -38,7 +38,7 @@ final class CueConfigurationImporterTests: XCTestCase {
             XCTAssertEqual(defaults.object(forKey: PreferencesKeys.recordingFPS) as? Int, 60)
             XCTAssertEqual(
                 defaults.object(forKey: PreferencesKeys.recordingShowCameraPreviewDuringRecording) as? Bool,
-                false,
+                false
             )
         #endif
     }
@@ -147,7 +147,7 @@ final class CueConfigurationImporterTests: XCTestCase {
         XCTAssertTrue(result.issues.isEmpty)
         XCTAssertEqual(
             defaults.string(forKey: PreferencesKeys.exportLocation),
-            CueConfigurationPaths.expandedUserPath("~/Desktop"),
+            CueConfigurationPaths.expandedUserPath("~/Desktop")
         )
     }
 
@@ -447,7 +447,7 @@ final class CueConfigurationImporterTests: XCTestCase {
             XCTAssertEqual(defaults.object(forKey: PreferencesKeys.recordingShowCountdown) as? Bool, true)
             XCTAssertEqual(
                 defaults.object(forKey: PreferencesKeys.recordingDoNotDisturbWhileRecording) as? Bool,
-                false,
+                false
             )
             XCTAssertEqual(defaults.string(forKey: PreferencesKeys.recordingMaxResolution), "720p")
             XCTAssertEqual(defaults.object(forKey: PreferencesKeys.recordingScaleRetinaTo1x) as? Bool, false)
@@ -646,7 +646,7 @@ final class CueConfigurationImporterTests: XCTestCase {
             store.applyConfiguration(
                 order: originalOrder,
                 enabledActions: originalEnabledActions,
-                slotAssignments: originalSlotAssignments,
+                slotAssignments: originalSlotAssignments
             )
         }
 

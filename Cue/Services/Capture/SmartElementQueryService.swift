@@ -56,7 +56,7 @@ final class SmartElementQueryService {
     init(
         snapshotProvider: AXSnapshotProviding = AXAccessibilitySnapshotProvider(),
         permissionChecker: @escaping () -> Bool = { AXIsProcessTrusted() },
-        debounceMilliseconds: Int = 25,
+        debounceMilliseconds: Int = 25
     ) {
         self.snapshotProvider = snapshotProvider
         self.permissionChecker = permissionChecker
@@ -117,7 +117,7 @@ final class SmartElementQueryService {
         DiagnosticLogger.shared.log(
             .warning,
             .capture,
-            "Smart element capture: accessibility prompt shown",
+            "Smart element capture: accessibility prompt shown"
         )
         return false
     }
@@ -145,7 +145,7 @@ final class SmartElementQueryService {
         DiagnosticLogger.shared.log(
             .debug,
             .capture,
-            "snapshot returned element: role=\(raw.role ?? "nil") size=\(raw.size)",
+            "snapshot returned element: role=\(raw.role ?? "nil") size=\(raw.size)"
         )
 
         guard let meaningful = AXElementInspector.findMeaningful(raw) else {
@@ -153,7 +153,7 @@ final class SmartElementQueryService {
                 .debug,
                 .capture,
                 "Smart element capture: no meaningful element after walk",
-                context: ["rawRole": raw.role ?? "nil", "rawSize": "\(raw.size)"],
+                context: ["rawRole": raw.role ?? "nil", "rawSize": "\(raw.size)"]
             )
             emit(nil)
             return
@@ -164,7 +164,7 @@ final class SmartElementQueryService {
                 .warning,
                 .capture,
                 "Smart element capture: no screen contains AX rect",
-                context: ["axRect": "\(meaningful.rect)"],
+                context: ["axRect": "\(meaningful.rect)"]
             )
             emit(nil)
             return
@@ -177,8 +177,8 @@ final class SmartElementQueryService {
             context: [
                 "role": meaningful.role ?? "nil",
                 "axRect": "\(meaningful.rect)",
-                "flippedRect": "\(flippedRect)",
-            ],
+                "flippedRect": "\(flippedRect)"
+            ]
         )
         emit(flippedRect)
     }
@@ -199,7 +199,7 @@ final class SmartElementQueryService {
         DiagnosticLogger.shared.log(
             .warning,
             .capture,
-            "Smart element capture: accessibility not trusted; emitting nil",
+            "Smart element capture: accessibility not trusted; emitting nil"
         )
     }
 }

@@ -41,7 +41,7 @@
                         // Frame thumbnail strip
                         VideoTimelineFrameStrip(
                             thumbnails: state.frameThumbnails,
-                            isLoading: state.isExtractingFrames,
+                            isLoading: state.isExtractingFrames
                         )
 
                         // Trim handles overlay
@@ -52,7 +52,7 @@
                             playbackState: state.playbackState,
                             duration: state.playbackDuration,
                             timelineWidth: timelineWidth,
-                            totalHeight: totalHeight,
+                            totalHeight: totalHeight
                         )
                     }
                     .frame(height: frameStripHeight)
@@ -92,7 +92,7 @@
                     let durationSeconds = CMTimeGetSeconds(state.playbackDuration)
                     let newTime = CMTime(
                         seconds: progress * durationSeconds,
-                        preferredTimescale: 600,
+                        preferredTimescale: 600
                     )
                     state.scrub(to: newTime)
                 }

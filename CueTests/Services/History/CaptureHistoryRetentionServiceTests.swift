@@ -24,7 +24,7 @@ final class CaptureHistoryRetentionServiceTests: XCTestCase {
         tempDirectory = FileManager.default.temporaryDirectory
             .appendingPathComponent("NotinhasTests_CaptureHistoryRetention_\(UUID().uuidString)", isDirectory: true)
         annotationSessionStore = AnnotationSessionStore(
-            rootDirectory: tempDirectory.appendingPathComponent("AnnotationSessions", isDirectory: true),
+            rootDirectory: tempDirectory.appendingPathComponent("AnnotationSessions", isDirectory: true)
         )
         defaultsSuiteName = "NotinhasTests.CaptureHistoryRetentionServiceTests.\(UUID().uuidString)"
         defaults = UserDefaults(suiteName: defaultsSuiteName)
@@ -171,7 +171,7 @@ final class CaptureHistoryRetentionServiceTests: XCTestCase {
             height: 100,
             duration: nil,
             thumbnailPath: nil,
-            isDeleted: false,
+            isDeleted: false
         )
     }
 
@@ -182,11 +182,11 @@ final class CaptureHistoryRetentionServiceTests: XCTestCase {
                 AnnotationItem(
                     type: .text("History"),
                     bounds: CGRect(x: 0, y: 0, width: 40, height: 16),
-                    properties: AnnotationProperties(),
-                ),
+                    properties: AnnotationProperties()
+                )
             ],
             canvasEffects: AnnotationCanvasEffects(),
-            cropRect: nil,
+            cropRect: nil
         )
     }
 

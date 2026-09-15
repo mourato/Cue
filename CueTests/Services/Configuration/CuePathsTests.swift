@@ -32,15 +32,15 @@ final class CueConfigurationPathsTests: XCTestCase {
 
         XCTAssertEqual(
             CueConfigurationPaths.collapsingHomePath("/Users/example/Desktop", homeDirectory: home),
-            "~/Desktop",
+            "~/Desktop"
         )
         XCTAssertEqual(
             CueConfigurationPaths.collapsingHomePath("/Users/example", homeDirectory: home),
-            "~",
+            "~"
         )
         XCTAssertEqual(
             CueConfigurationPaths.collapsingHomePath("/tmp/snapzy", homeDirectory: home),
-            "/tmp/snapzy",
+            "/tmp/snapzy"
         )
     }
 
@@ -49,11 +49,11 @@ final class CueConfigurationPathsTests: XCTestCase {
 
         XCTAssertEqual(
             CueConfigurationPaths.expandedUserPath("~/Desktop", homeDirectory: home),
-            "/Users/example/Desktop",
+            "/Users/example/Desktop"
         )
         XCTAssertEqual(
             CueConfigurationPaths.expandedUserPath("/tmp/snapzy", homeDirectory: home),
-            "/tmp/snapzy",
+            "/tmp/snapzy"
         )
     }
 

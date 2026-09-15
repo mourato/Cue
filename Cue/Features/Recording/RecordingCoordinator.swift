@@ -64,7 +64,7 @@
             cameraUnavailableObserver = NotificationCenter.default.addObserver(
                 forName: .recordingCameraUnavailable,
                 object: nil,
-                queue: .main,
+                queue: .main
             ) { [weak self] _ in
                 self?.showCameraFallbackAlert()
             }
@@ -89,7 +89,8 @@
         }
 
         private func recordingCaptureExclusionConfiguration()
-            -> (excludeOwnApplication: Bool, excludedWindowIDs: [CGWindowID]) {
+            -> (excludeOwnApplication: Bool, excludedWindowIDs: [CGWindowID])
+        {
             let excludeOwnApplication = !includeOwnAppInRecordings
             if excludeOwnApplication {
                 return (true, [])
@@ -113,7 +114,7 @@
                 "x": rect.origin.x,
                 "y": rect.origin.y,
                 "width": rect.width,
-                "height": rect.height,
+                "height": rect.height
             ]
             UserDefaults.standard.set(rectDict, forKey: PreferencesKeys.recordingLastAreaRect)
         }
@@ -124,7 +125,8 @@
                   let x = rectDict["x"] as? CGFloat,
                   let y = rectDict["y"] as? CGFloat,
                   let width = rectDict["width"] as? CGFloat,
-                  let height = rectDict["height"] as? CGFloat else {
+                  let height = rectDict["height"] as? CGFloat
+            else {
                 return nil
             }
 
@@ -158,7 +160,7 @@
 
         func stopFromStatusItem() {
             DiagnosticLogger.shared.log(.debug, .recording, "Stop requested from status item", context: [
-                "recorderState": "\(recorder.state)",
+                "recorderState": "\(recorder.state)"
             ])
             switch recorder.state {
             case .recording, .paused:
@@ -193,7 +195,7 @@
             for rect: CGRect,
             captureMode: RecordingCaptureMode = .area,
             windowTarget: WindowCaptureTarget? = nil,
-            onSessionEnded: (@MainActor () -> Void)? = nil,
+            onSessionEnded: (@MainActor () -> Void)? = nil
         ) {
             guard !isActive else {
                 DiagnosticLogger.shared.log(.debug, .recording, "Recording toolbar request ignored: coordinator active")
@@ -207,7 +209,7 @@
                 for: rect,
                 captureMode: captureMode,
                 windowTarget: windowTarget,
-                configuration: nil,
+                configuration: nil
             )
         }
 
@@ -260,7 +262,8 @@
             // presenting over the pre-record toolbar) keeps its session — replacing it here would
             // strand the screenshot flow. Mirrors the Escape yield above.
             if isCaptureAreaOverlayPresenting,
-               AreaSelectionController.shared.selectionMode != .recording {
+               AreaSelectionController.shared.selectionMode != .recording
+            {
                 return false
             }
             toggleApplicationCaptureMode()
@@ -299,7 +302,7 @@
         func cancel() {
             DiagnosticLogger.shared.log(.info, .recording, "Recording coordinator cancel requested", context: [
                 "isActive": "\(isActive)",
-                "recorderState": "\(recorder.state)",
+                "recorderState": "\(recorder.state)"
             ])
             Task {
                 await recorder.cancelRecording()
@@ -311,20 +314,20 @@
             for rect: CGRect,
             captureMode: RecordingCaptureMode,
             windowTarget: WindowCaptureTarget?,
-            configuration: ToolbarConfiguration?,
+            configuration: ToolbarConfiguration?
         ) {
             DiagnosticLogger.shared.log(.info, .recording, "Recording toolbar shown", context: [
                 "mode": captureMode.rawValue,
                 "rect": "\(Int(rect.width))x\(Int(rect.height))",
                 "origin": "\(Int(rect.origin.x)),\(Int(rect.origin.y))",
-                "windowTarget": windowTarget == nil ? "false" : "true",
+                "windowTarget": windowTarget == nil ? "false" : "true"
             ])
 
             updateSelectedTarget(
                 rect: rect,
                 captureMode: captureMode,
                 windowTarget: windowTarget,
-                syncToolbarMode: false,
+                syncToolbarMode: false
             )
 
             let toolbar = RecordingToolbarWindow(anchorRect: rect)
@@ -387,13 +390,13 @@
                 outputMode: toolbarWindow.outputMode,
                 showCursor: toolbarWindow.state.showCursor,
                 highlightClicks: toolbarWindow.state.highlightClicks,
-                showKeystrokes: toolbarWindow.state.showKeystrokes,
+                showKeystrokes: toolbarWindow.state.showKeystrokes
             )
         }
 
         private func applyToolbarConfiguration(
             _ configuration: ToolbarConfiguration?,
-            to toolbar: RecordingToolbarWindow,
+            to toolbar: RecordingToolbarWindow
         ) {
             if let configuration {
                 toolbar.selectedFormat = configuration.format
@@ -414,7 +417,8 @@
             }
 
             if let formatString = UserDefaults.standard.string(forKey: PreferencesKeys.recordingFormat),
-               let format = VideoFormat(rawValue: formatString) {
+               let format = VideoFormat(rawValue: formatString)
+            {
                 toolbar.selectedFormat = format
             }
         }
@@ -423,7 +427,7 @@
             rect: CGRect,
             captureMode: RecordingCaptureMode,
             windowTarget: WindowCaptureTarget?,
-            syncToolbarMode: Bool = true,
+            syncToolbarMode: Bool = true
         ) {
             selectedRect = rect
             selectedWindowTarget = windowTarget
@@ -447,7 +451,8 @@
         /// Apply a typed dimension edit while keeping the current selection center fixed.
         private func updateSelectionFromToolbar(_ requestedRect: CGRect) {
             guard let currentRect = selectedRect,
-                  toolbarWindow?.captureMode == .area else {
+                  toolbarWindow?.captureMode == .area
+            else {
                 toolbarWindow?.updateAnchorRect(selectedRect ?? requestedRect)
                 return
             }
@@ -458,12 +463,12 @@
             let rect = RecordingToolbarWindow.centeredSelectionRect(
                 around: center,
                 size: requestedRect.size,
-                within: screenFrame,
+                within: screenFrame
             )
             updateSelectedTarget(
                 rect: rect,
                 captureMode: .area,
-                windowTarget: nil,
+                windowTarget: nil
             )
         }
 
@@ -491,7 +496,7 @@
         private func handleSelectionResult(
             _ selection: AreaSelectionResult?,
             configuration: ToolbarConfiguration?,
-            cancellationLog: String,
+            cancellationLog: String
         ) {
             guard let selection else {
                 DiagnosticLogger.shared.log(.info, .recording, cancellationLog)
@@ -505,7 +510,7 @@
             case .rect:
                 captureMode = .area
                 windowTarget = nil
-            case .window(let target):
+            case let .window(target):
                 captureMode = .application
                 windowTarget = target
             }
@@ -514,7 +519,7 @@
                 for: selection.rect,
                 captureMode: captureMode,
                 windowTarget: windowTarget,
-                configuration: configuration,
+                configuration: configuration
             )
         }
 
@@ -522,7 +527,7 @@
             let configuration = currentToolbarConfiguration()
             DiagnosticLogger.shared.log(.info, .recording, "Recording selection restart requested", context: [
                 "mode": mode.rawValue,
-                "hasToolbar": "\(toolbarWindow != nil)",
+                "hasToolbar": "\(toolbarWindow != nil)"
             ])
 
             removeEscapeMonitors()
@@ -530,7 +535,7 @@
 
             let applicationConfiguration = AreaSelectionApplicationConfiguration(
                 prefetchedContentTask: captureManager.prefetchShareableContent(),
-                excludeOwnApplication: !includeOwnAppInRecordings,
+                excludeOwnApplication: !includeOwnAppInRecordings
             )
 
             if mode == .fullscreen {
@@ -539,7 +544,7 @@
                     for: fullscreenRect,
                     captureMode: .fullscreen,
                     windowTarget: nil,
-                    configuration: configuration,
+                    configuration: configuration
                 )
                 return
             }
@@ -548,13 +553,13 @@
                 mode: .recording,
                 backdrops: [:],
                 applicationConfiguration: applicationConfiguration,
-                initialInteractionMode: mode == .application ? .applicationWindow : .manualRegion,
+                initialInteractionMode: mode == .application ? .applicationWindow : .manualRegion
             ) { [weak self] selection in
                 guard let self else { return }
                 handleSelectionResult(
                     selection,
                     configuration: configuration,
-                    cancellationLog: "Recording reselection cancelled",
+                    cancellationLog: "Recording reselection cancelled"
                 )
             }
         }
@@ -585,7 +590,7 @@
         /// Handle capture mode toggle between area and fullscreen
         private func handleCaptureModeChange(_ mode: RecordingCaptureMode) {
             DiagnosticLogger.shared.log(.info, .recording, "Recording capture mode changed", context: [
-                "mode": "\(mode)",
+                "mode": "\(mode)"
             ])
 
             switch mode {
@@ -601,7 +606,7 @@
         /// Delete current recording and close
         private func deleteRecording() {
             DiagnosticLogger.shared.log(.info, .recording, "Recording delete requested", context: [
-                "recorderState": "\(recorder.state)",
+                "recorderState": "\(recorder.state)"
             ])
             Task {
                 await recorder.cancelRecording()
@@ -616,7 +621,7 @@
                 DiagnosticLogger.shared.log(
                     .warning,
                     .recording,
-                    "Recording restart ignored: missing selection or toolbar",
+                    "Recording restart ignored: missing selection or toolbar"
                 )
                 return
             }
@@ -642,7 +647,7 @@
                 "microphone": "\(savedCaptureMicrophone)",
                 "microphoneDevice": savedMicrophoneDeviceID,
                 "showCursor": "\(savedShowCursor)",
-                "rect": "\(Int(rect.width))x\(Int(rect.height))",
+                "rect": "\(Int(rect.width))x\(Int(rect.height))"
             ])
 
             Task {
@@ -663,7 +668,7 @@
                         DiagnosticLogger.shared.log(
                             .warning,
                             .recording,
-                            "Recording restart blocked: no save directory access",
+                            "Recording restart blocked: no save directory access"
                         )
                         self.showSaveLocationPermissionAlert()
                         return
@@ -672,7 +677,7 @@
                     let exclusionConfig = self.recordingCaptureExclusionConfiguration()
 
                     let savePlan = try self.tempCaptureManager.makeRecordingSavePlan(
-                        exportDirectory: saveDirectory,
+                        exportDirectory: saveDirectory
                     )
 
                     try await recorder.prepareRecording(
@@ -703,7 +708,7 @@
                         excludedWindowIDs: exclusionConfig.excludedWindowIDs,
                         context: self.selectedWindowTarget
                             .map { CaptureContext.fromPID($0.ownerPID, windowTitle: $0.title) } ?? CaptureContext
-                            .fromFrontmostApp(),
+                            .fromFrontmostApp()
                     )
 
                     try await recorder.startRecording()
@@ -743,7 +748,8 @@
             guard let toolbarWindow,
                   toolbarWindow.captureCamera,
                   toolbarWindow.outputMode != .gif,
-                  let selectedRect else {
+                  let selectedRect
+            else {
                 closeCameraPreview()
                 return
             }
@@ -766,12 +772,12 @@
                 deviceID: deviceID,
                 selectionRect: selectedRect,
                 configuration: configuration,
-                normalizedCenter: cameraPreviewNormalizedCenter,
+                normalizedCenter: cameraPreviewNormalizedCenter
             ) else {
                 DiagnosticLogger.shared.log(
                     .warning,
                     .recording,
-                    "Camera preview setup failed; recording can continue without live preview",
+                    "Camera preview setup failed; recording can continue without live preview"
                 )
                 return
             }
@@ -794,18 +800,18 @@
 
         private func recordedCameraOverlayLayout(
             in selectionRect: CGRect,
-            configuration: RecordingCameraPreviewConfiguration,
+            configuration: RecordingCameraPreviewConfiguration
         ) -> RecordedCameraOverlayLayout? {
             guard let normalizedRect = RecordingCameraPreviewPlacement.topLeftNormalizedRect(
                 in: selectionRect,
                 configuration: configuration,
-                normalizedCenter: cameraPreviewWindow?.normalizedCenter ?? cameraPreviewNormalizedCenter,
+                normalizedCenter: cameraPreviewWindow?.normalizedCenter ?? cameraPreviewNormalizedCenter
             ) else { return nil }
 
             return RecordedCameraOverlayLayout(
                 normalizedRect: normalizedRect,
                 shape: configuration.shape,
-                size: configuration.size,
+                size: configuration.size
             )
         }
 
@@ -814,7 +820,7 @@
                 DiagnosticLogger.shared.log(
                     .warning,
                     .recording,
-                    "Start recording ignored: missing selection or toolbar",
+                    "Start recording ignored: missing selection or toolbar"
                 )
                 return
             }
@@ -826,7 +832,7 @@
             let format = window.selectedFormat
             DiagnosticLogger.shared.log(.info, .recording, "Start recording", context: [
                 "format": format.rawValue,
-                "rect": "\(Int(rect.width))x\(Int(rect.height))",
+                "rect": "\(Int(rect.width))x\(Int(rect.height))"
             ])
 
             // Get FPS from preferences (default 30)
@@ -858,7 +864,7 @@
                 "systemAudio": "\(captureSystemAudio)",
                 "microphone": "\(captureMicrophone)",
                 "microphoneDevice": microphoneDeviceID,
-                "showCursor": "\(showCursor)",
+                "showCursor": "\(showCursor)"
             ])
 
             guard let saveDirectory = resolveSaveDirectoryForOperation() else {
@@ -876,11 +882,11 @@
                     let exclusionConfig = self.recordingCaptureExclusionConfiguration()
                     DiagnosticLogger.shared.log(.debug, .recording, "Recording capture exclusion resolved", context: [
                         "excludeOwnApp": "\(exclusionConfig.excludeOwnApplication)",
-                        "excludedWindows": "\(exclusionConfig.excludedWindowIDs.count)",
+                        "excludedWindows": "\(exclusionConfig.excludedWindowIDs.count)"
                     ])
 
                     let savePlan = try self.tempCaptureManager.makeRecordingSavePlan(
-                        exportDirectory: saveDirectory,
+                        exportDirectory: saveDirectory
                     )
 
                     if RecordingToolbarPreferences.showCountdown() {
@@ -920,7 +926,7 @@
                         excludedWindowIDs: exclusionConfig.excludedWindowIDs,
                         context: self.selectedWindowTarget
                             .map { CaptureContext.fromPID($0.ownerPID, windowTitle: $0.title) } ?? CaptureContext
-                            .fromFrontmostApp(),
+                            .fromFrontmostApp()
                     )
 
                     try await recorder.startRecording()
@@ -971,7 +977,7 @@
                 .error,
                 .recording,
                 "Error alert shown",
-                context: ["error": error.localizedDescription],
+                context: ["error": error.localizedDescription]
             )
             let alert = NSAlert()
             alert.messageText = L10n.Recording.failedTitle
@@ -991,7 +997,8 @@
                 case .alertFirstButtonReturn:
                     // Open System Settings > Privacy & Security > Microphone
                     if let url =
-                        URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone") {
+                        URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone")
+                    {
                         NSWorkspace.shared.open(url)
                     }
                     return false
@@ -1021,7 +1028,8 @@
             alert.addButton(withTitle: L10n.Camera.continueWithoutCamera)
 
             if alert.runModal() == .alertFirstButtonReturn,
-               let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Camera") {
+               let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Camera")
+            {
                 NSWorkspace.shared.open(url)
             }
         }
@@ -1031,7 +1039,7 @@
                 DiagnosticLogger.shared.log(
                     .warning,
                     .recording,
-                    "Microphone retry ignored: missing selection or toolbar",
+                    "Microphone retry ignored: missing selection or toolbar"
                 )
                 return
             }
@@ -1069,7 +1077,7 @@
                     let exclusionConfig = self.recordingCaptureExclusionConfiguration()
 
                     let savePlan = try self.tempCaptureManager.makeRecordingSavePlan(
-                        exportDirectory: saveDirectory,
+                        exportDirectory: saveDirectory
                     )
 
                     try await recorder.prepareRecording(
@@ -1099,7 +1107,7 @@
                         excludedWindowIDs: exclusionConfig.excludedWindowIDs,
                         context: self.selectedWindowTarget
                             .map { CaptureContext.fromPID($0.ownerPID, windowTitle: $0.title) } ?? CaptureContext
-                            .fromFrontmostApp(),
+                            .fromFrontmostApp()
                     )
                     try await recorder.startRecording()
                     removeEscapeMonitors()
@@ -1139,13 +1147,13 @@
                 let stopResult = recorder.lastStopResult
                 DiagnosticLogger.shared.log(.info, .recording, "Recording stopped", context: [
                     "hasOutput": "\(stopResult.map { if case .finished = $0 { true } else { false } } ?? false)",
-                    "outputMode": "\(outputMode)",
+                    "outputMode": "\(outputMode)"
                 ])
                 // Dismiss recording UI immediately (status bar, area overlay, etc.)
                 cleanup()
 
                 switch stopResult {
-                case .finished(let url):
+                case let .finished(url):
                     // Play sound
                     SoundManager.play("Glass")
 
@@ -1183,12 +1191,12 @@
                 .info,
                 .recording,
                 "GIF conversion started",
-                context: ["file": videoURL.lastPathComponent],
+                context: ["file": videoURL.lastPathComponent]
             )
             let quickAccess = QuickAccessManager.shared
             let sourceAccess = SandboxFileAccessManager.shared.beginAccessingURL(videoURL)
             let outputDirectoryAccess = SandboxFileAccessManager.shared.beginAccessingURL(
-                videoURL.deletingLastPathComponent(),
+                videoURL.deletingLastPathComponent()
             )
             defer {
                 sourceAccess.stop()
@@ -1205,8 +1213,8 @@
                     .recording,
                     "GIF conversion aborted: Quick Access item missing",
                     context: [
-                        "file": videoURL.lastPathComponent,
-                    ],
+                        "file": videoURL.lastPathComponent
+                    ]
                 )
                 return
             }
@@ -1222,14 +1230,14 @@
                     "fps": "\(gifOptions.fps)",
                     "maxWidth": "\(Int(gifOptions.maxWidth))",
                     "optimize": "\(gifOptions.optimize)",
-                    "quality": String(format: "%.2f", gifOptions.quality),
+                    "quality": String(format: "%.2f", gifOptions.quality)
                 ])
                 let gifURL = try await GIFConverter.convert(
                     videoURL: videoURL,
                     options: gifOptions,
                     onProgress: { progress in
                         quickAccess.updateProcessingState(id: itemId, state: .processing(progress: progress))
-                    },
+                    }
                 )
 
                 // Generate thumbnail from GIF
@@ -1250,7 +1258,7 @@
                     do {
                         try FileManager.default.removeItem(at: videoURL)
                         DiagnosticLogger.shared.log(.debug, .recording, "GIF source video deleted", context: [
-                            "file": videoURL.lastPathComponent,
+                            "file": videoURL.lastPathComponent
                         ])
                     } catch {
                         DiagnosticLogger.shared.logError(
@@ -1258,8 +1266,8 @@
                             error,
                             "Failed to delete GIF source video",
                             context: [
-                                "file": videoURL.lastPathComponent,
-                            ],
+                                "file": videoURL.lastPathComponent
+                            ]
                         )
                     }
                     try? RecordingMetadataStore.delete(for: videoURL)
@@ -1284,7 +1292,7 @@
                 "hasToolbar": "\(toolbarWindow != nil)",
                 "hasAnnotationOverlay": "\(annotationOverlayWindow != nil)",
                 "hasClickHighlight": "\(clickHighlightWindow != nil)",
-                "hasKeystrokeOverlay": "\(keystrokeOverlayWindow != nil)",
+                "hasKeystrokeOverlay": "\(keystrokeOverlayWindow != nil)"
             ])
             finishRecordingStartAttempt()
             // Remove escape monitors
@@ -1314,7 +1322,7 @@
             guard !isStartingRecording, recorder.state == .idle else {
                 DiagnosticLogger.shared.log(.debug, .recording, "Recording start blocked: recorder busy", context: [
                     "source": source,
-                    "state": "\(recorder.state)",
+                    "state": "\(recorder.state)"
                 ])
                 return false
             }
@@ -1331,7 +1339,7 @@
 
         private func resolveSaveDirectoryForOperation() -> URL? {
             SandboxFileAccessManager.shared.ensureExportDirectoryForOperation(
-                promptMessage: L10n.Recording.chooseSaveLocationMessage,
+                promptMessage: L10n.Recording.chooseSaveLocationMessage
             )
         }
 
@@ -1356,13 +1364,13 @@
             // Create overlay window covering recording rect
             let overlayWindow = RecordingAnnotationOverlayWindow(
                 recordingRect: rect,
-                annotationState: annotationState,
+                annotationState: annotationState
             )
             overlayWindow.orderFrontRegardless()
             annotationOverlayWindow = overlayWindow
             DiagnosticLogger.shared.log(.info, .recording, "Annotation overlay created", context: [
                 "windowID": "\(overlayWindow.overlayWindowID)",
-                "rect": "\(Int(rect.width))x\(Int(rect.height))",
+                "rect": "\(Int(rect.width))x\(Int(rect.height))"
             ])
 
             // Create popover-style annotation toolbar anchored to the status bar
@@ -1431,7 +1439,7 @@
             service.start(recordingRect: rect)
             clickHighlightService = service
             DiagnosticLogger.shared.log(.info, .recording, "Click highlight overlay started", context: [
-                "windowID": "\(highlightWindow.overlayWindowID)",
+                "windowID": "\(highlightWindow.overlayWindowID)"
             ])
 
             // Add to ScreenCaptureKit's exceptingWindows so the effect is captured
@@ -1472,7 +1480,7 @@
             service.start()
             keystrokeMonitorService = service
             DiagnosticLogger.shared.log(.info, .recording, "Keystroke overlay started", context: [
-                "windowID": "\(overlayWindow.overlayWindowID)",
+                "windowID": "\(overlayWindow.overlayWindowID)"
             ])
 
             // Add to ScreenCaptureKit's exceptingWindows so keystrokes are captured
@@ -1525,7 +1533,7 @@
         func overlay(
             _: CaptureSelectionOverlayWindow,
             didResizeRegionTo rect: CGRect,
-            modifiers _: NSEvent.ModifierFlags,
+            modifiers _: NSEvent.ModifierFlags
         ) {
             // Lightweight path: update overlay visuals only, skip persistence + toolbar reposition
             updateOverlayHighlightsOnly(rect)

@@ -30,8 +30,9 @@
             if let mouseHighlightColorData,
                let nsColor = try? NSKeyedUnarchiver.unarchivedObject(
                    ofClass: NSColor.self,
-                   from: mouseHighlightColorData,
-               ) {
+                   from: mouseHighlightColorData
+               )
+            {
                 return Color(nsColor: nsColor)
             }
             return Color(nsColor: MouseHighlightConfiguration.defaultHighlightColor)
@@ -43,18 +44,21 @@
                     .frame(width: contentRect.width, height: contentRect.height)
 
                 if showsClickEffects,
-                   let press = pointerFrame?.press {
+                   let press = pointerFrame?.press
+                {
                     clickEffect(for: press)
                 }
 
                 if showsSyntheticCursor,
                    let pointerFrame,
-                   pointerFrame.opacity > 0.01 {
+                   pointerFrame.opacity > 0.01
+                {
                     pointerView(for: pointerFrame)
                 }
 
                 if showsKeystrokes,
-                   let keystrokeFrame {
+                   let keystrokeFrame
+                {
                     keystrokeBadge(for: keystrokeFrame)
                 }
             }
@@ -91,7 +95,7 @@
             .opacity(pointerFrame.opacity)
             .position(
                 x: tip.x + (0.5 - anchor.x) * size.width,
-                y: tip.y + (0.5 - anchor.y) * size.height,
+                y: tip.y + (0.5 - anchor.y) * size.height
             )
         }
 
@@ -100,7 +104,7 @@
             let geometry = VideoEditorPointerPressEffectStyle.geometry(
                 progress: press.progress,
                 referenceHeight: contentRect.height,
-                cursorScale: cursorScale,
+                cursorScale: cursorScale
             )
             let center = pointInView(press.location)
             ZStack {
@@ -114,7 +118,7 @@
                     Circle()
                         .stroke(
                             pulseColor.opacity(geometry.rippleOpacity),
-                            lineWidth: geometry.rippleLineWidth,
+                            lineWidth: geometry.rippleLineWidth
                         )
                         .frame(width: geometry.rippleRadius * 2, height: geometry.rippleRadius * 2)
                         .position(center)
@@ -131,7 +135,7 @@
                 .font(.system(
                     size: metrics.fontSize * frame.scale * CGFloat(max(8, keystrokeFontSize) / 16.0),
                     weight: .medium,
-                    design: .monospaced,
+                    design: .monospaced
                 ))
                 .padding(.horizontal, metrics.paddingHorizontal)
                 .padding(.vertical, metrics.paddingVertical)
@@ -151,7 +155,7 @@
                 normalized,
                 contentSize: contentRect.size,
                 zoomLevel: zoomLevel,
-                zoomCenter: zoomCenter,
+                zoomCenter: zoomCenter
             )
         }
 

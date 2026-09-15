@@ -32,7 +32,7 @@ struct CropToolbarView: View {
                 CropRatioButton(
                     ratio: ratio,
                     isSelected: state.cropAspectRatio == ratio,
-                    isPortrait: state.isCropPortraitOrientation,
+                    isPortrait: state.isCropPortraitOrientation
                 ) {
                     state.applyCropAspectRatio(ratio)
                 }
@@ -59,7 +59,7 @@ struct CropToolbarView: View {
                 .frame(width: 28, height: 28)
                 .background(
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(Color.accentColor.opacity(0.2)),
+                        .fill(Color.accentColor.opacity(0.2))
                 )
         }
         .buttonStyle(.plain)
@@ -80,7 +80,7 @@ struct CropToolbarView: View {
                 .frame(width: 28, height: 28)
                 .background(
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(state.showCropGrid ? Color.accentColor.opacity(0.2) : Color.clear),
+                        .fill(state.showCropGrid ? Color.accentColor.opacity(0.2) : Color.clear)
                 )
         }
         .buttonStyle(.plain)
@@ -109,7 +109,7 @@ struct CropRatioButton: View {
                 .padding(.vertical, 4)
                 .background(
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(backgroundColor),
+                        .fill(backgroundColor)
                 )
         }
         .buttonStyle(.plain)

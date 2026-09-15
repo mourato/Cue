@@ -29,7 +29,7 @@
             contentRect: NSRect,
             styleMask style: NSWindow.StyleMask,
             backing bufferingType: NSWindow.BackingStoreType,
-            defer flag: Bool,
+            defer flag: Bool
         ) {
             super.init(contentRect: contentRect, styleMask: style, backing: bufferingType, defer: flag)
         }
@@ -39,7 +39,7 @@
                 contentRect: CGRect(origin: .zero, size: Self.windowSize),
                 styleMask: [.borderless, .nonactivatingPanel],
                 backing: .buffered,
-                defer: false,
+                defer: false
             )
             isOpaque = false
             backgroundColor = .clear
@@ -74,7 +74,7 @@
             let bounds = screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? rect
             var origin = CGPoint(
                 x: rect.midX - Self.windowSize.width / 2,
-                y: rect.midY - Self.windowSize.height / 2,
+                y: rect.midY - Self.windowSize.height / 2
             )
             origin.x = min(max(origin.x, bounds.minX), bounds.maxX - Self.windowSize.width)
             origin.y = min(max(origin.y, bounds.minY), bounds.maxY - Self.windowSize.height)

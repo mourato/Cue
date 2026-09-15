@@ -49,7 +49,7 @@ final class NotinhasIdentityMigrationServiceTests: XCTestCase {
         try FileManager.default.createDirectory(at: legacyAppSupport, withIntermediateDirectories: true)
         try FileManager.default.createDirectory(
             at: legacyAppSupport.appendingPathComponent("Captures", isDirectory: true),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         try FileManager.default.createDirectory(at: legacyLogs, withIntermediateDirectories: true)
         try FileManager.default.createDirectory(at: legacyConfig, withIntermediateDirectories: true)
@@ -64,19 +64,19 @@ final class NotinhasIdentityMigrationServiceTests: XCTestCase {
             .legacyReleaseBundleIdentifier)
         try FileManager.default.createDirectory(
             at: releasePreferences.deletingLastPathComponent(),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         XCTAssertTrue(
             ([
                 PreferencesKeys.screenshotFormat: "webp",
-                PreferencesKeys.historyEnabled: false,
-            ] as NSDictionary).write(to: releasePreferences, atomically: true),
+                PreferencesKeys.historyEnabled: false
+            ] as NSDictionary).write(to: releasePreferences, atomically: true)
         )
 
         keychain.store(
             service: NotinhasStoragePaths.legacyCurrentKeychainService,
             account: "com.mourato.notinhas.cloud.accessKey",
-            value: Data("secret-access".utf8),
+            value: Data("secret-access".utf8)
         )
 
         let firstResult = try makeService().runIfNeeded()
@@ -93,41 +93,41 @@ final class NotinhasIdentityMigrationServiceTests: XCTestCase {
         XCTAssertTrue(defaults.bool(forKey: PreferencesKeys.notinhasIdentityMigrationCompleted))
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: destinationAppSupport().appendingPathComponent("notinhas.db").path,
-            ),
+                atPath: destinationAppSupport().appendingPathComponent("notinhas.db").path
+            )
         )
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: destinationAppSupport().appendingPathComponent("notinhas.db-wal").path,
-            ),
+                atPath: destinationAppSupport().appendingPathComponent("notinhas.db-wal").path
+            )
         )
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: destinationAppSupport().appendingPathComponent("Captures/capture.png").path,
-            ),
+                atPath: destinationAppSupport().appendingPathComponent("Captures/capture.png").path
+            )
         )
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: destinationLogsDirectory().appendingPathComponent("snapzy_2026-06-21.txt").path,
-            ),
+                atPath: destinationLogsDirectory().appendingPathComponent("snapzy_2026-06-21.txt").path
+            )
         )
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: destinationConfigDirectory().appendingPathComponent("config.toml").path,
-            ),
+                atPath: destinationConfigDirectory().appendingPathComponent("config.toml").path
+            )
         )
         XCTAssertEqual(
             keychain.read(
                 service: NotinhasStoragePaths.destinationKeychainService,
-                account: "com.mourato.notinhas.cloud.accessKey",
+                account: "com.mourato.notinhas.cloud.accessKey"
             ),
-            Data("secret-access".utf8),
+            Data("secret-access".utf8)
         )
         XCTAssertNil(
             keychain.read(
                 service: NotinhasStoragePaths.legacyCurrentKeychainService,
-                account: "com.mourato.notinhas.cloud.accessKey",
-            ),
+                account: "com.mourato.notinhas.cloud.accessKey"
+            )
         )
 
         let secondResult = try makeService().runIfNeeded()
@@ -144,8 +144,8 @@ final class NotinhasIdentityMigrationServiceTests: XCTestCase {
         XCTAssertTrue(defaults.bool(forKey: PreferencesKeys.notinhasIdentityMigrationCompleted))
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: destinationAppSupport().appendingPathComponent(NotinhasStoragePaths.markerFileName).path,
-            ),
+                atPath: destinationAppSupport().appendingPathComponent(NotinhasStoragePaths.markerFileName).path
+            )
         )
     }
 
@@ -156,11 +156,11 @@ final class NotinhasIdentityMigrationServiceTests: XCTestCase {
             .appendingPathComponent("Data/Library/Application Support/Notinhas", isDirectory: true)
         try FileManager.default.createDirectory(
             at: sandboxAppSupport.appendingPathComponent("Captures", isDirectory: true),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         try Data("sandbox-db".utf8).write(to: sandboxAppSupport.appendingPathComponent("snapzy.db"))
         try Data("sandbox-capture".utf8).write(
-            to: sandboxAppSupport.appendingPathComponent("Captures/capture.png"),
+            to: sandboxAppSupport.appendingPathComponent("Captures/capture.png")
         )
 
         let result = try makeService().runIfNeeded()
@@ -169,11 +169,11 @@ final class NotinhasIdentityMigrationServiceTests: XCTestCase {
         XCTAssertEqual(result.copiedApplicationSupportItems, 1)
         XCTAssertEqual(
             try String(contentsOf: destinationAppSupport().appendingPathComponent("notinhas.db")),
-            "sandbox-db",
+            "sandbox-db"
         )
         XCTAssertEqual(
             try String(contentsOf: destinationAppSupport().appendingPathComponent("Captures/capture.png")),
-            "sandbox-capture",
+            "sandbox-capture"
         )
         XCTAssertTrue(FileManager.default.fileExists(atPath: sandboxAppSupport.path))
     }
@@ -182,13 +182,13 @@ final class NotinhasIdentityMigrationServiceTests: XCTestCase {
         let legacyAppSupport = legacyAppSupportDirectory()
         try FileManager.default.createDirectory(
             at: legacyAppSupport.appendingPathComponent("Captures", isDirectory: true),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         try Data("legacy capture".utf8).write(to: legacyAppSupport.appendingPathComponent("Captures/capture.png"))
 
         try FileManager.default.createDirectory(
             at: destinationAppSupport().appendingPathComponent("Captures", isDirectory: true),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         try Data("current database".utf8).write(to: destinationAppSupport().appendingPathComponent("notinhas.db"))
 
@@ -196,13 +196,13 @@ final class NotinhasIdentityMigrationServiceTests: XCTestCase {
             .legacyReleaseBundleIdentifier)
         try FileManager.default.createDirectory(
             at: releasePreferences.deletingLastPathComponent(),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         XCTAssertTrue(
             ([
                 PreferencesKeys.historyEnabled: false,
-                PreferencesKeys.screenshotFormat: "webp",
-            ] as NSDictionary).write(to: releasePreferences, atomically: true),
+                PreferencesKeys.screenshotFormat: "webp"
+            ] as NSDictionary).write(to: releasePreferences, atomically: true)
         )
         defaults.set(true, forKey: PreferencesKeys.historyEnabled)
 
@@ -213,11 +213,11 @@ final class NotinhasIdentityMigrationServiceTests: XCTestCase {
         XCTAssertEqual(result.migratedDatabaseFiles, 0)
         XCTAssertEqual(
             try String(contentsOf: destinationAppSupport().appendingPathComponent("notinhas.db")),
-            "current database",
+            "current database"
         )
         XCTAssertEqual(
             try String(contentsOf: destinationAppSupport().appendingPathComponent("Captures/capture.png")),
-            "legacy capture",
+            "legacy capture"
         )
         XCTAssertTrue(defaults.bool(forKey: PreferencesKeys.historyEnabled))
         XCTAssertEqual(defaults.string(forKey: PreferencesKeys.screenshotFormat), "webp")
@@ -227,13 +227,13 @@ final class NotinhasIdentityMigrationServiceTests: XCTestCase {
         let debugPreferences = legacyPreferencesURL(bundleIdentifier: NotinhasStoragePaths.legacyDebugBundleIdentifier)
         try FileManager.default.createDirectory(
             at: debugPreferences.deletingLastPathComponent(),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         XCTAssertTrue(
             ([
                 PreferencesKeys.screenshotFormat: "png",
-                PreferencesKeys.historyEnabled: false,
-            ] as NSDictionary).write(to: debugPreferences, atomically: true),
+                PreferencesKeys.historyEnabled: false
+            ] as NSDictionary).write(to: debugPreferences, atomically: true)
         )
         defaults.set("webp", forKey: PreferencesKeys.screenshotFormat)
 
@@ -280,12 +280,12 @@ final class NotinhasIdentityMigrationServiceTests: XCTestCase {
 
         try FileManager.default.setAttributes(
             [.posixPermissions: 0o500],
-            ofItemAtPath: applicationSupportDirectory.path,
+            ofItemAtPath: applicationSupportDirectory.path
         )
         defer {
             try? FileManager.default.setAttributes(
                 [.posixPermissions: 0o755],
-                ofItemAtPath: applicationSupportDirectory.path,
+                ofItemAtPath: applicationSupportDirectory.path
             )
         }
 
@@ -304,8 +304,8 @@ final class NotinhasIdentityMigrationServiceTests: XCTestCase {
         XCTAssertTrue(defaults.bool(forKey: PreferencesKeys.notinhasIdentityMigrationCompleted))
         XCTAssertFalse(
             FileManager.default.fileExists(
-                atPath: destinationAppSupport().appendingPathComponent("notinhas.db").path,
-            ),
+                atPath: destinationAppSupport().appendingPathComponent("notinhas.db").path
+            )
         )
 
         let result = try service.runIfNeeded()
@@ -316,7 +316,7 @@ final class NotinhasIdentityMigrationServiceTests: XCTestCase {
         keychain.store(
             service: NotinhasStoragePaths.legacyOlderKeychainService,
             account: "com.snapzy.cloud.secretKey",
-            value: Data("legacy-secret".utf8),
+            value: Data("legacy-secret".utf8)
         )
 
         let result = try makeService().runIfNeeded()
@@ -325,15 +325,15 @@ final class NotinhasIdentityMigrationServiceTests: XCTestCase {
         XCTAssertEqual(
             keychain.read(
                 service: NotinhasStoragePaths.destinationKeychainService,
-                account: "com.mourato.notinhas.cloud.secretKey",
+                account: "com.mourato.notinhas.cloud.secretKey"
             ),
-            Data("legacy-secret".utf8),
+            Data("legacy-secret".utf8)
         )
         XCTAssertNil(
             keychain.read(
                 service: NotinhasStoragePaths.legacyOlderKeychainService,
-                account: "com.snapzy.cloud.secretKey",
-            ),
+                account: "com.snapzy.cloud.secretKey"
+            )
         )
     }
 
@@ -346,8 +346,8 @@ final class NotinhasIdentityMigrationServiceTests: XCTestCase {
 
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: legacyAppSupport.appendingPathComponent("snapzy.db").path,
-            ),
+                atPath: legacyAppSupport.appendingPathComponent("snapzy.db").path
+            )
         )
     }
 
@@ -359,7 +359,7 @@ final class NotinhasIdentityMigrationServiceTests: XCTestCase {
                 libraryDirectory: self.libraryDirectory,
                 userDefaults: self.defaults,
                 fileManager: .default,
-                keychainAdapter: self.keychain,
+                keychainAdapter: self.keychain
             )
         }
     }
@@ -367,14 +367,14 @@ final class NotinhasIdentityMigrationServiceTests: XCTestCase {
     private func legacyAppSupportDirectory() -> URL {
         applicationSupportDirectory.appendingPathComponent(
             NotinhasStoragePaths.legacyAppSupportFolderName,
-            isDirectory: true,
+            isDirectory: true
         )
     }
 
     private func destinationAppSupport() -> URL {
         applicationSupportDirectory.appendingPathComponent(
             NotinhasStoragePaths.destinationAppSupportFolderName,
-            isDirectory: true,
+            isDirectory: true
         )
     }
 

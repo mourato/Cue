@@ -54,7 +54,7 @@ struct CueDeepLinkHandler {
                 .info,
                 .action,
                 "Ignored deeplink because URL scheme is disabled in preferences",
-                context: ["url": url.absoluteString],
+                context: ["url": url.absoluteString]
             )
             return
         }
@@ -67,8 +67,8 @@ struct CueDeepLinkHandler {
                 context: [
                     "scheme": url.scheme ?? "",
                     "host": url.host ?? "",
-                    "path": url.path,
-                ],
+                    "path": url.path
+                ]
             )
             return
         }
@@ -77,13 +77,13 @@ struct CueDeepLinkHandler {
             .info,
             .action,
             "Handling deeplink",
-            context: ["action": action.logName],
+            context: ["action": action.logName]
         )
 
         switch action {
         case .captureFullscreen:
             screenCaptureViewModel.captureFullscreen()
-        case .captureArea(let query):
+        case let .captureArea(query):
             handleCaptureArea(query)
         case .captureAllInOne:
             screenCaptureViewModel.captureAllInOne()
@@ -120,7 +120,7 @@ struct CueDeepLinkHandler {
         case .openAnnotate:
             AnnotateManager.shared.openEmptyAnnotation()
             NSApp.activate(ignoringOtherApps: true)
-        case .openCombine(let fileURLs):
+        case let .openCombine(fileURLs):
             if fileURLs.count >= 2 {
                 AnnotateManager.shared.openCombineImages(urls: fileURLs)
             } else {
@@ -140,7 +140,7 @@ struct CueDeepLinkHandler {
             HistoryFloatingManager.shared.toggle()
         case .showShortcuts:
             ShortcutOverlayManager.shared.toggle()
-        case .openSettings(let tab):
+        case let .openSettings(tab):
             AppStatusBarController.shared.openPreferencesWindow(tab: tab)
         }
     }
@@ -170,7 +170,7 @@ struct CueDeepLinkHandler {
             y: y,
             width: width,
             height: height,
-            screenFrame: screen.frame,
+            screenFrame: screen.frame
         )
         return CaptureSelectionDisplayTopology.clampRect(raw, to: screen.frame)
     }
@@ -180,7 +180,7 @@ struct CueDeepLinkHandler {
             .info,
             .action,
             "Ignored deeplink because video module is disabled",
-            context: ["action": action.logName],
+            context: ["action": action.logName]
         )
     }
 }
@@ -266,7 +266,7 @@ enum CueDeepLinkAction: Equatable {
     var logName: String {
         switch self {
         case .captureFullscreen: "captureFullscreen"
-        case .captureArea(let query):
+        case let .captureArea(query):
             query == .empty ? "captureArea" : "captureArea(params)"
         case .captureAllInOne: "captureAllInOne"
         case .captureApplication: "captureApplication"
@@ -279,11 +279,11 @@ enum CueDeepLinkAction: Equatable {
         case .recordScreen: "recordScreen"
         case .recordApplication: "recordApplication"
         case .openAnnotate: "openAnnotate"
-        case .openCombine(let fileURLs): "openCombine(\(fileURLs.count))"
+        case let .openCombine(fileURLs): "openCombine(\(fileURLs.count))"
         case .openVideoEditor: "openVideoEditor"
         case .openHistory: "openHistory"
         case .showShortcuts: "showShortcuts"
-        case .openSettings(let tab): "openSettings(\(String(describing: tab)))"
+        case let .openSettings(tab): "openSettings(\(String(describing: tab)))"
         }
     }
 
@@ -303,7 +303,7 @@ enum CueDeepLinkAction: Equatable {
             width: cgFloat("width"),
             height: cgFloat("height"),
             display: value("display").flatMap(Int.init),
-            action: afterCaptureAction(named: value("action")),
+            action: afterCaptureAction(named: value("action"))
         )
     }
 

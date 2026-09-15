@@ -59,8 +59,8 @@
                                             .fill(
                                                 stylePresetStore.activePresetID == preset.id
                                                     ? Color.accentColor.opacity(0.28)
-                                                    : SidebarColors.itemDefault,
-                                            ),
+                                                    : SidebarColors.itemDefault
+                                            )
                                     )
                             }
                             .buttonStyle(.plain)
@@ -85,14 +85,14 @@
                     .background(
                         RoundedRectangle(cornerRadius: Size.radiusSm)
                             .fill(state.backgroundStyle == .none ? Color.accentColor.opacity(0.3) : SidebarColors
-                                .itemDefault),
+                                .itemDefault)
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: Size.radiusSm)
                             .stroke(
                                 state.backgroundStyle == .none ? Color.accentColor : Color.clear,
-                                lineWidth: Size.strokeSelected,
-                            ),
+                                lineWidth: Size.strokeSelected
+                            )
                     )
             }
             .buttonStyle(.plain)
@@ -107,14 +107,14 @@
                 LazyVGrid(
                     columns: Array(
                         repeating: GridItem(.flexible(), spacing: GridConfig.gap),
-                        count: GridConfig.backgroundColumns,
+                        count: GridConfig.backgroundColumns
                     ),
-                    spacing: GridConfig.gap,
+                    spacing: GridConfig.gap
                 ) {
                     ForEach(GradientPreset.allCases) { preset in
                         VideoGradientPresetButton(
                             preset: preset,
-                            isSelected: state.backgroundStyle == .gradient(preset),
+                            isSelected: state.backgroundStyle == .gradient(preset)
                         ) {
                             if state.backgroundPadding <= 0 {
                                 state.backgroundPadding = 24
@@ -135,15 +135,15 @@
                 LazyVGrid(
                     columns: Array(
                         repeating: GridItem(.flexible(), spacing: GridConfig.gap),
-                        count: GridConfig.backgroundColumns,
+                        count: GridConfig.backgroundColumns
                     ),
-                    spacing: GridConfig.gap,
+                    spacing: GridConfig.gap
                 ) {
                     // Bundled default wallpapers
                     ForEach(wallpaperManager.defaultWallpapers) { item in
                         VideoDefaultWallpaperButton(
                             item: item,
-                            isSelected: isDefaultWallpaperSelected(item),
+                            isSelected: isDefaultWallpaperSelected(item)
                         ) {
                             selectDefaultWallpaper(item)
                         }
@@ -156,7 +156,7 @@
                             isSelected: isWallpaperUrlSelected(item.fullImageURL),
                             onRemove: {
                                 removeCustomWallpaper(item)
-                            },
+                            }
                         ) {
                             selectCustomWallpaper(item)
                         }
@@ -187,14 +187,14 @@
         // MARK: - Wallpaper Helpers
 
         private func isDefaultWallpaperSelected(_ item: SystemWallpaperManager.WallpaperItem) -> Bool {
-            if case .wallpaper(let url) = state.backgroundStyle {
+            if case let .wallpaper(url) = state.backgroundStyle {
                 return url == item.fullImageURL
             }
             return false
         }
 
         private func isWallpaperUrlSelected(_ url: URL) -> Bool {
-            if case .wallpaper(let selectedUrl) = state.backgroundStyle {
+            if case let .wallpaper(selectedUrl) = state.backgroundStyle {
                 return selectedUrl == url
             }
             return false
@@ -230,7 +230,7 @@
             let url = item.fullImageURL
             wallpaperManager.removeCustomWallpaper(item)
 
-            if case .wallpaper(let selectedUrl) = state.backgroundStyle, selectedUrl == url {
+            if case let .wallpaper(selectedUrl) = state.backgroundStyle, selectedUrl == url {
                 state.backgroundStyle = .none
                 state.backgroundPadding = 0
             }
@@ -248,7 +248,7 @@
         private var colorBinding: Binding<Color?> {
             Binding(
                 get: {
-                    if case .solidColor(let color) = state.backgroundStyle {
+                    if case let .solidColor(color) = state.backgroundStyle {
                         return color
                     }
                     return nil
@@ -260,7 +260,7 @@
                         }
                         state.backgroundStyle = .solidColor(color)
                     }
-                },
+                }
             )
         }
 
@@ -278,9 +278,9 @@
                             if newValue > 0, state.backgroundStyle == .none {
                                 state.backgroundStyle = .solidColor(.white)
                             }
-                        },
+                        }
                     ),
-                    range: 0 ... 300,
+                    range: 0 ... 300
                 )
                 VideoSliderRow(label: L10n.Common.shadow, value: $state.backgroundShadowIntensity, range: 0 ... 1)
                 VideoSliderRow(label: L10n.Common.corners, value: $state.backgroundCornerRadius, range: 0 ... 60)

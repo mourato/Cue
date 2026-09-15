@@ -21,7 +21,7 @@ final class SmartElementOverlayWindow: NSPanel, SmartElementOverlayWindowProvidi
             contentRect: screen.frame,
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
-            defer: false,
+            defer: false
         )
 
         level = .screenSaver

@@ -23,13 +23,13 @@
                 ToolbarIconButtonLabel(
                     systemName: systemName,
                     isActive: state.captureCamera,
-                    isHovered: isHovered || showPopover,
+                    isHovered: isHovered || showPopover
                 )
             }
             .buttonStyle(.plain)
             .frame(
                 width: ToolbarConstants.iconButtonSize,
-                height: ToolbarConstants.iconButtonSize,
+                height: ToolbarConstants.iconButtonSize
             )
             .accessibilityLabel(L10n.Camera.options)
             .accessibilityValue(statusText)
@@ -80,7 +80,7 @@
                 } label: {
                     cameraMenuItemLabel(
                         title: L10n.Camera.doNotUse,
-                        isSelected: !state.captureCamera,
+                        isSelected: !state.captureCamera
                     )
                 }
                 .buttonStyle(.plain)
@@ -102,12 +102,12 @@
                     } label: {
                         cameraMenuItemLabel(
                             title: device.localizedName,
-                            isSelected: state.captureCamera && state.cameraDeviceID == device.uniqueID,
+                            isSelected: state.captureCamera && state.cameraDeviceID == device.uniqueID
                         )
                     }
                     .buttonStyle(.plain)
                     .popoverMenuItem(
-                        isSelected: state.captureCamera && state.cameraDeviceID == device.uniqueID,
+                        isSelected: state.captureCamera && state.cameraDeviceID == device.uniqueID
                     )
                 }
 
@@ -129,7 +129,7 @@
                 ForEach(RecordingCameraPreviewSize.allCases) { size in
                     cameraOptionButton(
                         title: size.displayName,
-                        isSelected: state.cameraPreviewSize == size,
+                        isSelected: state.cameraPreviewSize == size
                     ) {
                         state.cameraPreviewSize = size
                         state.onCameraPreviewConfigurationChanged?()
@@ -145,7 +145,7 @@
                 ForEach(RecordingCameraPreviewShape.allCases) { shape in
                     cameraOptionButton(
                         title: shape.displayName,
-                        isSelected: state.cameraPreviewShape == shape,
+                        isSelected: state.cameraPreviewShape == shape
                     ) {
                         state.cameraPreviewShape = shape
                         state.onCameraPreviewConfigurationChanged?()
@@ -163,10 +163,10 @@
                             state.showCameraPreviewDuringRecording = isVisible
                             UserDefaults.standard.set(
                                 isVisible,
-                                forKey: PreferencesKeys.recordingShowCameraPreviewDuringRecording,
+                                forKey: PreferencesKeys.recordingShowCameraPreviewDuringRecording
                             )
-                        },
-                    ),
+                        }
+                    )
                 )
                 .accessibilityHint(L10n.Camera.showDuringRecordingDescription)
             }
@@ -175,7 +175,7 @@
         private func cameraOptionButton(
             title: String,
             isSelected: Bool,
-            action: @escaping () -> Void,
+            action: @escaping () -> Void
         ) -> some View {
             Button(action: action) {
                 HStack {

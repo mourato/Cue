@@ -6,7 +6,7 @@ enum CueVideoUploadTranscoder {
     static func prepare(
         sourceURL: URL,
         maximumBytes: Int64,
-        settings: CueVideoUploadSettings,
+        settings: CueVideoUploadSettings
     ) async throws -> CuePreparedUpload {
         let temporaryDirectory = FileManager.default.temporaryDirectory
             .appendingPathComponent("CueVideoUpload-\(UUID().uuidString)", isDirectory: true)
@@ -62,7 +62,7 @@ enum CueVideoUploadTranscoder {
         let scale = min(1, Double(settings.maximumDimension) / Double(max(sourceWidth, sourceHeight)))
         let outputSize = CGSize(
             width: evenDimension(sourceWidth * scale),
-            height: evenDimension(sourceHeight * scale),
+            height: evenDimension(sourceHeight * scale)
         )
 
         let exportAsset: AVAsset
@@ -74,14 +74,14 @@ enum CueVideoUploadTranscoder {
             let composition = AVMutableComposition()
             guard let compositionTrack = composition.addMutableTrack(
                 withMediaType: .video,
-                preferredTrackID: kCMPersistentTrackID_Invalid,
+                preferredTrackID: kCMPersistentTrackID_Invalid
             ) else {
                 throw CueUploadEncodingError.videoTranscodingFailed
             }
             try compositionTrack.insertTimeRange(
                 CMTimeRange(start: .zero, duration: duration),
                 of: sourceTrack,
-                at: .zero,
+                at: .zero
             )
             exportAsset = composition
             exportTrack = compositionTrack
@@ -89,7 +89,7 @@ enum CueVideoUploadTranscoder {
 
         guard let exportSession = AVAssetExportSession(
             asset: exportAsset,
-            presetName: exportPreset(for: settings.quality),
+            presetName: exportPreset(for: settings.quality)
         ) else {
             throw CueUploadEncodingError.videoTranscodingFailed
         }
@@ -97,11 +97,11 @@ enum CueVideoUploadTranscoder {
         let transformedBounds = sourceBounds
         let transformScale = min(
             outputSize.width / max(transformedBounds.width, 1),
-            outputSize.height / max(transformedBounds.height, 1),
+            outputSize.height / max(transformedBounds.height, 1)
         )
         let translation = CGAffineTransform(
             translationX: -transformedBounds.minX,
-            y: -transformedBounds.minY,
+            y: -transformedBounds.minY
         )
         let resize = CGAffineTransform(scaleX: transformScale, y: transformScale)
         let videoComposition = AVMutableVideoComposition()
@@ -113,7 +113,7 @@ enum CueVideoUploadTranscoder {
         let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: exportTrack)
         layerInstruction.setTransform(
             preferredTransform.concatenating(translation).concatenating(resize),
-            at: .zero,
+            at: .zero
         )
         instruction.layerInstructions = [layerInstruction]
         videoComposition.instructions = [instruction]
@@ -130,7 +130,8 @@ enum CueVideoUploadTranscoder {
         try Task.checkCancellation()
 
         guard exportSession.status == .completed,
-              FileManager.default.fileExists(atPath: outputURL.path) else {
+              FileManager.default.fileExists(atPath: outputURL.path)
+        else {
             throw exportSession.error ?? CueUploadEncodingError.videoTranscodingFailed
         }
     }

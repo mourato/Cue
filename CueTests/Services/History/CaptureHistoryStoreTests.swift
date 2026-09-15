@@ -183,8 +183,10 @@ final class CaptureHistoryStoreTests: XCTestCase {
         CaptureHistoryStore.shared.add(record)
         CaptureHistoryStore.shared.refreshRecords()
 
-        let expectation = expectation(forNotification: .captureHistoryFileDidChange,
-                                      object: CaptureHistoryStore.shared) { notification in
+        let expectation = expectation(
+            forNotification: .captureHistoryFileDidChange,
+            object: CaptureHistoryStore.shared
+        ) { notification in
             guard let ids = notification.userInfo?["recordIDs"] as? [UUID] else { return false }
             return ids.contains(record.id)
         }
@@ -286,7 +288,7 @@ final class CaptureHistoryStoreTests: XCTestCase {
             captureType: .screenshot,
             duration: nil,
             width: 100,
-            height: 200,
+            height: 200
         )
         CaptureHistoryStore.shared.refreshRecords()
 
@@ -330,7 +332,7 @@ final class CaptureHistoryStoreTests: XCTestCase {
     private func makeRecord(
         filePath: String? = nil,
         thumbnailPath: String? = nil,
-        capturedAt: Date = Date(),
+        capturedAt: Date = Date()
     ) -> CaptureHistoryRecord {
         let path = filePath ?? testDirectory.appendingPathComponent("\(UUID().uuidString).png").path
         return CaptureHistoryRecord(
@@ -344,7 +346,7 @@ final class CaptureHistoryStoreTests: XCTestCase {
             height: 100,
             duration: nil,
             thumbnailPath: thumbnailPath,
-            isDeleted: false,
+            isDeleted: false
         )
     }
 }

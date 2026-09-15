@@ -16,7 +16,7 @@ final class ScrollingCaptureCommitSchedulerTests: XCTestCase {
 
         let scheduler = ScrollingCaptureCommitScheduler(
             onRequestCoalesced: { coalescedCount += 1 },
-            operation: { request in executed.append(request) },
+            operation: { request in executed.append(request) }
         )
 
         let first = scheduler.schedule(reason: "first", expectedSignedDeltaPixels: nil)
@@ -62,7 +62,7 @@ final class ScrollingCaptureCommitSchedulerTests: XCTestCase {
                         resumeFirstOperation = continuation
                     }
                 }
-            },
+            }
         )
 
         scheduler.schedule(reason: "current", expectedSignedDeltaPixels: nil)

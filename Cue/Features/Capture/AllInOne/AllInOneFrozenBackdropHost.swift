@@ -17,7 +17,7 @@ final class AllInOneFrozenBackdropHost {
                 contentRect: screen.frame,
                 styleMask: [.borderless, .nonactivatingPanel],
                 backing: .buffered,
-                defer: false,
+                defer: false
             )
             isOpaque = true
             backgroundColor = .black
@@ -35,8 +35,8 @@ final class AllInOneFrozenBackdropHost {
                 cgImage: backdrop.image,
                 size: NSSize(
                     width: CGFloat(backdrop.image.width) / backdrop.scaleFactor,
-                    height: CGFloat(backdrop.image.height) / backdrop.scaleFactor,
-                ),
+                    height: CGFloat(backdrop.image.height) / backdrop.scaleFactor
+                )
             )
             contentView = imageView
         }

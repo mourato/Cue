@@ -45,9 +45,9 @@ struct TextStylingSection: View {
             Slider(
                 value: Binding(
                     get: { annotation.properties.fontSize },
-                    set: { state.updateAnnotationProperties(id: annotation.id, fontSize: $0, recordsUndo: true) },
+                    set: { state.updateAnnotationProperties(id: annotation.id, fontSize: $0, recordsUndo: true) }
                 ).stepped(by: 1, in: 12 ... 72),
-                in: 12 ... 72,
+                in: 12 ... 72
             )
             .controlSize(.small)
         }
@@ -73,7 +73,7 @@ struct TextStylingSection: View {
                         .background(
                             RoundedRectangle(cornerRadius: 4)
                                 .fill(AnnotateColorPaletteStore.isClear(annotation.properties.fillColor) ? Color.blue
-                                    .opacity(0.3) : Color.primary.opacity(0.1)),
+                                    .opacity(0.3) : Color.primary.opacity(0.1))
                         )
                 }
                 .buttonStyle(.plain)
@@ -92,8 +92,8 @@ struct TextStylingSection: View {
                                         colorsMatch(annotation.properties.fillColor, color) ? Color.accentColor : Color
                                             .secondary
                                             .opacity(0.5),
-                                        lineWidth: colorsMatch(annotation.properties.fillColor, color) ? 2 : 1,
-                                    ),
+                                        lineWidth: colorsMatch(annotation.properties.fillColor, color) ? 2 : 1
+                                    )
                             )
                     }
                     .buttonStyle(.plain)
@@ -106,7 +106,7 @@ struct TextStylingSection: View {
                         size: 24,
                         onDelete: {
                             paletteStore.removeColor(color)
-                        },
+                        }
                     ) {
                         state.updateAnnotationProperties(id: annotation.id, fillColor: color, recordsUndo: true)
                     }
@@ -115,7 +115,7 @@ struct TextStylingSection: View {
                 AnnotateCustomColorPickerControl(
                     selectedColor: backgroundColorBinding(for: annotation),
                     draftColor: $draftBackgroundColor,
-                    swatchSize: 24,
+                    swatchSize: 24
                 )
             }
         }
@@ -132,7 +132,7 @@ struct TextStylingSection: View {
             get: { annotation.properties.fillColor },
             set: { color in
                 state.updateAnnotationProperties(id: annotation.id, fillColor: color, recordsUndo: true)
-            },
+            }
         )
     }
 

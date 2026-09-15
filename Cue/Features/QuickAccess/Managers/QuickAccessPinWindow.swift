@@ -29,7 +29,7 @@ final class QuickAccessPinWindow: NSPanel {
             contentRect: contentRect,
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
-            defer: false,
+            defer: false
         )
         configure()
         installMouseMonitors()
@@ -213,7 +213,7 @@ final class QuickAccessPinWindow: NSPanel {
             scrollingDeltaX: event.scrollingDeltaX,
             scrollingDeltaY: event.scrollingDeltaY,
             hasPreciseScrollingDeltas: event.hasPreciseScrollingDeltas,
-            isLocked: pinState?.isLocked == true,
+            isLocked: pinState?.isLocked == true
         ), let onZoomStepRequested else { return false }
 
         onZoomStepRequested(step)
@@ -224,7 +224,7 @@ final class QuickAccessPinWindow: NSPanel {
     func requestMagnifyZoom(magnification: CGFloat) -> Bool {
         guard let step = Self.magnifyZoomStep(
             magnification: magnification,
-            isLocked: pinState?.isLocked == true,
+            isLocked: pinState?.isLocked == true
         ), let onZoomStepRequested else { return false }
 
         onZoomStepRequested(step)
@@ -235,7 +235,7 @@ final class QuickAccessPinWindow: NSPanel {
         scrollingDeltaX deltaX: CGFloat = 0,
         scrollingDeltaY deltaY: CGFloat,
         hasPreciseScrollingDeltas: Bool,
-        isLocked: Bool,
+        isLocked: Bool
     ) -> CGFloat? {
         guard !isLocked else { return nil }
 

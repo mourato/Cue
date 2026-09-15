@@ -192,7 +192,7 @@ final class AreaSelectionController: NSObject {
         screenChangeObserver = NotificationCenter.default.addObserver(
             forName: NSApplication.didChangeScreenParametersNotification,
             object: nil,
-            queue: .main,
+            queue: .main
         ) { [weak self] _ in
             Task { @MainActor in
                 self?.refreshWindowPool()
@@ -244,8 +244,8 @@ final class AreaSelectionController: NSObject {
             context: [
                 "screenCount": "\(screens.count)",
                 "poolSize": "\(windowPool.count)",
-                "mode": "\(selectionMode)",
-            ],
+                "mode": "\(selectionMode)"
+            ]
         )
         for screen in screens {
             guard let displayID = screen.displayID else {
@@ -253,7 +253,7 @@ final class AreaSelectionController: NSObject {
                     .warning,
                     .capture,
                     "Area selection skipped screen with nil displayID",
-                    context: ["frame": "\(screen.frame)"],
+                    context: ["frame": "\(screen.frame)"]
                 )
                 continue
             }
@@ -278,8 +278,8 @@ final class AreaSelectionController: NSObject {
                     "displayID": "\(displayID)",
                     "frame": "\(screen.frame)",
                     "selectionEnabled": "\(selectionEnabled(for: displayID))",
-                    "isPooled": "\(isPooled)",
-                ],
+                    "isPooled": "\(isPooled)"
+                ]
             )
         }
     }
@@ -290,7 +290,7 @@ final class AreaSelectionController: NSObject {
     private func configureSessionWindow(
         _ window: AreaSelectionWindow,
         for screen: NSScreen,
-        displayID: CGDirectDisplayID,
+        displayID: CGDirectDisplayID
     ) {
         // Sync frame to current screen position before showing
         if window.frame != screen.frame {
@@ -300,7 +300,7 @@ final class AreaSelectionController: NSObject {
                 .debug,
                 .capture,
                 "Area selection pooled window frame resynced",
-                context: ["displayID": "\(displayID)"],
+                context: ["displayID": "\(displayID)"]
             )
         }
         window.updateSelectionMode(selectionMode)
@@ -365,7 +365,7 @@ final class AreaSelectionController: NSObject {
         backdrops: [CGDirectDisplayID: AreaSelectionBackdrop],
         initialInteractionMode: AreaSelectionInteractionMode = .manualRegion,
         dismissesAfterSelection: Bool = true,
-        completion: @escaping AreaSelectionResultCompletion,
+        completion: @escaping AreaSelectionResultCompletion
     ) {
         startSelection(
             mode: mode,
@@ -373,7 +373,7 @@ final class AreaSelectionController: NSObject {
             applicationConfiguration: nil,
             initialInteractionMode: initialInteractionMode,
             dismissesAfterSelection: dismissesAfterSelection,
-            completion: completion,
+            completion: completion
         )
     }
 
@@ -385,7 +385,7 @@ final class AreaSelectionController: NSObject {
         dismissesAfterSelection: Bool = true,
         onDisplayActivationRequested: AreaSelectionDisplayActivationHandler? = nil,
         onTransitionRecapture: AreaSelectionTransitionRecaptureHandler? = nil,
-        completion: @escaping AreaSelectionResultCompletion,
+        completion: @escaping AreaSelectionResultCompletion
     ) {
         startSelectionSession(
             mode: mode,
@@ -395,7 +395,7 @@ final class AreaSelectionController: NSObject {
             dismissesAfterSelection: dismissesAfterSelection,
             completionWithResult: completion,
             onDisplayActivationRequested: onDisplayActivationRequested,
-            onTransitionRecapture: onTransitionRecapture,
+            onTransitionRecapture: onTransitionRecapture
         )
     }
 
@@ -409,7 +409,7 @@ final class AreaSelectionController: NSObject {
         completionWithMode: AreaSelectionCompletionWithMode? = nil,
         completionWithResult: AreaSelectionResultCompletion? = nil,
         onDisplayActivationRequested: AreaSelectionDisplayActivationHandler? = nil,
-        onTransitionRecapture: AreaSelectionTransitionRecaptureHandler? = nil,
+        onTransitionRecapture: AreaSelectionTransitionRecaptureHandler? = nil
     ) {
         // Atomic replacement: a presenting session must be torn down through the normal cancel
         // path — never silently dropped. This runs BEFORE the new completion is stored (below), so
@@ -425,8 +425,8 @@ final class AreaSelectionController: NSObject {
                 "Area selection replacing a presenting session; cancelling it first",
                 context: [
                     "previousMode": "\(selectionMode)",
-                    "newMode": "\(mode)",
-                ],
+                    "newMode": "\(mode)"
+                ]
             )
             cancelSelection()
         }
@@ -444,8 +444,8 @@ final class AreaSelectionController: NSObject {
             context: [
                 "mode": "\(mode)",
                 "backdropCount": "\(backdrops.count)",
-                "applicationSelection": applicationConfiguration == nil ? "false" : "true",
-            ],
+                "applicationSelection": applicationConfiguration == nil ? "false" : "true"
+            ]
         )
 
         selectionMode = mode
@@ -479,7 +479,7 @@ final class AreaSelectionController: NSObject {
         sessionSpaceChangeObserver = NSWorkspace.shared.notificationCenter.addObserver(
             forName: NSWorkspace.activeSpaceDidChangeNotification,
             object: nil,
-            queue: .main,
+            queue: .main
         ) { [weak self] _ in
             self?.handleSessionSpaceOrActivationChange()
             self?.recaptureBackdropsForLuma(reason: .spaceChange)
@@ -488,7 +488,7 @@ final class AreaSelectionController: NSObject {
         sessionAppActivationObserver = NotificationCenter.default.addObserver(
             forName: NSApplication.didBecomeActiveNotification,
             object: nil,
-            queue: .main,
+            queue: .main
         ) { [weak self] _ in
             self?.handleSessionSpaceOrActivationChange()
             self?.recaptureBackdropsForLuma(reason: .appActivation)
@@ -497,7 +497,7 @@ final class AreaSelectionController: NSObject {
         sessionAppSwitchObserver = NSWorkspace.shared.notificationCenter.addObserver(
             forName: NSWorkspace.didActivateApplicationNotification,
             object: nil,
-            queue: .main,
+            queue: .main
         ) { [weak self] _ in
             self?.handleSessionSpaceOrActivationChange()
             self?.recaptureBackdropsForLuma(reason: .appActivation)
@@ -538,7 +538,7 @@ final class AreaSelectionController: NSObject {
                         displayID: targetDisplayID,
                         captureRect: captureRect,
                         scaleFactor: backingScale,
-                        isVisible: false,
+                        isVisible: false
                     )
 
                     guard selectionSessionID == sessionID else { return }
@@ -546,7 +546,7 @@ final class AreaSelectionController: NSObject {
                         DiagnosticLogger.shared.log(
                             .warning,
                             .capture,
-                            "Failed to capture background backdrop for magnifier zoom in backdrop-less session",
+                            "Failed to capture background backdrop for magnifier zoom in backdrop-less session"
                         )
                         return
                     }
@@ -606,8 +606,8 @@ final class AreaSelectionController: NSObject {
                     "alphaValue": "\(window.alphaValue)",
                     "appIsActive": "\(NSApp.isActive)",
                     "screenFrame": "\(screen.frame)",
-                    "windowFrame": "\(window.frame)",
-                ],
+                    "windowFrame": "\(window.frame)"
+                ]
             )
             window.orderFrontRegardless()
             window.activateKeyboardInputIfNeeded()
@@ -640,7 +640,7 @@ final class AreaSelectionController: NSObject {
             || Self.isSpaceWindowSelectionKey(
                 event,
                 selectionMode: selectionMode,
-                allowsApplicationWindowSelection: allowsApplicationWindowSelection,
+                allowsApplicationWindowSelection: allowsApplicationWindowSelection
             )
             || isApplicationToggleEvent(event)
     }
@@ -654,7 +654,7 @@ final class AreaSelectionController: NSObject {
         if Self.isSpaceWindowSelectionKey(
             event,
             selectionMode: selectionMode,
-            allowsApplicationWindowSelection: allowsApplicationWindowSelection,
+            allowsApplicationWindowSelection: allowsApplicationWindowSelection
         ) {
             switchToApplicationWindow()
             return true
@@ -668,13 +668,14 @@ final class AreaSelectionController: NSObject {
     static func isSpaceWindowSelectionKey(
         _ event: NSEvent,
         selectionMode: SelectionMode,
-        allowsApplicationWindowSelection: Bool,
+        allowsApplicationWindowSelection: Bool
     ) -> Bool {
         guard allowsApplicationWindowSelection,
               event.type == .keyDown,
               event.keyCode == 49, // Space
               !event.isARepeat,
-              event.modifierFlags.intersection([.command, .control, .option, .shift]).isEmpty else {
+              event.modifierFlags.intersection([.command, .control, .option, .shift]).isEmpty
+        else {
             return false
         }
 
@@ -704,7 +705,8 @@ final class AreaSelectionController: NSObject {
 
     private func toggleInteractionMode() {
         guard manualSelectionStartPoint == nil,
-              !windowPool.values.contains(where: \.overlayView.isManualSelectionInProgress) else {
+              !windowPool.values.contains(where: \.overlayView.isManualSelectionInProgress)
+        else {
             return
         }
         let nextMode: AreaSelectionInteractionMode = interactionMode == .manualRegion
@@ -714,7 +716,7 @@ final class AreaSelectionController: NSObject {
             .info,
             .capture,
             "Area selection interaction mode toggled",
-            context: ["mode": nextMode == .manualRegion ? "manual" : "application"],
+            context: ["mode": nextMode == .manualRegion ? "manual" : "application"]
         )
         interactionMode = nextMode
         refreshPooledWindowsForInteractionModeChange()
@@ -734,7 +736,7 @@ final class AreaSelectionController: NSObject {
         windowSelectionTask = Task { [weak self] in
             let snapshot = await WindowSelectionQueryService.prepareSnapshot(
                 prefetchedContentTask: applicationConfiguration.prefetchedContentTask,
-                excludeOwnApplication: applicationConfiguration.excludeOwnApplication,
+                excludeOwnApplication: applicationConfiguration.excludeOwnApplication
             )
             await MainActor.run {
                 guard let self, self.selectionSessionID == sessionID else { return }
@@ -826,7 +828,8 @@ final class AreaSelectionController: NSObject {
         guard manualSelectionStartPoint != nil else { return }
         let sourceWindow = manualSelectionSourceWindow ?? activeWindow
         guard let displayID = sourceWindow?.displayID,
-              selectionBackdrops[displayID] == nil else {
+              selectionBackdrops[displayID] == nil
+        else {
             return
         }
         liveFallbackDisplayIDs.insert(displayID)
@@ -834,7 +837,7 @@ final class AreaSelectionController: NSObject {
 
     func withDisplayOverlayHidden<T>(
         for displayID: CGDirectDisplayID,
-        perform work: () -> T,
+        perform work: () -> T
     ) -> T {
         guard let window = windowPool[displayID], window.isVisible else {
             return work()
@@ -858,7 +861,7 @@ final class AreaSelectionController: NSObject {
     /// Use when the work body performs blocking I/O such as screen capture.
     func withDisplayOverlayHiddenAsync<T: Sendable>(
         for displayID: CGDirectDisplayID,
-        perform work: @Sendable () async -> T,
+        perform work: @Sendable () async -> T
     ) async -> T {
         guard let window = windowPool[displayID], window.isVisible else {
             return await work()
@@ -903,13 +906,14 @@ final class AreaSelectionController: NSObject {
             context: [
                 "isPresenting": "\(isPresenting)",
                 "isActive": "\(NSApp.isActive)",
-                "keyboardOwnerDisplayID": keyboardOwnerDisplayID.map { "\($0)" } ?? "nil",
-            ],
+                "keyboardOwnerDisplayID": keyboardOwnerDisplayID.map { "\($0)" } ?? "nil"
+            ]
         )
 
         // Restore key focus to the keyboard owner window
         if let keyboardDisplay = keyboardOwnerDisplayID,
-           let keyWindow = windowPool[keyboardDisplay] {
+           let keyWindow = windowPool[keyboardDisplay]
+        {
             if !keyWindow.isKeyWindow {
                 keyWindow.makeKey()
                 keyWindow.makeFirstResponder(keyWindow.overlayView)
@@ -957,7 +961,7 @@ final class AreaSelectionController: NSObject {
                 DiagnosticLogger.shared.log(
                     .info,
                     .capture,
-                    "Frozen session re-freezing displays after transition settle",
+                    "Frozen session re-freezing displays after transition settle"
                 )
                 transitionRecaptureHandler()
                 return
@@ -969,8 +973,8 @@ final class AreaSelectionController: NSObject {
                 "Recapturing backdrops for live-mode luma calculations after transition settle",
                 context: [
                     "isPresenting": "\(isPresenting)",
-                    "isActive": "\(NSApp.isActive)",
-                ],
+                    "isActive": "\(NSApp.isActive)"
+                ]
             )
 
             for screen in NSScreen.screens {
@@ -984,7 +988,7 @@ final class AreaSelectionController: NSObject {
                         displayID: displayID,
                         captureRect: captureRect,
                         scaleFactor: backingScale,
-                        isVisible: false,
+                        isVisible: false
                     )
 
                     guard let self, selectionSessionID == sessionID else { return }
@@ -1009,8 +1013,8 @@ final class AreaSelectionController: NSObject {
             context: [
                 "mode": "\(selectionMode)",
                 "displayID": displayID.map { "\($0)" } ?? "unknown",
-                "target": target.windowTarget == nil ? "region" : "window",
-            ],
+                "target": target.windowTarget == nil ? "region" : "window"
+            ]
         )
         removeManualSelectionMonitor()
         removeEscapeMonitors()
@@ -1038,8 +1042,8 @@ final class AreaSelectionController: NSObject {
                     target: target,
                     displayID: displayID,
                     mode: selectionMode,
-                    displayIDs: displayIDs.isEmpty ? [displayID] : displayIDs,
-                ),
+                    displayIDs: displayIDs.isEmpty ? [displayID] : displayIDs
+                )
             )
         } else {
             completionWithResult?(nil)
@@ -1073,7 +1077,7 @@ final class AreaSelectionController: NSObject {
                 context: nil,
                 eventNumber: 0,
                 clickCount: 0,
-                pressure: 0,
+                pressure: 0
             ) {
                 NSApp.postEvent(syntheticEvent, atStart: false)
             }
@@ -1201,7 +1205,7 @@ final class AreaSelectionController: NSObject {
             .debug,
             .capture,
             "Pointer tracking promoted key overlay",
-            context: ["displayID": "\(displayID)"],
+            context: ["displayID": "\(displayID)"]
         )
     }
 
@@ -1253,7 +1257,7 @@ final class AreaSelectionController: NSObject {
     private func beginManualSelection(
         at screenPoint: CGPoint,
         modifiers: NSEvent.ModifierFlags = [],
-        from window: AreaSelectionWindow,
+        from window: AreaSelectionWindow
     ) {
         guard interactionMode == .manualRegion else { return }
         guard let displayID = window.displayID else { return }
@@ -1347,7 +1351,8 @@ final class AreaSelectionController: NSObject {
               let displayID = screen.displayID,
               let backdrop = selectionBackdrops[displayID],
               backdrop.isVisible,
-              let boundaryIndex = boundarySnapIndices[displayID] else {
+              let boundaryIndex = boundarySnapIndices[displayID]
+        else {
             return nil
         }
 
@@ -1355,7 +1360,7 @@ final class AreaSelectionController: NSObject {
             point: current,
             anchor: start,
             boundaryIndex: boundaryIndex,
-            configuration: CaptureSelectionSnappingConfiguration.fromPreferences(),
+            configuration: CaptureSelectionSnappingConfiguration.fromPreferences()
         )
     }
 
@@ -1368,7 +1373,7 @@ final class AreaSelectionController: NSObject {
             appActivationObserver = NotificationCenter.default.addObserver(
                 forName: NSApplication.didBecomeActiveNotification,
                 object: nil,
-                queue: .main,
+                queue: .main
             ) { [weak self] _ in
                 Task { @MainActor in
                     self?.reassertManualSelectionCursor()
@@ -1383,7 +1388,7 @@ final class AreaSelectionController: NSObject {
     private func installManualSelectionGlobalMonitorIfNeeded() {
         guard manualSelectionGlobalMonitor == nil else { return }
         manualSelectionGlobalMonitor = NSEvent.addGlobalMonitorForEvents(
-            matching: [.leftMouseDown, .leftMouseDragged, .leftMouseUp],
+            matching: [.leftMouseDown, .leftMouseDragged, .leftMouseUp]
         ) { [weak self] event in
             let mouseLocation = NSEvent.mouseLocation
             Task { @MainActor in
@@ -1394,8 +1399,9 @@ final class AreaSelectionController: NSObject {
                           let window = self.window(containing: mouseLocation),
                           !CaptureFloatingCursorExclusion.contains(
                               mouseLocation,
-                              in: self.cursorExclusionFrames(),
-                          ) else {
+                              in: self.cursorExclusionFrames()
+                          )
+                    else {
                         return
                     }
                     window.orderFrontRegardless()
@@ -1447,7 +1453,8 @@ final class AreaSelectionController: NSObject {
         guard manualSelectionStartPoint == nil else { return }
         for displayID in deferredBackdropDisplayIDs {
             guard let backdrop = selectionBackdrops[displayID],
-                  let window = windowPool[displayID] else {
+                  let window = windowPool[displayID]
+            else {
                 continue
             }
             window.overlayView.applyBackdrop(backdrop)
@@ -1469,7 +1476,7 @@ final class AreaSelectionController: NSObject {
                 currentScreenPoint: currentPoint,
                 boundarySnapGuides: CaptureSelectionSnappingConfiguration.fromPreferences().showSnapGuides
                     ? guides
-                    : [:],
+                    : [:]
             )
         }
     }
@@ -1532,7 +1539,7 @@ final class AreaSelectionController: NSObject {
             NSScreen.screens.compactMap { screen in
                 guard screen.frame.intersects(rect) else { return nil }
                 return screen.displayID
-            },
+            }
         )
     }
 
@@ -1553,7 +1560,8 @@ final class AreaSelectionController: NSObject {
         for screen in NSScreen.screens {
             guard screen.frame.contains(screenPoint),
                   let displayID = screen.displayID,
-                  let window = windowPool[displayID] else {
+                  let window = windowPool[displayID]
+            else {
                 continue
             }
             return window
@@ -1616,14 +1624,15 @@ extension AreaSelectionController: AreaSelectionWindowDelegate {
         // processed normally — no need to enable fallback. Otherwise switch to live capture so
         // the pending click can be activated without waiting for the lazy snapshot.
         guard selectionBackdrops[displayID] == nil,
-              !liveFallbackDisplayIDs.contains(displayID) else {
+              !liveFallbackDisplayIDs.contains(displayID)
+        else {
             return
         }
         DiagnosticLogger.shared.log(
             .info,
             .capture,
             "Area selection live fallback enabled by user click",
-            context: ["displayID": "\(displayID)"],
+            context: ["displayID": "\(displayID)"]
         )
         enableLiveFallbackSelection(for: displayID)
     }
@@ -1631,7 +1640,7 @@ extension AreaSelectionController: AreaSelectionWindowDelegate {
     func areaSelectionWindow(
         _ window: AreaSelectionWindow,
         manualSelectionBeganAt screenPoint: CGPoint,
-        modifiers: NSEvent.ModifierFlags,
+        modifiers: NSEvent.ModifierFlags
     ) {
         beginManualSelection(at: screenPoint, modifiers: modifiers, from: window)
     }
@@ -1639,7 +1648,7 @@ extension AreaSelectionController: AreaSelectionWindowDelegate {
     func areaSelectionWindow(
         _: AreaSelectionWindow,
         manualSelectionChangedTo screenPoint: CGPoint,
-        modifiers: NSEvent.ModifierFlags,
+        modifiers: NSEvent.ModifierFlags
     ) {
         updateManualSelection(to: screenPoint, modifiers: modifiers)
     }
@@ -1647,7 +1656,7 @@ extension AreaSelectionController: AreaSelectionWindowDelegate {
     func areaSelectionWindow(
         _: AreaSelectionWindow,
         manualSelectionEndedAt screenPoint: CGPoint,
-        modifiers: NSEvent.ModifierFlags,
+        modifiers: NSEvent.ModifierFlags
     ) {
         endManualSelection(at: screenPoint, modifiers: modifiers)
     }
@@ -1669,17 +1678,17 @@ protocol AreaSelectionWindowDelegate: AnyObject {
     func areaSelectionWindow(
         _ window: AreaSelectionWindow,
         manualSelectionBeganAt screenPoint: CGPoint,
-        modifiers: NSEvent.ModifierFlags,
+        modifiers: NSEvent.ModifierFlags
     )
     func areaSelectionWindow(
         _ window: AreaSelectionWindow,
         manualSelectionChangedTo screenPoint: CGPoint,
-        modifiers: NSEvent.ModifierFlags,
+        modifiers: NSEvent.ModifierFlags
     )
     func areaSelectionWindow(
         _ window: AreaSelectionWindow,
         manualSelectionEndedAt screenPoint: CGPoint,
-        modifiers: NSEvent.ModifierFlags,
+        modifiers: NSEvent.ModifierFlags
     )
 }
 
@@ -1707,7 +1716,7 @@ final class AreaSelectionWindow: NSPanel {
             contentRect: screen.frame,
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
-            defer: false,
+            defer: false
         )
 
         // Configure as non-activating panel to prevent background windows from blurring
@@ -1821,36 +1830,36 @@ extension AreaSelectionWindow: AreaSelectionOverlayViewDelegate {
     func overlayView(
         _: AreaSelectionOverlayView,
         manualSelectionBeganAt point: CGPoint,
-        modifiers: NSEvent.ModifierFlags,
+        modifiers: NSEvent.ModifierFlags
     ) {
         selectionDelegate?.areaSelectionWindow(
             self,
             manualSelectionBeganAt: convertToScreenPoint(point),
-            modifiers: modifiers,
+            modifiers: modifiers
         )
     }
 
     func overlayView(
         _: AreaSelectionOverlayView,
         manualSelectionChangedTo point: CGPoint,
-        modifiers: NSEvent.ModifierFlags,
+        modifiers: NSEvent.ModifierFlags
     ) {
         selectionDelegate?.areaSelectionWindow(
             self,
             manualSelectionChangedTo: convertToScreenPoint(point),
-            modifiers: modifiers,
+            modifiers: modifiers
         )
     }
 
     func overlayView(
         _: AreaSelectionOverlayView,
         manualSelectionEndedAt point: CGPoint,
-        modifiers: NSEvent.ModifierFlags,
+        modifiers: NSEvent.ModifierFlags
     ) {
         selectionDelegate?.areaSelectionWindow(
             self,
             manualSelectionEndedAt: convertToScreenPoint(point),
-            modifiers: modifiers,
+            modifiers: modifiers
         )
     }
 
@@ -1863,14 +1872,14 @@ extension AreaSelectionWindow: AreaSelectionOverlayViewDelegate {
             x: windowFrame.origin.x + rect.origin.x,
             y: windowFrame.origin.y + rect.origin.y,
             width: rect.width,
-            height: rect.height,
+            height: rect.height
         )
     }
 
     private func convertToScreenPoint(_ point: CGPoint) -> CGPoint {
         CGPoint(
             x: frame.origin.x + point.x,
-            y: frame.origin.y + point.y,
+            y: frame.origin.y + point.y
         )
     }
 }
@@ -1889,17 +1898,17 @@ protocol AreaSelectionOverlayViewDelegate: AnyObject {
     func overlayView(
         _ view: AreaSelectionOverlayView,
         manualSelectionBeganAt point: CGPoint,
-        modifiers: NSEvent.ModifierFlags,
+        modifiers: NSEvent.ModifierFlags
     )
     func overlayView(
         _ view: AreaSelectionOverlayView,
         manualSelectionChangedTo point: CGPoint,
-        modifiers: NSEvent.ModifierFlags,
+        modifiers: NSEvent.ModifierFlags
     )
     func overlayView(
         _ view: AreaSelectionOverlayView,
         manualSelectionEndedAt point: CGPoint,
-        modifiers: NSEvent.ModifierFlags,
+        modifiers: NSEvent.ModifierFlags
     )
 }
 
@@ -1983,7 +1992,7 @@ final class AreaSelectionOverlayView: NSView {
             isPlanar: false,
             colorSpaceName: .deviceRGB,
             bytesPerRow: 4,
-            bitsPerPixel: 32,
+            bitsPerPixel: 32
         )
         if let rep {
             if let bitmapData = rep.bitmapData {
@@ -2018,7 +2027,7 @@ final class AreaSelectionOverlayView: NSView {
             "backgroundColor": NSNull(),
             "frame": NSNull(),
             "contents": NSNull(),
-            "contentsScale": NSNull(),
+            "contentsScale": NSNull()
         ]
     }
 
@@ -2123,7 +2132,7 @@ final class AreaSelectionOverlayView: NSView {
             color: .black,
             offset: .zero,
             radius: 2,
-            opacity: 0.5,
+            opacity: 0.5
         )
         rootLayer.addSublayer(crosshairIndicatorLayer)
 
@@ -2144,7 +2153,7 @@ final class AreaSelectionOverlayView: NSView {
             color: .white,
             offset: CGSize(width: 0.5, height: -0.5),
             radius: 0.1,
-            opacity: 1.0,
+            opacity: 1.0
         )
         rootLayer.addSublayer(sizeIndicatorTextLayer)
 
@@ -2169,7 +2178,7 @@ final class AreaSelectionOverlayView: NSView {
             rect: bounds,
             options: [.activeAlways, .mouseMoved, .mouseEnteredAndExited, .inVisibleRect, .cursorUpdate],
             owner: self,
-            userInfo: nil,
+            userInfo: nil
         )
         addTrackingArea(trackingArea)
     }
@@ -2317,7 +2326,7 @@ final class AreaSelectionOverlayView: NSView {
         delegate?.overlayView(
             self,
             manualSelectionChangedTo: currentMousePosition,
-            modifiers: pendingModifiers,
+            modifiers: pendingModifiers
         )
     }
 
@@ -2328,8 +2337,10 @@ final class AreaSelectionOverlayView: NSView {
         let scale: CGFloat
     }
 
-    private nonisolated static func extractBackdropPixelCache(from cgImage: CGImage,
-                                                              scale: CGFloat) -> BackdropPixelCache {
+    private nonisolated static func extractBackdropPixelCache(
+        from cgImage: CGImage,
+        scale: CGFloat
+    ) -> BackdropPixelCache {
         let width = cgImage.width
         let height = cgImage.height
         let colorSpace = CGColorSpaceCreateDeviceRGB()
@@ -2340,7 +2351,7 @@ final class AreaSelectionOverlayView: NSView {
             bitsPerComponent: 8,
             bytesPerRow: width * 4,
             space: colorSpace,
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue
         ) else {
             return BackdropPixelCache(data: nil, width: width, height: height, scale: scale)
         }
@@ -2353,13 +2364,13 @@ final class AreaSelectionOverlayView: NSView {
         let totalBytes = width * height * 4
         let bufferPointer = UnsafeBufferPointer(
             start: dataPtr.assumingMemoryBound(to: UInt8.self),
-            count: totalBytes,
+            count: totalBytes
         )
         return BackdropPixelCache(
             data: Array(bufferPointer),
             width: width,
             height: height,
-            scale: scale,
+            scale: scale
         )
     }
 
@@ -2387,8 +2398,8 @@ final class AreaSelectionOverlayView: NSView {
                         "width": "\(cache.width)",
                         "height": "\(cache.height)",
                         "scale": "\(cache.scale)",
-                        "cachedBytes": "\(cache.data?.count ?? 0)",
-                    ],
+                        "cachedBytes": "\(cache.data?.count ?? 0)"
+                    ]
                 )
             }
         }
@@ -2408,8 +2419,8 @@ final class AreaSelectionOverlayView: NSView {
                 "width": "\(cache.width)",
                 "height": "\(cache.height)",
                 "scale": "\(cache.scale)",
-                "cachedBytes": "\(cache.data?.count ?? 0)",
-            ],
+                "cachedBytes": "\(cache.data?.count ?? 0)"
+            ]
         )
     }
 
@@ -2417,7 +2428,8 @@ final class AreaSelectionOverlayView: NSView {
         guard let pixelData = backdropPixelDataArray,
               backdropWidth > 0,
               backdropHeight > 0,
-              !rect.isEmpty else {
+              !rect.isEmpty
+        else {
             return nil
         }
 
@@ -2433,7 +2445,7 @@ final class AreaSelectionOverlayView: NSView {
             x: rect.origin.x * scaleX,
             y: rect.origin.y * scaleY,
             width: rect.width * scaleX,
-            height: rect.height * scaleY,
+            height: rect.height * scaleY
         )
 
         let gridCount = 5
@@ -2491,8 +2503,8 @@ final class AreaSelectionOverlayView: NSView {
                     "updateInsideOverlayAppearance flipped",
                     context: [
                         "avgLuma": String(format: "%.3f", avgLuma),
-                        "isDark": "\(insideOverlayIsDark)",
-                    ],
+                        "isDark": "\(insideOverlayIsDark)"
+                    ]
                 )
             }
         } else if !didLogMissingLumaData {
@@ -2506,8 +2518,8 @@ final class AreaSelectionOverlayView: NSView {
                 context: [
                     "hasPixelData": "\(backdropPixelDataArray != nil)",
                     "width": "\(backdropWidth)",
-                    "height": "\(backdropHeight)",
-                ],
+                    "height": "\(backdropHeight)"
+                ]
             )
         }
 
@@ -2586,7 +2598,7 @@ final class AreaSelectionOverlayView: NSView {
             backdropHeight: backdropHeight,
             backdropScale: backdropScale,
             contentsScale: screenScaleFactor,
-            in: layer ?? CALayer(),
+            in: layer ?? CALayer()
         )
     }
 
@@ -2638,7 +2650,7 @@ final class AreaSelectionOverlayView: NSView {
         func testScrollWheel(
             deltaY: CGFloat,
             modifierFlags: NSEvent.ModifierFlags,
-            hasPreciseScrollingDeltas: Bool = false,
+            hasPreciseScrollingDeltas: Bool = false
         ) {
             if modifierFlags.contains(.command) {
                 if deltaY != 0 {
@@ -2671,7 +2683,7 @@ final class AreaSelectionOverlayView: NSView {
             // Fallback: use screen coordinates relative to view frame
             currentMousePosition = CGPoint(
                 x: mouseLocationInScreen.x - frame.origin.x,
-                y: mouseLocationInScreen.y - frame.origin.y,
+                y: mouseLocationInScreen.y - frame.origin.y
             )
         }
     }
@@ -2789,7 +2801,7 @@ final class AreaSelectionOverlayView: NSView {
     private var overlayTextAttributes: [NSAttributedString.Key: Any] {
         [
             .font: overlayFont,
-            .foregroundColor: NSColor.white,
+            .foregroundColor: NSColor.white
         ]
     }
 
@@ -2798,7 +2810,7 @@ final class AreaSelectionOverlayView: NSView {
     private var coordinateTextAttributes: [NSAttributedString.Key: Any] {
         [
             .font: coordinateIndicatorFont,
-            .foregroundColor: NSColor(white: 0.15, alpha: 1.0),
+            .foregroundColor: NSColor(white: 0.15, alpha: 1.0)
         ]
     }
 
@@ -2815,7 +2827,7 @@ final class AreaSelectionOverlayView: NSView {
         color: NSColor,
         offset: CGSize,
         radius: CGFloat,
-        opacity: Float,
+        opacity: Float
     ) {
         layer.shadowColor = color.cgColor
         layer.shadowOffset = offset
@@ -2873,7 +2885,8 @@ final class AreaSelectionOverlayView: NSView {
         #endif
         guard let window,
               window.isVisible,
-              window.frame.contains(mouseLocation) else {
+              window.frame.contains(mouseLocation)
+        else {
             return false
         }
         return true
@@ -2898,7 +2911,7 @@ final class AreaSelectionOverlayView: NSView {
             x: point.x + offset,
             y: point.y - textSize.height - 4,
             width: textSize.width,
-            height: textSize.height,
+            height: textSize.height
         )
 
         if textRect.maxX > bounds.maxX {
@@ -2942,7 +2955,7 @@ final class AreaSelectionOverlayView: NSView {
             x: point.x + offset,
             y: point.y - textSize.height - 4,
             width: textSize.width,
-            height: textSize.height,
+            height: textSize.height
         )
 
         if textRect.maxX > bounds.maxX {
@@ -2993,7 +3006,7 @@ final class AreaSelectionOverlayView: NSView {
             x: (bounds.width - hintSize.width) / 2 - padding.left,
             y: 24,
             width: hintSize.width + padding.left + padding.right,
-            height: hintSize.height + padding.top + padding.bottom,
+            height: hintSize.height + padding.top + padding.bottom
         )
 
         updateTextLayerScales()
@@ -3004,7 +3017,7 @@ final class AreaSelectionOverlayView: NSView {
             x: backgroundRect.minX + padding.left,
             y: backgroundRect.minY + padding.bottom - 1,
             width: hintSize.width,
-            height: hintSize.height,
+            height: hintSize.height
         )
         modeHintTextLayer.isHidden = false
     }
@@ -3016,7 +3029,7 @@ final class AreaSelectionOverlayView: NSView {
 
     func setInteractionMode(
         _ interactionMode: AreaSelectionInteractionMode,
-        resetSelection: Bool = true,
+        resetSelection: Bool = true
     ) {
         self.interactionMode = interactionMode
         if resetSelection {
@@ -3031,7 +3044,7 @@ final class AreaSelectionOverlayView: NSView {
     func renderManualSelection(
         screenRect: CGRect?,
         currentScreenPoint: CGPoint?,
-        boundarySnapGuides: [CaptureSelectionSnappingEdge: CGFloat] = [:],
+        boundarySnapGuides: [CaptureSelectionSnappingEdge: CGFloat] = [:]
     ) {
         guard interactionMode == .manualRegion else { return }
         updateBoundarySnapGuides(boundarySnapGuides)
@@ -3205,7 +3218,7 @@ final class AreaSelectionOverlayView: NSView {
             x: screenRect.origin.x - window.frame.origin.x,
             y: screenRect.origin.y - window.frame.origin.y,
             width: screenRect.width,
-            height: screenRect.height,
+            height: screenRect.height
         )
     }
 
@@ -3247,8 +3260,8 @@ final class AreaSelectionOverlayView: NSView {
                     "displayID": "\(areaWindow.displayID.map(String.init(describing:)) ?? "nil")",
                     "selectionEnabled": "\(selectionEnabled)",
                     "point": "\(point)",
-                    "interactionMode": "\(interactionMode)",
-                ],
+                    "interactionMode": "\(interactionMode)"
+                ]
             )
         }
         delegate?.overlayViewDidRequestDisplayActivation(self)
@@ -3495,10 +3508,10 @@ extension NSCursor {
         let pointSize: CGFloat = 16
         let baseConfig = NSImage.SymbolConfiguration(pointSize: pointSize, weight: .semibold)
         let whiteConfig = baseConfig.applying(
-            NSImage.SymbolConfiguration(paletteColors: [.white]),
+            NSImage.SymbolConfiguration(paletteColors: [.white])
         )
         let blackConfig = baseConfig.applying(
-            NSImage.SymbolConfiguration(paletteColors: [.black]),
+            NSImage.SymbolConfiguration(paletteColors: [.black])
         )
 
         guard
@@ -3513,7 +3526,7 @@ extension NSCursor {
         let padding: CGFloat = 5
         let canvasSize = NSSize(
             width: whiteSymbol.size.width + padding * 2,
-            height: whiteSymbol.size.height + padding * 2,
+            height: whiteSymbol.size.height + padding * 2
         )
         let composed = NSImage(size: canvasSize)
         composed.lockFocus()
@@ -3524,14 +3537,14 @@ extension NSCursor {
         // against pure white.
         let haloOffsets: [(CGFloat, CGFloat)] = [
             (-1, 0), (1, 0), (0, -1), (0, 1),
-            (-1, -1), (1, -1), (-1, 1), (1, 1),
+            (-1, -1), (1, -1), (-1, 1), (1, 1)
         ]
         for (dx, dy) in haloOffsets {
             blackSymbol.draw(
                 at: NSPoint(x: padding + dx, y: padding + dy),
                 from: .zero,
                 operation: .sourceOver,
-                fraction: 1.0,
+                fraction: 1.0
             )
         }
 
@@ -3539,14 +3552,14 @@ extension NSCursor {
             at: NSPoint(x: padding, y: padding),
             from: .zero,
             operation: .sourceOver,
-            fraction: 1.0,
+            fraction: 1.0
         )
 
         composed.unlockFocus()
 
         return NSCursor(
             image: composed,
-            hotSpot: NSPoint(x: canvasSize.width / 2, y: canvasSize.height / 2),
+            hotSpot: NSPoint(x: canvasSize.width / 2, y: canvasSize.height / 2)
         )
     }()
 }

@@ -26,11 +26,11 @@ struct KeyCapView: View {
             .padding(.horizontal, KeyCapMetrics.horizontalPadding)
             .background(
                 RoundedRectangle(cornerRadius: KeyCapMetrics.cornerRadius, style: .continuous)
-                    .fill(Color.secondary.opacity(0.12)),
+                    .fill(Color.secondary.opacity(0.12))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: KeyCapMetrics.cornerRadius, style: .continuous)
-                    .strokeBorder(Color.primary.opacity(0.15), lineWidth: 1),
+                    .strokeBorder(Color.primary.opacity(0.15), lineWidth: 1)
             )
     }
 }

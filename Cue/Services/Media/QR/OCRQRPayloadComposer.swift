@@ -11,7 +11,7 @@ enum OCRQRPayloadComposer {
     static func compose(
         recognizedText: String?,
         qrDetections: [QRCodeDetection],
-        qrSectionTitle: String,
+        qrSectionTitle: String
     ) -> String? {
         let text = recognizedText?
             .trimmingCharacters(in: .whitespacesAndNewlines)

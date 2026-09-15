@@ -35,7 +35,7 @@
                     systemName: systemName,
                     iconSize: speakerIconSize,
                     isActive: state.captureAudio,
-                    isHovered: isHovered,
+                    isHovered: isHovered
                 )
             }
             .buttonStyle(.plain)

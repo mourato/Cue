@@ -158,7 +158,7 @@
                 fps: min(max(fps, 1), 60),
                 maxWidth: CGFloat(max(maxWidth, 0)),
                 optimize: optimize,
-                quality: min(max(quality, 0.1), 1.0),
+                quality: min(max(quality, 0.1), 1.0)
             )
         }
     }
@@ -171,12 +171,12 @@
         static func frameOrigin(
             toolbarSize: CGSize,
             anchorRect rect: CGRect,
-            screenFrame: CGRect,
+            screenFrame: CGRect
         ) -> CGPoint {
             CaptureFloatingToolbarPlacement.frameOrigin(
                 toolbarSize: toolbarSize,
                 anchorRect: rect,
-                screenFrame: screenFrame,
+                screenFrame: screenFrame
             )
         }
     }
@@ -351,7 +351,7 @@
                 contentRect: .zero,
                 styleMask: [.borderless],
                 backing: .buffered,
-                defer: false,
+                defer: false
             )
 
             configureWindow()
@@ -383,7 +383,7 @@
             let view = RecordingToolbarView(
                 state: state,
                 onRecord: { [weak self] in self?.onRecord?() },
-                onCancel: { [weak self] in self?.onCancel?() },
+                onCancel: { [weak self] in self?.onCancel?() }
             )
 
             setContent(AnyView(view), usesWindowMaterial: false)
@@ -412,7 +412,7 @@
                     let offset = centerX + ToolbarConstants.horizontalPadding
                     self?.annotateButtonCenterXOffset = offset
                     self?.onAnnotateButtonOffsetChanged?(offset)
-                },
+                }
             )
 
             setContent(AnyView(view), usesWindowMaterial: true)
@@ -425,7 +425,7 @@
                 self,
                 selector: #selector(hoverBarVisibilityPreferenceChanged),
                 name: UserDefaults.didChangeNotification,
-                object: nil,
+                object: nil
             )
         }
 
@@ -464,7 +464,7 @@
                 self,
                 selector: #selector(recordingToolbarDidMove(_:)),
                 name: NSWindow.didMoveNotification,
-                object: self,
+                object: self
             )
         }
 
@@ -491,7 +491,7 @@
             let workItem = DispatchWorkItem {
                 UserDefaults.standard.set(
                     NSStringFromPoint(origin),
-                    forKey: PreferencesKeys.recordingHoverBarFrameOrigin,
+                    forKey: PreferencesKeys.recordingHoverBarFrameOrigin
                 )
             }
             pendingOriginSaveWorkItem = workItem
@@ -527,7 +527,7 @@
             let maxY = max(bounds.minY, bounds.maxY - size.height)
             return CGPoint(
                 x: min(max(origin.x, bounds.minX), maxX),
-                y: min(max(origin.y, bounds.minY), maxY),
+                y: min(max(origin.y, bounds.minY), maxY)
             )
         }
 
@@ -536,14 +536,14 @@
         nonisolated static func centeredSelectionRect(
             around center: CGPoint,
             size: CGSize,
-            within bounds: CGRect,
+            within bounds: CGRect
         ) -> CGRect {
             guard !bounds.isNull, bounds.width > 0, bounds.height > 0 else {
                 return CGRect(
                     x: center.x - max(1, size.width) / 2,
                     y: center.y - max(1, size.height) / 2,
                     width: max(1, size.width),
-                    height: max(1, size.height),
+                    height: max(1, size.height)
                 )
             }
 
@@ -552,7 +552,7 @@
             let origin = clampedOrigin(
                 CGPoint(x: center.x - width / 2, y: center.y - height / 2),
                 size: CGSize(width: width, height: height),
-                within: bounds,
+                within: bounds
             )
             return CGRect(origin: origin, size: CGSize(width: width, height: height))
         }
@@ -584,7 +584,7 @@
                     hosting.topAnchor.constraint(equalTo: effect.topAnchor),
                     hosting.bottomAnchor.constraint(equalTo: effect.bottomAnchor),
                     hosting.leadingAnchor.constraint(equalTo: effect.leadingAnchor),
-                    hosting.trailingAnchor.constraint(equalTo: effect.trailingAnchor),
+                    hosting.trailingAnchor.constraint(equalTo: effect.trailingAnchor)
                 ])
 
                 fittingSize = hosting.fittingSize
@@ -617,7 +617,7 @@
             let origin = RecordingToolbarPlacement.frameOrigin(
                 toolbarSize: size,
                 anchorRect: rect,
-                screenFrame: screenFrame,
+                screenFrame: screenFrame
             )
 
             setFrameOrigin(origin)

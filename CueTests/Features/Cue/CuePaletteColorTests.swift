@@ -29,7 +29,7 @@ final class CuePaletteColorTests: XCTestCase {
             format: "#%02X%02X%02X",
             Int((rgba.red * 255).rounded()),
             Int((rgba.green * 255).rounded()),
-            Int((rgba.blue * 255).rounded()),
+            Int((rgba.blue * 255).rounded())
         )
     }
 }

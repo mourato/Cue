@@ -24,7 +24,7 @@
             isRunning = true
 
             globalKeyDownMonitor = NSEvent.addGlobalMonitorForEvents(
-                matching: [.keyDown],
+                matching: [.keyDown]
             ) { [weak self] event in
                 MainActor.assumeIsolated {
                     self?.handleKeyDown(event)
@@ -32,7 +32,7 @@
             }
 
             localKeyDownMonitor = NSEvent.addLocalMonitorForEvents(
-                matching: [.keyDown],
+                matching: [.keyDown]
             ) { [weak self] event in
                 MainActor.assumeIsolated {
                     self?.handleKeyDown(event)

@@ -23,11 +23,11 @@ final class AreaSelectionOverlayBackdropTransitionTests: AreaSelectionOverlayTes
 
         XCTAssertTrue(
             (overlayView.testSnapshotLayer.contents as AnyObject) === (image2 as AnyObject),
-            "snapshotLayer.contents must be updated to the new image",
+            "snapshotLayer.contents must be updated to the new image"
         )
         XCTAssertFalse(
             overlayView.testSnapshotLayer.isHidden,
-            "Snapshot layer must remain visible for a visible backdrop",
+            "Snapshot layer must remain visible for a visible backdrop"
         )
     }
 
@@ -42,7 +42,7 @@ final class AreaSelectionOverlayBackdropTransitionTests: AreaSelectionOverlayTes
 
         XCTAssertTrue(
             overlayView.testSnapshotLayer.isHidden,
-            "Invisible backdrop must keep snapshotLayer hidden even on re-apply",
+            "Invisible backdrop must keep snapshotLayer hidden even on re-apply"
         )
     }
 }

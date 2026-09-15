@@ -66,7 +66,7 @@
                 changedState.cameraOverlayLayout = layout
                 XCTAssertNotEqual(
                     baseline.cacheKey(),
-                    VideoEditorRenderRecipe.capture(from: changedState, sourceFingerprint: fingerprint).cacheKey(),
+                    VideoEditorRenderRecipe.capture(from: changedState, sourceFingerprint: fingerprint).cacheKey()
                 )
             }
         }

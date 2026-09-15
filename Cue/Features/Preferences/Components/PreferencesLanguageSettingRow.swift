@@ -19,7 +19,7 @@ struct PreferencesLanguageSettingRow: View {
             title: L10n.PreferencesGeneral.languageTitle,
             description: languageManager.requiresRelaunch
                 ? L10n.PreferencesGeneral.languageRestartHint
-                : nil,
+                : nil
         ) {
             Picker("", selection: languageSelection) {
                 Text(L10n.PreferencesGeneral.languageSystem).tag("")
@@ -61,7 +61,7 @@ struct PreferencesLanguageSettingRow: View {
 
                 pendingLanguageIdentifier = newIdentifier
                 showRelaunchConfirmation = true
-            },
+            }
         )
     }
 

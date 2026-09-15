@@ -53,7 +53,7 @@ final class SandboxFileAccessManager {
                 .info,
                 .fileAccess,
                 "Default export location initialized",
-                context: ["directory": defaultExportDirectory.lastPathComponent],
+                context: ["directory": defaultExportDirectory.lastPathComponent]
             )
         }
         migrateLegacyPathBookmarkIfPossible()
@@ -106,7 +106,7 @@ final class SandboxFileAccessManager {
                 let bookmarkData = try normalizedURL.bookmarkData(
                     options: .withSecurityScope,
                     includingResourceValuesForKeys: nil,
-                    relativeTo: nil,
+                    relativeTo: nil
                 )
                 defaults.set(bookmarkData, forKey: PreferencesKeys.exportLocationBookmark)
             } catch {
@@ -115,7 +115,7 @@ final class SandboxFileAccessManager {
                     .debug,
                     .fileAccess,
                     "Export directory bookmark skipped outside sandbox",
-                    context: ["directory": normalizedURL.lastPathComponent],
+                    context: ["directory": normalizedURL.lastPathComponent]
                 )
             }
 
@@ -124,7 +124,7 @@ final class SandboxFileAccessManager {
                 .info,
                 .fileAccess,
                 "Export directory saved",
-                context: ["directory": normalizedURL.lastPathComponent],
+                context: ["directory": normalizedURL.lastPathComponent]
             )
             return true
         }
@@ -133,7 +133,7 @@ final class SandboxFileAccessManager {
             let bookmarkData = try normalizedURL.bookmarkData(
                 options: .withSecurityScope,
                 includingResourceValuesForKeys: nil,
-                relativeTo: nil,
+                relativeTo: nil
             )
             defaults.set(normalizedURL.path, forKey: PreferencesKeys.exportLocation)
             defaults.set(bookmarkData, forKey: PreferencesKeys.exportLocationBookmark)
@@ -142,7 +142,7 @@ final class SandboxFileAccessManager {
                 .info,
                 .fileAccess,
                 "Export directory bookmark saved",
-                context: ["directory": normalizedURL.lastPathComponent],
+                context: ["directory": normalizedURL.lastPathComponent]
             )
             return true
         } catch {
@@ -150,7 +150,7 @@ final class SandboxFileAccessManager {
                 .fileAccess,
                 error,
                 "Export directory bookmark save failed",
-                context: ["directory": normalizedURL.lastPathComponent],
+                context: ["directory": normalizedURL.lastPathComponent]
             )
             return false
         }
@@ -160,7 +160,7 @@ final class SandboxFileAccessManager {
     func chooseExportDirectory(
         message: String = L10n.FileAccess.chooseCapturesFolderMessage,
         prompt: String = L10n.FileAccess.grantAccessPrompt,
-        directoryURL: URL? = nil,
+        directoryURL: URL? = nil
     ) -> URL? {
         ensureExportLocationInitialized()
 
@@ -183,7 +183,7 @@ final class SandboxFileAccessManager {
                 .info,
                 .fileAccess,
                 "Export directory picker accepted",
-                context: ["directory": selectedURL.standardizedFileURL.lastPathComponent],
+                context: ["directory": selectedURL.standardizedFileURL.lastPathComponent]
             )
             return selectedURL.standardizedFileURL
         }
@@ -208,7 +208,7 @@ final class SandboxFileAccessManager {
             DiagnosticLogger.shared.log(
                 .warning,
                 .fileAccess,
-                "Export directory permission prompt suppressed for session",
+                "Export directory permission prompt suppressed for session"
             )
             return nil
         }
@@ -218,7 +218,7 @@ final class SandboxFileAccessManager {
         return chooseExportDirectory(
             message: promptMessage,
             prompt: L10n.FileAccess.chooseFolderPrompt,
-            directoryURL: resolvedExportDirectoryURL(),
+            directoryURL: resolvedExportDirectoryURL()
         )
     }
 
@@ -237,13 +237,13 @@ final class SandboxFileAccessManager {
 
         if !didStartAccessing, isRunningSandboxed {
             logger.error(
-                "Failed to start security-scoped access for target: \(targetURL.path, privacy: .public)",
+                "Failed to start security-scoped access for target: \(targetURL.path, privacy: .public)"
             )
             DiagnosticLogger.shared.log(
                 .error,
                 .fileAccess,
                 "Failed to start security-scoped file access",
-                context: ["fileName": targetURL.lastPathComponent],
+                context: ["fileName": targetURL.lastPathComponent]
             )
         }
 
@@ -281,7 +281,7 @@ final class SandboxFileAccessManager {
                 resolvingBookmarkData: bookmarkData,
                 options: [.withSecurityScope],
                 relativeTo: nil,
-                bookmarkDataIsStale: &isStale,
+                bookmarkDataIsStale: &isStale
             ).standardizedFileURL
 
             if isStale {
@@ -290,7 +290,7 @@ final class SandboxFileAccessManager {
                     .warning,
                     .fileAccess,
                     "Export directory bookmark was stale and refreshed",
-                    context: ["directory": url.lastPathComponent],
+                    context: ["directory": url.lastPathComponent]
                 )
             }
 
@@ -303,7 +303,7 @@ final class SandboxFileAccessManager {
                 .fileAccess,
                 error,
                 "Export directory bookmark resolve failed",
-                context: ["removedInvalidBookmark": removeInvalidBookmark ? "true" : "false"],
+                context: ["removedInvalidBookmark": removeInvalidBookmark ? "true" : "false"]
             )
             return nil
         }
@@ -333,8 +333,8 @@ final class SandboxFileAccessManager {
                 "Legacy export path bookmark migration attempted",
                 context: [
                     "directory": legacyURL.lastPathComponent,
-                    "success": didMigrate ? "true" : "false",
-                ],
+                    "success": didMigrate ? "true" : "false"
+                ]
             )
         }
     }

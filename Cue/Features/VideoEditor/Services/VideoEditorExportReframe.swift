@@ -41,8 +41,8 @@
                 magnification: a.magnification + (b.magnification - a.magnification) * fraction,
                 anchor: CGPoint(
                     x: a.anchor.x + (b.anchor.x - a.anchor.x) * fraction,
-                    y: a.anchor.y + (b.anchor.y - a.anchor.y) * fraction,
-                ),
+                    y: a.anchor.y + (b.anchor.y - a.anchor.y) * fraction
+                )
             )
         }
 
@@ -55,11 +55,12 @@
             sourceSize: CGSize,
             viewportTimeline: VideoEditorViewportTimeline,
             duration: TimeInterval,
-            focus: (TimeInterval) -> CGPoint?,
+            focus: (TimeInterval) -> CGPoint?
         ) -> VideoEditorReframeTrack? {
             guard let aspectRatio = preset.aspectRatio,
                   sourceSize.width > 0, sourceSize.height > 0,
-                  duration.isFinite, duration > 0 else {
+                  duration.isFinite, duration > 0
+            else {
                 return nil
             }
 
@@ -110,7 +111,7 @@
                 let handoff = min(max((magnification - 1) / Self.zoomHandoffSpan, 0), 1)
                 var anchor = CGPoint(
                     x: center.x + (viewport.anchor.x - center.x) * handoff,
-                    y: center.y + (viewport.anchor.y - center.y) * handoff,
+                    y: center.y + (viewport.anchor.y - center.y) * handoff
                 )
 
                 anchor.x = min(max(anchor.x, visibleX / 2), 1 - visibleX / 2)
@@ -130,7 +131,7 @@
                 preset: preset,
                 sourceAspect: sourceAspect,
                 frames: builtFrames,
-                duration: duration,
+                duration: duration
             )
         }
     }

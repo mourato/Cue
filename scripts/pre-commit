@@ -2,6 +2,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+STYLE_CONFIG_DIR="${AGENT_CONFIG_HOME:-${HOME}/.agents}/skills/swift-conventions/config"
 
 if [ -x "${SCRIPT_DIR}/first-commit-version-bump.sh" ]; then
   if ! "${SCRIPT_DIR}/first-commit-version-bump.sh"; then
@@ -21,7 +22,7 @@ fi
 
 if which swiftformat >/dev/null; then
   echo "Formatting staged Swift files..."
-  (cd "${PROJECT_ROOT}" && swiftformat "${staged_swift_files[@]}")
+  (cd "${PROJECT_ROOT}" && swiftformat --config "${STYLE_CONFIG_DIR}/.swiftformat" "${staged_swift_files[@]}")
   
   # Re-stage formatted files to ensure fixes are included in the commit
   git -C "${PROJECT_ROOT}" add "${staged_swift_files[@]}"

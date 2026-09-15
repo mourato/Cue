@@ -107,7 +107,7 @@ final class HistoryPanelPositionTests: XCTestCase {
 
     private func makeDefaults(
         file: StaticString = #filePath,
-        line: UInt = #line,
+        line: UInt = #line
     ) throws -> UserDefaults {
         let suiteName = "NotinhasTests.HistoryPanelPositionTests.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName), file: file, line: line)

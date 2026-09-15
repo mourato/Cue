@@ -17,7 +17,7 @@ enum AllDisplayFrozenSessionPreparer {
     /// Remaining IDs keep a stable numeric order for deterministic follow-up batches.
     nonisolated static func prioritizedCaptureOrder(
         displayIDs: Set<CGDirectDisplayID>,
-        priorityDisplayID: CGDirectDisplayID?,
+        priorityDisplayID: CGDirectDisplayID?
     ) -> (priority: CGDirectDisplayID?, remaining: [CGDirectDisplayID]) {
         guard !displayIDs.isEmpty else { return (nil, []) }
         let priority = priorityDisplayID.flatMap { displayIDs.contains($0) ? $0 : nil }
@@ -30,7 +30,7 @@ enum AllDisplayFrozenSessionPreparer {
 
     nonisolated static func validateCompleteSession(
         _ session: FrozenAreaCaptureSession,
-        expectedDisplayIDs: Set<CGDirectDisplayID>,
+        expectedDisplayIDs: Set<CGDirectDisplayID>
     ) throws {
         let missing = session.missingSnapshotDisplayIDs(for: expectedDisplayIDs)
         guard missing.isEmpty else {
@@ -49,7 +49,7 @@ enum AllDisplayFrozenSessionPreparer {
         prefetchedContentTask: ShareableContentPrefetchTask?,
         priorityDisplayID: CGDirectDisplayID? = nil,
         session: FrozenAreaCaptureSession? = nil,
-        onSnapshot: (@MainActor (FrozenDisplaySnapshot) -> Void)? = nil,
+        onSnapshot: (@MainActor (FrozenDisplaySnapshot) -> Void)? = nil
     ) async throws -> (session: FrozenAreaCaptureSession, mode: String) {
         let expectedDisplayIDs = connectedDisplayIDs(from: screens)
         guard !expectedDisplayIDs.isEmpty else {
@@ -57,11 +57,11 @@ enum AllDisplayFrozenSessionPreparer {
         }
 
         let shareableContentTask = prefetchedContentTask ?? captureManager.prefetchShareableContent(
-            includeDesktopWindows: excludeDesktopIcons || excludeDesktopWidgets,
+            includeDesktopWindows: excludeDesktopIcons || excludeDesktopWidgets
         )
         let order = prioritizedCaptureOrder(
             displayIDs: expectedDisplayIDs,
-            priorityDisplayID: priorityDisplayID,
+            priorityDisplayID: priorityDisplayID
         )
         let session = session ?? FrozenAreaCaptureSession.fromSnapshots([])
 
@@ -80,7 +80,7 @@ enum AllDisplayFrozenSessionPreparer {
                 excludeDesktopIcons: excludeDesktopIcons,
                 excludeDesktopWidgets: excludeDesktopWidgets,
                 excludeOwnApplication: excludeOwnApplication,
-                prefetchedContentTask: shareableContentTask,
+                prefetchedContentTask: shareableContentTask
             )
             absorb(prioritySnapshots)
         }
@@ -92,7 +92,7 @@ enum AllDisplayFrozenSessionPreparer {
                 excludeDesktopIcons: excludeDesktopIcons,
                 excludeDesktopWidgets: excludeDesktopWidgets,
                 excludeOwnApplication: excludeOwnApplication,
-                prefetchedContentTask: shareableContentTask,
+                prefetchedContentTask: shareableContentTask
             )
             absorb(remainingSnapshots)
         }

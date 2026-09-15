@@ -63,7 +63,7 @@ final class OverlayTooltipPresenterTests: XCTestCase {
         XCTAssertEqual(
             presenter.testingCurrentOwner,
             ownerNext,
-            "stale owner must not clear a newer successful show",
+            "stale owner must not clear a newer successful show"
         )
     }
 }

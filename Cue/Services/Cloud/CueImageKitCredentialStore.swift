@@ -8,7 +8,7 @@ enum CueImageKitCredentialError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .emptyKey: L10n.CloudSettings.imageKitPrivateKeyEmpty
-        case .keychainWriteFailed(let message): L10n.CloudOperation.keychainError(message)
+        case let .keychainWriteFailed(message): L10n.CloudOperation.keychainError(message)
         }
     }
 }
@@ -51,7 +51,7 @@ final class CueImageKitCredentialStore: ObservableObject {
 
     init(
         defaults: UserDefaults = .standard,
-        keychain: ImageKitKeychainBacking = CloudKeychainImageKitBacking(),
+        keychain: ImageKitKeychainBacking = CloudKeychainImageKitBacking()
     ) {
         self.defaults = defaults
         self.keychain = keychain
@@ -61,7 +61,7 @@ final class CueImageKitCredentialStore: ObservableObject {
     /// Unlocks Keychain when needed. Call only from explicit upload / Preferences paths.
     var privateKey: String? {
         switch keychain.read(context: "imageKitCredential.read") {
-        case .success(let value): normalized(value)
+        case let .success(value): normalized(value)
         case .itemNotFound, .authRequired, .interactionNotAllowed, .error: nil
         }
     }

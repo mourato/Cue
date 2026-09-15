@@ -147,14 +147,14 @@ struct AnnotateSidebarView: View, Equatable {
                 .background(
                     RoundedRectangle(cornerRadius: Size.radiusSm)
                         .fill(state.isNoneCanvasEffectsActive ? Color.accentColor.opacity(0.25) : SidebarColors
-                            .itemDefault),
+                            .itemDefault)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: Size.radiusSm)
                         .stroke(
                             state.isNoneCanvasEffectsActive ? Color.accentColor : Color.clear,
-                            lineWidth: Size.strokeSelected,
-                        ),
+                            lineWidth: Size.strokeSelected
+                        )
                 )
         }
         .buttonStyle(.plain)
@@ -184,21 +184,21 @@ struct AnnotateSidebarView: View, Equatable {
             .padding(.vertical, 7)
             .background(
                 RoundedRectangle(cornerRadius: Size.radiusSm)
-                    .fill(SidebarColors.itemDefault),
+                    .fill(SidebarColors.itemDefault)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: Size.radiusSm)
                     .stroke(
                         state.selectedCanvasPresetId != nil ? Color.accentColor.opacity(0.7) : Color.clear,
-                        lineWidth: Size.strokeDefault,
-                    ),
+                        lineWidth: Size.strokeDefault
+                    )
             )
         }
         .buttonStyle(.plain)
         .frame(maxWidth: .infinity)
         .help(L10n.AnnotateUI.applySavedStylePreset)
         .accessibilityLabel(
-            state.selectedCanvasPreset?.name ?? L10n.AnnotateUI.selectPreset,
+            state.selectedCanvasPreset?.name ?? L10n.AnnotateUI.selectPreset
         )
         .popover(isPresented: $isPresetDropdownPresented, arrowEdge: .bottom) {
             presetDropdownContent
@@ -284,12 +284,12 @@ struct AnnotateSidebarView: View, Equatable {
             .help(
                 state.isDefaultCanvasPreset(preset)
                     ? L10n.AnnotateUI.clearDefaultPresetHelp
-                    : L10n.AnnotateUI.setDefaultPresetHelp,
+                    : L10n.AnnotateUI.setDefaultPresetHelp
             )
             .accessibilityLabel(
                 state.isDefaultCanvasPreset(preset)
                     ? L10n.AnnotateUI.clearDefaultPresetHelp
-                    : L10n.AnnotateUI.setDefaultPresetHelp,
+                    : L10n.AnnotateUI.setDefaultPresetHelp
             )
             .frame(minWidth: 28, minHeight: 28)
 
@@ -327,11 +327,11 @@ struct AnnotateSidebarView: View, Equatable {
             .padding(.vertical, 7)
             .background(
                 RoundedRectangle(cornerRadius: Size.radiusSm)
-                    .fill(SidebarColors.itemDefault),
+                    .fill(SidebarColors.itemDefault)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: Size.radiusSm)
-                    .stroke(Color.orange.opacity(0.5), lineWidth: Size.strokeDefault),
+                    .stroke(Color.orange.opacity(0.5), lineWidth: Size.strokeDefault)
             )
         }
         .buttonStyle(.plain)
@@ -348,7 +348,7 @@ struct AnnotateSidebarView: View, Equatable {
         guard let name = promptForPresetName(
             title: L10n.AnnotateUI.savePresetTitle,
             message: L10n.AnnotateUI.savePresetMessage,
-            defaultValue: state.nextSuggestedCanvasPresetName,
+            defaultValue: state.nextSuggestedCanvasPresetName
         ) else {
             return
         }
@@ -407,7 +407,7 @@ struct AnnotateSidebarView: View, Equatable {
     private func promptForPresetName(
         title: String,
         message: String,
-        defaultValue: String,
+        defaultValue: String
     ) -> String? {
         let alert = NSAlert()
         alert.messageText = title
@@ -457,14 +457,14 @@ struct AnnotateSidebarView: View, Equatable {
             LazyVGrid(
                 columns: Array(
                     repeating: GridItem(.flexible(), spacing: GridConfig.gap),
-                    count: GridConfig.backgroundColumns,
+                    count: GridConfig.backgroundColumns
                 ),
-                spacing: GridConfig.gap,
+                spacing: GridConfig.gap
             ) {
                 ForEach(GradientPreset.allCases) { preset in
                     GradientPresetButton(
                         preset: preset,
-                        isSelected: state.backgroundStyle == .gradient(preset),
+                        isSelected: state.backgroundStyle == .gradient(preset)
                     ) {
                         if state.padding <= 0 {
                             state.padding = 24
@@ -504,7 +504,7 @@ struct AnnotateSidebarView: View, Equatable {
                 if let color = newColor {
                     state.backgroundStyle = .solidColor(color)
                 }
-            },
+            }
         )
     }
 
@@ -520,34 +520,34 @@ struct AnnotateSidebarView: View, Equatable {
                         if newValue > 0, state.backgroundStyle == .none {
                             state.backgroundStyle = .solidColor(.white)
                         }
-                    },
+                    }
                 ),
                 range: 0 ... 300,
                 onDragging: { isDragging, value in
                     state.previewPadding = isDragging ? value : nil
-                },
+                }
             )
             CompactSliderRow(
                 label: L10n.Common.shadow,
                 value: Binding(
                     get: { state.shadowIntensity },
-                    set: { state.shadowIntensity = $0 },
+                    set: { state.shadowIntensity = $0 }
                 ),
                 range: 0 ... 1,
                 onDragging: { isDragging, value in
                     state.previewShadowIntensity = isDragging ? value : nil
-                },
+                }
             )
             CompactSliderRow(
                 label: L10n.Common.corners,
                 value: Binding(
                     get: { state.cornerRadius },
-                    set: { state.cornerRadius = $0 },
+                    set: { state.cornerRadius = $0 }
                 ),
                 range: 0 ... 60,
                 onDragging: { isDragging, value in
                     state.previewCornerRadius = isDragging ? value : nil
-                },
+                }
             )
         }
     }
@@ -557,11 +557,11 @@ struct AnnotateSidebarView: View, Equatable {
             SidebarSectionHeader(title: L10n.AnnotateUI.alignment)
             AlignmentGrid(selected: Binding(
                 get: { state.imageAlignment },
-                set: { state.imageAlignment = $0 },
+                set: { state.imageAlignment = $0 }
             ), onAlignmentChange: { newAlignment in
                 print("DEBUG [Alignment]: Callback fired with newAlignment = \(newAlignment)")
                 print(
-                    "DEBUG [Alignment]: Current padding = \(state.padding), backgroundStyle = \(state.backgroundStyle)",
+                    "DEBUG [Alignment]: Current padding = \(state.padding), backgroundStyle = \(state.backgroundStyle)"
                 )
 
                 // Auto-apply padding when alignment changes from center
@@ -591,13 +591,13 @@ struct AnnotateSidebarView: View, Equatable {
 
             LazyVGrid(
                 columns: Array(repeating: GridItem(.flexible(), spacing: GridConfig.gap), count: 3),
-                spacing: GridConfig.gap,
+                spacing: GridConfig.gap
             ) {
                 ForEach(AspectRatioOption.allCases) { option in
                     AspectRatioOptionButton(
                         option: option,
                         isSelected: state.aspectRatio == option,
-                        orientation: state.aspectRatioOrientation,
+                        orientation: state.aspectRatioOrientation
                     ) {
                         state.aspectRatio = option
                     }
@@ -609,7 +609,7 @@ struct AnnotateSidebarView: View, Equatable {
     private var aspectRatioOrientationPicker: some View {
         Picker("", selection: Binding(
             get: { state.aspectRatioOrientation },
-            set: { state.aspectRatioOrientation = $0 },
+            set: { state.aspectRatioOrientation = $0 }
         )) {
             ForEach(AspectRatioOrientation.allCases) { orientation in
                 Image(systemName: orientation.systemImageName)
@@ -647,11 +647,11 @@ struct AspectRatioOptionButton: View {
                 .frame(maxWidth: .infinity, minHeight: 30)
                 .background(
                     RoundedRectangle(cornerRadius: Size.radiusSm)
-                        .fill(backgroundColor),
+                        .fill(backgroundColor)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: Size.radiusSm)
-                        .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: Size.strokeSelected),
+                        .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: Size.strokeSelected)
                 )
         }
         .buttonStyle(.plain)
@@ -684,9 +684,9 @@ struct CompactColorSwatchGrid: View {
             LazyVGrid(
                 columns: Array(
                     repeating: GridItem(.flexible(), spacing: GridConfig.gap),
-                    count: GridConfig.colorColumns,
+                    count: GridConfig.colorColumns
                 ),
-                spacing: GridConfig.gap,
+                spacing: GridConfig.gap
             ) {
                 ForEach(colors, id: \.name) { entry in
                     Button {
@@ -696,7 +696,7 @@ struct CompactColorSwatchGrid: View {
                             .fill(entry.color)
                             .colorSwatchStyle(isSelected: AnnotateColorPaletteStore.colorsMatch(
                                 selectedColor,
-                                entry.color,
+                                entry.color
                             ))
                     }
                     .buttonStyle(.plain)
@@ -704,7 +704,7 @@ struct CompactColorSwatchGrid: View {
                     .accessibilityValue(
                         AnnotateColorPaletteStore.colorsMatch(selectedColor, entry.color)
                             ? CueL10n.selected
-                            : "",
+                            : ""
                     )
                 }
 
@@ -715,7 +715,7 @@ struct CompactColorSwatchGrid: View {
                         size: nil,
                         onDelete: {
                             paletteStore.removeColor(color)
-                        },
+                        }
                     ) {
                         selectedColor = color
                     }
@@ -724,7 +724,7 @@ struct CompactColorSwatchGrid: View {
                 AnnotateCustomColorPickerControl(
                     selectedColor: customColorBinding,
                     draftColor: $draftCustomColor,
-                    swatchSize: nil,
+                    swatchSize: nil
                 )
             }
         }
@@ -736,7 +736,7 @@ struct CompactColorSwatchGrid: View {
             set: { color in
                 draftCustomColor = color
                 selectedColor = color
-            },
+            }
         )
     }
 }
@@ -770,7 +770,7 @@ struct CompactSliderRow: View {
                     .padding(.vertical, 2)
                     .background(
                         RoundedRectangle(cornerRadius: Size.radiusXs)
-                            .fill(SidebarColors.itemDefault),
+                            .fill(SidebarColors.itemDefault)
                     )
                     .focused($isTextFieldFocused)
                     .onAppear {
@@ -804,7 +804,7 @@ struct CompactSliderRow: View {
                         // Drag started
                         onDragging?(true, localValue)
                     }
-                },
+                }
             )
             .controlSize(.small)
         }

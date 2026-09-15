@@ -51,11 +51,11 @@ final class AllInOneSelectionRefinementController: NSObject {
         snappingConfiguration: CaptureSelectionSnappingConfiguration? = nil,
         semanticProvider: CaptureSelectionSemanticBoundaryProviding? = nil,
         backdropCapturer: (any AreaSelectionBackdropCapturing)? = nil,
-        frozenBackdrops: [CGDirectDisplayID: AreaSelectionBackdrop]? = nil,
+        frozenBackdrops: [CGDirectDisplayID: AreaSelectionBackdrop]? = nil
     ) {
         currentRect = CaptureSelectionGeometry.normalized(
             initialRect,
-            minSize: CaptureSelectionSnapping.refinementMinimumSize,
+            minSize: CaptureSelectionSnapping.refinementMinimumSize
         )
         self.aspectLocked = aspectLocked
         lockedAspectRatio = aspectRatio ?? CaptureSelectionGeometry.aspectRatio(of: initialRect)
@@ -161,7 +161,7 @@ final class AllInOneSelectionRefinementController: NSObject {
         screenParametersObserver = NotificationCenter.default.addObserver(
             forName: NSApplication.didChangeScreenParametersNotification,
             object: nil,
-            queue: .main,
+            queue: .main
         ) { [weak self] _ in
             self?.reconcileScreenOverlays()
             if self?.frozenBackdrops == nil {
@@ -234,7 +234,8 @@ final class AllInOneSelectionRefinementController: NSObject {
 
         if let ownerID = keyboardOwnerOverlayID,
            let owner = regionOverlayWindows[ownerID],
-           owner.isGestureInProgress {
+           owner.isGestureInProgress
+        {
             return
         }
         guard let overlay = regionOverlayWindows.values.first(where: { $0.frame.contains(location) }) else {
@@ -244,7 +245,8 @@ final class AllInOneSelectionRefinementController: NSObject {
         let overlayID = ObjectIdentifier(overlay)
         if overlayID != keyboardOwnerOverlayID {
             if let previousOwnerID = keyboardOwnerOverlayID,
-               let previousOwner = regionOverlayWindows[previousOwnerID] {
+               let previousOwner = regionOverlayWindows[previousOwnerID]
+            {
                 previousOwner.setReceivesKeyboardInput(false)
             }
             keyboardOwnerOverlayID = overlayID
@@ -257,7 +259,8 @@ final class AllInOneSelectionRefinementController: NSObject {
     func cursorKind(at location: CGPoint) -> CaptureSelectionCursorKind? {
         if let ownerID = keyboardOwnerOverlayID,
            let owner = regionOverlayWindows[ownerID],
-           owner.isGestureInProgress {
+           owner.isGestureInProgress
+        {
             return owner.cursorKind(atScreenLocation: location)
         }
         guard let overlay = regionOverlayWindows.values.first(where: { $0.frame.contains(location) }) else {
@@ -275,7 +278,7 @@ final class AllInOneSelectionRefinementController: NSObject {
     private func updateRect(_ rect: CGRect, notifyDuringInteraction: Bool = true) {
         let normalizedRect = CaptureSelectionGeometry.normalized(
             rect,
-            minSize: CaptureSelectionSnapping.refinementMinimumSize,
+            minSize: CaptureSelectionSnapping.refinementMinimumSize
         )
         guard normalizedRect != currentRect else { return }
 
@@ -292,7 +295,7 @@ final class AllInOneSelectionRefinementController: NSObject {
     private func finishInteraction(with rect: CGRect) {
         var finalRect = CaptureSelectionGeometry.normalized(
             rect,
-            minSize: CaptureSelectionSnapping.refinementMinimumSize,
+            minSize: CaptureSelectionSnapping.refinementMinimumSize
         )
         if aspectLocked, activeResizeHandle != nil {
             finalRect = aspectLockedResizeRect(from: rect)
@@ -320,10 +323,11 @@ final class AllInOneSelectionRefinementController: NSObject {
         guard let startRect = resizeStartRect,
               let handle = activeResizeHandle,
               let ratio = lockedAspectRatio,
-              ratio > 0 else {
+              ratio > 0
+        else {
             return CaptureSelectionGeometry.normalized(
                 proposedRect,
-                minSize: CaptureSelectionSnapping.refinementMinimumSize,
+                minSize: CaptureSelectionSnapping.refinementMinimumSize
             )
         }
 
@@ -333,14 +337,14 @@ final class AllInOneSelectionRefinementController: NSObject {
             translation: resizeTranslation(from: startRect, to: proposedRect, handle: handle),
             aspectLocked: true,
             aspectRatio: ratio,
-            minSize: CaptureSelectionSnapping.refinementMinimumSize,
+            minSize: CaptureSelectionSnapping.refinementMinimumSize
         )
     }
 
     private func applySnapping(
         to rawProposedRect: CGRect,
         pointer: CGPoint,
-        modifiers: NSEvent.ModifierFlags = [],
+        modifiers: NSEvent.ModifierFlags = []
     ) -> CGRect {
         guard !modifiers.contains(.option) else {
             setBoundarySnapGuides([:])
@@ -364,8 +368,8 @@ final class AllInOneSelectionRefinementController: NSObject {
             contentsOf: semanticProvider.semanticCandidates(
                 at: accessibilityPointer,
                 ownerPID: nil,
-                handle: handle,
-            ),
+                handle: handle
+            )
         )
 
         if let backdrop = backdropCache[displayID] {
@@ -377,8 +381,8 @@ final class AllInOneSelectionRefinementController: NSObject {
                     screenFrame: screenFrame,
                     configuration: snappingConfiguration,
                     sampler: backdropSamplers[displayID],
-                    boundaryIndex: backdropBoundaryIndices[displayID],
-                ),
+                    boundaryIndex: backdropBoundaryIndices[displayID]
+                )
             )
         }
 
@@ -389,7 +393,7 @@ final class AllInOneSelectionRefinementController: NSObject {
             candidates: candidates,
             configuration: snappingConfiguration,
             desktopBounds: desktopBounds,
-            minSize: CaptureSelectionSnapping.refinementMinimumSize,
+            minSize: CaptureSelectionSnapping.refinementMinimumSize
         )
         setBoundarySnapGuides(result.appliedCoordinates)
         return result.rect
@@ -429,7 +433,7 @@ final class AllInOneSelectionRefinementController: NSObject {
                     displayID: displayID,
                     captureRect: captureRect,
                     scaleFactor: scaleFactor,
-                    isVisible: true,
+                    isVisible: true
                 )
                 guard !Task.isCancelled, let backdrop else { return }
                 backdropCache[displayID] = backdrop
@@ -516,7 +520,7 @@ final class AllInOneSelectionRefinementController: NSObject {
     private func resizeTranslation(
         from startRect: CGRect,
         to proposedRect: CGRect,
-        handle: CaptureSelectionResizeHandle,
+        handle: CaptureSelectionResizeHandle
     ) -> CGPoint {
         switch handle {
         case .topLeft:
@@ -604,7 +608,7 @@ extension AllInOneSelectionRefinementController: CaptureSelectionOverlayDelegate
     func overlay(
         _ overlay: CaptureSelectionOverlayWindow,
         didResizeRegionTo rect: CGRect,
-        modifiers: NSEvent.ModifierFlags,
+        modifiers: NSEvent.ModifierFlags
     ) {
         // Reselect previews must not enter resize snapping (no real handle). A synthetic
         // handle + cold AX/image snap on the first drag frame hitch the main thread.

@@ -63,7 +63,8 @@
             fontSize = size ?? Self.defaultFontSize
 
             if let raw = ud.string(forKey: PreferencesKeys.keystrokePosition),
-               let pos = KeystrokeOverlayPosition(rawValue: raw) {
+               let pos = KeystrokeOverlayPosition(rawValue: raw)
+            {
                 position = pos
             } else {
                 position = Self.defaultPosition

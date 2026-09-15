@@ -20,7 +20,7 @@ enum CaptureLastSelectionStore {
             "x": rect.origin.x,
             "y": rect.origin.y,
             "width": rect.width,
-            "height": rect.height,
+            "height": rect.height
         ]
         userDefaults.set(rectDict, forKey: PreferencesKeys.captureAllInOneLastAreaRect)
     }
@@ -32,17 +32,19 @@ enum CaptureLastSelectionStore {
               let x = rectDict["x"] as? CGFloat,
               let y = rectDict["y"] as? CGFloat,
               let width = rectDict["width"] as? CGFloat,
-              let height = rectDict["height"] as? CGFloat else {
+              let height = rectDict["height"] as? CGFloat
+        else {
             return nil
         }
 
         guard x.isFinite, y.isFinite, width.isFinite, height.isFinite,
-              width > 0, height > 0 else {
+              width > 0, height > 0
+        else {
             return nil
         }
 
         let rect = CaptureSelectionGeometry.normalized(
-            CGRect(x: x, y: y, width: width, height: height),
+            CGRect(x: x, y: y, width: width, height: height)
         )
 
         guard isRectVisibleOnScreens(rect, screens: screens) else {

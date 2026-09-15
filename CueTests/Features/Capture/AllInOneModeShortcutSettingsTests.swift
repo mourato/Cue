@@ -42,15 +42,15 @@ final class AllInOneModeShortcutSettingsTests: XCTestCase {
     func testDefaultNewModeShortcuts_useExpectedKeys() {
         XCTAssertEqual(
             AllInOneModeShortcutSettings.defaultShortcut(for: .activeWindow).keyCode,
-            UInt32(kVK_ANSI_W),
+            UInt32(kVK_ANSI_W)
         )
         XCTAssertEqual(
             AllInOneModeShortcutSettings.defaultShortcut(for: .objectCutout).keyCode,
-            UInt32(kVK_ANSI_C),
+            UInt32(kVK_ANSI_C)
         )
         XCTAssertEqual(
             AllInOneModeShortcutSettings.defaultShortcut(for: .smartElement).keyCode,
-            UInt32(kVK_ANSI_E),
+            UInt32(kVK_ANSI_E)
         )
     }
 
@@ -66,7 +66,7 @@ final class AllInOneModeShortcutSettingsTests: XCTestCase {
     func testSetShortcut_stripsModifiers() throws {
         let independent = CaptureOverlayShortcut(
             keyCode: UInt32(kVK_ANSI_W),
-            modifiers: UInt32(cmdKey),
+            modifiers: UInt32(cmdKey)
         )
         AllInOneModeShortcutSettings.setShortcut(independent, for: .window)
 
@@ -83,7 +83,7 @@ final class AllInOneModeShortcutSettingsTests: XCTestCase {
     func testReset_fallsBackToDefault() throws {
         AllInOneModeShortcutSettings.setShortcut(
             CaptureOverlayShortcut(keyCode: UInt32(kVK_ANSI_Z), modifiers: 0),
-            for: .ocr,
+            for: .ocr
         )
         AllInOneModeShortcutSettings.resetShortcut(for: .ocr)
 
@@ -94,16 +94,16 @@ final class AllInOneModeShortcutSettingsTests: XCTestCase {
     func testConflictingMode_detectsDuplicateKey() {
         AllInOneModeShortcutSettings.setShortcut(
             CaptureOverlayShortcut(keyCode: UInt32(kVK_ANSI_X), modifiers: 0),
-            for: .area,
+            for: .area
         )
         AllInOneModeShortcutSettings.setShortcut(
             CaptureOverlayShortcut(keyCode: UInt32(kVK_ANSI_X), modifiers: 0),
-            for: .fullscreen,
+            for: .fullscreen
         )
 
         let conflict = AllInOneModeShortcutSettings.conflictingMode(
             for: CaptureOverlayShortcut(keyCode: UInt32(kVK_ANSI_X), modifiers: 0),
-            excluding: .area,
+            excluding: .area
         )
         XCTAssertEqual(conflict, .fullscreen)
     }
@@ -121,7 +121,7 @@ final class AllInOneModeShortcutSettingsTests: XCTestCase {
     func testMigrateFromApplicationCapture_independentIgnored() throws {
         let legacy = CaptureOverlayShortcut(
             keyCode: UInt32(kVK_ANSI_A),
-            modifiers: UInt32(cmdKey | shiftKey),
+            modifiers: UInt32(cmdKey | shiftKey)
         )
         let data = try JSONEncoder().encode(legacy)
         defaults.set(data, forKey: PreferencesKeys.areaApplicationCaptureShortcut)
@@ -133,7 +133,7 @@ final class AllInOneModeShortcutSettingsTests: XCTestCase {
     func testMatching_ignoresStoredShortcutForHiddenMode() throws {
         AllInOneModeShortcutSettings.setShortcut(
             CaptureOverlayShortcut(keyCode: UInt32(kVK_ANSI_Z), modifiers: 0),
-            for: .recording,
+            for: .recording
         )
         let event = try XCTUnwrap(NSEvent.keyEvent(
             with: .keyDown,
@@ -145,7 +145,7 @@ final class AllInOneModeShortcutSettingsTests: XCTestCase {
             characters: "z",
             charactersIgnoringModifiers: "z",
             isARepeat: false,
-            keyCode: UInt16(kVK_ANSI_Z),
+            keyCode: UInt16(kVK_ANSI_Z)
         ))
 
         XCTAssertNil(AllInOneModeShortcutSettings.mode(matching: event, in: [.area]))

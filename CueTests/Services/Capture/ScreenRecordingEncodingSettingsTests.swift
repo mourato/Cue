@@ -42,11 +42,11 @@
         func testPreferredCodec_movMediumAndLowUseH264() {
             XCTAssertEqual(
                 RecordingVideoEncodingSettings.preferredCodec(format: .mov, quality: .medium).rawValue,
-                AVVideoCodecType.h264.rawValue,
+                AVVideoCodecType.h264.rawValue
             )
             XCTAssertEqual(
                 RecordingVideoEncodingSettings.preferredCodec(format: .mov, quality: .low).rawValue,
-                AVVideoCodecType.h264.rawValue,
+                AVVideoCodecType.h264.rawValue
             )
         }
 
@@ -56,7 +56,7 @@
                 height: 100,
                 fps: 30,
                 quality: .high,
-                codec: .h264,
+                codec: .h264
             )
 
             XCTAssertEqual(bitrate, VideoQuality.high.minBitrate)
@@ -64,11 +64,11 @@
 
         func testCalculatedBitrate_hugeCaptureClampsToQualityMaximum() {
             let bitrate = RecordingVideoEncodingSettings.calculatedBitrate(
-                width: 7_680,
-                height: 4_320,
+                width: 7680,
+                height: 4320,
                 fps: 60,
                 quality: .high,
-                codec: .h264,
+                codec: .h264
             )
 
             XCTAssertEqual(bitrate, VideoQuality.high.maxBitrate)
@@ -76,18 +76,18 @@
 
         func testCalculatedBitrate_appliesHEVCEfficiencyBeforeClamp() {
             let h264Bitrate = RecordingVideoEncodingSettings.calculatedBitrate(
-                width: 1_920,
-                height: 1_080,
+                width: 1920,
+                height: 1080,
                 fps: 30,
                 quality: .low,
-                codec: .h264,
+                codec: .h264
             )
             let hevcBitrate = RecordingVideoEncodingSettings.calculatedBitrate(
-                width: 1_920,
-                height: 1_080,
+                width: 1920,
+                height: 1080,
                 fps: 30,
                 quality: .low,
-                codec: .hevc,
+                codec: .hevc
             )
 
             XCTAssertEqual(h264Bitrate, 4_976_640)
@@ -96,16 +96,16 @@
 
         func testMakeVideoSettings_h264IncludesProfileFPSAndColorProperties() throws {
             let settings = RecordingVideoEncodingSettings.makeVideoSettings(
-                width: 1_280,
+                width: 1280,
                 height: 720,
                 fps: 60,
                 quality: .medium,
                 codec: .h264,
-                bitrate: 7_200_000,
+                bitrate: 7_200_000
             )
 
             XCTAssertEqual(codecRawValue(settings[AVVideoCodecKey]), AVVideoCodecType.h264.rawValue)
-            XCTAssertEqual(settings[AVVideoWidthKey] as? Int, 1_280)
+            XCTAssertEqual(settings[AVVideoWidthKey] as? Int, 1280)
             XCTAssertEqual(settings[AVVideoHeightKey] as? Int, 720)
 
             let compression = try XCTUnwrap(settings[AVVideoCompressionPropertiesKey] as? [String: Any])
@@ -122,12 +122,12 @@
 
         func testMakeVideoSettings_hevcOmitsH264Profile() throws {
             let settings = RecordingVideoEncodingSettings.makeVideoSettings(
-                width: 1_920,
-                height: 1_080,
+                width: 1920,
+                height: 1080,
                 fps: 30,
                 quality: .high,
                 codec: .hevc,
-                bitrate: 10_000_000,
+                bitrate: 10_000_000
             )
 
             XCTAssertEqual(codecRawValue(settings[AVVideoCodecKey]), AVVideoCodecType.hevc.rawValue)
@@ -139,7 +139,7 @@
             let settings = RecordingAudioEncodingSettings.makeSystemAudioSettings()
 
             XCTAssertEqual(audioFormatRawValue(settings[AVFormatIDKey]), kAudioFormatMPEG4AAC)
-            XCTAssertEqual(settings[AVSampleRateKey] as? Int, 48_000)
+            XCTAssertEqual(settings[AVSampleRateKey] as? Int, 48000)
             XCTAssertEqual(settings[AVNumberOfChannelsKey] as? Int, 2)
             XCTAssertEqual(settings[AVEncoderBitRateKey] as? Int, 128_000)
             XCTAssertEqual(try channelLayoutTag(from: settings), kAudioChannelLayoutTag_Stereo)
@@ -149,7 +149,7 @@
             let settings = RecordingAudioEncodingSettings.makeMicrophoneAudioSettings()
 
             XCTAssertEqual(audioFormatRawValue(settings[AVFormatIDKey]), kAudioFormatMPEG4AAC)
-            XCTAssertEqual(settings[AVSampleRateKey] as? Int, 48_000)
+            XCTAssertEqual(settings[AVSampleRateKey] as? Int, 48000)
             XCTAssertEqual(settings[AVNumberOfChannelsKey] as? Int, 2)
             XCTAssertEqual(settings[AVEncoderBitRateKey] as? Int, 128_000)
             XCTAssertEqual(try channelLayoutTag(from: settings), kAudioChannelLayoutTag_Stereo)
@@ -159,7 +159,7 @@
             let settings = RecordingAudioEncodingSettings.makeMixedAudioSettings()
 
             XCTAssertEqual(audioFormatRawValue(settings[AVFormatIDKey]), kAudioFormatMPEG4AAC)
-            XCTAssertEqual(settings[AVSampleRateKey] as? Int, 48_000)
+            XCTAssertEqual(settings[AVSampleRateKey] as? Int, 48000)
             XCTAssertEqual(settings[AVNumberOfChannelsKey] as? Int, 2)
             XCTAssertEqual(settings[AVEncoderBitRateKey] as? Int, 192_000)
             XCTAssertEqual(try channelLayoutTag(from: settings), kAudioChannelLayoutTag_Stereo)
@@ -189,15 +189,15 @@
         func testAudioCompatibilityExporterSkipsMixDownWhenKeepingSeparateTracks() {
             XCTAssertFalse(RecordingAudioCompatibilityExporter.requiresMixDown(
                 audioTrackCount: 2,
-                keepSeparateTracks: true,
+                keepSeparateTracks: true
             ))
             XCTAssertFalse(RecordingAudioCompatibilityExporter.requiresMixDown(
                 audioTrackCount: 1,
-                keepSeparateTracks: true,
+                keepSeparateTracks: true
             ))
             XCTAssertTrue(RecordingAudioCompatibilityExporter.requiresMixDown(
                 audioTrackCount: 2,
-                keepSeparateTracks: false,
+                keepSeparateTracks: false
             ))
         }
 
@@ -208,7 +208,7 @@
             XCTAssertEqual(
                 RecordingAudioCompatibilityExporter.mixdownInputVolume(audioTrackCount: 3),
                 1.0 / 3.0,
-                accuracy: 0.0001,
+                accuracy: 0.0001
             )
         }
 
@@ -226,7 +226,7 @@
                 displayScale: 2.0,
                 scaleRetinaTo1x: true,
                 maxResolution: "Original",
-                pointSize: CGSize(width: 800, height: 600),
+                pointSize: CGSize(width: 800, height: 600)
             )
             XCTAssertEqual(scale, 1.0, accuracy: 0.0001)
         }
@@ -236,7 +236,7 @@
                 displayScale: 2.0,
                 scaleRetinaTo1x: false,
                 maxResolution: "Original",
-                pointSize: CGSize(width: 800, height: 600),
+                pointSize: CGSize(width: 800, height: 600)
             )
             XCTAssertEqual(scale, 2.0, accuracy: 0.0001)
         }
@@ -247,7 +247,7 @@
                 displayScale: 2.0,
                 scaleRetinaTo1x: false,
                 maxResolution: "720p",
-                pointSize: CGSize(width: 800, height: 600),
+                pointSize: CGSize(width: 800, height: 600)
             )
             XCTAssertEqual(scale, 1.6, accuracy: 0.0001)
         }
@@ -257,7 +257,7 @@
                 displayScale: 2.0,
                 scaleRetinaTo1x: false,
                 maxResolution: "1080p",
-                pointSize: CGSize(width: 400, height: 300),
+                pointSize: CGSize(width: 400, height: 300)
             )
             XCTAssertEqual(scale, 2.0, accuracy: 0.0001)
         }

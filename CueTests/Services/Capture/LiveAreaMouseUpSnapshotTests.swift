@@ -19,7 +19,7 @@ final class LiveAreaMouseUpSnapshotTests: XCTestCase {
         guard let image = TestImageFactory.solidColor(
             width: 20,
             height: 20,
-            red: 10, green: 20, blue: 30,
+            red: 10, green: 20, blue: 30
         ) else {
             return nil
         }
@@ -28,7 +28,7 @@ final class LiveAreaMouseUpSnapshotTests: XCTestCase {
             screenFrame: CGRect(x: 0, y: 0, width: 10, height: 10),
             scaleFactor: 2.0,
             colorSpaceName: nil,
-            image: image,
+            image: image
         )
     }
 
@@ -40,7 +40,7 @@ final class LiveAreaMouseUpSnapshotTests: XCTestCase {
             displayIDs: [1],
             showCursor: true,
             excludeDesktopIcons: false,
-            excludeDesktopWidgets: false,
+            excludeDesktopWidgets: false
         ) { displayID in
             providerCalls += 1
             return self.makeSnapshot(displayID: displayID)
@@ -55,7 +55,7 @@ final class LiveAreaMouseUpSnapshotTests: XCTestCase {
             displayIDs: [1],
             showCursor: false,
             excludeDesktopIcons: true,
-            excludeDesktopWidgets: false,
+            excludeDesktopWidgets: false
         ) { self.makeSnapshot(displayID: $0) }
 
         XCTAssertTrue(snapshots.isEmpty)
@@ -66,7 +66,7 @@ final class LiveAreaMouseUpSnapshotTests: XCTestCase {
             displayIDs: [1],
             showCursor: false,
             excludeDesktopIcons: false,
-            excludeDesktopWidgets: true,
+            excludeDesktopWidgets: true
         ) { self.makeSnapshot(displayID: $0) }
 
         XCTAssertTrue(snapshots.isEmpty)
@@ -79,7 +79,7 @@ final class LiveAreaMouseUpSnapshotTests: XCTestCase {
             displayIDs: [7],
             showCursor: false,
             excludeDesktopIcons: false,
-            excludeDesktopWidgets: false,
+            excludeDesktopWidgets: false
         ) { self.makeSnapshot(displayID: $0) }
 
         XCTAssertEqual(snapshots.map(\.displayID), [7])
@@ -91,7 +91,7 @@ final class LiveAreaMouseUpSnapshotTests: XCTestCase {
             displayIDs: displayIDs,
             showCursor: false,
             excludeDesktopIcons: false,
-            excludeDesktopWidgets: false,
+            excludeDesktopWidgets: false
         ) { self.makeSnapshot(displayID: $0) }
 
         XCTAssertEqual(Set(snapshots.map(\.displayID)), displayIDs)
@@ -105,7 +105,7 @@ final class LiveAreaMouseUpSnapshotTests: XCTestCase {
             displayIDs: [1, 2, 3],
             showCursor: false,
             excludeDesktopIcons: false,
-            excludeDesktopWidgets: false,
+            excludeDesktopWidgets: false
         ) { displayID in
             displayID == 2 ? nil : self.makeSnapshot(displayID: displayID)
         }

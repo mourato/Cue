@@ -40,7 +40,7 @@ nonisolated enum CueNoteTarget: Codable, Equatable {
             let rect = try container.decode(CGRect.self, forKey: .rect)
             let pinCorner = try container.decodeIfPresent(
                 CueRectPinCorner.self,
-                forKey: .pinCorner,
+                forKey: .pinCorner
             ) ?? .legacyFallback
             self = .rect(rect, pinCorner)
         }
@@ -49,10 +49,10 @@ nonisolated enum CueNoteTarget: Codable, Equatable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         switch self {
-        case .point(let point):
+        case let .point(point):
             try container.encode(Kind.point, forKey: .kind)
             try container.encode(point, forKey: .point)
-        case .rect(let rect, let pinCorner):
+        case let .rect(rect, pinCorner):
             try container.encode(Kind.rect, forKey: .kind)
             try container.encode(rect, forKey: .rect)
             try container.encode(pinCorner, forKey: .pinCorner)
@@ -67,7 +67,7 @@ nonisolated enum CueNoteTarget: Codable, Equatable {
     }
 
     var pinCorner: CueRectPinCorner? {
-        if case .rect(_, let pinCorner) = self {
+        if case let .rect(_, pinCorner) = self {
             return pinCorner
         }
         return nil
@@ -75,9 +75,9 @@ nonisolated enum CueNoteTarget: Codable, Equatable {
 
     var pinCenter: CGPoint {
         switch self {
-        case .point(let point):
+        case let .point(point):
             point
-        case .rect(let rect, let pinCorner):
+        case let .rect(rect, pinCorner):
             CueNoteGeometry.pinCenter(for: rect.standardized, pinCorner: pinCorner)
         }
     }
@@ -88,12 +88,12 @@ nonisolated enum CueNoteTarget: Codable, Equatable {
 
     func rotated(oldSize: CGSize, clockwise: Bool) -> CueNoteTarget {
         switch self {
-        case .point(let point):
+        case let .point(point):
             .point(AnnotateImageRotation.rotatePoint(point, oldSize: oldSize, clockwise: clockwise))
-        case .rect(let rect, let pinCorner):
+        case let .rect(rect, pinCorner):
             .rect(
                 AnnotateImageRotation.rotateRect(rect, oldSize: oldSize, clockwise: clockwise),
-                pinCorner.rotated(clockwise: clockwise),
+                pinCorner.rotated(clockwise: clockwise)
             )
         }
     }

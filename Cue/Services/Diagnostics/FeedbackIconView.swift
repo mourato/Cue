@@ -36,7 +36,7 @@ struct FeedbackIconView: View {
                 } else {
                     FeedbackSpinnerView(
                         colors: style.iconAccentColors,
-                        size: fontSize + 4,
+                        size: fontSize + 4
                     )
                     .transition(iconTransition)
                 }
@@ -67,9 +67,9 @@ private struct FeedbackSpinnerView: View {
             .stroke(
                 AngularGradient(
                     gradient: Gradient(colors: colors.map { $0.opacity(0.15) } + [colors.last ?? .cyan]),
-                    center: .center,
+                    center: .center
                 ),
-                style: StrokeStyle(lineWidth: max(2, size * 0.15), lineCap: .round),
+                style: StrokeStyle(lineWidth: max(2, size * 0.15), lineCap: .round)
             )
             .frame(width: size, height: size)
             .rotationEffect(.degrees(isSpinning ? 360 : 0))

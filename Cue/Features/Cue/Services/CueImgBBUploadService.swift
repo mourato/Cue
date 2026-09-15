@@ -51,7 +51,7 @@ actor CueImgBBUploadService {
         request.httpBody = makeMultipartBody(
             boundary: boundary,
             apiKey: trimmedAPIKey,
-            image: image,
+            image: image
         )
 
         let (data, response) = try await session.data(for: request)
@@ -84,7 +84,7 @@ actor CueImgBBUploadService {
 
         body.append("--\(boundary)\(lineBreak)")
         body.append(
-            "Content-Disposition: form-data; name=\"image\"; filename=\"image.\(image.fileExtension)\"\(lineBreak)",
+            "Content-Disposition: form-data; name=\"image\"; filename=\"image.\(image.fileExtension)\"\(lineBreak)"
         )
         body.append("Content-Type: \(image.contentType)\(lineBreak)\(lineBreak)")
         body.append(image.data)
@@ -100,13 +100,14 @@ actor CueImgBBUploadService {
         guard let link else { return nil }
         return CueImgBBUploadResult(
             link: link,
-            deleteURL: dataObject["delete_url"] as? String,
+            deleteURL: dataObject["delete_url"] as? String
         )
     }
 
     private func parseErrorMessage(from json: [String: Any]?) -> String? {
         if let errorObject = json?["error"] as? [String: Any],
-           let message = errorObject["message"] as? String {
+           let message = errorObject["message"] as? String
+        {
             return message
         }
         return json?["status_txt"] as? String

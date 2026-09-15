@@ -10,7 +10,7 @@ final class AnnotationStrokeWidthTests: XCTestCase {
     func testPresetsMatchScreendropInspectorWidths() {
         XCTAssertEqual(
             AnnotationStrokeWidth.allCases.map(\.points),
-            [2, 4, 6, 8, 12],
+            [2, 4, 6, 8, 12]
         )
         XCTAssertEqual(AnnotationStrokeWidth.default, .regular)
     }

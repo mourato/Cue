@@ -31,7 +31,7 @@
         static func calculateCropRect(
             center: CGPoint,
             zoomLevel: CGFloat,
-            frameSize: CGSize,
+            frameSize: CGSize
         ) -> CGRect {
             guard zoomLevel > 1.0 else {
                 return CGRect(origin: .zero, size: frameSize)
@@ -79,12 +79,12 @@
         static func interpolateCenter(
             from start: CGPoint,
             to end: CGPoint,
-            progress: Double,
+            progress: Double
         ) -> CGPoint {
             let t = CGFloat(min(max(progress, 0), 1))
             return CGPoint(
                 x: start.x + (end.x - start.x) * t,
-                y: start.y + (end.y - start.y) * t,
+                y: start.y + (end.y - start.y) * t
             )
         }
 
@@ -99,7 +99,7 @@
         static func interpolateZoom(
             segment: ZoomSegment,
             currentTime: TimeInterval,
-            transitionDuration: TimeInterval = defaultTransitionDuration,
+            transitionDuration: TimeInterval = defaultTransitionDuration
         ) -> (level: CGFloat, center: CGPoint, progress: Double) {
             guard segment.isEnabled else {
                 return (level: 1.0, center: CGPoint(x: 0.5, y: 0.5), progress: 0)
@@ -156,7 +156,7 @@
         static func calculateTransform(
             zoomLevel: CGFloat,
             center: CGPoint,
-            viewSize: CGSize,
+            viewSize: CGSize
         ) -> (scale: CGFloat, offset: CGSize) {
             guard zoomLevel > 1.0 else {
                 return (scale: 1.0, offset: .zero)
@@ -175,7 +175,7 @@
         /// Find the active zoom segment at a given time
         static func activeSegment(
             at time: TimeInterval,
-            in segments: [ZoomSegment],
+            in segments: [ZoomSegment]
         ) -> ZoomSegment? {
             // Return last matching segment (priority to later segments)
             segments.filter { $0.isEnabled && $0.contains(time: time) }.last
@@ -191,7 +191,7 @@
             at time: TimeInterval,
             duration: TimeInterval,
             in segments: [ZoomSegment],
-            excluding: UUID? = nil,
+            excluding: UUID? = nil
         ) -> Bool {
             let testSegment = ZoomSegment(startTime: time, duration: duration)
             return segments.contains { segment in

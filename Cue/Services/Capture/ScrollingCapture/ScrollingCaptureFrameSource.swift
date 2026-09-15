@@ -51,7 +51,7 @@ private final class ScrollingCapturePublicationState: @unchecked Sendable {
 final class ScrollingCaptureFrameSource: NSObject {
     private let sampleQueue = DispatchQueue(
         label: "com.mourato.notinhas.scrolling-capture.preview-stream",
-        qos: .userInteractive,
+        qos: .userInteractive
     )
     private let minimumPublishInterval: TimeInterval
     private let ciContext: CIContext
@@ -70,7 +70,7 @@ final class ScrollingCaptureFrameSource: NSObject {
     func start(
         with context: ScreenCaptureManager.PreparedAreaCaptureContext,
         frameHandler: @escaping (ScrollingCaptureFrame) -> Void,
-        failureHandler: @escaping (String) -> Void,
+        failureHandler: @escaping (String) -> Void
     ) async throws {
         stop()
 
@@ -81,7 +81,7 @@ final class ScrollingCaptureFrameSource: NSObject {
         let configuration = ScreenCaptureManager.shared.makeAreaStreamConfiguration(
             from: context,
             maximumFrameRate: 30,
-            showsCursor: false,
+            showsCursor: false
         )
         let stream = SCStream(filter: context.contentFilter, configuration: configuration, delegate: self)
         try stream.addStreamOutput(self, type: .screen, sampleHandlerQueue: sampleQueue)
@@ -118,7 +118,7 @@ extension ScrollingCaptureFrameSource: SCStreamOutput {
     nonisolated func stream(
         _: SCStream,
         didOutputSampleBuffer sampleBuffer: CMSampleBuffer,
-        of type: SCStreamOutputType,
+        of type: SCStreamOutputType
     ) {
         autoreleasepool {
             guard type == .screen, sampleBuffer.isValid else { return }
@@ -127,25 +127,26 @@ extension ScrollingCaptureFrameSource: SCStreamOutput {
             if
                 let attachments = CMSampleBufferGetSampleAttachmentsArray(
                     sampleBuffer,
-                    createIfNecessary: false,
+                    createIfNecessary: false
                 ) as? [[SCStreamFrameInfo: Any]],
                 let statusRaw = attachments.first?[.status] as? Int,
                 let status = SCFrameStatus(rawValue: statusRaw),
-                status != .complete {
+                status != .complete
+            {
                 return
             }
 
             let now = ProcessInfo.processInfo.systemUptime
             guard let pendingPublication = publicationState.beginPublication(
                 at: now,
-                minimumInterval: minimumPublishInterval,
+                minimumInterval: minimumPublishInterval
             ) else { return }
 
             let imageRect = CGRect(
                 x: 0,
                 y: 0,
                 width: CVPixelBufferGetWidth(pixelBuffer),
-                height: CVPixelBufferGetHeight(pixelBuffer),
+                height: CVPixelBufferGetHeight(pixelBuffer)
             )
             let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
             guard let cgImage = ciContext.createCGImage(ciImage, from: imageRect) else {
@@ -154,13 +155,13 @@ extension ScrollingCaptureFrameSource: SCStreamOutput {
 
             guard let sequenceNumber = publicationState.finishPublication(
                 generation: pendingPublication,
-                capturedAt: now,
+                capturedAt: now
             ) else { return }
             let frame = ScrollingCaptureFrame(
                 sequenceNumber: sequenceNumber,
                 image: cgImage,
                 capturedAt: now,
-                motionScore: nil,
+                motionScore: nil
             )
             Task { @MainActor [weak self] in
                 self?.onFrame?(frame)

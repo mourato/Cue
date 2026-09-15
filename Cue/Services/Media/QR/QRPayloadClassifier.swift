@@ -17,9 +17,9 @@ nonisolated enum QRPayloadClassification: Equatable, Sendable {
         switch self {
         case .plainText:
             "plain-text"
-        case .webURL(let scheme, _):
+        case let .webURL(scheme, _):
             "web-url-\(scheme)"
-        case .urlScheme(let scheme):
+        case let .urlScheme(scheme):
             "scheme-\(scheme)"
         }
     }

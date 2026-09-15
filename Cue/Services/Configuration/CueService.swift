@@ -12,7 +12,7 @@ final class CueConfigurationService {
     static let shared = CueConfigurationService()
     private nonisolated static let managedConfigFileQueue = DispatchQueue(
         label: "com.mourato.notinhas.configuration.managed-file",
-        qos: .utility,
+        qos: .utility
     )
 
     private let defaults = UserDefaults.standard
@@ -93,7 +93,7 @@ final class CueConfigurationService {
     static func syncDecision(
         fileSource: String,
         currentSource: String,
-        defaults: UserDefaults = .standard,
+        defaults: UserDefaults = .standard
     ) -> CueConfigurationSyncDecision {
         if fileSource == currentSource {
             return .alreadyCurrent
@@ -132,7 +132,7 @@ final class CueConfigurationService {
 
     func importBackupReplacingManagedConfig(
         from url: URL,
-        managedConfigURL: URL? = nil,
+        managedConfigURL: URL? = nil
     ) throws -> CueConfigurationImportResult {
         let source = try String(contentsOf: url, encoding: .utf8)
         let validationIssues = CueConfigurationImporter.validateTOML(source)
@@ -187,7 +187,7 @@ final class CueConfigurationService {
             try Self.syncManagedConfigFile(
                 currentSource: currentSource,
                 fileURL: access.url,
-                lastAppliedSignature: lastAppliedSignature,
+                lastAppliedSignature: lastAppliedSignature
             )
         }
         if let source = outcome.sourceToMarkApplied {
@@ -213,7 +213,7 @@ final class CueConfigurationService {
                 try Self.syncManagedConfigFile(
                     currentSource: currentSource,
                     fileURL: fileURL,
-                    lastAppliedSignature: lastAppliedSignature,
+                    lastAppliedSignature: lastAppliedSignature
                 )
             }
         }.value
@@ -236,7 +236,7 @@ final class CueConfigurationService {
     @discardableResult
     func syncManagedConfigToCurrentSettingsIfUnchanged(
         at url: URL? = nil,
-        expectedFileSignature: String?,
+        expectedFileSignature: String?
     ) throws -> URL {
         let operationID = beginManagedConfigOperation()
         let source = exportTOML()
@@ -248,7 +248,7 @@ final class CueConfigurationService {
             let fileManager = FileManager.default
             try fileManager.createDirectory(
                 at: targetURL.deletingLastPathComponent(),
-                withIntermediateDirectories: true,
+                withIntermediateDirectories: true
             )
 
             if let expectedFileSignature {
@@ -355,7 +355,7 @@ final class CueConfigurationService {
         let bookmarkData = try url.standardizedFileURL.bookmarkData(
             options: .withSecurityScope,
             includingResourceValuesForKeys: nil,
-            relativeTo: nil,
+            relativeTo: nil
         )
         defaults.set(bookmarkData, forKey: key)
     }
@@ -373,7 +373,8 @@ final class CueConfigurationService {
 
     private func resolvedConfigAccessURL(for targetURL: URL) -> URL? {
         if let fileURL = resolveBookmarkURL(forKey: PreferencesKeys.configurationFileBookmark),
-           normalizedPath(fileURL) == normalizedPath(targetURL) {
+           normalizedPath(fileURL) == normalizedPath(targetURL)
+        {
             return fileURL
         }
 
@@ -399,7 +400,7 @@ final class CueConfigurationService {
                 resolvingBookmarkData: bookmarkData,
                 options: [.withSecurityScope],
                 relativeTo: nil,
-                bookmarkDataIsStale: &isStale,
+                bookmarkDataIsStale: &isStale
             ).standardizedFileURL
 
             if isStale {
@@ -418,7 +419,7 @@ final class CueConfigurationService {
     private nonisolated static func syncManagedConfigFile(
         currentSource: String,
         fileURL: URL,
-        lastAppliedSignature: String?,
+        lastAppliedSignature: String?
     ) throws -> ManagedConfigFileSyncOutcome {
         let fileManager = FileManager.default
         let directory = fileURL.deletingLastPathComponent()
@@ -432,9 +433,9 @@ final class CueConfigurationService {
                     status: .synced,
                     fileURL: fileURL,
                     observedFileSignature: nil,
-                    exportedSettingsSignature: currentSignature,
+                    exportedSettingsSignature: currentSignature
                 ),
-                sourceToMarkApplied: currentSource,
+                sourceToMarkApplied: currentSource
             )
         }
 
@@ -446,9 +447,9 @@ final class CueConfigurationService {
                     status: .alreadyCurrent,
                     fileURL: fileURL,
                     observedFileSignature: fileSignature,
-                    exportedSettingsSignature: currentSignature,
+                    exportedSettingsSignature: currentSignature
                 ),
-                sourceToMarkApplied: fileSource,
+                sourceToMarkApplied: fileSource
             )
         }
 
@@ -459,9 +460,9 @@ final class CueConfigurationService {
                     status: .synced,
                     fileURL: fileURL,
                     observedFileSignature: fileSignature,
-                    exportedSettingsSignature: currentSignature,
+                    exportedSettingsSignature: currentSignature
                 ),
-                sourceToMarkApplied: currentSource,
+                sourceToMarkApplied: currentSource
             )
         }
 
@@ -470,9 +471,9 @@ final class CueConfigurationService {
                 status: .needsConfirmation,
                 fileURL: fileURL,
                 observedFileSignature: fileSignature,
-                exportedSettingsSignature: currentSignature,
+                exportedSettingsSignature: currentSignature
             ),
-            sourceToMarkApplied: nil,
+            sourceToMarkApplied: nil
         )
     }
 

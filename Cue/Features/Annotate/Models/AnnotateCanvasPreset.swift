@@ -21,7 +21,7 @@ struct AnnotateCanvasPreset: Identifiable, Codable, Equatable {
         name: String,
         payload: AnnotateCanvasPresetPayload,
         createdAt: Date = Date(),
-        updatedAt: Date = Date(),
+        updatedAt: Date = Date()
     ) {
         self.id = id
         self.name = name
@@ -49,7 +49,7 @@ struct AnnotateCanvasPresetPayload: Codable, Equatable {
         shadowIntensity: CGFloat,
         cornerRadius: CGFloat,
         aspectRatio: AspectRatioOption = .auto,
-        aspectRatioOrientation: AspectRatioOrientation = .horizontal,
+        aspectRatioOrientation: AspectRatioOrientation = .horizontal
     ) {
         self.backgroundStyle = backgroundStyle
         self.isBlurredBackgroundEnabled = isBlurredBackgroundEnabled
@@ -103,7 +103,7 @@ struct AnnotateCanvasPresetPayload: Codable, Equatable {
 
     func approximatelyEquals(
         _ other: AnnotateCanvasPresetPayload,
-        tolerance: CGFloat = 0.0001,
+        tolerance: CGFloat = 0.0001
     ) -> Bool {
         let blurEnabledMatches = isBlurredBackgroundEnabled == other.isBlurredBackgroundEnabled
         let blurredEffectMatches = isBlurredBackgroundEnabled
@@ -142,22 +142,22 @@ struct CodableBackgroundStyle: Codable, Equatable {
             gradientPresetRawValue = nil
             urlString = nil
             solidColorRGBA = nil
-        case .gradient(let preset):
+        case let .gradient(preset):
             kind = .gradient
             gradientPresetRawValue = preset.rawValue
             urlString = nil
             solidColorRGBA = nil
-        case .wallpaper(let url):
+        case let .wallpaper(url):
             kind = .wallpaper
             gradientPresetRawValue = nil
             urlString = url.absoluteString
             solidColorRGBA = nil
-        case .blurred(let url):
+        case let .blurred(url):
             kind = .blurred
             gradientPresetRawValue = nil
             urlString = url.absoluteString
             solidColorRGBA = nil
-        case .solidColor(let color):
+        case let .solidColor(color):
             guard let rgba = RGBAColor(color: color) else { return nil }
             kind = .solidColor
             gradientPresetRawValue = nil
@@ -172,19 +172,22 @@ struct CodableBackgroundStyle: Codable, Equatable {
             return .none
         case .gradient:
             guard let raw = gradientPresetRawValue,
-                  let preset = GradientPreset(rawValue: raw) else {
+                  let preset = GradientPreset(rawValue: raw)
+            else {
                 return .none
             }
             return .gradient(preset)
         case .wallpaper:
             guard let urlString,
-                  let url = URL(string: urlString) else {
+                  let url = URL(string: urlString)
+            else {
                 return .none
             }
             return .wallpaper(url)
         case .blurred:
             guard let urlString,
-                  let url = URL(string: urlString) else {
+                  let url = URL(string: urlString)
+            else {
                 return .none
             }
             return .blurred(url)
@@ -219,7 +222,7 @@ struct RGBAColor: Codable, Equatable {
             red: Double(srgb.redComponent),
             green: Double(srgb.greenComponent),
             blue: Double(srgb.blueComponent),
-            alpha: Double(srgb.alphaComponent),
+            alpha: Double(srgb.alphaComponent)
         )
     }
 
@@ -229,8 +232,8 @@ struct RGBAColor: Codable, Equatable {
                 srgbRed: red,
                 green: green,
                 blue: blue,
-                alpha: alpha,
-            ),
+                alpha: alpha
+            )
         )
     }
 }

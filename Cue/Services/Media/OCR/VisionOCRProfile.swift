@@ -49,8 +49,10 @@ struct VisionOCRProfile {
         }
     }
 
-    static func recoveryProfiles(for request: OCRRequest,
-                                 primary primaryProfile: VisionOCRProfile) -> [VisionOCRProfile] {
+    static func recoveryProfiles(
+        for request: OCRRequest,
+        primary primaryProfile: VisionOCRProfile
+    ) -> [VisionOCRProfile] {
         switch primaryProfile.id {
         case englishInterface.id,
              vietnameseInterface.id,
@@ -73,8 +75,10 @@ struct VisionOCRProfile {
         }
     }
 
-    static func enhancedRecoveryProfiles(for request: OCRRequest,
-                                         primary primaryProfile: VisionOCRProfile) -> [VisionOCRProfile] {
+    static func enhancedRecoveryProfiles(
+        for request: OCRRequest,
+        primary primaryProfile: VisionOCRProfile
+    ) -> [VisionOCRProfile] {
         guard request.contentType != .code else { return [] }
 
         switch primaryProfile.id {
@@ -119,7 +123,7 @@ private extension VisionOCRProfile {
         "Preferences",
         "Export",
         "Shortcut",
-        "Screenshot",
+        "Screenshot"
     ]
 
     static let defaultInterface = VisionOCRProfile(
@@ -130,7 +134,7 @@ private extension VisionOCRProfile {
         automaticallyDetectsLanguage: true,
         minimumTextHeight: 0.008,
         minimumAcceptableConfidence: 0.58,
-        prefersCJKContent: false,
+        prefersCJKContent: false
     )
 
     static let englishInterface = VisionOCRProfile(
@@ -141,7 +145,7 @@ private extension VisionOCRProfile {
         automaticallyDetectsLanguage: false,
         minimumTextHeight: 0.008,
         minimumAcceptableConfidence: 0.62,
-        prefersCJKContent: false,
+        prefersCJKContent: false
     )
 
     static let vietnameseInterface = VisionOCRProfile(
@@ -160,13 +164,13 @@ private extension VisionOCRProfile {
             "Phím tắt",
             "Văn bản",
             "Trích xuất",
-            "Chính xác",
+            "Chính xác"
         ],
         usesLanguageCorrection: true,
         automaticallyDetectsLanguage: false,
         minimumTextHeight: 0.006,
         minimumAcceptableConfidence: 0.50,
-        prefersCJKContent: false,
+        prefersCJKContent: false
     )
 
     static let spanishInterface = VisionOCRProfile(
@@ -177,7 +181,7 @@ private extension VisionOCRProfile {
         automaticallyDetectsLanguage: false,
         minimumTextHeight: 0.006,
         minimumAcceptableConfidence: 0.52,
-        prefersCJKContent: false,
+        prefersCJKContent: false
     )
 
     static let russianInterface = VisionOCRProfile(
@@ -188,7 +192,7 @@ private extension VisionOCRProfile {
         automaticallyDetectsLanguage: false,
         minimumTextHeight: 0.006,
         minimumAcceptableConfidence: 0.52,
-        prefersCJKContent: false,
+        prefersCJKContent: false
     )
 
     static let frenchInterface = VisionOCRProfile(
@@ -199,7 +203,7 @@ private extension VisionOCRProfile {
         automaticallyDetectsLanguage: false,
         minimumTextHeight: 0.006,
         minimumAcceptableConfidence: 0.52,
-        prefersCJKContent: false,
+        prefersCJKContent: false
     )
 
     static let germanInterface = VisionOCRProfile(
@@ -210,13 +214,13 @@ private extension VisionOCRProfile {
             "Einstellungen",
             "Überschriften",
             "Dokumentation",
-            "zuverlässig",
+            "zuverlässig"
         ],
         usesLanguageCorrection: true,
         automaticallyDetectsLanguage: false,
         minimumTextHeight: 0.006,
         minimumAcceptableConfidence: 0.52,
-        prefersCJKContent: false,
+        prefersCJKContent: false
     )
 
     static let japaneseInterface = VisionOCRProfile(
@@ -227,7 +231,7 @@ private extension VisionOCRProfile {
         automaticallyDetectsLanguage: false,
         minimumTextHeight: 0.006,
         minimumAcceptableConfidence: 0.55,
-        prefersCJKContent: true,
+        prefersCJKContent: true
     )
 
     static let koreanInterface = VisionOCRProfile(
@@ -238,7 +242,7 @@ private extension VisionOCRProfile {
         automaticallyDetectsLanguage: false,
         minimumTextHeight: 0.006,
         minimumAcceptableConfidence: 0.55,
-        prefersCJKContent: true,
+        prefersCJKContent: true
     )
 
     static let simplifiedChineseInterface = VisionOCRProfile(
@@ -249,7 +253,7 @@ private extension VisionOCRProfile {
         automaticallyDetectsLanguage: false,
         minimumTextHeight: 0.006,
         minimumAcceptableConfidence: 0.55,
-        prefersCJKContent: true,
+        prefersCJKContent: true
     )
 
     static let traditionalChineseInterface = VisionOCRProfile(
@@ -260,7 +264,7 @@ private extension VisionOCRProfile {
         automaticallyDetectsLanguage: false,
         minimumTextHeight: 0.006,
         minimumAcceptableConfidence: 0.55,
-        prefersCJKContent: true,
+        prefersCJKContent: true
     )
 
     static let denseDocument = VisionOCRProfile(
@@ -271,7 +275,7 @@ private extension VisionOCRProfile {
         automaticallyDetectsLanguage: true,
         minimumTextHeight: 0.005,
         minimumAcceptableConfidence: 0.52,
-        prefersCJKContent: false,
+        prefersCJKContent: false
     )
 
     static let cjkRecovery = VisionOCRProfile(
@@ -286,13 +290,13 @@ private extension VisionOCRProfile {
             "匯出",
             "設定",
             "環境設定",
-            "환경설정",
+            "환경설정"
         ],
         usesLanguageCorrection: true,
         automaticallyDetectsLanguage: false,
         minimumTextHeight: 0.004,
         minimumAcceptableConfidence: 0.42,
-        prefersCJKContent: true,
+        prefersCJKContent: true
     )
 
     static let autoRecovery = VisionOCRProfile(
@@ -307,13 +311,13 @@ private extension VisionOCRProfile {
             "貼上",
             "粘贴",
             "設定",
-            "환경설정",
+            "환경설정"
         ],
         usesLanguageCorrection: true,
         automaticallyDetectsLanguage: true,
         minimumTextHeight: 0.004,
         minimumAcceptableConfidence: 0.38,
-        prefersCJKContent: false,
+        prefersCJKContent: false
     )
 
     static let code = VisionOCRProfile(
@@ -325,12 +329,12 @@ private extension VisionOCRProfile {
             "QuickAccessSound",
             "captureOCR",
             "CGImage",
-            "NSImage",
+            "NSImage"
         ],
         usesLanguageCorrection: false,
         automaticallyDetectsLanguage: false,
         minimumTextHeight: 0.01,
         minimumAcceptableConfidence: 0.42,
-        prefersCJKContent: false,
+        prefersCJKContent: false
     )
 }

@@ -47,7 +47,7 @@ struct CropOverlayView: View {
         // Dim overlay outside crop region
         CropDimOverlay(
             cropRect: scaledCrop,
-            containerSize: containerSize,
+            containerSize: containerSize
         )
         .allowsHitTesting(false)
 
@@ -84,7 +84,7 @@ struct CropOverlayView: View {
             if let cropRect = state.cropRect {
                 CropDimensionLabel(
                     width: Int(cropRect.width),
-                    height: Int(cropRect.height),
+                    height: Int(cropRect.height)
                 )
                 .position(x: scaledCrop.midX, y: scaledCrop.maxY + 24)
                 .allowsHitTesting(false)
@@ -99,7 +99,7 @@ struct CropOverlayView: View {
         // Solid black mask outside crop region (hides cropped areas)
         CropSolidMask(
             cropRect: scaledCrop,
-            containerSize: containerSize,
+            containerSize: containerSize
         )
         .allowsHitTesting(false)
 
@@ -117,7 +117,7 @@ struct CropOverlayView: View {
             x: (rect.origin.x - canvasBounds.minX) * scale,
             y: (canvasBounds.maxY - rect.origin.y - rect.height) * scale,
             width: rect.width * scale,
-            height: rect.height * scale,
+            height: rect.height * scale
         )
     }
 
@@ -337,7 +337,7 @@ struct CropEdgeHandle: View {
             .fill(Color.white)
             .frame(
                 width: isHorizontal ? handleLength : thickness,
-                height: isHorizontal ? thickness : handleLength,
+                height: isHorizontal ? thickness : handleLength
             )
             .shadow(color: .black.opacity(0.5), radius: 1, x: 0, y: 0)
     }
@@ -368,7 +368,7 @@ struct CropDimensionLabel: View {
         .padding(.vertical, 4)
         .background(
             Capsule()
-                .fill(Color.black.opacity(0.75)),
+                .fill(Color.black.opacity(0.75))
         )
     }
 }

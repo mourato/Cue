@@ -45,7 +45,7 @@
         @State private var draftCustomColor = Color.red
 
         private let colors: [Color] = [
-            .red, .orange, .yellow, .green, .blue, .purple, .pink, .gray, .white, .black,
+            .red, .orange, .yellow, .green, .blue, .purple, .pink, .gray, .white, .black
         ]
 
         var body: some View {
@@ -53,9 +53,9 @@
                 LazyVGrid(
                     columns: Array(
                         repeating: GridItem(.flexible(), spacing: GridConfig.gap),
-                        count: GridConfig.colorColumns,
+                        count: GridConfig.colorColumns
                     ),
-                    spacing: GridConfig.gap,
+                    spacing: GridConfig.gap
                 ) {
                     ForEach(colors, id: \.self) { color in
                         Button {
@@ -65,7 +65,7 @@
                                 .fill(color)
                                 .colorSwatchStyle(isSelected: AnnotateColorPaletteStore.colorsMatch(
                                     selectedColor,
-                                    color,
+                                    color
                                 ))
                         }
                         .buttonStyle(.plain)
@@ -78,7 +78,7 @@
                             size: nil,
                             onDelete: {
                                 paletteStore.removeColor(color)
-                            },
+                            }
                         ) {
                             selectedColor = color
                         }
@@ -87,7 +87,7 @@
                     AnnotateCustomColorPickerControl(
                         selectedColor: customColorBinding,
                         draftColor: $draftCustomColor,
-                        swatchSize: nil,
+                        swatchSize: nil
                     )
                 }
             }
@@ -99,7 +99,7 @@
                 set: { color in
                     draftCustomColor = color
                     selectedColor = color
-                },
+                }
             )
         }
     }
@@ -134,7 +134,7 @@
                         .padding(.vertical, 2)
                         .background(
                             RoundedRectangle(cornerRadius: Size.radiusXs)
-                                .fill(SidebarColors.itemDefault),
+                                .fill(SidebarColors.itemDefault)
                         )
                         .focused($isTextFieldFocused)
                         .onAppear {
@@ -168,7 +168,7 @@
                             // Drag started
                             onDragging?(true, localValue)
                         }
-                    },
+                    }
                 )
                 .controlSize(.small)
             }
@@ -220,7 +220,7 @@
                             .fill(Color.gray.opacity(0.15))
                             .overlay(
                                 ProgressView()
-                                    .scaleEffect(0.5),
+                                    .scaleEffect(0.5)
                             )
                     }
                 }
@@ -271,7 +271,7 @@
                                 .fill(Color.gray.opacity(0.15))
                                 .overlay(
                                     ProgressView()
-                                        .scaleEffect(0.5),
+                                        .scaleEffect(0.5)
                                 )
                         }
                     }
@@ -313,7 +313,7 @@
             let item = SystemWallpaperManager.WallpaperItem(
                 fullImageURL: url,
                 thumbnailURL: nil,
-                name: url.lastPathComponent,
+                name: url.lastPathComponent
             )
             SystemWallpaperManager.shared.loadThumbnail(for: item) { image in
                 thumbnail = image

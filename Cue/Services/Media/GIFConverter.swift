@@ -50,11 +50,11 @@
         static func convert(
             videoURL: URL,
             options: Options = .default,
-            onProgress: @escaping (Double) -> Void,
+            onProgress: @escaping (Double) -> Void
         ) async throws -> URL {
             let sourceAccess = SandboxFileAccessManager.shared.beginAccessingURL(videoURL)
             let outputDirectoryAccess = SandboxFileAccessManager.shared.beginAccessingURL(
-                videoURL.deletingLastPathComponent(),
+                videoURL.deletingLastPathComponent()
             )
             defer {
                 sourceAccess.stop()
@@ -63,7 +63,7 @@
             DiagnosticLogger.shared.log(.info, .recording, "GIF conversion pipeline started", context: [
                 "file": videoURL.lastPathComponent,
                 "fps": "\(options.fps)",
-                "maxWidth": "\(Int(options.maxWidth))",
+                "maxWidth": "\(Int(options.maxWidth))"
             ])
 
             let asset = AVURLAsset(url: videoURL)
@@ -75,7 +75,7 @@
             guard durationSeconds > 0, durationSeconds.isFinite else {
                 DiagnosticLogger.shared.log(.error, .recording, "GIF conversion invalid video duration", context: [
                     "file": videoURL.lastPathComponent,
-                    "durationSeconds": "\(durationSeconds)",
+                    "durationSeconds": "\(durationSeconds)"
                 ])
                 throw GIFConversionError.invalidVideo
             }
@@ -92,8 +92,8 @@
                     .recording,
                     "GIF conversion found no video track; using fallback size",
                     context: [
-                        "file": videoURL.lastPathComponent,
-                    ],
+                        "file": videoURL.lastPathComponent
+                    ]
                 )
                 naturalSize = CGSize(width: 640, height: 480)
             }
@@ -117,14 +117,14 @@
                         outputHeight: outputHeight,
                         durationSeconds: durationSeconds,
                         options: options,
-                        onProgress: onProgress,
+                        onProgress: onProgress
                     )
                 } catch {
                     DiagnosticLogger.shared.log(
                         .warning,
                         .recording,
                         "GIF gifski export failed; falling back to ImageIO",
-                        context: ["file": videoURL.lastPathComponent],
+                        context: ["file": videoURL.lastPathComponent]
                     )
                 }
             }
@@ -134,7 +134,7 @@
             guard totalFrames > 0 else {
                 DiagnosticLogger.shared.log(.error, .recording, "GIF conversion has no frame times", context: [
                     "durationSeconds": String(format: "%.3f", durationSeconds),
-                    "fps": "\(options.fps)",
+                    "fps": "\(options.fps)"
                 ])
                 throw GIFConversionError.noFrames
             }
@@ -142,14 +142,14 @@
                 "durationSeconds": String(format: "%.3f", durationSeconds),
                 "sourceSize": "\(Int(naturalSize.width))x\(Int(naturalSize.height))",
                 "outputSize": "\(outputWidth)x\(outputHeight)",
-                "expectedFrames": "\(totalFrames)",
+                "expectedFrames": "\(totalFrames)"
             ])
 
             var frameTimes: [NSValue] = []
             for i in 0 ..< totalFrames {
                 let time = CMTime(
                     seconds: Double(i) / Double(options.fps),
-                    preferredTimescale: 9600, // High timescale for sub-frame precision
+                    preferredTimescale: 9600 // High timescale for sub-frame precision
                 )
                 frameTimes.append(NSValue(time: time))
             }
@@ -174,7 +174,7 @@
                     expectedCount: expectedCount,
                     videoFileName: videoURL.lastPathComponent,
                     onProgress: onProgress,
-                    continuation: continuation,
+                    continuation: continuation
                 )
 
                 generator.generateCGImagesAsynchronously(forTimes: frameTimes) {
@@ -193,8 +193,8 @@
                     "GIF conversion generated fewer frames than expected",
                     context: [
                         "expectedFrames": "\(totalFrames)",
-                        "generatedFrames": "\(orderedFrames.count)",
-                    ],
+                        "generatedFrames": "\(orderedFrames.count)"
+                    ]
                 )
             }
 
@@ -204,7 +204,7 @@
                 "extractedFrames": "\(orderedFrames.count)",
                 "outputFrames": "\(plannedFrames.images.count)",
                 "optimize": "\(options.optimize)",
-                "quality": String(format: "%.2f", options.quality),
+                "quality": String(format: "%.2f", options.quality)
             ])
 
             // Generate output URL (same directory, .gif extension)
@@ -218,11 +218,11 @@
                 gifURL as CFURL,
                 UTType.gif.identifier as CFString,
                 plannedFrames.images.count,
-                nil,
+                nil
             ) else {
                 DiagnosticLogger.shared.log(.error, .recording, "GIF conversion destination creation failed", context: [
                     "file": gifURL.lastPathComponent,
-                    "expectedFrames": "\(plannedFrames.images.count)",
+                    "expectedFrames": "\(plannedFrames.images.count)"
                 ])
                 throw GIFConversionError.destinationCreationFailed
             }
@@ -230,8 +230,8 @@
             // Set GIF-level properties (loop count only — ImageIO picks the color map)
             let gifProperties: [String: Any] = [
                 kCGImagePropertyGIFDictionary as String: [
-                    kCGImagePropertyGIFLoopCount as String: options.loopCount,
-                ],
+                    kCGImagePropertyGIFLoopCount as String: options.loopCount
+                ]
             ]
             CGImageDestinationSetProperties(destination, gifProperties as CFDictionary)
 
@@ -240,8 +240,8 @@
                 let frameProperties: [String: Any] = [
                     kCGImagePropertyGIFDictionary as String: [
                         kCGImagePropertyGIFDelayTime as String: plannedFrames.delays[idx],
-                        kCGImagePropertyGIFUnclampedDelayTime as String: plannedFrames.delays[idx],
-                    ],
+                        kCGImagePropertyGIFUnclampedDelayTime as String: plannedFrames.delays[idx]
+                    ]
                 ]
                 CGImageDestinationAddImage(destination, frame, frameProperties as CFDictionary)
 
@@ -257,7 +257,7 @@
             guard CGImageDestinationFinalize(destination) else {
                 DiagnosticLogger.shared.log(.error, .recording, "GIF conversion finalization failed", context: [
                     "file": gifURL.lastPathComponent,
-                    "frames": "\(orderedFrames.count)",
+                    "frames": "\(orderedFrames.count)"
                 ])
                 throw GIFConversionError.finalizationFailed
             }
@@ -269,7 +269,7 @@
             DiagnosticLogger.shared.log(.info, .recording, "GIF conversion completed", context: [
                 "file": gifURL.lastPathComponent,
                 "frames": "\(orderedFrames.count)",
-                "fileSizeMB": fileSizeMB,
+                "fileSizeMB": fileSizeMB
             ])
 
             return gifURL
@@ -376,7 +376,7 @@
                 bitsPerComponent: 8,
                 bytesPerRow: width * 4,
                 space: CGColorSpaceCreateDeviceRGB(),
-                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
             ), let data = context.data else {
                 return nil
             }
@@ -423,7 +423,7 @@
         outputHeight: Int,
         durationSeconds: Double,
         options: GIFConverter.Options,
-        onProgress: @escaping (Double) -> Void,
+        onProgress: @escaping (Double) -> Void
     ) async throws -> URL {
         let gifFPS = min(max(options.fps, 1), 50)
         let tracks = try? await asset.loadTracks(withMediaType: .video)
@@ -433,7 +433,7 @@
 
         let reader = try AVAssetReader(asset: asset)
         let trackOutput = AVAssetReaderTrackOutput(track: videoTrack, outputSettings: [
-            kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
+            kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA
         ])
         trackOutput.alwaysCopiesSampleData = true
         guard reader.canAdd(trackOutput) else { throw GIFConversionError.noFrames }
@@ -476,8 +476,14 @@
         let exitCode: Int32 = try await withCheckedThrowingContinuation { continuation in
             let proc = Process()
             proc.executableURL = binary
-            proc.arguments = ["--fps", String(gifFPS), "--quality", String(gifskiQuality(for: options.quality)),
-                              "-o", tmpGIF.path] + framePaths
+            proc.arguments = [
+                "--fps",
+                String(gifFPS),
+                "--quality",
+                String(gifskiQuality(for: options.quality)),
+                "-o",
+                tmpGIF.path
+            ] + framePaths
             proc.standardOutput = Pipe()
             proc.standardError = Pipe()
             proc.terminationHandler = { process in
@@ -509,19 +515,19 @@
         let srcBytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
         let colorSpace = CGColorSpace(name: CGColorSpace.sRGB) ?? CGColorSpaceCreateDeviceRGB()
         guard let srcProvider = CGDataProvider(
-            dataInfo: nil, data: baseAddress, size: srcBytesPerRow * srcHeight, releaseData: { _, _, _ in },
+            dataInfo: nil, data: baseAddress, size: srcBytesPerRow * srcHeight, releaseData: { _, _, _ in }
         ) else { return nil }
         guard let srcImage = CGImage(
             width: srcWidth, height: srcHeight, bitsPerComponent: 8, bitsPerPixel: 32,
             bytesPerRow: srcBytesPerRow, space: colorSpace,
             bitmapInfo: CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder32Little.rawValue
                 | CGImageAlphaInfo.premultipliedFirst.rawValue),
-            provider: srcProvider, decode: nil, shouldInterpolate: false, intent: .defaultIntent,
+            provider: srcProvider, decode: nil, shouldInterpolate: false, intent: .defaultIntent
         ) else { return nil }
         guard let dstContext = CGContext(
             data: nil, width: dstWidth, height: dstHeight, bitsPerComponent: 8, bytesPerRow: dstWidth * 4,
             space: colorSpace,
-            bitmapInfo: CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.premultipliedLast.rawValue,
+            bitmapInfo: CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.premultipliedLast.rawValue
         ) else { return nil }
         dstContext.interpolationQuality = .high
         dstContext.draw(srcImage, in: CGRect(x: 0, y: 0, width: dstWidth, height: dstHeight))
@@ -530,7 +536,7 @@
 
     private func writePNG(_ image: CGImage, toPath path: String) -> Bool {
         guard let dest = CGImageDestinationCreateWithURL(
-            URL(fileURLWithPath: path) as CFURL, UTType.png.identifier as CFString, 1, nil,
+            URL(fileURLWithPath: path) as CFURL, UTType.png.identifier as CFString, 1, nil
         ) else { return false }
         CGImageDestinationAddImage(dest, image, nil)
         return CGImageDestinationFinalize(dest)
@@ -554,7 +560,7 @@
             expectedCount: Int,
             videoFileName: String,
             onProgress: @escaping (Double) -> Void,
-            continuation: CheckedContinuation<[CGImage], Error>,
+            continuation: CheckedContinuation<[CGImage], Error>
         ) {
             self.expectedCount = expectedCount
             self.videoFileName = videoFileName
@@ -584,8 +590,8 @@
                     "GIF conversion generated no frames",
                     context: [
                         "file": videoFileName,
-                        "expectedFrames": "\(expectedCount)",
-                    ],
+                        "expectedFrames": "\(expectedCount)"
+                    ]
                 )
                 continuation?.resume(throwing: GIFConversionError.noFrames)
             } else {

@@ -47,7 +47,7 @@
             // Arrow triangle
             let clampedCenter = max(
                 cornerRadius + arrowWidth / 2,
-                min(arrowCenterX, bounds.width - cornerRadius - arrowWidth / 2),
+                min(arrowCenterX, bounds.width - cornerRadius - arrowWidth / 2)
             )
             let arrowLeft = clampedCenter - arrowWidth / 2
             let arrowRight = clampedCenter + arrowWidth / 2
@@ -104,7 +104,7 @@
                 contentRect: .zero,
                 styleMask: [.borderless],
                 backing: .buffered,
-                defer: false,
+                defer: false
             )
 
             configureWindow()
@@ -148,7 +148,7 @@
             // Always horizontal for popover style
             let result = AnnotationToolbarContentBuilder.build(
                 state: annotationState,
-                direction: .horizontal,
+                direction: .horizontal
             )
 
             // Create a container view that holds the effect view + arrow
@@ -158,7 +158,7 @@
 
             let container = NSView(frame: CGRect(
                 origin: .zero,
-                size: CGSize(width: bodySize.width, height: totalHeight),
+                size: CGSize(width: bodySize.width, height: totalHeight)
             ))
             container.wantsLayer = true
 
@@ -172,14 +172,14 @@
 
             result.effectView.frame = CGRect(
                 origin: CGPoint(x: 0, y: effectOriginY),
-                size: bodySize,
+                size: bodySize
             )
             container.addSubview(result.effectView)
 
             // Arrow background view (visual effect for arrow)
             let arrow = PopoverArrowView(frame: CGRect(
                 origin: .zero,
-                size: CGSize(width: bodySize.width, height: totalHeight),
+                size: CGSize(width: bodySize.width, height: totalHeight)
             ))
             arrow.arrowEdge = arrowEdge
             arrow.arrowCenterX = bodySize.width / 2

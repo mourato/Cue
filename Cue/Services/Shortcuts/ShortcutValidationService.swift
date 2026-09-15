@@ -28,33 +28,33 @@ final class ShortcutValidationService {
 
     func validateGlobalShortcut(
         _ config: ShortcutConfig?,
-        for kind: GlobalShortcutKind,
+        for kind: GlobalShortcutKind
     ) -> ShortcutValidationDecision {
         guard let config else { return .accept(issue: nil) }
 
         if let conflictKind = conflictingGlobalShortcut(for: config, excluding: kind) {
             return .reject(issue: ShortcutValidationIssue(
                 severity: .error,
-                message: L10n.ShortcutValidation.alreadyUsedBy(conflictKind.displayName),
+                message: L10n.ShortcutValidation.alreadyUsedBy(conflictKind.displayName)
             ))
         }
 
         if let conflictKind = conflictingAnnotateActionShortcut(for: config, excluding: nil) {
             return .reject(issue: ShortcutValidationIssue(
                 severity: .error,
-                message: L10n.ShortcutValidation.alreadyUsedByInAnnotate(conflictKind.displayName),
+                message: L10n.ShortcutValidation.alreadyUsedByInAnnotate(conflictKind.displayName)
             ))
         }
 
         let systemConflicts = SystemScreenshotShortcutManager.shared.conflictDescriptions(
             for: kind,
-            shortcut: config,
+            shortcut: config
         )
 
         if let systemConflict = systemConflicts.first {
             return .accept(issue: ShortcutValidationIssue(
                 severity: .warning,
-                message: L10n.ShortcutValidation.matchesSystemConflict(systemConflict),
+                message: L10n.ShortcutValidation.matchesSystemConflict(systemConflict)
             ))
         }
 
@@ -63,21 +63,21 @@ final class ShortcutValidationService {
 
     func validateAnnotateActionShortcut(
         _ config: ShortcutConfig?,
-        for kind: AnnotateActionShortcutKind,
+        for kind: AnnotateActionShortcutKind
     ) -> ShortcutValidationDecision {
         guard let config else { return .accept(issue: nil) }
 
         if let conflictKind = conflictingAnnotateActionShortcut(for: config, excluding: kind) {
             return .reject(issue: ShortcutValidationIssue(
                 severity: .error,
-                message: L10n.ShortcutValidation.alreadyUsedBy(conflictKind.displayName),
+                message: L10n.ShortcutValidation.alreadyUsedBy(conflictKind.displayName)
             ))
         }
 
         if let conflictKind = conflictingGlobalShortcut(for: config, excluding: nil) {
             return .reject(issue: ShortcutValidationIssue(
                 severity: .error,
-                message: L10n.ShortcutValidation.alreadyUsedBy(conflictKind.displayName),
+                message: L10n.ShortcutValidation.alreadyUsedBy(conflictKind.displayName)
             ))
         }
 
@@ -86,12 +86,12 @@ final class ShortcutValidationService {
 
     func validateAnnotateToolShortcut(
         _ key: Character,
-        for tool: AnnotationToolType,
+        for tool: AnnotationToolType
     ) -> ShortcutValidationDecision {
         if let conflictTool = AnnotateShortcutManager.shared.conflictingTool(for: key, excluding: tool) {
             return .reject(issue: ShortcutValidationIssue(
                 severity: .error,
-                message: L10n.ShortcutValidation.alreadyUsedBy(conflictTool.displayName),
+                message: L10n.ShortcutValidation.alreadyUsedBy(conflictTool.displayName)
             ))
         }
 
@@ -100,7 +100,7 @@ final class ShortcutValidationService {
 
     func validateCaptureOverlayShortcut(
         _ shortcut: CaptureOverlayShortcut?,
-        for kind: CaptureOverlayShortcutKind,
+        for kind: CaptureOverlayShortcutKind
     ) -> ShortcutValidationDecision {
         guard let shortcut else { return .accept(issue: nil) }
         guard let config = shortcut.independentShortcutConfig else {
@@ -110,33 +110,33 @@ final class ShortcutValidationService {
         if let conflictKind = conflictingGlobalShortcut(for: config, excluding: nil) {
             return .reject(issue: ShortcutValidationIssue(
                 severity: .error,
-                message: L10n.ShortcutValidation.alreadyUsedBy(conflictKind.displayName),
+                message: L10n.ShortcutValidation.alreadyUsedBy(conflictKind.displayName)
             ))
         }
 
         if let conflictKind = conflictingAnnotateActionShortcut(for: config, excluding: nil) {
             return .reject(issue: ShortcutValidationIssue(
                 severity: .error,
-                message: L10n.ShortcutValidation.alreadyUsedByInAnnotate(conflictKind.displayName),
+                message: L10n.ShortcutValidation.alreadyUsedByInAnnotate(conflictKind.displayName)
             ))
         }
 
         if let conflictKind = conflictingCaptureOverlayShortcut(for: config, excluding: kind) {
             return .reject(issue: ShortcutValidationIssue(
                 severity: .error,
-                message: L10n.ShortcutValidation.alreadyUsedBy(conflictKind.displayName),
+                message: L10n.ShortcutValidation.alreadyUsedBy(conflictKind.displayName)
             ))
         }
 
         let systemConflicts = SystemScreenshotShortcutManager.shared.conflictDescriptions(
             for: kind.systemConflictKind,
-            shortcut: config,
+            shortcut: config
         )
 
         if let systemConflict = systemConflicts.first {
             return .accept(issue: ShortcutValidationIssue(
                 severity: .warning,
-                message: L10n.ShortcutValidation.matchesSystemConflict(systemConflict),
+                message: L10n.ShortcutValidation.matchesSystemConflict(systemConflict)
             ))
         }
 
@@ -145,21 +145,21 @@ final class ShortcutValidationService {
 
     func validateAllInOneModeShortcut(
         _ shortcut: CaptureOverlayShortcut?,
-        for mode: AllInOneCaptureMode,
+        for mode: AllInOneCaptureMode
     ) -> ShortcutValidationDecision {
         guard let shortcut else { return .accept(issue: nil) }
 
         if shortcut.isIndependent {
             return .reject(issue: ShortcutValidationIssue(
                 severity: .error,
-                message: L10n.ShortcutValidation.allInOneModeRequiresSingleKey,
+                message: L10n.ShortcutValidation.allInOneModeRequiresSingleKey
             ))
         }
 
         if let conflict = AllInOneModeShortcutSettings.conflictingMode(for: shortcut, excluding: mode) {
             return .reject(issue: ShortcutValidationIssue(
                 severity: .error,
-                message: L10n.ShortcutValidation.alreadyUsedBy(conflict.compactTitle),
+                message: L10n.ShortcutValidation.alreadyUsedBy(conflict.compactTitle)
             ))
         }
 
@@ -168,7 +168,7 @@ final class ShortcutValidationService {
 
     private func conflictingGlobalShortcut(
         for config: ShortcutConfig,
-        excluding excludedKind: GlobalShortcutKind?,
+        excluding excludedKind: GlobalShortcutKind?
     ) -> GlobalShortcutKind? {
         GlobalShortcutKind.allCases.first(where: {
             $0 != excludedKind
@@ -179,7 +179,7 @@ final class ShortcutValidationService {
 
     private func conflictingAnnotateActionShortcut(
         for config: ShortcutConfig,
-        excluding excludedKind: AnnotateActionShortcutKind?,
+        excluding excludedKind: AnnotateActionShortcutKind?
     ) -> AnnotateActionShortcutKind? {
         AnnotateActionShortcutKind.allCases.first(where: {
             $0 != excludedKind
@@ -190,7 +190,7 @@ final class ShortcutValidationService {
 
     private func conflictingCaptureOverlayShortcut(
         for config: ShortcutConfig,
-        excluding excludedKind: CaptureOverlayShortcutKind,
+        excluding excludedKind: CaptureOverlayShortcutKind
     ) -> CaptureOverlayShortcutKind? {
         [CaptureOverlayShortcutKind.applicationRecording].first(where: {
             $0 != excludedKind

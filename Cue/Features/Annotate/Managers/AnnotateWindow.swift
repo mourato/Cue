@@ -42,7 +42,7 @@ class AnnotateWindow: NSWindow {
             contentRect: contentRect,
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
             backing: .buffered,
-            defer: false,
+            defer: false
         )
         configure()
     }
@@ -119,7 +119,8 @@ class AnnotateWindow: NSWindow {
 
         // Cmd+S while actively editing crop confirms the crop first.
         if event.keyCode == 1, flags == .command, interactionState?.isCropInteractionActive == true,
-           !isTextInputActive {
+           !isTextInputActive
+        {
             interactionState?.confirmCropInteraction()
             return true
         }
@@ -303,7 +304,7 @@ class AnnotateWindow: NSWindow {
             NotificationCenter.default.post(
                 name: .annotateScrollZoom,
                 object: self,
-                userInfo: ["delta": delta],
+                userInfo: ["delta": delta]
             )
             return // Consume event
 
@@ -314,8 +315,8 @@ class AnnotateWindow: NSWindow {
                 object: self,
                 userInfo: [
                     "deltaX": delta.width,
-                    "deltaY": delta.height,
-                ],
+                    "deltaY": delta.height
+                ]
             )
             return
 
@@ -325,7 +326,7 @@ class AnnotateWindow: NSWindow {
             NotificationCenter.default.post(
                 name: .annotateMagnifyZoom,
                 object: self,
-                userInfo: ["magnification": magnification],
+                userInfo: ["magnification": magnification]
             )
             return // Consume event
 
@@ -365,7 +366,7 @@ class AnnotateWindow: NSWindow {
             NotificationCenter.default.post(
                 name: .annotatePanDrag,
                 object: self,
-                userInfo: ["deltaX": dx, "deltaY": dy],
+                userInfo: ["deltaX": dx, "deltaY": dy]
             )
             return // Consume — don't forward to drawing canvas
 

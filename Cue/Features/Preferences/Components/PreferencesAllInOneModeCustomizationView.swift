@@ -23,7 +23,7 @@ struct PreferencesAllInOneModeCustomizationContent: View {
                 isEnabled: { mode in
                     Binding(
                         get: { store.isEnabled(mode) },
-                        set: { store.setEnabled(mode, enabled: $0) },
+                        set: { store.setEnabled(mode, enabled: $0) }
                     )
                 },
                 canReorder: { _ in true },
@@ -34,7 +34,7 @@ struct PreferencesAllInOneModeCustomizationContent: View {
                 resetTitle: L10n.PreferencesCapture.resetAllInOneModes,
                 onReset: { store.resetToDefaults() },
                 reorderPayload: { $0.rawValue },
-                accessory: { _ in EmptyView() },
+                accessory: { _ in EmptyView() }
             )
 
             Text(L10n.PreferencesCapture.allInOneModesMinimumFootnote)

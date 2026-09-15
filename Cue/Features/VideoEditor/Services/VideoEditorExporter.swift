@@ -18,21 +18,21 @@
         static func exportTrimmed(
             state: VideoEditorState,
             to outputURL: URL,
-            progress: @escaping (Float) -> Void,
+            progress: @escaping (Float) -> Void
         ) async throws {
             DiagnosticLogger.shared.log(.info, .export, "Video export started", context: [
                 "file": state.sourceURL.lastPathComponent,
-                "hasZooms": "\(state.zoomSegments.contains { $0.isEnabled })",
+                "hasZooms": "\(state.zoomSegments.contains(where: \.isEnabled))",
                 "hasBackground": "\(state.backgroundStyle != .none && state.backgroundPadding > 0)",
                 "hasCustomAudio": "\(state.exportSettings.audioMode == .custom)",
                 "hasSpeed": "\(state.hasSpeedSegments)",
-                "quality": state.exportSettings.quality.exportPreset,
+                "quality": state.exportSettings.quality.exportPreset
             ])
             let outputAccess = SandboxFileAccessManager.shared.beginAccessingURL(outputURL.deletingLastPathComponent())
             defer { outputAccess.stop() }
             let scopedOutputURL = outputAccess.url.appendingPathComponent(outputURL.lastPathComponent)
 
-            let hasCameraEffects = state.zoomSegments.contains { $0.isEnabled }
+            let hasCameraEffects = state.zoomSegments.contains(where: \.isEnabled)
             let hasCameraOverlay = state.hasCameraTrack && state.cameraOverlayLayout.isVisible
             let hasBackground = state.backgroundStyle != .none && state.backgroundPadding > 0
             let hasCustomAudio = state.exportSettings.audioMode == .custom
@@ -48,8 +48,9 @@
                let cached = VideoEditorRenderCacheStore.lookup(
                    cacheKey: cacheKey,
                    sourceFingerprint: sourceFingerprint,
-                   recipe: recipe,
-               ) {
+                   recipe: recipe
+               )
+            {
                 try? FileManager.default.removeItem(at: scopedOutputURL)
                 try FileManager.default.copyItem(at: cached, to: scopedOutputURL)
                 progress(1.0)
@@ -64,13 +65,13 @@
                 try await exportWithZooms(state: state, to: scopedOutputURL, progress: progress)
                 try await normalizeExportAudioForCompatibilityIfNeeded(
                     at: scopedOutputURL,
-                    fileExtension: state.fileExtension,
+                    fileExtension: state.fileExtension
                 )
                 try? VideoEditorRenderCacheStore.store(
                     renderedFile: scopedOutputURL,
                     cacheKey: cacheKey,
                     sourceFingerprint: sourceFingerprint,
-                    recipe: recipe,
+                    recipe: recipe
                 )
                 return
             }
@@ -85,7 +86,7 @@
             try await exportStandard(state: state, to: scopedOutputURL, progress: progress)
             try await normalizeExportAudioForCompatibilityIfNeeded(
                 at: scopedOutputURL,
-                fileExtension: state.fileExtension,
+                fileExtension: state.fileExtension
             )
         }
 
@@ -93,19 +94,19 @@
         private static func exportStandard(
             state: VideoEditorState,
             to outputURL: URL,
-            progress: @escaping (Float) -> Void,
+            progress: @escaping (Float) -> Void
         ) async throws {
             let timeRange = CMTimeRange(start: state.trimStart, end: state.trimEnd)
 
             print("📹 [Export] Standard export starting")
             DiagnosticLogger.shared.log(.info, .export, "Standard export", context: [
                 "trim": "\(String(format: "%.1f", CMTimeGetSeconds(state.trimStart)))s-\(String(format: "%.1f", CMTimeGetSeconds(state.trimEnd)))s",
-                "output": outputURL.lastPathComponent,
+                "output": outputURL.lastPathComponent
             ])
 
             guard let exportSession = AVAssetExportSession(
                 asset: state.asset,
-                presetName: state.exportSettings.quality.exportPreset,
+                presetName: state.exportSettings.quality.exportPreset
             ) else {
                 DiagnosticLogger.shared.log(.error, .export, "Standard video export session creation failed")
                 throw ExportError.sessionCreationFailed
@@ -121,7 +122,7 @@
                 for: state.asset,
                 settings: state.exportSettings,
                 roles: state.audioTrackRoles,
-                logPrefix: "[Export]",
+                logPrefix: "[Export]"
             ) {
                 exportSession.audioMix = audioMix
             }
@@ -145,18 +146,18 @@
                     let fittedRect = state.exportSettings.videoContentRect(from: state.naturalSize)
                     let scaleTransform = CGAffineTransform(
                         scaleX: fittedRect.width / state.naturalSize.width,
-                        y: fittedRect.height / state.naturalSize.height,
+                        y: fittedRect.height / state.naturalSize.height
                     )
                     let centerTransform = CGAffineTransform(
                         translationX: fittedRect.origin.x,
-                        y: fittedRect.origin.y,
+                        y: fittedRect.origin.y
                     )
 
                     // Apply preferred transform first, then scale, then center
                     let preferredTransform = try await videoTrack.load(.preferredTransform)
                     layerInstruction.setTransform(
                         preferredTransform.concatenating(scaleTransform).concatenating(centerTransform),
-                        at: .zero,
+                        at: .zero
                     )
 
                     instruction.layerInstructions = [layerInstruction]
@@ -168,7 +169,7 @@
                         .debug,
                         .export,
                         "Applied custom dimensions",
-                        context: ["size": "\(Int(targetSize.width))x\(Int(targetSize.height))"],
+                        context: ["size": "\(Int(targetSize.width))x\(Int(targetSize.height))"]
                     )
                 }
             }
@@ -189,7 +190,7 @@
                 .debug,
                 .export,
                 "Standard video export finished",
-                context: ["status": "\(exportSession.status.rawValue)"],
+                context: ["status": "\(exportSession.status.rawValue)"]
             )
             if let error = exportSession.error {
                 print("📹 [Export] Export error: \(error)")
@@ -207,7 +208,7 @@
                 fileExists ? .info : .error,
                 .export,
                 "Standard video export completed",
-                context: ["output": outputURL.lastPathComponent, "fileExists": fileExists ? "true" : "false"],
+                context: ["output": outputURL.lastPathComponent, "fileExists": fileExists ? "true" : "false"]
             )
         }
 
@@ -215,12 +216,12 @@
         private static func exportWithZooms(
             state: VideoEditorState,
             to outputURL: URL,
-            progress: @escaping (Float) -> Void,
+            progress: @escaping (Float) -> Void
         ) async throws {
             DiagnosticLogger.shared.log(.info, .export, "Zoom export started", context: [
                 "zoomSegments": "\(state.zoomSegments.count)",
                 "trim": "\(String(format: "%.1f", CMTimeGetSeconds(state.trimStart)))s-\(String(format: "%.1f", CMTimeGetSeconds(state.trimEnd)))s",
-                "size": "\(Int(state.naturalSize.width))x\(Int(state.naturalSize.height))",
+                "size": "\(Int(state.naturalSize.width))x\(Int(state.naturalSize.height))"
             ])
             print("🔍 [ZoomExport] Starting export with zooms")
             print("🔍 [ZoomExport] Output URL: \(outputURL)")
@@ -251,7 +252,7 @@
             let hasCameraOverlay = state.hasCameraTrack && state.cameraOverlayLayout.isVisible
             if let speedMap {
                 print(
-                    "🔍 [ZoomExport] Speed scaling active — original \(String(format: "%.2f", speedMap.originalDuration))s → scaled \(String(format: "%.2f", speedMap.scaledDuration))s, spans: \(speedMap.spans.count)",
+                    "🔍 [ZoomExport] Speed scaling active — original \(String(format: "%.2f", speedMap.originalDuration))s → scaled \(String(format: "%.2f", speedMap.scaledDuration))s, spans: \(speedMap.spans.count)"
                 )
             }
 
@@ -260,7 +261,7 @@
             let adjustedZooms: [ZoomSegment] = if usesClipComposition {
                 VideoEditorClipTimeline.mapZoomSegmentsToEditorTimeline(
                     state.zoomSegments,
-                    clipTimeline: state.clipTimeline,
+                    clipTimeline: state.clipTimeline
                 )
                 .filter {
                     $0.startTime + $0.duration > 0
@@ -292,7 +293,7 @@
                         var path = VideoEditorAutoFocusEngine.trimmedPath(
                             state.autoFocusPath(for: segment),
                             trimStart: trimStartSeconds,
-                            trimEnd: trimEndSeconds,
+                            trimEnd: trimEndSeconds
                         )
                         // Map trim-relative keyframe timestamps into the scaled timeline so focus
                         // animation tracks the same frames after speed scaling.
@@ -300,13 +301,13 @@
                             path = VideoEditorAutoFocusEngine.scaledPath(path, map: map)
                         }
                         return (segment.id, path)
-                    },
+                    }
             )
 
             print("🔍 [ZoomExport] Adjusted zooms count: \(adjustedZooms.count)")
             for (index, zoom) in adjustedZooms.enumerated() {
                 print(
-                    "🔍 [ZoomExport] Zoom[\(index)]: start=\(zoom.startTime)s, duration=\(zoom.duration)s, level=\(zoom.zoomLevel)x, enabled=\(zoom.isEnabled)",
+                    "🔍 [ZoomExport] Zoom[\(index)]: start=\(zoom.startTime)s, duration=\(zoom.duration)s, level=\(zoom.zoomLevel)x, enabled=\(zoom.isEnabled)"
                 )
             }
 
@@ -317,7 +318,7 @@
                 duration: exportDuration,
                 trimStart: trimStartSeconds,
                 trimEnd: trimEndSeconds,
-                speedMap: speedMap,
+                speedMap: speedMap
             )
             let exportPointerTimeline = VideoEditorPointerTimeline.buildForExport(
                 metadata: state.recordingMetadata,
@@ -325,19 +326,19 @@
                 trimStart: trimStartSeconds,
                 trimEnd: trimEndSeconds,
                 speedMap: speedMap,
-                smoothingPreset: state.cursorSmoothingPreset,
+                smoothingPreset: state.cursorSmoothingPreset
             )
             let exportKeystrokeTimeline = VideoEditorKeystrokeCaptionTimeline.buildForExport(
                 metadata: state.recordingMetadata,
                 trimStart: trimStartSeconds,
                 trimEnd: trimEndSeconds,
-                speedMap: speedMap,
+                speedMap: speedMap
             )
             let keystrokePlacement = KeystrokeOverlayConfiguration().position
             let exportReframeTrack = state.makeReframeTrack(
                 viewportTimeline: exportViewportTimeline,
                 pointerTimeline: exportPointerTimeline,
-                duration: exportDuration,
+                duration: exportDuration
             )
 
             // Create composition
@@ -347,7 +348,8 @@
             // Add video track
             let sourceVideoTracks = try await state.asset.loadTracks(withMediaType: .video)
             guard let screenVideoTrack = sourceVideoTracks.first(where: { $0.trackID == state.screenTrackID })
-                ?? sourceVideoTracks.first else {
+                ?? sourceVideoTracks.first
+            else {
                 print("❌ [ZoomExport] ERROR: No video track found in source asset")
                 DiagnosticLogger.shared.log(.error, .export, "No video track in source asset")
                 throw ExportError.exportFailed
@@ -364,11 +366,11 @@
                         videoTrackID: state.screenTrackID,
                         clipTimeline: state.clipTimeline,
                         sourceDuration: fullDuration,
-                        into: composition,
+                        into: composition
                     )
                     compositionVideoTrack = track
                     print(
-                        "🔍 [ZoomExport] Inserted clip composition duration: \(CMTimeGetSeconds(compositionDuration))s",
+                        "🔍 [ZoomExport] Inserted clip composition duration: \(CMTimeGetSeconds(compositionDuration))s"
                     )
                 } catch {
                     print("❌ [ZoomExport] ERROR inserting clip composition: \(error)")
@@ -378,7 +380,7 @@
             } else {
                 guard let track = composition.addMutableTrack(
                     withMediaType: .video,
-                    preferredTrackID: screenVideoTrack.trackID,
+                    preferredTrackID: screenVideoTrack.trackID
                 ) else {
                     print("❌ [ZoomExport] ERROR: Failed to add video track to composition")
                     DiagnosticLogger.shared.log(.error, .export, "Zoom export failed to add video track to composition")
@@ -387,7 +389,7 @@
                 do {
                     try track.insertTimeRange(timeRange, of: screenVideoTrack, at: .zero)
                     print(
-                        "🔍 [ZoomExport] Inserted video time range: \(CMTimeGetSeconds(timeRange.start))s - \(CMTimeGetSeconds(timeRange.end))s (duration: \(CMTimeGetSeconds(timeRange.duration))s)",
+                        "🔍 [ZoomExport] Inserted video time range: \(CMTimeGetSeconds(timeRange.start))s - \(CMTimeGetSeconds(timeRange.end))s (duration: \(CMTimeGetSeconds(timeRange.duration))s)"
                     )
                 } catch {
                     print("❌ [ZoomExport] ERROR inserting video time range: \(error)")
@@ -411,8 +413,9 @@
                 guard let cameraID = state.cameraTrackID,
                       let sourceCameraTrack = sourceVideoTracks.first(where: { $0.trackID == cameraID }),
                       let cameraCompositionTrack = composition.addMutableTrack(
-                          withMediaType: .video, preferredTrackID: sourceCameraTrack.trackID,
-                      ) else {
+                          withMediaType: .video, preferredTrackID: sourceCameraTrack.trackID
+                      )
+                else {
                     throw ExportError.exportFailed
                 }
                 try cameraCompositionTrack.insertTimeRange(timeRange, of: sourceCameraTrack, at: .zero)
@@ -421,7 +424,7 @@
                     applySpeedScaling(
                         to: cameraCompositionTrack,
                         map: speedMap,
-                        logPrefix: "[ZoomExport] camera",
+                        logPrefix: "[ZoomExport] camera"
                     )
                 }
             }
@@ -434,7 +437,7 @@
                 settings: state.exportSettings,
                 roles: state.audioTrackRoles,
                 speedMap: speedMap,
-                logPrefix: "[ZoomExport]",
+                logPrefix: "[ZoomExport]"
             )
 
             // Verify composition duration
@@ -446,7 +449,7 @@
                 DiagnosticLogger.shared.log(
                     .error,
                     .export,
-                    "Zoom export composition has no video tracks after insertion",
+                    "Zoom export composition has no video tracks after insertion"
                 )
                 throw ExportError.exportFailed
             }
@@ -487,14 +490,14 @@
                 cameraSize: state.cameraSize,
                 cameraIsMirrored: state.cameraIsMirrored,
                 screenTrackID: compositionVideoTrack.trackID,
-                cursorScale: state.cursorScale,
+                cursorScale: state.cursorScale
             )
 
             // Use actual composition duration to prevent frame boundary issues
             let actualCompositionDuration = composition.duration
             let compositionTimeRange = CMTimeRange(start: .zero, duration: actualCompositionDuration)
             print(
-                "🔍 [ZoomExport] Composition time range: start=\(CMTimeGetSeconds(compositionTimeRange.start))s, duration=\(CMTimeGetSeconds(compositionTimeRange.duration))s",
+                "🔍 [ZoomExport] Composition time range: start=\(CMTimeGetSeconds(compositionTimeRange.start))s, duration=\(CMTimeGetSeconds(compositionTimeRange.duration))s"
             )
 
             // Validate the scaled composition duration matches the expected output length.
@@ -508,11 +511,11 @@
                         "Speed-scaled composition duration mismatch",
                         context: [
                             "actual": String(format: "%.3f", actualSeconds),
-                            "expected": String(format: "%.3f", expectedSeconds),
-                        ],
+                            "expected": String(format: "%.3f", expectedSeconds)
+                        ]
                     )
                     print(
-                        "⚠️ [ZoomExport] Scaled duration mismatch: actual=\(actualSeconds)s expected=\(expectedSeconds)s",
+                        "⚠️ [ZoomExport] Scaled duration mismatch: actual=\(actualSeconds)s expected=\(expectedSeconds)s"
                     )
                 }
             }
@@ -521,7 +524,7 @@
             do {
                 videoComposition = try await zoomCompositor.createVideoComposition(
                     for: composition,
-                    timeRange: compositionTimeRange,
+                    timeRange: compositionTimeRange
                 )
                 // RenderSize is already set correctly in ZoomCompositor, just use paddedRenderSize for background
                 videoComposition.renderSize = zoomCompositor.paddedRenderSize
@@ -538,7 +541,7 @@
             // Export with video composition
             guard let exportSession = AVAssetExportSession(
                 asset: composition,
-                presetName: state.exportSettings.quality.exportPreset,
+                presetName: state.exportSettings.quality.exportPreset
             ) else {
                 print("❌ [ZoomExport] ERROR: Failed to create export session")
                 DiagnosticLogger.shared.log(.error, .export, "Zoom export session creation failed")
@@ -555,7 +558,7 @@
                 exportSession.audioMix = audioMix
             }
             print(
-                "🔍 [ZoomExport] Export session configured with output type: \(exportSession.outputFileType?.rawValue ?? "nil")",
+                "🔍 [ZoomExport] Export session configured with output type: \(exportSession.outputFileType?.rawValue ?? "nil")"
             )
 
             let progressTask = Task {
@@ -578,7 +581,7 @@
                     .export,
                     error,
                     "Zoom export failed",
-                    context: ["status": "\(exportSession.status.rawValue)"],
+                    context: ["status": "\(exportSession.status.rawValue)"]
                 )
                 if let nsError = error as NSError? {
                     print("❌ [ZoomExport] Error domain: \(nsError.domain)")
@@ -593,7 +596,7 @@
                     .error,
                     .export,
                     "Zoom export failed with non-completed status",
-                    context: ["status": "\(exportSession.status.rawValue)"],
+                    context: ["status": "\(exportSession.status.rawValue)"]
                 )
                 throw exportSession.error ?? ExportError.exportFailed
             }
@@ -603,7 +606,7 @@
                 .info,
                 .export,
                 "Zoom export completed",
-                context: ["output": outputURL.lastPathComponent],
+                context: ["output": outputURL.lastPathComponent]
             )
         }
 
@@ -611,13 +614,13 @@
         private static func exportVideoOnly(
             state: VideoEditorState,
             to outputURL: URL,
-            progress: @escaping (Float) -> Void,
+            progress: @escaping (Float) -> Void
         ) async throws {
             DiagnosticLogger.shared.log(
                 .info,
                 .export,
                 "Video-only export started",
-                context: ["output": outputURL.lastPathComponent],
+                context: ["output": outputURL.lastPathComponent]
             )
             let timeRange = CMTimeRange(start: state.trimStart, end: state.trimEnd)
             let composition = AVMutableComposition()
@@ -631,7 +634,7 @@
 
             guard let compositionVideoTrack = composition.addMutableTrack(
                 withMediaType: .video,
-                preferredTrackID: kCMPersistentTrackID_Invalid,
+                preferredTrackID: kCMPersistentTrackID_Invalid
             ) else {
                 DiagnosticLogger.shared.log(.error, .export, "Video-only export failed to add video track")
                 throw ExportError.exportFailed
@@ -660,16 +663,16 @@
                 let fittedRect = state.exportSettings.videoContentRect(from: state.naturalSize)
                 let scaleTransform = CGAffineTransform(
                     scaleX: fittedRect.width / state.naturalSize.width,
-                    y: fittedRect.height / state.naturalSize.height,
+                    y: fittedRect.height / state.naturalSize.height
                 )
                 let centerTransform = CGAffineTransform(
                     translationX: fittedRect.origin.x,
-                    y: fittedRect.origin.y,
+                    y: fittedRect.origin.y
                 )
 
                 layerInstruction.setTransform(
                     transform.concatenating(scaleTransform).concatenating(centerTransform),
-                    at: .zero,
+                    at: .zero
                 )
 
                 instruction.layerInstructions = [layerInstruction]
@@ -682,7 +685,7 @@
             // Export composition
             guard let exportSession = AVAssetExportSession(
                 asset: composition,
-                presetName: state.exportSettings.quality.exportPreset,
+                presetName: state.exportSettings.quality.exportPreset
             ) else {
                 DiagnosticLogger.shared.log(.error, .export, "Video-only export session creation failed")
                 throw ExportError.sessionCreationFailed
@@ -713,7 +716,7 @@
                         .error,
                         .export,
                         "Video-only export failed with non-completed status",
-                        context: ["status": "\(exportSession.status.rawValue)"],
+                        context: ["status": "\(exportSession.status.rawValue)"]
                     )
                 }
                 throw exportSession.error ?? ExportError.exportFailed
@@ -722,7 +725,7 @@
                 .info,
                 .export,
                 "Video-only export completed",
-                context: ["output": outputURL.lastPathComponent],
+                context: ["output": outputURL.lastPathComponent]
             )
         }
 
@@ -739,7 +742,7 @@
                 .info,
                 .export,
                 "Replace original started",
-                context: ["file": state.originalURL.lastPathComponent],
+                context: ["file": state.originalURL.lastPathComponent]
             )
 
             try await exportTrimmed(state: state, to: tempURL, progress: progress)
@@ -758,7 +761,7 @@
 
             // Replace original with temp file - use originalURL for correct target
             let targetDirectoryAccess = SandboxFileAccessManager.shared.beginAccessingURL(
-                state.originalURL.deletingLastPathComponent(),
+                state.originalURL.deletingLastPathComponent()
             )
             defer { targetDirectoryAccess.stop() }
 
@@ -807,7 +810,7 @@
                 .info,
                 .export,
                 "Replace original completed",
-                context: ["size": "\(finalSize) bytes"],
+                context: ["size": "\(finalSize) bytes"]
             )
         }
 
@@ -818,7 +821,7 @@
                 .info,
                 .export,
                 "Save as copy started",
-                context: ["output": copyURL.lastPathComponent],
+                context: ["output": copyURL.lastPathComponent]
             )
             try await exportTrimmed(state: state, to: copyURL, progress: progress)
             DiagnosticLogger.shared.log(.info, .export, "Save as copy completed")
@@ -834,7 +837,7 @@
             settings: ExportSettings,
             roles: [VideoEditorAudioTrackRole],
             speedMap: SpeedTimeMap?,
-            logPrefix: String,
+            logPrefix: String
         ) async throws -> AVMutableAudioMix? {
             guard settings.shouldIncludeAudio else {
                 print("\(logPrefix) Audio muted, skipping audio tracks")
@@ -851,7 +854,7 @@
             for sourceAudioTrack in sourceAudioTracks {
                 guard let compositionAudioTrack = composition.addMutableTrack(
                     withMediaType: .audio,
-                    preferredTrackID: kCMPersistentTrackID_Invalid,
+                    preferredTrackID: kCMPersistentTrackID_Invalid
                 ) else {
                     DiagnosticLogger.shared.log(.error, .export, "Failed to add composition audio track")
                     throw ExportError.exportFailed
@@ -873,14 +876,14 @@
                 for: compositionAudioTracks,
                 settings: settings,
                 roles: roles,
-                logPrefix: logPrefix,
+                logPrefix: logPrefix
             )
             // Preserve pitch on scaled audio (independent of volume/custom mode).
             return applyPitchPreservation(
                 to: baseMix,
                 tracks: compositionAudioTracks,
                 speedMap: speedMap,
-                logPrefix: logPrefix,
+                logPrefix: logPrefix
             )
         }
 
@@ -889,12 +892,12 @@
         private static func applySpeedScaling(
             to track: AVMutableCompositionTrack,
             map: SpeedTimeMap,
-            logPrefix: String,
+            logPrefix: String
         ) {
             for span in map.spans.reversed() where span.rate != 1.0 {
                 let range = CMTimeRange(
                     start: CMTime(seconds: span.origStart, preferredTimescale: 600),
-                    duration: CMTime(seconds: span.origDuration, preferredTimescale: 600),
+                    duration: CMTime(seconds: span.origDuration, preferredTimescale: 600)
                 )
                 let newDuration = CMTime(seconds: span.scaledDuration, preferredTimescale: 600)
                 track.scaleTimeRange(range, toDuration: newDuration)
@@ -909,7 +912,7 @@
             to baseMix: AVMutableAudioMix?,
             tracks: [AVMutableCompositionTrack],
             speedMap: SpeedTimeMap?,
-            logPrefix: String,
+            logPrefix: String
         ) -> AVMutableAudioMix? {
             guard let speedMap, !speedMap.isIdentity else { return baseMix }
 
@@ -917,7 +920,7 @@
             let existing = (mix.inputParameters as? [AVMutableAudioMixInputParameters]) ?? []
             let existingByTrack = Dictionary(
                 existing.map { ($0.trackID, $0) },
-                uniquingKeysWith: { first, _ in first },
+                uniquingKeysWith: { first, _ in first }
             )
 
             mix.inputParameters = tracks.map { track in
@@ -933,7 +936,7 @@
             for asset: AVAsset,
             settings: ExportSettings,
             roles: [VideoEditorAudioTrackRole],
-            logPrefix: String,
+            logPrefix: String
         ) async throws -> AVMutableAudioMix? {
             guard settings.audioMode == .custom else { return nil }
 
@@ -947,7 +950,7 @@
                 for: audioTracks,
                 settings: settings,
                 roles: roles,
-                logPrefix: logPrefix,
+                logPrefix: logPrefix
             )
         }
 
@@ -955,7 +958,7 @@
             for audioTracks: [AVAssetTrack],
             settings: ExportSettings,
             roles: [VideoEditorAudioTrackRole],
-            logPrefix: String,
+            logPrefix: String
         ) -> AVMutableAudioMix? {
             guard settings.audioMode == .custom else { return nil }
 
@@ -967,7 +970,7 @@
             let mix = VideoEditorAudioMixFactory.makeAudioMix(
                 for: audioTracks,
                 settings: settings,
-                roles: resolvedRoles,
+                roles: resolvedRoles
             )
             for (_, role) in zip(audioTracks, resolvedRoles) {
                 let volume = settings.effectiveVolume(for: role)
@@ -978,18 +981,18 @@
 
         private static func normalizeExportAudioForCompatibilityIfNeeded(
             at outputURL: URL,
-            fileExtension: String,
+            fileExtension: String
         ) async throws {
             let result = try await RecordingAudioCompatibilityExporter.normalizeIfNeeded(
                 at: outputURL,
                 fileType: outputFileType(for: fileExtension),
-                preservesAudioSource: false,
+                preservesAudioSource: false
             )
 
             guard result.didNormalize else {
                 DiagnosticLogger.shared.log(.debug, .export, "Video export audio normalization skipped", context: [
                     "output": outputURL.lastPathComponent,
-                    "audioTracks": "\(result.audioTrackCount)",
+                    "audioTracks": "\(result.audioTrackCount)"
                 ])
                 return
             }
@@ -997,7 +1000,7 @@
             DiagnosticLogger.shared.log(.info, .export, "Video export audio normalized for compatibility", context: [
                 "output": outputURL.lastPathComponent,
                 "sourceAudioTracks": "\(result.audioTrackCount)",
-                "outputAudioTracks": "1",
+                "outputAudioTracks": "1"
             ])
         }
 
@@ -1039,7 +1042,7 @@
         private static func sourceFrameDuration(for videoTrack: AVAssetTrack) async throws -> CMTime {
             let nominalFrameRate = try await videoTrack.load(.nominalFrameRate)
             if nominalFrameRate > 0 {
-                return CMTime(seconds: 1.0 / Double(nominalFrameRate), preferredTimescale: 60_000)
+                return CMTime(seconds: 1.0 / Double(nominalFrameRate), preferredTimescale: 60000)
             }
 
             let minFrameDuration = try await videoTrack.load(.minFrameDuration)
@@ -1054,7 +1057,8 @@
         private static func compositionFrameDuration(source: CMTime, state: VideoEditorState) -> CMTime {
             if state.hasSyntheticOverlays
                 || state.zoomSegments.contains(where: \.isEnabled)
-                || state.usesReframeExport {
+                || state.usesReframeExport
+            {
                 return CMTime(value: 1, timescale: 60)
             }
             return source

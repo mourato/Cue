@@ -18,7 +18,7 @@ enum DefaultPresets {
         .isometricLeft,
         .isometricRight,
         .heroShot,
-        .dramatic,
+        .dramatic
     ]
 
     /// Get preset by name

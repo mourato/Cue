@@ -55,7 +55,7 @@ private struct HintModifier: ViewModifier {
                     HintPopoverContent(text: text)
                 }
 
-        case .icon(let style):
+        case let .icon(style):
             HStack(spacing: 4) {
                 content
 

@@ -37,7 +37,7 @@ final class AreaSelectionOverlayCursorDragTests: AreaSelectionOverlayTestCase {
             context: nil,
             eventNumber: 0,
             clickCount: 1,
-            pressure: 1,
+            pressure: 1
         ) else {
             XCTFail("Failed to synthesize mouse-down event")
             return
@@ -47,7 +47,7 @@ final class AreaSelectionOverlayCursorDragTests: AreaSelectionOverlayTestCase {
         // THEN: a manual selection is in progress, so re-assertion during drag is active (not the no-op path)
         XCTAssertTrue(
             overlayView.isManualSelectionInProgress,
-            "Manual selection must be in progress after a left mouse-down in manual-region mode",
+            "Manual selection must be in progress after a left mouse-down in manual-region mode"
         )
         overlayView.reassertCursorDuringDrag() // must run without crashing while in progress
         XCTAssertTrue(overlayView.isManualSelectionInProgress)

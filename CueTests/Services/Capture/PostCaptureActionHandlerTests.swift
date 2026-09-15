@@ -81,7 +81,7 @@ final class PostCaptureActionHandlerTests: XCTestCase {
         annotateAction: @escaping (QuickAccessItem?, URL, AnnotationSessionData?) -> Void = { _, _, _ in },
         uploadAction: @escaping @MainActor (URL) -> Void = { _ in },
         videoEditorAction: @escaping @MainActor (QuickAccessItem?, URL) -> Void = { _, _ in },
-        historyAction: ((URL) async -> Void)? = nil,
+        historyAction: ((URL) async -> Void)? = nil
     ) -> PostCaptureActionHandler {
         PostCaptureActionHandler(
             preferences: preferences,
@@ -92,7 +92,7 @@ final class PostCaptureActionHandlerTests: XCTestCase {
             annotateAction: annotateAction,
             uploadAction: uploadAction,
             videoEditorAction: videoEditorAction,
-            historyAction: historyAction,
+            historyAction: historyAction
         )
     }
 
@@ -111,14 +111,14 @@ final class PostCaptureActionHandlerTests: XCTestCase {
                 XCTAssertEqual(url, self.tempFileURL)
                 openedItems.append(item)
             },
-            historyAction: { url in historyURLs.append(url) },
+            historyAction: { url in historyURLs.append(url) }
         )
 
         _ = await handler.handleVideoFrameCapture(
             url: tempFileURL,
             sourceURL: tempDirectory.appendingPathComponent("source.mov"),
             requestedTime: 1,
-            actualTime: 1,
+            actualTime: 1
         )
 
         XCTAssertEqual(fakeQuickAccess.addedScreenshots, [tempFileURL])
@@ -141,7 +141,8 @@ final class PostCaptureActionHandlerTests: XCTestCase {
         guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
               let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [String: Any],
               let width = properties[kCGImagePropertyPixelWidth as String] as? CGFloat,
-              let height = properties[kCGImagePropertyPixelHeight as String] as? CGFloat else {
+              let height = properties[kCGImagePropertyPixelHeight as String] as? CGFloat
+        else {
             return nil
         }
         return CGSize(width: width, height: height)
@@ -149,7 +150,7 @@ final class PostCaptureActionHandlerTests: XCTestCase {
 
     private func saveDefaultPreset(
         padding: CGFloat = 10,
-        backgroundStyle: Cue.BackgroundStyle = .solidColor(SwiftUI.Color.red),
+        backgroundStyle: Cue.BackgroundStyle = .solidColor(SwiftUI.Color.red)
     ) -> AnnotateCanvasPreset {
         let preset = AnnotateCanvasPreset(
             name: "Default Share",
@@ -157,8 +158,8 @@ final class PostCaptureActionHandlerTests: XCTestCase {
                 backgroundStyle: CodableBackgroundStyle(from: backgroundStyle)!,
                 padding: padding,
                 shadowIntensity: 0,
-                cornerRadius: 0,
-            ),
+                cornerRadius: 0
+            )
         )
         canvasPresetStore.savePresets([preset])
         canvasPresetStore.saveDefaultPresetId(preset.id)
@@ -207,7 +208,7 @@ final class PostCaptureActionHandlerTests: XCTestCase {
         let handler = makeHandler(
             quickAccess: fakeQuickAccess,
             clipboardAction: { _, _ in copied += 1 },
-            annotateAction: { _, _, _ in annotated += 1 },
+            annotateAction: { _, _, _ in annotated += 1 }
         )
 
         _ = await handler.handleScreenshotCapture(url: tempFileURL)
@@ -279,7 +280,7 @@ final class PostCaptureActionHandlerTests: XCTestCase {
             clipboardAction: { url, isVideo in
                 copiedURL = url
                 copiedAsVideo = isVideo
-            },
+            }
         )
 
         await handler.handleScreenshotCapture(url: tempFileURL)
@@ -306,7 +307,7 @@ final class PostCaptureActionHandlerTests: XCTestCase {
             clipboardAction: { url, isVideo in
                 copiedURL = url
                 copiedAsVideo = isVideo
-            },
+            }
         )
 
         await handler.handleVideoCapture(url: videoURL)
@@ -331,7 +332,7 @@ final class PostCaptureActionHandlerTests: XCTestCase {
         let beforeData = try Data(contentsOf: tempFileURL)
 
         let sessionData = try XCTUnwrap(
-            screenshotPresetAutoApplier.applyDefaultPresetIfNeeded(to: tempFileURL),
+            screenshotPresetAutoApplier.applyDefaultPresetIfNeeded(to: tempFileURL)
         )
         let afterSize = try XCTUnwrap(imagePixelSize(at: tempFileURL))
 
@@ -471,7 +472,7 @@ final class PostCaptureActionHandlerTests: XCTestCase {
             uploadAction: { url in
                 uploadedURL = url
                 uploaded.fulfill()
-            },
+            }
         )
 
         await handler.handleScreenshotCapture(url: tempFileURL)
@@ -490,7 +491,7 @@ final class PostCaptureActionHandlerTests: XCTestCase {
         var editorURL: URL?
         let handler = makeHandler(
             quickAccess: fakeQuickAccess,
-            videoEditorAction: { _, url in editorURL = url },
+            videoEditorAction: { _, url in editorURL = url }
         )
 
         await handler.handleVideoCapture(url: videoURL)

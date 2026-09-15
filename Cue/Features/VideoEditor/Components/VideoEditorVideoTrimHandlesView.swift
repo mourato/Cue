@@ -93,7 +93,7 @@
                     isDraggingStart = true
                     let newOffset = snappedTimelineOffset(
                         clampedTimelineOffset(value.location.x),
-                        to: startDragPlayheadTime,
+                        to: startDragPlayheadTime
                     )
                     let newTime = time(atTimelineOffset: newOffset)
                     state.setTrimStart(newTime)
@@ -113,7 +113,7 @@
                     isDraggingEnd = true
                     let newOffset = snappedTimelineOffset(
                         clampedTimelineOffset(value.location.x),
-                        to: endDragPlayheadTime,
+                        to: endDragPlayheadTime
                     )
                     let newTime = time(atTimelineOffset: newOffset)
                     state.setTrimEnd(newTime)
@@ -159,7 +159,7 @@
             let progress = clampedTimelineOffset(offset) / timelineWidth
             return CMTime(
                 seconds: progress * durationSeconds,
-                preferredTimescale: 600,
+                preferredTimescale: 600
             )
         }
     }
@@ -178,7 +178,7 @@
                 .overlay(
                     Image(systemName: isStart ? "chevron.compact.left" : "chevron.compact.right")
                         .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(.black.opacity(0.5)),
+                        .foregroundColor(.black.opacity(0.5))
                 )
                 .contentShape(Rectangle().inset(by: -10))
         }

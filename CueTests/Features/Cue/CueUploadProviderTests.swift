@@ -53,7 +53,7 @@ final class CueUploadProviderTests: XCTestCase {
         let store = CueUploadConfigurationStore(
             defaults: defaults,
             imgbb: CueImgBBCredentialStore(defaults: defaults, keychain: MockProviderKeychain()),
-            imageKit: CueImageKitCredentialStore(defaults: defaults, keychain: MockProviderKeychain()),
+            imageKit: CueImageKitCredentialStore(defaults: defaults, keychain: MockProviderKeychain())
         )
 
         XCTAssertEqual(store.provider, .imgbb)
@@ -121,9 +121,9 @@ final class CueUploadProviderTests: XCTestCase {
                         url: request.url!,
                         statusCode: 200,
                         httpVersion: nil,
-                        headerFields: nil,
+                        headerFields: nil
                     )!,
-                    Data("{}".utf8),
+                    Data("{}".utf8)
                 )
             }
             XCTAssertEqual(request.url?.absoluteString, "https://old.worker.example/api/ping")
@@ -132,9 +132,9 @@ final class CueUploadProviderTests: XCTestCase {
                     url: request.url!,
                     statusCode: 200,
                     httpVersion: nil,
-                    headerFields: nil,
+                    headerFields: nil
                 )!,
-                Data(#"{"ok":true}"#.utf8),
+                Data(#"{"ok":true}"#.utf8)
             )
         }
         defer {
@@ -151,8 +151,8 @@ final class CueUploadProviderTests: XCTestCase {
             imageKit: CueImageKitCredentialStore(defaults: defaults, keychain: MockProviderKeychain()),
             cloudflare: credentials,
             cloudflareService: CueCloudflareUploadService(
-                session: URLSession(configuration: sessionConfiguration),
-            ),
+                session: URLSession(configuration: sessionConfiguration)
+            )
         )
 
         let verification = Task { await store.verifyCloudflareConnection() }
@@ -173,35 +173,35 @@ final class CueUploadProviderTests: XCTestCase {
             token: nil,
             credential: "",
             isEditing: false,
-            didPrefill: false,
+            didPrefill: false
         ))
         XCTAssertFalse(CloudflareTokenPrefill.shouldPrefill(
             provider: .cloudflare,
             token: "existing-token",
             credential: "",
             isEditing: false,
-            didPrefill: false,
+            didPrefill: false
         ))
         XCTAssertFalse(CloudflareTokenPrefill.shouldPrefill(
             provider: .cloudflare,
             token: nil,
             credential: "draft",
             isEditing: true,
-            didPrefill: false,
+            didPrefill: false
         ))
         XCTAssertFalse(CloudflareTokenPrefill.shouldPrefill(
             provider: .cloudflare,
             token: nil,
             credential: "",
             isEditing: false,
-            didPrefill: true,
+            didPrefill: true
         ))
         XCTAssertFalse(CloudflareTokenPrefill.shouldPrefill(
             provider: .imgbb,
             token: nil,
             credential: "",
             isEditing: false,
-            didPrefill: false,
+            didPrefill: false
         ))
     }
 
@@ -230,7 +230,7 @@ final class CueUploadProviderTests: XCTestCase {
             imgbb: CueImgBBCredentialStore(defaults: defaults, keychain: MockProviderKeychain()),
             imageKit: CueImageKitCredentialStore(defaults: defaults, keychain: MockProviderKeychain()),
             cloudflare: credentials,
-            cloudflareService: service,
+            cloudflareService: service
         )
         store.select(.cloudflare)
         let coordinator = CueUploadCoordinator(configuration: store, cloudflareService: service)
@@ -260,7 +260,7 @@ final class CueUploadProviderTests: XCTestCase {
         let store = CueUploadConfigurationStore(
             defaults: defaults,
             imgbb: CueImgBBCredentialStore(defaults: defaults, keychain: MockProviderKeychain()),
-            imageKit: CueImageKitCredentialStore(defaults: defaults, keychain: MockProviderKeychain()),
+            imageKit: CueImageKitCredentialStore(defaults: defaults, keychain: MockProviderKeychain())
         )
 
         XCTAssertEqual(store.imageKitPlan, .free)
@@ -278,23 +278,23 @@ final class CueUploadProviderTests: XCTestCase {
 
     func testVideoUploadSettingsReduceQualityAcrossRetries() {
         let settings = CueVideoUploadSettings(
-            maximumDimension: 1_920,
+            maximumDimension: 1920,
             quality: .high,
             frameRate: 60,
-            includesAudio: true,
+            includesAudio: true
         )
 
         XCTAssertEqual(
             settings.reducedForRetry(1),
-            CueVideoUploadSettings(maximumDimension: 1_280, quality: .compact, frameRate: 30, includesAudio: true),
+            CueVideoUploadSettings(maximumDimension: 1280, quality: .compact, frameRate: 30, includesAudio: true)
         )
         XCTAssertEqual(
             settings.reducedForRetry(2),
-            CueVideoUploadSettings(maximumDimension: 960, quality: .compact, frameRate: 24, includesAudio: true),
+            CueVideoUploadSettings(maximumDimension: 960, quality: .compact, frameRate: 24, includesAudio: true)
         )
         XCTAssertEqual(
             settings.reducedForRetry(3),
-            CueVideoUploadSettings(maximumDimension: 960, quality: .compact, frameRate: 24, includesAudio: false),
+            CueVideoUploadSettings(maximumDimension: 960, quality: .compact, frameRate: 24, includesAudio: false)
         )
         XCTAssertNil(settings.reducedForRetry(4))
     }

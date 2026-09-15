@@ -15,7 +15,7 @@
         static func evenSize(_ size: CGSize) -> CGSize {
             CGSize(
                 width: CGFloat(evenDimension(for: size.width)),
-                height: CGFloat(evenDimension(for: size.height)),
+                height: CGFloat(evenDimension(for: size.height))
             )
         }
 
@@ -35,8 +35,8 @@
             return evenSize(
                 CGSize(
                     width: aspectRatio.width * scale,
-                    height: aspectRatio.height * scale,
-                ),
+                    height: aspectRatio.height * scale
+                )
             )
         }
 
@@ -52,14 +52,14 @@
             let scale = min(canvasSize.width / sourceSize.width, canvasSize.height / sourceSize.height)
             let fittedSize = CGSize(
                 width: sourceSize.width * scale,
-                height: sourceSize.height * scale,
+                height: sourceSize.height * scale
             )
 
             return CGRect(
                 x: (canvasSize.width - fittedSize.width) / 2,
                 y: (canvasSize.height - fittedSize.height) / 2,
                 width: fittedSize.width,
-                height: fittedSize.height,
+                height: fittedSize.height
             )
         }
 
@@ -75,14 +75,14 @@
             let scale = max(canvasSize.width / sourceSize.width, canvasSize.height / sourceSize.height)
             let filledSize = CGSize(
                 width: sourceSize.width * scale,
-                height: sourceSize.height * scale,
+                height: sourceSize.height * scale
             )
 
             return CGRect(
                 x: (canvasSize.width - filledSize.width) / 2,
                 y: (canvasSize.height - filledSize.height) / 2,
                 width: filledSize.width,
-                height: filledSize.height,
+                height: filledSize.height
             )
         }
 
@@ -199,7 +199,7 @@
                 "systemAudio"
             case .microphone:
                 "microphone"
-            case .additional(let index):
+            case let .additional(index):
                 "additional-\(index)"
             }
         }
@@ -212,7 +212,7 @@
                 L10n.VideoEditor.systemAudio
             case .microphone:
                 L10n.VideoEditor.microphoneAudio
-            case .additional(let index):
+            case let .additional(index):
                 L10n.VideoEditor.additionalAudioTrack(index)
             }
         }
@@ -225,7 +225,7 @@
                 L10n.VideoEditor.systemAudioShort
             case .microphone:
                 L10n.VideoEditor.microphoneAudioShort
-            case .additional(let index):
+            case let .additional(index):
                 L10n.VideoEditor.additionalAudioTrackShort(index)
             }
         }
@@ -264,7 +264,7 @@
         static func makeAudioMix(
             for audioTracks: [AVAssetTrack],
             settings: ExportSettings,
-            roles: [VideoEditorAudioTrackRole] = [],
+            roles: [VideoEditorAudioTrackRole] = []
         ) -> AVMutableAudioMix? {
             guard settings.audioMode == .custom else { return nil }
             guard !audioTracks.isEmpty else { return nil }
@@ -315,7 +315,7 @@
             .ratio3x2,
             .ratio2x3,
             .ratio16x9,
-            .ratio9x16,
+            .ratio9x16
         ]
 
         /// Returns scale factor for percentage-based presets
@@ -368,13 +368,13 @@
             case .original:
                 return L10n.VideoEditor.originalDimensionsLabel(
                     Int(naturalSize.width),
-                    Int(naturalSize.height),
+                    Int(naturalSize.height)
                 )
             case .ratio1x1, .ratio4x3, .ratio3x4, .ratio3x2, .ratio2x3, .ratio16x9, .ratio9x16:
                 guard let aspectRatio else { return rawValue }
                 let size = VideoEditorExportLayout.aspectRatioCanvasSize(
                     for: naturalSize,
-                    aspectRatio: aspectRatio,
+                    aspectRatio: aspectRatio
                 )
                 return "\(rawValue) (\(Int(size.width))×\(Int(size.height)))"
             case .percent90, .percent80, .percent60, .percent50, .percent40, .percent30, .percent20:
@@ -382,8 +382,8 @@
                 let size = VideoEditorExportLayout.evenSize(
                     CGSize(
                         width: naturalSize.width * scale,
-                        height: naturalSize.height * scale,
-                    ),
+                        height: naturalSize.height * scale
+                    )
                 )
                 return "\(rawValue) (\(Int(size.width))×\(Int(size.height)))"
             case .custom:
@@ -421,7 +421,7 @@
                 }
                 return VideoEditorExportLayout.aspectRatioCanvasSize(
                     for: naturalSize,
-                    aspectRatio: aspectRatio,
+                    aspectRatio: aspectRatio
                 )
 
             case .percent90, .percent80, .percent60, .percent50, .percent40, .percent30, .percent20:
@@ -431,13 +431,13 @@
                 return VideoEditorExportLayout.evenSize(
                     CGSize(
                         width: naturalSize.width * scale,
-                        height: naturalSize.height * scale,
-                    ),
+                        height: naturalSize.height * scale
+                    )
                 )
 
             case .custom:
                 return VideoEditorExportLayout.evenSize(
-                    CGSize(width: customWidth, height: customHeight),
+                    CGSize(width: customWidth, height: customHeight)
                 )
             }
         }
@@ -445,7 +445,7 @@
         func videoContentRect(from naturalSize: CGSize) -> CGRect {
             VideoEditorExportLayout.aspectFitRect(
                 sourceSize: naturalSize,
-                in: exportSize(from: naturalSize),
+                in: exportSize(from: naturalSize)
             )
         }
 

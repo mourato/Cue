@@ -24,7 +24,7 @@ enum AnnotateImageDropLoader {
     @discardableResult
     static func load(
         from provider: NSItemProvider,
-        completion: @escaping (AnnotateDroppedImage?) -> Void,
+        completion: @escaping (AnnotateDroppedImage?) -> Void
     ) -> Bool {
         if provider.canLoadObject(ofClass: NSImage.self) {
             provider.loadObject(ofClass: NSImage.self) { object, _ in
@@ -49,7 +49,8 @@ enum AnnotateImageDropLoader {
 
             defer { try? FileManager.default.removeItem(at: url) }
             guard let data = try? Data(contentsOf: url),
-                  let image = NSImage(data: data) else {
+                  let image = NSImage(data: data)
+            else {
                 completion(nil)
                 return
             }
@@ -69,7 +70,7 @@ struct AnnotateCanvasView: View {
 
     /// Supported image types for drag-drop
     static let supportedImageTypes: [UTType] = [
-        .png, .jpeg, .gif, .tiff, .bmp, .heic,
+        .png, .jpeg, .gif, .tiff, .bmp, .heic
     ]
 
     /// Check if any mockup transforms have been applied
@@ -101,7 +102,7 @@ struct AnnotateCanvasView: View {
                             state.updateViewportMetrics(
                                 containerSize: geometry.size,
                                 baseCanvasSize: .zero,
-                                fitScale: 1.0,
+                                fitScale: 1.0
                             )
                         }
                         .onChange(of: geometry.size) { newSize in
@@ -227,7 +228,7 @@ struct AnnotateCanvasView: View {
             NSAccessibility.post(
                 element: NSApp,
                 notification: .announcementRequested,
-                userInfo: [.announcement: message],
+                userInfo: [.announcement: message]
             )
             try? await Task.sleep(nanoseconds: 2_500_000_000) // 2.5 seconds
             withAnimation {
@@ -268,7 +269,7 @@ struct AnnotateCanvasView: View {
                 for: fitBounds.size,
                 padding: currentPadding,
                 alignmentSpace: alignmentSpace,
-                orientation: state.aspectRatioOrientation,
+                orientation: state.aspectRatioOrientation
             )
         let scaleX = availableWidth / fitLogicalCanvasSize.width
         let scaleY = availableHeight / fitLogicalCanvasSize.height
@@ -281,7 +282,7 @@ struct AnnotateCanvasView: View {
                 cropWorkspaceBounds(
                     for: imageBounds,
                     availableSize: CGSize(width: availableWidth, height: availableHeight),
-                    scale: scale,
+                    scale: scale
                 )
             } else {
                 cropBounds
@@ -293,13 +294,13 @@ struct AnnotateCanvasView: View {
         let logicalCanvasSize = state.isCombineMode
             ? CGSize(
                 width: foregroundBounds.width + currentPadding * 2,
-                height: foregroundBounds.height + currentPadding * 2,
+                height: foregroundBounds.height + currentPadding * 2
             )
             : state.aspectRatio.canvasSize(
                 for: foregroundBounds.size,
                 padding: currentPadding,
                 alignmentSpace: alignmentSpace,
-                orientation: state.aspectRatioOrientation,
+                orientation: state.aspectRatioOrientation
             )
 
         // Background = logical canvas * scale (includes padding + alignment space)
@@ -308,7 +309,7 @@ struct AnnotateCanvasView: View {
         let viewportMetrics = AnnotateViewportMetrics(
             containerSize: containerSize,
             baseCanvasSize: CGSize(width: bgWidth, height: bgHeight),
-            fitScale: scale,
+            fitScale: scale
         )
 
         let foregroundWidth = foregroundBounds.width * scale
@@ -317,7 +318,7 @@ struct AnnotateCanvasView: View {
         let offset = state.isCombineMode ? .zero : state.imageOffset(
             for: CGSize(width: bgWidth, height: bgHeight),
             imageDisplaySize: foregroundDisplaySize,
-            displayPadding: currentPadding * scale,
+            displayPadding: currentPadding * scale
         )
 
         return ZStack {
@@ -338,7 +339,7 @@ struct AnnotateCanvasView: View {
                         TextEditOverlay(
                             state: state,
                             scale: scale,
-                            canvasBounds: foregroundBounds,
+                            canvasBounds: foregroundBounds
                         )
                         .frame(width: foregroundWidth, height: foregroundHeight)
                         .clipped()
@@ -353,7 +354,7 @@ struct AnnotateCanvasView: View {
                     CropOverlayView(
                         state: state,
                         scale: scale,
-                        canvasBounds: foregroundBounds,
+                        canvasBounds: foregroundBounds
                     )
                     .frame(width: foregroundWidth, height: foregroundHeight)
                     .offset(x: offset.x, y: offset.y)
@@ -361,7 +362,7 @@ struct AnnotateCanvasView: View {
             }
             .modifier(CombineCanvasClipModifier(
                 isEnabled: state.isCombineMode,
-                cornerRadius: state.effectiveCornerRadius * scale,
+                cornerRadius: state.effectiveCornerRadius * scale
             ))
             .scaleEffect(state.zoomLevel)
             .offset(x: state.panOffset.width, y: state.panOffset.height)
@@ -375,7 +376,7 @@ struct AnnotateCanvasView: View {
                     foregroundOffset: offset,
                     backgroundDisplaySize: CGSize(width: bgWidth, height: bgHeight),
                     zoomLevel: state.zoomLevel,
-                    panOffset: state.panOffset,
+                    panOffset: state.panOffset
                 )
                 .frame(width: containerSize.width, height: containerSize.height)
             }
@@ -384,14 +385,14 @@ struct AnnotateCanvasView: View {
             state.updateViewportMetrics(
                 containerSize: viewportMetrics.containerSize,
                 baseCanvasSize: viewportMetrics.baseCanvasSize,
-                fitScale: viewportMetrics.fitScale,
+                fitScale: viewportMetrics.fitScale
             )
         }
         .onChange(of: viewportMetrics) { newMetrics in
             state.updateViewportMetrics(
                 containerSize: newMetrics.containerSize,
                 baseCanvasSize: newMetrics.baseCanvasSize,
-                fitScale: newMetrics.fitScale,
+                fitScale: newMetrics.fitScale
             )
         }
         .accessibilityElement(children: .ignore)
@@ -434,7 +435,7 @@ struct AnnotateCanvasView: View {
             x: imageBounds.midX - workspaceWidth / 2,
             y: imageBounds.midY - workspaceHeight / 2,
             width: workspaceWidth,
-            height: workspaceHeight,
+            height: workspaceHeight
         ).standardized
     }
 
@@ -449,25 +450,26 @@ struct AnnotateCanvasView: View {
             case .none:
                 EmptyView()
 
-            case .gradient(let preset):
+            case let .gradient(preset):
                 Rectangle()
                     .fill(LinearGradient(
                         colors: preset.colors,
                         startPoint: .topLeading,
-                        endPoint: .bottomTrailing,
+                        endPoint: .bottomTrailing
                     ))
                     .frame(width: width, height: height)
                     .shadow(
                         color: .black.opacity(currentShadowIntensity),
                         radius: 20,
                         x: 0,
-                        y: 10,
+                        y: 10
                     )
 
-            case .wallpaper(let url):
+            case let .wallpaper(url):
                 // Check if this is a preset wallpaper
                 if url.scheme == "preset", let presetName = url.host,
-                   let preset = WallpaperPreset(rawValue: presetName) {
+                   let preset = WallpaperPreset(rawValue: presetName)
+                {
                     Rectangle()
                         .fill(preset.gradient)
                         .frame(width: width, height: height)
@@ -475,26 +477,26 @@ struct AnnotateCanvasView: View {
                             color: .black.opacity(currentShadowIntensity),
                             radius: 20,
                             x: 0,
-                            y: 10,
+                            y: 10
                         )
                 } else {
                     wallpaperLayer(url: url, width: width, height: height)
                 }
 
-            case .blurred(let url):
+            case let .blurred(url):
                 if url.scheme == "preset" {
                     EmptyView()
                 } else {
                     wallpaperLayer(url: url, width: width, height: height, forceBlurred: true)
                 }
 
-            case .solidColor(let color):
+            case let .solidColor(color):
                 solidColorLayer(color, width: width, height: height)
                     .shadow(
                         color: .black.opacity(currentShadowIntensity),
                         radius: 20,
                         x: 0,
-                        y: 10,
+                        y: 10
                     )
             }
         }
@@ -506,7 +508,7 @@ struct AnnotateCanvasView: View {
         url: URL,
         width: CGFloat,
         height: CGFloat,
-        forceBlurred: Bool = false,
+        forceBlurred: Bool = false
     ) -> some View {
         let shouldBlur = forceBlurred || state.isBlurredBackgroundEffectActive
 
@@ -526,7 +528,7 @@ struct AnnotateCanvasView: View {
     private func solidColorLayer(
         _ color: Color,
         width: CGFloat,
-        height: CGFloat,
+        height: CGFloat
     ) -> some View {
         let effect = state.isBlurredBackgroundEffectActive ? state.blurredBackgroundEffect : nil
         return Rectangle()
@@ -541,7 +543,7 @@ struct AnnotateCanvasView: View {
         _ nsImage: NSImage,
         width: CGFloat,
         height: CGFloat,
-        appliesLiveEffect: Bool,
+        appliesLiveEffect: Bool
     ) -> some View {
         let effect = state.blurredBackgroundEffect
 
@@ -588,7 +590,7 @@ struct AnnotateCanvasView: View {
                     color: .black.opacity(state.backgroundStyle != .none ? currentShadowIntensity : 0),
                     radius: 15,
                     x: 0,
-                    y: 8,
+                    y: 8
                 )
         }
     }
@@ -596,7 +598,7 @@ struct AnnotateCanvasView: View {
     private func displayOffset(for contentBounds: CGRect, in visibleBounds: CGRect, scale: CGFloat) -> CGPoint {
         CGPoint(
             x: (contentBounds.midX - visibleBounds.midX) * scale,
-            y: (visibleBounds.midY - contentBounds.midY) * scale,
+            y: (visibleBounds.midY - contentBounds.midY) * scale
         )
     }
 
@@ -647,7 +649,7 @@ struct AnnotateCanvasView: View {
                     if !state.importImage(
                         droppedImage.image,
                         sourceURL: nil,
-                        sourceData: droppedImage.data,
+                        sourceData: droppedImage.data
                     ) {
                         showError(L10n.AnnotateUI.imageImportFailed)
                     }

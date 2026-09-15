@@ -101,7 +101,7 @@ final class QuickAccessManager: ObservableObject {
         didSet {
             let clamped = min(
                 max(cornerButtonScale, QuickAccessCornerButtonMetrics.scaleRange.lowerBound),
-                QuickAccessCornerButtonMetrics.scaleRange.upperBound,
+                QuickAccessCornerButtonMetrics.scaleRange.upperBound
             )
             if clamped != cornerButtonScale {
                 cornerButtonScale = clamped
@@ -151,7 +151,7 @@ final class QuickAccessManager: ObservableObject {
 
     static let defaultOpenEditorShortcut = ShortcutConfig(
         keyCode: UInt32(kVK_Return),
-        modifiers: UInt32(cmdKey),
+        modifiers: UInt32(cmdKey)
     )
 
     // MARK: - Configuration
@@ -211,7 +211,8 @@ final class QuickAccessManager: ObservableObject {
         isEnabled = UserDefaults.standard.object(forKey: Keys.enabled) as? Bool ?? true
 
         if let positionRaw = UserDefaults.standard.string(forKey: Keys.position),
-           let savedPosition = QuickAccessPosition(rawValue: positionRaw) {
+           let savedPosition = QuickAccessPosition(rawValue: positionRaw)
+        {
             position = savedPosition
         }
 
@@ -221,7 +222,8 @@ final class QuickAccessManager: ObservableObject {
             UserDefaults.standard.object(forKey: Keys.hideCardWhenWindowOpen) as? Bool ?? true
 
         if let savedAnimStyle = UserDefaults.standard.string(forKey: Keys.quickAccessAnimationStyle),
-           let style = QuickAccessAnimationStyle(rawValue: savedAnimStyle) {
+           let style = QuickAccessAnimationStyle(rawValue: savedAnimStyle)
+        {
             animationStyle = style
         }
 
@@ -233,7 +235,7 @@ final class QuickAccessManager: ObservableObject {
             UserDefaults.standard.object(forKey: PreferencesKeys.quickAccessCornerButtonScale) as? Double ?? 1.0
         cornerButtonScale = min(
             max(savedCornerButtonScale, QuickAccessCornerButtonMetrics.scaleRange.lowerBound),
-            QuickAccessCornerButtonMetrics.scaleRange.upperBound,
+            QuickAccessCornerButtonMetrics.scaleRange.upperBound
         )
         dragDropEnabled =
             UserDefaults.standard.object(forKey: Keys.dragDropEnabled) as? Bool ?? true
@@ -256,8 +258,8 @@ final class QuickAccessManager: ObservableObject {
                 "autoDismiss": autoDismissEnabled ? "true" : "false",
                 "delay": "\(autoDismissDelay)",
                 "twoFingerSwipeToDismiss": twoFingerSwipeToDismissEnabled ? "true" : "false",
-                "swipeSensitivity": "\(swipeSensitivity)",
-            ],
+                "swipeSensitivity": "\(swipeSensitivity)"
+            ]
         )
     }
 
@@ -271,7 +273,7 @@ final class QuickAccessManager: ObservableObject {
                 .debug,
                 .action,
                 "Quick access screenshot skipped; feature disabled",
-                context: ["fileName": url.lastPathComponent],
+                context: ["fileName": url.lastPathComponent]
             )
             return nil
         }
@@ -291,7 +293,7 @@ final class QuickAccessManager: ObservableObject {
                 .warning,
                 .ui,
                 "Quick access screenshot thumbnail failed; using placeholder",
-                context: ["fileName": url.lastPathComponent],
+                context: ["fileName": url.lastPathComponent]
             )
             thumbnail = ThumbnailGenerator.placeholderThumbnail()
             needsRetry = true
@@ -309,7 +311,7 @@ final class QuickAccessManager: ObservableObject {
                     .debug,
                     .ui,
                     "Quick access trimmed oldest item",
-                    context: ["maxVisibleItems": "\(maxVisibleItems)"],
+                    context: ["maxVisibleItems": "\(maxVisibleItems)"]
                 )
             }
             items.insert(item, at: 0)
@@ -318,7 +320,7 @@ final class QuickAccessManager: ObservableObject {
             .info,
             .action,
             "Quick access screenshot added",
-            context: ["fileName": url.lastPathComponent, "itemCount": "\(items.count)"],
+            context: ["fileName": url.lastPathComponent, "itemCount": "\(items.count)"]
         )
 
         // Ensure the panel window exists — heals any state where items outlived
@@ -346,7 +348,7 @@ final class QuickAccessManager: ObservableObject {
                 .debug,
                 .action,
                 "Quick access video skipped; feature disabled",
-                context: ["fileName": url.lastPathComponent],
+                context: ["fileName": url.lastPathComponent]
             )
             return nil
         }
@@ -366,7 +368,7 @@ final class QuickAccessManager: ObservableObject {
                 .warning,
                 .ui,
                 "Quick access video thumbnail failed; using placeholder",
-                context: ["fileName": url.lastPathComponent],
+                context: ["fileName": url.lastPathComponent]
             )
             thumbnail = ThumbnailGenerator.placeholderThumbnail()
             needsRetry = true
@@ -385,7 +387,7 @@ final class QuickAccessManager: ObservableObject {
                     .debug,
                     .ui,
                     "Quick access trimmed oldest item",
-                    context: ["maxVisibleItems": "\(maxVisibleItems)"],
+                    context: ["maxVisibleItems": "\(maxVisibleItems)"]
                 )
             }
             items.insert(item, at: 0)
@@ -410,8 +412,8 @@ final class QuickAccessManager: ObservableObject {
             context: [
                 "fileName": url.lastPathComponent,
                 "itemCount": "\(items.count)",
-                "duration": "\(result.duration ?? 0)",
-            ],
+                "duration": "\(result.duration ?? 0)"
+            ]
         )
 
         return item
@@ -433,8 +435,8 @@ final class QuickAccessManager: ObservableObject {
                 context: [
                     "fileName": record.fileName,
                     "type": record.captureType.rawValue,
-                    "itemId": existingItem.id.uuidString,
-                ],
+                    "itemId": existingItem.id.uuidString
+                ]
             )
             return existingItem
         }
@@ -447,7 +449,7 @@ final class QuickAccessManager: ObservableObject {
                 .warning,
                 .history,
                 "History restore skipped; file missing",
-                context: ["fileName": record.fileName, "type": record.captureType.rawValue],
+                context: ["fileName": record.fileName, "type": record.captureType.rawValue]
             )
             return nil
         }
@@ -465,7 +467,7 @@ final class QuickAccessManager: ObservableObject {
                 .warning,
                 .ui,
                 "History restore thumbnail failed; using placeholder",
-                context: ["fileName": record.fileName, "type": record.captureType.rawValue],
+                context: ["fileName": record.fileName, "type": record.captureType.rawValue]
             )
         }
 
@@ -477,7 +479,7 @@ final class QuickAccessManager: ObservableObject {
                 thumbnail: thumbnail,
                 capturedAt: record.capturedAt,
                 itemType: .screenshot,
-                duration: nil,
+                duration: nil
             )
         case .video, .gif:
             QuickAccessItem(
@@ -486,7 +488,7 @@ final class QuickAccessManager: ObservableObject {
                 thumbnail: thumbnail,
                 capturedAt: record.capturedAt,
                 itemType: .video,
-                duration: record.duration ?? result.duration ?? 0,
+                duration: record.duration ?? result.duration ?? 0
             )
         }
 
@@ -498,8 +500,8 @@ final class QuickAccessManager: ObservableObject {
             context: [
                 "fileName": record.fileName,
                 "type": record.captureType.rawValue,
-                "itemId": item.id.uuidString,
-            ],
+                "itemId": item.id.uuidString
+            ]
         )
         return item
     }
@@ -514,7 +516,7 @@ final class QuickAccessManager: ObservableObject {
                 .debug,
                 .action,
                 "Quick access remove requested for missing item",
-                context: ["itemId": id.uuidString],
+                context: ["itemId": id.uuidString]
             )
             return
         }
@@ -551,7 +553,7 @@ final class QuickAccessManager: ObservableObject {
                 .info,
                 .action,
                 "Quick access item dismissed; saved file retained",
-                context: ["fileName": url.lastPathComponent],
+                context: ["fileName": url.lastPathComponent]
             )
             return
         }
@@ -576,14 +578,14 @@ final class QuickAccessManager: ObservableObject {
                     .info,
                     .action,
                     "Quick access item dismissed; temp file preserved for history",
-                    context: ["fileName": url.lastPathComponent],
+                    context: ["fileName": url.lastPathComponent]
                 )
             } else {
                 DiagnosticLogger.shared.log(
                     .info,
                     .action,
                     "Quick access item dismissed; temp file auto-delete requested",
-                    context: ["fileName": url.lastPathComponent],
+                    context: ["fileName": url.lastPathComponent]
                 )
                 AnnotationSessionStore.shared.deleteSession(for: url)
                 tempCaptureManager.deleteTempFile(at: url)
@@ -599,7 +601,7 @@ final class QuickAccessManager: ObservableObject {
             .debug,
             .action,
             "Quick access card dismissed without deleting file",
-            context: ["itemId": id.uuidString],
+            context: ["itemId": id.uuidString]
         )
         cancelDismissTimer(for: id)
         pinWindowManager.close(id: id)
@@ -622,7 +624,7 @@ final class QuickAccessManager: ObservableObject {
                 .warning,
                 .action,
                 "Quick access toggle pin missed item",
-                context: ["itemId": id.uuidString],
+                context: ["itemId": id.uuidString]
             )
             return
         }
@@ -651,7 +653,7 @@ final class QuickAccessManager: ObservableObject {
                 .warning,
                 .action,
                 "Quick access direct pin skipped; file missing",
-                context: ["fileName": url.lastPathComponent],
+                context: ["fileName": url.lastPathComponent]
             )
             return nil
         }
@@ -664,7 +666,7 @@ final class QuickAccessManager: ObservableObject {
                 .debug,
                 .action,
                 "Transient pinned screenshot closed",
-                context: ["itemId": closedId.uuidString],
+                context: ["itemId": closedId.uuidString]
             )
         }
 
@@ -674,7 +676,7 @@ final class QuickAccessManager: ObservableObject {
             .info,
             .action,
             "Screenshot URL pinned directly",
-            context: ["fileName": url.lastPathComponent, "itemId": item.id.uuidString],
+            context: ["fileName": url.lastPathComponent, "itemId": item.id.uuidString]
         )
         return item
     }
@@ -737,7 +739,7 @@ final class QuickAccessManager: ObservableObject {
                 .info,
                 .action,
                 "Quick access item pinned",
-                context: ["itemId": id.uuidString],
+                context: ["itemId": id.uuidString]
             )
         } else {
             if closePinWindow {
@@ -750,7 +752,7 @@ final class QuickAccessManager: ObservableObject {
                 .info,
                 .action,
                 "Quick access item unpinned",
-                context: ["itemId": id.uuidString],
+                context: ["itemId": id.uuidString]
             )
         }
     }
@@ -765,7 +767,7 @@ final class QuickAccessManager: ObservableObject {
             .info,
             .action,
             "Pin window closed, item unpinned",
-            context: ["itemId": id.uuidString],
+            context: ["itemId": id.uuidString]
         )
     }
 
@@ -776,7 +778,7 @@ final class QuickAccessManager: ObservableObject {
                 .warning,
                 .action,
                 "Quick access processing state update missed item",
-                context: ["itemId": id.uuidString, "state": "\(state)"],
+                context: ["itemId": id.uuidString, "state": "\(state)"]
             )
             return
         }
@@ -785,7 +787,7 @@ final class QuickAccessManager: ObservableObject {
             .debug,
             .action,
             "Quick access processing state changed",
-            context: ["itemId": id.uuidString, "state": "\(state)"],
+            context: ["itemId": id.uuidString, "state": "\(state)"]
         )
         if state == .idle {
             resumeCountdownForActivity(id)
@@ -801,7 +803,7 @@ final class QuickAccessManager: ObservableObject {
                 .warning,
                 .action,
                 "Quick access item URL update missed item",
-                context: ["itemId": id.uuidString, "fileName": newURL.lastPathComponent],
+                context: ["itemId": id.uuidString, "fileName": newURL.lastPathComponent]
             )
             return
         }
@@ -817,14 +819,14 @@ final class QuickAccessManager: ObservableObject {
             cloudURL: existing.cloudURL,
             cloudKey: existing.cloudKey,
             isCloudStale: existing.isCloudStale,
-            isPinned: existing.isPinned,
+            isPinned: existing.isPinned
         )
         pinWindowManager.update(item: items[index])
         DiagnosticLogger.shared.log(
             .info,
             .action,
             "Quick access item URL updated",
-            context: ["itemId": id.uuidString, "fileName": newURL.lastPathComponent],
+            context: ["itemId": id.uuidString, "fileName": newURL.lastPathComponent]
         )
     }
 
@@ -846,7 +848,7 @@ final class QuickAccessManager: ObservableObject {
             cloudURL: existing.cloudURL,
             cloudKey: existing.cloudKey,
             isCloudStale: existing.isCloudStale,
-            isPinned: existing.isPinned,
+            isPinned: existing.isPinned
         )
         pinWindowManager.update(item: items[index], imageOverride: image)
         logger.info("Thumbnail updated directly for item \(id)")
@@ -874,7 +876,7 @@ final class QuickAccessManager: ObservableObject {
             cloudURL: existing.cloudURL,
             cloudKey: existing.cloudKey,
             isCloudStale: existing.isCloudStale,
-            isPinned: existing.isPinned,
+            isPinned: existing.isPinned
         )
         if let fullResImage {
             pinWindowManager.update(item: items[index], imageOverride: fullResImage)
@@ -903,7 +905,7 @@ final class QuickAccessManager: ObservableObject {
 
         let newSize = CGSize(
             width: originalSize.width * scale,
-            height: originalSize.height * scale,
+            height: originalSize.height * scale
         )
 
         var rect = CGRect(origin: .zero, size: originalSize)
@@ -919,7 +921,7 @@ final class QuickAccessManager: ObservableObject {
                   bitsPerComponent: 8,
                   bytesPerRow: 0,
                   space: colorSpace,
-                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
               ) else { return image }
 
         context.interpolationQuality = .high
@@ -946,7 +948,7 @@ final class QuickAccessManager: ObservableObject {
 
             let newSize = CGSize(
                 width: originalSize.width * scale,
-                height: originalSize.height * scale,
+                height: originalSize.height * scale
             )
             let thumbnail = NSImage(size: newSize)
             thumbnail.lockFocus()
@@ -955,7 +957,7 @@ final class QuickAccessManager: ObservableObject {
                 in: NSRect(origin: .zero, size: newSize),
                 from: NSRect(origin: .zero, size: originalSize),
                 operation: .copy,
-                fraction: 1.0,
+                fraction: 1.0
             )
             thumbnail.unlockFocus()
             return thumbnail
@@ -969,7 +971,7 @@ final class QuickAccessManager: ObservableObject {
                 .debug,
                 .ui,
                 "Quick access thumbnail refresh skipped; item missing",
-                context: ["itemId": id.uuidString],
+                context: ["itemId": id.uuidString]
             )
             return
         }
@@ -983,7 +985,7 @@ final class QuickAccessManager: ObservableObject {
                 .warning,
                 .ui,
                 "Quick access thumbnail refresh failed",
-                context: ["fileName": url.lastPathComponent],
+                context: ["fileName": url.lastPathComponent]
             )
             return
         }
@@ -1000,7 +1002,7 @@ final class QuickAccessManager: ObservableObject {
             cloudURL: existing.cloudURL,
             cloudKey: existing.cloudKey,
             isCloudStale: existing.isCloudStale,
-            isPinned: existing.isPinned,
+            isPinned: existing.isPinned
         )
         pinWindowManager.update(item: items[freshIndex])
         logger.info("Thumbnail refreshed for \(url.lastPathComponent)")
@@ -1008,7 +1010,7 @@ final class QuickAccessManager: ObservableObject {
             .debug,
             .ui,
             "Quick access thumbnail refreshed",
-            context: ["fileName": url.lastPathComponent],
+            context: ["fileName": url.lastPathComponent]
         )
     }
 
@@ -1039,7 +1041,7 @@ final class QuickAccessManager: ObservableObject {
             .info,
             .action,
             "Quick access dismissed all items",
-            context: ["itemCount": "\(count)"],
+            context: ["itemCount": "\(count)"]
         )
     }
 
@@ -1050,7 +1052,7 @@ final class QuickAccessManager: ObservableObject {
                 .warning,
                 .clipboard,
                 "Quick access clipboard copy missed item",
-                context: ["itemId": id.uuidString],
+                context: ["itemId": id.uuidString]
             )
             return
         }
@@ -1067,7 +1069,7 @@ final class QuickAccessManager: ObservableObject {
                 .info,
                 .clipboard,
                 "Quick access copied video file to clipboard",
-                context: ["fileName": url.lastPathComponent],
+                context: ["fileName": url.lastPathComponent]
             )
         } else {
             ClipboardHelper.copyImage(from: url)
@@ -1075,7 +1077,7 @@ final class QuickAccessManager: ObservableObject {
                 .info,
                 .clipboard,
                 "Quick access copied image to clipboard",
-                context: ["fileName": url.lastPathComponent],
+                context: ["fileName": url.lastPathComponent]
             )
         }
 
@@ -1096,7 +1098,7 @@ final class QuickAccessManager: ObservableObject {
                 .warning,
                 .action,
                 "Quick access delete missed item",
-                context: ["itemId": id.uuidString],
+                context: ["itemId": id.uuidString]
             )
             return
         }
@@ -1107,7 +1109,7 @@ final class QuickAccessManager: ObservableObject {
             .info,
             .action,
             "Quick access delete requested",
-            context: ["fileName": url.lastPathComponent, "temp": isTempFile ? "true" : "false"],
+            context: ["fileName": url.lastPathComponent, "temp": isTempFile ? "true" : "false"]
         )
 
         // Remove matching history record up-front so:
@@ -1142,7 +1144,7 @@ final class QuickAccessManager: ObservableObject {
                         .fileAccess,
                         error,
                         "Quick access delete failed",
-                        context: ["fileName": url.lastPathComponent],
+                        context: ["fileName": url.lastPathComponent]
                     )
                 }
             }
@@ -1156,7 +1158,7 @@ final class QuickAccessManager: ObservableObject {
                 .warning,
                 .action,
                 "Quick access reveal in Finder missed item",
-                context: ["itemId": id.uuidString],
+                context: ["itemId": id.uuidString]
             )
             return
         }
@@ -1172,7 +1174,7 @@ final class QuickAccessManager: ObservableObject {
             .info,
             .action,
             "Quick access reveal in Finder requested",
-            context: ["fileName": url.lastPathComponent],
+            context: ["fileName": url.lastPathComponent]
         )
         Task { @MainActor in
             let fileAccess = fileAccessManager.beginAccessingURL(url)
@@ -1187,7 +1189,7 @@ final class QuickAccessManager: ObservableObject {
                 .warning,
                 .action,
                 "Quick access save missed item",
-                context: ["itemId": id.uuidString],
+                context: ["itemId": id.uuidString]
             )
             return
         }
@@ -1197,7 +1199,7 @@ final class QuickAccessManager: ObservableObject {
             .info,
             .action,
             "Quick access manual save requested",
-            context: ["fileName": tempURL.lastPathComponent],
+            context: ["fileName": tempURL.lastPathComponent]
         )
 
         // Remove card immediately (don't trigger temp file deletion since we're saving)
@@ -1219,18 +1221,19 @@ final class QuickAccessManager: ObservableObject {
                 // independent from persisted history record IDs.
                 CaptureHistoryStore.shared.updateFilePath(
                     from: tempURL.path,
-                    to: savedURL.path,
+                    to: savedURL.path
                 )
                 if !AnnotationSessionStore.shared.moveSession(from: tempURL, to: savedURL),
                    let cachedSessionData,
-                   AnnotationSessionStore.shared.shouldPersist(for: savedURL) {
+                   AnnotationSessionStore.shared.shouldPersist(for: savedURL)
+                {
                     AnnotationSessionStore.shared.persist(cachedSessionData, for: savedURL)
                 }
 
                 let captureType: CaptureType = item.isVideo ? .recording : .screenshot
                 PostCaptureActionHandler.shared.copyEditedCaptureToClipboardIfEnabled(
                     for: captureType,
-                    url: savedURL,
+                    url: savedURL
                 )
 
                 let fileAccess = fileAccessManager.beginAccessingURL(savedURL)
@@ -1240,14 +1243,14 @@ final class QuickAccessManager: ObservableObject {
                     .info,
                     .action,
                     "Quick access manual save completed",
-                    context: ["fileName": savedURL.lastPathComponent],
+                    context: ["fileName": savedURL.lastPathComponent]
                 )
             } else {
                 DiagnosticLogger.shared.log(
                     .error,
                     .fileAccess,
                     "Quick access manual save failed",
-                    context: ["fileName": tempURL.lastPathComponent],
+                    context: ["fileName": tempURL.lastPathComponent]
                 )
             }
             AnnotateManager.shared.clearSessionData(for: id)
@@ -1261,7 +1264,7 @@ final class QuickAccessManager: ObservableObject {
             .info,
             .preferences,
             "Quick access position changed",
-            context: ["position": newPosition.rawValue],
+            context: ["position": newPosition.rawValue]
         )
     }
 
@@ -1274,7 +1277,7 @@ final class QuickAccessManager: ObservableObject {
             stackView,
             size: size,
             itemCount: visiblePanelItemCount,
-            scale: CGFloat(overlayScale),
+            scale: CGFloat(overlayScale)
         )
         panelController.reinstallMouseMonitors()
         installEditHotKeyIfNeeded()
@@ -1282,7 +1285,7 @@ final class QuickAccessManager: ObservableObject {
             .debug,
             .ui,
             "Quick access panel shown",
-            context: ["itemCount": "\(items.count)"],
+            context: ["itemCount": "\(items.count)"]
         )
     }
 
@@ -1310,7 +1313,7 @@ final class QuickAccessManager: ObservableObject {
                     .info,
                     .action,
                     "Quick access revealed video in Finder; video module disabled",
-                    context: ["itemId": item.id.uuidString],
+                    context: ["itemId": item.id.uuidString]
                 )
                 return true
             case .videoEditor:
@@ -1327,7 +1330,7 @@ final class QuickAccessManager: ObservableObject {
             .info,
             .action,
             "Quick access editor opened via keyboard shortcut",
-            context: ["itemId": item.id.uuidString, "isVideo": item.isVideo ? "true" : "false"],
+            context: ["itemId": item.id.uuidString, "isVideo": item.isVideo ? "true" : "false"]
         )
         return true
     }
@@ -1339,7 +1342,7 @@ final class QuickAccessManager: ObservableObject {
         if editHotKeyHandler == nil {
             var spec = EventTypeSpec(
                 eventClass: OSType(kEventClassKeyboard),
-                eventKind: OSType(kEventHotKeyPressed),
+                eventKind: OSType(kEventHotKeyPressed)
             )
             let callback: EventHandlerUPP = { _, event, userData in
                 guard let userData, let event else { return OSStatus(eventNotHandledErr) }
@@ -1351,7 +1354,7 @@ final class QuickAccessManager: ObservableObject {
                     nil,
                     MemoryLayout<EventHotKeyID>.size,
                     nil,
-                    &hotKeyID,
+                    &hotKeyID
                 )
                 let manager = Unmanaged<QuickAccessManager>.fromOpaque(userData).takeUnretainedValue()
                 guard hotKeyID.signature == manager.editHotKeyID.signature else {
@@ -1368,7 +1371,7 @@ final class QuickAccessManager: ObservableObject {
                 1,
                 &spec,
                 Unmanaged.passUnretained(self).toOpaque(),
-                &editHotKeyHandler,
+                &editHotKeyHandler
             )
         }
 
@@ -1378,7 +1381,7 @@ final class QuickAccessManager: ObservableObject {
             editHotKeyID,
             GetApplicationEventTarget(),
             0,
-            &editHotKeyRef,
+            &editHotKeyRef
         )
     }
 
@@ -1423,7 +1426,7 @@ final class QuickAccessManager: ObservableObject {
     private func refreshPanelInteractionMetrics() {
         panelController.updateInteractionMetrics(
             itemCount: visiblePanelItemCount,
-            scale: CGFloat(overlayScale),
+            scale: CGFloat(overlayScale)
         )
     }
 
@@ -1435,7 +1438,7 @@ final class QuickAccessManager: ObservableObject {
     private func insertRestoredHistoryItem(
         _ item: QuickAccessItem,
         needsRetry: Bool,
-        retryURL: URL,
+        retryURL: URL
     ) {
         withAnimation(QuickAccessAnimations.cardInsert) {
             if items.count >= maxVisibleItems, let oldestId = items.last?.id {
@@ -1446,7 +1449,7 @@ final class QuickAccessManager: ObservableObject {
                     .debug,
                     .ui,
                     "Quick access trimmed oldest item for history restore",
-                    context: ["maxVisibleItems": "\(maxVisibleItems)"],
+                    context: ["maxVisibleItems": "\(maxVisibleItems)"]
                 )
             }
             items.insert(item, at: 0)
@@ -1551,7 +1554,7 @@ final class QuickAccessManager: ObservableObject {
             .debug,
             .action,
             "Quick access countdown paused for editing",
-            context: ["itemId": id.uuidString, "affectedCount": "\(editIndex + 1)"],
+            context: ["itemId": id.uuidString, "affectedCount": "\(editIndex + 1)"]
         )
 
         // Pause the edited item + items at lower indices (captured after, newer)
@@ -1567,7 +1570,7 @@ final class QuickAccessManager: ObservableObject {
             .debug,
             .action,
             "Quick access countdown resumed after editing",
-            context: ["itemId": id.uuidString],
+            context: ["itemId": id.uuidString]
         )
 
         if let editIndex = items.firstIndex(where: { $0.id == id }) {
@@ -1605,7 +1608,7 @@ final class QuickAccessManager: ObservableObject {
                     .error,
                     .ui,
                     "Quick access thumbnail retry failed",
-                    context: ["fileName": url.lastPathComponent],
+                    context: ["fileName": url.lastPathComponent]
                 )
                 return
             }
@@ -1621,14 +1624,14 @@ final class QuickAccessManager: ObservableObject {
                     duration: existing.duration,
                     cloudURL: existing.cloudURL,
                     cloudKey: existing.cloudKey,
-                    isCloudStale: existing.isCloudStale,
+                    isCloudStale: existing.isCloudStale
                 )
                 logger.info("Thumbnail retry succeeded for \(url.lastPathComponent)")
                 DiagnosticLogger.shared.log(
                     .debug,
                     .ui,
                     "Quick access thumbnail retry succeeded",
-                    context: ["fileName": url.lastPathComponent],
+                    context: ["fileName": url.lastPathComponent]
                 )
             }
         }

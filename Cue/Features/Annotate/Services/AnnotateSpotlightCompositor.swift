@@ -21,7 +21,7 @@ nonisolated enum SpotlightCompositor {
         regions: [SpotlightRegion], // committed spotlight items (canvas coord space)
         previewRegion: SpotlightRegion?, // in-progress drag rect; nil for export
         canvasRect: CGRect, // effective/cropped visible bounds, same coord space
-        in context: CGContext,
+        in context: CGContext
     ) {
         let holes = regions + (previewRegion.map { [$0] } ?? [])
         guard !holes.isEmpty else { return }

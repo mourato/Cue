@@ -45,7 +45,7 @@ struct CaptureOverlayShortcutRecorderRow: View {
 
             ShortcutResetButton(
                 isDisabled: !isEnabled.wrappedValue || isRecording || shortcut == defaultShortcut,
-                action: resetToDefault,
+                action: resetToDefault
             )
 
             toggleStatus
@@ -176,7 +176,7 @@ struct PreferencesGuideStep: View {
                 .frame(width: 18, height: 18)
                 .background(
                     Circle()
-                        .fill(FeedbackStyle(tone: .warning).iconColor.opacity(0.15)),
+                        .fill(FeedbackStyle(tone: .warning).iconColor.opacity(0.15))
                 )
 
             Text(.init(text)) // Supports **bold** markdown
@@ -210,7 +210,7 @@ struct ReadOnlyShortcutRow: View {
                     .padding(.vertical, 6)
                     .background(
                         RoundedRectangle(cornerRadius: 6)
-                            .fill(Color.gray.opacity(0.1)),
+                            .fill(Color.gray.opacity(0.1))
                     )
             }
         }

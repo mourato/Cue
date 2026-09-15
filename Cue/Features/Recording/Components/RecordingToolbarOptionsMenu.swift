@@ -23,7 +23,7 @@
                 if compact {
                     ToolbarIconButtonLabel(
                         systemName: "slider.horizontal.3",
-                        isHovered: isHovered || showPopover,
+                        isHovered: isHovered || showPopover
                     )
                 } else {
                     HStack(spacing: 2) {
@@ -37,7 +37,7 @@
                     .padding(.vertical, 6)
                     .background(
                         RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
-                            .fill(Color.primary.opacity(isHovered || showPopover ? 0.1 : 0)),
+                            .fill(Color.primary.opacity(isHovered || showPopover ? 0.1 : 0))
                     )
                     .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
                     .animation(ToolbarConstants.hoverAnimation, value: isHovered)
@@ -77,7 +77,7 @@
                         ForEach(VideoFormat.allCases, id: \.self) { format in
                             OptionPill(
                                 title: format.displayName,
-                                isSelected: state.selectedFormat == format,
+                                isSelected: state.selectedFormat == format
                             ) {
                                 state.selectedFormat = format
                             }
@@ -91,7 +91,7 @@
                         ForEach(VideoQuality.allCases, id: \.self) { quality in
                             OptionPill(
                                 title: quality.displayName,
-                                isSelected: state.selectedQuality == quality,
+                                isSelected: state.selectedQuality == quality
                             ) {
                                 state.selectedQuality = quality
                             }
@@ -110,8 +110,8 @@
                             set: { newValue in
                                 state.showCursor = newValue
                                 UserDefaults.standard.set(newValue, forKey: PreferencesKeys.recordingShowCursor)
-                            },
-                        ),
+                            }
+                        )
                     )
                 }
             }
@@ -179,7 +179,7 @@
                     .padding(.vertical, PopoverTokens.controlVerticalPadding)
                     .background(
                         RoundedRectangle(cornerRadius: PopoverTokens.controlCornerRadius)
-                            .fill(isSelected ? Color.accentColor : Color.primary.opacity(isHovered ? 0.1 : 0.05)),
+                            .fill(isSelected ? Color.accentColor : Color.primary.opacity(isHovered ? 0.1 : 0.05))
                     )
             }
             .buttonStyle(.plain)

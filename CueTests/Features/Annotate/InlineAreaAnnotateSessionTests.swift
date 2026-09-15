@@ -16,7 +16,7 @@ final class InlineAreaAnnotateSessionTests: XCTestCase {
     func testDesktopFrame_unionsScreenFrames() {
         let frames = [
             CGRect(x: 0, y: 0, width: 1000, height: 600),
-            CGRect(x: 1000, y: 100, width: 800, height: 500),
+            CGRect(x: 1000, y: 100, width: 800, height: 500)
         ]
         let desktop = InlineAreaAnnotateSession.desktopFrame(for: frames)
         XCTAssertEqual(desktop.minX, 0)
@@ -63,7 +63,7 @@ final class InlineAreaAnnotateSessionTests: XCTestCase {
     func testDisplayIDsIntersecting_findsIntersecting() {
         let frames: [CGDirectDisplayID: CGRect] = [
             1: CGRect(x: 0, y: 0, width: 1000, height: 600),
-            2: CGRect(x: 1000, y: 0, width: 800, height: 600),
+            2: CGRect(x: 1000, y: 0, width: 800, height: 600)
         ]
         let rect = CGRect(x: 1100, y: 100, width: 200, height: 200)
         let ids = InlineAreaAnnotateSession.displayIDsIntersecting(rect, screenFramesByDisplayID: frames)
@@ -73,7 +73,7 @@ final class InlineAreaAnnotateSessionTests: XCTestCase {
 
     func testDisplayIDsIntersecting_emptyWhenNoOverlap() {
         let frames: [CGDirectDisplayID: CGRect] = [
-            1: CGRect(x: 0, y: 0, width: 100, height: 100),
+            1: CGRect(x: 0, y: 0, width: 100, height: 100)
         ]
         let rect = CGRect(x: 200, y: 200, width: 50, height: 50)
         let ids = InlineAreaAnnotateSession.displayIDsIntersecting(rect, screenFramesByDisplayID: frames)
@@ -85,26 +85,26 @@ final class InlineAreaAnnotateSessionTests: XCTestCase {
     func testPrimaryDisplayID_returnsLargestOverlap() {
         let frames: [CGDirectDisplayID: CGRect] = [
             1: CGRect(x: 0, y: 0, width: 1000, height: 600),
-            2: CGRect(x: 1000, y: 0, width: 800, height: 600),
+            2: CGRect(x: 1000, y: 0, width: 800, height: 600)
         ]
         let rect = CGRect(x: 1050, y: 100, width: 400, height: 400)
         let id = InlineAreaAnnotateSession.primaryDisplayID(
             for: rect,
             screenFramesByDisplayID: frames,
-            fallback: 99,
+            fallback: 99
         )
         XCTAssertEqual(id, 2)
     }
 
     func testPrimaryDisplayID_usesFallbackWhenNoOverlap() {
         let frames: [CGDirectDisplayID: CGRect] = [
-            1: CGRect(x: 0, y: 0, width: 100, height: 100),
+            1: CGRect(x: 0, y: 0, width: 100, height: 100)
         ]
         let rect = CGRect(x: 200, y: 200, width: 50, height: 50)
         let id = InlineAreaAnnotateSession.primaryDisplayID(
             for: rect,
             screenFramesByDisplayID: frames,
-            fallback: 99,
+            fallback: 99
         )
         XCTAssertEqual(id, 99)
     }
@@ -112,11 +112,11 @@ final class InlineAreaAnnotateSessionTests: XCTestCase {
     func testConfirmedMinimumSize_matchesSharedContract() {
         XCTAssertEqual(
             InlineAreaLayout.minimumSelectionSize,
-            CaptureSelectionChromeMetrics.confirmedMinimumSize,
+            CaptureSelectionChromeMetrics.confirmedMinimumSize
         )
         XCTAssertEqual(
             CaptureSelectionGeometry.confirmedMinimumSize,
-            CaptureSelectionChromeMetrics.confirmedMinimumSize,
+            CaptureSelectionChromeMetrics.confirmedMinimumSize
         )
     }
 
@@ -147,25 +147,25 @@ final class InlineAreaAnnotateSessionTests: XCTestCase {
             copy,
             isLocalEvent: true,
             hasTextResponder: false,
-            hasKeyWindow: false,
+            hasKeyWindow: false
         ))
         XCTAssertTrue(InlineAreaAnnotateSession.shouldHandleCommandCopyShortcut(
             copy,
             isLocalEvent: false,
             hasTextResponder: false,
-            hasKeyWindow: true,
+            hasKeyWindow: true
         ))
         XCTAssertFalse(InlineAreaAnnotateSession.shouldHandleCommandCopyShortcut(
             copy,
             isLocalEvent: false,
             hasTextResponder: false,
-            hasKeyWindow: false,
+            hasKeyWindow: false
         ))
         XCTAssertFalse(InlineAreaAnnotateSession.shouldHandleCommandCopyShortcut(
             copy,
             isLocalEvent: true,
             hasTextResponder: true,
-            hasKeyWindow: true,
+            hasKeyWindow: true
         ))
     }
 
@@ -178,9 +178,9 @@ final class InlineAreaAnnotateSessionTests: XCTestCase {
                 source: .local,
                 phase: .annotating,
                 hasTextResponder: true,
-                hasKeyWindow: true,
+                hasKeyWindow: true
             ),
-            .passThrough,
+            .passThrough
         )
     }
 
@@ -193,9 +193,9 @@ final class InlineAreaAnnotateSessionTests: XCTestCase {
                 source: .global,
                 phase: .annotating,
                 hasTextResponder: false,
-                hasKeyWindow: false,
+                hasKeyWindow: false
             ),
-            .passThrough,
+            .passThrough
         )
         XCTAssertEqual(
             InlineAreaAnnotateSession.keyAction(
@@ -203,9 +203,9 @@ final class InlineAreaAnnotateSessionTests: XCTestCase {
                 source: .global,
                 phase: .annotating,
                 hasTextResponder: false,
-                hasKeyWindow: true,
+                hasKeyWindow: true
             ),
-            .copyCurrentImage,
+            .copyCurrentImage
         )
     }
 
@@ -218,9 +218,9 @@ final class InlineAreaAnnotateSessionTests: XCTestCase {
                 source: .local,
                 phase: .annotating,
                 hasTextResponder: true,
-                hasKeyWindow: true,
+                hasKeyWindow: true
             ),
-            .finish,
+            .finish
         )
     }
 
@@ -233,9 +233,9 @@ final class InlineAreaAnnotateSessionTests: XCTestCase {
                 source: .local,
                 phase: .annotating,
                 hasTextResponder: true,
-                hasKeyWindow: true,
+                hasKeyWindow: true
             ),
-            .resetMoveModifierAndPassThrough,
+            .resetMoveModifierAndPassThrough
         )
     }
 
@@ -263,7 +263,7 @@ final class InlineAreaAnnotateSessionTests: XCTestCase {
         type: NSEvent.EventType = .keyDown,
         keyCode: UInt16,
         characters: String,
-        flags: NSEvent.ModifierFlags,
+        flags: NSEvent.ModifierFlags
     ) throws -> NSEvent {
         try XCTUnwrap(NSEvent.keyEvent(
             with: type,
@@ -275,7 +275,7 @@ final class InlineAreaAnnotateSessionTests: XCTestCase {
             characters: characters,
             charactersIgnoringModifiers: characters.lowercased(),
             isARepeat: false,
-            keyCode: keyCode,
+            keyCode: keyCode
         ))
     }
 }

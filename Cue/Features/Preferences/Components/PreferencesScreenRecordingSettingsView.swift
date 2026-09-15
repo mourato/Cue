@@ -52,35 +52,35 @@
                 Section(L10n.PreferencesScreenRecording.generalSection) {
                     ScreenRecordingToggleRow(
                         title: L10n.PreferencesScreenRecording.showControlsTitle,
-                        isOn: $showControlsWhileRecording,
+                        isOn: $showControlsWhileRecording
                     )
                     ScreenRecordingToggleRow(
                         title: L10n.PreferencesScreenRecording.rememberLastSelectionTitle,
-                        isOn: $rememberLastSelection,
+                        isOn: $rememberLastSelection
                     )
                     ScreenRecordingToggleRow(
                         title: L10n.PreferencesScreenRecording.displayTimeInMenuBarTitle,
-                        isOn: $displayTimeInMenuBar,
+                        isOn: $displayTimeInMenuBar
                     )
                     ScreenRecordingToggleRow(
                         title: L10n.PreferencesScreenRecording.dimScreenTitle,
-                        isOn: $dimScreenWhileRecording,
+                        isOn: $dimScreenWhileRecording
                     )
                     ScreenRecordingToggleRow(
                         title: L10n.PreferencesScreenRecording.showCountdownTitle,
-                        isOn: $showCountdown,
+                        isOn: $showCountdown
                     )
                 }
 
                 Section(L10n.PreferencesScreenRecording.cursorSection) {
                     ScreenRecordingToggleRow(
                         title: L10n.PreferencesCapture.showCursorTitle,
-                        isOn: $showCursor,
+                        isOn: $showCursor
                     )
                     ScreenRecordingOptionsRow(
                         title: L10n.PreferencesScreenRecording.highlightClicksTitle,
                         isOn: $highlightClicks,
-                        showOptions: $showClickOptions,
+                        showOptions: $showClickOptions
                     )
                     .popover(isPresented: $showClickOptions) {
                         ClickHighlightOptionsView()
@@ -91,7 +91,7 @@
                     ScreenRecordingOptionsRow(
                         title: L10n.PreferencesScreenRecording.showKeystrokesTitle,
                         isOn: $showKeystrokes,
-                        showOptions: $showKeystrokeOptions,
+                        showOptions: $showKeystrokeOptions
                     )
                     .popover(isPresented: $showKeystrokeOptions) {
                         KeystrokeOptionsView()
@@ -147,19 +147,19 @@
 
                     ScreenRecordingToggleRow(
                         title: L10n.PreferencesScreenRecording.scaleRetinaTitle,
-                        isOn: $scaleRetinaTo1x,
+                        isOn: $scaleRetinaTo1x
                     )
                 }
 
                 Section(L10n.PreferencesScreenRecording.audioSection) {
                     ScreenRecordingToggleRow(
                         title: L10n.PreferencesScreenRecording.recordMonoTitle,
-                        isOn: $recordMono,
+                        isOn: $recordMono
                     )
                     VStack(alignment: .leading, spacing: 2) {
                         ScreenRecordingToggleRow(
                             title: L10n.PreferencesScreenRecording.recordSystemAudioTitle,
-                            isOn: $recordSystemAudio,
+                            isOn: $recordSystemAudio
                         )
                         Text(L10n.PreferencesScreenRecording.recordSystemAudioDescription)
                             .font(.caption)
@@ -215,7 +215,7 @@
 
                     ScreenRecordingToggleRow(
                         title: L10n.PreferencesScreenRecording.optimizeGIFsTitle,
-                        isOn: $optimizeGIFs,
+                        isOn: $optimizeGIFs
                     )
 
                     HStack {
@@ -298,7 +298,8 @@
             Binding<Color>(
                 get: {
                     if let data = UserDefaults.standard.data(forKey: PreferencesKeys.mouseHighlightColor),
-                       let nsColor = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: data) {
+                       let nsColor = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: data)
+                    {
                         return Color(nsColor: nsColor)
                     }
                     return Color(nsColor: MouseHighlightConfiguration.defaultHighlightColor)
@@ -307,11 +308,11 @@
                     let nsColor = NSColor(newColor)
                     if let data = try? NSKeyedArchiver.archivedData(
                         withRootObject: nsColor,
-                        requiringSecureCoding: true,
+                        requiringSecureCoding: true
                     ) {
                         UserDefaults.standard.set(data, forKey: PreferencesKeys.mouseHighlightColor)
                     }
-                },
+                }
             )
         }
 
@@ -338,7 +339,7 @@
                     Stepper(
                         "",
                         value: $rippleCount,
-                        in: 1 ... 6,
+                        in: 1 ... 6
                     )
                     .labelsHidden()
                     .accessibilityLabel(L10n.PreferencesCapture.rippleCountTitle)

@@ -20,6 +20,8 @@ precedence: project
 - Formatter/lint commands: `make format-check`, `make lint`, and
   `make lint-changed`. Use `make format-fix` or `make lint-fix` only as
   explicit autofix commands; verification must fail closed.
+- The formatter and lint rules come from the global `swift-conventions` skill;
+  `.swiftlint-baseline.json` records existing project debt when present.
 - Screen Recording and Accessibility permissions are required for affected capture and accessibility checks.
 - Use `./scripts/build_and_run.sh`, `./scripts/run-tests.sh`, and `./scripts/verify-local.sh` for project validation.
 - The optional Video module is compile-time gated by `CUE_VIDEO_MODULE` and runtime-gated by `VideoModuleAvailability` / `videoModule.enabled` (default off). Manual validation of capture → annotate → export requires the relevant permissions.

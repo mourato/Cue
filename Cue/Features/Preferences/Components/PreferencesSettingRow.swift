@@ -17,7 +17,7 @@ struct SettingRow<Content: View>: View {
         title: String,
         description: String? = nil,
         tooltip: String? = nil,
-        @ViewBuilder content: @escaping () -> Content,
+        @ViewBuilder content: @escaping () -> Content
     ) {
         self.title = title
         self.description = description

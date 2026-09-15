@@ -43,7 +43,7 @@ enum ForegroundCutoutError: LocalizedError {
         switch self {
         case .noSubjectDetected:
             L10n.ForegroundCutout.noSubjectDetected
-        case .cutoutFailed(let error):
+        case let .cutoutFailed(error):
             L10n.ForegroundCutout.cutoutFailed(error.localizedDescription)
         case .imageConversionFailed:
             L10n.ForegroundCutout.imageConversionFailed
@@ -70,13 +70,13 @@ final class ForegroundCutoutService {
     ///   - policy: Heuristics used to decide if auto-crop is safe and meaningful.
     func extractForegroundResult(
         from image: CGImage,
-        policy: ForegroundAutoCropPolicy,
+        policy: ForegroundAutoCropPolicy
     ) async throws -> ForegroundCutoutResult {
         DiagnosticLogger.shared.log(
             .info,
             .capture,
             "Foreground cutout started",
-            context: ["width": "\(image.width)", "height": "\(image.height)", "mode": "full-canvas+auto-crop-eval"],
+            context: ["width": "\(image.width)", "height": "\(image.height)", "mode": "full-canvas+auto-crop-eval"]
         )
 
         do {
@@ -92,8 +92,8 @@ final class ForegroundCutoutService {
                     "width": "\(result.fullCanvasImage.width)",
                     "height": "\(result.fullCanvasImage.height)",
                     "decision": result.autoCropDecision.rawValue,
-                    "hasSuggestedCrop": "\(result.suggestedAutoCropRect != nil)",
-                ],
+                    "hasSuggestedCrop": "\(result.suggestedAutoCropRect != nil)"
+                ]
             )
             return result
         } catch let error as ForegroundCutoutError {
@@ -114,7 +114,7 @@ final class ForegroundCutoutService {
             .info,
             .capture,
             "Foreground cutout started",
-            context: ["width": "\(image.width)", "height": "\(image.height)", "crop": "\(cropToSubject)"],
+            context: ["width": "\(image.width)", "height": "\(image.height)", "crop": "\(cropToSubject)"]
         )
 
         do {
@@ -126,7 +126,7 @@ final class ForegroundCutoutService {
                 .info,
                 .capture,
                 "Foreground cutout completed",
-                context: ["width": "\(result.width)", "height": "\(result.height)"],
+                context: ["width": "\(result.width)", "height": "\(result.height)"]
             )
             return result
         } catch let error as ForegroundCutoutError {
@@ -140,7 +140,7 @@ final class ForegroundCutoutService {
 
     private nonisolated static func extractForegroundSync(
         from image: CGImage,
-        cropToSubject: Bool,
+        cropToSubject: Bool
     ) throws -> CGImage {
         let request = VNGenerateForegroundInstanceMaskRequest()
         let handler = VNImageRequestHandler(cgImage: image, options: [:])
@@ -165,7 +165,7 @@ final class ForegroundCutoutService {
             maskedPixelBuffer = try observation.generateMaskedImage(
                 ofInstances: instances,
                 from: handler,
-                croppedToInstancesExtent: cropToSubject,
+                croppedToInstancesExtent: cropToSubject
             )
         } catch {
             throw ForegroundCutoutError.cutoutFailed(error)
@@ -187,20 +187,20 @@ final class ForegroundCutoutService {
 
     private nonisolated static func extractForegroundResultSync(
         from image: CGImage,
-        policy: ForegroundAutoCropPolicy,
+        policy: ForegroundAutoCropPolicy
     ) throws -> ForegroundCutoutResult {
         let fullCanvasImage = try extractForegroundSync(from: image, cropToSubject: false)
         let (suggestedRect, decision) = evaluateAutoCropSuggestion(for: fullCanvasImage, policy: policy)
         return ForegroundCutoutResult(
             fullCanvasImage: fullCanvasImage,
             suggestedAutoCropRect: suggestedRect,
-            autoCropDecision: decision,
+            autoCropDecision: decision
         )
     }
 
     private nonisolated static func evaluateAutoCropSuggestion(
         for image: CGImage,
-        policy: ForegroundAutoCropPolicy,
+        policy: ForegroundAutoCropPolicy
     ) -> (CGRect?, ForegroundAutoCropDecision) {
         guard let opaqueBounds = alphaBounds(in: image, alphaThreshold: policy.alphaThreshold) else {
             return (nil, .skippedNoOpaquePixels)
@@ -213,7 +213,8 @@ final class ForegroundCutoutService {
 
         if opaqueBounds.width < CGFloat(policy.minimumSubjectDimensionPixels) ||
             opaqueBounds.height < CGFloat(policy.minimumSubjectDimensionPixels) ||
-            (subjectArea / totalArea) < policy.minimumSubjectAreaRatio {
+            (subjectArea / totalArea) < policy.minimumSubjectAreaRatio
+        {
             return (nil, .skippedSubjectTooSmall)
         }
 
@@ -248,7 +249,7 @@ final class ForegroundCutoutService {
         _ rect: CGRect,
         padding: Int,
         imageWidth: Int,
-        imageHeight: Int,
+        imageHeight: Int
     ) -> CGRect {
         guard padding > 0 else { return rect }
         let pad = CGFloat(padding)
@@ -278,7 +279,7 @@ final class ForegroundCutoutService {
                 bitsPerComponent: 8,
                 bytesPerRow: bytesPerRow,
                 space: colorSpace,
-                bitmapInfo: bitmapInfo,
+                bitmapInfo: bitmapInfo
             ) else {
                 return false
             }
@@ -310,7 +311,7 @@ final class ForegroundCutoutService {
             x: minX,
             y: minY,
             width: maxX - minX + 1,
-            height: maxY - minY + 1,
+            height: maxY - minY + 1
         )
     }
 }

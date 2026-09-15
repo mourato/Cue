@@ -19,22 +19,22 @@ final class AreaSelectionModelsTests: XCTestCase {
             AreaSelectionController.isSpaceWindowSelectionKey(
                 event,
                 selectionMode: .screenshot,
-                allowsApplicationWindowSelection: true,
-            ),
+                allowsApplicationWindowSelection: true
+            )
         )
         XCTAssertTrue(
             AreaSelectionController.isSpaceWindowSelectionKey(
                 event,
                 selectionMode: .recording,
-                allowsApplicationWindowSelection: true,
-            ),
+                allowsApplicationWindowSelection: true
+            )
         )
         XCTAssertFalse(
             AreaSelectionController.isSpaceWindowSelectionKey(
                 event,
                 selectionMode: .scrollingCapture,
-                allowsApplicationWindowSelection: true,
-            ),
+                allowsApplicationWindowSelection: true
+            )
         )
     }
 
@@ -47,28 +47,28 @@ final class AreaSelectionModelsTests: XCTestCase {
             AreaSelectionController.isSpaceWindowSelectionKey(
                 modifierEvent,
                 selectionMode: .screenshot,
-                allowsApplicationWindowSelection: true,
-            ),
+                allowsApplicationWindowSelection: true
+            )
         )
         XCTAssertFalse(
             AreaSelectionController.isSpaceWindowSelectionKey(
                 repeatEvent,
                 selectionMode: .recording,
-                allowsApplicationWindowSelection: true,
-            ),
+                allowsApplicationWindowSelection: true
+            )
         )
         XCTAssertFalse(
             AreaSelectionController.isSpaceWindowSelectionKey(
                 disabledEvent,
                 selectionMode: .screenshot,
-                allowsApplicationWindowSelection: false,
-            ),
+                allowsApplicationWindowSelection: false
+            )
         )
     }
 
     private func makeSpaceKeyEvent(
         modifierFlags: NSEvent.ModifierFlags = [],
-        isARepeat: Bool = false,
+        isARepeat: Bool = false
     ) -> NSEvent? {
         NSEvent.keyEvent(
             with: .keyDown,
@@ -80,7 +80,7 @@ final class AreaSelectionModelsTests: XCTestCase {
             characters: " ",
             charactersIgnoringModifiers: " ",
             isARepeat: isARepeat,
-            keyCode: UInt16(kVK_Space),
+            keyCode: UInt16(kVK_Space)
         )
     }
 
@@ -98,7 +98,7 @@ final class AreaSelectionModelsTests: XCTestCase {
             displayID: 1,
             title: "Test",
             bundleIdentifier: "com.test",
-            ownerPID: nil,
+            ownerPID: nil
         )
         let target = AreaSelectionTarget.window(windowTarget)
         XCTAssertEqual(target.rect, windowTarget.frame)
@@ -109,7 +109,7 @@ final class AreaSelectionModelsTests: XCTestCase {
         let result = AreaSelectionResult(
             target: .rect(CGRect(x: 0, y: 0, width: 100, height: 100)),
             displayID: 1,
-            mode: .screenshot,
+            mode: .screenshot
         )
         XCTAssertEqual(result.displayIDs, [1])
         XCTAssertFalse(result.spansMultipleDisplays)
@@ -120,7 +120,7 @@ final class AreaSelectionModelsTests: XCTestCase {
             target: .rect(CGRect(x: 0, y: 0, width: 100, height: 100)),
             displayID: 1,
             mode: .screenshot,
-            displayIDs: [1, 2],
+            displayIDs: [1, 2]
         )
         XCTAssertTrue(result.spansMultipleDisplays)
         XCTAssertEqual(result.displayIDs.count, 2)
@@ -131,7 +131,7 @@ final class AreaSelectionModelsTests: XCTestCase {
         let result = AreaSelectionResult(
             target: .rect(rect),
             displayID: 1,
-            mode: .recording,
+            mode: .recording
         )
         XCTAssertEqual(result.rect, rect)
     }
@@ -143,7 +143,7 @@ final class AreaSelectionModelsTests: XCTestCase {
             displayID: 1,
             title: nil,
             bundleIdentifier: nil,
-            ownerPID: nil,
+            ownerPID: nil
         )
         let b = WindowCaptureTarget(
             windowID: 1,
@@ -151,7 +151,7 @@ final class AreaSelectionModelsTests: XCTestCase {
             displayID: 1,
             title: nil,
             bundleIdentifier: nil,
-            ownerPID: nil,
+            ownerPID: nil
         )
         let c = WindowCaptureTarget(
             windowID: 2,
@@ -159,7 +159,7 @@ final class AreaSelectionModelsTests: XCTestCase {
             displayID: 1,
             title: nil,
             bundleIdentifier: nil,
-            ownerPID: nil,
+            ownerPID: nil
         )
         XCTAssertEqual(a, b)
         XCTAssertNotEqual(a, c)
@@ -182,7 +182,7 @@ final class CaptureViewModelTests: XCTestCase {
             contentRect: NSRect(x: 0, y: 0, width: 100, height: 100),
             styleMask: .borderless,
             backing: .buffered,
-            defer: false,
+            defer: false
         )
         window.orderFront(nil)
 
@@ -190,7 +190,7 @@ final class CaptureViewModelTests: XCTestCase {
             windows: [window],
             keyWindow: nil,
             mainWindow: nil,
-            shouldReactivateApp: false,
+            shouldReactivateApp: false
         )
 
         let expectation = XCTestExpectation(description: "Synthetic mouse event posted")
@@ -235,7 +235,7 @@ final class AreaSelectionControllerTests: XCTestCase {
             let isNil = String(describing: value) == "nil"
             XCTAssertFalse(
                 isNil,
-                "manualSelectionGlobalMonitor should be non-nil before the first mouseDown",
+                "manualSelectionGlobalMonitor should be non-nil before the first mouseDown"
             )
         } else {
             XCTFail("manualSelectionGlobalMonitor property not found")
@@ -288,7 +288,7 @@ final class AreaSelectionControllerTests: XCTestCase {
 
         XCTAssertTrue(
             controller.dismissesAfterSelection,
-            "a cancelled live selection must not leak its dismiss policy into the next capture session",
+            "a cancelled live selection must not leak its dismiss policy into the next capture session"
         )
     }
 
@@ -359,7 +359,8 @@ final class AreaSelectionControllerTests: XCTestCase {
             return active
         }
         if let pool = mirror.children.first(where: { $0.label == "windowPool" })?.value
-            as? [CGDirectDisplayID: AreaSelectionWindow] {
+            as? [CGDirectDisplayID: AreaSelectionWindow]
+        {
             return pool.values.first
         }
         return nil

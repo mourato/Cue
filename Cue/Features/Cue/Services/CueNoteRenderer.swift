@@ -9,7 +9,7 @@ enum CueNoteRenderer {
         notes: [CueVisualNote],
         selectedNoteID: UUID?,
         in context: CGContext,
-        imageBounds: CGRect,
+        imageBounds: CGRect
     ) {
         context.saveGState()
         context.clip(to: imageBounds)
@@ -29,7 +29,7 @@ enum CueNoteRenderer {
                 displayNumber: displayNumber,
                 isSelected: isSelected,
                 in: context,
-                imageBounds: imageBounds,
+                imageBounds: imageBounds
             )
         }
     }
@@ -39,11 +39,11 @@ enum CueNoteRenderer {
         displayNumber: Int,
         isSelected: Bool,
         in context: CGContext,
-        imageBounds _: CGRect,
+        imageBounds _: CGRect
     ) {
         let pinRadius = note.pinDiameter / 2
         switch note.target {
-        case .point(let center):
+        case let .point(center):
             drawPointTarget(
                 center: center,
                 color: note.color.nsColor,
@@ -51,9 +51,9 @@ enum CueNoteRenderer {
                 textColor: CuePaletteColor.matching(note.color)?.numeralColor ?? .white,
                 pinRadius: pinRadius,
                 isSelected: isSelected,
-                in: context,
+                in: context
             )
-        case .rect(let rect, let pinCorner):
+        case let .rect(rect, pinCorner):
             drawRectangleTarget(
                 rect: rect,
                 pinCorner: pinCorner,
@@ -63,7 +63,7 @@ enum CueNoteRenderer {
                 displayNumber: displayNumber,
                 textColor: CuePaletteColor.matching(note.color)?.numeralColor ?? .white,
                 pinRadius: pinRadius,
-                in: context,
+                in: context
             )
         }
     }
@@ -75,13 +75,13 @@ enum CueNoteRenderer {
         textColor: NSColor = .white,
         pinRadius: CGFloat = defaultPinRadius,
         isSelected: Bool,
-        in context: CGContext,
+        in context: CGContext
     ) {
         let circleRect = CGRect(
             x: center.x - pinRadius,
             y: center.y - pinRadius,
             width: pinRadius * 2,
-            height: pinRadius * 2,
+            height: pinRadius * 2
         )
 
         context.saveGState()
@@ -91,7 +91,7 @@ enum CueNoteRenderer {
             in: circleRect,
             fillColor: color.withAlphaComponent(1),
             in: context,
-            textColor: textColor,
+            textColor: textColor
         )
 
         if isSelected {
@@ -112,7 +112,7 @@ enum CueNoteRenderer {
         displayNumber: Int,
         textColor: NSColor = .white,
         pinRadius: CGFloat = defaultPinRadius,
-        in context: CGContext,
+        in context: CGContext
     ) {
         context.saveGState()
         let standardized = rect.standardized
@@ -147,14 +147,14 @@ enum CueNoteRenderer {
             x: pinCenter.x - pinRadius,
             y: pinCenter.y - pinRadius,
             width: pinRadius * 2,
-            height: pinRadius * 2,
+            height: pinRadius * 2
         )
         AnnotationNumberedBadgeDrawer.draw(
             value: displayNumber,
             in: circleRect,
             fillColor: color.withAlphaComponent(1),
             in: context,
-            textColor: textColor,
+            textColor: textColor
         )
 
         context.restoreGState()

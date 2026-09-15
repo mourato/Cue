@@ -12,7 +12,7 @@
         func testBuild_emptyMetadata_returnsEmpty() {
             XCTAssertEqual(
                 VideoEditorPointerTimeline.build(metadata: nil, duration: 5),
-                .empty,
+                .empty
             )
         }
 
@@ -22,8 +22,8 @@
                 samplesPerSecond: 60,
                 mouseSamples: [
                     RecordedMouseSample(time: 0, normalizedX: 0.1, normalizedY: 0.1, isInsideCapture: true),
-                    RecordedMouseSample(time: 1, normalizedX: 0.9, normalizedY: 0.9, isInsideCapture: true),
-                ],
+                    RecordedMouseSample(time: 1, normalizedX: 0.9, normalizedY: 0.9, isInsideCapture: true)
+                ]
             )
             let timeline = VideoEditorPointerTimeline.build(metadata: metadata, duration: 2)
             let early = timeline.frame(at: 0.2)
@@ -39,11 +39,11 @@
                 captureSize: CGSize(width: 1920, height: 1080),
                 samplesPerSecond: 60,
                 mouseSamples: [
-                    RecordedMouseSample(time: 0, normalizedX: 0.5, normalizedY: 0.5, isInsideCapture: true),
+                    RecordedMouseSample(time: 0, normalizedX: 0.5, normalizedY: 0.5, isInsideCapture: true)
                 ],
                 mousePresses: [
-                    RecordedMousePress(time: 1, normalizedX: 0.5, normalizedY: 0.5, button: 0, phase: .down),
-                ],
+                    RecordedMousePress(time: 1, normalizedX: 0.5, normalizedY: 0.5, button: 0, phase: .down)
+                ]
             )
             let timeline = VideoEditorPointerTimeline.build(metadata: metadata, duration: 3)
             let duringPulse = timeline.frame(at: 1.1)
@@ -59,7 +59,7 @@
                 mouseSamples: [
                     RecordedMouseSample(time: 0, normalizedX: 0.5, normalizedY: 0.5, isInsideCapture: true),
                     RecordedMouseSample(time: 1, normalizedX: 1, normalizedY: 0.5, isInsideCapture: false),
-                    RecordedMouseSample(time: 2, normalizedX: 0.25, normalizedY: 0.75, isInsideCapture: true),
+                    RecordedMouseSample(time: 2, normalizedX: 0.25, normalizedY: 0.75, isInsideCapture: true)
                 ],
                 mousePresses: [
                     RecordedMousePress(
@@ -67,9 +67,9 @@
                         normalizedX: 1,
                         normalizedY: 0.5,
                         button: 0,
-                        phase: .down,
-                    ),
-                ],
+                        phase: .down
+                    )
+                ]
             )
 
             let timeline = VideoEditorPointerTimeline.build(metadata: metadata, duration: 3)
@@ -84,24 +84,24 @@
                 samplesPerSecond: 60,
                 mouseSamples: [
                     RecordedMouseSample(time: 0, normalizedX: 0.1, normalizedY: 0.1, isInsideCapture: true),
-                    RecordedMouseSample(time: 1, normalizedX: 0.9, normalizedY: 0.9, isInsideCapture: true),
-                ],
+                    RecordedMouseSample(time: 1, normalizedX: 0.9, normalizedY: 0.9, isInsideCapture: true)
+                ]
             )
 
             let original = VideoEditorPointerTimeline.build(
                 metadata: metadata,
                 duration: 2,
-                smoothingPreset: .original,
+                smoothingPreset: .original
             )
             let smooth = VideoEditorPointerTimeline.build(
                 metadata: metadata,
                 duration: 2,
-                smoothingPreset: .smooth,
+                smoothingPreset: .smooth
             )
             let fast = VideoEditorPointerTimeline.build(
                 metadata: metadata,
                 duration: 2,
-                smoothingPreset: .fast,
+                smoothingPreset: .fast
             )
 
             let originalX = try XCTUnwrap(original.frame(at: 1.5)?.location.x)

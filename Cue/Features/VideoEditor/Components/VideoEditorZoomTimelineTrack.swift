@@ -120,7 +120,7 @@
                         isSelected: state.selectedZoomId == segment.id,
                         isDragging: dragSegmentId == segment.id,
                         blockX: segmentLayout.visualStartX,
-                        blockWidth: segmentLayout.visualWidth,
+                        blockWidth: segmentLayout.visualWidth
                     )
                 }
 
@@ -128,7 +128,7 @@
                 if shouldShowPlaceholder {
                     ZoomPlaceholderView(
                         width: placeholderWidth,
-                        xPosition: placeholderX,
+                        xPosition: placeholderX
                     )
                 }
             }
@@ -143,7 +143,7 @@
             }
             .onContinuousHover { phase in
                 switch phase {
-                case .active(let location):
+                case let .active(location):
                     isHovering = true
                     hoverLocation = location
                 case .ended:
@@ -201,7 +201,8 @@
 
         private func continueDrag(translation: CGSize) {
             guard let segmentId = dragSegmentId,
-                  let segment = state.zoomSegments.first(where: { $0.id == segmentId }) else {
+                  let segment = state.zoomSegments.first(where: { $0.id == segmentId })
+            else {
                 return
             }
 
@@ -251,7 +252,7 @@
             state.updateZoom(
                 id: segment.id,
                 startTime: segment.startTime,
-                duration: segment.duration,
+                duration: segment.duration
             )
             lastDragModelUpdateTime = now
         }
@@ -297,7 +298,7 @@
             } label: {
                 Label(
                     isHovering ? L10n.VideoEditor.addZoomHere : L10n.VideoEditor.addZoomAtPlayhead,
-                    systemImage: "plus.magnifyingglass",
+                    systemImage: "plus.magnifyingglass"
                 )
             }
 
@@ -312,7 +313,7 @@
                     if let segment = state.selectedZoomSegment {
                         Label(
                             segment.isEnabled ? L10n.VideoEditor.disableZoom : L10n.VideoEditor.enableZoom,
-                            systemImage: segment.isEnabled ? "eye.slash" : "eye",
+                            systemImage: segment.isEnabled ? "eye.slash" : "eye"
                         )
                     }
                 }
@@ -348,7 +349,7 @@
                 return SegmentLayout(
                     visualStartX: 0,
                     visualEndX: minVisualBlockWidth,
-                    visualWidth: minVisualBlockWidth,
+                    visualWidth: minVisualBlockWidth
                 )
             }
 
@@ -361,7 +362,7 @@
             return SegmentLayout(
                 visualStartX: visualStartX,
                 visualEndX: visualStartX + visualWidth,
-                visualWidth: visualWidth,
+                visualWidth: visualWidth
             )
         }
 
@@ -380,7 +381,8 @@
             guard !containing.isEmpty else { return nil }
 
             if let selectedId = state.selectedZoomId,
-               let selected = containing.first(where: { $0.segment.id == selectedId }) {
+               let selected = containing.first(where: { $0.segment.id == selectedId })
+            {
                 return selected
             }
 
@@ -417,7 +419,7 @@
                     .fill(blockFillColor)
                     .overlay(
                         RoundedRectangle(cornerRadius: 6)
-                            .strokeBorder(isSelected ? Color.white : Color.clear, lineWidth: 2),
+                            .strokeBorder(isSelected ? Color.white : Color.clear, lineWidth: 2)
                     )
                     .shadow(color: isSelected ? ZoomColors.primary.opacity(0.4) : .clear, radius: 4, y: 2)
 
@@ -498,8 +500,8 @@
                     RoundedRectangle(cornerRadius: 6)
                         .strokeBorder(
                             ZoomColors.primary.opacity(0.5),
-                            style: StrokeStyle(lineWidth: 1.5, dash: [6, 4]),
-                        ),
+                            style: StrokeStyle(lineWidth: 1.5, dash: [6, 4])
+                        )
                 )
                 .overlay(
                     HStack(spacing: 4) {
@@ -508,7 +510,7 @@
                         Text(L10n.VideoEditor.clickToAdd)
                             .font(.system(size: 9, weight: .medium))
                     }
-                    .foregroundColor(ZoomColors.primary.opacity(0.8)),
+                    .foregroundColor(ZoomColors.primary.opacity(0.8))
                 )
                 .frame(width: width, height: 28)
                 .offset(x: xPosition)
@@ -522,7 +524,7 @@
     #Preview {
         ZoomTimelineTrack(
             state: VideoEditorState(url: URL(fileURLWithPath: "/tmp/test.mov")),
-            timelineWidth: 400,
+            timelineWidth: 400
         )
         .padding()
         .background(Color(NSColor.windowBackgroundColor))

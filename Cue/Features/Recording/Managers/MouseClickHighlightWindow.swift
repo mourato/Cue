@@ -24,7 +24,7 @@
                 contentRect: recordingRect,
                 styleMask: [.borderless],
                 backing: .buffered,
-                defer: false,
+                defer: false
             )
 
             configureWindow()
@@ -133,7 +133,7 @@
                 x: center.x - size / 2,
                 y: center.y - size / 2,
                 width: size,
-                height: size,
+                height: size
             )
             super.init(frame: frame)
 
@@ -212,7 +212,7 @@
                 x: center.x - size / 2,
                 y: center.y - size / 2,
                 width: size,
-                height: size,
+                height: size
             )
             super.init(frame: frame)
 
@@ -220,7 +220,7 @@
             layer?.masksToBounds = false
             setupRingLayer(
                 ringWidth: ringWidth,
-                color: configuration.highlightColor.withAlphaComponent(configuration.highlightOpacity),
+                color: configuration.highlightColor.withAlphaComponent(configuration.highlightOpacity)
             )
         }
 
@@ -256,7 +256,7 @@
                 x: point.x - size / 2,
                 y: point.y - size / 2,
                 width: size,
-                height: size,
+                height: size
             )
 
             CATransaction.commit()

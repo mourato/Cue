@@ -15,7 +15,7 @@ struct PreferencesFilenameSettingsSection: View {
     var body: some View {
         Section(L10n.PreferencesAdvanced.fileNameSection) {
             SettingRow(
-                title: L10n.PreferencesAdvanced.askForNameTitle,
+                title: L10n.PreferencesAdvanced.askForNameTitle
             ) {
                 Toggle("", isOn: $askForNameAfterCapture)
                     .labelsHidden()
@@ -23,7 +23,7 @@ struct PreferencesFilenameSettingsSection: View {
             }
 
             SettingRow(
-                title: L10n.PreferencesAdvanced.fileNameFormatTitle,
+                title: L10n.PreferencesAdvanced.fileNameFormatTitle
             ) {
                 Button(L10n.PreferencesAdvanced.customizeButton) {
                     isNameFormatEditorPresented = true
@@ -34,7 +34,7 @@ struct PreferencesFilenameSettingsSection: View {
 
             SettingRow(
                 title: L10n.PreferencesAdvanced.retinaSuffixTitle,
-                description: L10n.PreferencesAdvanced.retinaSuffixDescription,
+                description: L10n.PreferencesAdvanced.retinaSuffixDescription
             ) {
                 Toggle("", isOn: $addRetinaSuffix)
                     .labelsHidden()

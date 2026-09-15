@@ -20,7 +20,7 @@
             let height = max(referenceSize.height, 1)
             return CGPoint(
                 x: min(max(anchorPoint.x / width, 0), 1),
-                y: min(max(anchorPoint.y / height, 0), 1),
+                y: min(max(anchorPoint.y / height, 0), 1)
             )
         }
 
@@ -48,7 +48,8 @@
 
         static func cgImage(for artwork: RecordedPointerArtwork) -> CGImage? {
             guard let image = image(for: artwork),
-                  let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+                  let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil)
+            else {
                 return nil
             }
             return cgImage

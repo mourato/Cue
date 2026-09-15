@@ -101,7 +101,7 @@ final class DragHandleNSView: NSView {
         let resolvedUTType = Self.preferredUTType()
         let provider = AnnotateDragFilePromiseProvider(
             fileType: resolvedUTType.identifier,
-            delegate: self,
+            delegate: self
         )
         provider.fallbackFileURL = preparedFallbackFileURL
         provider.sourceFileURL = state.sourceURL
@@ -118,7 +118,7 @@ final class DragHandleNSView: NSView {
                 in: NSRect(origin: .zero, size: imageSize),
                 from: .zero,
                 operation: .sourceOver,
-                fraction: 0.8,
+                fraction: 0.8
             )
             dragImage.unlockFocus()
         }
@@ -129,9 +129,9 @@ final class DragHandleNSView: NSView {
                 x: mouseLocation.x - imageSize.width / 2,
                 y: mouseLocation.y - imageSize.height / 2,
                 width: imageSize.width,
-                height: imageSize.height,
+                height: imageSize.height
             ),
-            contents: dragImage,
+            contents: dragImage
         )
 
         // Notify only this window controller to hide the source window.
@@ -151,7 +151,7 @@ final class DragHandleNSView: NSView {
 extension DragHandleNSView: NSDraggingSource {
     func draggingSession(
         _: NSDraggingSession,
-        sourceOperationMaskFor _: NSDraggingContext,
+        sourceOperationMaskFor _: NSDraggingContext
     ) -> NSDragOperation {
         .copy
     }
@@ -159,7 +159,7 @@ extension DragHandleNSView: NSDraggingSource {
     func draggingSession(
         _: NSDraggingSession,
         endedAt _: NSPoint,
-        operation: NSDragOperation,
+        operation: NSDragOperation
     ) {
         isDragging = false
         let success = operation != []
@@ -177,7 +177,7 @@ extension DragHandleNSView: NSDraggingSource {
             NotificationCenter.default.post(
                 name: .annotateDragEnded,
                 object: sourceWindow,
-                userInfo: ["success": success],
+                userInfo: ["success": success]
             )
         }
     }
@@ -189,7 +189,7 @@ extension DragHandleNSView: NSFilePromiseProviderDelegate {
     /// Called on drag start to get the promised filename (cheap, no rendering)
     func filePromiseProvider(
         _ filePromiseProvider: NSFilePromiseProvider,
-        fileNameForType _: String,
+        fileNameForType _: String
     ) -> String {
         let provider = filePromiseProvider as? AnnotateDragFilePromiseProvider
         let baseName = provider?.sourceFileURL?
@@ -202,7 +202,7 @@ extension DragHandleNSView: NSFilePromiseProviderDelegate {
     func filePromiseProvider(
         _ filePromiseProvider: NSFilePromiseProvider,
         writePromiseTo url: URL,
-        completionHandler: @escaping (Error?) -> Void,
+        completionHandler: @escaping (Error?) -> Void
     ) {
         guard let provider = filePromiseProvider as? AnnotateDragFilePromiseProvider else {
             completionHandler(DragError.noState)
@@ -274,7 +274,7 @@ final class AnnotateDragFilePromiseProvider: NSFilePromiseProvider {
 
     override func writingOptions(
         forType type: NSPasteboard.PasteboardType,
-        pasteboard: NSPasteboard,
+        pasteboard: NSPasteboard
     ) -> NSPasteboard.WritingOptions {
         // Promised types should be lazy; file URL can be written immediately
         if type == .fileURL {
@@ -284,7 +284,7 @@ final class AnnotateDragFilePromiseProvider: NSFilePromiseProvider {
     }
 
     override func pasteboardPropertyList(
-        forType type: NSPasteboard.PasteboardType,
+        forType type: NSPasteboard.PasteboardType
     ) -> Any? {
         // Provide a concrete file URL for apps that ask for NSFilenamesPboardType / public.file-url.
         if type == .fileURL {
@@ -506,7 +506,7 @@ private struct DragFallbackSignature: Equatable {
         mockupPadding = Self.quantize(state.mockupPadding)
         annotations = state.annotations.map(Self.annotationSignature)
         embeddedAssets = state.annotations.compactMap { annotation in
-            guard case .embeddedImage(let assetId) = annotation.type else { return nil }
+            guard case let .embeddedImage(assetId) = annotation.type else { return nil }
             return "\(assetId.uuidString)|\(Self.imageIdentity(state.embeddedImage(for: assetId)) ?? "nil")"
         }
     }
@@ -522,13 +522,13 @@ private struct DragFallbackSignature: Equatable {
         switch style {
         case .none:
             "none"
-        case .gradient(let preset):
+        case let .gradient(preset):
             "gradient|\(preset.rawValue)"
-        case .wallpaper(let url):
+        case let .wallpaper(url):
             "wallpaper|\(url.absoluteString)"
-        case .blurred(let url):
+        case let .blurred(url):
             "blurred|\(url.absoluteString)"
-        case .solidColor(let color):
+        case let .solidColor(color):
             "solid|\(colorSignature(color))"
         }
     }
@@ -549,38 +549,38 @@ private struct DragFallbackSignature: Equatable {
             String(quantize(properties.rotationDegrees)),
             properties.watermarkStyle.rawValue,
             properties.shapeFillStyle.rawValue,
-            String(quantize(properties.magnification)),
+            String(quantize(properties.magnification))
         ].joined(separator: "|")
     }
 
     private static func annotationTypeSignature(_ type: AnnotationType) -> String {
         switch type {
-        case .path(let points):
+        case let .path(points):
             return "path|\(points.map(pointSignature).joined(separator: ";"))"
         case .rectangle:
             return "rectangle"
         case .circle:
             return "circle"
-        case .arrow(let geometry):
+        case let .arrow(geometry):
             let controlPoint = geometry.resolvedControlPoint.map(pointSignature) ?? "nil"
             return "arrow|\(pointSignature(geometry.start))|\(pointSignature(geometry.end))|\(geometry.style.rawValue)|\(controlPoint)"
-        case .line(let start, let end):
+        case let .line(start, end):
             return "line|\(pointSignature(start))|\(pointSignature(end))"
-        case .text(let value):
+        case let .text(value):
             return "text|\(value)"
-        case .highlight(let points):
+        case let .highlight(points):
             return "highlight|\(points.map(pointSignature).joined(separator: ";"))"
-        case .blur(let blurType):
+        case let .blur(blurType):
             return "blur|\(blurType.rawValue)"
-        case .counter(let value):
+        case let .counter(value):
             return "counter|\(value)"
-        case .watermark(let text):
+        case let .watermark(text):
             return "watermark|\(text)"
-        case .embeddedImage(let assetId):
+        case let .embeddedImage(assetId):
             return "embeddedImage|\(assetId.uuidString)"
         case .spotlight:
             return "spotlight"
-        case .magnify(let sourceCenter, let showsSourceCircle):
+        case let .magnify(sourceCenter, showsSourceCircle):
             return "magnify|\(pointSignature(sourceCenter))|\(showsSourceCircle)"
         }
     }
@@ -608,10 +608,10 @@ private struct DragFallbackSignature: Equatable {
     }
 
     private static func quantize(_ value: CGFloat) -> Int64 {
-        Int64((value * 10_000).rounded())
+        Int64((value * 10000).rounded())
     }
 
     private static func quantize(_ value: Double) -> Int64 {
-        Int64((value * 10_000).rounded())
+        Int64((value * 10000).rounded())
     }
 }

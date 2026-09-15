@@ -48,7 +48,7 @@ final class SteppedSliderControlTests: XCTestCase {
         var bindingValue = startValue
         let binding = Binding(
             get: { bindingValue },
-            set: { bindingValue = $0 },
+            set: { bindingValue = $0 }
         ).stepped(by: step, in: range)
         binding.wrappedValue = startValue + step
 
@@ -64,12 +64,12 @@ final class SteppedSliderControlTests: XCTestCase {
         var bindingValue = 975.0
         let binding = Binding(
             get: { bindingValue },
-            set: { bindingValue = $0 },
+            set: { bindingValue = $0 }
         ).stepped(by: 50, in: range)
 
-        binding.wrappedValue = 1_025
+        binding.wrappedValue = 1025
 
-        XCTAssertEqual(bindingValue, 1_000)
+        XCTAssertEqual(bindingValue, 1000)
     }
 
     func testDoubleCanNudgeIsDisabledAtEndpoints() {

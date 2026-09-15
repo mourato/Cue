@@ -74,7 +74,7 @@ struct AnnotationPropertiesSection: View {
 
             ColorPickerRow(
                 selectedColor: strokeColorBinding,
-                colors: AnnotateBuiltInColorPalette.annotationColors,
+                colors: AnnotateBuiltInColorPalette.annotationColors
             )
         }
     }
@@ -93,7 +93,7 @@ struct AnnotationPropertiesSection: View {
         CompactSliderRow(
             label: L10n.AnnotateUI.magnifyZoom,
             value: magnificationBinding,
-            range: AnnotationProperties.magnificationRange,
+            range: AnnotationProperties.magnificationRange
         )
     }
 
@@ -114,9 +114,9 @@ struct AnnotationPropertiesSection: View {
                             state.updateAnnotationProperties(
                                 id: id,
                                 shapeFillStyle: style,
-                                recordsUndo: true,
+                                recordsUndo: true
                             )
-                        },
+                        }
                     )
                 }
                 Spacer(minLength: 0)
@@ -132,7 +132,7 @@ struct AnnotationPropertiesSection: View {
             set: { newColor in
                 guard let id = state.selectedAnnotationId else { return }
                 state.updateAnnotationPrimaryColor(id: id, color: newColor, recordsUndo: true)
-            },
+            }
         )
     }
 
@@ -142,7 +142,7 @@ struct AnnotationPropertiesSection: View {
             set: { newWidth in
                 guard let id = state.selectedAnnotationId else { return }
                 state.updateAnnotationProperties(id: id, strokeWidth: newWidth, recordsUndo: true)
-            },
+            }
         )
     }
 
@@ -152,7 +152,7 @@ struct AnnotationPropertiesSection: View {
             set: { newMagnification in
                 guard let id = state.selectedAnnotationId else { return }
                 state.updateAnnotationProperties(id: id, magnification: newMagnification, recordsUndo: true)
-            },
+            }
         )
     }
 }
@@ -187,7 +187,7 @@ struct ColorPickerRow: View {
                         size: 20,
                         onDelete: {
                             paletteStore.removeColor(color)
-                        },
+                        }
                     ) {
                         selectedColor = color
                     }
@@ -196,7 +196,7 @@ struct ColorPickerRow: View {
                 AnnotateCustomColorPickerControl(
                     selectedColor: $selectedColor,
                     draftColor: $draftCustomColor,
-                    swatchSize: 20,
+                    swatchSize: 20
                 )
             }
         }
@@ -222,8 +222,8 @@ struct ColorPickerRow: View {
                                 AnnotateColorPaletteStore.colorsMatch(selectedColor, color) ? Color.accentColor : Color
                                     .secondary
                                     .opacity(0.5),
-                                lineWidth: AnnotateColorPaletteStore.colorsMatch(selectedColor, color) ? 2 : 1,
-                            ),
+                                lineWidth: AnnotateColorPaletteStore.colorsMatch(selectedColor, color) ? 2 : 1
+                            )
                     )
             }
         }

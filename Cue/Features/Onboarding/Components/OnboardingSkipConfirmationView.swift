@@ -46,11 +46,11 @@ struct SkipConfirmationView: View {
             .padding(.vertical, 14)
             .background(
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(VSDesignSystem.Colors.cardFill),
+                    .fill(VSDesignSystem.Colors.cardFill)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
-                    .stroke(VSDesignSystem.Colors.cardStroke, lineWidth: 1),
+                    .stroke(VSDesignSystem.Colors.cardStroke, lineWidth: 1)
             )
             .padding(.top, 24)
 

@@ -29,7 +29,7 @@ struct CaptureSelectionChromeLayout: Equatable {
         let maxCornerFromSpan = max(0, (min(width, height) - hitSize) / 2)
         let cornerLength = min(
             CaptureSelectionChromeMetrics.cornerHandleLength,
-            max(8, maxCornerFromSpan),
+            max(8, maxCornerFromSpan)
         )
         let edgeLength = CaptureSelectionChromeMetrics.edgeHandleLength
 
@@ -49,7 +49,7 @@ struct CaptureSelectionChromeLayout: Equatable {
         return CaptureSelectionChromeLayout(
             cornerLength: cornerLength,
             edgeLength: edgeLength,
-            availableHandles: availableHandles,
+            availableHandles: availableHandles
         )
     }
 }
@@ -61,7 +61,7 @@ enum CaptureSelectionHandleGeometry {
     static func handleBars(
         in rect: CGRect,
         coordinateSpace: CaptureSelectionCoordinateSpace,
-        layout: CaptureSelectionChromeLayout? = nil,
+        layout: CaptureSelectionChromeLayout? = nil
     ) -> [CGRect] {
         let resolvedLayout = layout ?? CaptureSelectionChromeLayout.layout(for: rect)
         var bars: [CGRect] = []
@@ -72,7 +72,7 @@ enum CaptureSelectionHandleGeometry {
                 for: handle,
                 anchor: anchor,
                 coordinateSpace: coordinateSpace,
-                layout: resolvedLayout,
+                layout: resolvedLayout
             )
             bars.append(cornerBars.horizontal)
             bars.append(cornerBars.vertical)
@@ -85,8 +85,8 @@ enum CaptureSelectionHandleGeometry {
                     for: handle,
                     anchor: anchor,
                     coordinateSpace: coordinateSpace,
-                    layout: resolvedLayout,
-                ),
+                    layout: resolvedLayout
+                )
             )
         }
 
@@ -101,7 +101,7 @@ enum CaptureSelectionHandleGeometry {
         in rect: CGRect,
         hitSize: CGFloat = CaptureSelectionChromeMetrics.handleHitSize,
         coordinateSpace: CaptureSelectionCoordinateSpace = .bottomLeftOrigin,
-        layout: CaptureSelectionChromeLayout? = nil,
+        layout: CaptureSelectionChromeLayout? = nil
     ) -> CaptureSelectionResizeHandle? {
         let resolvedLayout = layout ?? CaptureSelectionChromeLayout.layout(for: rect)
 
@@ -126,7 +126,7 @@ enum CaptureSelectionHandleGeometry {
         for handle: CaptureSelectionResizeHandle,
         in rect: CGRect,
         hitSize: CGFloat = CaptureSelectionChromeMetrics.handleHitSize,
-        coordinateSpace: CaptureSelectionCoordinateSpace = .bottomLeftOrigin,
+        coordinateSpace: CaptureSelectionCoordinateSpace = .bottomLeftOrigin
     ) -> CGRect {
         let hs = hitSize
         switch coordinateSpace {
@@ -140,7 +140,7 @@ enum CaptureSelectionHandleGeometry {
     private static func bottomLeftOriginHitRect(
         for handle: CaptureSelectionResizeHandle,
         in rect: CGRect,
-        hitSize hs: CGFloat,
+        hitSize hs: CGFloat
     ) -> CGRect {
         switch handle {
         case .topLeft:
@@ -156,28 +156,28 @@ enum CaptureSelectionHandleGeometry {
                 x: rect.minX + hs,
                 y: rect.maxY - hs,
                 width: max(0, rect.width - hs * 2),
-                height: hs * 2,
+                height: hs * 2
             )
         case .bottom:
             CGRect(
                 x: rect.minX + hs,
                 y: rect.minY - hs,
                 width: max(0, rect.width - hs * 2),
-                height: hs * 2,
+                height: hs * 2
             )
         case .left:
             CGRect(
                 x: rect.minX - hs,
                 y: rect.minY + hs,
                 width: hs * 2,
-                height: max(0, rect.height - hs * 2),
+                height: max(0, rect.height - hs * 2)
             )
         case .right:
             CGRect(
                 x: rect.maxX - hs,
                 y: rect.minY + hs,
                 width: hs * 2,
-                height: max(0, rect.height - hs * 2),
+                height: max(0, rect.height - hs * 2)
             )
         }
     }
@@ -185,7 +185,7 @@ enum CaptureSelectionHandleGeometry {
     private static func topLeftOriginHitRect(
         for handle: CaptureSelectionResizeHandle,
         in rect: CGRect,
-        hitSize hs: CGFloat,
+        hitSize hs: CGFloat
     ) -> CGRect {
         switch handle {
         case .topLeft:
@@ -201,28 +201,28 @@ enum CaptureSelectionHandleGeometry {
                 x: rect.minX + hs,
                 y: rect.minY - hs,
                 width: max(0, rect.width - hs * 2),
-                height: hs * 2,
+                height: hs * 2
             )
         case .bottom:
             CGRect(
                 x: rect.minX + hs,
                 y: rect.maxY - hs,
                 width: max(0, rect.width - hs * 2),
-                height: hs * 2,
+                height: hs * 2
             )
         case .left:
             CGRect(
                 x: rect.minX - hs,
                 y: rect.minY + hs,
                 width: hs * 2,
-                height: max(0, rect.height - hs * 2),
+                height: max(0, rect.height - hs * 2)
             )
         case .right:
             CGRect(
                 x: rect.maxX - hs,
                 y: rect.minY + hs,
                 width: hs * 2,
-                height: max(0, rect.height - hs * 2),
+                height: max(0, rect.height - hs * 2)
             )
         }
     }
@@ -235,14 +235,14 @@ enum CaptureSelectionHandleGeometry {
         anchor: CGPoint,
         metrics: (
             cornerLength: CGFloat,
-            thickness: CGFloat,
+            thickness: CGFloat
         )? = nil,
         coordinateSpace: CaptureSelectionCoordinateSpace = .bottomLeftOrigin,
-        layout: CaptureSelectionChromeLayout? = nil,
+        layout: CaptureSelectionChromeLayout? = nil
     ) -> (horizontal: CGRect, vertical: CGRect) {
         let resolvedMetrics = metrics ?? (
             cornerLength: layout?.cornerLength ?? CaptureSelectionChromeMetrics.cornerHandleLength,
-            thickness: CaptureSelectionChromeMetrics.handleThickness,
+            thickness: CaptureSelectionChromeMetrics.handleThickness
         )
         let length = resolvedMetrics.cornerLength
         let thickness = resolvedMetrics.thickness
@@ -256,8 +256,8 @@ enum CaptureSelectionHandleGeometry {
                     x: anchor.x - halfThickness,
                     y: anchor.y - length + halfThickness,
                     width: thickness,
-                    height: length,
-                ),
+                    height: length
+                )
             )
         case (.topRight, .bottomLeftOrigin):
             return (
@@ -265,19 +265,19 @@ enum CaptureSelectionHandleGeometry {
                     x: anchor.x - length + halfThickness,
                     y: anchor.y - halfThickness,
                     width: length,
-                    height: thickness,
+                    height: thickness
                 ),
                 CGRect(
                     x: anchor.x - halfThickness,
                     y: anchor.y - length + halfThickness,
                     width: thickness,
-                    height: length,
-                ),
+                    height: length
+                )
             )
         case (.bottomLeft, .bottomLeftOrigin):
             return (
                 CGRect(x: anchor.x - halfThickness, y: anchor.y - halfThickness, width: length, height: thickness),
-                CGRect(x: anchor.x - halfThickness, y: anchor.y - halfThickness, width: thickness, height: length),
+                CGRect(x: anchor.x - halfThickness, y: anchor.y - halfThickness, width: thickness, height: length)
             )
         case (.bottomRight, .bottomLeftOrigin):
             return (
@@ -285,14 +285,14 @@ enum CaptureSelectionHandleGeometry {
                     x: anchor.x - length + halfThickness,
                     y: anchor.y - halfThickness,
                     width: length,
-                    height: thickness,
+                    height: thickness
                 ),
-                CGRect(x: anchor.x - halfThickness, y: anchor.y - halfThickness, width: thickness, height: length),
+                CGRect(x: anchor.x - halfThickness, y: anchor.y - halfThickness, width: thickness, height: length)
             )
         case (.topLeft, .topLeftOrigin):
             return (
                 CGRect(x: anchor.x - halfThickness, y: anchor.y - halfThickness, width: length, height: thickness),
-                CGRect(x: anchor.x - halfThickness, y: anchor.y - halfThickness, width: thickness, height: length),
+                CGRect(x: anchor.x - halfThickness, y: anchor.y - halfThickness, width: thickness, height: length)
             )
         case (.topRight, .topLeftOrigin):
             return (
@@ -300,9 +300,9 @@ enum CaptureSelectionHandleGeometry {
                     x: anchor.x - length + halfThickness,
                     y: anchor.y - halfThickness,
                     width: length,
-                    height: thickness,
+                    height: thickness
                 ),
-                CGRect(x: anchor.x - halfThickness, y: anchor.y - halfThickness, width: thickness, height: length),
+                CGRect(x: anchor.x - halfThickness, y: anchor.y - halfThickness, width: thickness, height: length)
             )
         case (.bottomLeft, .topLeftOrigin):
             return (
@@ -310,14 +310,14 @@ enum CaptureSelectionHandleGeometry {
                     x: anchor.x - halfThickness,
                     y: anchor.y - thickness + halfThickness,
                     width: length,
-                    height: thickness,
+                    height: thickness
                 ),
                 CGRect(
                     x: anchor.x - halfThickness,
                     y: anchor.y - length + halfThickness,
                     width: thickness,
-                    height: length,
-                ),
+                    height: length
+                )
             )
         case (.bottomRight, .topLeftOrigin):
             return (
@@ -325,14 +325,14 @@ enum CaptureSelectionHandleGeometry {
                     x: anchor.x - length + halfThickness,
                     y: anchor.y - thickness + halfThickness,
                     width: length,
-                    height: thickness,
+                    height: thickness
                 ),
                 CGRect(
                     x: anchor.x - halfThickness,
                     y: anchor.y - length + halfThickness,
                     width: thickness,
-                    height: length,
-                ),
+                    height: length
+                )
             )
         default:
             return (.zero, .zero)
@@ -345,14 +345,14 @@ enum CaptureSelectionHandleGeometry {
         anchor: CGPoint,
         metrics: (
             edgeLength: CGFloat,
-            thickness: CGFloat,
+            thickness: CGFloat
         )? = nil,
         coordinateSpace: CaptureSelectionCoordinateSpace = .bottomLeftOrigin,
-        layout: CaptureSelectionChromeLayout? = nil,
+        layout: CaptureSelectionChromeLayout? = nil
     ) -> CGRect {
         let resolvedMetrics = metrics ?? (
             edgeLength: layout?.edgeLength ?? CaptureSelectionChromeMetrics.edgeHandleLength,
-            thickness: CaptureSelectionChromeMetrics.handleThickness,
+            thickness: CaptureSelectionChromeMetrics.handleThickness
         )
         let length = resolvedMetrics.edgeLength
         let thickness = resolvedMetrics.thickness
@@ -365,28 +365,28 @@ enum CaptureSelectionHandleGeometry {
                 x: anchor.x - halfLength,
                 y: anchor.y - halfThickness,
                 width: length,
-                height: thickness,
+                height: thickness
             )
         case (.left, .bottomLeftOrigin), (.right, .bottomLeftOrigin):
             return CGRect(
                 x: anchor.x - halfThickness,
                 y: anchor.y - halfLength,
                 width: thickness,
-                height: length,
+                height: length
             )
         case (.top, .topLeftOrigin), (.bottom, .topLeftOrigin):
             return CGRect(
                 x: anchor.x - halfLength,
                 y: anchor.y - halfThickness,
                 width: length,
-                height: thickness,
+                height: thickness
             )
         case (.left, .topLeftOrigin), (.right, .topLeftOrigin):
             return CGRect(
                 x: anchor.x - halfThickness,
                 y: anchor.y - halfLength,
                 width: thickness,
-                height: length,
+                height: length
             )
         default:
             return .zero
@@ -397,7 +397,7 @@ enum CaptureSelectionHandleGeometry {
     static func anchor(
         for handle: CaptureSelectionResizeHandle,
         in rect: CGRect,
-        coordinateSpace: CaptureSelectionCoordinateSpace,
+        coordinateSpace: CaptureSelectionCoordinateSpace
     ) -> CGPoint {
         switch coordinateSpace {
         case .bottomLeftOrigin:
@@ -428,7 +428,7 @@ enum CaptureSelectionHandleGeometry {
     /// Corner anchor points for drawing L-handles around a selection rect.
     static func cornerAnchors(
         in rect: CGRect,
-        coordinateSpace: CaptureSelectionCoordinateSpace,
+        coordinateSpace: CaptureSelectionCoordinateSpace
     ) -> [(handle: CaptureSelectionResizeHandle, point: CGPoint)] {
         switch coordinateSpace {
         case .bottomLeftOrigin:
@@ -436,14 +436,14 @@ enum CaptureSelectionHandleGeometry {
                 (.topLeft, CGPoint(x: rect.minX, y: rect.maxY)),
                 (.topRight, CGPoint(x: rect.maxX, y: rect.maxY)),
                 (.bottomLeft, CGPoint(x: rect.minX, y: rect.minY)),
-                (.bottomRight, CGPoint(x: rect.maxX, y: rect.minY)),
+                (.bottomRight, CGPoint(x: rect.maxX, y: rect.minY))
             ]
         case .topLeftOrigin:
             [
                 (.topLeft, CGPoint(x: rect.minX, y: rect.minY)),
                 (.topRight, CGPoint(x: rect.maxX, y: rect.minY)),
                 (.bottomLeft, CGPoint(x: rect.minX, y: rect.maxY)),
-                (.bottomRight, CGPoint(x: rect.maxX, y: rect.maxY)),
+                (.bottomRight, CGPoint(x: rect.maxX, y: rect.maxY))
             ]
         }
     }
@@ -451,7 +451,7 @@ enum CaptureSelectionHandleGeometry {
     /// Mid-edge anchor points for drawing edge handles around a selection rect.
     static func edgeAnchors(
         in rect: CGRect,
-        coordinateSpace: CaptureSelectionCoordinateSpace,
+        coordinateSpace: CaptureSelectionCoordinateSpace
     ) -> [(handle: CaptureSelectionResizeHandle, point: CGPoint)] {
         switch coordinateSpace {
         case .bottomLeftOrigin:
@@ -459,14 +459,14 @@ enum CaptureSelectionHandleGeometry {
                 (.top, CGPoint(x: rect.midX, y: rect.maxY)),
                 (.bottom, CGPoint(x: rect.midX, y: rect.minY)),
                 (.left, CGPoint(x: rect.minX, y: rect.midY)),
-                (.right, CGPoint(x: rect.maxX, y: rect.midY)),
+                (.right, CGPoint(x: rect.maxX, y: rect.midY))
             ]
         case .topLeftOrigin:
             [
                 (.top, CGPoint(x: rect.midX, y: rect.minY)),
                 (.bottom, CGPoint(x: rect.midX, y: rect.maxY)),
                 (.left, CGPoint(x: rect.minX, y: rect.midY)),
-                (.right, CGPoint(x: rect.maxX, y: rect.midY)),
+                (.right, CGPoint(x: rect.maxX, y: rect.midY))
             ]
         }
     }

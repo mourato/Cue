@@ -41,9 +41,9 @@ final class AnnotateSelectionEditingTests: XCTestCase {
                 x: min(start.x, end.x),
                 y: min(start.y, end.y),
                 width: abs(end.x - start.x),
-                height: abs(end.y - start.y),
+                height: abs(end.y - start.y)
             ),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
     }
 
@@ -199,7 +199,7 @@ final class AnnotateSelectionEditingTests: XCTestCase {
         // Move only the start; end stays put.
         state.updateLineEndpoint(id: line.id, start: CGPoint(x: 10, y: 10))
         var updated = try XCTUnwrap(state.annotations.first)
-        guard case .line(let start1, let end1) = updated.type else {
+        guard case let .line(start1, end1) = updated.type else {
             return XCTFail("Expected line annotation")
         }
         XCTAssertEqual(start1, CGPoint(x: 10, y: 10))
@@ -208,7 +208,7 @@ final class AnnotateSelectionEditingTests: XCTestCase {
         // Move only the end; start stays at its previously-set value.
         state.updateLineEndpoint(id: line.id, end: CGPoint(x: 60, y: 20))
         updated = try XCTUnwrap(state.annotations.first)
-        guard case .line(let start2, let end2) = updated.type else {
+        guard case let .line(start2, end2) = updated.type else {
             return XCTFail("Expected line annotation")
         }
         XCTAssertEqual(start2, CGPoint(x: 10, y: 10))
@@ -227,7 +227,7 @@ final class AnnotateSelectionEditingTests: XCTestCase {
         for style in [ArrowStyle.curvedRight, .curvedLeft, .straight] {
             state.updateArrowStyle(id: arrow.id, style: style)
             let updated = try XCTUnwrap(state.annotations.first)
-            guard case .arrow(let geometry) = updated.type else {
+            guard case let .arrow(geometry) = updated.type else {
                 return XCTFail("Expected arrow annotation")
             }
             XCTAssertEqual(geometry.style, style)
@@ -288,7 +288,7 @@ final class AnnotateSelectionEditingTests: XCTestCase {
         let spotlight = AnnotationItem(
             type: .spotlight,
             bounds: CGRect(x: 0, y: 0, width: 80, height: 80),
-            properties: AnnotationProperties(spotlightOpacity: 0.5),
+            properties: AnnotationProperties(spotlightOpacity: 0.5)
         )
         state.annotations = [spotlight]
         state.activateTool(.selection)

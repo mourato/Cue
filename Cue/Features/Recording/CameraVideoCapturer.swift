@@ -55,7 +55,7 @@
         func configureOutput(
             on session: CameraCaptureSession,
             delegate: AVCaptureVideoDataOutputSampleBufferDelegate,
-            queue: DispatchQueue,
+            queue: DispatchQueue
         ) throws
     }
 
@@ -66,13 +66,14 @@
             AVCaptureDevice.DiscoverySession(
                 deviceTypes: [.builtInWideAngleCamera, .externalUnknown],
                 mediaType: .video,
-                position: .unspecified,
+                position: .unspecified
             ).devices.sorted { $0.localizedName.localizedCaseInsensitiveCompare($1.localizedName) == .orderedAscending }
         }
 
         static func device(matching id: String?) -> AVCaptureDevice? {
             if let id, id != systemDefaultID,
-               let device = devices().first(where: { $0.uniqueID == id }) {
+               let device = devices().first(where: { $0.uniqueID == id })
+            {
                 return device
             }
             return devices().first
@@ -107,7 +108,7 @@
         func configureOutput(
             on session: CameraCaptureSession,
             delegate: AVCaptureVideoDataOutputSampleBufferDelegate,
-            queue: DispatchQueue,
+            queue: DispatchQueue
         ) throws {
             let output = AVCaptureVideoDataOutput()
             output.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
@@ -130,7 +131,7 @@
 
         init(
             preferredDeviceID: String? = nil,
-            factory: CameraCaptureSessionFactory = AVFoundationCameraCaptureSessionFactory(),
+            factory: CameraCaptureSessionFactory = AVFoundationCameraCaptureSessionFactory()
         ) {
             self.preferredDeviceID = preferredDeviceID
             self.factory = factory
@@ -153,7 +154,7 @@
                 notificationTokens = [
                     AVCaptureSession.runtimeErrorNotification,
                     AVCaptureSession.wasInterruptedNotification,
-                    AVCaptureDevice.wasDisconnectedNotification,
+                    AVCaptureDevice.wasDisconnectedNotification
                 ].map { notification in
                     NotificationCenter.default
                         .addObserver(forName: notification, object: nil, queue: nil) { [weak self] _ in

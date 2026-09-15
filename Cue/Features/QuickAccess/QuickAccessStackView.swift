@@ -21,7 +21,7 @@ struct QuickAccessStackView: View {
                 QuickAccessCardView(
                     item: item,
                     manager: manager,
-                    onHover: nil,
+                    onHover: nil
                 )
                 .id(item.id)
                 .transition(cardTransition(for: item))
@@ -41,13 +41,13 @@ struct QuickAccessStackView: View {
         case .scale:
             return .asymmetric(
                 insertion: .scale(scale: 0.9, anchor: .bottom).combined(with: .opacity),
-                removal: .scale(scale: 0.8, anchor: .bottom).combined(with: .opacity),
+                removal: .scale(scale: 0.8, anchor: .bottom).combined(with: .opacity)
             )
         case .slide:
             let edge: Edge = manager.position.isLeftSide ? .leading : .trailing
             return .asymmetric(
                 insertion: .move(edge: edge).combined(with: .opacity),
-                removal: .move(edge: edge).combined(with: .opacity),
+                removal: .move(edge: edge).combined(with: .opacity)
             )
         }
     }

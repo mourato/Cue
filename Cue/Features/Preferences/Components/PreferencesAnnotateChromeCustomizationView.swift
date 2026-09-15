@@ -25,7 +25,7 @@ struct AnnotateChromeCustomizationContent: View {
                 showsReset: false,
                 onMove: { source, destination in
                     chromeStore.moveToolbarItem(from: source, to: destination)
-                },
+                }
             )
         case .bottomBar:
             chromeListSection(
@@ -34,7 +34,7 @@ struct AnnotateChromeCustomizationContent: View {
                 showsReset: true,
                 onMove: { source, destination in
                     chromeStore.moveBottomAction(from: source, to: destination)
-                },
+                }
             )
         }
     }
@@ -45,7 +45,7 @@ private extension AnnotateChromeCustomizationContent {
         items: [AnnotateChromeItem],
         showsFootnote: Bool,
         showsReset: Bool,
-        onMove: @escaping (IndexSet, Int) -> Void,
+        onMove: @escaping (IndexSet, Int) -> Void
     ) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(L10n.PreferencesAnnotate.chromeDescription)
@@ -58,7 +58,7 @@ private extension AnnotateChromeCustomizationContent {
                 isEnabled: { item in
                     Binding(
                         get: { chromeStore.isEnabled(item) },
-                        set: { chromeStore.setEnabled(item, enabled: $0) },
+                        set: { chromeStore.setEnabled(item, enabled: $0) }
                     )
                 },
                 canReorder: { $0.isCustomizable },
@@ -67,7 +67,7 @@ private extension AnnotateChromeCustomizationContent {
                 resetTitle: showsReset ? L10n.PreferencesAnnotate.resetChrome : nil,
                 onReset: showsReset ? { chromeStore.resetToDefaults() } : nil,
                 reorderPayload: { $0.rawValue },
-                accessory: { _ in EmptyView() },
+                accessory: { _ in EmptyView() }
             )
 
             if showsFootnote {

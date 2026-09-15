@@ -35,7 +35,7 @@ extension NSImage {
             bitsPerComponent: 8,
             bytesPerRow: 0,
             space: colorSpace,
-            bitmapInfo: bitmapInfo,
+            bitmapInfo: bitmapInfo
         ) else {
             return nil
         }
@@ -65,7 +65,7 @@ enum AnnotateImageRotation {
     static func rotatePoint(
         _ point: CGPoint,
         oldSize: CGSize,
-        clockwise: Bool,
+        clockwise: Bool
     ) -> CGPoint {
         if clockwise {
             CGPoint(x: point.y, y: oldSize.width - point.x)
@@ -78,7 +78,7 @@ enum AnnotateImageRotation {
     static func rotateRect(
         _ rect: CGRect,
         oldSize: CGSize,
-        clockwise: Bool,
+        clockwise: Bool
     ) -> CGRect {
         let standardised = rect.standardized
         if clockwise {
@@ -86,14 +86,14 @@ enum AnnotateImageRotation {
                 x: standardised.minY,
                 y: oldSize.width - standardised.minX - standardised.width,
                 width: standardised.height,
-                height: standardised.width,
+                height: standardised.width
             )
         } else {
             return CGRect(
                 x: oldSize.height - standardised.minY - standardised.height,
                 y: standardised.minX,
                 width: standardised.height,
-                height: standardised.width,
+                height: standardised.width
             )
         }
     }
@@ -105,20 +105,20 @@ enum AnnotateImageRotation {
     static func rotateLayoutRectPreservingSize(
         _ rect: CGRect,
         oldSize: CGSize,
-        clockwise: Bool,
+        clockwise: Bool
     ) -> CGRect {
         let standardised = rect.standardized
         let rotatedCenter = rotatePoint(
             CGPoint(x: standardised.midX, y: standardised.midY),
             oldSize: oldSize,
-            clockwise: clockwise,
+            clockwise: clockwise
         )
 
         return CGRect(
             x: rotatedCenter.x - standardised.width / 2,
             y: rotatedCenter.y - standardised.height / 2,
             width: standardised.width,
-            height: standardised.height,
+            height: standardised.height
         )
     }
 }

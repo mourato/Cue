@@ -34,7 +34,7 @@ struct QuickAccessPinWindowView: View {
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                .stroke(Color.white.opacity(0.22), lineWidth: 1),
+                .stroke(Color.white.opacity(0.22), lineWidth: 1)
         )
         .background(Color.clear)
     }
@@ -82,7 +82,7 @@ struct QuickAccessPinWindowView: View {
     private var lockButton: some View {
         chromeButton(
             systemName: state.isLocked ? "lock.fill" : "lock.open",
-            help: state.isLocked ? L10n.QuickAccess.unlockPinnedWindow : L10n.QuickAccess.lockPinnedWindow,
+            help: state.isLocked ? L10n.QuickAccess.unlockPinnedWindow : L10n.QuickAccess.lockPinnedWindow
         ) {
             state.isLocked.toggle()
             onLockChanged()
@@ -101,11 +101,11 @@ struct QuickAccessPinWindowView: View {
                 .frame(height: 28)
                 .background(
                     Capsule(style: .continuous)
-                        .fill(Color.black.opacity(isZoomHovering || isZoomPickerPresented ? 0.64 : 0.54)),
+                        .fill(Color.black.opacity(isZoomHovering || isZoomPickerPresented ? 0.64 : 0.54))
                 )
                 .overlay(
                     Capsule(style: .continuous)
-                        .strokeBorder(Color.white.opacity(0.18), lineWidth: 1),
+                        .strokeBorder(Color.white.opacity(0.18), lineWidth: 1)
                 )
                 .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 2)
         }
@@ -125,7 +125,7 @@ struct QuickAccessPinWindowView: View {
             ForEach(state.zoomMenuPercents, id: \.self) { percent in
                 PinWindowZoomOptionButton(
                     title: "\(percent)%",
-                    isSelected: percent == state.zoomPercent,
+                    isSelected: percent == state.zoomPercent
                 ) {
                     onZoomSizeChange(state.setZoomPercent(percent))
                     isZoomPickerPresented = false
@@ -140,7 +140,7 @@ struct QuickAccessPinWindowView: View {
             PinWindowZoomOptionButton(
                 title: L10n.QuickAccess.fitPinnedWindow,
                 systemImage: "arrow.down.right.and.arrow.up.left",
-                isSelected: state.zoomPercent == 100,
+                isSelected: state.zoomPercent == 100
             ) {
                 onZoomSizeChange(state.resetZoom())
                 isZoomPickerPresented = false
@@ -155,7 +155,7 @@ struct QuickAccessPinWindowView: View {
             fileURL: state.url,
             image: state.image,
             thumbnail: state.thumbnail,
-            onDragStateChanged: { isDragActive = $0 },
+            onDragStateChanged: { isDragActive = $0 }
         )
         .frame(width: 72, height: 32)
         .overlay(
@@ -169,7 +169,7 @@ struct QuickAccessPinWindowView: View {
                 dragGrip
             }
             .foregroundStyle(dragForegroundColor)
-            .allowsHitTesting(false),
+            .allowsHitTesting(false)
         )
         .background(dragHandleFill(isActive: isDragHovering || isDragActive))
         .overlay(dragHandleStroke(isActive: isDragHovering || isDragActive))
@@ -200,11 +200,11 @@ struct QuickAccessPinWindowView: View {
                 .frame(width: 28, height: 28)
                 .background(
                     Circle()
-                        .fill(Color(nsColor: .windowBackgroundColor).opacity(0.84)),
+                        .fill(Color(nsColor: .windowBackgroundColor).opacity(0.84))
                 )
                 .overlay(
                     Circle()
-                        .stroke(Color.primary.opacity(0.1), lineWidth: 1),
+                        .stroke(Color.primary.opacity(0.1), lineWidth: 1)
                 )
                 .shadow(color: Color.black.opacity(0.12), radius: 6, x: 0, y: 2)
         }

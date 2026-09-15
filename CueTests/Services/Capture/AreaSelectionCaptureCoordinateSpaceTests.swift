@@ -43,13 +43,13 @@ final class AreaSelectionCaptureCoordinateSpaceTests: AreaSelectionOverlayTestCa
             quartzBounds.width,
             appKitFrame.width,
             accuracy: 0.5,
-            "Display width must match between coordinate spaces",
+            "Display width must match between coordinate spaces"
         )
         XCTAssertEqual(
             quartzBounds.height,
             appKitFrame.height,
             accuracy: 0.5,
-            "Display height must match between coordinate spaces",
+            "Display height must match between coordinate spaces"
         )
 
         // The primary display's Quartz origin is always (0, 0) by definition (it anchors the
@@ -71,7 +71,7 @@ final class AreaSelectionCaptureCoordinateSpaceTests: AreaSelectionOverlayTestCa
             x: 0,
             y: appKitFrame.height, // AppKit: Y grows upward, so "above" means larger Y
             width: 1920,
-            height: secondaryHeight,
+            height: secondaryHeight
         )
 
         // Compute what CGDisplayBounds would report for that same physical arrangement.
@@ -83,7 +83,7 @@ final class AreaSelectionCaptureCoordinateSpaceTests: AreaSelectionOverlayTestCa
             simulatedSecondaryAppKitFrame.origin.y,
             expectedQuartzYForDisplayAbovePrimary,
             "AppKit Y-up origin and Quartz Y-down origin must diverge for a secondary display -- "
-                + "passing screen.frame directly to CGWindowListCreateImage would capture the wrong region",
+                + "passing screen.frame directly to CGWindowListCreateImage would capture the wrong region"
         )
 
         // Concretely: AppKit reports the primary display's height (positive, Y-up), while Quartz
@@ -106,7 +106,7 @@ final class AreaSelectionCaptureCoordinateSpaceTests: AreaSelectionOverlayTestCa
             XCTAssertEqual(
                 captureRect,
                 CGDisplayBounds(displayID),
-                "captureRect must be derived directly from CGDisplayBounds(displayID)",
+                "captureRect must be derived directly from CGDisplayBounds(displayID)"
             )
 
             // Only assert divergence-from-AppKit-space where it's guaranteed to be observable:
@@ -116,7 +116,7 @@ final class AreaSelectionCaptureCoordinateSpaceTests: AreaSelectionOverlayTestCa
                     captureRect.origin.y,
                     screen.frame.origin.y,
                     "For a non-primary display, Quartz-space Y origin must differ from AppKit-space Y origin " +
-                        "(Y-down vs Y-up) -- using screen.frame here would capture the wrong screen region",
+                        "(Y-down vs Y-up) -- using screen.frame here would capture the wrong screen region"
                 )
             }
         }

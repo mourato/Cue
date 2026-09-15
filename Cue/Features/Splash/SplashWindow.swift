@@ -16,17 +16,17 @@ final class SplashWindow: NSWindow {
         // Size to ~85% of visible screen (max 1200×800) for a normal window feel
         let windowSize = NSSize(
             width: min(screen.visibleFrame.width * 0.85, 1200),
-            height: min(screen.visibleFrame.height * 0.85, 800),
+            height: min(screen.visibleFrame.height * 0.85, 800)
         )
         let origin = NSPoint(
             x: screen.visibleFrame.midX - windowSize.width / 2,
-            y: screen.visibleFrame.midY - windowSize.height / 2,
+            y: screen.visibleFrame.midY - windowSize.height / 2
         )
         super.init(
             contentRect: NSRect(origin: origin, size: windowSize),
             styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
             backing: .buffered,
-            defer: false,
+            defer: false
         )
         configureWindow()
         setupOpaqueBackground()
@@ -41,7 +41,7 @@ final class SplashWindow: NSWindow {
                 appearance.bestMatch(from: [.darkAqua]) == .darkAqua
                     ? NSColor(srgbRed: 28 / 255, green: 28 / 255, blue: 30 / 255, alpha: 1) // #1C1C1E
                     : NSColor(srgbRed: 242 / 255, green: 242 / 255, blue: 247 / 255, alpha: 1) // #F2F2F7
-            },
+            }
         )
         isOpaque = true
         level = .normal
@@ -106,14 +106,14 @@ final class SplashWindowController: NSObject, NSWindowDelegate {
         showWindow(
             forceOnboarding: false,
             initialScreen: .configAccess,
-            onboardingSteps: [.configAccess],
+            onboardingSteps: [.configAccess]
         )
     }
 
     private func showWindow(
         forceOnboarding: Bool,
         initialScreen: SplashScreen = .splash,
-        onboardingSteps: [SplashScreen]? = nil,
+        onboardingSteps: [SplashScreen]? = nil
     ) {
         guard let screen = NSScreen.main else {
             DiagnosticLogger.shared.log(.warning, .ui, "Splash skipped because main screen is unavailable")
@@ -125,7 +125,8 @@ final class SplashWindowController: NSObject, NSWindowDelegate {
         if isStandardStartup,
            !forceOnboarding,
            defaults.bool(forKey: PreferencesKeys.splashSkipOnceAfterOnboardingRelaunch),
-           OnboardingFlowView.hasCompletedOnboarding {
+           OnboardingFlowView.hasCompletedOnboarding
+        {
             DiagnosticLogger.shared.log(.debug, .ui, "Splash skipped once after onboarding relaunch")
             defaults.removeObject(forKey: PreferencesKeys.splashSkipOnceAfterOnboardingRelaunch)
             return
@@ -135,7 +136,8 @@ final class SplashWindowController: NSObject, NSWindowDelegate {
         if isStandardStartup,
            !forceOnboarding,
            OnboardingFlowView.hasCompletedOnboarding,
-           defaults.bool(forKey: PreferencesKeys.splashSkipped) {
+           defaults.bool(forKey: PreferencesKeys.splashSkipped)
+        {
             DiagnosticLogger.shared.log(.debug, .ui, "Splash skipped by user preference")
             return
         }
@@ -155,15 +157,15 @@ final class SplashWindowController: NSObject, NSWindowDelegate {
             context: [
                 "forceOnboarding": forceOnboarding ? "true" : "false",
                 "needsOnboarding": needsOnboarding ? "true" : "false",
-                "initialScreen": "\(initialScreen)",
-            ],
+                "initialScreen": "\(initialScreen)"
+            ]
         )
 
         attachContent(
             to: window,
             needsOnboarding: needsOnboarding,
             initialScreen: initialScreen,
-            onboardingSteps: onboardingSteps,
+            onboardingSteps: onboardingSteps
         )
 
         // Show window and activate
@@ -181,7 +183,7 @@ final class SplashWindowController: NSObject, NSWindowDelegate {
         to window: SplashWindow,
         needsOnboarding: Bool,
         initialScreen: SplashScreen,
-        onboardingSteps: [SplashScreen]?,
+        onboardingSteps: [SplashScreen]?
     ) {
         let rootView = SplashOnboardingRootView(
             needsOnboarding: needsOnboarding,
@@ -189,7 +191,7 @@ final class SplashWindowController: NSObject, NSWindowDelegate {
             onboardingSteps: onboardingSteps,
             onDismiss: { [weak self] in
                 self?.dismiss()
-            },
+            }
         )
         window.attachContent(rootView)
     }

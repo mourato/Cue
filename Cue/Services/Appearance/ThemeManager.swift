@@ -61,7 +61,7 @@ final class ThemeManager: ObservableObject {
         appearanceObserver = DistributedNotificationCenter.default.addObserver(
             forName: NSNotification.Name("AppleInterfaceThemeChangedNotification"),
             object: nil,
-            queue: .main,
+            queue: .main
         ) { [weak self] _ in
             MainActor.assumeIsolated {
                 self?.updateSystemAppearance()
@@ -72,7 +72,7 @@ final class ThemeManager: ObservableObject {
         appLaunchObserver = NotificationCenter.default.addObserver(
             forName: NSApplication.didFinishLaunchingNotification,
             object: nil,
-            queue: .main,
+            queue: .main
         ) { [weak self] _ in
             MainActor.assumeIsolated {
                 self?.updateSystemAppearance()

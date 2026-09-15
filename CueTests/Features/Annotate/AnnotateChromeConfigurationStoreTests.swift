@@ -35,9 +35,9 @@ final class AnnotateChromeConfigurationStoreTests: XCTestCase {
                 AnnotateChromeItem.watermark.rawValue,
                 "future-item",
                 AnnotateChromeItem.addBackground.rawValue,
-                AnnotateChromeItem.rectangle.rawValue,
+                AnnotateChromeItem.rectangle.rawValue
             ],
-            forKey: PreferencesKeys.annotateChromeToolbarOrder,
+            forKey: PreferencesKeys.annotateChromeToolbarOrder
         )
 
         let store = makeStore(defaults: defaults)
@@ -95,7 +95,7 @@ final class AnnotateChromeConfigurationStoreTests: XCTestCase {
             L10n.PreferencesAnnotate.chromeBottomSection,
             L10n.PreferencesAnnotate.chromeDescription,
             L10n.PreferencesAnnotate.chromeAlwaysOnFootnote,
-            L10n.PreferencesAnnotate.resetChrome,
+            L10n.PreferencesAnnotate.resetChrome
         ]
 
         for value in strings {

@@ -24,25 +24,26 @@ struct TextEditOverlay: View {
         GeometryReader { _ in
             if let editingId = state.editingTextAnnotationId,
                let annotation = state.annotations.first(where: { $0.id == editingId }),
-               case .text(let currentText) = annotation.type {
+               case let .text(currentText) = annotation.type
+            {
                 let displayBounds = calculateDisplayBounds(annotation.bounds)
                 let displayFont = AnnotateTextLayout.displayFont(
                     size: annotation.properties.fontSize,
                     fontName: annotation.properties.fontName,
-                    scale: scale,
+                    scale: scale
                 )
                 let fieldWidth = max(displayBounds.width, minTextFieldWidth)
                 let fieldHeight = max(displayBounds.height, 1)
                 let textContainerInset = AnnotateTextLayout.textEditorInset(
                     scale: scale,
                     presentation: annotation.properties.textPresentation,
-                    fontSize: annotation.properties.fontSize,
+                    fontSize: annotation.properties.fontSize
                 )
                 let tailTarget = annotation.properties.calloutTailTarget.map {
                     TextBubbleGeometry.resolvedTailTarget(
                         in: annotation.bounds,
                         requestedTarget: $0,
-                        fontSize: annotation.properties.fontSize,
+                        fontSize: annotation.properties.fontSize
                     )
                 }.map(calculateDisplayPoint)
                 let relativeTailTarget = tailTarget.map {
@@ -54,7 +55,7 @@ struct TextEditOverlay: View {
                         TextBubbleShape(
                             tailTarget: annotation.properties.textPresentation == .callout ? relativeTailTarget : nil,
                             fontSize: displayFont.pointSize,
-                            cornerRadius: annotation.properties.cornerRadius * scale,
+                            cornerRadius: annotation.properties.cornerRadius * scale
                         )
                         .fill(annotation.properties.fillColor)
                     }
@@ -68,17 +69,17 @@ struct TextEditOverlay: View {
                         onCommit: { commitEdit(id: editingId) },
                         onCancel: cancelEdit,
                         onUndo: { state.undo() },
-                        onRedo: { state.redo() },
+                        onRedo: { state.redo() }
                     )
                 }
                 .frame(
                     width: fieldWidth,
                     height: fieldHeight,
-                    alignment: .topLeading,
+                    alignment: .topLeading
                 )
                 .position(
                     x: displayBounds.minX + fieldWidth / 2,
-                    y: displayBounds.minY + fieldHeight / 2,
+                    y: displayBounds.minY + fieldHeight / 2
                 )
                 .onAppear {
                     editingText = currentText
@@ -113,14 +114,14 @@ struct TextEditOverlay: View {
             x: scaledX,
             y: flippedY,
             width: scaledWidth,
-            height: scaledHeight,
+            height: scaledHeight
         )
     }
 
     private func calculateDisplayPoint(_ imagePoint: CGPoint) -> CGPoint {
         CGPoint(
             x: (imagePoint.x - canvasBounds.minX) * scale,
-            y: (canvasBounds.maxY - imagePoint.y) * scale,
+            y: (canvasBounds.maxY - imagePoint.y) * scale
         )
     }
 
@@ -135,8 +136,9 @@ struct TextEditOverlay: View {
         // If it was a new annotation with empty text, delete it
         if let editingId = state.editingTextAnnotationId,
            let annotation = state.annotations.first(where: { $0.id == editingId }),
-           case .text(let text) = annotation.type,
-           text.isEmpty {
+           case let .text(text) = annotation.type,
+           text.isEmpty
+        {
             state.annotations.removeAll { $0.id == editingId }
             state.selectedAnnotationId = nil
         }
@@ -158,8 +160,8 @@ private struct TextBubbleShape: Shape {
                 in: rect,
                 cornerRadius: resolvedCornerRadius,
                 tailTarget: tailTarget,
-                fontSize: fontSize,
-            ),
+                fontSize: fontSize
+            )
         )
     }
 }

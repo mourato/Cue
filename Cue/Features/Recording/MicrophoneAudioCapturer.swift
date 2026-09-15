@@ -67,7 +67,7 @@
         func configureOutput(
             on session: MicrophoneCaptureSession,
             delegate: AVCaptureAudioDataOutputSampleBufferDelegate,
-            queue: DispatchQueue,
+            queue: DispatchQueue
         ) throws
     }
 
@@ -97,7 +97,7 @@
         func configureOutput(
             on session: MicrophoneCaptureSession,
             delegate: AVCaptureAudioDataOutputSampleBufferDelegate,
-            queue: DispatchQueue,
+            queue: DispatchQueue
         ) throws {
             let output = AVCaptureAudioDataOutput()
             // Force 48 kHz LPCM at the capture source so AVFoundation resamples with a proper
@@ -123,18 +123,18 @@
         private var captureSession: MicrophoneCaptureSession?
         private let sessionQueue = DispatchQueue(
             label: "com.mourato.notinhas.microphone.session",
-            qos: .userInteractive,
+            qos: .userInteractive
         )
         private let dataOutputQueue = DispatchQueue(
             label: "com.mourato.notinhas.microphone.data",
-            qos: .userInteractive,
+            qos: .userInteractive
         )
 
         private var isRunning = false
 
         init(
             preferredDeviceID: String? = nil,
-            captureSessionFactory: MicrophoneCaptureSessionFactory = AVFoundationMicrophoneCaptureSessionFactory(),
+            captureSessionFactory: MicrophoneCaptureSessionFactory = AVFoundationMicrophoneCaptureSessionFactory()
         ) {
             self.preferredDeviceID = RecordingMicrophoneDeviceProvider.normalizedCaptureDeviceID(preferredDeviceID)
             self.captureSessionFactory = captureSessionFactory
@@ -174,7 +174,7 @@
             let authorizationStatus = captureSessionFactory.authorizationStatus()
             guard authorizationStatus == .authorized else {
                 log(.warning, "MicrophoneAudioCapturer: microphone permission unavailable", context: [
-                    "status": "\(authorizationStatus.rawValue)",
+                    "status": "\(authorizationStatus.rawValue)"
                 ])
                 resetCaptureState()
                 return
@@ -186,13 +186,13 @@
             do {
                 let deviceName = try captureSessionFactory.configureInput(
                     on: session,
-                    preferredDeviceID: preferredDeviceID,
+                    preferredDeviceID: preferredDeviceID
                 )
                 try captureSessionFactory.configureOutput(on: session, delegate: self, queue: dataOutputQueue)
                 session.startRunning()
                 log(.info, "MicrophoneAudioCapturer: session started", context: [
                     "deviceID": preferredDeviceID ?? RecordingMicrophoneDevice.systemDefaultID,
-                    "device": deviceName,
+                    "device": deviceName
                 ])
             } catch MicrophoneCaptureSetupError.noDefaultDevice {
                 log(.warning, "MicrophoneAudioCapturer: no default audio device found")
@@ -220,7 +220,7 @@
             context: [String: String]? = nil,
             file: String = #fileID,
             function: String = #function,
-            line: Int = #line,
+            line: Int = #line
         ) {
             Task { @MainActor in
                 DiagnosticLogger.shared.log(
@@ -230,7 +230,7 @@
                     context: context,
                     file: file,
                     function: function,
-                    line: line,
+                    line: line
                 )
             }
         }
@@ -240,7 +240,7 @@
             _ message: String,
             file: String = #fileID,
             function: String = #function,
-            line: Int = #line,
+            line: Int = #line
         ) {
             Task { @MainActor in
                 DiagnosticLogger.shared.logError(
@@ -249,7 +249,7 @@
                     message,
                     file: file,
                     function: function,
-                    line: line,
+                    line: line
                 )
             }
         }
@@ -261,7 +261,7 @@
         func captureOutput(
             _: AVCaptureOutput,
             didOutput sampleBuffer: CMSampleBuffer,
-            from _: AVCaptureConnection,
+            from _: AVCaptureConnection
         ) {
             guard sampleBuffer.isValid else { return }
             delegate?.microphoneCapturer(self, didOutput: sampleBuffer)

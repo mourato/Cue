@@ -29,7 +29,7 @@
         @MainActor
         func testVideoEditorWindowFocusSyncKeepsInactiveWindowAtRestingLevel() {
             let window = MockVideoEditorWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 800, height: 600),
+                contentRect: NSRect(x: 0, y: 0, width: 800, height: 600)
             )
             defer { window.close() }
 
@@ -63,11 +63,11 @@
         func testVideoEditorExportLayoutEvenSize_roundsToEvenMinimumDimensions() {
             XCTAssertEqual(
                 VideoEditorExportLayout.evenSize(CGSize(width: 101.7, height: 1.1)),
-                CGSize(width: 102, height: 2),
+                CGSize(width: 102, height: 2)
             )
             XCTAssertEqual(
                 VideoEditorExportLayout.evenSize(CGSize(width: -10, height: 0)),
-                CGSize(width: 2, height: 2),
+                CGSize(width: 2, height: 2)
             )
         }
 
@@ -75,30 +75,30 @@
             XCTAssertEqual(
                 VideoEditorExportLayout.aspectRatioCanvasSize(
                     for: CGSize(width: 1920, height: 1080),
-                    aspectRatio: CGSize(width: 1, height: 1),
+                    aspectRatio: CGSize(width: 1, height: 1)
                 ),
-                CGSize(width: 1080, height: 1080),
+                CGSize(width: 1080, height: 1080)
             )
             XCTAssertEqual(
                 VideoEditorExportLayout.aspectRatioCanvasSize(
                     for: CGSize(width: 1080, height: 1920),
-                    aspectRatio: CGSize(width: 16, height: 9),
+                    aspectRatio: CGSize(width: 16, height: 9)
                 ),
-                CGSize(width: 1920, height: 1080),
+                CGSize(width: 1920, height: 1080)
             )
             XCTAssertEqual(
                 VideoEditorExportLayout.aspectRatioCanvasSize(
                     for: CGSize(width: 0, height: 1080),
-                    aspectRatio: CGSize(width: 16, height: 9),
+                    aspectRatio: CGSize(width: 16, height: 9)
                 ),
-                .zero,
+                .zero
             )
         }
 
         func testVideoEditorExportLayoutAspectFitRect_centersContent() {
             let rect = VideoEditorExportLayout.aspectFitRect(
                 sourceSize: CGSize(width: 1920, height: 1080),
-                in: CGSize(width: 1080, height: 1080),
+                in: CGSize(width: 1080, height: 1080)
             )
 
             XCTAssertEqual(rect.origin.x, 0, accuracy: 0.0001)
@@ -176,7 +176,7 @@
             XCTAssertEqual(VideoEditorAudioTrackRole.roles(forAudioTrackCount: 1), [.mixed])
             XCTAssertEqual(
                 VideoEditorAudioTrackRole.roles(forAudioTrackCount: 3),
-                [.systemAudio, .microphone, .additional(3)],
+                [.systemAudio, .microphone, .additional(3)]
             )
         }
 
@@ -195,11 +195,11 @@
             let composition = AVMutableComposition()
             let systemTrack = composition.addMutableTrack(
                 withMediaType: .audio,
-                preferredTrackID: kCMPersistentTrackID_Invalid,
+                preferredTrackID: kCMPersistentTrackID_Invalid
             )
             let microphoneTrack = composition.addMutableTrack(
                 withMediaType: .audio,
-                preferredTrackID: kCMPersistentTrackID_Invalid,
+                preferredTrackID: kCMPersistentTrackID_Invalid
             )
             XCTAssertNotNil(systemTrack)
             XCTAssertNotNil(microphoneTrack)
@@ -211,7 +211,7 @@
 
             let mix = VideoEditorAudioMixFactory.makeAudioMix(
                 for: [systemTrack, microphoneTrack].compactMap(\.self),
-                settings: settings,
+                settings: settings
             )
 
             XCTAssertEqual(mix?.inputParameters.count, 2)
@@ -223,7 +223,7 @@
             let composition = AVMutableComposition()
             let track = composition.addMutableTrack(
                 withMediaType: .audio,
-                preferredTrackID: kCMPersistentTrackID_Invalid,
+                preferredTrackID: kCMPersistentTrackID_Invalid
             )
             XCTAssertNotNil(track)
 
@@ -235,7 +235,7 @@
             let mix = VideoEditorAudioMixFactory.makeAudioMix(
                 for: [track].compactMap(\.self),
                 settings: settings,
-                roles: [.microphone],
+                roles: [.microphone]
             )
 
             XCTAssertEqual(mix?.inputParameters.count, 1)
@@ -246,7 +246,7 @@
             let composition = AVMutableComposition()
             let track = composition.addMutableTrack(
                 withMediaType: .audio,
-                preferredTrackID: kCMPersistentTrackID_Invalid,
+                preferredTrackID: kCMPersistentTrackID_Invalid
             )
             XCTAssertNotNil(track)
 
@@ -266,7 +266,7 @@
                 zoomCenter: CGPoint(x: -1, y: 2),
                 zoomType: .auto,
                 followSpeed: 99,
-                focusMargin: -5,
+                focusMargin: -5
             )
 
             XCTAssertEqual(segment.startTime, 0)
@@ -301,8 +301,8 @@
                     for: .zero,
                     startVolume: &startVolume,
                     endVolume: &endVolume,
-                    timeRange: &timeRange,
-                ),
+                    timeRange: &timeRange
+                )
             )
             XCTAssertEqual(startVolume, endVolume, accuracy: 0.0001)
             return startVolume

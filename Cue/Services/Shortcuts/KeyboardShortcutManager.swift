@@ -26,91 +26,91 @@ struct ShortcutConfig: Equatable, Codable {
     /// Cmd + Shift + 3
     static let defaultFullscreen = ShortcutConfig(
         keyCode: UInt32(kVK_ANSI_3),
-        modifiers: UInt32(cmdKey | shiftKey),
+        modifiers: UInt32(cmdKey | shiftKey)
     )
 
     /// Cmd + Shift + 4
     static let defaultArea = ShortcutConfig(
         keyCode: UInt32(kVK_ANSI_4),
-        modifiers: UInt32(cmdKey | shiftKey),
+        modifiers: UInt32(cmdKey | shiftKey)
     )
 
     /// Cmd + Shift + 7
     static let defaultAreaAnnotate = ShortcutConfig(
         keyCode: UInt32(kVK_ANSI_7),
-        modifiers: UInt32(cmdKey | shiftKey),
+        modifiers: UInt32(cmdKey | shiftKey)
     )
 
     /// Cmd + Shift + 5
     static let defaultRecording = ShortcutConfig(
         keyCode: UInt32(kVK_ANSI_5),
-        modifiers: UInt32(cmdKey | shiftKey),
+        modifiers: UInt32(cmdKey | shiftKey)
     )
 
     /// Cmd + Shift + 0 — suggested value only; the shortcut ships unbound (cleared) by default.
     static let defaultAllInOne = ShortcutConfig(
         keyCode: UInt32(kVK_ANSI_0),
-        modifiers: UInt32(cmdKey | shiftKey),
+        modifiers: UInt32(cmdKey | shiftKey)
     )
 
     /// Cmd + Shift + Space — suggested value only; the shortcut ships unbound (cleared) by default.
     static let defaultPauseResumeRecording = ShortcutConfig(
         keyCode: UInt32(kVK_Space),
-        modifiers: UInt32(cmdKey | shiftKey),
+        modifiers: UInt32(cmdKey | shiftKey)
     )
 
     /// Cmd + Shift + 6
     static let defaultScrollingCapture = ShortcutConfig(
         keyCode: UInt32(kVK_ANSI_6),
-        modifiers: UInt32(cmdKey | shiftKey),
+        modifiers: UInt32(cmdKey | shiftKey)
     )
 
     /// Cmd + Shift + 2
     static let defaultOCR = ShortcutConfig(
         keyCode: UInt32(kVK_ANSI_2),
-        modifiers: UInt32(cmdKey | shiftKey),
+        modifiers: UInt32(cmdKey | shiftKey)
     )
 
     /// Option + Shift + 4
     static let defaultSmartElement = ShortcutConfig(
         keyCode: UInt32(kVK_ANSI_4),
-        modifiers: UInt32(optionKey | shiftKey),
+        modifiers: UInt32(optionKey | shiftKey)
     )
 
     /// Cmd + Shift + 1
     static let defaultObjectCutout = ShortcutConfig(
         keyCode: UInt32(kVK_ANSI_1),
-        modifiers: UInt32(cmdKey | shiftKey),
+        modifiers: UInt32(cmdKey | shiftKey)
     )
 
     /// Cmd + Shift + 9
     static let defaultActiveWindowCapture = ShortcutConfig(
         keyCode: UInt32(kVK_ANSI_9),
-        modifiers: UInt32(cmdKey | shiftKey),
+        modifiers: UInt32(cmdKey | shiftKey)
     )
 
     /// Cmd + Shift + A
     static let defaultAnnotate = ShortcutConfig(
         keyCode: UInt32(kVK_ANSI_A),
-        modifiers: UInt32(cmdKey | shiftKey),
+        modifiers: UInt32(cmdKey | shiftKey)
     )
 
     /// Cmd + Shift + E
     static let defaultVideoEditor = ShortcutConfig(
         keyCode: UInt32(kVK_ANSI_E),
-        modifiers: UInt32(cmdKey | shiftKey),
+        modifiers: UInt32(cmdKey | shiftKey)
     )
 
     /// Cmd + Shift + K
     static let defaultShortcutList = ShortcutConfig(
         keyCode: UInt32(kVK_ANSI_K),
-        modifiers: UInt32(cmdKey | shiftKey),
+        modifiers: UInt32(cmdKey | shiftKey)
     )
 
     /// Cmd + Shift + H
     static let defaultHistory = ShortcutConfig(
         keyCode: UInt32(kVK_ANSI_H),
-        modifiers: UInt32(cmdKey | shiftKey),
+        modifiers: UInt32(cmdKey | shiftKey)
     )
 
     var displayString: String {
@@ -191,7 +191,7 @@ struct ShortcutConfig: Equatable, Codable {
 
     /// Modifier flags that participate in shortcut matching (excludes capsLock, numericPad, etc.).
     private static let matchableEventModifiers: NSEvent.ModifierFlags = [
-        .command, .shift, .option, .control, .function,
+        .command, .shift, .option, .control, .function
     ]
 
     /// Whether a key event exactly matches this shortcut (keyCode + full modifier set, incl. Fn).
@@ -440,20 +440,20 @@ extension ShortcutConfig {
     private static func currentLayoutPrintableKeyEquivalent(for keyCode: UInt32) -> String? {
         resolvePrintableKeyEquivalent(
             from: TISCopyCurrentKeyboardLayoutInputSource().takeRetainedValue(),
-            keyCode: keyCode,
+            keyCode: keyCode
         ) ?? resolvePrintableKeyEquivalent(
             from: TISCopyCurrentASCIICapableKeyboardLayoutInputSource().takeRetainedValue(),
-            keyCode: keyCode,
+            keyCode: keyCode
         )
     }
 
     private static func resolvePrintableKeyEquivalent(
         from inputSource: TISInputSource,
-        keyCode: UInt32,
+        keyCode: UInt32
     ) -> String? {
         guard let layoutDataPointer = TISGetInputSourceProperty(
             inputSource,
-            kTISPropertyUnicodeKeyLayoutData,
+            kTISPropertyUnicodeKeyLayoutData
         ) else { return nil }
 
         let layoutData = unsafeBitCast(layoutDataPointer, to: CFData.self)
@@ -466,7 +466,7 @@ extension ShortcutConfig {
 
         let status = keyboardLayoutBytes.withMemoryRebound(
             to: UCKeyboardLayout.self,
-            capacity: 1,
+            capacity: 1
         ) { keyboardLayout in
             UCKeyTranslate(
                 keyboardLayout,
@@ -478,7 +478,7 @@ extension ShortcutConfig {
                 &deadKeyState,
                 maxLength,
                 &actualLength,
-                &unicodeChars,
+                &unicodeChars
             )
         }
 
@@ -814,7 +814,7 @@ final class KeyboardShortcutManager {
         .togglePenRecording,
         .restartRecording,
         .deleteRecording,
-        .videoEditor,
+        .videoEditor
     ]
 
     private func shouldRegisterGlobalShortcut(kind: GlobalShortcutKind) -> Bool {
@@ -839,7 +839,7 @@ final class KeyboardShortcutManager {
         NotificationCenter.default.addObserver(
             forName: .videoModuleAvailabilityDidChange,
             object: nil,
-            queue: .main,
+            queue: .main
         ) { [weak self] _ in
             Task { @MainActor in
                 self?.refreshShortcutRegistration()
@@ -1109,7 +1109,7 @@ final class KeyboardShortcutManager {
     private func setShortcut(
         _ config: ShortcutConfig?,
         for kind: GlobalShortcutKind,
-        assign: (ShortcutConfig) -> Void,
+        assign: (ShortcutConfig) -> Void
     ) {
         if let config {
             assign(config)
@@ -1192,75 +1192,93 @@ final class KeyboardShortcutManager {
     private func loadShortcuts() {
         let decoder = JSONDecoder()
         if let fullscreenData = UserDefaults.standard.data(forKey: fullscreenShortcutKey),
-           let config = try? decoder.decode(ShortcutConfig.self, from: fullscreenData) {
+           let config = try? decoder.decode(ShortcutConfig.self, from: fullscreenData)
+        {
             fullscreenShortcut = config
         }
         if let areaData = UserDefaults.standard.data(forKey: areaShortcutKey),
-           let config = try? decoder.decode(ShortcutConfig.self, from: areaData) {
+           let config = try? decoder.decode(ShortcutConfig.self, from: areaData)
+        {
             areaShortcut = config
         }
         if let allInOneData = UserDefaults.standard.data(forKey: allInOneShortcutKey),
-           let config = try? decoder.decode(ShortcutConfig.self, from: allInOneData) {
+           let config = try? decoder.decode(ShortcutConfig.self, from: allInOneData)
+        {
             allInOneShortcut = config
         }
         if let areaAnnotateData = UserDefaults.standard.data(forKey: areaAnnotateShortcutKey),
-           let config = try? decoder.decode(ShortcutConfig.self, from: areaAnnotateData) {
+           let config = try? decoder.decode(ShortcutConfig.self, from: areaAnnotateData)
+        {
             areaAnnotateShortcut = config
         }
         if let scrollingCaptureData = UserDefaults.standard.data(forKey: scrollingCaptureShortcutKey),
-           let config = try? decoder.decode(ShortcutConfig.self, from: scrollingCaptureData) {
+           let config = try? decoder.decode(ShortcutConfig.self, from: scrollingCaptureData)
+        {
             scrollingCaptureShortcut = config
         }
         if let recordingData = UserDefaults.standard.data(forKey: recordingShortcutKey),
-           let config = try? decoder.decode(ShortcutConfig.self, from: recordingData) {
+           let config = try? decoder.decode(ShortcutConfig.self, from: recordingData)
+        {
             recordingShortcut = config
         }
         if let pauseResumeRecordingData = UserDefaults.standard.data(forKey: pauseResumeRecordingShortcutKey),
-           let config = try? decoder.decode(ShortcutConfig.self, from: pauseResumeRecordingData) {
+           let config = try? decoder.decode(ShortcutConfig.self, from: pauseResumeRecordingData)
+        {
             pauseResumeRecordingShortcut = config
         }
         if let togglePenRecordingData = UserDefaults.standard.data(forKey: togglePenRecordingShortcutKey),
-           let config = try? decoder.decode(ShortcutConfig.self, from: togglePenRecordingData) {
+           let config = try? decoder.decode(ShortcutConfig.self, from: togglePenRecordingData)
+        {
             togglePenRecordingShortcut = config
         }
         if let restartRecordingData = UserDefaults.standard.data(forKey: restartRecordingShortcutKey),
-           let config = try? decoder.decode(ShortcutConfig.self, from: restartRecordingData) {
+           let config = try? decoder.decode(ShortcutConfig.self, from: restartRecordingData)
+        {
             restartRecordingShortcut = config
         }
         if let deleteRecordingData = UserDefaults.standard.data(forKey: deleteRecordingShortcutKey),
-           let config = try? decoder.decode(ShortcutConfig.self, from: deleteRecordingData) {
+           let config = try? decoder.decode(ShortcutConfig.self, from: deleteRecordingData)
+        {
             deleteRecordingShortcut = config
         }
         if let annotateData = UserDefaults.standard.data(forKey: annotateShortcutKey),
-           let config = try? decoder.decode(ShortcutConfig.self, from: annotateData) {
+           let config = try? decoder.decode(ShortcutConfig.self, from: annotateData)
+        {
             annotateShortcut = config
         }
         if let videoEditorData = UserDefaults.standard.data(forKey: videoEditorShortcutKey),
-           let config = try? decoder.decode(ShortcutConfig.self, from: videoEditorData) {
+           let config = try? decoder.decode(ShortcutConfig.self, from: videoEditorData)
+        {
             videoEditorShortcut = config
         }
         if let shortcutListData = UserDefaults.standard.data(forKey: shortcutListShortcutKey),
-           let config = try? decoder.decode(ShortcutConfig.self, from: shortcutListData) {
+           let config = try? decoder.decode(ShortcutConfig.self, from: shortcutListData)
+        {
             shortcutListShortcut = config
         }
         if let ocrData = UserDefaults.standard.data(forKey: ocrShortcutKey),
-           let config = try? decoder.decode(ShortcutConfig.self, from: ocrData) {
+           let config = try? decoder.decode(ShortcutConfig.self, from: ocrData)
+        {
             ocrShortcut = config
         }
         if let smartElementData = UserDefaults.standard.data(forKey: smartElementShortcutKey),
-           let config = try? decoder.decode(ShortcutConfig.self, from: smartElementData) {
+           let config = try? decoder.decode(ShortcutConfig.self, from: smartElementData)
+        {
             smartElementShortcut = config
         }
         if let objectCutoutData = UserDefaults.standard.data(forKey: objectCutoutShortcutKey),
-           let config = try? decoder.decode(ShortcutConfig.self, from: objectCutoutData) {
+           let config = try? decoder.decode(ShortcutConfig.self, from: objectCutoutData)
+        {
             objectCutoutShortcut = config
         }
         if let historyData = UserDefaults.standard.data(forKey: historyShortcutKey),
-           let config = try? decoder.decode(ShortcutConfig.self, from: historyData) {
+           let config = try? decoder.decode(ShortcutConfig.self, from: historyData)
+        {
             historyShortcut = config
         }
         if let activeWindowData = UserDefaults.standard.data(forKey: activeWindowShortcutKey),
-           let config = try? decoder.decode(ShortcutConfig.self, from: activeWindowData) {
+           let config = try? decoder.decode(ShortcutConfig.self, from: activeWindowData)
+        {
             activeWindowShortcut = config
         }
     }
@@ -1297,27 +1315,32 @@ final class KeyboardShortcutManager {
     private func seedDefaultClearedShortcutsOnFirstLaunchIfNeeded() {
         var didMutate = false
         if UserDefaults.standard.data(forKey: pauseResumeRecordingShortcutKey) == nil,
-           !clearedShortcuts.contains(.pauseResumeRecording) {
+           !clearedShortcuts.contains(.pauseResumeRecording)
+        {
             clearedShortcuts.insert(.pauseResumeRecording)
             didMutate = true
         }
         if UserDefaults.standard.data(forKey: togglePenRecordingShortcutKey) == nil,
-           !clearedShortcuts.contains(.togglePenRecording) {
+           !clearedShortcuts.contains(.togglePenRecording)
+        {
             clearedShortcuts.insert(.togglePenRecording)
             didMutate = true
         }
         if UserDefaults.standard.data(forKey: restartRecordingShortcutKey) == nil,
-           !clearedShortcuts.contains(.restartRecording) {
+           !clearedShortcuts.contains(.restartRecording)
+        {
             clearedShortcuts.insert(.restartRecording)
             didMutate = true
         }
         if UserDefaults.standard.data(forKey: deleteRecordingShortcutKey) == nil,
-           !clearedShortcuts.contains(.deleteRecording) {
+           !clearedShortcuts.contains(.deleteRecording)
+        {
             clearedShortcuts.insert(.deleteRecording)
             didMutate = true
         }
         if UserDefaults.standard.data(forKey: allInOneShortcutKey) == nil,
-           !clearedShortcuts.contains(.allInOne) {
+           !clearedShortcuts.contains(.allInOne)
+        {
             clearedShortcuts.insert(.allInOne)
             didMutate = true
         }
@@ -1331,7 +1354,7 @@ final class KeyboardShortcutManager {
     private func setupEventHandler() {
         // Install Carbon event handler for hotkey events
         var eventType = EventTypeSpec(
-            eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed),
+            eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed)
         )
 
         let handlerBlock: EventHandlerUPP = { _, event, _ -> OSStatus in
@@ -1343,7 +1366,7 @@ final class KeyboardShortcutManager {
                 nil,
                 MemoryLayout<EventHotKeyID>.size,
                 nil,
-                &hotkeyID,
+                &hotkeyID
             )
 
             guard status == noErr else { return status }
@@ -1362,7 +1385,7 @@ final class KeyboardShortcutManager {
             1,
             &eventType,
             nil,
-            &eventHandler,
+            &eventHandler
         )
     }
 
@@ -1443,7 +1466,7 @@ final class KeyboardShortcutManager {
             DiagnosticLogger.shared.log(
                 .info,
                 .action,
-                "Shortcut \(actionName) ignored: video module disabled",
+                "Shortcut \(actionName) ignored: video module disabled"
             )
             return
         }
@@ -1463,116 +1486,116 @@ final class KeyboardShortcutManager {
             kind: .fullscreen,
             config: shortcut(for: .fullscreen),
             hotkeyID: fullscreenHotkeyID,
-            ref: &fullscreenHotkeyRef,
+            ref: &fullscreenHotkeyRef
         )
         registerShortcutIfNeeded(
             kind: .area,
             config: shortcut(for: .area),
             hotkeyID: areaHotkeyID,
-            ref: &areaHotkeyRef,
+            ref: &areaHotkeyRef
         )
         registerShortcutIfNeeded(
             kind: .allInOne,
             config: shortcut(for: .allInOne),
             hotkeyID: allInOneHotkeyID,
-            ref: &allInOneHotkeyRef,
+            ref: &allInOneHotkeyRef
         )
         registerShortcutIfNeeded(
             kind: .areaAnnotate,
             config: shortcut(for: .areaAnnotate),
             hotkeyID: areaAnnotateHotkeyID,
-            ref: &areaAnnotateHotkeyRef,
+            ref: &areaAnnotateHotkeyRef
         )
         registerShortcutIfNeeded(
             kind: .activeWindow,
             config: shortcut(for: .activeWindow),
             hotkeyID: activeWindowHotkeyID,
-            ref: &activeWindowHotkeyRef,
+            ref: &activeWindowHotkeyRef
         )
         registerShortcutIfNeeded(
             kind: .scrollingCapture,
             config: shortcut(for: .scrollingCapture),
             hotkeyID: scrollingCaptureHotkeyID,
-            ref: &scrollingCaptureHotkeyRef,
+            ref: &scrollingCaptureHotkeyRef
         )
         registerShortcutIfNeeded(
             kind: .recording,
             config: shortcut(for: .recording),
             hotkeyID: recordingHotkeyID,
-            ref: &recordingHotkeyRef,
+            ref: &recordingHotkeyRef
         )
         registerShortcutIfNeeded(
             kind: .pauseResumeRecording,
             config: shortcut(for: .pauseResumeRecording),
             hotkeyID: pauseResumeRecordingHotkeyID,
-            ref: &pauseResumeRecordingHotkeyRef,
+            ref: &pauseResumeRecordingHotkeyRef
         )
         registerShortcutIfNeeded(
             kind: .togglePenRecording,
             config: shortcut(for: .togglePenRecording),
             hotkeyID: togglePenRecordingHotkeyID,
-            ref: &togglePenRecordingHotkeyRef,
+            ref: &togglePenRecordingHotkeyRef
         )
         registerShortcutIfNeeded(
             kind: .restartRecording,
             config: shortcut(for: .restartRecording),
             hotkeyID: restartRecordingHotkeyID,
-            ref: &restartRecordingHotkeyRef,
+            ref: &restartRecordingHotkeyRef
         )
         registerShortcutIfNeeded(
             kind: .deleteRecording,
             config: shortcut(for: .deleteRecording),
             hotkeyID: deleteRecordingHotkeyID,
-            ref: &deleteRecordingHotkeyRef,
+            ref: &deleteRecordingHotkeyRef
         )
         registerOverlayShortcutIfNeeded(
             label: "application-recording",
             parentKind: .recording,
             config: CaptureOverlayShortcutSettings.recordingApplicationCaptureIndependentShortcut,
             hotkeyID: applicationRecordingHotkeyID,
-            ref: &applicationRecordingHotkeyRef,
+            ref: &applicationRecordingHotkeyRef
         )
         registerShortcutIfNeeded(
             kind: .annotate,
             config: shortcut(for: .annotate),
             hotkeyID: annotateHotkeyID,
-            ref: &annotateHotkeyRef,
+            ref: &annotateHotkeyRef
         )
         registerShortcutIfNeeded(
             kind: .videoEditor,
             config: shortcut(for: .videoEditor),
             hotkeyID: videoEditorHotkeyID,
-            ref: &videoEditorHotkeyRef,
+            ref: &videoEditorHotkeyRef
         )
         registerShortcutIfNeeded(
             kind: .ocr,
             config: shortcut(for: .ocr),
             hotkeyID: ocrHotkeyID,
-            ref: &ocrHotkeyRef,
+            ref: &ocrHotkeyRef
         )
         registerShortcutIfNeeded(
             kind: .smartElement,
             config: shortcut(for: .smartElement),
             hotkeyID: smartElementHotkeyID,
-            ref: &smartElementHotkeyRef,
+            ref: &smartElementHotkeyRef
         )
         registerShortcutIfNeeded(
             kind: .shortcutList,
             config: shortcut(for: .shortcutList),
             hotkeyID: shortcutListHotkeyID,
-            ref: &shortcutListHotkeyRef,
+            ref: &shortcutListHotkeyRef
         )
         registerShortcutIfNeeded(
             kind: .objectCutout,
             config: shortcut(for: .objectCutout),
             hotkeyID: objectCutoutHotkeyID,
-            ref: &objectCutoutHotkeyRef,
+            ref: &objectCutoutHotkeyRef
         )
         registerShortcutIfNeeded(
             kind: .history,
             config: shortcut(for: .history),
             hotkeyID: historyHotkeyID,
-            ref: &historyHotkeyRef,
+            ref: &historyHotkeyRef
         )
     }
 
@@ -1580,7 +1603,7 @@ final class KeyboardShortcutManager {
         kind: GlobalShortcutKind,
         config: ShortcutConfig?,
         hotkeyID: EventHotKeyID,
-        ref: inout EventHotKeyRef?,
+        ref: inout EventHotKeyRef?
     ) {
         guard shouldRegisterGlobalShortcut(kind: kind), let config else { return }
 
@@ -1600,7 +1623,7 @@ final class KeyboardShortcutManager {
             hotkeyID,
             GetApplicationEventTarget(),
             0,
-            &ref,
+            &ref
         )
 
         if status != noErr || ref == nil {
@@ -1608,7 +1631,7 @@ final class KeyboardShortcutManager {
                 .warning,
                 .action,
                 "Failed to register shortcut \(kind.rawValue)",
-                context: ["status": String(status)],
+                context: ["status": String(status)]
             )
             ref = nil
             return
@@ -1620,7 +1643,7 @@ final class KeyboardShortcutManager {
         parentKind: GlobalShortcutKind,
         config: ShortcutConfig?,
         hotkeyID: EventHotKeyID,
-        ref: inout EventHotKeyRef?,
+        ref: inout EventHotKeyRef?
     ) {
         guard shouldRegisterGlobalShortcut(kind: parentKind), let config else { return }
 
@@ -1638,7 +1661,7 @@ final class KeyboardShortcutManager {
             hotkeyID,
             GetApplicationEventTarget(),
             0,
-            &ref,
+            &ref
         )
 
         if status != noErr || ref == nil {
@@ -1646,7 +1669,7 @@ final class KeyboardShortcutManager {
                 .warning,
                 .action,
                 "Failed to register shortcut \(label)",
-                context: ["status": String(status)],
+                context: ["status": String(status)]
             )
             ref = nil
             return

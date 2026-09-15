@@ -92,7 +92,7 @@ struct QuickAccessItem: Identifiable, Equatable {
         cloudKey: String? = nil,
         isCloudStale: Bool = false,
         isPinned: Bool = false,
-        isWindowOpen: Bool = false,
+        isWindowOpen: Bool = false
     ) {
         self.id = id
         self.url = url

@@ -28,7 +28,7 @@ final class AnnotateUndoRedoTests: XCTestCase {
         AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 10, y: 10, width: 40, height: 40),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
     }
 
@@ -116,7 +116,7 @@ final class AnnotateUndoRedoTests: XCTestCase {
         let second = AnnotationItem(
             type: .circle,
             bounds: CGRect(x: 60, y: 60, width: 30, height: 30),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
 
         state.saveState()

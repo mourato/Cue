@@ -70,7 +70,7 @@ nonisolated enum AnnotateBuiltInColorPalette {
         Entry(id: "pink", rgba: RGBAColor(red: 1, green: 0.215686, blue: 0.372549, alpha: 1)),
         Entry(id: "gray", rgba: RGBAColor(red: 0.596078, green: 0.596078, blue: 0.615686, alpha: 1)),
         Entry(id: "white", rgba: RGBAColor(red: 1, green: 1, blue: 1, alpha: 1)),
-        entry(from: .black),
+        entry(from: .black)
     ])
 
     /// Canvas background extras kept after the shared annotation set.
@@ -78,7 +78,7 @@ nonisolated enum AnnotateBuiltInColorPalette {
         Entry(id: "darkGray", rgba: RGBAColor(red: 0.3, green: 0.3, blue: 0.3, alpha: 1)),
         Entry(id: "mediumGray", rgba: RGBAColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)),
         Entry(id: "lightGray", rgba: RGBAColor(red: 0.7, green: 0.7, blue: 0.7, alpha: 1)),
-        Entry(id: "nearWhite", rgba: RGBAColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1)),
+        Entry(id: "nearWhite", rgba: RGBAColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1))
     ])
 
     static let canvasEntries: [Entry] = uniqued(annotationEntries + canvasExtendedEntries)

@@ -20,7 +20,8 @@ final class QuickAccessTrackpadSwipeModeStore: ObservableObject {
         self.defaults = defaults
 
         if let rawValue = defaults.string(forKey: PreferencesKeys.quickAccessTrackpadSwipeMode),
-           let storedMode = QuickAccessTrackpadSwipeMode(rawValue: rawValue) {
+           let storedMode = QuickAccessTrackpadSwipeMode(rawValue: rawValue)
+        {
             mode = storedMode
         } else {
             mode = .inverted

@@ -76,7 +76,7 @@
                 cursorScale: Double(state.cursorScale),
                 cursorSmoothingPreset: state.cursorSmoothingPreset,
                 exportContentMode: state.exportContentMode.rawValue,
-                cameraOverlayLayoutPayload: cameraOverlayLayoutPayload,
+                cameraOverlayLayoutPayload: cameraOverlayLayoutPayload
             )
         }
 
@@ -102,9 +102,9 @@
             shadowIntensity = state.backgroundShadowIntensity
             styleKind = switch state.backgroundStyle {
             case .none: "none"
-            case .gradient(let preset): "gradient:\(preset.rawValue)"
-            case .wallpaper(let url): "wallpaper:\(url.path)"
-            case .blurred(let url): "blurred:\(url.path)"
+            case let .gradient(preset): "gradient:\(preset.rawValue)"
+            case let .wallpaper(url): "wallpaper:\(url.path)"
+            case let .blurred(url): "blurred:\(url.path)"
             case .solidColor: "solid"
             }
         }

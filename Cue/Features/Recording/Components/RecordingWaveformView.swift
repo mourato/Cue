@@ -54,8 +54,8 @@
                         with: .linearGradient(
                             waveGradient,
                             startPoint: CGPoint(x: 0, y: baseline - size.height * maxAmplitudeFraction),
-                            endPoint: CGPoint(x: 0, y: size.height),
-                        ),
+                            endPoint: CGPoint(x: 0, y: size.height)
+                        )
                     )
                 }
             }

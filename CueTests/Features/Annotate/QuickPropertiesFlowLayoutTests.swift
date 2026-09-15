@@ -7,14 +7,14 @@ final class QuickPropertiesFlowLayoutTests: XCTestCase {
         let items = [
             QuickPropertiesFlowLayoutItem(size: CGSize(width: 30, height: 24), isRowLeadingDivider: false),
             QuickPropertiesFlowLayoutItem(size: CGSize(width: 180, height: 24), isRowLeadingDivider: false),
-            QuickPropertiesFlowLayoutItem(size: CGSize(width: 190, height: 24), isRowLeadingDivider: false),
+            QuickPropertiesFlowLayoutItem(size: CGSize(width: 190, height: 24), isRowLeadingDivider: false)
         ]
 
         let result = QuickPropertiesFlowLayoutEngine.layout(
             items: items,
             maxWidth: 500,
             horizontalSpacing: 12,
-            verticalSpacing: 12,
+            verticalSpacing: 12
         )
 
         XCTAssertEqual(result.size.width, 424, accuracy: 0.001)
@@ -29,14 +29,14 @@ final class QuickPropertiesFlowLayoutTests: XCTestCase {
         let items = [
             QuickPropertiesFlowLayoutItem(size: CGSize(width: 30, height: 24), isRowLeadingDivider: false),
             QuickPropertiesFlowLayoutItem(size: CGSize(width: 180, height: 24), isRowLeadingDivider: false),
-            QuickPropertiesFlowLayoutItem(size: CGSize(width: 190, height: 24), isRowLeadingDivider: false),
+            QuickPropertiesFlowLayoutItem(size: CGSize(width: 190, height: 24), isRowLeadingDivider: false)
         ]
 
         let result = QuickPropertiesFlowLayoutEngine.layout(
             items: items,
             maxWidth: 300,
             horizontalSpacing: 12,
-            verticalSpacing: 8,
+            verticalSpacing: 8
         )
 
         XCTAssertEqual(result.size.width, 222, accuracy: 0.001)
@@ -50,14 +50,14 @@ final class QuickPropertiesFlowLayoutTests: XCTestCase {
         let items = [
             QuickPropertiesFlowLayoutItem(size: CGSize(width: 250, height: 24), isRowLeadingDivider: false),
             QuickPropertiesFlowLayoutItem(size: CGSize(width: 1, height: 24), isRowLeadingDivider: true),
-            QuickPropertiesFlowLayoutItem(size: CGSize(width: 100, height: 24), isRowLeadingDivider: false),
+            QuickPropertiesFlowLayoutItem(size: CGSize(width: 100, height: 24), isRowLeadingDivider: false)
         ]
 
         let result = QuickPropertiesFlowLayoutEngine.layout(
             items: items,
             maxWidth: 260,
             horizontalSpacing: 12,
-            verticalSpacing: 8,
+            verticalSpacing: 8
         )
 
         XCTAssertEqual(result.skippedDividerIndices, [1])

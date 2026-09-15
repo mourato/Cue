@@ -11,7 +11,8 @@ import Foundation
 
 /// Predefined stroke widths for drawn annotations.
 nonisolated enum AnnotationStrokeWidth: CGFloat, CaseIterable, Codable, Equatable, Hashable, Identifiable,
-    Sendable {
+    Sendable
+{
     case thin = 2
     case regular = 4
     case medium = 6

@@ -27,7 +27,7 @@ final class AnnotateCreationTests: XCTestCase {
         AnnotationItem(
             type: .blur(.pixelated),
             bounds: CGRect(x: 0, y: 0, width: 100, height: 60),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
     }
 
@@ -40,7 +40,7 @@ final class AnnotateCreationTests: XCTestCase {
         for blurType in BlurType.allCases {
             state.updateBlurType(id: annotation.id, blurType: blurType)
             let updated = try XCTUnwrap(state.annotations.first)
-            guard case .blur(let appliedType) = updated.type else {
+            guard case let .blur(appliedType) = updated.type else {
                 return XCTFail("Expected blur annotation, got \(updated.type)")
             }
             XCTAssertEqual(appliedType, blurType)
@@ -56,7 +56,7 @@ final class AnnotateCreationTests: XCTestCase {
         let rectangle = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 0, y: 0, width: 40, height: 40),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         state.annotations = [rectangle]
 
@@ -89,7 +89,7 @@ final class AnnotateCreationTests: XCTestCase {
         let state = makeAnnotateState()
         state.annotations = [
             AnnotationItem(type: .counter(1), bounds: .zero, properties: AnnotationProperties()),
-            AnnotationItem(type: .counter(5), bounds: .zero, properties: AnnotationProperties()),
+            AnnotationItem(type: .counter(5), bounds: .zero, properties: AnnotationProperties())
         ]
 
         // Derived from the maximum existing counter, not the count of counters.
@@ -101,7 +101,7 @@ final class AnnotateCreationTests: XCTestCase {
         let state = makeAnnotateState()
         state.annotations = [
             AnnotationItem(type: .rectangle, bounds: .zero, properties: AnnotationProperties()),
-            AnnotationItem(type: .counter(3), bounds: .zero, properties: AnnotationProperties()),
+            AnnotationItem(type: .counter(3), bounds: .zero, properties: AnnotationProperties())
         ]
 
         XCTAssertEqual(state.nextCounterValue(), 4)

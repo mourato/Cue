@@ -40,7 +40,7 @@ final class AnnotateExporter {
             .info,
             .annotate,
             "Save to original",
-            context: ["file": sourceURL.lastPathComponent],
+            context: ["file": sourceURL.lastPathComponent]
         )
         return save(state: state, to: sourceURL)
     }
@@ -50,7 +50,7 @@ final class AnnotateExporter {
         DiagnosticLogger.shared.log(.info, .annotate, "Save started", context: [
             "file": url.lastPathComponent,
             "format": url.pathExtension,
-            "annotations": "\(state.annotations.count)",
+            "annotations": "\(state.annotations.count)"
         ])
         guard let image = renderFinalImage(state: state) else {
             DiagnosticLogger.shared.log(.error, .annotate, "Save failed: render returned nil")
@@ -121,7 +121,7 @@ final class AnnotateExporter {
             .info,
             .annotate,
             "Copy to clipboard",
-            context: ["annotations": "\(state.annotations.count)"],
+            context: ["annotations": "\(state.annotations.count)"]
         )
         guard let image = renderFinalImage(state: state) else {
             DiagnosticLogger.shared.log(.error, .annotate, "Copy failed: render returned nil")
@@ -249,13 +249,13 @@ final class AnnotateExporter {
 
     private nonisolated static func imageDestinationProperties(
         for fileExtension: String,
-        scaleFactor: CGFloat,
+        scaleFactor: CGFloat
     ) -> CFDictionary? {
         let resolvedScale = max(Double(scaleFactor), 1.0)
         let dpi = resolvedScale * 72.0
         var properties: [CFString: Any] = [
             kCGImagePropertyDPIWidth: dpi,
-            kCGImagePropertyDPIHeight: dpi,
+            kCGImagePropertyDPIHeight: dpi
         ]
 
         switch fileExtension {
@@ -263,7 +263,7 @@ final class AnnotateExporter {
             let pixelsPerMeter = Int((dpi / 0.0254).rounded())
             properties[kCGImagePropertyPNGDictionary] = [
                 kCGImagePropertyPNGXPixelsPerMeter: pixelsPerMeter,
-                kCGImagePropertyPNGYPixelsPerMeter: pixelsPerMeter,
+                kCGImagePropertyPNGYPixelsPerMeter: pixelsPerMeter
             ] as CFDictionary
         case "jpg", "jpeg":
             properties[kCGImageDestinationLossyCompressionQuality] = 0.9
@@ -293,16 +293,16 @@ final class AnnotateExporter {
 
     static func renderCanvasEffects(
         sourceImage: NSImage,
-        effects: AnnotationCanvasEffects,
+        effects: AnnotationCanvasEffects
     ) -> NSImage? {
         let startedAt = CFAbsoluteTimeGetCurrent()
         var outputSizeDescription = "nil"
         defer {
-            let durationMs = Int((CFAbsoluteTimeGetCurrent() - startedAt) * 1_000)
+            let durationMs = Int((CFAbsoluteTimeGetCurrent() - startedAt) * 1000)
             DiagnosticLogger.shared.log(.debug, .annotate, "Render canvas effects completed", context: [
                 "background": "\(effects.backgroundStyle)",
                 "outputSize": outputSizeDescription,
-                "durationMs": "\(durationMs)",
+                "durationMs": "\(durationMs)"
             ])
         }
 
@@ -314,7 +314,7 @@ final class AnnotateExporter {
             for: effectiveBounds.size,
             padding: padding,
             alignmentSpace: alignmentSpace,
-            orientation: effects.aspectRatioOrientation,
+            orientation: effects.aspectRatioOrientation
         )
         outputSizeDescription = "\(Int(totalSize.width))x\(Int(totalSize.height))"
 
@@ -332,7 +332,7 @@ final class AnnotateExporter {
             isPlanar: false,
             colorSpaceName: .deviceRGB,
             bytesPerRow: 0,
-            bitsPerPixel: 0,
+            bitsPerPixel: 0
         ) else { return nil }
         bitmapRep.size = totalSize
 
@@ -347,7 +347,7 @@ final class AnnotateExporter {
         let destinationOrigin = destinationOrigin(
             imageSize: effectiveBounds.size,
             totalSize: totalSize,
-            alignment: effects.imageAlignment,
+            alignment: effects.imageAlignment
         )
 
         if effects.cornerRadius > 0 {
@@ -355,7 +355,7 @@ final class AnnotateExporter {
                 x: destinationOrigin.x,
                 y: destinationOrigin.y,
                 width: effectiveBounds.width,
-                height: effectiveBounds.height,
+                height: effectiveBounds.height
             )
             let path = NSBezierPath(roundedRect: clipRect, xRadius: effects.cornerRadius, yRadius: effects.cornerRadius)
             path.addClip()
@@ -365,7 +365,7 @@ final class AnnotateExporter {
             sourceImage,
             effectiveBounds: effectiveBounds,
             destinationOrigin: destinationOrigin,
-            in: context,
+            in: context
         )
         context.resetClip()
 
@@ -383,7 +383,7 @@ final class AnnotateExporter {
             guard let flatImage = renderMockupFlatImage(snapshot: snapshot) else { return nil }
             return composeNotinhasIfNeeded(
                 compositeMockupImage(flatImage: flatImage, snapshot: snapshot),
-                snapshot: snapshot,
+                snapshot: snapshot
             )
         }
         return composeNotinhasIfNeeded(renderFlatFinalImage(snapshot: snapshot), snapshot: snapshot)
@@ -413,13 +413,13 @@ final class AnnotateExporter {
         }
         var outputSizeDescription = "nil"
         defer {
-            let durationMs = Int((CFAbsoluteTimeGetCurrent() - startedAt) * 1_000)
+            let durationMs = Int((CFAbsoluteTimeGetCurrent() - startedAt) * 1000)
             DiagnosticLogger.shared.log(.debug, .annotate, "Render final image completed", context: [
                 "mode": snapshot.editorMode.rawValue,
                 "annotations": "\(snapshot.annotations.count)",
                 "embeddedLayers": "\(embeddedLayerCount)",
                 "outputSize": outputSizeDescription,
-                "durationMs": "\(durationMs)",
+                "durationMs": "\(durationMs)"
             ])
         }
 
@@ -428,7 +428,7 @@ final class AnnotateExporter {
         DiagnosticLogger.shared.log(.debug, .annotate, "Rendering final image", context: [
             "annotations": "\(snapshot.annotations.count)",
             "hasCrop": "\(snapshot.cropRect != nil)",
-            "background": "\(snapshot.backgroundStyle)",
+            "background": "\(snapshot.backgroundStyle)"
         ])
 
         // Determine effective bounds (crop or full image)
@@ -452,7 +452,7 @@ final class AnnotateExporter {
                 for: effectiveBounds.size,
                 padding: padding,
                 alignmentSpace: alignmentSpace,
-                orientation: snapshot.aspectRatioOrientation,
+                orientation: snapshot.aspectRatioOrientation
             )
         outputSizeDescription = "\(Int(totalSize.width))x\(Int(totalSize.height))"
 
@@ -471,7 +471,7 @@ final class AnnotateExporter {
             isPlanar: false,
             colorSpaceName: .deviceRGB,
             bytesPerRow: 0,
-            bitsPerPixel: 0,
+            bitsPerPixel: 0
         ) else { return nil }
         bitmapRep.size = totalSize // Point size — CG context will scale drawings to pixel dimensions
 
@@ -530,12 +530,12 @@ final class AnnotateExporter {
                 x: destX,
                 y: destY,
                 width: effectiveBounds.width,
-                height: effectiveBounds.height,
+                height: effectiveBounds.height
             )
             let path = NSBezierPath(
                 roundedRect: clipRect,
                 xRadius: snapshot.cornerRadius,
-                yRadius: snapshot.cornerRadius,
+                yRadius: snapshot.cornerRadius
             )
             path.addClip()
         }
@@ -544,7 +544,7 @@ final class AnnotateExporter {
             sourceImage,
             effectiveBounds: effectiveBounds,
             destinationOrigin: CGPoint(x: destX, y: destY),
-            in: context,
+            in: context
         )
 
         if !snapshot.isCombineMode {
@@ -559,19 +559,19 @@ final class AnnotateExporter {
                 a,
                 cropOrigin: effectiveBounds.origin,
                 imageX: destX,
-                imageY: destY,
+                imageY: destY
             )
             return SpotlightRegion(
                 rect: offset.bounds,
                 cornerRadius: offset.properties.cornerRadius,
-                opacity: offset.properties.spotlightOpacity,
+                opacity: offset.properties.spotlightOpacity
             )
         }
         SpotlightCompositor.drawOverlay(
             regions: spotlightRegions,
             previewRegion: nil,
             canvasRect: CGRect(x: destX, y: destY, width: effectiveBounds.width, height: effectiveBounds.height),
-            in: context,
+            in: context
         )
 
         // Draw annotations (offset by crop origin and image position based on alignment)
@@ -586,8 +586,8 @@ final class AnnotateExporter {
             },
             sourceDisplayOffset: CGPoint(
                 x: destX - effectiveBounds.origin.x,
-                y: destY - effectiveBounds.origin.y,
-            ),
+                y: destY - effectiveBounds.origin.y
+            )
         )
         for annotation in snapshot.annotations.renderOrdered {
             if case .spotlight = annotation.type {
@@ -601,7 +601,7 @@ final class AnnotateExporter {
                 annotation,
                 cropOrigin: effectiveBounds.origin,
                 imageX: destX,
-                imageY: destY,
+                imageY: destY
             )
             renderer.draw(offsetAnnotation)
         }
@@ -611,7 +611,7 @@ final class AnnotateExporter {
             cropOrigin: effectiveBounds.origin,
             destinationOffset: CGPoint(x: destX, y: destY),
             imageBounds: CGRect(x: destX, y: destY, width: effectiveBounds.width, height: effectiveBounds.height),
-            in: context,
+            in: context
         )
 
         if snapshot.isCombineMode {
@@ -627,7 +627,7 @@ final class AnnotateExporter {
 
     private nonisolated static func composeNotinhasIfNeeded(
         _ image: NSImage?,
-        snapshot: AnnotateRenderSnapshot,
+        snapshot: AnnotateRenderSnapshot
     ) -> NSImage? {
         guard let image else { return nil }
         let renderableNotes = exportableNotinhasNotes(snapshot)
@@ -635,7 +635,7 @@ final class AnnotateExporter {
         return CueNotesComposer.addPanelOnly(
             to: image,
             notes: renderableNotes,
-            panelSide: snapshot.notinhasPanelSide,
+            panelSide: snapshot.notinhasPanelSide
         )
     }
 
@@ -644,27 +644,27 @@ final class AnnotateExporter {
         cropOrigin: CGPoint,
         destinationOffset: CGPoint,
         imageBounds: CGRect,
-        in context: CGContext,
+        in context: CGContext
     ) {
         guard !notes.isEmpty else { return }
         let transformed = notes.map {
             CueNoteGeometry.exportTransformed(
                 $0,
                 cropOrigin: cropOrigin,
-                destinationOffset: destinationOffset,
+                destinationOffset: destinationOffset
             )
         }
         CueNoteRenderer.draw(
             notes: transformed,
             selectedNoteID: nil,
             in: context,
-            imageBounds: imageBounds,
+            imageBounds: imageBounds
         )
     }
 
     /// Notes use the same crop visibility and deterministic ordering in every final renderer.
     private nonisolated static func exportableNotinhasNotes(
-        _ snapshot: AnnotateRenderSnapshot,
+        _ snapshot: AnnotateRenderSnapshot
     ) -> [CueVisualNote] {
         let notes = CueNoteGeometry.orderedRenderableNotes(snapshot.cueNotes)
         guard let cropRect = snapshot.cropRect?.standardized else { return notes }
@@ -677,7 +677,7 @@ final class AnnotateExporter {
         _ sourceImage: NSImage,
         effectiveBounds: CGRect,
         destinationOrigin: CGPoint,
-        in context: CGContext,
+        in context: CGContext
     ) {
         let sourceImageBounds = CGRect(origin: .zero, size: sourceImage.size)
         let visibleSourceBounds = effectiveBounds.intersection(sourceImageBounds)
@@ -687,14 +687,14 @@ final class AnnotateExporter {
             x: destinationOrigin.x + visibleSourceBounds.minX - effectiveBounds.minX,
             y: destinationOrigin.y + visibleSourceBounds.minY - effectiveBounds.minY,
             width: visibleSourceBounds.width,
-            height: visibleSourceBounds.height,
+            height: visibleSourceBounds.height
         )
         guard
             let sourceCGImage = bestCGImage(from: sourceImage),
             let sourcePixelRect = sourcePixelCropRect(
                 for: visibleSourceBounds,
                 imageSize: sourceImage.size,
-                pixelSize: CGSize(width: sourceCGImage.width, height: sourceCGImage.height),
+                pixelSize: CGSize(width: sourceCGImage.width, height: sourceCGImage.height)
             ),
             let croppedImage = sourceCGImage.cropping(to: sourcePixelRect)
         else {
@@ -702,7 +702,7 @@ final class AnnotateExporter {
                 x: visibleSourceBounds.minX,
                 y: visibleSourceBounds.minY,
                 width: visibleSourceBounds.width,
-                height: visibleSourceBounds.height,
+                height: visibleSourceBounds.height
             )
             sourceImage.draw(in: destinationRect, from: sourceRect, operation: .sourceOver, fraction: 1.0)
             return
@@ -711,7 +711,7 @@ final class AnnotateExporter {
         let sourceScale = sourceImageScale(sourceImage)
         let destinationPixelSize = CGSize(
             width: destinationRect.width * sourceScale,
-            height: destinationRect.height * sourceScale,
+            height: destinationRect.height * sourceScale
         )
         let drawsOneToOne = abs(destinationPixelSize.width - CGFloat(croppedImage.width)) < 0.5
             && abs(destinationPixelSize.height - CGFloat(croppedImage.height)) < 0.5
@@ -725,7 +725,7 @@ final class AnnotateExporter {
     private nonisolated static func sourcePixelCropRect(
         for bounds: CGRect,
         imageSize: CGSize,
-        pixelSize: CGSize,
+        pixelSize: CGSize
     ) -> CGRect? {
         guard imageSize.width > 0, imageSize.height > 0, pixelSize.width > 0, pixelSize.height > 0 else {
             return nil
@@ -742,7 +742,7 @@ final class AnnotateExporter {
             x: minX,
             y: minY,
             width: maxX - minX,
-            height: maxY - minY,
+            height: maxY - minY
         )
         .intersection(imagePixelBounds)
         .integral
@@ -756,35 +756,35 @@ final class AnnotateExporter {
         _ annotation: AnnotationItem,
         cropOrigin: CGPoint,
         imageX: CGFloat,
-        imageY: CGFloat,
+        imageY: CGFloat
     ) -> AnnotationItem {
         var result = annotation
         result.bounds = CGRect(
             x: annotation.bounds.origin.x - cropOrigin.x + imageX,
             y: annotation.bounds.origin.y - cropOrigin.y + imageY,
             width: annotation.bounds.width,
-            height: annotation.bounds.height,
+            height: annotation.bounds.height
         )
 
         // Offset internal points for types that store coordinates
         switch annotation.type {
-        case .arrow(let geometry):
+        case let .arrow(geometry):
             result.type = .arrow(
                 geometry.translatedBy(
                     dx: -cropOrigin.x + imageX,
-                    dy: -cropOrigin.y + imageY,
-                ),
+                    dy: -cropOrigin.y + imageY
+                )
             )
-        case .line(let start, let end):
+        case let .line(start, end):
             result.type = .line(
                 start: CGPoint(x: start.x - cropOrigin.x + imageX, y: start.y - cropOrigin.y + imageY),
-                end: CGPoint(x: end.x - cropOrigin.x + imageX, y: end.y - cropOrigin.y + imageY),
+                end: CGPoint(x: end.x - cropOrigin.x + imageX, y: end.y - cropOrigin.y + imageY)
             )
-        case .path(let points):
+        case let .path(points):
             result.type = .path(points.map {
                 CGPoint(x: $0.x - cropOrigin.x + imageX, y: $0.y - cropOrigin.y + imageY)
             })
-        case .highlight(let points):
+        case let .highlight(points):
             result.type = .highlight(points.map {
                 CGPoint(x: $0.x - cropOrigin.x + imageX, y: $0.y - cropOrigin.y + imageY)
             })
@@ -799,35 +799,35 @@ final class AnnotateExporter {
     private nonisolated static func offsetAnnotationForCrop(
         _ annotation: AnnotationItem,
         cropOrigin: CGPoint,
-        padding: CGFloat,
+        padding: CGFloat
     ) -> AnnotationItem {
         var result = annotation
         result.bounds = CGRect(
             x: annotation.bounds.origin.x - cropOrigin.x + padding,
             y: annotation.bounds.origin.y - cropOrigin.y + padding,
             width: annotation.bounds.width,
-            height: annotation.bounds.height,
+            height: annotation.bounds.height
         )
 
         // Offset internal points for types that store coordinates
         switch annotation.type {
-        case .arrow(let geometry):
+        case let .arrow(geometry):
             result.type = .arrow(
                 geometry.translatedBy(
                     dx: -cropOrigin.x + padding,
-                    dy: -cropOrigin.y + padding,
-                ),
+                    dy: -cropOrigin.y + padding
+                )
             )
-        case .line(let start, let end):
+        case let .line(start, end):
             result.type = .line(
                 start: CGPoint(x: start.x - cropOrigin.x + padding, y: start.y - cropOrigin.y + padding),
-                end: CGPoint(x: end.x - cropOrigin.x + padding, y: end.y - cropOrigin.y + padding),
+                end: CGPoint(x: end.x - cropOrigin.x + padding, y: end.y - cropOrigin.y + padding)
             )
-        case .path(let points):
+        case let .path(points):
             result.type = .path(points.map {
                 CGPoint(x: $0.x - cropOrigin.x + padding, y: $0.y - cropOrigin.y + padding)
             })
-        case .highlight(let points):
+        case let .highlight(points):
             result.type = .highlight(points.map {
                 CGPoint(x: $0.x - cropOrigin.x + padding, y: $0.y - cropOrigin.y + padding)
             })
@@ -839,23 +839,25 @@ final class AnnotateExporter {
     }
 
     /// Offset an annotation by padding, including internal points for lines/arrows
-    private nonisolated static func offsetAnnotation(_ annotation: AnnotationItem,
-                                                     by padding: CGFloat) -> AnnotationItem {
+    private nonisolated static func offsetAnnotation(
+        _ annotation: AnnotationItem,
+        by padding: CGFloat
+    ) -> AnnotationItem {
         var result = annotation
         result.bounds = annotation.bounds.offsetBy(dx: padding, dy: padding)
 
         // Also offset internal points for types that store coordinates
         switch annotation.type {
-        case .arrow(let geometry):
+        case let .arrow(geometry):
             result.type = .arrow(geometry.translatedBy(dx: padding, dy: padding))
-        case .line(let start, let end):
+        case let .line(start, end):
             result.type = .line(
                 start: CGPoint(x: start.x + padding, y: start.y + padding),
-                end: CGPoint(x: end.x + padding, y: end.y + padding),
+                end: CGPoint(x: end.x + padding, y: end.y + padding)
             )
-        case .path(let points):
+        case let .path(points):
             result.type = .path(points.map { CGPoint(x: $0.x + padding, y: $0.y + padding) })
-        case .highlight(let points):
+        case let .highlight(points):
             result.type = .highlight(points.map { CGPoint(x: $0.x + padding, y: $0.y + padding) })
         default:
             break
@@ -866,28 +868,32 @@ final class AnnotateExporter {
 
     /// Snapshot-based background draw. The wallpaper/blurred image arrives pre-resolved
     /// (main-bound sandbox access + CI blur happen when the snapshot is built).
-    private nonisolated static func drawBackground(snapshot: AnnotateRenderSnapshot, in context: CGContext,
-                                                   size: NSSize) {
+    private nonisolated static func drawBackground(
+        snapshot: AnnotateRenderSnapshot,
+        in context: CGContext,
+        size: NSSize
+    ) {
         let rect = CGRect(origin: .zero, size: size)
 
         switch snapshot.backgroundStyle {
         case .none:
             break
 
-        case .gradient(let preset):
+        case let .gradient(preset):
             drawLinearGradient(colors: preset.colors, in: context, size: size)
 
-        case .solidColor(let color):
+        case let .solidColor(color):
             context.setFillColor(NSColor(color).cgColor)
             context.fill(rect)
             if snapshot.isBlurredBackgroundEffectActive {
                 drawBlurredBackgroundTint(effect: snapshot.blurredBackgroundEffect, in: context, rect: rect)
             }
 
-        case .wallpaper(let url):
+        case let .wallpaper(url):
             if url.scheme == "preset",
                let presetName = url.host,
-               let preset = WallpaperPreset(rawValue: presetName) {
+               let preset = WallpaperPreset(rawValue: presetName)
+            {
                 drawLinearGradient(colors: preset.colors, in: context, size: size)
                 return
             }
@@ -913,20 +919,21 @@ final class AnnotateExporter {
         case .none:
             break
 
-        case .gradient(let preset):
+        case let .gradient(preset):
             drawLinearGradient(colors: preset.colors, in: context, size: size)
 
-        case .solidColor(let color):
+        case let .solidColor(color):
             context.setFillColor(NSColor(color).cgColor)
             context.fill(rect)
             if isBlurredBackgroundEffectActive(effects) {
                 drawBlurredBackgroundTint(effect: effects.blurredBackgroundEffect, in: context, rect: rect)
             }
 
-        case .wallpaper(let url):
+        case let .wallpaper(url):
             if url.scheme == "preset",
                let presetName = url.host,
-               let preset = WallpaperPreset(rawValue: presetName) {
+               let preset = WallpaperPreset(rawValue: presetName)
+            {
                 drawLinearGradient(colors: preset.colors, in: context, size: size)
                 return
             }
@@ -934,7 +941,7 @@ final class AnnotateExporter {
             if let wallpaper = resolveWallpaperImage(
                 for: url,
                 blurredEffect: effects.blurredBackgroundEffect,
-                preferBlurred: preferBlurred,
+                preferBlurred: preferBlurred
             ) {
                 wallpaper.draw(in: rect)
                 if preferBlurred {
@@ -942,11 +949,11 @@ final class AnnotateExporter {
                 }
             }
 
-        case .blurred(let url):
+        case let .blurred(url):
             if let wallpaper = resolveWallpaperImage(
                 for: url,
                 blurredEffect: effects.blurredBackgroundEffect,
-                preferBlurred: true,
+                preferBlurred: true
             ) {
                 wallpaper.draw(in: rect)
                 drawBlurredBackgroundTint(effect: effects.blurredBackgroundEffect, in: context, rect: rect)
@@ -967,14 +974,14 @@ final class AnnotateExporter {
         let gradient = CGGradient(
             colorsSpace: CGColorSpaceCreateDeviceRGB(),
             colors: cgColors as CFArray,
-            locations: nil,
+            locations: nil
         )
         if let gradient {
             context.drawLinearGradient(
                 gradient,
                 start: .zero,
                 end: CGPoint(x: size.width, y: size.height),
-                options: [],
+                options: []
             )
         }
     }
@@ -982,7 +989,7 @@ final class AnnotateExporter {
     private static func resolveWallpaperImage(
         for url: URL,
         blurredEffect: BlurredBackgroundEffect,
-        preferBlurred: Bool,
+        preferBlurred: Bool
     ) -> NSImage? {
         let image = SandboxFileAccessManager.shared.withScopedAccess(to: url) {
             NSImage(contentsOf: url)
@@ -994,7 +1001,7 @@ final class AnnotateExporter {
     private nonisolated static func drawBlurredBackgroundTint(
         effect: BlurredBackgroundEffect,
         in context: CGContext,
-        rect: CGRect,
+        rect: CGRect
     ) {
         guard effect.tintOpacity > 0 else { return }
 
@@ -1006,7 +1013,7 @@ final class AnnotateExporter {
 
     private nonisolated static func makeBlurredBackgroundImage(
         from image: NSImage?,
-        effect: BlurredBackgroundEffect,
+        effect: BlurredBackgroundEffect
     ) -> NSImage? {
         guard let image,
               let tiffData = image.tiffRepresentation,
@@ -1035,7 +1042,7 @@ final class AnnotateExporter {
     private nonisolated static func destinationOrigin(
         imageSize: CGSize,
         totalSize: CGSize,
-        alignment: ImageAlignment,
+        alignment: ImageAlignment
     ) -> CGPoint {
         let totalExtraWidth = totalSize.width - imageSize.width
         let totalExtraHeight = totalSize.height - imageSize.height
@@ -1091,7 +1098,7 @@ final class AnnotateExporter {
             isPlanar: false,
             colorSpaceName: .deviceRGB,
             bytesPerRow: 0,
-            bitsPerPixel: 0,
+            bitsPerPixel: 0
         ) else { return nil }
         bitmapRep.size = effectiveBounds.size // Point size
 
@@ -1115,8 +1122,8 @@ final class AnnotateExporter {
             },
             sourceDisplayOffset: CGPoint(
                 x: -effectiveBounds.origin.x,
-                y: -effectiveBounds.origin.y,
-            ),
+                y: -effectiveBounds.origin.y
+            )
         )
         for annotation in snapshot.annotations.renderOrdered {
             if let cropRect = snapshot.cropRect {
@@ -1125,7 +1132,7 @@ final class AnnotateExporter {
             let offsetAnnotation = offsetAnnotationForCrop(
                 annotation,
                 cropOrigin: effectiveBounds.origin,
-                padding: 0,
+                padding: 0
             )
             renderer.draw(offsetAnnotation)
         }
@@ -1135,7 +1142,7 @@ final class AnnotateExporter {
             cropOrigin: effectiveBounds.origin,
             destinationOffset: .zero,
             imageBounds: CGRect(origin: .zero, size: effectiveBounds.size),
-            in: context,
+            in: context
         )
 
         NSGraphicsContext.restoreGraphicsState()
@@ -1178,25 +1185,25 @@ struct MockupExportViewForAnnotate: View {
                     axis: (x: 0, y: 1, z: 0),
                     anchor: .center,
                     anchorZ: 0,
-                    perspective: snapshot.mockupPerspective,
+                    perspective: snapshot.mockupPerspective
                 )
                 .rotation3DEffect(
                     .degrees(snapshot.mockupRotationX),
                     axis: (x: 1, y: 0, z: 0),
                     anchor: .center,
                     anchorZ: 0,
-                    perspective: snapshot.mockupPerspective,
+                    perspective: snapshot.mockupPerspective
                 )
                 .rotation3DEffect(
                     .degrees(snapshot.mockupRotationZ),
                     axis: (x: 0, y: 0, z: 1),
-                    anchor: .center,
+                    anchor: .center
                 )
                 .shadow(
                     color: .black.opacity(snapshot.shadowIntensity),
                     radius: snapshot.mockupShadowRadius,
                     x: snapshot.mockupShadowOffsetX,
-                    y: snapshot.mockupShadowOffsetY,
+                    y: snapshot.mockupShadowOffsetY
                 )
         }
     }
@@ -1212,7 +1219,7 @@ struct MockupExportViewForAnnotate: View {
         let extraSpace = padding * 2 + 100 // Extra for shadow and rotation
         return CGSize(
             width: imageSize.width + extraSpace,
-            height: imageSize.height + extraSpace,
+            height: imageSize.height + extraSpace
         )
     }
 
@@ -1223,24 +1230,25 @@ struct MockupExportViewForAnnotate: View {
         switch snapshot.backgroundStyle {
         case .none:
             Color.clear
-        case .gradient(let preset):
+        case let .gradient(preset):
             LinearGradient(
                 colors: preset.colors,
                 startPoint: .topLeading,
-                endPoint: .bottomTrailing,
+                endPoint: .bottomTrailing
             )
-        case .solidColor(let color):
+        case let .solidColor(color):
             color
                 .brightness(snapshot.isBlurredBackgroundEffectActive ? snapshot.blurredBackgroundEffect.brightness : 0)
                 .overlay(
                     (snapshot.isBlurredBackgroundEffectActive ? snapshot.blurredBackgroundEffect.tintColor : .clear)
                         .opacity(snapshot.isBlurredBackgroundEffectActive ? snapshot.blurredBackgroundEffect
-                            .tintOpacity : 0),
+                            .tintOpacity : 0)
                 )
-        case .wallpaper(let url):
+        case let .wallpaper(url):
             // Check if this is a preset wallpaper
             if url.scheme == "preset", let presetName = url.host,
-               let preset = WallpaperPreset(rawValue: presetName) {
+               let preset = WallpaperPreset(rawValue: presetName)
+            {
                 preset.gradient
             } else if let image = snapshot.resolvedBackgroundImage {
                 Image(nsImage: image)
@@ -1250,7 +1258,7 @@ struct MockupExportViewForAnnotate: View {
                         snapshot.isBlurredBackgroundEffectActive
                             ? snapshot.blurredBackgroundEffect.tintColor
                             .opacity(snapshot.blurredBackgroundEffect.tintOpacity)
-                            : .clear,
+                            : .clear
                     )
             } else {
                 Color.gray.opacity(0.3)

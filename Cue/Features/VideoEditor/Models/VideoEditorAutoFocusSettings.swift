@@ -26,7 +26,7 @@
             isEnabled: Bool = false,
             zoomLevel: CGFloat = Self.defaultZoomLevel,
             followSpeed: Double = Self.defaultFollowSpeed,
-            focusMargin: CGFloat = Self.defaultFocusMargin,
+            focusMargin: CGFloat = Self.defaultFocusMargin
         ) {
             self.isEnabled = isEnabled
             self.zoomLevel = Self.clampZoomLevel(zoomLevel)
@@ -73,7 +73,7 @@
 
         static let identity = VideoEditorCameraState(
             zoomLevel: 1.0,
-            center: CGPoint(x: 0.5, y: 0.5),
+            center: CGPoint(x: 0.5, y: 0.5)
         )
     }
 #endif

@@ -29,7 +29,7 @@
         /// Build the visual-effect backdrop + SwiftUI hosting view for a given direction.
         static func build(
             state: RecordingAnnotationState,
-            direction: AnnotationToolbarDirection,
+            direction: AnnotationToolbarDirection
         ) -> AnnotationToolbarContent {
             let view = RecordingAnnotationToolbarView(state: state, direction: direction)
             let themed = view.preferredColorScheme(ThemeManager.shared.systemAppearance)
@@ -50,7 +50,7 @@
                 hosting.topAnchor.constraint(equalTo: effect.topAnchor),
                 hosting.bottomAnchor.constraint(equalTo: effect.bottomAnchor),
                 hosting.leadingAnchor.constraint(equalTo: effect.leadingAnchor),
-                hosting.trailingAnchor.constraint(equalTo: effect.trailingAnchor),
+                hosting.trailingAnchor.constraint(equalTo: effect.trailingAnchor)
             ])
 
             let fittingSize = hosting.fittingSize
@@ -59,14 +59,14 @@
             return AnnotationToolbarContent(
                 effectView: effect,
                 hostingView: hosting,
-                fittingSize: fittingSize,
+                fittingSize: fittingSize
             )
         }
 
         /// Compute the fitting size for a given direction without building the full view tree.
         static func fittingSize(
             state: RecordingAnnotationState,
-            direction: AnnotationToolbarDirection,
+            direction: AnnotationToolbarDirection
         ) -> CGSize {
             let view = RecordingAnnotationToolbarView(state: state, direction: direction)
             let themed = view.preferredColorScheme(ThemeManager.shared.systemAppearance)

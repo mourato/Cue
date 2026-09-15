@@ -124,121 +124,121 @@ enum ScrollingCaptureSelectionGuidanceKind {
             ScrollingCaptureSelectionGuidance(
                 title: L10n.ScrollingCapture.guidanceFrameOnlyScrollingContent,
                 detail: L10n.ScrollingCapture.guidanceThenPressStartCapture,
-                tone: .neutral,
+                tone: .neutral
             )
         case .releaseToLockArea:
             ScrollingCaptureSelectionGuidance(
                 title: L10n.ScrollingCapture.guidanceReleaseToLockArea,
                 detail: L10n.ScrollingCapture.guidanceKeepOnlyScrollingContent,
-                tone: .active,
+                tone: .active
             )
         case .areaUpdated:
             ScrollingCaptureSelectionGuidance(
                 title: L10n.ScrollingCapture.guidanceAreaUpdated,
                 detail: L10n.ScrollingCapture.guidanceKeepOnlyScrollingContent,
-                tone: .active,
+                tone: .active
             )
         case .keepOneDirection:
             ScrollingCaptureSelectionGuidance(
                 title: L10n.ScrollingCapture.guidanceKeepOneDirection,
                 detail: L10n.ScrollingCapture.guidanceReverseScrollingCanBreakStitch,
-                tone: .warning,
+                tone: .warning
             )
         case .keepCapturing:
             ScrollingCaptureSelectionGuidance(
                 title: L10n.ScrollingCapture.guidanceKeepCapturing,
                 detail: L10n.ScrollingCapture.guidanceThenTryDoneAgain,
-                tone: .warning,
+                tone: .warning
             )
         case .tryDoneAgain:
             ScrollingCaptureSelectionGuidance(
                 title: L10n.ScrollingCapture.guidanceTryDoneAgain,
                 detail: L10n.ScrollingCapture.guidanceCurrentResultStillReady,
-                tone: .warning,
+                tone: .warning
             )
         case .placeMouseInsideSelection:
             ScrollingCaptureSelectionGuidance(
                 title: L10n.ScrollingCapture.guidancePlaceMouseInsideSelection,
                 detail: L10n.ScrollingCapture.guidanceReturnMouseInsideSelection,
-                tone: .warning,
+                tone: .warning
             )
         case .heightLimitReached:
             ScrollingCaptureSelectionGuidance(
                 title: L10n.ScrollingCapture.guidanceHeightLimitReached,
                 detail: L10n.ScrollingCapture.guidancePressDoneToSave,
-                tone: .warning,
+                tone: .warning
             )
         case .pressDoneNoNewContent:
             ScrollingCaptureSelectionGuidance(
                 title: L10n.ScrollingCapture.guidancePressDoneToSave,
                 detail: L10n.ScrollingCapture.guidanceNoNewContentDetected,
-                tone: .active,
+                tone: .active
             )
         case .pressDoneCurrentResultReady:
             ScrollingCaptureSelectionGuidance(
                 title: L10n.ScrollingCapture.guidancePressDoneToSave,
                 detail: L10n.ScrollingCapture.guidanceCurrentStitchedResultReady,
-                tone: .active,
+                tone: .active
             )
         case .continueManually:
             ScrollingCaptureSelectionGuidance(
                 title: L10n.ScrollingCapture.guidanceContinueManually,
                 detail: L10n.ScrollingCapture.guidancePressDoneWhenReady,
-                tone: .active,
+                tone: .active
             )
         case .holdSteady:
             ScrollingCaptureSelectionGuidance(
                 title: L10n.ScrollingCapture.guidanceHoldSteady,
                 detail: L10n.ScrollingCapture.guidanceLockingFirstFrame,
-                tone: .progress,
+                tone: .progress
             )
         case .slowDown:
             ScrollingCaptureSelectionGuidance(
                 title: L10n.ScrollingCapture.guidanceSlowDown,
                 detail: L10n.ScrollingCapture.guidanceKeepOneDirectionForRealignment,
-                tone: .warning,
+                tone: .warning
             )
         case .keepSteadierPace:
             ScrollingCaptureSelectionGuidance(
                 title: L10n.ScrollingCapture.guidanceKeepSteadierPace,
                 detail: L10n.ScrollingCapture.guidanceStayOnOneDirection,
-                tone: .warning,
+                tone: .warning
             )
         case .previewNeedsRecovery:
             ScrollingCaptureSelectionGuidance(
                 title: L10n.ScrollingCapture.guidancePreviewNeedsRecovery,
                 detail: L10n.ScrollingCapture.guidanceKeepOneDirectionOrRestart,
-                tone: .warning,
+                tone: .warning
             )
         case .keepScrollingDown:
             ScrollingCaptureSelectionGuidance(
                 title: L10n.ScrollingCapture.guidanceKeepScrollingDown,
                 detail: L10n.ScrollingCapture.guidanceOneDirectionSteadyPace,
-                tone: .progress,
+                tone: .progress
             )
         case .scrollDownSteadily:
             ScrollingCaptureSelectionGuidance(
                 title: L10n.ScrollingCapture.guidanceScrollDownSteadily,
                 detail: L10n.ScrollingCapture.guidanceKeepOneDirectionForCleanStitch,
-                tone: .progress,
+                tone: .progress
             )
         case .savingCurrentResult:
             ScrollingCaptureSelectionGuidance(
                 title: L10n.ScrollingCapture.guidanceSavingCurrentResult,
                 detail: L10n.ScrollingCapture.guidanceHeightLimitReached,
-                tone: .active,
+                tone: .active
             )
         case .lockingCurrentCapture:
             ScrollingCaptureSelectionGuidance(
                 title: L10n.ScrollingCapture.guidanceLockingCurrentCapture,
                 detail: L10n.ScrollingCapture.guidanceSealingStitchedResult,
-                tone: .progress,
+                tone: .progress
             )
         case .savingLongScreenshot:
             ScrollingCaptureSelectionGuidance(
                 title: L10n.ScrollingCapture.guidanceSavingLongScreenshot,
                 detail: L10n.ScrollingCapture.guidancePleaseWait,
-                tone: .progress,
+                tone: .progress
             )
         }
     }
@@ -249,7 +249,7 @@ enum ScrollingCaptureConfiguration {
         UserDefaults.standard.object(forKey: PreferencesKeys.scrollingCaptureShowHints) as? Bool ?? true
     }
 
-    static let maxOutputHeight = 32_768
+    static let maxOutputHeight = 32768
 }
 
 enum ScrollingCaptureAutoScrollStitchAction: Equatable {
@@ -265,7 +265,7 @@ enum ScrollingCaptureAutoScrollPolicy {
     static func canToggle(
         phase: ScrollingCapturePhase,
         acceptedFrameCount: Int,
-        isAutoScrolling: Bool,
+        isAutoScrolling: Bool
     ) -> Bool {
         switch phase {
         case .capturing:
@@ -344,7 +344,7 @@ final class ScrollingCaptureSessionModel: ObservableObject {
         ScrollingCaptureAutoScrollPolicy.canToggle(
             phase: phase,
             acceptedFrameCount: acceptedFrameCount,
-            isAutoScrolling: isAutoScrolling,
+            isAutoScrolling: isAutoScrolling
         )
     }
 

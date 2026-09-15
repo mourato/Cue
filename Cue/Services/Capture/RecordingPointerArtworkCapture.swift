@@ -20,7 +20,8 @@
             guard let tiffData = image.tiffRepresentation,
                   let bitmap = NSBitmapImageRep(data: tiffData),
                   let imageData = bitmap.representation(using: .png, properties: [:]),
-                  !imageData.isEmpty else {
+                  !imageData.isEmpty
+            else {
                 return nil
             }
 
@@ -39,12 +40,12 @@
                 imageData: imageData,
                 anchorPoint: RecordedPointerArtwork.Point(
                     x: min(max(hotSpot.x.isFinite ? hotSpot.x : 0, 0), width),
-                    y: min(max(hotSpot.y.isFinite ? hotSpot.y : 0, 0), height),
+                    y: min(max(hotSpot.y.isFinite ? hotSpot.y : 0, 0), height)
                 ),
                 referenceSize: RecordedPointerArtwork.Size(
                     width: width,
-                    height: height,
-                ),
+                    height: height
+                )
             )
         }
     }

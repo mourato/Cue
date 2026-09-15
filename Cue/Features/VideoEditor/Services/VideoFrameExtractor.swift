@@ -46,7 +46,7 @@
 
         static func extract(
             request: VideoFrameExtractionRequest,
-            outputRoot: URL,
+            outputRoot: URL
         ) async throws -> VideoFrameExtractionResult {
             guard let clampedTime = request.clampedTime else {
                 throw VideoFrameExtractionError.invalidRequestTime
@@ -55,7 +55,7 @@
             let outputURL = CaptureOutputNaming.makeUniqueFileURL(
                 in: outputRoot,
                 baseName: "\(request.baseName)-frame",
-                fileExtension: "png",
+                fileExtension: "png"
             )
 
             return try await withCheckedThrowingContinuation { continuation in
@@ -67,13 +67,13 @@
                         var actualCMTime = CMTime.zero
                         let image = try generator.copyCGImage(
                             at: CMTime(seconds: clampedTime, preferredTimescale: 600),
-                            actualTime: &actualCMTime,
+                            actualTime: &actualCMTime
                         )
                         guard let destination = CGImageDestinationCreateWithURL(
                             outputURL as CFURL,
                             "public.png" as CFString,
                             1,
-                            nil,
+                            nil
                         ) else {
                             throw VideoFrameExtractionError.couldNotCreatePNG
                         }
@@ -92,7 +92,7 @@
                         continuation.resume(returning: VideoFrameExtractionResult(
                             url: outputURL,
                             requestedTime: clampedTime,
-                            actualTime: CMTimeGetSeconds(actualCMTime),
+                            actualTime: CMTimeGetSeconds(actualCMTime)
                         ))
                     } catch {
                         try? FileManager.default.removeItem(at: outputURL)

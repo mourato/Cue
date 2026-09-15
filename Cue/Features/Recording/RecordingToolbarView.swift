@@ -34,7 +34,7 @@
                     ToolbarIconButton(
                         systemName: "xmark",
                         action: onCancel,
-                        accessibilityLabel: L10n.RecordingToolbar.cancelRecording,
+                        accessibilityLabel: L10n.RecordingToolbar.cancelRecording
                     )
                 }
 
@@ -62,7 +62,7 @@
                 RecordingOutputActionButton(
                     mode: .gif,
                     state: state,
-                    onRecord: onRecord,
+                    onRecord: onRecord
                 )
 
                 RecordingToolbarHorizontalDivider()
@@ -70,7 +70,7 @@
                 RecordingOutputActionButton(
                     mode: .video,
                     state: state,
-                    onRecord: onRecord,
+                    onRecord: onRecord
                 )
             }
             .padding(4)
@@ -105,7 +105,7 @@
                         systemName: "cursorarrow.click.2",
                         title: L10n.RecordingToolbar.highlightClicks,
                         preferenceKey: PreferencesKeys.recordingHighlightClicks,
-                        keyPath: \.highlightClicks,
+                        keyPath: \.highlightClicks
                     )
                 }
 
@@ -117,7 +117,7 @@
                         systemName: "command.square",
                         title: L10n.RecordingToolbar.showKeystrokes,
                         preferenceKey: PreferencesKeys.recordingShowKeystrokes,
-                        keyPath: \.showKeystrokes,
+                        keyPath: \.showKeystrokes
                     )
                 }
             }
@@ -160,7 +160,7 @@
                 dimensionField(
                     accessibilityLabel: L10n.AllInOne.widthFieldAccessibility,
                     text: $state.selectionWidthText,
-                    field: .width,
+                    field: .width
                 )
 
                 Text("×")
@@ -171,7 +171,7 @@
                 dimensionField(
                     accessibilityLabel: L10n.AllInOne.heightFieldAccessibility,
                     text: $state.selectionHeightText,
-                    field: .height,
+                    field: .height
                 )
             }
             .opacity(isEditable ? 1 : 0.55)
@@ -184,7 +184,7 @@
         private func dimensionField(
             accessibilityLabel: String,
             text: Binding<String>,
-            field: Field,
+            field: Field
         ) -> some View {
             TextField("", text: text)
                 .textFieldStyle(.plain)
@@ -193,11 +193,11 @@
                 .multilineTextAlignment(.center)
                 .background(
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(Color.primary.opacity(0.08)),
+                        .fill(Color.primary.opacity(0.08))
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 6)
-                        .stroke(Color.primary.opacity(0.12), lineWidth: 1),
+                        .stroke(Color.primary.opacity(0.12), lineWidth: 1)
                 )
                 .focused($focusedField, equals: field)
                 .disabled(!isEditable)
@@ -222,14 +222,14 @@
                     state.selectionRect,
                     width: width,
                     aspectLocked: false,
-                    aspectRatio: nil,
+                    aspectRatio: nil
                 )
             case .height:
                 CaptureSelectionGeometry.rectBySettingHeight(
                     state.selectionRect,
                     height: height,
                     aspectLocked: false,
-                    aspectRatio: nil,
+                    aspectRatio: nil
                 )
             }
 
@@ -264,7 +264,7 @@
                 ToolbarIconButtonLabel(
                     systemName: systemName,
                     isActive: isOn,
-                    isHovered: isHovered,
+                    isHovered: isHovered
                 )
             }
             .buttonStyle(.plain)
@@ -308,7 +308,7 @@
                 .frame(minHeight: 32, alignment: .leading)
                 .background(
                     RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.primary.opacity(isHovered ? 0.1 : 0)),
+                        .fill(Color.primary.opacity(isHovered ? 0.1 : 0))
                 )
                 .contentShape(RoundedRectangle(cornerRadius: 8))
             }
@@ -324,7 +324,7 @@
         RecordingToolbarView(
             state: RecordingToolbarState(),
             onRecord: {},
-            onCancel: {},
+            onCancel: {}
         )
         .padding()
     }

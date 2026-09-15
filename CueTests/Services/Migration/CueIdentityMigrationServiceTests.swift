@@ -49,7 +49,7 @@ final class CueIdentityMigrationServiceTests: XCTestCase {
         try FileManager.default.createDirectory(at: legacyAppSupport, withIntermediateDirectories: true)
         try FileManager.default.createDirectory(
             at: legacyAppSupport.appendingPathComponent("Captures", isDirectory: true),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         try FileManager.default.createDirectory(at: legacyLogs, withIntermediateDirectories: true)
         try FileManager.default.createDirectory(at: legacyConfig, withIntermediateDirectories: true)
@@ -64,19 +64,19 @@ final class CueIdentityMigrationServiceTests: XCTestCase {
             .legacyReleaseBundleIdentifier)
         try FileManager.default.createDirectory(
             at: releasePreferences.deletingLastPathComponent(),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         XCTAssertTrue(
             ([
                 PreferencesKeys.screenshotFormat: "webp",
-                PreferencesKeys.historyEnabled: false,
-            ] as NSDictionary).write(to: releasePreferences, atomically: true),
+                PreferencesKeys.historyEnabled: false
+            ] as NSDictionary).write(to: releasePreferences, atomically: true)
         )
 
         keychain.store(
             service: CueStoragePaths.legacyCurrentKeychainService,
             account: "com.mourato.notinhas.cloud.accessKey",
-            value: Data("secret-access".utf8),
+            value: Data("secret-access".utf8)
         )
 
         let firstResult = try makeService().runIfNeeded()
@@ -93,41 +93,41 @@ final class CueIdentityMigrationServiceTests: XCTestCase {
         XCTAssertTrue(defaults.bool(forKey: PreferencesKeys.cueIdentityMigrationCompleted))
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: destinationAppSupport().appendingPathComponent("cue.db").path,
-            ),
+                atPath: destinationAppSupport().appendingPathComponent("cue.db").path
+            )
         )
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: destinationAppSupport().appendingPathComponent("cue.db-wal").path,
-            ),
+                atPath: destinationAppSupport().appendingPathComponent("cue.db-wal").path
+            )
         )
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: destinationAppSupport().appendingPathComponent("Captures/capture.png").path,
-            ),
+                atPath: destinationAppSupport().appendingPathComponent("Captures/capture.png").path
+            )
         )
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: destinationLogsDirectory().appendingPathComponent("notinhas_2026-06-21.txt").path,
-            ),
+                atPath: destinationLogsDirectory().appendingPathComponent("notinhas_2026-06-21.txt").path
+            )
         )
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: destinationConfigDirectory().appendingPathComponent("config.toml").path,
-            ),
+                atPath: destinationConfigDirectory().appendingPathComponent("config.toml").path
+            )
         )
         XCTAssertEqual(
             keychain.read(
                 service: CueStoragePaths.destinationKeychainService,
-                account: "com.mourato.cue.cloud.accessKey",
+                account: "com.mourato.cue.cloud.accessKey"
             ),
-            Data("secret-access".utf8),
+            Data("secret-access".utf8)
         )
         XCTAssertNil(
             keychain.read(
                 service: CueStoragePaths.legacyCurrentKeychainService,
-                account: "com.mourato.notinhas.cloud.accessKey",
-            ),
+                account: "com.mourato.notinhas.cloud.accessKey"
+            )
         )
 
         let secondResult = try makeService().runIfNeeded()
@@ -144,8 +144,8 @@ final class CueIdentityMigrationServiceTests: XCTestCase {
         XCTAssertTrue(defaults.bool(forKey: PreferencesKeys.cueIdentityMigrationCompleted))
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: destinationAppSupport().appendingPathComponent(CueStoragePaths.markerFileName).path,
-            ),
+                atPath: destinationAppSupport().appendingPathComponent(CueStoragePaths.markerFileName).path
+            )
         )
     }
 
@@ -156,11 +156,11 @@ final class CueIdentityMigrationServiceTests: XCTestCase {
             .appendingPathComponent("Data/Library/Application Support/Notinhas", isDirectory: true)
         try FileManager.default.createDirectory(
             at: sandboxAppSupport.appendingPathComponent("Captures", isDirectory: true),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         try Data("sandbox-db".utf8).write(to: sandboxAppSupport.appendingPathComponent("notinhas.db"))
         try Data("sandbox-capture".utf8).write(
-            to: sandboxAppSupport.appendingPathComponent("Captures/capture.png"),
+            to: sandboxAppSupport.appendingPathComponent("Captures/capture.png")
         )
 
         let result = try makeService().runIfNeeded()
@@ -169,11 +169,11 @@ final class CueIdentityMigrationServiceTests: XCTestCase {
         XCTAssertEqual(result.copiedApplicationSupportItems, 1)
         XCTAssertEqual(
             try String(contentsOf: destinationAppSupport().appendingPathComponent("cue.db")),
-            "sandbox-db",
+            "sandbox-db"
         )
         XCTAssertEqual(
             try String(contentsOf: destinationAppSupport().appendingPathComponent("Captures/capture.png")),
-            "sandbox-capture",
+            "sandbox-capture"
         )
         XCTAssertTrue(FileManager.default.fileExists(atPath: sandboxAppSupport.path))
     }
@@ -182,13 +182,13 @@ final class CueIdentityMigrationServiceTests: XCTestCase {
         let legacyAppSupport = legacyAppSupportDirectory()
         try FileManager.default.createDirectory(
             at: legacyAppSupport.appendingPathComponent("Captures", isDirectory: true),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         try Data("legacy capture".utf8).write(to: legacyAppSupport.appendingPathComponent("Captures/capture.png"))
 
         try FileManager.default.createDirectory(
             at: destinationAppSupport().appendingPathComponent("Captures", isDirectory: true),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         try Data("current database".utf8).write(to: destinationAppSupport().appendingPathComponent("cue.db"))
 
@@ -196,13 +196,13 @@ final class CueIdentityMigrationServiceTests: XCTestCase {
             .legacyReleaseBundleIdentifier)
         try FileManager.default.createDirectory(
             at: releasePreferences.deletingLastPathComponent(),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         XCTAssertTrue(
             ([
                 PreferencesKeys.historyEnabled: false,
-                PreferencesKeys.screenshotFormat: "webp",
-            ] as NSDictionary).write(to: releasePreferences, atomically: true),
+                PreferencesKeys.screenshotFormat: "webp"
+            ] as NSDictionary).write(to: releasePreferences, atomically: true)
         )
         defaults.set(true, forKey: PreferencesKeys.historyEnabled)
 
@@ -213,11 +213,11 @@ final class CueIdentityMigrationServiceTests: XCTestCase {
         XCTAssertEqual(result.migratedDatabaseFiles, 0)
         XCTAssertEqual(
             try String(contentsOf: destinationAppSupport().appendingPathComponent("cue.db")),
-            "current database",
+            "current database"
         )
         XCTAssertEqual(
             try String(contentsOf: destinationAppSupport().appendingPathComponent("Captures/capture.png")),
-            "legacy capture",
+            "legacy capture"
         )
         XCTAssertTrue(defaults.bool(forKey: PreferencesKeys.historyEnabled))
         XCTAssertEqual(defaults.string(forKey: PreferencesKeys.screenshotFormat), "webp")
@@ -227,13 +227,13 @@ final class CueIdentityMigrationServiceTests: XCTestCase {
         let debugPreferences = legacyPreferencesURL(bundleIdentifier: CueStoragePaths.legacyDebugBundleIdentifier)
         try FileManager.default.createDirectory(
             at: debugPreferences.deletingLastPathComponent(),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         XCTAssertTrue(
             ([
                 PreferencesKeys.screenshotFormat: "png",
-                PreferencesKeys.historyEnabled: false,
-            ] as NSDictionary).write(to: debugPreferences, atomically: true),
+                PreferencesKeys.historyEnabled: false
+            ] as NSDictionary).write(to: debugPreferences, atomically: true)
         )
         defaults.set("webp", forKey: PreferencesKeys.screenshotFormat)
 
@@ -280,12 +280,12 @@ final class CueIdentityMigrationServiceTests: XCTestCase {
 
         try FileManager.default.setAttributes(
             [.posixPermissions: 0o500],
-            ofItemAtPath: applicationSupportDirectory.path,
+            ofItemAtPath: applicationSupportDirectory.path
         )
         defer {
             try? FileManager.default.setAttributes(
                 [.posixPermissions: 0o755],
-                ofItemAtPath: applicationSupportDirectory.path,
+                ofItemAtPath: applicationSupportDirectory.path
             )
         }
 
@@ -304,8 +304,8 @@ final class CueIdentityMigrationServiceTests: XCTestCase {
         XCTAssertTrue(defaults.bool(forKey: PreferencesKeys.cueIdentityMigrationCompleted))
         XCTAssertFalse(
             FileManager.default.fileExists(
-                atPath: destinationAppSupport().appendingPathComponent("cue.db").path,
-            ),
+                atPath: destinationAppSupport().appendingPathComponent("cue.db").path
+            )
         )
 
         let result = try service.runIfNeeded()
@@ -317,13 +317,13 @@ final class CueIdentityMigrationServiceTests: XCTestCase {
             .legacyReleaseBundleIdentifier)
         try FileManager.default.createDirectory(
             at: releasePreferences.deletingLastPathComponent(),
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
         XCTAssertTrue(
             ([
                 PreferencesKeys.notinhasIdentityMigrationCompleted: true,
-                PreferencesKeys.screenshotFormat: "png",
-            ] as NSDictionary).write(to: releasePreferences, atomically: true),
+                PreferencesKeys.screenshotFormat: "png"
+            ] as NSDictionary).write(to: releasePreferences, atomically: true)
         )
 
         _ = try makeService().runIfNeeded()
@@ -337,7 +337,7 @@ final class CueIdentityMigrationServiceTests: XCTestCase {
         keychain.store(
             service: CueStoragePaths.legacyCurrentKeychainService,
             account: "com.mourato.notinhas.cloud.imgbbAPIKey",
-            value: Data("imgbb-secret".utf8),
+            value: Data("imgbb-secret".utf8)
         )
 
         let result = try makeService().runIfNeeded()
@@ -346,15 +346,15 @@ final class CueIdentityMigrationServiceTests: XCTestCase {
         XCTAssertEqual(
             keychain.read(
                 service: CueStoragePaths.destinationKeychainService,
-                account: "com.mourato.cue.cloud.imgbbAPIKey",
+                account: "com.mourato.cue.cloud.imgbbAPIKey"
             ),
-            Data("imgbb-secret".utf8),
+            Data("imgbb-secret".utf8)
         )
         XCTAssertNil(
             keychain.read(
                 service: CueStoragePaths.legacyCurrentKeychainService,
-                account: "com.mourato.notinhas.cloud.imgbbAPIKey",
-            ),
+                account: "com.mourato.notinhas.cloud.imgbbAPIKey"
+            )
         )
     }
 
@@ -367,8 +367,8 @@ final class CueIdentityMigrationServiceTests: XCTestCase {
 
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: legacyAppSupport.appendingPathComponent("notinhas.db").path,
-            ),
+                atPath: legacyAppSupport.appendingPathComponent("notinhas.db").path
+            )
         )
     }
 
@@ -380,7 +380,7 @@ final class CueIdentityMigrationServiceTests: XCTestCase {
                 libraryDirectory: self.libraryDirectory,
                 userDefaults: self.defaults,
                 fileManager: .default,
-                keychainAdapter: self.keychain,
+                keychainAdapter: self.keychain
             )
         }
     }
@@ -388,14 +388,14 @@ final class CueIdentityMigrationServiceTests: XCTestCase {
     private func legacyAppSupportDirectory() -> URL {
         applicationSupportDirectory.appendingPathComponent(
             CueStoragePaths.legacyAppSupportFolderName,
-            isDirectory: true,
+            isDirectory: true
         )
     }
 
     private func destinationAppSupport() -> URL {
         applicationSupportDirectory.appendingPathComponent(
             CueStoragePaths.destinationAppSupportFolderName,
-            isDirectory: true,
+            isDirectory: true
         )
     }
 

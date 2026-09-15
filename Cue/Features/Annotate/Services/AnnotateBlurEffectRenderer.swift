@@ -50,7 +50,7 @@ nonisolated enum BlurEffectRenderer {
         if let metalDevice = MTLCreateSystemDefaultDevice() {
             return CIContext(mtlDevice: metalDevice, options: [
                 .cacheIntermediates: true,
-                .priorityRequestLow: false,
+                .priorityRequestLow: false
             ])
         }
         return CIContext(options: [.cacheIntermediates: true])
@@ -74,14 +74,14 @@ nonisolated enum BlurEffectRenderer {
         in context: CGContext,
         sourceImage: NSImage,
         region: CGRect,
-        pixelSize: CGFloat = defaultPixelSize,
+        pixelSize: CGFloat = defaultPixelSize
     ) {
         drawPixelatedRegion(
             in: context,
             sourceImage: sourceImage,
             sourceRegion: region,
             destRegion: region,
-            pixelSize: pixelSize,
+            pixelSize: pixelSize
         )
     }
 
@@ -91,7 +91,7 @@ nonisolated enum BlurEffectRenderer {
         sourceImage: NSImage,
         sourceRegion: CGRect,
         destRegion: CGRect,
-        pixelSize: CGFloat = defaultPixelSize,
+        pixelSize: CGFloat = defaultPixelSize
     ) {
         guard let cgImage = sourceImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
             drawFallbackBlur(in: context, region: destRegion)
@@ -104,7 +104,7 @@ nonisolated enum BlurEffectRenderer {
             sourceSize: sourceImage.size,
             sourceRegion: sourceRegion,
             destRegion: destRegion,
-            pixelSize: pixelSize,
+            pixelSize: pixelSize
         )
     }
 
@@ -115,7 +115,7 @@ nonisolated enum BlurEffectRenderer {
         sourceSize: CGSize,
         sourceRegion: CGRect,
         destRegion: CGRect,
-        pixelSize: CGFloat = defaultPixelSize,
+        pixelSize: CGFloat = defaultPixelSize
     ) {
         guard sourceRegion.width > 0, sourceRegion.height > 0, destRegion.width > 0,
               destRegion.height > 0 else { return }
@@ -124,7 +124,7 @@ nonisolated enum BlurEffectRenderer {
             sourceSize: sourceSize,
             cgImage: cgImage,
             sourceRegion: sourceRegion,
-            destRegion: destRegion,
+            destRegion: destRegion
         ) else {
             drawFallbackBlur(in: context, region: destRegion)
             return
@@ -139,7 +139,7 @@ nonisolated enum BlurEffectRenderer {
             croppedImage: croppedImage,
             in: context,
             destRect: mapping.clampedDestRegion,
-            pixelSize: pixelSize * max(mapping.imageScaleX, mapping.imageScaleY),
+            pixelSize: pixelSize * max(mapping.imageScaleX, mapping.imageScaleY)
         )
     }
 
@@ -149,7 +149,7 @@ nonisolated enum BlurEffectRenderer {
         croppedImage: CGImage,
         in context: CGContext,
         destRect: CGRect,
-        pixelSize: CGFloat,
+        pixelSize: CGFloat
     ) {
         let blockSize = max(1, pixelSize)
         let cols = max(1, Int(ceil(CGFloat(croppedImage.width) / blockSize)))
@@ -162,7 +162,7 @@ nonisolated enum BlurEffectRenderer {
             bitsPerComponent: 8,
             bytesPerRow: 0,
             space: CGColorSpaceCreateDeviceRGB(),
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
         ) else {
             drawFallbackBlur(in: context, region: destRect)
             return
@@ -194,7 +194,7 @@ nonisolated enum BlurEffectRenderer {
     /// Draw a subtle placeholder while an exact async blur render is pending.
     static func drawBlurPlaceholder(
         in context: CGContext,
-        region: CGRect,
+        region: CGRect
     ) {
         context.saveGState()
         context.setFillColor(NSColor.gray.withAlphaComponent(0.32).cgColor)
@@ -206,7 +206,7 @@ nonisolated enum BlurEffectRenderer {
     static func drawBlurPreview(
         in context: CGContext,
         region: CGRect,
-        strokeColor: CGColor,
+        strokeColor: CGColor
     ) {
         // Draw semi-transparent overlay with pattern to indicate blur area
         context.setFillColor(NSColor.gray.withAlphaComponent(0.5).cgColor)
@@ -226,7 +226,7 @@ nonisolated enum BlurEffectRenderer {
         sourceImage: NSImage,
         region: CGRect,
         radius: Double = defaultGaussianRadius,
-        quality: BlurRenderQuality = .export,
+        quality: BlurRenderQuality = .export
     ) {
         drawGaussianRegion(
             in: context,
@@ -234,7 +234,7 @@ nonisolated enum BlurEffectRenderer {
             sourceRegion: region,
             destRegion: region,
             radius: radius,
-            quality: quality,
+            quality: quality
         )
     }
 
@@ -245,7 +245,7 @@ nonisolated enum BlurEffectRenderer {
         sourceRegion: CGRect,
         destRegion: CGRect,
         radius: Double = defaultGaussianRadius,
-        quality: BlurRenderQuality = .export,
+        quality: BlurRenderQuality = .export
     ) {
         guard let cgImage = sourceImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
             drawFallbackBlur(in: context, region: destRegion)
@@ -259,7 +259,7 @@ nonisolated enum BlurEffectRenderer {
             sourceRegion: sourceRegion,
             destRegion: destRegion,
             radius: radius,
-            quality: quality,
+            quality: quality
         )
     }
 
@@ -271,7 +271,7 @@ nonisolated enum BlurEffectRenderer {
         sourceRegion: CGRect,
         destRegion: CGRect,
         radius: Double = defaultGaussianRadius,
-        quality: BlurRenderQuality = .export,
+        quality: BlurRenderQuality = .export
     ) {
         guard sourceRegion.width > 0, sourceRegion.height > 0, destRegion.width > 0,
               destRegion.height > 0 else { return }
@@ -280,7 +280,7 @@ nonisolated enum BlurEffectRenderer {
             sourceSize: sourceSize,
             cgImage: cgImage,
             sourceRegion: sourceRegion,
-            destRegion: destRegion,
+            destRegion: destRegion
         ) else {
             drawFallbackBlur(in: context, region: destRegion)
             return
@@ -291,7 +291,7 @@ nonisolated enum BlurEffectRenderer {
         let effectiveRadiusPx = effectiveGaussianRadiusPixels(
             baseRadius: CGFloat(radius),
             imageScale: imageScale,
-            pixelRegion: targetPixelRegion,
+            pixelRegion: targetPixelRegion
         )
         let samplePaddingPx = ceil(effectiveRadiusPx * gaussianPaddingMultiplier)
         let pixelBounds = CGRect(x: 0, y: 0, width: cgImage.width, height: cgImage.height)
@@ -299,7 +299,8 @@ nonisolated enum BlurEffectRenderer {
             .intersection(pixelBounds)
 
         guard !sampledPixelRegion.isEmpty,
-              let sampledCGImage = cgImage.cropping(to: sampledPixelRegion) else {
+              let sampledCGImage = cgImage.cropping(to: sampledPixelRegion)
+        else {
             drawFallbackBlur(in: context, region: mapping.clampedDestRegion)
             return
         }
@@ -332,7 +333,7 @@ nonisolated enum BlurEffectRenderer {
             x: targetPixelRegion.minX - sampledPixelRegion.minX,
             y: targetPixelRegion.minY - sampledPixelRegion.minY,
             width: targetPixelRegion.width,
-            height: targetPixelRegion.height,
+            height: targetPixelRegion.height
         )
         let workingTarget = targetInSample.applying(CGAffineTransform(scaleX: downsampleScale, y: downsampleScale))
             .intersection(workingImage.extent)
@@ -358,7 +359,7 @@ nonisolated enum BlurEffectRenderer {
         sourceSize: CGSize,
         cgImage: CGImage,
         sourceRegion: CGRect,
-        destRegion: CGRect,
+        destRegion: CGRect
     ) -> RegionMapping? {
         guard sourceSize.width > 0, sourceSize.height > 0 else { return nil }
 
@@ -383,7 +384,7 @@ nonisolated enum BlurEffectRenderer {
                 x: normalizedDestRegion.minX + offsetX * scaleX,
                 y: normalizedDestRegion.minY + offsetY * scaleY,
                 width: clampedSourceRegion.width * scaleX,
-                height: clampedSourceRegion.height * scaleY,
+                height: clampedSourceRegion.height * scaleY
             )
         }
 
@@ -399,7 +400,7 @@ nonisolated enum BlurEffectRenderer {
             x: pixelMinX,
             y: pixelMinY,
             width: pixelMaxX - pixelMinX,
-            height: pixelMaxY - pixelMinY,
+            height: pixelMaxY - pixelMinY
         )
 
         guard !targetPixelRegion.isEmpty, targetPixelRegion.width >= 1,
@@ -410,7 +411,7 @@ nonisolated enum BlurEffectRenderer {
             imageScaleY: imageScaleY,
             clampedSourceRegion: clampedSourceRegion,
             clampedDestRegion: clampedDestRegion,
-            targetPixelRegion: targetPixelRegion,
+            targetPixelRegion: targetPixelRegion
         )
     }
 
@@ -423,7 +424,7 @@ nonisolated enum BlurEffectRenderer {
         destRegion: CGRect,
         filterName: String,
         configureFilter: (CIFilter, CGFloat) -> Void,
-        quality: BlurRenderQuality = .export,
+        quality: BlurRenderQuality = .export
     ) {
         guard sourceRegion.width > 0, sourceRegion.height > 0, destRegion.width > 0,
               destRegion.height > 0 else { return }
@@ -432,7 +433,7 @@ nonisolated enum BlurEffectRenderer {
             sourceSize: sourceSize,
             cgImage: cgImage,
             sourceRegion: sourceRegion,
-            destRegion: destRegion,
+            destRegion: destRegion
         ) else {
             drawFallbackBlur(in: context, region: destRegion)
             return
@@ -448,7 +449,8 @@ nonisolated enum BlurEffectRenderer {
             .intersection(pixelBounds)
 
         guard !sampledPixelRegion.isEmpty,
-              let sampledCGImage = cgImage.cropping(to: sampledPixelRegion) else {
+              let sampledCGImage = cgImage.cropping(to: sampledPixelRegion)
+        else {
             drawFallbackBlur(in: context, region: mapping.clampedDestRegion)
             return
         }
@@ -486,7 +488,7 @@ nonisolated enum BlurEffectRenderer {
             x: targetPixelRegion.minX - sampledPixelRegion.minX,
             y: targetPixelRegion.minY - sampledPixelRegion.minY,
             width: targetPixelRegion.width,
-            height: targetPixelRegion.height,
+            height: targetPixelRegion.height
         )
         let workingTarget = targetInSample.applying(CGAffineTransform(scaleX: downsampleScale, y: downsampleScale))
             .intersection(workingImage.extent)
@@ -515,7 +517,7 @@ nonisolated enum BlurEffectRenderer {
         sourceImage: NSImage,
         region: CGRect,
         scale: Double,
-        quality: BlurRenderQuality = .export,
+        quality: BlurRenderQuality = .export
     ) {
         drawHexagonalRegion(
             in: context,
@@ -523,7 +525,7 @@ nonisolated enum BlurEffectRenderer {
             sourceRegion: region,
             destRegion: region,
             scale: scale,
-            quality: quality,
+            quality: quality
         )
     }
 
@@ -533,7 +535,7 @@ nonisolated enum BlurEffectRenderer {
         sourceRegion: CGRect,
         destRegion: CGRect,
         scale: Double,
-        quality: BlurRenderQuality = .export,
+        quality: BlurRenderQuality = .export
     ) {
         guard let cgImage = sourceImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
             drawFallbackBlur(in: context, region: destRegion)
@@ -546,7 +548,7 @@ nonisolated enum BlurEffectRenderer {
             sourceRegion: sourceRegion,
             destRegion: destRegion,
             scale: scale,
-            quality: quality,
+            quality: quality
         )
     }
 
@@ -557,7 +559,7 @@ nonisolated enum BlurEffectRenderer {
         sourceRegion: CGRect,
         destRegion: CGRect,
         scale: Double,
-        quality: BlurRenderQuality = .export,
+        quality: BlurRenderQuality = .export
     ) {
         drawCIFilterRegion(
             in: context,
@@ -571,7 +573,7 @@ nonisolated enum BlurEffectRenderer {
                 filter.setValue(CIVector(x: 0, y: 0), forKey: "inputCenter")
                 filter.setValue(NSNumber(value: Double(size)), forKey: "inputScale")
             },
-            quality: quality,
+            quality: quality
         )
     }
 
@@ -584,19 +586,19 @@ nonisolated enum BlurEffectRenderer {
         path.move(to: CGPoint(x: center.x, y: center.y - radius))
         path.addQuadCurve(
             to: CGPoint(x: center.x + radius, y: center.y),
-            control: CGPoint(x: center.x + radius * 0.15, y: center.y - radius * 0.15),
+            control: CGPoint(x: center.x + radius * 0.15, y: center.y - radius * 0.15)
         )
         path.addQuadCurve(
             to: CGPoint(x: center.x, y: center.y + radius),
-            control: CGPoint(x: center.x + radius * 0.15, y: center.y + radius * 0.15),
+            control: CGPoint(x: center.x + radius * 0.15, y: center.y + radius * 0.15)
         )
         path.addQuadCurve(
             to: CGPoint(x: center.x - radius, y: center.y),
-            control: CGPoint(x: center.x - radius * 0.15, y: center.y + radius * 0.15),
+            control: CGPoint(x: center.x - radius * 0.15, y: center.y + radius * 0.15)
         )
         path.addQuadCurve(
             to: CGPoint(x: center.x, y: center.y - radius),
-            control: CGPoint(x: center.x - radius * 0.15, y: center.y - radius * 0.15),
+            control: CGPoint(x: center.x - radius * 0.15, y: center.y - radius * 0.15)
         )
         path.closeSubpath()
         context.addPath(path)
@@ -609,7 +611,7 @@ nonisolated enum BlurEffectRenderer {
     static func drawCrystallizedRegion(
         in context: CGContext,
         region: CGRect,
-        radius: CGFloat,
+        radius: CGFloat
     ) {
         let normalized = region.standardized
         guard normalized.width > 0, normalized.height > 0 else { return }
@@ -623,7 +625,7 @@ nonisolated enum BlurEffectRenderer {
         context.setShadow(
             offset: CGSize(width: 1.0, height: -1.5),
             blur: 2.0,
-            color: NSColor.black.withAlphaComponent(0.12).cgColor,
+            color: NSColor.black.withAlphaComponent(0.12).cgColor
         )
 
         // 2. Fill base color (pastel lilac/lavender)
@@ -671,7 +673,7 @@ nonisolated enum BlurEffectRenderer {
         sourceImage _: NSImage,
         region: CGRect,
         radius: Double,
-        quality _: BlurRenderQuality = .export,
+        quality _: BlurRenderQuality = .export
     ) {
         drawCrystallizedRegion(in: context, region: region, radius: CGFloat(radius))
     }
@@ -682,7 +684,7 @@ nonisolated enum BlurEffectRenderer {
         sourceRegion _: CGRect,
         destRegion: CGRect,
         radius: Double,
-        quality _: BlurRenderQuality = .export,
+        quality _: BlurRenderQuality = .export
     ) {
         drawCrystallizedRegion(in: context, region: destRegion, radius: CGFloat(radius))
     }
@@ -694,7 +696,7 @@ nonisolated enum BlurEffectRenderer {
         sourceRegion _: CGRect,
         destRegion: CGRect,
         radius: Double,
-        quality _: BlurRenderQuality = .export,
+        quality _: BlurRenderQuality = .export
     ) {
         drawCrystallizedRegion(in: context, region: destRegion, radius: CGFloat(radius))
     }
@@ -704,7 +706,7 @@ nonisolated enum BlurEffectRenderer {
     static func drawPointillismRegion(
         in context: CGContext,
         region: CGRect,
-        radius: CGFloat,
+        radius: CGFloat
     ) {
         let normalized = region.standardized
         guard normalized.width > 0, normalized.height > 0 else { return }
@@ -718,7 +720,7 @@ nonisolated enum BlurEffectRenderer {
         context.setShadow(
             offset: CGSize(width: 1.0, height: -1.5),
             blur: 2.0,
-            color: NSColor.black.withAlphaComponent(0.12).cgColor,
+            color: NSColor.black.withAlphaComponent(0.12).cgColor
         )
 
         // 2. Fill base color (pastel peach)
@@ -784,7 +786,7 @@ nonisolated enum BlurEffectRenderer {
         sourceImage _: NSImage,
         region: CGRect,
         radius: Double,
-        quality _: BlurRenderQuality = .export,
+        quality _: BlurRenderQuality = .export
     ) {
         drawPointillismRegion(in: context, region: region, radius: CGFloat(radius))
     }
@@ -795,7 +797,7 @@ nonisolated enum BlurEffectRenderer {
         sourceRegion _: CGRect,
         destRegion: CGRect,
         radius: Double,
-        quality _: BlurRenderQuality = .export,
+        quality _: BlurRenderQuality = .export
     ) {
         drawPointillismRegion(in: context, region: destRegion, radius: CGFloat(radius))
     }
@@ -807,7 +809,7 @@ nonisolated enum BlurEffectRenderer {
         sourceRegion _: CGRect,
         destRegion: CGRect,
         radius: Double,
-        quality _: BlurRenderQuality = .export,
+        quality _: BlurRenderQuality = .export
     ) {
         drawPointillismRegion(in: context, region: destRegion, radius: CGFloat(radius))
     }
@@ -817,7 +819,7 @@ nonisolated enum BlurEffectRenderer {
     static func drawHalftoneRegion(
         in context: CGContext,
         region: CGRect,
-        width: CGFloat,
+        width: CGFloat
     ) {
         let normalized = region.standardized
         guard normalized.width > 0, normalized.height > 0 else { return }
@@ -831,7 +833,7 @@ nonisolated enum BlurEffectRenderer {
         context.setShadow(
             offset: CGSize(width: 1.0, height: -1.5),
             blur: 2.0,
-            color: NSColor.black.withAlphaComponent(0.12).cgColor,
+            color: NSColor.black.withAlphaComponent(0.12).cgColor
         )
 
         // 2. Fill base color (pastel cream/yellow)
@@ -866,7 +868,7 @@ nonisolated enum BlurEffectRenderer {
                 x: normalized.minX,
                 y: by - rectHeight / 2,
                 width: normalized.width,
-                height: rectHeight,
+                height: rectHeight
             ))
             by += patternSpacing
         }
@@ -879,7 +881,7 @@ nonisolated enum BlurEffectRenderer {
         sourceImage _: NSImage,
         region: CGRect,
         width: Double,
-        quality _: BlurRenderQuality = .export,
+        quality _: BlurRenderQuality = .export
     ) {
         drawHalftoneRegion(in: context, region: region, width: CGFloat(width))
     }
@@ -890,7 +892,7 @@ nonisolated enum BlurEffectRenderer {
         sourceRegion _: CGRect,
         destRegion: CGRect,
         width: Double,
-        quality _: BlurRenderQuality = .export,
+        quality _: BlurRenderQuality = .export
     ) {
         drawHalftoneRegion(in: context, region: destRegion, width: CGFloat(width))
     }
@@ -902,7 +904,7 @@ nonisolated enum BlurEffectRenderer {
         sourceRegion _: CGRect,
         destRegion: CGRect,
         width: Double,
-        quality _: BlurRenderQuality = .export,
+        quality _: BlurRenderQuality = .export
     ) {
         drawHalftoneRegion(in: context, region: destRegion, width: CGFloat(width))
     }
@@ -948,7 +950,7 @@ nonisolated enum BlurEffectRenderer {
     static func drawTapeRegion(
         in context: CGContext,
         region: CGRect,
-        patternSpacing: CGFloat,
+        patternSpacing: CGFloat
     ) {
         let normalized = region.standardized
         guard normalized.width > 0, normalized.height > 0 else { return }
@@ -962,7 +964,7 @@ nonisolated enum BlurEffectRenderer {
         context.setShadow(
             offset: CGSize(width: 1.0, height: -1.5),
             blur: 2.0,
-            color: NSColor.black.withAlphaComponent(0.12).cgColor,
+            color: NSColor.black.withAlphaComponent(0.12).cgColor
         )
 
         // 2. Fill base color (off-white correction tape)
@@ -999,7 +1001,7 @@ nonisolated enum BlurEffectRenderer {
         sourceImage _: NSImage,
         region: CGRect,
         patternSpacing: Double,
-        quality _: BlurRenderQuality = .export,
+        quality _: BlurRenderQuality = .export
     ) {
         drawTapeRegion(in: context, region: region, patternSpacing: CGFloat(patternSpacing))
     }
@@ -1011,7 +1013,7 @@ nonisolated enum BlurEffectRenderer {
         sourceRegion _: CGRect,
         destRegion: CGRect,
         patternSpacing: Double,
-        quality _: BlurRenderQuality = .export,
+        quality _: BlurRenderQuality = .export
     ) {
         drawTapeRegion(in: context, region: destRegion, patternSpacing: CGFloat(patternSpacing))
     }
@@ -1021,7 +1023,7 @@ nonisolated enum BlurEffectRenderer {
     static func drawWashiRegion(
         in context: CGContext,
         region: CGRect,
-        patternSpacing: CGFloat,
+        patternSpacing: CGFloat
     ) {
         let normalized = region.standardized
         guard normalized.width > 0, normalized.height > 0 else { return }
@@ -1035,7 +1037,7 @@ nonisolated enum BlurEffectRenderer {
         context.setShadow(
             offset: CGSize(width: 1.0, height: -1.5),
             blur: 2.0,
-            color: NSColor.black.withAlphaComponent(0.12).cgColor,
+            color: NSColor.black.withAlphaComponent(0.12).cgColor
         )
 
         // 2. Fill base color (pastel mint/teal washi tape)
@@ -1061,7 +1063,7 @@ nonisolated enum BlurEffectRenderer {
                     x: x - dotRadius,
                     y: y - dotRadius,
                     width: dotRadius * 2,
-                    height: dotRadius * 2,
+                    height: dotRadius * 2
                 ))
                 context.fillPath()
                 y += patternSpacing
@@ -1077,7 +1079,7 @@ nonisolated enum BlurEffectRenderer {
         sourceImage _: NSImage,
         region: CGRect,
         patternSpacing: Double,
-        quality _: BlurRenderQuality = .export,
+        quality _: BlurRenderQuality = .export
     ) {
         drawWashiRegion(in: context, region: region, patternSpacing: CGFloat(patternSpacing))
     }
@@ -1089,7 +1091,7 @@ nonisolated enum BlurEffectRenderer {
         sourceRegion _: CGRect,
         destRegion: CGRect,
         patternSpacing: Double,
-        quality _: BlurRenderQuality = .export,
+        quality _: BlurRenderQuality = .export
     ) {
         drawWashiRegion(in: context, region: destRegion, patternSpacing: CGFloat(patternSpacing))
     }
@@ -1097,7 +1099,7 @@ nonisolated enum BlurEffectRenderer {
     private static func effectiveGaussianRadiusPixels(
         baseRadius: CGFloat,
         imageScale: CGFloat,
-        pixelRegion: CGRect,
+        pixelRegion: CGRect
     ) -> CGFloat {
         let baseRadiusPx = max(1, baseRadius * imageScale)
         let minDimensionPx = min(pixelRegion.width, pixelRegion.height)
@@ -1105,7 +1107,7 @@ nonisolated enum BlurEffectRenderer {
         let adaptiveRadiusPx = max(baseRadiusPx, securityFloorPx)
         let maxRegionRadiusPx = max(
             24,
-            min(maxAdaptiveGaussianRadius, max(pixelRegion.width, pixelRegion.height) * 0.9),
+            min(maxAdaptiveGaussianRadius, max(pixelRegion.width, pixelRegion.height) * 0.9)
         )
         return min(adaptiveRadiusPx, maxRegionRadiusPx)
     }

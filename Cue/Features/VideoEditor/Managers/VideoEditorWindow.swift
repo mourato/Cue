@@ -22,7 +22,7 @@
                 contentRect: contentRect,
                 styleMask: [.titled, .closable, .miniaturizable, .resizable],
                 backing: .buffered,
-                defer: false,
+                defer: false
             )
             configure()
         }

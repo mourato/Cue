@@ -16,7 +16,7 @@
             let timeline = VideoEditorViewportTimeline.build(
                 segments: [segment],
                 metadata: nil,
-                duration: 0,
+                duration: 0
             )
             XCTAssertEqual(timeline, .identity)
         }
@@ -29,12 +29,12 @@
                 zoomLevel: 2,
                 zoomCenter: center,
                 zoomType: .manual,
-                anchorMode: .pinned,
+                anchorMode: .pinned
             )
             let timeline = VideoEditorViewportTimeline.build(
                 segments: [segment],
                 metadata: nil,
-                duration: 5,
+                duration: 5
             )
 
             let duringZoom = timeline.frame(at: 2)
@@ -49,7 +49,7 @@
                 samplesPerSecond: 60,
                 mouseSamples: [
                     RecordedMouseSample(time: 0, normalizedX: 0.2, normalizedY: 0.2, isInsideCapture: true),
-                    RecordedMouseSample(time: 2, normalizedX: 0.8, normalizedY: 0.8, isInsideCapture: true),
+                    RecordedMouseSample(time: 2, normalizedX: 0.8, normalizedY: 0.8, isInsideCapture: true)
                 ],
                 mousePresses: [
                     RecordedMousePress(
@@ -57,9 +57,9 @@
                         normalizedX: 0.5,
                         normalizedY: 0.5,
                         button: 0,
-                        phase: .down,
-                    ),
-                ],
+                        phase: .down
+                    )
+                ]
             )
             let segment = ZoomSegment(
                 startTime: 0.5,
@@ -67,12 +67,12 @@
                 zoomLevel: 2,
                 zoomCenter: CGPoint(x: 0.5, y: 0.5),
                 zoomType: .auto,
-                anchorMode: .pointer,
+                anchorMode: .pointer
             )
             let timeline = VideoEditorViewportTimeline.build(
                 segments: [segment],
                 metadata: metadata,
-                duration: 4,
+                duration: 4
             )
 
             let early = timeline.frame(at: 1)
@@ -89,12 +89,12 @@
                 zoomLevel: 2,
                 zoomCenter: CGPoint(x: 0.5, y: 0.5),
                 zoomType: .manual,
-                anchorMode: .pinned,
+                anchorMode: .pinned
             )
             let timeline = VideoEditorViewportTimeline.build(
                 segments: [segment],
                 metadata: nil,
-                duration: 6,
+                duration: 6
             )
 
             let before = timeline.frame(at: 0.5).magnification
@@ -114,19 +114,19 @@
                 zoomLevel: 2,
                 zoomCenter: CGPoint(x: 0.4, y: 0.6),
                 zoomType: .manual,
-                anchorMode: .pinned,
+                anchorMode: .pinned
             )
             let timeline = VideoEditorViewportTimeline.build(
                 segments: [segment],
                 metadata: nil,
-                duration: 3,
+                duration: 3
             )
             let state = VideoEditorAutoFocusEngine.resolvedCameraState(
                 at: 1,
                 segments: [segment],
                 autoFocusPaths: [:],
                 transitionDuration: 0.5,
-                viewportTimeline: timeline,
+                viewportTimeline: timeline
             )
 
             XCTAssertGreaterThan(state.zoomLevel, 1.5)

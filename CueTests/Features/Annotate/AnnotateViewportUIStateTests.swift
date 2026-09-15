@@ -68,7 +68,7 @@ final class AnnotateViewportUIStateTests: XCTestCase {
         state.updateViewportMetrics(
             containerSize: CGSize(width: 400, height: 400),
             baseCanvasSize: CGSize(width: 100, height: 100),
-            fitScale: 0.5,
+            fitScale: 0.5
         )
 
         // percent/100 / fitScale = 1.0 / 0.5 = 2.0, still within [0.25, max].
@@ -84,7 +84,7 @@ final class AnnotateViewportUIStateTests: XCTestCase {
         state.updateViewportMetrics(
             containerSize: CGSize(width: 800, height: 600),
             baseCanvasSize: CGSize(width: 400, height: 300),
-            fitScale: 1.0,
+            fitScale: 1.0
         )
         state.zoomLevel = 1.0
 
@@ -102,7 +102,7 @@ final class AnnotateViewportUIStateTests: XCTestCase {
         state.updateViewportMetrics(
             containerSize: CGSize(width: 200, height: 200),
             baseCanvasSize: CGSize(width: 1000, height: 1000),
-            fitScale: 1.0,
+            fitScale: 1.0
         )
         state.zoomLevel = 1.0
 
@@ -121,14 +121,14 @@ final class AnnotateViewportUIStateTests: XCTestCase {
         state.updateViewportMetrics(
             containerSize: CGSize(width: 200, height: 200),
             baseCanvasSize: CGSize(width: 1000, height: 1000),
-            fitScale: 1.0,
+            fitScale: 1.0
         )
         state.zoomLevel = 1.0
 
         // Overflow per side = (1000 - 200) / 2 = 400; margin = 200 * 0.1 = 20.
         let maxPan: CGFloat = 400 + 20
 
-        state.panOffset = CGSize(width: 10_000, height: -10_000)
+        state.panOffset = CGSize(width: 10000, height: -10000)
         state.clampPanOffset()
 
         XCTAssertEqual(state.panOffset.width, maxPan, accuracy: 0.0001)
@@ -141,7 +141,7 @@ final class AnnotateViewportUIStateTests: XCTestCase {
         state.updateViewportMetrics(
             containerSize: CGSize(width: 800, height: 600),
             baseCanvasSize: CGSize(width: 400, height: 300),
-            fitScale: 1.0,
+            fitScale: 1.0
         )
         state.zoomLevel = 1.0
         state.panOffset = CGSize(width: 50, height: 50)
@@ -158,7 +158,7 @@ final class AnnotateViewportUIStateTests: XCTestCase {
         state.updateViewportMetrics(
             containerSize: CGSize(width: 200, height: 200),
             baseCanvasSize: CGSize(width: 1000, height: 1000),
-            fitScale: 1.0,
+            fitScale: 1.0
         )
         state.isCanvasPanningMode = true
 
@@ -176,7 +176,7 @@ final class AnnotateViewportUIStateTests: XCTestCase {
         state.updateViewportMetrics(
             containerSize: CGSize(width: 640, height: 480),
             baseCanvasSize: CGSize(width: 320, height: 240),
-            fitScale: 0.75,
+            fitScale: 0.75
         )
 
         XCTAssertEqual(state.fitScale, 0.75, accuracy: 0.0001)
@@ -192,7 +192,7 @@ final class AnnotateViewportUIStateTests: XCTestCase {
         state.updateViewportMetrics(
             containerSize: CGSize(width: 400, height: 400),
             baseCanvasSize: CGSize(width: 400, height: 400),
-            fitScale: 1.0,
+            fitScale: 1.0
         )
 
         XCTAssertEqual(state.zoomLevel, state.effectiveMaximumZoomLevel, accuracy: 0.0001)
@@ -215,7 +215,7 @@ final class AnnotateViewportUIStateTests: XCTestCase {
         let annotation = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 10, y: 10, width: 40, height: 40),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         state.annotations = [annotation]
         state.selectedAnnotationId = annotation.id
@@ -232,7 +232,7 @@ final class AnnotateViewportUIStateTests: XCTestCase {
         let annotation = AnnotationItem(
             type: .rectangle,
             bounds: CGRect(x: 10, y: 10, width: 40, height: 40),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
         state.annotations = [annotation]
         state.selectedAnnotationId = annotation.id

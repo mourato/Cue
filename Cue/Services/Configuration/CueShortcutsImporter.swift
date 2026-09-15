@@ -13,7 +13,7 @@ extension CueConfigurationImporter {
 
     static func collectShortcuts(
         _ reader: inout CueConfigurationReader,
-        mutations: inout [() -> Void],
+        mutations: inout [() -> Void]
     ) {
         if let enabled = reader.bool("shortcuts", "enabled") {
             mutations.append {
@@ -29,7 +29,7 @@ extension CueConfigurationImporter {
         collectOverlayShortcut(
             &reader,
             path: ["shortcuts", "overlay", "area_application_capture"],
-            mutations: &mutations,
+            mutations: &mutations
         ) { shortcut in
             if let shortcut, !shortcut.isIndependent {
                 AllInOneModeShortcutSettings.setShortcut(shortcut, for: .window)
@@ -41,7 +41,7 @@ extension CueConfigurationImporter {
             collectOverlayShortcut(
                 &reader,
                 path: ["shortcuts", "overlay", "all_in_one", mode.rawValue],
-                mutations: &mutations,
+                mutations: &mutations
             ) { shortcut in
                 // AIO mode shortcuts are child-only; strip any imported modifiers.
                 let child = shortcut.map { CaptureOverlayShortcut(keyCode: $0.keyCode, modifiers: 0) }
@@ -51,7 +51,7 @@ extension CueConfigurationImporter {
         collectOverlayShortcut(
             &reader,
             path: ["shortcuts", "overlay", "recording_application_capture"],
-            mutations: &mutations,
+            mutations: &mutations
         ) {
             CaptureOverlayShortcutSettings.setRecordingApplicationCaptureShortcut($0)
         }
@@ -63,7 +63,7 @@ extension CueConfigurationImporter {
 
     private static func collectQuickAccessShortcut(
         _ reader: inout CueConfigurationReader,
-        mutations: inout [() -> Void],
+        mutations: inout [() -> Void]
     ) {
         let path = ["shortcuts", "quick_access", "edit_latest_capture"]
         let enabled = reader.bool(path + ["enabled"])
@@ -89,7 +89,7 @@ extension CueConfigurationImporter {
             guard let shortcut = CueConfigurationShortcutCodec.shortcut(
                 key: key,
                 modifiers: modifiers ?? [],
-                requireModifier: true,
+                requireModifier: true
             ) else {
                 reader.error("shortcuts.quick_access.edit_latest_capture has an invalid shortcut")
                 return
@@ -101,7 +101,7 @@ extension CueConfigurationImporter {
     }
 
     static func quickAccessSlots(
-        from reader: inout CueConfigurationReader,
+        from reader: inout CueConfigurationReader
     ) -> [QuickAccessActionSlot: QuickAccessActionKind]? {
         var assignments: [QuickAccessActionSlot: QuickAccessActionKind] = [:]
         var sawValue = false
@@ -128,7 +128,7 @@ extension CueConfigurationImporter {
     private static func collectGlobalShortcut(
         _ reader: inout CueConfigurationReader,
         kind: GlobalShortcutKind,
-        mutations: inout [() -> Void],
+        mutations: inout [() -> Void]
     ) {
         let path = ["shortcuts", "global", kind.configKey]
         let key = reader.string(path + ["key"])
@@ -153,7 +153,7 @@ extension CueConfigurationImporter {
             guard let shortcut = CueConfigurationShortcutCodec.shortcut(
                 key: key,
                 modifiers: modifiers ?? [],
-                requireModifier: true,
+                requireModifier: true
             ) else {
                 reader.error("shortcuts.global.\(kind.configKey) has an invalid shortcut")
                 return
@@ -170,7 +170,7 @@ extension CueConfigurationImporter {
         _ reader: inout CueConfigurationReader,
         path: [String],
         mutations: inout [() -> Void],
-        apply: @escaping (CaptureOverlayShortcut?) -> Void,
+        apply: @escaping (CaptureOverlayShortcut?) -> Void
     ) {
         let enabled = reader.bool(path + ["enabled"])
         let key = reader.string(path + ["key"])
@@ -190,8 +190,9 @@ extension CueConfigurationImporter {
         guard let key,
               let shortcut = CueConfigurationShortcutCodec.overlayShortcut(
                   key: key,
-                  modifiers: modifiers ?? [],
-              ) else {
+                  modifiers: modifiers ?? []
+              )
+        else {
             reader.error("\(path.joined(separator: ".")) has an invalid shortcut")
             return
         }
@@ -201,7 +202,7 @@ extension CueConfigurationImporter {
 
     private static func collectAnnotateTools(
         _ reader: inout CueConfigurationReader,
-        mutations: inout [() -> Void],
+        mutations: inout [() -> Void]
     ) {
         let disabled = disabledAnnotateTools(from: &reader)
 
@@ -217,10 +218,11 @@ extension CueConfigurationImporter {
                 let normalizedKey = key.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
                 guard normalizedKey.count == 1,
                       let shortcut = normalizedKey.first,
-                      shortcut.isLetter || shortcut.isNumber || shortcut.isPunctuation || shortcut.isSymbol else {
+                      shortcut.isLetter || shortcut.isNumber || shortcut.isPunctuation || shortcut.isSymbol
+                else {
                     reader
                         .error(
-                            "shortcuts.annotate_tools.\(tool.rawValue) must be a single letter, number, or special character",
+                            "shortcuts.annotate_tools.\(tool.rawValue) must be a single letter, number, or special character"
                         )
                     continue
                 }
@@ -239,7 +241,7 @@ extension CueConfigurationImporter {
 
     private static func collectAnnotateActions(
         _ reader: inout CueConfigurationReader,
-        mutations: inout [() -> Void],
+        mutations: inout [() -> Void]
     ) {
         let disabled = disabledAnnotateActions(from: &reader)
 
@@ -252,7 +254,7 @@ extension CueConfigurationImporter {
         _ reader: inout CueConfigurationReader,
         kind: AnnotateActionShortcutKind,
         disabled: Set<AnnotateActionShortcutKind>?,
-        mutations: inout [() -> Void],
+        mutations: inout [() -> Void]
     ) {
         let path = ["shortcuts", "annotate_actions", kind.configKey]
         let key = reader.string(path + ["key"])
@@ -280,7 +282,7 @@ extension CueConfigurationImporter {
             guard let shortcut = CueConfigurationShortcutCodec.shortcut(
                 key: key,
                 modifiers: modifiers ?? [],
-                requireModifier: true,
+                requireModifier: true
             ) else {
                 reader.error("shortcuts.annotate_actions.\(kind.configKey) has an invalid shortcut")
                 return
@@ -297,7 +299,7 @@ extension CueConfigurationImporter {
     }
 
     private static func disabledAnnotateTools(
-        from reader: inout CueConfigurationReader,
+        from reader: inout CueConfigurationReader
     ) -> Set<AnnotationToolType>? {
         guard let rawValues = reader.stringArray("shortcuts", "annotate_tools", "disabled") else { return nil }
         var disabled: Set<AnnotationToolType> = []
@@ -314,7 +316,7 @@ extension CueConfigurationImporter {
     }
 
     private static func disabledAnnotateActions(
-        from reader: inout CueConfigurationReader,
+        from reader: inout CueConfigurationReader
     ) -> Set<AnnotateActionShortcutKind>? {
         guard let rawValues = reader.stringArray("shortcuts", "annotate_actions", "disabled") else { return nil }
         var disabled: Set<AnnotateActionShortcutKind> = []

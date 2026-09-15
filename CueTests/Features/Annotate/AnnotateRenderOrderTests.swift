@@ -14,7 +14,7 @@ final class AnnotateRenderOrderTests: XCTestCase {
         AnnotationItem(
             type: type,
             bounds: CGRect(x: 0, y: 0, width: 100, height: 50),
-            properties: AnnotationProperties(),
+            properties: AnnotationProperties()
         )
     }
 
@@ -27,7 +27,7 @@ final class AnnotateRenderOrderTests: XCTestCase {
             style: .straight,
             arrowType: .tapered,
             startHead: .none,
-            endHead: .arrow,
+            endHead: .arrow
         )))
 
         // Model order has the blur on top (created last); render order puts it underneath.
@@ -64,7 +64,7 @@ final class AnnotateRenderOrderTests: XCTestCase {
             makeItem(.counter(1)),
             makeItem(.embeddedImage(UUID())),
             makeItem(.watermark("wm")),
-            makeItem(.spotlight),
+            makeItem(.spotlight)
         ]
 
         let ordered = items.renderOrdered
@@ -77,7 +77,7 @@ final class AnnotateRenderOrderTests: XCTestCase {
         let items = [
             makeItem(.rectangle),
             makeItem(.counter(2)),
-            makeItem(.text("note")),
+            makeItem(.text("note"))
         ]
 
         XCTAssertEqual(items.renderOrdered.map(\.id), items.map(\.id))

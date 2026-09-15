@@ -8,8 +8,8 @@ struct AnnotateCombineModePicker: View {
             L10n.Combine.mode,
             selection: Binding(
                 get: { state.combineMode },
-                set: { state.setCombineMode($0) },
-            ),
+                set: { state.setCombineMode($0) }
+            )
         ) {
             Text(L10n.Combine.autoStitch).tag(CombineImagesMode.autoStitch)
             Text(L10n.Combine.freeCanvas).tag(CombineImagesMode.freeCanvas)
@@ -46,9 +46,9 @@ struct AnnotateCombineControlsView: View {
                     label: L10n.Combine.imageGap,
                     value: Binding(
                         get: { state.combineGap },
-                        set: { state.setCombineGap($0) },
+                        set: { state.setCombineGap($0) }
                     ),
-                    range: 0 ... 80,
+                    range: 0 ... 80
                 )
             }
             .disabled(state.combineMode == .freeCanvas)
@@ -97,7 +97,7 @@ struct AnnotateCombineControlsView: View {
                 .padding(.vertical, 6)
                 .background(
                     RoundedRectangle(cornerRadius: Size.radiusSm)
-                        .fill(SidebarColors.itemDefault),
+                        .fill(SidebarColors.itemDefault)
                 )
             }
         }
@@ -129,7 +129,7 @@ struct AnnotateCombineControlsView: View {
     private func directionButton(
         _ direction: CombineImagesDirection,
         title: String,
-        icon: String,
+        icon: String
     ) -> some View {
         Button {
             state.setCombineDirection(direction)
@@ -146,11 +146,11 @@ struct AnnotateCombineControlsView: View {
             .background(
                 RoundedRectangle(cornerRadius: Size.radiusSm)
                     .fill(state.combineDirection == direction ? Color.accentColor.opacity(0.75) : SidebarColors
-                        .itemDefault),
+                        .itemDefault)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: Size.radiusSm)
-                    .stroke(state.combineDirection == direction ? Color.accentColor : Color.clear, lineWidth: 1),
+                    .stroke(state.combineDirection == direction ? Color.accentColor : Color.clear, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)

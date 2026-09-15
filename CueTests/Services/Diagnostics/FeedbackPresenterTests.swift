@@ -16,7 +16,7 @@ final class FeedbackPresenterTests: XCTestCase {
         let frame = FeedbackPanelPlacement.frame(
             in: visibleFrame,
             panelSize: panelSize,
-            slot: .bottomCenter,
+            slot: .bottomCenter
         )
 
         XCTAssertEqual(frame.origin.x, visibleFrame.midX - panelSize.width / 2, accuracy: 0.001)
@@ -28,14 +28,14 @@ final class FeedbackPresenterTests: XCTestCase {
         let frame = FeedbackPanelPlacement.frame(
             in: visibleFrame,
             panelSize: panelSize,
-            slot: .topCenter,
+            slot: .topCenter
         )
 
         XCTAssertEqual(frame.origin.x, visibleFrame.midX - panelSize.width / 2, accuracy: 0.001)
         XCTAssertEqual(
             frame.origin.y,
             visibleFrame.maxY - panelSize.height - FeedbackPanelPlacement.standardMargin,
-            accuracy: 0.001,
+            accuracy: 0.001
         )
         XCTAssertEqual(frame.size, panelSize)
     }
@@ -44,12 +44,12 @@ final class FeedbackPresenterTests: XCTestCase {
         let bottomCenter = FeedbackPanelPlacement.frame(
             in: visibleFrame,
             panelSize: panelSize,
-            slot: .bottomCenter,
+            slot: .bottomCenter
         )
         let raised = FeedbackPanelPlacement.frame(
             in: visibleFrame,
             panelSize: panelSize,
-            slot: .bottomCenterRaised,
+            slot: .bottomCenterRaised
         )
 
         let expectedDelta = FeedbackPanelPlacement.raisedBottomMargin - FeedbackPanelPlacement.standardMargin
@@ -61,7 +61,7 @@ final class FeedbackPresenterTests: XCTestCase {
         let frame = FeedbackPanelPlacement.frame(
             in: visibleFrame,
             panelSize: panelSize,
-            slot: .bottomCenterRaised,
+            slot: .bottomCenterRaised
         )
 
         XCTAssertGreaterThanOrEqual(frame.minX, visibleFrame.minX)

@@ -27,11 +27,11 @@ struct AnnotationStrokeWidthPicker: View {
         .frame(height: controlHeight)
         .background(
             RoundedRectangle(cornerRadius: Size.radiusSm, style: .continuous)
-                .fill(SidebarColors.itemDefault),
+                .fill(SidebarColors.itemDefault)
         )
         .overlay(
             RoundedRectangle(cornerRadius: Size.radiusSm, style: .continuous)
-                .stroke(Color.secondary.opacity(0.14), lineWidth: Size.strokeDefault),
+                .stroke(Color.secondary.opacity(0.14), lineWidth: Size.strokeDefault)
         )
         .accessibilityElement(children: .contain)
         .accessibilityLabel(L10n.Common.stroke)

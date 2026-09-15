@@ -32,7 +32,7 @@
                 for: .applicationSupportDirectory,
                 in: .userDomainMask,
                 appropriateFor: nil,
-                create: true,
+                create: true
             )
             let root = support
                 .appendingPathComponent(CueStoragePaths.destinationAppSupportFolderName, isDirectory: true)
@@ -44,7 +44,7 @@
         static func entryDirectory(
             for cacheKey: String,
             fileManager: FileManager = .default,
-            cacheRoot overrideRoot: URL? = nil,
+            cacheRoot overrideRoot: URL? = nil
         ) throws -> URL {
             let root = try overrideRoot ?? cacheRoot(in: fileManager)
             guard !cacheKey.contains("/"), !cacheKey.contains("..") else {
@@ -58,7 +58,7 @@
             sourceFingerprint: String,
             recipe: VideoEditorRenderRecipe,
             fileManager: FileManager = .default,
-            cacheRoot overrideRoot: URL? = nil,
+            cacheRoot overrideRoot: URL? = nil
         ) -> URL? {
             guard let entry = try? entryDirectory(for: cacheKey, fileManager: fileManager, cacheRoot: overrideRoot),
                   let manifest = loadManifest(from: entry, fileManager: fileManager),
@@ -67,9 +67,10 @@
                   let renderURL = existingRenderURL(
                       in: entry,
                       extension: manifest.outputExtension,
-                      fileManager: fileManager,
+                      fileManager: fileManager
                   ),
-                  isPlayableAsset(at: renderURL) else {
+                  isPlayableAsset(at: renderURL)
+            else {
                 return nil
             }
             touch(manifest: manifest, in: entry, fileManager: fileManager)
@@ -82,7 +83,7 @@
             sourceFingerprint: String,
             recipe: VideoEditorRenderRecipe,
             fileManager: FileManager = .default,
-            cacheRoot overrideRoot: URL? = nil,
+            cacheRoot overrideRoot: URL? = nil
         ) throws {
             let entry = try entryDirectory(for: cacheKey, fileManager: fileManager, cacheRoot: overrideRoot)
             try fileManager.createDirectory(at: entry, withIntermediateDirectories: true)
@@ -107,7 +108,7 @@
                 outputExtension: ext,
                 byteSize: byteSize,
                 createdAt: now,
-                lastUsedAt: now,
+                lastUsedAt: now
             )
 
             let manifestURL = entry.appendingPathComponent(manifestFileName)
@@ -122,12 +123,15 @@
             _ = try fileManager.replaceItemAt(destination, withItemAt: tempDestination)
         }
 
-        private static func loadManifest(from entry: URL,
-                                         fileManager _: FileManager) -> VideoEditorRenderCacheManifest? {
+        private static func loadManifest(
+            from entry: URL,
+            fileManager _: FileManager
+        ) -> VideoEditorRenderCacheManifest? {
             let manifestURL = entry.appendingPathComponent(manifestFileName)
             guard let data = try? Data(contentsOf: manifestURL),
                   let manifest = try? JSONDecoder().decode(VideoEditorRenderCacheManifest.self, from: data),
-                  manifest.schemaVersion == VideoEditorRenderCacheManifest.schemaVersion else {
+                  manifest.schemaVersion == VideoEditorRenderCacheManifest.schemaVersion
+            else {
                 return nil
             }
             return manifest

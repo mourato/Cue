@@ -118,7 +118,7 @@
         init(
             normalizedRect: CGRect,
             shape: RecordingCameraPreviewShape,
-            size: RecordingCameraPreviewSize? = nil,
+            size: RecordingCameraPreviewSize? = nil
         ) {
             self.normalizedRect = normalizedRect
             self.shape = shape
@@ -162,7 +162,7 @@
             videoSourceTracks: [RecordingVideoSourceTrack] = [],
             cameraOverlayLayout: RecordedCameraOverlayLayout? = nil,
             clickHighlightsWereBaked: Bool? = nil,
-            keystrokesWereBaked: Bool? = nil,
+            keystrokesWereBaked: Bool? = nil
         ) {
             self.version = version
             self.coordinateSpace = coordinateSpace
@@ -206,7 +206,7 @@
             let decodedVersion = try container.decodeIfPresent(Int.self, forKey: .version) ?? 1
             let decodedCoordinateSpace = try container.decodeIfPresent(
                 RecordingCoordinateSpace.self,
-                forKey: .coordinateSpace,
+                forKey: .coordinateSpace
             )
 
             version = decodedVersion
@@ -225,19 +225,19 @@
             audioSourceURL = try container.decodeIfPresent(URL.self, forKey: .audioSourceURL)
             audioSourceTrackRoles = try container.decodeIfPresent(
                 [RecordingAudioSourceTrackRole].self,
-                forKey: .audioSourceTrackRoles,
+                forKey: .audioSourceTrackRoles
             ) ?? []
             audioSourceTracks = try container.decodeIfPresent(
                 [RecordingAudioSourceTrack].self,
-                forKey: .audioSourceTracks,
+                forKey: .audioSourceTracks
             ) ?? []
             videoSourceTracks = try container.decodeIfPresent(
                 [RecordingVideoSourceTrack].self,
-                forKey: .videoSourceTracks,
+                forKey: .videoSourceTracks
             ) ?? []
             cameraOverlayLayout = try container.decodeIfPresent(
                 RecordedCameraOverlayLayout.self,
-                forKey: .cameraOverlayLayout,
+                forKey: .cameraOverlayLayout
             )
             clickHighlightsWereBaked = try container.decodeIfPresent(Bool.self, forKey: .clickHighlightsWereBaked)
             keystrokesWereBaked = try container.decodeIfPresent(Bool.self, forKey: .keystrokesWereBaked)
@@ -332,7 +332,7 @@
                 if let metadata = try loadStoredMetadata(
                     for: videoURL,
                     location: unifiedLocation,
-                    index: &unifiedIndex,
+                    index: &unifiedIndex
                 ) {
                     return metadata.canonicalizedForCurrentVersion()
                 }
@@ -340,7 +340,7 @@
                 if let metadata = try migrateLegacySidecarIfNeeded(
                     for: videoURL,
                     location: unifiedLocation,
-                    index: &unifiedIndex,
+                    index: &unifiedIndex
                 ) {
                     return metadata.canonicalizedForCurrentVersion()
                 }
@@ -360,7 +360,7 @@
             } catch {
                 recordingMetadataLogger
                     .error(
-                        "Failed to load recording metadata for \(videoURL.path, privacy: .public): \(error.localizedDescription, privacy: .public)",
+                        "Failed to load recording metadata for \(videoURL.path, privacy: .public): \(error.localizedDescription, privacy: .public)"
                     )
             }
 
@@ -384,7 +384,8 @@
             upsert(entry: entry, into: &index)
             try saveIndex(index, to: location)
             if let legacyLocation = try storeLocation(layout: .legacy, createIfNeeded: false),
-               legacyLocation.entriesURL != location.entriesURL {
+               legacyLocation.entriesURL != location.entriesURL
+            {
                 var legacyIndex = loadIndex(from: legacyLocation)
                 try? deleteStoredMetadata(for: videoURL, location: legacyLocation, index: &legacyIndex)
             }
@@ -411,7 +412,8 @@
                 unifiedIndex.entries[resolved.index] = entry
                 try saveIndex(unifiedIndex, to: unifiedLocation)
                 if let legacyLocation = try storeLocation(layout: .legacy, createIfNeeded: false),
-                   legacyLocation.entriesURL != unifiedLocation.entriesURL {
+                   legacyLocation.entriesURL != unifiedLocation.entriesURL
+                {
                     var legacyIndex = loadIndex(from: legacyLocation)
                     try? deleteStoredMetadata(for: oldURL, location: legacyLocation, index: &legacyIndex)
                 }
@@ -421,7 +423,8 @@
             }
 
             if let legacyLocation = try storeLocation(layout: .legacy, createIfNeeded: false),
-               legacyLocation.entriesURL != unifiedLocation.entriesURL {
+               legacyLocation.entriesURL != unifiedLocation.entriesURL
+            {
                 var legacyIndex = loadIndex(from: legacyLocation)
                 if let metadata = try loadStoredMetadata(for: oldURL, location: legacyLocation, index: &legacyIndex) {
                     try save(metadata, for: newURL)
@@ -462,7 +465,7 @@
                     }
 
                     switch cleanupDisposition(for: entry, now: now) {
-                    case .keep(let updatedEntry):
+                    case let .keep(updatedEntry):
                         keptEntries.append(updatedEntry)
                     case .delete:
                         metadataURLsToDelete.append(metadataURL)
@@ -484,7 +487,7 @@
 
         private static func storeLocation(
             layout: StoreLayout,
-            createIfNeeded: Bool,
+            createIfNeeded: Bool
         ) throws -> StoreLocation? {
             guard let appSupportURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
                 .first
@@ -506,12 +509,12 @@
                 try FileManager.default.createDirectory(
                     at: entriesURL,
                     withIntermediateDirectories: true,
-                    attributes: nil,
+                    attributes: nil
                 )
                 try FileManager.default.createDirectory(
                     at: audioSourcesURL,
                     withIntermediateDirectories: true,
-                    attributes: nil,
+                    attributes: nil
                 )
             } else if !FileManager.default.fileExists(atPath: rootURL.path) {
                 return nil
@@ -520,7 +523,7 @@
             return StoreLocation(
                 entriesURL: entriesURL,
                 indexURL: indexURL,
-                audioSourcesURL: audioSourcesURL,
+                audioSourcesURL: audioSourcesURL
             )
         }
 
@@ -557,7 +560,8 @@
             }
 
             if let legacy = try storeLocation(layout: .legacy, createIfNeeded: false),
-               !locations.contains(where: { $0.entriesURL == legacy.entriesURL }) {
+               !locations.contains(where: { $0.entriesURL == legacy.entriesURL })
+            {
                 locations.append(legacy)
             }
 
@@ -576,7 +580,7 @@
             } catch {
                 recordingMetadataLogger
                     .error(
-                        "Failed to decode metadata index at \(location.indexURL.path, privacy: .public): \(error.localizedDescription, privacy: .public)",
+                        "Failed to decode metadata index at \(location.indexURL.path, privacy: .public): \(error.localizedDescription, privacy: .public)"
                     )
                 return MetadataIndex()
             }
@@ -592,7 +596,7 @@
         private static func loadStoredMetadata(
             for videoURL: URL,
             location: StoreLocation,
-            index: inout MetadataIndex,
+            index: inout MetadataIndex
         ) throws -> RecordingMetadata? {
             guard let resolved = resolveEntry(for: videoURL, index: index) else {
                 return nil
@@ -619,7 +623,7 @@
         private static func deleteStoredMetadata(
             for videoURL: URL,
             location: StoreLocation,
-            index: inout MetadataIndex,
+            index: inout MetadataIndex
         ) throws {
             guard let resolved = resolveEntry(for: videoURL, index: index) else {
                 return
@@ -634,7 +638,7 @@
 
         private static func resolveEntry(
             for videoURL: URL,
-            index: MetadataIndex,
+            index: MetadataIndex
         ) -> (index: Int, entry: MetadataIndexEntry)? {
             let targetPath = normalizedPath(for: videoURL)
 
@@ -664,7 +668,7 @@
                 id: id,
                 lastKnownPath: normalizedPath(for: videoURL),
                 bookmarkData: videoBookmarkData(for: videoURL),
-                staleSince: nil,
+                staleSince: nil
             )
         }
 
@@ -685,7 +689,7 @@
                 try videoURL.standardizedFileURL.bookmarkData(
                     options: [.minimalBookmark],
                     includingResourceValuesForKeys: nil,
-                    relativeTo: nil,
+                    relativeTo: nil
                 )
             }
         }
@@ -698,7 +702,7 @@
                     resolvingBookmarkData: entry.bookmarkData,
                     options: [.withoutUI, .withoutMounting],
                     relativeTo: nil,
-                    bookmarkDataIsStale: &isStale,
+                    bookmarkDataIsStale: &isStale
                 )
                 .standardizedFileURL
                 .resolvingSymlinksInPath()
@@ -709,10 +713,11 @@
 
         private static func cleanupDisposition(
             for entry: MetadataIndexEntry,
-            now: Date,
+            now: Date
         ) -> CleanupDisposition {
             if let bookmarkedURL = resolveBookmarkedURL(for: entry),
-               FileManager.default.fileExists(atPath: bookmarkedURL.path) {
+               FileManager.default.fileExists(atPath: bookmarkedURL.path)
+            {
                 return .keep(refreshedCleanupEntry(entry, resolvedURL: bookmarkedURL))
             }
 
@@ -736,7 +741,7 @@
 
         private static func refreshedCleanupEntry(
             _ entry: MetadataIndexEntry,
-            resolvedURL: URL,
+            resolvedURL: URL
         ) -> MetadataIndexEntry {
             var refreshed = entry
             refreshed.lastKnownPath = normalizedPath(for: resolvedURL)
@@ -765,7 +770,8 @@
                 let metadata = try? JSONDecoder().decode(RecordingMetadata.self, from: data),
                 let audioSourceURL = metadata.audioSourceURL,
                 isStoredAudioSourceURL(audioSourceURL, location: location),
-                FileManager.default.fileExists(atPath: audioSourceURL.path) {
+                FileManager.default.fileExists(atPath: audioSourceURL.path)
+            {
                 try? FileManager.default.removeItem(at: audioSourceURL)
             }
 
@@ -783,7 +789,7 @@
         private static func migrateLegacySidecarIfNeeded(
             for videoURL: URL,
             location: StoreLocation,
-            index: inout MetadataIndex,
+            index: inout MetadataIndex
         ) throws -> RecordingMetadata? {
             guard let metadata = try loadLegacySidecarMetadata(for: videoURL) else {
                 return nil
@@ -872,7 +878,7 @@
                 videoSourceTracks: videoSourceTracks,
                 cameraOverlayLayout: cameraOverlayLayout,
                 clickHighlightsWereBaked: clickHighlightsWereBaked,
-                keystrokesWereBaked: keystrokesWereBaked,
+                keystrokesWereBaked: keystrokesWereBaked
             )
         }
     }

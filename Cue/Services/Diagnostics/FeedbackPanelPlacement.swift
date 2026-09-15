@@ -29,7 +29,7 @@ enum FeedbackPanelPlacement {
     static func frame(
         in visibleFrame: CGRect,
         panelSize size: CGSize,
-        slot: FeedbackPanelSlot,
+        slot: FeedbackPanelSlot
     ) -> CGRect {
         let x = visibleFrame.midX - size.width / 2
         let y: CGFloat = switch slot {

@@ -31,7 +31,7 @@ final class CaptureFloatingHUDWindow: NSPanel {
             contentRect: .zero,
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
-            defer: false,
+            defer: false
         )
         configureWindow()
     }
@@ -71,7 +71,7 @@ final class CaptureFloatingHUDWindow: NSPanel {
             rect: view.bounds,
             options: [.activeAlways, .mouseEnteredAndExited, .cursorUpdate, .inVisibleRect],
             owner: self,
-            userInfo: nil,
+            userInfo: nil
         )
         view.addTrackingArea(area)
     }
@@ -172,7 +172,7 @@ final class CaptureFloatingHUDWindow: NSPanel {
         let origin = CaptureFloatingToolbarPlacement.frameOrigin(
             toolbarSize: size,
             anchorRect: anchorRect,
-            screenFrame: screenFrame,
+            screenFrame: screenFrame
         )
 
         setFrameOrigin(origin)

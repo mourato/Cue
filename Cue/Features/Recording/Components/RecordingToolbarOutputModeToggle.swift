@@ -34,13 +34,13 @@
             }
             .background(
                 RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
-                    .fill(Color.primary.opacity(isHovered || showPopover ? 0.1 : 0)),
+                    .fill(Color.primary.opacity(isHovered || showPopover ? 0.1 : 0))
             )
             .popover(isPresented: $showPopover, arrowEdge: .bottom) {
                 OutputModePopoverContent(state: state)
             }
             .accessibilityLabel(
-                "\(L10n.RecordingToolbar.outputModeAccessibilityPrefix): \(state.outputMode.displayName)",
+                "\(L10n.RecordingToolbar.outputModeAccessibilityPrefix): \(state.outputMode.displayName)"
             )
             .accessibilityHint(L10n.RecordingToolbar.outputModeHint)
         }
@@ -70,7 +70,7 @@
                         .padding(.vertical, 2)
                         .background(
                             RoundedRectangle(cornerRadius: 4)
-                                .fill(badgeBackgroundColor),
+                                .fill(badgeBackgroundColor)
                         )
                 }
                 .foregroundColor(.primary)
@@ -87,7 +87,7 @@
             }
             .background(
                 RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
-                    .fill(Color.primary.opacity(isHovered && !state.isPreparingToRecord ? 0.08 : 0)),
+                    .fill(Color.primary.opacity(isHovered && !state.isPreparingToRecord ? 0.08 : 0))
             )
             .opacity(state.isPreparingToRecord ? 0.65 : 1)
             .accessibilityLabel(L10n.RecordingToolbar.startRecordingAs(state.outputMode.displayName))
@@ -113,7 +113,7 @@
                 ForEach(RecordingOutputMode.allCases, id: \.self) { mode in
                     OutputModeRow(
                         mode: mode,
-                        isSelected: state.outputMode == mode,
+                        isSelected: state.outputMode == mode
                     ) {
                         state.outputMode = mode
                         state.onOutputModeChanged?(mode)

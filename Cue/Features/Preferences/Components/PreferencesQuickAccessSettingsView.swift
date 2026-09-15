@@ -21,7 +21,7 @@ struct QuickAccessSettingsView: View {
 
             Section(L10n.PreferencesQuickAccess.positionSection) {
                 SettingRow(
-                    title: L10n.PreferencesQuickAccess.screenEdgeTitle,
+                    title: L10n.PreferencesQuickAccess.screenEdgeTitle
                 ) {
                     Picker("", selection: $positionIsLeft) {
                         Text(L10n.PreferencesQuickAccess.left).tag(true)
@@ -38,30 +38,30 @@ struct QuickAccessSettingsView: View {
 
             Section(L10n.PreferencesQuickAccess.appearanceSection) {
                 SettingRow(
-                    title: L10n.PreferencesQuickAccess.overlaySizeTitle,
+                    title: L10n.PreferencesQuickAccess.overlaySizeTitle
                 ) {
                     scalePicker(
                         selection: $manager.overlayScale,
                         range: Self.overlayScaleRange,
-                        accessibilityLabel: L10n.PreferencesQuickAccess.overlaySizeTitle,
+                        accessibilityLabel: L10n.PreferencesQuickAccess.overlaySizeTitle
                     )
                 }
 
                 SettingRow(
                     title: L10n.PreferencesQuickAccess.cornerButtonSizeTitle,
-                    description: L10n.PreferencesQuickAccess.cornerButtonSizeDescription,
+                    description: L10n.PreferencesQuickAccess.cornerButtonSizeDescription
                 ) {
                     scalePicker(
                         selection: $manager.cornerButtonScale,
                         range: QuickAccessCornerButtonMetrics.scaleRange,
-                        accessibilityLabel: L10n.PreferencesQuickAccess.cornerButtonSizeTitle,
+                        accessibilityLabel: L10n.PreferencesQuickAccess.cornerButtonSizeTitle
                     )
                 }
             }
 
             Section(L10n.PreferencesQuickAccess.behaviorsSection) {
                 SettingRow(
-                    title: L10n.PreferencesQuickAccess.floatingOverlayTitle,
+                    title: L10n.PreferencesQuickAccess.floatingOverlayTitle
                 ) {
                     Toggle("", isOn: $manager.isEnabled)
                         .labelsHidden()
@@ -76,7 +76,7 @@ struct QuickAccessSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesQuickAccess.hideCardWhenWindowOpenTitle,
-                    description: L10n.PreferencesQuickAccess.hideCardWhenWindowOpenDescription,
+                    description: L10n.PreferencesQuickAccess.hideCardWhenWindowOpenDescription
                 ) {
                     Toggle("", isOn: $manager.hideCardWhenWindowOpen)
                         .labelsHidden()
@@ -84,7 +84,7 @@ struct QuickAccessSettingsView: View {
                 }
 
                 SettingRow(
-                    title: L10n.PreferencesQuickAccess.animationStyleTitle,
+                    title: L10n.PreferencesQuickAccess.animationStyleTitle
                 ) {
                     Picker("", selection: $manager.animationStyle) {
                         ForEach(QuickAccessAnimationStyle.allCases) { style in
@@ -112,7 +112,7 @@ struct QuickAccessSettingsView: View {
                             step: 1,
                             accessibilityTitle: L10n.PreferencesQuickAccess.closeAfter,
                             unit: "s",
-                            valueLabel: { "\(Int($0))s" },
+                            valueLabel: { "\(Int($0))s" }
                         )
                     }
                     .padding(.vertical, 4)
@@ -120,7 +120,7 @@ struct QuickAccessSettingsView: View {
 
                 if manager.autoDismissEnabled {
                     SettingRow(
-                        title: L10n.PreferencesQuickAccess.pauseOnHoverTitle,
+                        title: L10n.PreferencesQuickAccess.pauseOnHoverTitle
                     ) {
                         Toggle("", isOn: $manager.pauseCountdownOnHover)
                             .labelsHidden()
@@ -129,7 +129,7 @@ struct QuickAccessSettingsView: View {
                 }
 
                 SettingRow(
-                    title: L10n.PreferencesQuickAccess.dragAndDropTitle,
+                    title: L10n.PreferencesQuickAccess.dragAndDropTitle
                 ) {
                     Toggle("", isOn: $manager.dragDropEnabled)
                         .labelsHidden()
@@ -138,7 +138,7 @@ struct QuickAccessSettingsView: View {
 
                 SettingRow(
                     title: L10n.PreferencesQuickAccess.twoFingerSwipeTitle,
-                    description: L10n.PreferencesQuickAccess.twoFingerSwipeDescription,
+                    description: L10n.PreferencesQuickAccess.twoFingerSwipeDescription
                 ) {
                     Toggle("", isOn: $manager.twoFingerSwipeToDismissEnabled)
                         .labelsHidden()
@@ -148,7 +148,7 @@ struct QuickAccessSettingsView: View {
                 if manager.twoFingerSwipeToDismissEnabled {
                     SettingRow(
                         title: L10n.PreferencesQuickAccess.swipeSensitivityTitle,
-                        description: L10n.PreferencesQuickAccess.swipeSensitivityDescription,
+                        description: L10n.PreferencesQuickAccess.swipeSensitivityDescription
                     ) {
                         PreferencesNumericPicker(
                             value: $manager.swipeSensitivity,
@@ -158,7 +158,7 @@ struct QuickAccessSettingsView: View {
                             accessibilityTitle: L10n.PreferencesQuickAccess.swipeSensitivityTitle,
                             unit: "%",
                             customInputScale: 100,
-                            valueLabel: { "\(Int($0 * 100))%" },
+                            valueLabel: { "\(Int($0 * 100))%" }
                         )
                     }
                 }
@@ -170,8 +170,8 @@ struct QuickAccessSettingsView: View {
                         L10n.PreferencesQuickAccess.trackpadSwipeModeTitle,
                         selection: Binding(
                             get: { trackpadSwipeModeStore.mode },
-                            set: { trackpadSwipeModeStore.setMode($0) },
-                        ),
+                            set: { trackpadSwipeModeStore.setMode($0) }
+                        )
                     ) {
                         ForEach(QuickAccessTrackpadSwipeMode.allCases) { mode in
                             Text(mode.displayName).tag(mode)
@@ -199,11 +199,11 @@ struct QuickAccessSettingsView: View {
         selection: Binding<Double>,
         range: ClosedRange<Double>,
         step: Double = 0.25,
-        accessibilityLabel: String,
+        accessibilityLabel: String
     ) -> some View {
         let normalizedSelection = Binding(
             get: { SteppedValue.snapped(selection.wrappedValue, by: step, in: range) },
-            set: { selection.wrappedValue = $0 },
+            set: { selection.wrappedValue = $0 }
         )
 
         return Picker("", selection: normalizedSelection) {

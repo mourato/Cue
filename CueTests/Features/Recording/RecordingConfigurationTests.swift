@@ -28,11 +28,11 @@
             XCTAssertTrue(RecordingToolbarPreferences.showCameraPreviewDuringRecording(defaults: defaults))
             XCTAssertEqual(
                 RecordingToolbarPreferences.cameraDeviceID(defaults: defaults),
-                RecordingCameraDeviceProvider.systemDefaultID,
+                RecordingCameraDeviceProvider.systemDefaultID
             )
             XCTAssertEqual(
                 RecordingToolbarPreferences.microphoneDeviceID(defaults: defaults),
-                RecordingMicrophoneDevice.systemDefaultID,
+                RecordingMicrophoneDevice.systemDefaultID
             )
             XCTAssertEqual(RecordingToolbarPreferences.outputMode(defaults: defaults), .video)
             XCTAssertTrue(RecordingToolbarPreferences.showCursor(defaults: defaults))
@@ -147,13 +147,13 @@
             let origin = RecordingToolbarPlacement.frameOrigin(
                 toolbarSize: toolbarSize,
                 anchorRect: selectionRect,
-                screenFrame: screenFrame,
+                screenFrame: screenFrame
             )
 
             XCTAssertEqual(origin.x, selectionRect.midX - toolbarSize.width / 2)
             XCTAssertEqual(
                 origin.y,
-                selectionRect.minY - toolbarSize.height - RecordingToolbarPlacement.outsideSelectionGap,
+                selectionRect.minY - toolbarSize.height - RecordingToolbarPlacement.outsideSelectionGap
             )
         }
 
@@ -165,12 +165,12 @@
             let origin = RecordingToolbarPlacement.frameOrigin(
                 toolbarSize: toolbarSize,
                 anchorRect: selectionRect,
-                screenFrame: screenFrame,
+                screenFrame: screenFrame
             )
 
             XCTAssertEqual(
                 origin.y,
-                selectionRect.minY + RecordingToolbarPlacement.insideSelectionBottomInset,
+                selectionRect.minY + RecordingToolbarPlacement.insideSelectionBottomInset
             )
         }
 
@@ -182,12 +182,12 @@
             let origin = RecordingToolbarPlacement.frameOrigin(
                 toolbarSize: toolbarSize,
                 anchorRect: selectionRect,
-                screenFrame: screenFrame,
+                screenFrame: screenFrame
             )
 
             XCTAssertEqual(
                 origin.y,
-                screenFrame.maxY - toolbarSize.height - RecordingToolbarPlacement.screenEdgeInset,
+                screenFrame.maxY - toolbarSize.height - RecordingToolbarPlacement.screenEdgeInset
             )
         }
 
@@ -214,7 +214,7 @@
             let color = NSColor(calibratedRed: 0.9, green: 0.2, blue: 0.4, alpha: 1.0)
             let colorData = try NSKeyedArchiver.archivedData(
                 withRootObject: color,
-                requiringSecureCoding: true,
+                requiringSecureCoding: true
             )
             defaults.set(CGFloat(100), forKey: PreferencesKeys.mouseHighlightSize)
             defaults.set(1.2, forKey: PreferencesKeys.mouseHighlightAnimationDuration)

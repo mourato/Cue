@@ -13,7 +13,7 @@ enum ScrollingCaptureCommitFrameNormalizer {
         logicalSize: CGSize,
         sourceScaleFactor: CGFloat,
         minimumOutputScaleFactor: CGFloat,
-        colorSpaceName: CFString?,
+        colorSpaceName: CFString?
     ) -> CGImage? {
         let outputScaleFactor = max(sourceScaleFactor, minimumOutputScaleFactor)
         guard outputScaleFactor.isFinite,
@@ -37,7 +37,7 @@ enum ScrollingCaptureCommitFrameNormalizer {
             logicalSize: logicalSize,
             sourceScaleFactor: sourceScaleFactor,
             minimumOutputScaleFactor: minimumOutputScaleFactor,
-            colorSpaceName: colorSpaceName,
+            colorSpaceName: colorSpaceName
         ).image
         guard normalized.width == targetWidth, normalized.height == targetHeight else {
             return nil

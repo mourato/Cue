@@ -20,8 +20,8 @@
         var displayName: String {
             switch self {
             case .persist: L10n.RecordingAnnotation.persist
-            case .timeBased(let s): "\(Int(s))s"
-            case .countBased(let c): L10n.RecordingAnnotation.lastCount(c)
+            case let .timeBased(s): "\(Int(s))s"
+            case let .countBased(c): L10n.RecordingAnnotation.lastCount(c)
             }
         }
     }
@@ -64,7 +64,7 @@
         private var cleanupTimer: Timer?
 
         static let availableTools: [AnnotationToolType] = [
-            .selection, .rectangle, .circle, .arrow, .line, .pencil, .highlighter,
+            .selection, .rectangle, .circle, .arrow, .line, .pencil, .highlighter
         ]
 
         static let clearModePresets: [AnnotationClearMode] = [
@@ -74,7 +74,7 @@
             .timeBased(seconds: 10),
             .countBased(count: 3),
             .countBased(count: 5),
-            .countBased(count: 10),
+            .countBased(count: 10)
         ]
 
         func clearMode(for tool: AnnotationToolType) -> AnnotationClearMode {
@@ -88,7 +88,7 @@
                 id: item.id,
                 item: item,
                 createdAt: Date(),
-                createdByTool: tool,
+                createdByTool: tool
             )
             annotations.append(entry)
             enforceCountLimit(for: tool)
@@ -129,7 +129,7 @@
 
             annotations = annotations.compactMap { entry in
                 let mode = clearMode(for: entry.createdByTool)
-                guard case .timeBased(let seconds) = mode else { return entry }
+                guard case let .timeBased(seconds) = mode else { return entry }
 
                 let elapsed = now.timeIntervalSince(entry.createdAt)
                 let fadeStart = seconds - 0.5 // Start fading 0.5s before removal
@@ -152,7 +152,7 @@
         }
 
         private func enforceCountLimit(for tool: AnnotationToolType) {
-            guard case .countBased(let maxCount) = clearMode(for: tool) else { return }
+            guard case let .countBased(maxCount) = clearMode(for: tool) else { return }
 
             let toolEntries = annotations.filter { $0.createdByTool == tool }
             guard toolEntries.count > maxCount else { return }

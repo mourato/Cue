@@ -16,7 +16,7 @@ final class CueNoteRendererTests: XCTestCase {
             isPlanar: false,
             colorSpaceName: .deviceRGB,
             bytesPerRow: 0,
-            bitsPerPixel: 0,
+            bitsPerPixel: 0
         ) else {
             XCTFail("Expected bitmap representation")
             return
@@ -36,7 +36,7 @@ final class CueNoteRendererTests: XCTestCase {
             color: .red,
             displayNumber: 1,
             isSelected: false,
-            in: graphicsContext.cgContext,
+            in: graphicsContext.cgContext
         )
         NSGraphicsContext.restoreGraphicsState()
 

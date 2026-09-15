@@ -57,13 +57,13 @@ struct CueAreaStylePreviewButton: View {
                 .padding(.vertical, 5)
                 .background(
                     RoundedRectangle(cornerRadius: 7, style: .continuous)
-                        .fill(isSelected ? Color.accentColor.opacity(0.16) : Color.primary.opacity(0.06)),
+                        .fill(isSelected ? Color.accentColor.opacity(0.16) : Color.primary.opacity(0.06))
                 )
                 .overlay {
                     RoundedRectangle(cornerRadius: 7, style: .continuous)
                         .stroke(
                             isSelected ? Color.accentColor.opacity(0.55) : Color.primary.opacity(0.12),
-                            lineWidth: 1,
+                            lineWidth: 1
                         )
                 }
         }

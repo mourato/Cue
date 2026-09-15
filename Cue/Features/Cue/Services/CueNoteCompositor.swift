@@ -6,13 +6,13 @@ enum CueNoteCompositor {
         image: NSImage,
         notes: [CueVisualNote],
         includeNotes: Bool,
-        panelSide: CueNotesPanelSide = .default,
+        panelSide: CueNotesPanelSide = .default
     ) -> NSImage {
         guard includeNotes else { return image }
         return CueNotesComposer.compose(
             baseImage: image,
             notes: notes,
-            panelSide: panelSide,
+            panelSide: panelSide
         )
     }
 
@@ -21,13 +21,13 @@ enum CueNoteCompositor {
         notes: [CueVisualNote],
         includeNotes: Bool,
         maxDimension: CGFloat,
-        panelSide: CueNotesPanelSide = .default,
+        panelSide: CueNotesPanelSide = .default
     ) -> NSImage {
         let base = compose(
             image: image,
             notes: notes,
             includeNotes: includeNotes,
-            panelSide: panelSide,
+            panelSide: panelSide
         )
         return downscaleIfNeeded(image: base, maxDimension: maxDimension)
     }

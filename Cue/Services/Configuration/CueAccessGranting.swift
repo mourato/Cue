@@ -18,7 +18,7 @@ enum CueConfigurationAccessGrantError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .unexpectedDirectory(let expectedPath):
+        case let .unexpectedDirectory(expectedPath):
             L10n.PreferencesAdvanced.configDirectoryMismatch(expectedPath)
         }
     }
@@ -29,13 +29,13 @@ enum CueConfigurationAccessGranting {
     static func grantSuggestedConfigAccess(
         title: String? = nil,
         message: String? = nil,
-        prompt: String? = nil,
+        prompt: String? = nil
     ) throws -> CueConfigurationAccessGrantResult? {
         try grantSuggestedConfigAccess(
             service: .shared,
             title: title,
             message: message,
-            prompt: prompt,
+            prompt: prompt
         )
     }
 
@@ -43,17 +43,17 @@ enum CueConfigurationAccessGranting {
         service: CueConfigurationService,
         title: String? = nil,
         message: String? = nil,
-        prompt: String? = nil,
+        prompt: String? = nil
     ) throws -> CueConfigurationAccessGrantResult? {
         try? FileManager.default.createDirectory(
             at: service.suggestedConfigDirectoryURL,
-            withIntermediateDirectories: true,
+            withIntermediateDirectories: true
         )
 
         let panel = NSOpenPanel()
         panel.title = title ?? L10n.PreferencesAdvanced.configDirectoryPanelTitle
         panel.message = message ?? L10n.PreferencesAdvanced.configDirectoryPanelMessage(
-            service.suggestedConfigDirectoryURL.path,
+            service.suggestedConfigDirectoryURL.path
         )
         panel.prompt = prompt ?? L10n.PreferencesAdvanced.configDirectoryPanelPrompt
         panel.directoryURL = initialDirectoryURL(for: service)
@@ -82,7 +82,7 @@ enum CueConfigurationAccessGranting {
 
         return CueConfigurationAccessGrantResult(
             configURL: configURL,
-            autoImportResult: autoImportResult,
+            autoImportResult: autoImportResult
         )
     }
 
@@ -103,7 +103,7 @@ enum CueConfigurationAccessGranting {
 
     private static func resolvedConfigDirectory(
         from selectedURL: URL,
-        service: CueConfigurationService,
+        service: CueConfigurationService
     ) throws -> URL {
         if service.isSuggestedConfigDirectory(selectedURL) {
             return selectedURL
@@ -118,7 +118,7 @@ enum CueConfigurationAccessGranting {
         }
 
         throw CueConfigurationAccessGrantError.unexpectedDirectory(
-            expectedPath: service.suggestedConfigDirectoryURL.path,
+            expectedPath: service.suggestedConfigDirectoryURL.path
         )
     }
 }

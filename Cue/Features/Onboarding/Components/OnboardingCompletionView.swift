@@ -37,19 +37,19 @@ struct CompletionView: View {
                 CompletionHintRow(
                     icon: "menubar.arrow.up.rectangle",
                     title: completionMenuBarTitle,
-                    description: completionMenuBarHint,
+                    description: completionMenuBarHint
                 )
 
                 CompletionHintRow(
                     icon: "keyboard",
                     title: preferencesShortcutsTabTitle,
-                    description: completionShortcutsHint,
+                    description: completionShortcutsHint
                 )
 
                 CompletionHintRow(
                     icon: "gearshape",
                     title: commonPreferencesTitle,
-                    description: completionPreferencesHint,
+                    description: completionPreferencesHint
                 )
             }
             .frame(maxWidth: 380)
@@ -87,7 +87,7 @@ struct CompletionView: View {
         onboardingLocalization.string(
             "onboarding.completion.title",
             defaultValue: "You're all set!",
-            comment: "Onboarding completion title",
+            comment: "Onboarding completion title"
         )
     }
 
@@ -95,7 +95,7 @@ struct CompletionView: View {
         onboardingLocalization.string(
             "onboarding.completion.description",
             defaultValue: "Cue is ready. Access it from the menu bar or use your keyboard shortcuts.",
-            comment: "Onboarding completion description",
+            comment: "Onboarding completion description"
         )
     }
 
@@ -103,7 +103,7 @@ struct CompletionView: View {
         onboardingLocalization.string(
             "onboarding.completion.menu-bar",
             defaultValue: "Menu Bar",
-            comment: "Completion card title",
+            comment: "Completion card title"
         )
     }
 
@@ -111,7 +111,7 @@ struct CompletionView: View {
         onboardingLocalization.string(
             "onboarding.completion.menu-bar-hint",
             defaultValue: "Look for the camera icon in your menu bar",
-            comment: "Completion card description",
+            comment: "Completion card description"
         )
     }
 
@@ -119,7 +119,7 @@ struct CompletionView: View {
         onboardingLocalization.string(
             "preferences.tab.shortcuts",
             defaultValue: "Shortcuts",
-            comment: "Preferences tab title",
+            comment: "Preferences tab title"
         )
     }
 
@@ -127,7 +127,7 @@ struct CompletionView: View {
         onboardingLocalization.string(
             "onboarding.completion.shortcuts-hint",
             defaultValue: "Use ⇧⌘3, ⇧⌘4, ⇧⌘5 to capture anytime",
-            comment: "Completion card description",
+            comment: "Completion card description"
         )
     }
 
@@ -135,7 +135,7 @@ struct CompletionView: View {
         onboardingLocalization.string(
             "common.preferences",
             defaultValue: "Preferences",
-            comment: "Generic preferences title",
+            comment: "Generic preferences title"
         )
     }
 
@@ -143,7 +143,7 @@ struct CompletionView: View {
         onboardingLocalization.string(
             "onboarding.completion.preferences-hint",
             defaultValue: "Customize shortcuts, output format, and more",
-            comment: "Completion card description",
+            comment: "Completion card description"
         )
     }
 
@@ -151,7 +151,7 @@ struct CompletionView: View {
         onboardingLocalization.string(
             "onboarding.completion.open-preferences",
             defaultValue: "Open Preferences",
-            comment: "Secondary action on onboarding completion screen",
+            comment: "Secondary action on onboarding completion screen"
         )
     }
 
@@ -159,7 +159,7 @@ struct CompletionView: View {
         onboardingLocalization.string(
             "onboarding.completion.get-started",
             defaultValue: "Get Started",
-            comment: "Primary action on onboarding completion screen",
+            comment: "Primary action on onboarding completion screen"
         )
     }
 
@@ -167,7 +167,7 @@ struct CompletionView: View {
         onboardingLocalization.string(
             "splash.press-enter",
             defaultValue: "Press Enter ↵",
-            comment: "Hint text under buttons on splash and completion screens",
+            comment: "Hint text under buttons on splash and completion screens"
         )
     }
 }
@@ -202,18 +202,18 @@ private struct CompletionHintRow: View {
         .padding(.vertical, 10)
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .fill(VSDesignSystem.Colors.cardFill),
+                .fill(VSDesignSystem.Colors.cardFill)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .stroke(VSDesignSystem.Colors.cardStroke, lineWidth: 1),
+                .stroke(VSDesignSystem.Colors.cardStroke, lineWidth: 1)
         )
     }
 }
 
 #Preview {
     CompletionView(
-        onComplete: {},
+        onComplete: {}
     )
     .environmentObject(OnboardingLocalizationController())
     .frame(width: 500, height: 520)

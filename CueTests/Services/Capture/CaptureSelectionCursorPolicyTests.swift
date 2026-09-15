@@ -11,18 +11,18 @@ final class CaptureSelectionCursorPolicyTests: XCTestCase {
     func testPolicy_hudZoneAlwaysArrow() {
         XCTAssertEqual(
             CaptureSelectionCursorPolicy.cursorKind(zone: .hud, phase: .initialAreaSelection),
-            .arrow,
+            .arrow
         )
         XCTAssertEqual(
             CaptureSelectionCursorPolicy.cursorKind(zone: .hud, phase: .confirmedRefinement),
-            .arrow,
+            .arrow
         )
     }
 
     func testPolicy_resizeHandleMapsToResizeCursor() {
         XCTAssertEqual(
             CaptureSelectionCursorPolicy.cursorKind(zone: .resizeHandle(.left), phase: .confirmedRefinement),
-            .resize(.left),
+            .resize(.left)
         )
     }
 
@@ -30,12 +30,12 @@ final class CaptureSelectionCursorPolicyTests: XCTestCase {
         for handle in CaptureSelectionResizeHandle.allCases {
             let expected = NSCursor.frameResize(
                 position: CaptureSelectionResizeCursor.position(for: handle),
-                directions: .all,
+                directions: .all
             )
             XCTAssertEqual(
                 CaptureSelectionResizeCursor.cursor(for: handle),
                 expected,
-                "Handle \(handle) must use NSCursor.frameResize",
+                "Handle \(handle) must use NSCursor.frameResize"
             )
         }
     }
@@ -43,7 +43,7 @@ final class CaptureSelectionCursorPolicyTests: XCTestCase {
     func testPolicy_outsideInitialSelectionUsesCrosshair() {
         XCTAssertEqual(
             CaptureSelectionCursorPolicy.cursorKind(zone: .outside, phase: .initialAreaSelection),
-            .crosshair,
+            .crosshair
         )
     }
 

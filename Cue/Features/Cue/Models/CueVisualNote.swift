@@ -31,7 +31,7 @@ nonisolated struct CueVisualNote: Codable, Equatable, Identifiable {
         areaStyle: CueAreaStyle = .outline,
         areaStrokeWidth: CGFloat = defaultAreaStrokeWidth,
         pinControlValue: CGFloat = legacyDefaultPinControlValue,
-        creationOrder: Int,
+        creationOrder: Int
     ) {
         self.id = id
         self.text = text
@@ -51,7 +51,7 @@ nonisolated struct CueVisualNote: Codable, Equatable, Identifiable {
         color = try container.decode(RGBAColor.self, forKey: .color)
         areaStyle = try container.decodeIfPresent(CueAreaStyle.self, forKey: .areaStyle) ?? .outline
         areaStrokeWidth = try Self.clampedAreaStrokeWidth(
-            container.decodeIfPresent(CGFloat.self, forKey: .areaStrokeWidth) ?? Self.defaultAreaStrokeWidth,
+            container.decodeIfPresent(CGFloat.self, forKey: .areaStrokeWidth) ?? Self.defaultAreaStrokeWidth
         )
         pinControlValue = try container.decodeIfPresent(CGFloat.self, forKey: .pinControlValue)
             ?? Self.legacyDefaultPinControlValue

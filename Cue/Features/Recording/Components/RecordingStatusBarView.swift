@@ -59,13 +59,13 @@
                         .opacity(recorder.isPaused ? 0.4 : (reduceMotion ? 1 : indicatorOpacity))
                         .animation(
                             reduceMotion ? nil : .easeInOut(duration: 0.8).repeatForever(autoreverses: true),
-                            value: indicatorOpacity,
+                            value: indicatorOpacity
                         )
                         .onAppear { indicatorOpacity = reduceMotion ? 1 : 0.3 }
                         .accessibilityLabel(
                             recorder.isPaused
                                 ? L10n.RecordingToolbar.recordingPaused
-                                : L10n.RecordingToolbar.recordingInProgress,
+                                : L10n.RecordingToolbar.recordingInProgress
                         )
 
                     Text(recorder.formattedDuration)
@@ -82,7 +82,7 @@
                     action: { recorder.togglePause() },
                     accessibilityLabel: recorder.isPaused
                         ? L10n.RecordingToolbar.resumeRecording
-                        : L10n.RecordingToolbar.pauseRecording,
+                        : L10n.RecordingToolbar.pauseRecording
                 )
 
                 // Annotate toggle button
@@ -93,15 +93,15 @@
                     action: { annotationState.isAnnotationEnabled.toggle() },
                     accessibilityLabel: annotationState.isAnnotationEnabled
                         ? L10n.RecordingToolbar.disableAnnotations
-                        : L10n.RecordingToolbar.enableAnnotations,
+                        : L10n.RecordingToolbar.enableAnnotations
                 )
                 .background(
                     GeometryReader { geo in
                         Color.clear.preference(
                             key: AnnotateButtonCenterXKey.self,
-                            value: geo.frame(in: .named("statusBar")).midX,
+                            value: geo.frame(in: .named("statusBar")).midX
                         )
-                    },
+                    }
                 )
 
                 RecordingToolbarDivider()
@@ -110,14 +110,14 @@
                 ToolbarIconButton(
                     systemName: "arrow.counterclockwise",
                     action: onRestart,
-                    accessibilityLabel: L10n.RecordingToolbar.restartRecording,
+                    accessibilityLabel: L10n.RecordingToolbar.restartRecording
                 )
 
                 // Delete button
                 ToolbarIconButton(
                     systemName: "trash",
                     action: onDelete,
-                    accessibilityLabel: L10n.RecordingToolbar.deleteRecording,
+                    accessibilityLabel: L10n.RecordingToolbar.deleteRecording
                 )
 
                 RecordingToolbarDivider()
@@ -140,7 +140,7 @@
                 if shouldShowWaveform {
                     RecordingWaveformView(
                         level: audioLevelMeter.level,
-                        isActive: recorder.isRecording && !recorder.isPaused,
+                        isActive: recorder.isRecording && !recorder.isPaused
                     )
                     .opacity(recorder.isPaused ? 0.35 : 1.0)
                     .allowsHitTesting(false)
@@ -163,7 +163,7 @@
             state: RecordingToolbarState(),
             onDelete: {},
             onRestart: {},
-            onStop: {},
+            onStop: {}
         )
         .padding()
     }

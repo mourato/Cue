@@ -37,14 +37,14 @@ final class SystemScreenshotShortcutManager {
             case .copyAreaToClipboard:
                 ShortcutConfig(
                     keyCode: UInt32(kVK_ANSI_4),
-                    modifiers: UInt32(cmdKey | shiftKey | controlKey),
+                    modifiers: UInt32(cmdKey | shiftKey | controlKey)
                 )
             case .saveScreenToFile:
                 .defaultFullscreen
             case .copyScreenToClipboard:
                 ShortcutConfig(
                     keyCode: UInt32(kVK_ANSI_3),
-                    modifiers: UInt32(cmdKey | shiftKey | controlKey),
+                    modifiers: UInt32(cmdKey | shiftKey | controlKey)
                 )
             case .screenshotOptions:
                 .defaultRecording
@@ -89,7 +89,7 @@ final class SystemScreenshotShortcutManager {
             // Can't read — assume NO conflicts (don't nag user if we can't verify)
             DiagnosticLogger.shared.log(
                 .warning, .action,
-                "Cannot read com.apple.symbolichotkeys — assuming no conflicts",
+                "Cannot read com.apple.symbolichotkeys — assuming no conflicts"
             )
             return false
         }
@@ -105,7 +105,7 @@ final class SystemScreenshotShortcutManager {
 
         DiagnosticLogger.shared.log(
             .info, .action,
-            "No conflicting system screenshot shortcuts detected",
+            "No conflicting system screenshot shortcuts detected"
         )
         return false
     }
@@ -130,7 +130,7 @@ final class SystemScreenshotShortcutManager {
         // Works on macOS 13+ (Ventura and later)
         let urls = [
             "x-apple.systempreferences:com.apple.Keyboard-Settings.extension?Screenshots",
-            "x-apple.systempreferences:com.apple.preference.keyboard?Shortcuts",
+            "x-apple.systempreferences:com.apple.preference.keyboard?Shortcuts"
         ]
 
         for urlString in urls {
@@ -138,7 +138,7 @@ final class SystemScreenshotShortcutManager {
                 NSWorkspace.shared.open(url)
                 DiagnosticLogger.shared.log(
                     .info, .action,
-                    "Opened System Settings: \(urlString)",
+                    "Opened System Settings: \(urlString)"
                 )
                 return
             }
@@ -156,10 +156,11 @@ final class SystemScreenshotShortcutManager {
     private func readHotkeys() -> [String: Any]? {
         // Method 1: UserDefaults(suiteName:) — works with shared-preference entitlement
         if let prefs = UserDefaults(suiteName: "com.apple.symbolichotkeys"),
-           let hotkeys = prefs.dictionary(forKey: "AppleSymbolicHotKeys") {
+           let hotkeys = prefs.dictionary(forKey: "AppleSymbolicHotKeys")
+        {
             DiagnosticLogger.shared.log(
                 .info, .action,
-                "Read \(hotkeys.count) symbolic hotkeys via UserDefaults",
+                "Read \(hotkeys.count) symbolic hotkeys via UserDefaults"
             )
             return hotkeys
         }
@@ -167,12 +168,12 @@ final class SystemScreenshotShortcutManager {
         // Method 2: CFPreferences API — lower level, may work where UserDefaults doesn't
         if let value = CFPreferencesCopyAppValue(
             "AppleSymbolicHotKeys" as CFString,
-            "com.apple.symbolichotkeys" as CFString,
+            "com.apple.symbolichotkeys" as CFString
         ) {
             if let hotkeys = value as? [String: Any] {
                 DiagnosticLogger.shared.log(
                     .info, .action,
-                    "Read \(hotkeys.count) symbolic hotkeys via CFPreferences",
+                    "Read \(hotkeys.count) symbolic hotkeys via CFPreferences"
                 )
                 return hotkeys
             }
@@ -180,7 +181,7 @@ final class SystemScreenshotShortcutManager {
 
         DiagnosticLogger.shared.log(
             .warning, .action,
-            "All methods failed to read com.apple.symbolichotkeys",
+            "All methods failed to read com.apple.symbolichotkeys"
         )
         return nil
     }
@@ -216,13 +217,14 @@ final class SystemScreenshotShortcutManager {
               let parameters = value["parameters"] as? [Any],
               parameters.count >= 3,
               let keyCode = integerValue(parameters[1]),
-              let flags = integerValue(parameters[2]) else {
+              let flags = integerValue(parameters[2])
+        else {
             return nil
         }
 
         return ShortcutConfig(
             keyCode: UInt32(keyCode),
-            modifiers: carbonModifiers(fromSystemFlags: UInt64(flags)),
+            modifiers: carbonModifiers(fromSystemFlags: UInt64(flags))
         )
     }
 
@@ -265,11 +267,12 @@ final class SystemScreenshotShortcutManager {
     private func matchingSystemHotkeys(
         for kind: GlobalShortcutKind,
         shortcut: ShortcutConfig,
-        in hotkeys: [String: Any],
+        in hotkeys: [String: Any]
     ) -> [SystemHotkeyID] {
         relevantSystemHotkeys(for: kind).filter { hotkeyID in
             guard isHotkeyEnabled(id: hotkeyID.rawValue, in: hotkeys),
-                  let systemShortcut = shortcutConfig(for: hotkeyID, in: hotkeys) else {
+                  let systemShortcut = shortcutConfig(for: hotkeyID, in: hotkeys)
+            else {
                 return false
             }
 
@@ -277,7 +280,7 @@ final class SystemScreenshotShortcutManager {
             if matches {
                 DiagnosticLogger.shared.log(
                     .info, .action,
-                    "System screenshot hotkey \(hotkeyID.rawValue) matches Notinhas \(kind.rawValue) shortcut",
+                    "System screenshot hotkey \(hotkeyID.rawValue) matches Notinhas \(kind.rawValue) shortcut"
                 )
             }
             return matches

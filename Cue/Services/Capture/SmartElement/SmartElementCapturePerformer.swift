@@ -23,7 +23,7 @@ final class SmartElementCapturePerformer: SmartElementCapturePerforming {
             DiagnosticLogger.shared.log(
                 .warning,
                 .capture,
-                "Smart element capture skipped: screen capture view model unavailable",
+                "Smart element capture skipped: screen capture view model unavailable"
             )
             return
         }

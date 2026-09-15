@@ -50,11 +50,11 @@ struct QuickAccessIconButton: View {
                 .contentShape(Circle())
                 .background(
                     Circle()
-                        .fill(buttonBackgroundColor),
+                        .fill(buttonBackgroundColor)
                 )
                 .scaleEffect(FeedbackMotionPolicy.quickAccessPressScale(
                     reduceMotion: reduceMotion,
-                    isPressed: isPressed,
+                    isPressed: isPressed
                 ))
         }
         .buttonStyle(.plain)
@@ -120,7 +120,7 @@ struct QuickAccessCornerButtonMetrics {
     static func resolvedScale(cornerButtonScale: CGFloat, overlayScale: CGFloat) -> CGFloat {
         let preferred = max(
             CGFloat(scaleRange.lowerBound),
-            min(cornerButtonScale, CGFloat(scaleRange.upperBound)),
+            min(cornerButtonScale, CGFloat(scaleRange.upperBound))
         )
         return min(preferred, maximumScale(forOverlayScale: overlayScale))
     }

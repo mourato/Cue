@@ -23,7 +23,7 @@ struct QuickAccessActionCustomizationView: View {
                     cornerButtonScale: CGFloat(manager.cornerButtonScale),
                     actionStore: actionStore,
                     swipeActionStore: swipeActionStore,
-                    isReordering: isReorderingActions,
+                    isReordering: isReorderingActions
                 )
                 Spacer()
             }
@@ -43,7 +43,7 @@ struct QuickAccessActionCustomizationView: View {
                     isEnabled: { action in
                         Binding(
                             get: { actionStore.isEnabled(action) },
-                            set: { actionStore.setEnabled(action, enabled: $0) },
+                            set: { actionStore.setEnabled(action, enabled: $0) }
                         )
                     },
                     canReorder: { _ in true },
@@ -76,7 +76,7 @@ struct QuickAccessActionCustomizationView: View {
                     onReorderStateChanged: { isReorderingActions = $0 },
                     bodyDragPreview: { action in
                         QuickAccessActionDragPreview(action: action)
-                    },
+                    }
                 )
             }
         }
@@ -102,7 +102,7 @@ private struct QuickAccessActionDragPreview: View {
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .stroke(.quaternary, lineWidth: 1),
+                .stroke(.quaternary, lineWidth: 1)
         )
         .shadow(color: Color.black.opacity(0.14), radius: 8, x: 0, y: 4)
         .fixedSize(horizontal: true, vertical: false)

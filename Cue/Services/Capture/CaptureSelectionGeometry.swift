@@ -55,13 +55,13 @@ enum CaptureSelectionGeometry {
         translation: CGPoint,
         aspectLocked: Bool,
         aspectRatio: CGFloat?,
-        minSize: CGFloat = defaultMinSize,
+        minSize: CGFloat = defaultMinSize
     ) -> CGRect {
         var rect = freeResizedRect(
             original: original,
             handle: handle,
             translation: translation,
-            minSize: minSize,
+            minSize: minSize
         )
 
         if aspectLocked, let ratio = aspectRatio, ratio > 0 {
@@ -70,7 +70,7 @@ enum CaptureSelectionGeometry {
                 handle: handle,
                 anchorRect: original,
                 aspectRatio: ratio,
-                minSize: minSize,
+                minSize: minSize
             )
         }
 
@@ -84,7 +84,7 @@ enum CaptureSelectionGeometry {
         width: CGFloat,
         aspectLocked: Bool,
         aspectRatio: CGFloat?,
-        minSize: CGFloat = defaultMinSize,
+        minSize: CGFloat = defaultMinSize
     ) -> CGRect {
         let clampedWidth = max(minSize, width)
         let center = CGPoint(x: rect.midX, y: rect.midY)
@@ -96,9 +96,9 @@ enum CaptureSelectionGeometry {
                     x: center.x - clampedWidth / 2,
                     y: center.y - height / 2,
                     width: clampedWidth,
-                    height: height,
+                    height: height
                 ),
-                minSize: minSize,
+                minSize: minSize
             )
         }
 
@@ -107,9 +107,9 @@ enum CaptureSelectionGeometry {
                 x: center.x - clampedWidth / 2,
                 y: rect.minY,
                 width: clampedWidth,
-                height: rect.height,
+                height: rect.height
             ),
-            minSize: minSize,
+            minSize: minSize
         )
     }
 
@@ -118,7 +118,7 @@ enum CaptureSelectionGeometry {
         height: CGFloat,
         aspectLocked: Bool,
         aspectRatio: CGFloat?,
-        minSize: CGFloat = defaultMinSize,
+        minSize: CGFloat = defaultMinSize
     ) -> CGRect {
         let clampedHeight = max(minSize, height)
         let center = CGPoint(x: rect.midX, y: rect.midY)
@@ -130,9 +130,9 @@ enum CaptureSelectionGeometry {
                     x: center.x - width / 2,
                     y: center.y - clampedHeight / 2,
                     width: width,
-                    height: clampedHeight,
+                    height: clampedHeight
                 ),
-                minSize: minSize,
+                minSize: minSize
             )
         }
 
@@ -141,16 +141,16 @@ enum CaptureSelectionGeometry {
                 x: rect.minX,
                 y: center.y - clampedHeight / 2,
                 width: rect.width,
-                height: clampedHeight,
+                height: clampedHeight
             ),
-            minSize: minSize,
+            minSize: minSize
         )
     }
 
     static func rectByLockingAspectRatio(
         _ rect: CGRect,
         aspectRatio: CGFloat,
-        minSize: CGFloat = defaultMinSize,
+        minSize: CGFloat = defaultMinSize
     ) -> CGRect {
         guard aspectRatio > 0 else { return normalized(rect, minSize: minSize) }
 
@@ -163,9 +163,9 @@ enum CaptureSelectionGeometry {
                 x: center.x - width / 2,
                 y: center.y - height / 2,
                 width: width,
-                height: height,
+                height: height
             ),
-            minSize: minSize,
+            minSize: minSize
         )
     }
 
@@ -175,7 +175,7 @@ enum CaptureSelectionGeometry {
         original: CGRect,
         handle: CaptureSelectionResizeHandle,
         translation: CGPoint,
-        minSize: CGFloat,
+        minSize: CGFloat
     ) -> CGRect {
         var rect = original
 
@@ -215,7 +215,7 @@ enum CaptureSelectionGeometry {
         _ rect: CGRect,
         handle: CaptureSelectionResizeHandle,
         reference: CGRect,
-        minSize: CGFloat,
+        minSize: CGFloat
     ) -> CGRect {
         var result = rect
 
@@ -241,7 +241,7 @@ enum CaptureSelectionGeometry {
         handle: CaptureSelectionResizeHandle,
         anchorRect: CGRect,
         aspectRatio: CGFloat,
-        minSize: CGFloat,
+        minSize: CGFloat
     ) -> CGRect {
         switch handle {
         case .topLeft:
@@ -250,7 +250,7 @@ enum CaptureSelectionGeometry {
                 fixedCorner: CGPoint(x: anchorRect.maxX, y: anchorRect.minY),
                 fixedCornerKind: .bottomRight,
                 aspectRatio: aspectRatio,
-                minSize: minSize,
+                minSize: minSize
             )
         case .top:
             let height = max(minSize, rect.height)
@@ -259,7 +259,7 @@ enum CaptureSelectionGeometry {
                 x: anchorRect.midX - width / 2,
                 y: anchorRect.minY,
                 width: width,
-                height: height,
+                height: height
             )
         case .topRight:
             return anchoredSize(
@@ -267,21 +267,21 @@ enum CaptureSelectionGeometry {
                 fixedCorner: CGPoint(x: anchorRect.minX, y: anchorRect.minY),
                 fixedCornerKind: .bottomLeft,
                 aspectRatio: aspectRatio,
-                minSize: minSize,
+                minSize: minSize
             )
         case .left:
             return centeredVerticalSize(
                 width: rect.width,
                 center: CGPoint(x: anchorRect.maxX, y: anchorRect.midY),
                 aspectRatio: aspectRatio,
-                minSize: minSize,
+                minSize: minSize
             )
         case .right:
             return centeredVerticalSize(
                 width: rect.width,
                 center: CGPoint(x: anchorRect.minX, y: anchorRect.midY),
                 aspectRatio: aspectRatio,
-                minSize: minSize,
+                minSize: minSize
             )
         case .bottomLeft:
             return anchoredSize(
@@ -289,7 +289,7 @@ enum CaptureSelectionGeometry {
                 fixedCorner: CGPoint(x: anchorRect.maxX, y: anchorRect.maxY),
                 fixedCornerKind: .topRight,
                 aspectRatio: aspectRatio,
-                minSize: minSize,
+                minSize: minSize
             )
         case .bottom:
             let height = max(minSize, rect.height)
@@ -298,7 +298,7 @@ enum CaptureSelectionGeometry {
                 x: anchorRect.midX - width / 2,
                 y: anchorRect.maxY - height,
                 width: width,
-                height: height,
+                height: height
             )
         case .bottomRight:
             return anchoredSize(
@@ -306,7 +306,7 @@ enum CaptureSelectionGeometry {
                 fixedCorner: CGPoint(x: anchorRect.minX, y: anchorRect.maxY),
                 fixedCornerKind: .topLeft,
                 aspectRatio: aspectRatio,
-                minSize: minSize,
+                minSize: minSize
             )
         }
     }
@@ -323,7 +323,7 @@ enum CaptureSelectionGeometry {
         fixedCorner: CGPoint,
         fixedCornerKind: FixedCornerKind,
         aspectRatio: CGFloat,
-        minSize: CGFloat,
+        minSize: CGFloat
     ) -> CGRect {
         let clampedWidth = max(minSize, width)
         let height = max(minSize, clampedWidth / aspectRatio)
@@ -336,7 +336,7 @@ enum CaptureSelectionGeometry {
                 x: fixedCorner.x - clampedWidth,
                 y: fixedCorner.y - height,
                 width: clampedWidth,
-                height: height,
+                height: height
             )
         case .bottomLeft:
             return CGRect(x: fixedCorner.x, y: fixedCorner.y, width: clampedWidth, height: height)
@@ -349,7 +349,7 @@ enum CaptureSelectionGeometry {
         height: CGFloat,
         center: CGPoint,
         aspectRatio: CGFloat,
-        minSize: CGFloat,
+        minSize: CGFloat
     ) -> CGRect {
         let clampedHeight = max(minSize, height)
         let width = max(minSize, clampedHeight * aspectRatio)
@@ -357,7 +357,7 @@ enum CaptureSelectionGeometry {
             x: center.x - width / 2,
             y: center.y - clampedHeight / 2,
             width: width,
-            height: clampedHeight,
+            height: clampedHeight
         )
     }
 
@@ -365,7 +365,7 @@ enum CaptureSelectionGeometry {
         width: CGFloat,
         center: CGPoint,
         aspectRatio: CGFloat,
-        minSize: CGFloat,
+        minSize: CGFloat
     ) -> CGRect {
         let clampedWidth = max(minSize, width)
         let height = max(minSize, clampedWidth / aspectRatio)
@@ -373,7 +373,7 @@ enum CaptureSelectionGeometry {
             x: center.x - clampedWidth / 2,
             y: center.y - height / 2,
             width: clampedWidth,
-            height: height,
+            height: height
         )
     }
 }
@@ -389,7 +389,7 @@ enum CaptureSelectionResizeAdapter {
         containerSize: CGSize? = nil,
         aspectLocked: Bool = false,
         aspectRatio: CGFloat? = nil,
-        minSize: CGFloat = CaptureSelectionChromeMetrics.confirmedMinimumSize,
+        minSize: CGFloat = CaptureSelectionChromeMetrics.confirmedMinimumSize
     ) -> CGRect {
         switch coordinateSpace {
         case .bottomLeftOrigin:
@@ -399,7 +399,7 @@ enum CaptureSelectionResizeAdapter {
                 translation: translation,
                 aspectLocked: aspectLocked,
                 aspectRatio: aspectRatio,
-                minSize: minSize,
+                minSize: minSize
             )
             if let containerSize {
                 result = clampBottomLeft(result, handle: handle, container: containerSize, minSize: minSize)
@@ -415,7 +415,7 @@ enum CaptureSelectionResizeAdapter {
                 translation: bottomLeftTranslation,
                 aspectLocked: aspectLocked,
                 aspectRatio: aspectRatio,
-                minSize: minSize,
+                minSize: minSize
             )
             result = flipToTopLeft(result, containerHeight: containerHeight)
             if let containerSize {
@@ -430,7 +430,7 @@ enum CaptureSelectionResizeAdapter {
             x: rect.minX,
             y: containerHeight - rect.maxY,
             width: rect.width,
-            height: rect.height,
+            height: rect.height
         )
     }
 
@@ -439,7 +439,7 @@ enum CaptureSelectionResizeAdapter {
             x: rect.minX,
             y: containerHeight - rect.maxY,
             width: rect.width,
-            height: rect.height,
+            height: rect.height
         )
     }
 
@@ -447,7 +447,7 @@ enum CaptureSelectionResizeAdapter {
         _ rect: CGRect,
         handle: CaptureSelectionResizeHandle,
         container: CGSize,
-        minSize: CGFloat,
+        minSize: CGFloat
     ) -> CGRect {
         var result = rect.standardized
         switch handle {
@@ -473,7 +473,7 @@ enum CaptureSelectionResizeAdapter {
         _ rect: CGRect,
         handle: CaptureSelectionResizeHandle,
         container: CGSize,
-        minSize: CGFloat,
+        minSize: CGFloat
     ) -> CGRect {
         var result = rect.standardized
         switch handle {

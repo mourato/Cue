@@ -23,12 +23,12 @@
         static func fromNotinhasCapture(
             globalCaptureRect: CGRect,
             pixelWidth: Int,
-            pixelHeight: Int,
+            pixelHeight: Int
         ) -> RecordingInputMapping {
             RecordingInputMapping(
                 captureRect: quartzRect(fromAppKitRect: globalCaptureRect),
                 pixelWidth: pixelWidth,
-                pixelHeight: pixelHeight,
+                pixelHeight: pixelHeight
             )
         }
 
@@ -38,7 +38,7 @@
                 x: rect.minX,
                 y: mainDisplayHeight - rect.maxY,
                 width: rect.width,
-                height: rect.height,
+                height: rect.height
             )
         }
     }
@@ -113,7 +113,7 @@
         @MainActor
         func start(
             mapping: RecordingInputMapping,
-            tracksDynamicGeometry: Bool = false,
+            tracksDynamicGeometry: Bool = false
         ) {
             stop()
 
@@ -156,7 +156,7 @@
                 target: self,
                 selector: #selector(pointerAppearanceTimer(_:)),
                 userInfo: nil,
-                repeats: true,
+                repeats: true
             )
             RunLoop.main.add(appearanceTimer, forMode: .common)
             cursorAppearanceTimer = appearanceTimer
@@ -216,7 +216,7 @@
             let cursorPoint = CGEvent(source: nil)?.location
             let attachments = CMSampleBufferGetSampleAttachmentsArray(
                 sampleBuffer,
-                createIfNecessary: false,
+                createIfNecessary: false
             ) as? [[SCStreamFrameInfo: Any]]
             let attachment = attachments?.first
             let screenRect = Self.rectValue(attachment?[.screenRect])
@@ -230,12 +230,13 @@
                 if pauseStartedUptime == nil,
                    let cursorPoint,
                    !hasFrameAlignedSample
-                   || samples.last.map({ uptime - $0.uptime >= 1 }) ?? true {
+                   || samples.last.map({ uptime - $0.uptime >= 1 }) ?? true
+                {
                     let sample = CapturedPointerSample(
                         uptime: uptime,
                         point: cursorPoint,
                         travelKind: pressedButtons.isEmpty ? .move : .drag,
-                        artworkID: activeArtworkID,
+                        artworkID: activeArtworkID
                     )
                     if hasFrameAlignedSample {
                         appendSample(sample)
@@ -251,20 +252,22 @@
                 guard tracksDynamicGeometry,
                       let screenRect,
                       screenRect.width > 0,
-                      screenRect.height > 0 else {
+                      screenRect.height > 0
+                else {
                     return
                 }
                 let geometry = CapturedFrameGeometry(
                     uptime: uptime,
                     screenRect: screenRect,
                     contentRect: contentRect ?? CGRect(origin: .zero, size: screenRect.size),
-                    scaleFactor: max(scaleFactor, 0.001),
+                    scaleFactor: max(scaleFactor, 0.001)
                 )
                 if let last = frameGeometries.last,
                    Self.nearlyEqual(last.screenRect, geometry.screenRect),
                    Self.nearlyEqual(last.contentRect, geometry.contentRect),
                    abs(last.scaleFactor - geometry.scaleFactor) < 0.001,
-                   uptime - last.uptime < 1 {
+                   uptime - last.uptime < 1
+                {
                     return
                 }
                 frameGeometries.append(geometry)
@@ -283,7 +286,7 @@
                 if let pauseStartedUptime {
                     completedPauses.append(PauseInterval(
                         start: pauseStartedUptime,
-                        end: ProcessInfo.processInfo.systemUptime,
+                        end: ProcessInfo.processInfo.systemUptime
                     ))
                 }
 
@@ -292,13 +295,14 @@
                         for: sample.uptime,
                         sessionStartUptime: sessionStartUptime,
                         duration: duration,
-                        pauseIntervals: completedPauses,
+                        pauseIntervals: completedPauses
                     ),
                         let point = normalizedPoint(
                             for: sample.point,
                             at: sample.uptime,
-                            mapping: mapping,
-                        ) else {
+                            mapping: mapping
+                        )
+                    else {
                         return nil
                     }
                     return RecordedMouseSample(
@@ -306,7 +310,7 @@
                         normalizedX: CGFloat(point.x),
                         normalizedY: CGFloat(point.y),
                         isInsideCapture: mapping.captureRect.contains(sample.point),
-                        artworkID: sample.artworkID,
+                        artworkID: sample.artworkID
                     )
                 }
                 let presses = self.presses.compactMap { press -> RecordedMousePress? in
@@ -314,13 +318,14 @@
                         for: press.uptime,
                         sessionStartUptime: sessionStartUptime,
                         duration: duration,
-                        pauseIntervals: completedPauses,
+                        pauseIntervals: completedPauses
                     ),
                         let point = normalizedPoint(
                             for: press.point,
                             at: press.uptime,
-                            mapping: mapping,
-                        ) else {
+                            mapping: mapping
+                        )
+                    else {
                         return nil
                     }
                     return RecordedMousePress(
@@ -329,7 +334,7 @@
                         normalizedY: CGFloat(point.y),
                         button: press.button,
                         phase: press.phase == .down ? .down : .up,
-                        artworkID: press.artworkID,
+                        artworkID: press.artworkID
                     )
                 }
 
@@ -345,7 +350,7 @@
                 return RecordingPointerCaptureResult(
                     samples: samples,
                     presses: presses,
-                    artwork: artwork,
+                    artwork: artwork
                 )
             }
         }
@@ -358,7 +363,7 @@
                 .mouseMoved,
                 .leftMouseDragged, .rightMouseDragged, .otherMouseDragged,
                 .leftMouseDown, .rightMouseDown, .otherMouseDown,
-                .leftMouseUp, .rightMouseUp, .otherMouseUp,
+                .leftMouseUp, .rightMouseUp, .otherMouseUp
             ]
             let mask = eventTypes.reduce(CGEventMask(0)) { partial, type in
                 partial | (CGEventMask(1) << type.rawValue)
@@ -383,7 +388,7 @@
                 options: .listenOnly,
                 eventsOfInterest: mask,
                 callback: callback,
-                userInfo: userInfo,
+                userInfo: userInfo
             ) else {
                 NSLog("[Notinhas] Pointer event tap unavailable; using sampled cursor fallback.")
                 return false
@@ -401,7 +406,7 @@
                 CFRunLoopRemoveSource(CFRunLoopGetMain(), source, .commonModes)
                 CFMachPortInvalidate(tap)
                 NSLog(
-                    "[Notinhas] Pointer event tap created but not enabled (Input Monitoring not granted); using sampled cursor fallback.",
+                    "[Notinhas] Pointer event tap created but not enabled (Input Monitoring not granted); using sampled cursor fallback."
                 )
                 return false
             }
@@ -426,8 +431,8 @@
                             uptime: uptime,
                             point: point,
                             travelKind: .move,
-                            artworkID: artworkID,
-                        ),
+                            artworkID: artworkID
+                        )
                     )
                 case .leftMouseDragged, .rightMouseDragged, .otherMouseDragged:
                     appendSample(
@@ -435,8 +440,8 @@
                             uptime: uptime,
                             point: point,
                             travelKind: .drag,
-                            artworkID: artworkID,
-                        ),
+                            artworkID: artworkID
+                        )
                     )
                 case .leftMouseDown, .rightMouseDown, .otherMouseDown:
                     let button = Self.buttonNumber(for: type, event: event)
@@ -446,7 +451,7 @@
                         point: point,
                         button: button,
                         phase: .down,
-                        artworkID: artworkID,
+                        artworkID: artworkID
                     ))
                 case .leftMouseUp, .rightMouseUp, .otherMouseUp:
                     let button = Self.buttonNumber(for: type, event: event)
@@ -456,7 +461,7 @@
                         point: point,
                         button: button,
                         phase: .up,
-                        artworkID: artworkID,
+                        artworkID: artworkID
                     ))
                 default:
                     break
@@ -474,7 +479,7 @@
             let clickMask: NSEvent.EventTypeMask = [
                 .leftMouseDown, .leftMouseUp,
                 .rightMouseDown, .rightMouseUp,
-                .otherMouseDown, .otherMouseUp,
+                .otherMouseDown, .otherMouseUp
             ]
             fallbackGlobalMonitor = NSEvent.addGlobalMonitorForEvents(matching: clickMask) { [weak self] event in
                 self?.handleFallbackPress(event)
@@ -489,7 +494,7 @@
         private func installSampledTravelFallback() {
             let timer = DispatchSource.makeTimerSource(queue: DispatchQueue(
                 label: "com.screendrop.recording.pointer-capture",
-                qos: .utility,
+                qos: .utility
             ))
             timer.schedule(deadline: .now(), repeating: 1.0 / 60.0, leeway: .milliseconds(4))
             timer.setEventHandler { [weak self] in
@@ -510,7 +515,7 @@
                     uptime: uptime,
                     point: point,
                     travelKind: pressedButtons.isEmpty ? .move : .drag,
-                    artworkID: activeArtworkID,
+                    artworkID: activeArtworkID
                 ))
             }
         }
@@ -557,7 +562,7 @@
                     point: point,
                     button: button,
                     phase: phase,
-                    artworkID: activeArtworkID,
+                    artworkID: activeArtworkID
                 ))
             }
         }
@@ -568,7 +573,8 @@
                 if moved < 1,
                    sample.uptime - last.uptime < 1,
                    sample.travelKind == last.travelKind,
-                   sample.artworkID == last.artworkID {
+                   sample.artworkID == last.artworkID
+                {
                     return
                 }
             }
@@ -584,7 +590,8 @@
                last.button == press.button,
                last.phase == press.phase,
                abs(last.uptime - press.uptime) < Self.duplicatePressWindow,
-               hypot(last.point.x - press.point.x, last.point.y - press.point.y) < 1 {
+               hypot(last.point.x - press.point.x, last.point.y - press.point.y) < 1
+            {
                 return
             }
             presses.append(press)
@@ -604,7 +611,8 @@
             // can be transiently nil, so retain the last valid system cursor in
             // that case rather than flashing to a different shape.
             if let currentCursor = NSCursor.currentSystem,
-               captureArtwork(from: currentCursor) {
+               captureArtwork(from: currentCursor)
+            {
                 return
             }
 
@@ -628,7 +636,7 @@
 
             guard let artwork = RecordingPointerArtworkCapture.capture(
                 cursor,
-                id: "artwork-candidate",
+                id: "artwork-candidate"
             ) else {
                 return false
             }
@@ -655,7 +663,7 @@
                         artworkID: artworkID,
                         imageData: imageData,
                         anchorPoint: anchorPoint,
-                        referenceSize: referenceSize,
+                        referenceSize: referenceSize
                     ))
                 }
 
@@ -663,12 +671,13 @@
                 activeArtworkID = artworkID
                 if appearanceChanged,
                    pauseStartedUptime == nil,
-                   let cursorPoint {
+                   let cursorPoint
+                {
                     appendSample(CapturedPointerSample(
                         uptime: uptime,
                         point: cursorPoint,
                         travelKind: pressedButtons.isEmpty ? .move : .drag,
-                        artworkID: artworkID,
+                        artworkID: artworkID
                     ))
                 }
             }
@@ -688,7 +697,7 @@
                     uptime: uptime,
                     point: cursorPoint,
                     travelKind: pressedButtons.isEmpty ? .move : .drag,
-                    artworkID: nil,
+                    artworkID: nil
                 ))
             }
         }
@@ -699,7 +708,7 @@
             for uptime: TimeInterval,
             sessionStartUptime: TimeInterval,
             duration: TimeInterval,
-            pauseIntervals: [PauseInterval],
+            pauseIntervals: [PauseInterval]
         ) -> TimeInterval? {
             let precedingPauseDuration = pauseIntervals.reduce(0) { total, interval in
                 guard uptime > interval.start else { return total }
@@ -713,7 +722,7 @@
         private func normalizedPoint(
             for screenPoint: CGPoint,
             at uptime: TimeInterval,
-            mapping: RecordingInputMapping,
+            mapping: RecordingInputMapping
         ) -> (x: Double, y: Double)? {
             // Two hops, both top-left: screen point to a fraction of the source's
             // onscreen rectangle, then that fraction into the frame the source
@@ -726,7 +735,8 @@
                geometry.screenRect.width > 0,
                geometry.screenRect.height > 0,
                geometry.contentRect.width > 0,
-               geometry.contentRect.height > 0 {
+               geometry.contentRect.height > 0
+            {
                 let sourceX = (screenPoint.x - geometry.screenRect.minX) / geometry.screenRect.width
                 let sourceY = (screenPoint.y - geometry.screenRect.minY) / geometry.screenRect.height
                 let surfaceWidth = Double(mapping.pixelWidth) / geometry.scaleFactor
@@ -735,12 +745,12 @@
                 return (
                     x: min(
                         max((geometry.contentRect.minX + sourceX * geometry.contentRect.width) / surfaceWidth, 0),
-                        1,
+                        1
                     ),
                     y: min(
                         max((geometry.contentRect.minY + sourceY * geometry.contentRect.height) / surfaceHeight, 0),
-                        1,
-                    ),
+                        1
+                    )
                 )
             }
 
@@ -748,7 +758,7 @@
             guard captureRect.width > 0, captureRect.height > 0 else { return nil }
             return (
                 x: min(max((screenPoint.x - captureRect.minX) / captureRect.width, 0), 1),
-                y: min(max((screenPoint.y - captureRect.minY) / captureRect.height, 0), 1),
+                y: min(max((screenPoint.y - captureRect.minY) / captureRect.height, 0), 1)
             )
         }
 
@@ -784,7 +794,8 @@
         private static func rectValue(_ value: Any?) -> CGRect? {
             guard let value else { return nil }
             if CFGetTypeID(value as CFTypeRef) == CFDictionaryGetTypeID(),
-               let rect = CGRect(dictionaryRepresentation: value as! CFDictionary) {
+               let rect = CGRect(dictionaryRepresentation: value as! CFDictionary)
+            {
                 return rect
             }
             if let rect = value as? CGRect {

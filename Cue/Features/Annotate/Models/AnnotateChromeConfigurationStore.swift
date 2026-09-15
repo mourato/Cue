@@ -21,13 +21,13 @@ final class AnnotateChromeConfigurationStore: ObservableObject {
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         toolbarItemOrder = Self.normalizedToolbarOrder(
-            from: defaults.stringArray(forKey: PreferencesKeys.annotateChromeToolbarOrder),
+            from: defaults.stringArray(forKey: PreferencesKeys.annotateChromeToolbarOrder)
         )
         bottomActionOrder = Self.normalizedBottomOrder(
-            from: defaults.stringArray(forKey: PreferencesKeys.annotateChromeBottomOrder),
+            from: defaults.stringArray(forKey: PreferencesKeys.annotateChromeBottomOrder)
         )
         enabledItems = Self.normalizedEnabledItems(
-            from: defaults.stringArray(forKey: PreferencesKeys.annotateChromeEnabledItems),
+            from: defaults.stringArray(forKey: PreferencesKeys.annotateChromeEnabledItems)
         )
     }
 
@@ -38,8 +38,10 @@ final class AnnotateChromeConfigurationStore: ObservableObject {
         return enabledItems.contains(item)
     }
 
-    func orderedToolbarItems(in group: AnnotateChromeItem.ToolbarGroup,
-                             includeDisabled: Bool = false) -> [AnnotateChromeItem] {
+    func orderedToolbarItems(
+        in group: AnnotateChromeItem.ToolbarGroup,
+        includeDisabled: Bool = false
+    ) -> [AnnotateChromeItem] {
         toolbarItemOrder.filter { item in
             item.toolbarGroup == group && (includeDisabled || isEnabled(item))
         }
@@ -84,7 +86,7 @@ final class AnnotateChromeConfigurationStore: ObservableObject {
             in: &toolbarItemOrder,
             customizableOrder: AnnotateChromeItem.defaultToolbarOrder,
             from: source,
-            to: destination,
+            to: destination
         )
         toolbarItemOrder = Self.normalizedToolbarOrder(from: toolbarItemOrder.map(\.rawValue))
         save()
@@ -95,7 +97,7 @@ final class AnnotateChromeConfigurationStore: ObservableObject {
             in: &bottomActionOrder,
             customizableOrder: AnnotateChromeItem.defaultBottomOrder,
             from: source,
-            to: destination,
+            to: destination
         )
         bottomActionOrder = Self.normalizedBottomOrder(from: bottomActionOrder.map(\.rawValue))
         save()
@@ -111,7 +113,7 @@ final class AnnotateChromeConfigurationStore: ObservableObject {
     func applyConfiguration(
         toolbarOrder: [AnnotateChromeItem]?,
         bottomOrder: [AnnotateChromeItem]?,
-        enabledItems: Set<AnnotateChromeItem>?,
+        enabledItems: Set<AnnotateChromeItem>?
     ) {
         if let toolbarOrder {
             toolbarItemOrder = Self.normalizedToolbarOrder(from: toolbarOrder.map(\.rawValue))
@@ -134,7 +136,7 @@ final class AnnotateChromeConfigurationStore: ObservableObject {
         in order: inout [AnnotateChromeItem],
         customizableOrder _: [AnnotateChromeItem],
         from source: IndexSet,
-        to destination: Int,
+        to destination: Int
     ) {
         guard !source.isEmpty else { return }
 
@@ -155,7 +157,7 @@ final class AnnotateChromeConfigurationStore: ObservableObject {
         defaults.set(bottomActionOrder.map(\.rawValue), forKey: PreferencesKeys.annotateChromeBottomOrder)
         defaults.set(
             (toolbarItemOrder + bottomActionOrder).filter { enabledItems.contains($0) }.map(\.rawValue),
-            forKey: PreferencesKeys.annotateChromeEnabledItems,
+            forKey: PreferencesKeys.annotateChromeEnabledItems
         )
     }
 
@@ -174,7 +176,7 @@ final class AnnotateChromeConfigurationStore: ObservableObject {
     private static func normalizedOrder(
         from rawIDs: [String]?,
         defaults defaultOrder: [AnnotateChromeItem],
-        isAllowed: (AnnotateChromeItem) -> Bool,
+        isAllowed: (AnnotateChromeItem) -> Bool
     ) -> [AnnotateChromeItem] {
         var seen = Set<AnnotateChromeItem>()
         var ordered: [AnnotateChromeItem] = []

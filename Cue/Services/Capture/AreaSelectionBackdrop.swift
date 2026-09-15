@@ -44,9 +44,9 @@ nonisolated enum AreaSelectionTarget: Equatable {
 
     var rect: CGRect {
         switch self {
-        case .rect(let rect):
+        case let .rect(rect):
             rect
-        case .window(let target):
+        case let .window(target):
             target.frame
         }
     }
@@ -55,7 +55,7 @@ nonisolated enum AreaSelectionTarget: Equatable {
         switch self {
         case .rect:
             nil
-        case .window(let target):
+        case let .window(target):
             target
         }
     }
@@ -76,7 +76,7 @@ nonisolated struct AreaSelectionResult {
         target: AreaSelectionTarget,
         displayID: CGDirectDisplayID,
         mode: SelectionMode,
-        displayIDs: Set<CGDirectDisplayID>? = nil,
+        displayIDs: Set<CGDirectDisplayID>? = nil
     ) {
         self.target = target
         self.displayID = displayID

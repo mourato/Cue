@@ -102,11 +102,11 @@ struct ShortcutsSettingsView: View {
             initialValue: Dictionary(
                 uniqueKeysWithValues: AllInOneCaptureMode.allCases.map { mode in
                     (mode, ModeShortcutState(shortcut: AllInOneModeShortcutSettings.shortcut(for: mode)))
-                },
-            ),
+                }
+            )
         )
         _recordingApplicationCaptureShortcut = State(
-            initialValue: CaptureOverlayShortcutSettings.recordingApplicationCaptureShortcut,
+            initialValue: CaptureOverlayShortcutSettings.recordingApplicationCaptureShortcut
         )
         _scrollingCaptureShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .scrollingCapture))
         _objectCutoutShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .objectCutout))
@@ -114,16 +114,16 @@ struct ShortcutsSettingsView: View {
         _smartElementShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .smartElement))
         _recordingShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .recording))
         _pauseResumeRecordingShortcut = State(
-            initialValue: KeyboardShortcutManager.shared.shortcut(for: .pauseResumeRecording),
+            initialValue: KeyboardShortcutManager.shared.shortcut(for: .pauseResumeRecording)
         )
         _togglePenRecordingShortcut = State(
-            initialValue: KeyboardShortcutManager.shared.shortcut(for: .togglePenRecording),
+            initialValue: KeyboardShortcutManager.shared.shortcut(for: .togglePenRecording)
         )
         _restartRecordingShortcut = State(
-            initialValue: KeyboardShortcutManager.shared.shortcut(for: .restartRecording),
+            initialValue: KeyboardShortcutManager.shared.shortcut(for: .restartRecording)
         )
         _deleteRecordingShortcut = State(
-            initialValue: KeyboardShortcutManager.shared.shortcut(for: .deleteRecording),
+            initialValue: KeyboardShortcutManager.shared.shortcut(for: .deleteRecording)
         )
         _annotateShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .annotate))
         _videoEditorShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .videoEditor))
@@ -135,21 +135,21 @@ struct ShortcutsSettingsView: View {
         _toggleSidebarShortcut = State(initialValue: AnnotateShortcutManager.shared.toggleSidebarShortcut)
         _togglePinShortcut = State(initialValue: AnnotateShortcutManager.shared.togglePinShortcut)
         _autoRedactSensitiveDataShortcut = State(
-            initialValue: AnnotateShortcutManager.shared.autoRedactSensitiveDataShortcut,
+            initialValue: AnnotateShortcutManager.shared.autoRedactSensitiveDataShortcut
         )
         _globalShortcutEnabled = State(
             initialValue: Dictionary(
                 uniqueKeysWithValues: GlobalShortcutKind.allCases.map {
                     ($0, KeyboardShortcutManager.shared.isShortcutEnabled(for: $0))
-                },
-            ),
+                }
+            )
         )
         _annotateActionEnabled = State(
             initialValue: Dictionary(
                 uniqueKeysWithValues: AnnotateActionShortcutKind.allCases.map {
                     ($0, AnnotateShortcutManager.shared.isActionShortcutEnabled(for: $0))
-                },
-            ),
+                }
+            )
         )
         _shortcutsEnabled = State(initialValue: KeyboardShortcutManager.shared.isEnabled)
         // System conflict detection reads com.apple.symbolichotkeys; defer it to
@@ -202,21 +202,21 @@ struct ShortcutsSettingsView: View {
 
                                 PreferencesGuideStep(
                                     step: "1",
-                                    text: L10n.Onboarding.guideStep1,
+                                    text: L10n.Onboarding.guideStep1
                                 )
                                 PreferencesGuideStep(
                                     step: "2",
-                                    text: L10n.Onboarding.guideStep2,
+                                    text: L10n.Onboarding.guideStep2
                                 )
                                 PreferencesGuideStep(
                                     step: "3",
-                                    text: L10n.Onboarding.guideStep3,
+                                    text: L10n.Onboarding.guideStep3
                                 )
                             }
                             .padding(10)
                             .background(
                                 RoundedRectangle(cornerRadius: 8)
-                                    .fill(warningFeedbackStyle.iconColor.opacity(0.06)),
+                                    .fill(warningFeedbackStyle.iconColor.opacity(0.06))
                             )
 
                             // Action buttons
@@ -240,7 +240,7 @@ struct ShortcutsSettingsView: View {
                                     HStack(spacing: 4) {
                                         Image(
                                             systemName: isRefreshingConflict
-                                                ? "arrow.triangle.2.circlepath" : "arrow.clockwise",
+                                                ? "arrow.triangle.2.circlepath" : "arrow.clockwise"
                                         )
                                         .font(.system(size: 12))
                                         .rotationEffect(.degrees(isRefreshingConflict ? 360 : 0))
@@ -281,7 +281,7 @@ struct ShortcutsSettingsView: View {
                             } label: {
                                 Image(
                                     systemName: isRefreshingConflict
-                                        ? "arrow.triangle.2.circlepath" : "arrow.clockwise",
+                                        ? "arrow.triangle.2.circlepath" : "arrow.clockwise"
                                 )
                                 .font(.system(size: 12))
                                 .rotationEffect(.degrees(isRefreshingConflict ? 360 : 0))
@@ -303,7 +303,7 @@ struct ShortcutsSettingsView: View {
                     .foregroundColor(.secondary)
 
                 SettingRow(
-                    title: L10n.PreferencesShortcuts.enableShortcutsTitle,
+                    title: L10n.PreferencesShortcuts.enableShortcutsTitle
                 ) {
                     Toggle("", isOn: $shortcutsEnabled)
                         .labelsHidden()
@@ -352,8 +352,9 @@ struct ShortcutsSettingsView: View {
                         Button(L10n.Common.openSettings) {
                             if let url =
                                 URL(
-                                    string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility",
-                                ) {
+                                    string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
+                                )
+                            {
                                 NSWorkspace.shared.open(url)
                             }
                         }
@@ -372,7 +373,7 @@ struct ShortcutsSettingsView: View {
                         defaultShortcut: .defaultFullscreen,
                         isEnabled: globalEnabledBinding(for: .fullscreen),
                         validationIssue: globalValidationIssues[.fullscreen],
-                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .fullscreen) },
+                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .fullscreen) }
                     )
 
                     VStack(alignment: .leading, spacing: 4) {
@@ -383,13 +384,13 @@ struct ShortcutsSettingsView: View {
                             defaultShortcut: .defaultAllInOne,
                             isEnabled: globalEnabledBinding(for: .allInOne),
                             validationIssue: globalValidationIssues[.allInOne],
-                            onShortcutChanged: { handleGlobalShortcutChange($0, for: .allInOne) },
+                            onShortcutChanged: { handleGlobalShortcutChange($0, for: .allInOne) }
                         )
 
                         VStack(alignment: .leading, spacing: 4) {
                             ForEach(
                                 AllInOneCaptureMode.availableModes(videoEnabled: videoModuleEnabled),
-                                id: \.self,
+                                id: \.self
                             ) { mode in
                                 CaptureOverlayShortcutRecorderRow(
                                     label: mode.compactTitle,
@@ -398,7 +399,7 @@ struct ShortcutsSettingsView: View {
                                     defaultShortcut: AllInOneModeShortcutSettings.defaultShortcut(for: mode),
                                     isEnabled: globalEnabledBinding(for: .allInOne),
                                     validationIssue: allInOneModeValidationIssues[mode],
-                                    allowsIndependent: false,
+                                    allowsIndependent: false
                                 ) { newShortcut in
                                     handleAllInOneModeShortcutChange(newShortcut, for: mode)
                                 }
@@ -414,7 +415,7 @@ struct ShortcutsSettingsView: View {
                         defaultShortcut: .defaultArea,
                         isEnabled: globalEnabledBinding(for: .area),
                         validationIssue: globalValidationIssues[.area],
-                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .area) },
+                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .area) }
                     )
 
                     ShortcutRecorderView(
@@ -424,7 +425,7 @@ struct ShortcutsSettingsView: View {
                         defaultShortcut: .defaultAreaAnnotate,
                         isEnabled: globalEnabledBinding(for: .areaAnnotate),
                         validationIssue: globalValidationIssues[.areaAnnotate],
-                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .areaAnnotate) },
+                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .areaAnnotate) }
                     )
 
                     ShortcutRecorderView(
@@ -434,7 +435,7 @@ struct ShortcutsSettingsView: View {
                         defaultShortcut: .defaultActiveWindowCapture,
                         isEnabled: globalEnabledBinding(for: .activeWindow),
                         validationIssue: globalValidationIssues[.activeWindow],
-                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .activeWindow) },
+                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .activeWindow) }
                     )
 
                     ShortcutRecorderView(
@@ -443,7 +444,7 @@ struct ShortcutsSettingsView: View {
                         defaultShortcut: .defaultScrollingCapture,
                         isEnabled: globalEnabledBinding(for: .scrollingCapture),
                         validationIssue: globalValidationIssues[.scrollingCapture],
-                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .scrollingCapture) },
+                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .scrollingCapture) }
                     )
 
                     ShortcutRecorderView(
@@ -452,7 +453,7 @@ struct ShortcutsSettingsView: View {
                         defaultShortcut: .defaultObjectCutout,
                         isEnabled: globalEnabledBinding(for: .objectCutout),
                         validationIssue: globalValidationIssues[.objectCutout],
-                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .objectCutout) },
+                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .objectCutout) }
                     )
 
                     ShortcutRecorderView(
@@ -461,7 +462,7 @@ struct ShortcutsSettingsView: View {
                         defaultShortcut: .defaultOCR,
                         isEnabled: globalEnabledBinding(for: .ocr),
                         validationIssue: globalValidationIssues[.ocr],
-                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .ocr) },
+                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .ocr) }
                     )
 
                     ShortcutRecorderView(
@@ -471,7 +472,7 @@ struct ShortcutsSettingsView: View {
                         defaultShortcut: .defaultSmartElement,
                         isEnabled: globalEnabledBinding(for: .smartElement),
                         validationIssue: globalValidationIssues[.smartElement],
-                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .smartElement) },
+                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .smartElement) }
                     )
                 } header: {
                     HStack {
@@ -494,7 +495,7 @@ struct ShortcutsSettingsView: View {
                                 defaultShortcut: .defaultRecording,
                                 isEnabled: globalEnabledBinding(for: .recording),
                                 validationIssue: globalValidationIssues[.recording],
-                                onShortcutChanged: { handleGlobalShortcutChange($0, for: .recording) },
+                                onShortcutChanged: { handleGlobalShortcutChange($0, for: .recording) }
                             )
 
                             CaptureOverlayShortcutRecorderRow(
@@ -504,14 +505,14 @@ struct ShortcutsSettingsView: View {
                                 defaultShortcut: CaptureOverlayShortcutSettings
                                     .defaultRecordingApplicationCaptureShortcut,
                                 isEnabled: globalEnabledBinding(for: .recording),
-                                validationIssue: captureOverlayValidationIssues[.applicationRecording],
+                                validationIssue: captureOverlayValidationIssues[.applicationRecording]
                             ) { newShortcut in
                                 handleCaptureOverlayShortcutChange(newShortcut, for: .applicationRecording)
                             }
 
                             DisclosureGroup(
                                 L10n.PreferencesShortcuts.moreRecordingShortcuts,
-                                isExpanded: $showRecordingExtras,
+                                isExpanded: $showRecordingExtras
                             ) {
                                 ShortcutRecorderView(
                                     label: L10n.Actions.pauseResumeRecording,
@@ -522,7 +523,7 @@ struct ShortcutsSettingsView: View {
                                     validationIssue: globalValidationIssues[.pauseResumeRecording],
                                     onShortcutChanged: {
                                         handleGlobalShortcutChange($0, for: .pauseResumeRecording)
-                                    },
+                                    }
                                 )
 
                                 ShortcutRecorderView(
@@ -534,7 +535,7 @@ struct ShortcutsSettingsView: View {
                                     validationIssue: globalValidationIssues[.togglePenRecording],
                                     onShortcutChanged: {
                                         handleGlobalShortcutChange($0, for: .togglePenRecording)
-                                    },
+                                    }
                                 )
 
                                 ShortcutRecorderView(
@@ -546,7 +547,7 @@ struct ShortcutsSettingsView: View {
                                     validationIssue: globalValidationIssues[.restartRecording],
                                     onShortcutChanged: {
                                         handleGlobalShortcutChange($0, for: .restartRecording)
-                                    },
+                                    }
                                 )
 
                                 ShortcutRecorderView(
@@ -558,7 +559,7 @@ struct ShortcutsSettingsView: View {
                                     validationIssue: globalValidationIssues[.deleteRecording],
                                     onShortcutChanged: {
                                         handleGlobalShortcutChange($0, for: .deleteRecording)
-                                    },
+                                    }
                                 )
                             }
                         }
@@ -583,7 +584,7 @@ struct ShortcutsSettingsView: View {
                         defaultShortcut: .defaultAnnotate,
                         isEnabled: globalEnabledBinding(for: .annotate),
                         validationIssue: globalValidationIssues[.annotate],
-                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .annotate) },
+                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .annotate) }
                     )
 
                     if videoModuleEnabled {
@@ -593,7 +594,7 @@ struct ShortcutsSettingsView: View {
                             defaultShortcut: .defaultVideoEditor,
                             isEnabled: globalEnabledBinding(for: .videoEditor),
                             validationIssue: globalValidationIssues[.videoEditor],
-                            onShortcutChanged: { handleGlobalShortcutChange($0, for: .videoEditor) },
+                            onShortcutChanged: { handleGlobalShortcutChange($0, for: .videoEditor) }
                         )
                     }
 
@@ -603,7 +604,7 @@ struct ShortcutsSettingsView: View {
                         defaultShortcut: .defaultShortcutList,
                         isEnabled: globalEnabledBinding(for: .shortcutList),
                         validationIssue: globalValidationIssues[.shortcutList],
-                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .shortcutList) },
+                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .shortcutList) }
                     )
 
                     Text(L10n.PreferencesShortcuts.recorderHint)
@@ -633,7 +634,7 @@ struct ShortcutsSettingsView: View {
                         defaultShortcut: .defaultHistory,
                         isEnabled: globalEnabledBinding(for: .history),
                         validationIssue: globalValidationIssues[.history],
-                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .history) },
+                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .history) }
                     )
                 } header: {
                     HStack {
@@ -662,12 +663,12 @@ struct ShortcutsSettingsView: View {
                             set: { newValue in
                                 openEditorShortcutEnabled = newValue
                                 QuickAccessManager.shared.openEditorShortcutEnabled = newValue
-                            },
+                            }
                         ),
                         onShortcutChanged: { config in
                             QuickAccessManager.shared.setOpenEditorShortcut(config)
                             return true
-                        },
+                        }
                     )
                 } header: {
                     HStack {
@@ -693,7 +694,7 @@ struct ShortcutsSettingsView: View {
                         defaultShortcut: AnnotateShortcutManager.defaultCopyAndClose,
                         isEnabled: annotateActionEnabledBinding(for: .copyAndClose),
                         validationIssue: annotateActionValidationIssues[.copyAndClose],
-                        onShortcutChanged: { handleAnnotateActionShortcutChange($0, for: .copyAndClose) },
+                        onShortcutChanged: { handleAnnotateActionShortcutChange($0, for: .copyAndClose) }
                     )
 
                     ShortcutRecorderView(
@@ -702,7 +703,7 @@ struct ShortcutsSettingsView: View {
                         defaultShortcut: AnnotateShortcutManager.defaultToggleSidebar,
                         isEnabled: annotateActionEnabledBinding(for: .toggleSidebar),
                         validationIssue: annotateActionValidationIssues[.toggleSidebar],
-                        onShortcutChanged: { handleAnnotateActionShortcutChange($0, for: .toggleSidebar) },
+                        onShortcutChanged: { handleAnnotateActionShortcutChange($0, for: .toggleSidebar) }
                     )
 
                     ShortcutRecorderView(
@@ -711,7 +712,7 @@ struct ShortcutsSettingsView: View {
                         defaultShortcut: AnnotateShortcutManager.defaultTogglePin,
                         isEnabled: annotateActionEnabledBinding(for: .togglePin),
                         validationIssue: annotateActionValidationIssues[.togglePin],
-                        onShortcutChanged: { handleAnnotateActionShortcutChange($0, for: .togglePin) },
+                        onShortcutChanged: { handleAnnotateActionShortcutChange($0, for: .togglePin) }
                     )
 
                     ShortcutRecorderView(
@@ -721,7 +722,7 @@ struct ShortcutsSettingsView: View {
                         defaultShortcut: AnnotateShortcutManager.defaultAutoRedactSensitiveData,
                         isEnabled: annotateActionEnabledBinding(for: .autoRedactSensitiveData),
                         validationIssue: annotateActionValidationIssues[.autoRedactSensitiveData],
-                        onShortcutChanged: { handleAnnotateActionShortcutChange($0, for: .autoRedactSensitiveData) },
+                        onShortcutChanged: { handleAnnotateActionShortcutChange($0, for: .autoRedactSensitiveData) }
                     )
                 } header: {
                     HStack {
@@ -738,7 +739,7 @@ struct ShortcutsSettingsView: View {
                 Section {
                     DisclosureGroup(
                         L10n.PreferencesShortcuts.annotationToolDescription,
-                        isExpanded: $showAnnotateToolKeys,
+                        isExpanded: $showAnnotateToolKeys
                     ) {
                         ForEach(AnnotateShortcutManager.configurableTools, id: \.self) { tool in
                             SingleKeyRecorderView(
@@ -749,7 +750,7 @@ struct ShortcutsSettingsView: View {
                                 onChanged: { handleAnnotateToolShortcutChange($0, for: tool) },
                                 conflictingTool: conflictForTool(tool),
                                 context: toolContext(for: tool),
-                                defaultShortcut: tool.defaultShortcut,
+                                defaultShortcut: tool.defaultShortcut
                             )
                         }
                     }
@@ -770,31 +771,31 @@ struct ShortcutsSettingsView: View {
                 Section {
                     DisclosureGroup(
                         L10n.PreferencesShortcuts.referenceDescription,
-                        isExpanded: $showAnnotateReference,
+                        isExpanded: $showAnnotateReference
                     ) {
                         ReadOnlyShortcutRow(
                             label: L10n.ShortcutOverlay.saveDone,
-                            shortcut: "⌘ S",
+                            shortcut: "⌘ S"
                         )
                         ReadOnlyShortcutRow(
                             label: L10n.ShortcutOverlay.saveAs,
-                            shortcut: "⌘ ⇧ S",
+                            shortcut: "⌘ ⇧ S"
                         )
                         ReadOnlyShortcutRow(label: L10n.ShortcutOverlay.undo, shortcut: "⌘ Z")
                         ReadOnlyShortcutRow(
                             label: L10n.ShortcutOverlay.redo,
-                            shortcut: "⌘ ⇧ Z",
+                            shortcut: "⌘ ⇧ Z"
                         )
                         ReadOnlyShortcutRow(label: L10n.ShortcutOverlay.deleteAnnotation, shortcut: "⌫")
                         ReadOnlyShortcutRow(label: L10n.ShortcutOverlay.cancelDeselect, shortcut: "⎋")
                         ReadOnlyShortcutRow(label: L10n.ShortcutOverlay.confirmCrop, shortcut: "↩")
                         ReadOnlyShortcutRow(
                             label: L10n.ShortcutOverlay.nudgeAnnotation,
-                            shortcut: "← → ↑ ↓",
+                            shortcut: "← → ↑ ↓"
                         )
                         ReadOnlyShortcutRow(
                             label: L10n.ShortcutOverlay.nudgeTenPixels,
-                            shortcut: "⇧ ← → ↑ ↓",
+                            shortcut: "⇧ ← → ↑ ↓"
                         )
                     }
                 } header: {
@@ -849,7 +850,7 @@ struct ShortcutsSettingsView: View {
 
         let captureKinds: [GlobalShortcutKind] = [
             .fullscreen, .allInOne, .area, .areaAnnotate, .activeWindow, .scrollingCapture, .objectCutout, .ocr,
-            .smartElement,
+            .smartElement
         ]
         for kind in captureKinds {
             globalShortcutEnabled[kind] = true
@@ -870,7 +871,7 @@ struct ShortcutsSettingsView: View {
         AllInOneModeShortcutSettings.resetAllModeShortcuts()
         for mode in AllInOneCaptureMode.allCases {
             allInOneModeShortcuts[mode] = ModeShortcutState(
-                shortcut: AllInOneModeShortcutSettings.defaultShortcut(for: mode),
+                shortcut: AllInOneModeShortcutSettings.defaultShortcut(for: mode)
             )
         }
 
@@ -1005,7 +1006,7 @@ struct ShortcutsSettingsView: View {
         systemConflictStatus = .checking
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             let newStatus = SystemConflictStatus(
-                hasConflict: SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts(),
+                hasConflict: SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts()
             )
             if FeedbackMotionPolicy.allowsMotion(reduceMotion: reduceMotion) {
                 withAnimation(.easeInOut(duration: 0.3)) {
@@ -1019,7 +1020,7 @@ struct ShortcutsSettingsView: View {
 
     private func updateSystemConflictStatus() {
         systemConflictStatus = SystemConflictStatus(
-            hasConflict: SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts(),
+            hasConflict: SystemScreenshotShortcutManager.shared.hasConflictingSystemShortcuts()
         )
     }
 
@@ -1028,7 +1029,7 @@ struct ShortcutsSettingsView: View {
     private func bindingForTool(_ tool: AnnotationToolType) -> Binding<Character?> {
         Binding(
             get: { annotateManager.shortcut(for: tool) },
-            set: { annotateManager.setShortcut($0, for: tool) },
+            set: { annotateManager.setShortcut($0, for: tool) }
         )
     }
 
@@ -1038,9 +1039,9 @@ struct ShortcutsSettingsView: View {
             set: { newValue in
                 if newValue, let key = annotateManager.shortcut(for: tool) {
                     switch validator.validateAnnotateToolShortcut(key, for: tool) {
-                    case .accept(let issue):
+                    case let .accept(issue):
                         annotateToolValidationIssues[tool] = issue
-                    case .reject(let issue):
+                    case let .reject(issue):
                         annotateToolValidationIssues[tool] = issue
                         return
                     }
@@ -1050,7 +1051,7 @@ struct ShortcutsSettingsView: View {
                 if !newValue {
                     annotateToolValidationIssues.removeValue(forKey: tool)
                 }
-            },
+            }
         )
     }
 
@@ -1060,9 +1061,9 @@ struct ShortcutsSettingsView: View {
             set: { newValue in
                 if newValue {
                     switch validator.validateGlobalShortcut(manager.shortcut(for: kind), for: kind) {
-                    case .accept(let issue):
+                    case let .accept(issue):
                         globalValidationIssues[kind] = issue
-                    case .reject(let issue):
+                    case let .reject(issue):
                         globalValidationIssues[kind] = issue
                         return
                     }
@@ -1076,7 +1077,7 @@ struct ShortcutsSettingsView: View {
                 if kind.isSystemConflictRelevant {
                     updateSystemConflictStatus()
                 }
-            },
+            }
         )
     }
 
@@ -1086,9 +1087,9 @@ struct ShortcutsSettingsView: View {
             set: { newValue in
                 if newValue {
                     switch validator.validateAnnotateActionShortcut(annotateManager.shortcut(for: kind), for: kind) {
-                    case .accept(let issue):
+                    case let .accept(issue):
                         annotateActionValidationIssues[kind] = issue
-                    case .reject(let issue):
+                    case let .reject(issue):
                         annotateActionValidationIssues[kind] = issue
                         return
                     }
@@ -1099,7 +1100,7 @@ struct ShortcutsSettingsView: View {
                 if !newValue {
                     annotateActionValidationIssues.removeValue(forKey: kind)
                 }
-            },
+            }
         )
     }
 
@@ -1111,7 +1112,7 @@ struct ShortcutsSettingsView: View {
 
     private func handleGlobalShortcutChange(_ config: ShortcutConfig?, for kind: GlobalShortcutKind) -> Bool {
         switch validator.validateGlobalShortcut(config, for: kind) {
-        case .accept(let issue):
+        case let .accept(issue):
             globalValidationIssues[kind] = issue
             switch kind {
             case .fullscreen:
@@ -1174,7 +1175,7 @@ struct ShortcutsSettingsView: View {
                 updateSystemConflictStatus()
             }
             return true
-        case .reject(let issue):
+        case let .reject(issue):
             globalValidationIssues[kind] = issue
             return false
         }
@@ -1182,10 +1183,10 @@ struct ShortcutsSettingsView: View {
 
     private func handleAnnotateActionShortcutChange(
         _ config: ShortcutConfig?,
-        for kind: AnnotateActionShortcutKind,
+        for kind: AnnotateActionShortcutKind
     ) -> Bool {
         switch validator.validateAnnotateActionShortcut(config, for: kind) {
-        case .accept(let issue):
+        case let .accept(issue):
             annotateActionValidationIssues[kind] = issue
             switch kind {
             case .copyAndClose:
@@ -1202,7 +1203,7 @@ struct ShortcutsSettingsView: View {
                 annotateManager.setAutoRedactSensitiveDataShortcut(config)
             }
             return true
-        case .reject(let issue):
+        case let .reject(issue):
             annotateActionValidationIssues[kind] = issue
             return false
         }
@@ -1210,10 +1211,10 @@ struct ShortcutsSettingsView: View {
 
     private func handleCaptureOverlayShortcutChange(
         _ shortcut: CaptureOverlayShortcut?,
-        for kind: CaptureOverlayShortcutKind,
+        for kind: CaptureOverlayShortcutKind
     ) -> Bool {
         switch validator.validateCaptureOverlayShortcut(shortcut, for: kind) {
-        case .accept(let issue):
+        case let .accept(issue):
             captureOverlayValidationIssues[kind] = issue
             switch kind {
             case .applicationRecording:
@@ -1223,7 +1224,7 @@ struct ShortcutsSettingsView: View {
             manager.refreshShortcutRegistration()
             updateSystemConflictStatus()
             return true
-        case .reject(let issue):
+        case let .reject(issue):
             captureOverlayValidationIssues[kind] = issue
             return false
         }
@@ -1232,16 +1233,16 @@ struct ShortcutsSettingsView: View {
     private func allInOneModeShortcutBinding(for mode: AllInOneCaptureMode) -> Binding<CaptureOverlayShortcut?> {
         Binding(
             get: { allInOneModeShortcuts[mode]?.shortcut },
-            set: { allInOneModeShortcuts[mode] = ModeShortcutState(shortcut: $0) },
+            set: { allInOneModeShortcuts[mode] = ModeShortcutState(shortcut: $0) }
         )
     }
 
     private func handleAllInOneModeShortcutChange(
         _ shortcut: CaptureOverlayShortcut?,
-        for mode: AllInOneCaptureMode,
+        for mode: AllInOneCaptureMode
     ) -> Bool {
         switch validator.validateAllInOneModeShortcut(shortcut, for: mode) {
-        case .accept(let issue):
+        case let .accept(issue):
             if let issue {
                 allInOneModeValidationIssues[mode] = issue
             } else {
@@ -1250,7 +1251,7 @@ struct ShortcutsSettingsView: View {
             allInOneModeShortcuts[mode] = ModeShortcutState(shortcut: shortcut)
             AllInOneModeShortcutSettings.setShortcut(shortcut, for: mode)
             return true
-        case .reject(let issue):
+        case let .reject(issue):
             allInOneModeValidationIssues[mode] = issue
             return false
         }
@@ -1258,7 +1259,7 @@ struct ShortcutsSettingsView: View {
 
     private func handleAnnotateToolShortcutChange(
         _ key: Character?,
-        for tool: AnnotationToolType,
+        for tool: AnnotationToolType
     ) -> Bool {
         guard let key else {
             annotateToolValidationIssues.removeValue(forKey: tool)
@@ -1267,11 +1268,11 @@ struct ShortcutsSettingsView: View {
         }
 
         switch validator.validateAnnotateToolShortcut(key, for: tool) {
-        case .accept(let issue):
+        case let .accept(issue):
             annotateToolValidationIssues[tool] = issue
             annotateManager.setShortcut(key, for: tool)
             return true
-        case .reject(let issue):
+        case let .reject(issue):
             annotateToolValidationIssues[tool] = issue
             return false
         }
@@ -1279,13 +1280,13 @@ struct ShortcutsSettingsView: View {
 
     /// Recording annotation supports a subset of tools
     private static let recordingTools: Set<AnnotationToolType> = [
-        .selection, .rectangle, .circle, .arrow, .line, .pencil, .highlighter,
+        .selection, .rectangle, .circle, .arrow, .line, .pencil, .highlighter
     ]
 
     /// Screenshot annotation tools (all configurable except crop handled separately)
     private static let screenshotTools: Set<AnnotationToolType> = [
         .selection, .rectangle, .circle, .arrow, .line, .text,
-        .highlighter, .blur, .cueNote, .pencil,
+        .highlighter, .blur, .cueNote, .pencil
     ]
 
     private func toolContext(for tool: AnnotationToolType) -> AnnotationToolContext {

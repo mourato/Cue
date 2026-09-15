@@ -61,7 +61,7 @@ enum AllInOneModeShortcutSettings {
     /// First available mode whose child shortcut matches the event.
     static func mode(
         matching event: NSEvent,
-        in availableModes: [AllInOneCaptureMode],
+        in availableModes: [AllInOneCaptureMode]
     ) -> AllInOneCaptureMode? {
         availableModes.first { matches(event, mode: $0) }
     }
@@ -69,7 +69,7 @@ enum AllInOneModeShortcutSettings {
     /// True when another mode already uses the same single key.
     static func conflictingMode(
         for candidate: CaptureOverlayShortcut,
-        excluding excluded: AllInOneCaptureMode,
+        excluding excluded: AllInOneCaptureMode
     ) -> AllInOneCaptureMode? {
         AllInOneCaptureMode.allCases.first { mode in
             guard mode != excluded, let existing = shortcut(for: mode) else { return false }
@@ -130,7 +130,7 @@ enum AllInOneModeShortcutSettings {
 
     private static func loadShortcut(
         forKey key: String,
-        defaultValue: CaptureOverlayShortcut,
+        defaultValue: CaptureOverlayShortcut
     ) -> CaptureOverlayShortcut? {
         let decoder = JSONDecoder()
         if let data = defaults.data(forKey: key) {

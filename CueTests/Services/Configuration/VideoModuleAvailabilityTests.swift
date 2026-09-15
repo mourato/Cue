@@ -29,7 +29,7 @@ final class VideoModuleAvailabilityTests: XCTestCase {
     func testSetEnabledRoundTrip() throws {
         try XCTSkipUnless(
             VideoModuleAvailability.isCompiledIn,
-            "Requires CUE_VIDEO_MODULE (Notinhas Video / Debug+Video)",
+            "Requires CUE_VIDEO_MODULE (Notinhas Video / Debug+Video)"
         )
 
         XCTAssertTrue(VideoModuleAvailability.isEnabled(using: defaults))
@@ -44,7 +44,7 @@ final class VideoModuleAvailabilityTests: XCTestCase {
     func testDisabledWhenNotCompiledIn() throws {
         try XCTSkipUnless(
             !VideoModuleAvailability.isCompiledIn,
-            "Only meaningful on default Notinhas builds without CUE_VIDEO_MODULE",
+            "Only meaningful on default Notinhas builds without CUE_VIDEO_MODULE"
         )
 
         defaults.set(true, forKey: PreferencesKeys.videoModuleEnabled)

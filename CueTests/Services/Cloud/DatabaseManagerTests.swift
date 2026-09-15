@@ -52,7 +52,7 @@ final class DatabaseManagerTests: XCTestCase {
         let archive = try DatabaseManager.archiveDatabaseFilesForTesting(
             in: testDirectory,
             fileNames: fileNames,
-            timestamp: "20260605-204500",
+            timestamp: "20260605-204500"
         )
 
         XCTAssertEqual(archive.archivedFileURLs.count, fileNames.count)
@@ -65,8 +65,8 @@ final class DatabaseManagerTests: XCTestCase {
                     atPath: testDirectory
                         .appendingPathComponent("DatabaseRecovery-20260605-204500", isDirectory: true)
                         .appendingPathComponent(fileName)
-                        .path,
-                ),
+                        .path
+                )
             )
         }
     }
@@ -82,7 +82,7 @@ final class DatabaseManagerTests: XCTestCase {
         let archive = try DatabaseManager.archiveDatabaseFilesForTesting(
             in: testDirectory,
             fileNames: ["snapzy.db"],
-            timestamp: "20260605-204500",
+            timestamp: "20260605-204500"
         )
 
         XCTAssertEqual(archive.archiveDirectoryURL?.lastPathComponent, "DatabaseRecovery-20260605-204500-2")
@@ -91,8 +91,8 @@ final class DatabaseManagerTests: XCTestCase {
                 atPath: testDirectory
                     .appendingPathComponent("DatabaseRecovery-20260605-204500-2", isDirectory: true)
                     .appendingPathComponent("snapzy.db")
-                    .path,
-            ),
+                    .path
+            )
         )
     }
 
@@ -109,7 +109,7 @@ final class DatabaseManagerTests: XCTestCase {
             return directory
         } catch {
             throw XCTSkip(
-                "DatabaseManagerTests require a writable temporary directory: \(error.localizedDescription)",
+                "DatabaseManagerTests require a writable temporary directory: \(error.localizedDescription)"
             )
         }
     }

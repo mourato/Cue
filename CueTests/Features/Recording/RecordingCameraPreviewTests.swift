@@ -8,7 +8,7 @@
             let preview = RecordingCameraPreviewPlacement.frame(in: selection)
             let safeBounds = selection.insetBy(
                 dx: RecordingCameraPreviewPlacement.inset,
-                dy: RecordingCameraPreviewPlacement.inset,
+                dy: RecordingCameraPreviewPlacement.inset
             )
 
             XCTAssertTrue(safeBounds.contains(preview))
@@ -36,14 +36,14 @@
             for shape in RecordingCameraPreviewShape.allCases {
                 let preview = RecordingCameraPreviewPlacement.frame(
                     in: selection,
-                    configuration: RecordingCameraPreviewConfiguration(shape: shape),
+                    configuration: RecordingCameraPreviewConfiguration(shape: shape)
                 )
 
                 XCTAssertTrue(selection.insetBy(dx: 16, dy: 16).contains(preview))
                 XCTAssertEqual(
                     preview.width / preview.height,
                     shape == .vertical ? 9 / 16 : shape == .rectangle ? 16 / 9 : 1,
-                    accuracy: 0.001,
+                    accuracy: 0.001
                 )
             }
         }
@@ -53,7 +53,7 @@
             let widths = RecordingCameraPreviewSize.allCases.map { size in
                 RecordingCameraPreviewPlacement.frame(
                     in: selection,
-                    configuration: RecordingCameraPreviewConfiguration(size: size),
+                    configuration: RecordingCameraPreviewConfiguration(size: size)
                 ).width
             }
 
@@ -66,7 +66,7 @@
             let origin = RecordingCameraPreviewPlacement.clampedOrigin(
                 CGPoint(x: -500, y: 5000),
                 size: CGSize(width: 240, height: 135),
-                in: selection,
+                in: selection
             )
 
             XCTAssertEqual(origin.x, selection.minX + 16)
@@ -77,12 +77,12 @@
             let selection = CGRect(x: 100, y: 200, width: 1200, height: 800)
             let configuration = RecordingCameraPreviewConfiguration(
                 size: .medium,
-                shape: .square,
+                shape: .square
             )
             let preview = RecordingCameraPreviewPlacement.frame(
                 in: selection,
                 configuration: configuration,
-                normalizedCenter: CGPoint(x: 0.25, y: 0.75),
+                normalizedCenter: CGPoint(x: 0.25, y: 0.75)
             )
 
             XCTAssertEqual((preview.midX - selection.minX) / selection.width, 0.25, accuracy: 0.001)
@@ -93,17 +93,17 @@
             let selection = CGRect(x: 100, y: 200, width: 1200, height: 800)
             let configuration = RecordingCameraPreviewConfiguration(
                 size: .medium,
-                shape: .vertical,
+                shape: .vertical
             )
             let preview = RecordingCameraPreviewPlacement.frame(
                 in: selection,
                 configuration: configuration,
-                normalizedCenter: CGPoint(x: 0.25, y: 0.75),
+                normalizedCenter: CGPoint(x: 0.25, y: 0.75)
             )
             let normalized = try XCTUnwrap(RecordingCameraPreviewPlacement.topLeftNormalizedRect(
                 in: selection,
                 configuration: configuration,
-                normalizedCenter: CGPoint(x: 0.25, y: 0.75),
+                normalizedCenter: CGPoint(x: 0.25, y: 0.75)
             ))
 
             XCTAssertEqual(normalized.minX, (preview.minX - selection.minX) / selection.width, accuracy: 0.001)
@@ -112,14 +112,14 @@
             XCTAssertEqual(
                 normalized.minY,
                 1 - (preview.minY - selection.minY + preview.height) / selection.height,
-                accuracy: 0.001,
+                accuracy: 0.001
             )
         }
 
         func testRecordedCameraOverlayLayoutRoundTripsThroughCodable() throws {
             let layout = RecordedCameraOverlayLayout(
                 normalizedRect: CGRect(x: 0.1, y: 0.2, width: 0.3, height: 0.4),
-                shape: .circle,
+                shape: .circle
             )
 
             let data = try JSONEncoder().encode(layout)
@@ -131,13 +131,13 @@
         func testRecordingMetadataCarriesCameraOverlayLayout() throws {
             let layout = RecordedCameraOverlayLayout(
                 normalizedRect: CGRect(x: 0.1, y: 0.2, width: 0.3, height: 0.4),
-                shape: .vertical,
+                shape: .vertical
             )
             let metadata = RecordingMetadata(
                 captureSize: CGSize(width: 1280, height: 720),
                 samplesPerSecond: 30,
                 mouseSamples: [],
-                cameraOverlayLayout: layout,
+                cameraOverlayLayout: layout
             )
 
             let data = try JSONEncoder().encode(metadata)

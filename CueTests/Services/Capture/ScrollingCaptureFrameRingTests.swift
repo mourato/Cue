@@ -50,7 +50,7 @@ final class ScrollingCaptureFrameRingTests: XCTestCase {
             sequenceNumber: sequenceNumber,
             image: image,
             capturedAt: 0,
-            motionScore: nil,
+            motionScore: nil
         )
     }
 }

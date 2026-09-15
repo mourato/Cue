@@ -53,13 +53,13 @@ nonisolated enum WebPEncoderService {
             bitsPerComponent: 8,
             bytesPerRow: bytesPerRow,
             space: CGColorSpaceCreateDeviceRGB(),
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue, // RGBA
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue // RGBA
         ) else {
             DiagnosticLogger.shared.log(
                 .error,
                 .export,
                 "WebP: failed to create bitmap context",
-                context: ["width": "\(width)", "height": "\(height)"],
+                context: ["width": "\(width)", "height": "\(height)"]
             )
             return nil
         }
@@ -87,7 +87,7 @@ nonisolated enum WebPEncoderService {
                 config: config,
                 originWidth: width,
                 originHeight: height,
-                stride: bytesPerRow,
+                stride: bytesPerRow
             )
         } catch {
             DiagnosticLogger.shared.logError(.export, error, "WebP encoding failed")

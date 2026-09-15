@@ -31,7 +31,7 @@
         func testCollapse_extendsDelayForConsecutiveDuplicates() {
             let (indices, delays) = GIFFramePlan.collapse(
                 hashes: [1, 1, 2, 2, 2, 3],
-                frameDelay: 0.1,
+                frameDelay: 0.1
             )
 
             XCTAssertEqual(indices, [0, 2, 5])
@@ -59,11 +59,11 @@
 
             XCTAssertEqual(
                 GIFFramePlan.thumbnailHash(red),
-                GIFFramePlan.thumbnailHash(redAgain),
+                GIFFramePlan.thumbnailHash(redAgain)
             )
             XCTAssertNotEqual(
                 GIFFramePlan.thumbnailHash(red),
-                GIFFramePlan.thumbnailHash(blue),
+                GIFFramePlan.thumbnailHash(blue)
             )
         }
 
@@ -151,7 +151,7 @@
                 provider: provider,
                 decode: nil,
                 shouldInterpolate: false,
-                intent: .defaultIntent,
+                intent: .defaultIntent
             ))
         }
 
@@ -165,7 +165,7 @@
                 bitsPerComponent: 8,
                 bytesPerRow: width * 4,
                 space: CGColorSpaceCreateDeviceRGB(),
-                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
             ), let data = context.data else {
                 throw XCTSkip("Cannot read test image pixels")
             }

@@ -17,12 +17,12 @@ struct AllInOneCaptureToolbarView: View {
                     systemName: mode.systemImage,
                     title: mode.compactTitle,
                     action: { session.activateMode(mode) },
-                    accessibilityLabel: mode.accessibilityLabel,
+                    accessibilityLabel: mode.accessibilityLabel
                 )
                 .accessibilityValue(
                     session.selectedMode == mode
                         ? L10n.AllInOne.modeSelectedAccessibilityValue
-                        : "",
+                        : ""
                 )
                 .accessibilityAddTraits(session.selectedMode == mode ? .isSelected : [])
             }

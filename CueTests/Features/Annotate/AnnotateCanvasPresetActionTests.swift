@@ -31,13 +31,13 @@ final class AnnotateCanvasPresetActionTests: XCTestCase {
 
     private func makeAnnotateState(
         store: AnnotateCanvasPresetStore,
-        defaults: UserDefaults,
+        defaults: UserDefaults
     ) -> AnnotateState {
         let state = AnnotateState(
             image: NSImage(size: NSSize(width: 40, height: 40)),
             url: URL(fileURLWithPath: "/tmp/snapzy-canvas-preset-tests.png"),
             defaults: defaults,
-            canvasPresetStore: store,
+            canvasPresetStore: store
         )
         Self.retainedAnnotateStates.append(state)
         return state
@@ -47,13 +47,13 @@ final class AnnotateCanvasPresetActionTests: XCTestCase {
         background: BackgroundStyle = .gradient(.bluePurple),
         padding: CGFloat = 40,
         shadowIntensity: CGFloat = 0.3,
-        cornerRadius: CGFloat = 12,
+        cornerRadius: CGFloat = 12
     ) -> AnnotateCanvasPresetPayload {
         AnnotateCanvasPresetPayload(
             backgroundStyle: CodableBackgroundStyle(from: background)!,
             padding: padding,
             shadowIntensity: shadowIntensity,
-            cornerRadius: cornerRadius,
+            cornerRadius: cornerRadius
         )
     }
 
@@ -70,8 +70,8 @@ final class AnnotateCanvasPresetActionTests: XCTestCase {
                 background: .gradient(.orangeRed),
                 padding: 56,
                 shadowIntensity: 0.42,
-                cornerRadius: 20,
-            ),
+                cornerRadius: 20
+            )
         )
 
         state.applyCanvasPreset(preset)
@@ -96,8 +96,8 @@ final class AnnotateCanvasPresetActionTests: XCTestCase {
                 background: .gradient(.bluePurple),
                 padding: 32,
                 shadowIntensity: 0.2,
-                cornerRadius: 8,
-            ),
+                cornerRadius: 8
+            )
         )
 
         state.applyCanvasPreset(preset, marksUnsaved: false)
@@ -235,7 +235,7 @@ final class AnnotateCanvasPresetActionTests: XCTestCase {
             cornerRadius: 22,
             imageAlignment: .center,
             aspectRatio: .auto,
-            aspectRatioOrientation: .horizontal,
+            aspectRatioOrientation: .horizontal
         )
 
         state.applyCanvasEffects(effects)

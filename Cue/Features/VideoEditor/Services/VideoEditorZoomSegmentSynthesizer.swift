@@ -45,7 +45,7 @@
                     return Candidate(
                         startTime: startTime,
                         endTime: endTime,
-                        center: press.normalizedPoint,
+                        center: press.normalizedPoint
                     )
                 }
 
@@ -53,7 +53,8 @@
             merged.reserveCapacity(candidates.count)
             for candidate in candidates {
                 if var previous = merged.last,
-                   candidate.startTime <= previous.endTime + joinTolerance {
+                   candidate.startTime <= previous.endTime + joinTolerance
+                {
                     previous.endTime = max(previous.endTime, candidate.endTime)
                     merged[merged.count - 1] = previous
                 } else {
@@ -69,7 +70,7 @@
                     zoomCenter: candidate.center,
                     zoomType: .auto,
                     isImplicit: true,
-                    anchorMode: .pointer,
+                    anchorMode: .pointer
                 ).clamped(to: duration)
             }
         }

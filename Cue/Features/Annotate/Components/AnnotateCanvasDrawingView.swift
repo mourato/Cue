@@ -213,7 +213,7 @@ final class DrawingCanvasNSView: NSView {
             rect: .zero,
             options: [.activeInKeyWindow, .inVisibleRect, .mouseMoved],
             owner: self,
-            userInfo: nil,
+            userInfo: nil
         )
         addTrackingArea(trackingArea)
     }
@@ -341,7 +341,8 @@ final class DrawingCanvasNSView: NSView {
             if state.selectedTool == .cueNote,
                let noteID = state.notinhasSelectedNoteID,
                state.notinhasEditingNoteID == nil,
-               state.editingTextAnnotationId == nil {
+               state.editingTextAnnotationId == nil
+            {
                 Task { @MainActor in
                     state.notinhasDeleteNote(id: noteID)
                 }
@@ -427,7 +428,8 @@ final class DrawingCanvasNSView: NSView {
             if !event.modifierFlags.contains(.command),
                state.notinhasEditingNoteID == nil,
                let char = event.characters?.lowercased().first,
-               let matchedTool = shortcutManager.tool(for: char) {
+               let matchedTool = shortcutManager.tool(for: char)
+            {
                 Task { @MainActor in
                     if matchedTool == .crop {
                         state.beginCropInteraction()
@@ -468,7 +470,7 @@ final class DrawingCanvasNSView: NSView {
     private func hitTestHandle(
         at point: CGPoint,
         for annotation: AnnotationItem,
-        inDisplayCoordinates: Bool,
+        inDisplayCoordinates: Bool
     ) -> ResizeHandle? {
         for (handle, rect) in resizeHandleRects(for: annotation, inDisplayCoordinates: inDisplayCoordinates) {
             if rect.contains(point) {
@@ -480,34 +482,35 @@ final class DrawingCanvasNSView: NSView {
 
     private func resizeHandleRects(
         for annotation: AnnotationItem,
-        inDisplayCoordinates: Bool,
+        inDisplayCoordinates: Bool
     ) -> [(ResizeHandle, CGRect)] {
         switch annotation.type {
-        case .line(let start, let end):
+        case let .line(start, end):
             let startPoint = inDisplayCoordinates ? imageToDisplay(start) : start
             let endPoint = inDisplayCoordinates ? imageToDisplay(end) : end
             return [
                 (.lineStart, handleRect(at: startPoint)),
-                (.lineEnd, handleRect(at: endPoint)),
+                (.lineEnd, handleRect(at: endPoint))
             ]
 
         case .text:
             let bounds = inDisplayCoordinates ? imageToDisplay(annotation.resizeBounds) : annotation.resizeBounds
             var handles = standardResizeHandleRects(for: bounds)
             if annotation.properties.textPresentation == .callout,
-               let tailTarget = annotation.properties.calloutTailTarget {
+               let tailTarget = annotation.properties.calloutTailTarget
+            {
                 let point = inDisplayCoordinates ? imageToDisplay(tailTarget) : tailTarget
                 handles.append((.textCalloutTail, handleRect(at: point)))
             }
             return handles
 
-        case .arrow(let geometry):
+        case let .arrow(geometry):
             // Figma-style endpoint editing: two draggable endpoints instead of a bounding box.
             let startPoint = inDisplayCoordinates ? imageToDisplay(geometry.start) : geometry.start
             let endPoint = inDisplayCoordinates ? imageToDisplay(geometry.end) : geometry.end
             return [
                 (.lineStart, handleRect(at: startPoint)),
-                (.lineEnd, handleRect(at: endPoint)),
+                (.lineEnd, handleRect(at: endPoint))
             ]
 
         case .rectangle:
@@ -522,7 +525,7 @@ final class DrawingCanvasNSView: NSView {
 
     private func standardResizeHandleRects(
         for bounds: CGRect,
-        includingSides: Bool = false,
+        includingSides: Bool = false
     ) -> [(ResizeHandle, CGRect)] {
         var handles: [(ResizeHandle, CGRect)] = [
             (
@@ -530,33 +533,33 @@ final class DrawingCanvasNSView: NSView {
                 handleRect(at: CaptureSelectionHandleGeometry.anchor(
                     for: .topLeft,
                     in: bounds,
-                    coordinateSpace: .bottomLeftOrigin,
-                )),
+                    coordinateSpace: .bottomLeftOrigin
+                ))
             ),
             (
                 .topRight,
                 handleRect(at: CaptureSelectionHandleGeometry.anchor(
                     for: .topRight,
                     in: bounds,
-                    coordinateSpace: .bottomLeftOrigin,
-                )),
+                    coordinateSpace: .bottomLeftOrigin
+                ))
             ),
             (
                 .bottomLeft,
                 handleRect(at: CaptureSelectionHandleGeometry.anchor(
                     for: .bottomLeft,
                     in: bounds,
-                    coordinateSpace: .bottomLeftOrigin,
-                )),
+                    coordinateSpace: .bottomLeftOrigin
+                ))
             ),
             (
                 .bottomRight,
                 handleRect(at: CaptureSelectionHandleGeometry.anchor(
                     for: .bottomRight,
                     in: bounds,
-                    coordinateSpace: .bottomLeftOrigin,
-                )),
-            ),
+                    coordinateSpace: .bottomLeftOrigin
+                ))
+            )
         ]
         guard includingSides else { return handles }
 
@@ -566,33 +569,33 @@ final class DrawingCanvasNSView: NSView {
                 handleRect(at: CaptureSelectionHandleGeometry.anchor(
                     for: .top,
                     in: bounds,
-                    coordinateSpace: .bottomLeftOrigin,
-                )),
+                    coordinateSpace: .bottomLeftOrigin
+                ))
             ),
             (
                 .bottom,
                 handleRect(at: CaptureSelectionHandleGeometry.anchor(
                     for: .bottom,
                     in: bounds,
-                    coordinateSpace: .bottomLeftOrigin,
-                )),
+                    coordinateSpace: .bottomLeftOrigin
+                ))
             ),
             (
                 .left,
                 handleRect(at: CaptureSelectionHandleGeometry.anchor(
                     for: .left,
                     in: bounds,
-                    coordinateSpace: .bottomLeftOrigin,
-                )),
+                    coordinateSpace: .bottomLeftOrigin
+                ))
             ),
             (
                 .right,
                 handleRect(at: CaptureSelectionHandleGeometry.anchor(
                     for: .right,
                     in: bounds,
-                    coordinateSpace: .bottomLeftOrigin,
-                )),
-            ),
+                    coordinateSpace: .bottomLeftOrigin
+                ))
+            )
         ]
         return handles
     }
@@ -604,7 +607,7 @@ final class DrawingCanvasNSView: NSView {
             x: center.x - displayHandleSize / 2,
             y: center.y - displayHandleSize / 2,
             width: displayHandleSize,
-            height: displayHandleSize,
+            height: displayHandleSize
         )
     }
 
@@ -615,7 +618,7 @@ final class DrawingCanvasNSView: NSView {
         guard displayScale > 0 else { return point }
         return CGPoint(
             x: point.x / displayScale + effectiveCanvasBounds.minX,
-            y: point.y / displayScale + effectiveCanvasBounds.minY,
+            y: point.y / displayScale + effectiveCanvasBounds.minY
         )
     }
 
@@ -623,7 +626,7 @@ final class DrawingCanvasNSView: NSView {
     private func imageToDisplay(_ point: CGPoint) -> CGPoint {
         CGPoint(
             x: (point.x - effectiveCanvasBounds.minX) * displayScale,
-            y: (point.y - effectiveCanvasBounds.minY) * displayScale,
+            y: (point.y - effectiveCanvasBounds.minY) * displayScale
         )
     }
 
@@ -633,7 +636,7 @@ final class DrawingCanvasNSView: NSView {
             x: (rect.origin.x - effectiveCanvasBounds.minX) * displayScale,
             y: (rect.origin.y - effectiveCanvasBounds.minY) * displayScale,
             width: rect.width * displayScale,
-            height: rect.height * displayScale,
+            height: rect.height * displayScale
         )
     }
 
@@ -644,7 +647,7 @@ final class DrawingCanvasNSView: NSView {
             x: rect.origin.x / displayScale + effectiveCanvasBounds.minX,
             y: rect.origin.y / displayScale + effectiveCanvasBounds.minY,
             width: rect.width / displayScale,
-            height: rect.height / displayScale,
+            height: rect.height / displayScale
         )
     }
 
@@ -667,7 +670,7 @@ final class DrawingCanvasNSView: NSView {
             : state.activeAnnotationBounds.standardized
         return CGPoint(
             x: max(bounds.minX, min(point.x, bounds.maxX)),
-            y: max(bounds.minY, min(point.y, bounds.maxY)),
+            y: max(bounds.minY, min(point.y, bounds.maxY))
         )
     }
 
@@ -690,7 +693,8 @@ final class DrawingCanvasNSView: NSView {
             return true
         }
         if let annotation = state.annotations.first(where: { $0.id == id }),
-           case .embeddedImage = annotation.type {
+           case .embeddedImage = annotation.type
+        {
             return true
         }
         return false
@@ -717,7 +721,8 @@ final class DrawingCanvasNSView: NSView {
         // Handle double-click on text annotations to enter edit mode
         if event.clickCount == 2 {
             if let annotation = hitTestAnnotation(at: imagePoint),
-               case .text = annotation.type {
+               case .text = annotation.type
+            {
                 Task { @MainActor in
                     state.selectedAnnotationId = annotation.id
                     state.beginTextEditing(id: annotation.id)
@@ -741,7 +746,8 @@ final class DrawingCanvasNSView: NSView {
         if let selectedId = state.selectedAnnotationId,
            let annotation = state.annotations.first(where: { $0.id == selectedId }),
            annotation.supportsResize,
-           canResizeAnnotation(annotation) {
+           canResizeAnnotation(annotation)
+        {
             if let handle = hitTestHandle(at: displayPoint, for: annotation, inDisplayCoordinates: true) {
                 isResizingAnnotation = true
                 resizingAnnotationId = selectedId
@@ -759,7 +765,8 @@ final class DrawingCanvasNSView: NSView {
         if state.selectedTool == .cueNote,
            let selectedId = state.notinhasSelectedNoteID,
            let note = state.cueNotes.first(where: { $0.id == selectedId }),
-           let handle = hitTestNotinhasResizeHandle(at: displayPoint, for: note) {
+           let handle = hitTestNotinhasResizeHandle(at: displayPoint, for: note)
+        {
             if state.notinhasEditingNoteID != nil {
                 state.notinhasCloseEditor(discardIfEmpty: false, revertLiveAppearance: true)
             }
@@ -807,7 +814,8 @@ final class DrawingCanvasNSView: NSView {
         // otherwise secondary images would block drawing on every image but the base.
         if state.selectedTool != .crop,
            let annotation = hitTestAnnotation(at: imagePoint),
-           !Self.shouldPrioritizeCanvasMarkup(over: annotation, selectedTool: state.selectedTool) {
+           !Self.shouldPrioritizeCanvasMarkup(over: annotation, selectedTool: state.selectedTool)
+        {
             let optionDuplicate = event.modifierFlags.contains(.option)
             // Gesture locals first so selection/@Published sinks skip full redraw at drag start.
             beginAnnotationDrag(anchor: annotation, at: imagePoint)
@@ -847,7 +855,7 @@ final class DrawingCanvasNSView: NSView {
     /// the base image when the user is adding a markup annotation.
     static func shouldPrioritizeCanvasMarkup(
         over annotation: AnnotationItem,
-        selectedTool: AnnotationToolType,
+        selectedTool: AnnotationToolType
     ) -> Bool {
         guard selectedTool != .selection else { return false }
         if case .embeddedImage = annotation.type {
@@ -864,7 +872,8 @@ final class DrawingCanvasNSView: NSView {
 
     private func beginAnnotationDragBody(anchor annotation: AnnotationItem, at imagePoint: CGPoint) {
         if state.isCombineMode, state.combineMode == .autoStitch,
-           case .embeddedImage = annotation.type {
+           case .embeddedImage = annotation.type
+        {
             state.setSelectedAnnotationIds([annotation.id])
             invalidateDrawing()
             return
@@ -880,7 +889,7 @@ final class DrawingCanvasNSView: NSView {
         if NSEvent.modifierFlags.contains(.option) {
             let duplicateResult = state.duplicateAnnotationsDetail(
                 withIds: activeIds,
-                anchorOriginalId: annotation.id,
+                anchorOriginalId: annotation.id
             )
             activeIds = duplicateResult.cloneIds
             if let anchorCloneId = duplicateResult.anchorCloneId {
@@ -896,12 +905,12 @@ final class DrawingCanvasNSView: NSView {
         let anchorBounds = dragAnchor.resizeBounds
         dragOffset = CGPoint(
             x: imagePoint.x - anchorBounds.origin.x,
-            y: imagePoint.y - anchorBounds.origin.y,
+            y: imagePoint.y - anchorBounds.origin.y
         )
         originalBounds = anchorBounds
         let draggedItems = state.annotations.filter { activeIds.contains($0.id) }
         originalBoundsByAnnotationId = Dictionary(
-            uniqueKeysWithValues: draggedItems.map { ($0.id, $0.resizeBounds) },
+            uniqueKeysWithValues: draggedItems.map { ($0.id, $0.resizeBounds) }
         )
         gestureOriginalItems = Dictionary(uniqueKeysWithValues: draggedItems.map { ($0.id, $0) })
         gestureLocalItems = gestureOriginalItems
@@ -936,7 +945,8 @@ final class DrawingCanvasNSView: NSView {
         }
 
         guard let start = selectionAreaStart,
-              let current = selectionAreaCurrent else {
+              let current = selectionAreaCurrent
+        else {
             state.deselectAnnotation()
             return
         }
@@ -945,7 +955,7 @@ final class DrawingCanvasNSView: NSView {
             x: min(start.x, current.x),
             y: min(start.y, current.y),
             width: abs(current.x - start.x),
-            height: abs(current.y - start.y),
+            height: abs(current.y - start.y)
         )
 
         guard selectionRect.width >= 3 || selectionRect.height >= 3 else {
@@ -968,7 +978,8 @@ final class DrawingCanvasNSView: NSView {
         // Handle resizing (in image coordinates). Mutates only the gesture-local
         // copy; the final geometry commits to state once on mouseUp.
         if isResizingAnnotation, let handle = activeResizeHandle,
-           let resizeId = resizingAnnotationId {
+           let resizeId = resizingAnnotationId
+        {
             applyGestureResize(handle: handle, resizeId: resizeId, imagePoint: imagePoint, event: event)
             invalidateLiveLayers()
             return
@@ -1015,9 +1026,9 @@ final class DrawingCanvasNSView: NSView {
                 let newBounds = CGRect(
                     origin: CGPoint(
                         x: originalBounds.origin.x + dx,
-                        y: originalBounds.origin.y + dy,
+                        y: originalBounds.origin.y + dy
                     ),
-                    size: originalBounds.size,
+                    size: originalBounds.size
                 )
                 gestureLocalItems[id] = original.applyingResizeBounds(newBounds)
                 gestureDidMutate = true
@@ -1030,7 +1041,8 @@ final class DrawingCanvasNSView: NSView {
                activeIds.count == 1,
                let draggedID = activeIds.first,
                let dragged = gestureLocalItems[draggedID],
-               case .embeddedImage = dragged.type {
+               case .embeddedImage = dragged.type
+            {
                 let candidates = [state.sourceImageBounds] + state.annotations.compactMap { annotation -> CGRect? in
                     guard annotation.id != draggedID, case .embeddedImage = annotation.type else { return nil }
                     return annotation.bounds
@@ -1039,7 +1051,7 @@ final class DrawingCanvasNSView: NSView {
                     draggedBounds: dragged.bounds,
                     candidateBounds: candidates,
                     gap: state.combineGap,
-                    tolerance: state.combineSnapTolerance,
+                    tolerance: state.combineSnapTolerance
                 ) {
                     gestureLocalItems[draggedID] = dragged.applyingResizeBounds(snapped)
                 }
@@ -1058,7 +1070,7 @@ final class DrawingCanvasNSView: NSView {
         if let startDisplayPoint = drawingStartDisplayPoint {
             let distance = hypot(
                 displayPoint.x - startDisplayPoint.x,
-                displayPoint.y - startDisplayPoint.y,
+                displayPoint.y - startDisplayPoint.y
             )
             drawingDragDistance = max(drawingDragDistance, distance)
         }
@@ -1067,7 +1079,7 @@ final class DrawingCanvasNSView: NSView {
             for: state.selectedTool,
             start: dragStart ?? imagePoint,
             end: imagePoint,
-            shiftHeld: event.modifierFlags.contains(.shift),
+            shiftHeld: event.modifierFlags.contains(.shift)
         )
         switch state.selectedTool {
         case .pencil, .highlighter:
@@ -1083,7 +1095,8 @@ final class DrawingCanvasNSView: NSView {
         guard isDrawing,
               let start = dragStart,
               state.selectedTool == .line || state.selectedTool == .arrow
-              || state.selectedTool == .rectangle || state.selectedTool == .circle else {
+              || state.selectedTool == .rectangle || state.selectedTool == .circle
+        else {
             super.flagsChanged(with: event)
             return
         }
@@ -1094,7 +1107,7 @@ final class DrawingCanvasNSView: NSView {
             for: state.selectedTool,
             start: start,
             end: imagePoint,
-            shiftHeld: event.modifierFlags.contains(.shift),
+            shiftHeld: event.modifierFlags.contains(.shift)
         )]
         invalidateLiveLayers()
     }
@@ -1103,7 +1116,7 @@ final class DrawingCanvasNSView: NSView {
         for tool: AnnotationToolType,
         start: CGPoint,
         end: CGPoint,
-        shiftHeld: Bool,
+        shiftHeld: Bool
     ) -> CGPoint {
         guard shiftHeld else { return end }
         switch tool {
@@ -1130,18 +1143,18 @@ final class DrawingCanvasNSView: NSView {
             var item = original
             let isStart = handle == .lineStart
             switch item.type {
-            case .arrow(let geometry):
+            case let .arrow(geometry):
                 let updated = ArrowGeometry(
                     start: isStart ? imagePoint : geometry.start,
                     end: isStart ? geometry.end : imagePoint,
                     style: geometry.style,
                     arrowType: geometry.arrowType,
                     startHead: geometry.startHead,
-                    endHead: geometry.endHead,
+                    endHead: geometry.endHead
                 )
                 item.type = .arrow(updated)
                 item.bounds = updated.bounds()
-            case .line(let start, let end):
+            case let .line(start, end):
                 let updatedStart = isStart ? imagePoint : start
                 let updatedEnd = isStart ? end : imagePoint
                 item.type = .line(start: updatedStart, end: updatedEnd)
@@ -1149,7 +1162,7 @@ final class DrawingCanvasNSView: NSView {
                     x: min(updatedStart.x, updatedEnd.x),
                     y: min(updatedStart.y, updatedEnd.y),
                     width: abs(updatedEnd.x - updatedStart.x),
-                    height: abs(updatedEnd.y - updatedStart.y),
+                    height: abs(updatedEnd.y - updatedStart.y)
                 ).standardized
             default:
                 return
@@ -1163,7 +1176,7 @@ final class DrawingCanvasNSView: NSView {
             item.properties.calloutTailTarget = TextBubbleGeometry.resolvedTailTarget(
                 in: item.bounds,
                 requestedTarget: imagePoint,
-                fontSize: item.properties.fontSize,
+                fontSize: item.properties.fontSize
             )
             gestureLocalItems[resizeId] = item
 
@@ -1179,7 +1192,7 @@ final class DrawingCanvasNSView: NSView {
             let newBounds = calculateResizedBounds(
                 handle: handle,
                 currentPoint: imagePoint,
-                proportional: proportional,
+                proportional: proportional
             )
             gestureLastResizeBounds = newBounds
             gestureLocalItems[resizeId] = original.applyingResizeBounds(newBounds)
@@ -1198,7 +1211,8 @@ final class DrawingCanvasNSView: NSView {
             // Invalidate blur cache if resizing a blur annotation
             if let resizeId = resizingAnnotationId,
                let annotation = state.annotations.first(where: { $0.id == resizeId }),
-               case .blur = annotation.type {
+               case .blur = annotation.type
+            {
                 blurCacheManager.invalidate(id: resizeId)
             }
             // Commit the gesture-local result synchronously so the very next draw
@@ -1276,7 +1290,8 @@ final class DrawingCanvasNSView: NSView {
                 : draggingAnnotationIds
             for id in activeIds {
                 if let annotation = state.annotations.first(where: { $0.id == id }),
-                   case .blur = annotation.type {
+                   case .blur = annotation.type
+                {
                     blurCacheManager.invalidate(id: id)
                 }
             }
@@ -1313,7 +1328,7 @@ final class DrawingCanvasNSView: NSView {
             for: tool,
             start: start,
             end: imagePoint,
-            shiftHeld: event.modifierFlags.contains(.shift),
+            shiftHeld: event.modifierFlags.contains(.shift)
         )
 
         if shouldCommitDrawing(tool: tool, start: start, end: drawingEnd, path: pathToSave) {
@@ -1330,13 +1345,13 @@ final class DrawingCanvasNSView: NSView {
     private func calculateResizedBounds(
         handle: ResizeHandle,
         currentPoint: CGPoint,
-        proportional: Bool = false,
+        proportional: Bool = false
     ) -> CGRect {
         Self.resizedBounds(
             from: originalBounds,
             handle: handle,
             to: currentPoint,
-            proportional: proportional,
+            proportional: proportional
         )
     }
 
@@ -1344,7 +1359,7 @@ final class DrawingCanvasNSView: NSView {
         from originalBounds: CGRect,
         handle: ResizeHandle,
         to currentPoint: CGPoint,
-        proportional: Bool = false,
+        proportional: Bool = false
     ) -> CGRect {
         let minSize: CGFloat = 20
         var newBounds = originalBounds
@@ -1444,7 +1459,7 @@ final class DrawingCanvasNSView: NSView {
         tool: AnnotationToolType,
         start: CGPoint,
         end: CGPoint,
-        path: [CGPoint],
+        path: [CGPoint]
     ) -> Bool {
         guard tool.requiresDragToCreateAnnotation else { return true }
         return maxDrawingDistance(from: start, to: end, path: path) >= Self.drawingCommitDragThreshold
@@ -1486,7 +1501,7 @@ final class DrawingCanvasNSView: NSView {
             from: start,
             to: end,
             path: path,
-            state: state,
+            state: state
         )
         if let item {
             state.saveState()
@@ -1519,9 +1534,9 @@ final class DrawingCanvasNSView: NSView {
 
     private func hitTestNotinhasResizeHandle(
         at displayPoint: CGPoint,
-        for note: CueVisualNote,
+        for note: CueVisualNote
     ) -> CueNoteGeometry.ResizeHandle? {
-        guard case .rect(let rect, _) = note.target else { return nil }
+        guard case let .rect(rect, _) = note.target else { return nil }
         for (handle, center) in CueNoteGeometry.resizeHandleCenters(for: rect) {
             if handleRect(at: imageToDisplay(center)).contains(displayPoint) {
                 return handle
@@ -1589,13 +1604,13 @@ final class DrawingCanvasNSView: NSView {
                     state.notinhasUpdateResizingNote(
                         to: imagePoint,
                         imageBounds: notinhasImageBounds(),
-                        handle: handle,
+                        handle: handle
                     )
                 } else {
                     state.notinhasUpdateMovingNote(
                         to: imagePoint,
                         imageBounds: notinhasImageBounds(),
-                        from: startPoint,
+                        from: startPoint
                     )
                 }
                 invalidateNotinhasNotesLayer()
@@ -1664,10 +1679,11 @@ final class DrawingCanvasNSView: NSView {
                 displayNumber: index + 1,
                 isSelected: note.id == state.notinhasSelectedNoteID,
                 in: context,
-                imageBounds: notinhasImageBounds(),
+                imageBounds: notinhasImageBounds()
             )
             if note.id == state.notinhasSelectedNoteID,
-               case .rect(let rect, _) = displayNote.target {
+               case let .rect(rect, _) = displayNote.target
+            {
                 drawNotinhasResizeHandles(for: rect, in: context)
             }
         }
@@ -1678,7 +1694,7 @@ final class DrawingCanvasNSView: NSView {
                 displayNumber: ordered.count + 1,
                 isSelected: true,
                 in: context,
-                imageBounds: notinhasImageBounds(),
+                imageBounds: notinhasImageBounds()
             )
         }
 
@@ -1693,7 +1709,7 @@ final class DrawingCanvasNSView: NSView {
             displayNumber: orderedCount + 1,
             isSelected: true,
             in: context,
-            imageBounds: notinhasImageBounds(),
+            imageBounds: notinhasImageBounds()
         )
     }
 
@@ -1704,13 +1720,13 @@ final class DrawingCanvasNSView: NSView {
             font: AnnotateTextLayout.font(size: properties.fontSize, fontName: properties.fontName),
             origin: .zero,
             constrainedWidth: AnnotateTextLayout.minWidth,
-            presentation: properties.textPresentation,
+            presentation: properties.textPresentation
         )
         let bounds = CGRect(
             x: point.x,
             y: point.y - initialBounds.height,
             width: initialBounds.width,
-            height: initialBounds.height,
+            height: initialBounds.height
         )
         state.createTextAnnotation(bounds: bounds, properties: properties)
     }
@@ -1760,7 +1776,8 @@ final class DrawingCanvasNSView: NSView {
     /// Splits display items into the three drawing layers, preserving the
     /// `renderOrdered` z-order around the dragged item.
     private func partitionedDisplayItems()
-        -> (below: [AnnotationItem], dragged: [AnnotationItem], above: [AnnotationItem]) {
+        -> (below: [AnnotationItem], dragged: [AnnotationItem], above: [AnnotationItem])
+    {
         let ordered = currentDisplayItems().renderOrdered
         guard usesDragLayerSplit else {
             return (ordered, [], [])
@@ -1785,8 +1802,11 @@ final class DrawingCanvasNSView: NSView {
         return (effectiveSourceImage, effectiveSourceImage?.cgImage(forProposedRect: nil, context: nil, hints: nil))
     }
 
-    private func makeRenderer(sourceImage: NSImage?, sourceCGImage: CGImage?,
-                              in context: CGContext) -> AnnotationRenderer {
+    private func makeRenderer(
+        sourceImage: NSImage?,
+        sourceCGImage: CGImage?,
+        in context: CGContext
+    ) -> AnnotationRenderer {
         AnnotationRenderer(
             context: context,
             editingTextId: state.editingTextAnnotationId,
@@ -1800,7 +1820,7 @@ final class DrawingCanvasNSView: NSView {
             },
             embeddedCGImageProvider: { [state] assetId in
                 state.embeddedCGImage(for: assetId)
-            },
+            }
         )
     }
 
@@ -1856,7 +1876,7 @@ final class DrawingCanvasNSView: NSView {
                 drawSelectionAffordance(
                     for: annotation,
                     in: context,
-                    showsHandles: state.selectedAnnotationIds.count == 1 && annotation.supportsResize,
+                    showsHandles: state.selectedAnnotationIds.count == 1 && annotation.supportsResize
                 )
             }
         }
@@ -1884,7 +1904,7 @@ final class DrawingCanvasNSView: NSView {
             return SpotlightRegion(
                 rect: a.bounds,
                 cornerRadius: a.properties.cornerRadius,
-                opacity: a.properties.spotlightOpacity,
+                opacity: a.properties.spotlightOpacity
             )
         }
         let spotlightPreview: SpotlightRegion? = (isDrawing && state.selectedTool == .spotlight)
@@ -1895,10 +1915,10 @@ final class DrawingCanvasNSView: NSView {
                             x: min(s.x, $0.x),
                             y: min(s.y, $0.y),
                             width: abs($0.x - s.x),
-                            height: abs($0.y - s.y),
+                            height: abs($0.y - s.y)
                         ),
                         cornerRadius: spotlightCreationProps.cornerRadius,
-                        opacity: spotlightCreationProps.spotlightOpacity,
+                        opacity: spotlightCreationProps.spotlightOpacity
                     )
                 }
             }
@@ -1907,7 +1927,7 @@ final class DrawingCanvasNSView: NSView {
             regions: spotlightRegions,
             previewRegion: spotlightPreview,
             canvasRect: effectiveCanvasBounds,
-            in: context,
+            in: context
         )
 
         context.restoreGState()
@@ -1944,7 +1964,7 @@ final class DrawingCanvasNSView: NSView {
                 currentPoint: lastPoint,
                 strokeColor: state.strokeColor,
                 blurType: state.blurType,
-                controlValue: state.annotationCreationProperties(for: .blur).strokeWidth,
+                controlValue: state.annotationCreationProperties(for: .blur).strokeWidth
             )
         } else if state.selectedTool == .spotlight {
             // Spotlight preview is handled in the unified overlay pass above.
@@ -1969,7 +1989,7 @@ final class DrawingCanvasNSView: NSView {
                 watermarkOpacity: previewProperties.opacity,
                 watermarkRotationDegrees: previewProperties.rotationDegrees,
                 watermarkFontSize: previewProperties.fontSize,
-                magnification: previewProperties.magnification,
+                magnification: previewProperties.magnification
             )
         }
     }
@@ -2003,7 +2023,8 @@ final class DrawingCanvasNSView: NSView {
 
         guard let id = candidateId,
               let annotation = state.annotations.first(where: { $0.id == id }),
-              case .embeddedImage = annotation.type else {
+              case .embeddedImage = annotation.type
+        else {
             return nil
         }
         return id
@@ -2047,9 +2068,9 @@ final class DrawingCanvasNSView: NSView {
     /// rather than a line through it or a box around it.
     private func drawSelectionUnderlay(for annotation: AnnotationItem, in context: CGContext) {
         switch annotation.type {
-        case .path(let points):
+        case let .path(points):
             drawSelectionGlow(points: points, bodyWidth: annotation.properties.strokeWidth, in: context)
-        case .highlight(let points):
+        case let .highlight(points):
             // Highlighter renders at 3× stroke width; match it so the halo hugs the bar.
             drawSelectionGlow(points: points, bodyWidth: annotation.properties.strokeWidth * 3, in: context)
         default:
@@ -2110,7 +2131,7 @@ final class DrawingCanvasNSView: NSView {
             x: min(start.x, current.x),
             y: min(start.y, current.y),
             width: abs(current.x - start.x),
-            height: abs(current.y - start.y),
+            height: abs(current.y - start.y)
         ).standardized
         guard rect.width > 0 || rect.height > 0 else { return }
 
@@ -2137,7 +2158,8 @@ final class DrawingCanvasNSView: NSView {
            let selectedId = state.notinhasSelectedNoteID,
            let note = state.cueNotes.first(where: { $0.id == selectedId }),
            case .rect = note.target,
-           let handle = hitTestNotinhasResizeHandle(at: displayPoint, for: note) {
+           let handle = hitTestNotinhasResizeHandle(at: displayPoint, for: note)
+        {
             CaptureSelectionResizeCursor.cursor(for: handle).set()
             return
         }
@@ -2145,9 +2167,11 @@ final class DrawingCanvasNSView: NSView {
         // Check resize handles first for single selection.
         if state.selectedAnnotationIds.count == 1,
            let selectedId = state.selectedAnnotationIds.first,
-           let annotation = state.annotations.first(where: { $0.id == selectedId }) {
+           let annotation = state.annotations.first(where: { $0.id == selectedId })
+        {
             if annotation.supportsResize,
-               let handle = hitTestHandle(at: displayPoint, for: annotation, inDisplayCoordinates: true) {
+               let handle = hitTestHandle(at: displayPoint, for: annotation, inDisplayCoordinates: true)
+            {
                 setCursorForHandle(handle)
                 return
             }
@@ -2231,7 +2255,7 @@ final class DrawingCanvasNSView: NSView {
                 isCropDragging = true
                 dragOffset = CGPoint(
                     x: imagePoint.x - cropRect.origin.x,
-                    y: imagePoint.y - cropRect.origin.y,
+                    y: imagePoint.y - cropRect.origin.y
                 )
             } else {
                 isCropResizing = true
@@ -2243,7 +2267,7 @@ final class DrawingCanvasNSView: NSView {
             isCropDragging = true
             dragOffset = CGPoint(
                 x: imagePoint.x - cropRect.origin.x,
-                y: imagePoint.y - cropRect.origin.y,
+                y: imagePoint.y - cropRect.origin.y
             )
             originalCropRect = cropRect
         }
@@ -2258,7 +2282,7 @@ final class DrawingCanvasNSView: NSView {
             let center = CaptureSelectionHandleGeometry.anchor(
                 for: resizeHandle,
                 in: cropRect,
-                coordinateSpace: .bottomLeftOrigin,
+                coordinateSpace: .bottomLeftOrigin
             )
             let distance = hypot(point.x - center.x, point.y - center.y)
             if distance <= handleRadius {
@@ -2399,7 +2423,7 @@ final class DrawingCanvasNSView: NSView {
     private func handleCropDrag(to point: CGPoint) {
         let newOrigin = CGPoint(
             x: point.x - dragOffset.x,
-            y: point.y - dragOffset.y,
+            y: point.y - dragOffset.y
         )
         var newRect = originalCropRect
         newRect.origin = newOrigin

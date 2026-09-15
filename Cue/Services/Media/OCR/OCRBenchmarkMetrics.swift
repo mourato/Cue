@@ -50,7 +50,7 @@ enum OCRBenchmarkMetrics {
                 noOutputRate: Double(noOutputCount) / Double(languageSamples.count),
                 averageConfidence: languageSamples.map { Double($0.confidence) }
                     .reduce(0, +) / Double(languageSamples.count),
-                averageLatencyMs: languageSamples.map(\.latencyMs).reduce(0, +) / Double(languageSamples.count),
+                averageLatencyMs: languageSamples.map(\.latencyMs).reduce(0, +) / Double(languageSamples.count)
             )
         }
     }
@@ -91,7 +91,7 @@ enum OCRBenchmarkMetrics {
                 current[rightIndex + 1] = min(
                     previous[rightIndex + 1] + 1,
                     current[rightIndex] + 1,
-                    previous[rightIndex] + cost,
+                    previous[rightIndex] + cost
                 )
             }
             previous = current

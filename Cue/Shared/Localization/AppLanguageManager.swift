@@ -28,7 +28,7 @@ struct AppLanguageOption: Identifiable, Hashable {
         AppLanguageOption(identifier: "ko", displayName: "한국어", greeting: "안녕하세요"),
         AppLanguageOption(identifier: "ru", displayName: "Русский", greeting: "Привет"),
         AppLanguageOption(identifier: "fr", displayName: "Français", greeting: "Bonjour"),
-        AppLanguageOption(identifier: "de", displayName: "Deutsch", greeting: "Hallo"),
+        AppLanguageOption(identifier: "de", displayName: "Deutsch", greeting: "Hallo")
     ]
 }
 
@@ -85,7 +85,7 @@ final class AppLanguageManager: ObservableObject {
     func effectiveIdentifier(for selection: String) -> String {
         Self.effectiveIdentifier(
             for: selection,
-            systemResolvedIdentifier: systemResolvedIdentifier,
+            systemResolvedIdentifier: systemResolvedIdentifier
         )
     }
 
@@ -110,7 +110,7 @@ final class AppLanguageManager: ObservableObject {
 
         _ = try await NSWorkspace.shared.openApplication(
             at: Bundle.main.bundleURL,
-            configuration: configuration,
+            configuration: configuration
         )
 
         NSApp.terminate(nil)
@@ -146,7 +146,8 @@ final class AppLanguageManager: ObservableObject {
         let normalized = identifier.lowercased()
 
         if normalized.contains("hant") || normalized.hasPrefix("zh-tw") || normalized.hasPrefix("zh-hk") || normalized
-            .hasPrefix("zh-mo") {
+            .hasPrefix("zh-mo")
+        {
             return "zh-Hant"
         }
 
@@ -162,7 +163,7 @@ final class AppLanguageManager: ObservableObject {
             ("ko", "ko"),
             ("ru", "ru"),
             ("fr", "fr"),
-            ("de", "de"),
+            ("de", "de")
         ]
 
         for entry in prefixMap where normalized.hasPrefix(entry.prefix) {
@@ -176,11 +177,12 @@ final class AppLanguageManager: ObservableObject {
         let availableIdentifiers = availableOptions.map(\.identifier)
         let preferredIdentifiers = Bundle.preferredLocalizations(
             from: availableIdentifiers,
-            forPreferences: Locale.preferredLanguages,
+            forPreferences: Locale.preferredLanguages
         )
 
         if let preferredIdentifier = preferredIdentifiers.first,
-           let normalizedIdentifier = normalizedIdentifier(from: preferredIdentifier) {
+           let normalizedIdentifier = normalizedIdentifier(from: preferredIdentifier)
+        {
             return normalizedIdentifier
         }
 
@@ -189,7 +191,7 @@ final class AppLanguageManager: ObservableObject {
 
     private static func effectiveIdentifier(
         for selection: String,
-        systemResolvedIdentifier: String,
+        systemResolvedIdentifier: String
     ) -> String {
         if selection.isEmpty {
             return systemResolvedIdentifier

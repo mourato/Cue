@@ -28,7 +28,7 @@
             backgroundPadding: CGFloat = 24,
             backgroundCornerRadius: CGFloat = 12,
             backgroundShadowIntensity: CGFloat = 0.35,
-            cursorScale: CGFloat = Self.defaultCursorScale,
+            cursorScale: CGFloat = Self.defaultCursorScale
         ) {
             self.id = id
             self.name = name
@@ -45,7 +45,7 @@
             backgroundPadding: 48,
             backgroundCornerRadius: 16,
             backgroundShadowIntensity: 0.4,
-            cursorScale: defaultCursorScale,
+            cursorScale: defaultCursorScale
         )
     }
 
@@ -69,7 +69,7 @@
             switch preset.backgroundStyle {
             case .none:
                 background = .none
-            case .gradient(let gradient):
+            case let .gradient(gradient):
                 background = .gradient(gradient.rawValue)
             default:
                 background = .none
@@ -83,7 +83,7 @@
         var stylePreset: VideoEditorStylePreset {
             let backgroundStyle: BackgroundStyle = switch background {
             case .none: .none
-            case .gradient(let raw):
+            case let .gradient(raw):
                 if let gradient = GradientPreset(rawValue: raw) {
                     .gradient(gradient)
                 } else {
@@ -97,7 +97,7 @@
                 backgroundPadding: backgroundPadding,
                 backgroundCornerRadius: backgroundCornerRadius,
                 backgroundShadowIntensity: backgroundShadowIntensity,
-                cursorScale: cursorScale,
+                cursorScale: cursorScale
             )
         }
     }
@@ -151,7 +151,7 @@
                 backgroundPadding: state.backgroundPadding,
                 backgroundCornerRadius: state.backgroundCornerRadius,
                 backgroundShadowIntensity: state.backgroundShadowIntensity,
-                cursorScale: state.cursorScale,
+                cursorScale: state.cursorScale
             )
             presets.append(preset)
             persist()
@@ -174,7 +174,7 @@
             let library = Library(
                 version: 1,
                 presets: presets.map(VideoEditorStoredStylePreset.init),
-                activePresetID: activePresetID,
+                activePresetID: activePresetID
             )
             if let data = try? JSONEncoder().encode(library) {
                 defaults.set(data, forKey: Self.libraryKey)
@@ -183,7 +183,8 @@
 
         private static func loadLibrary(from defaults: UserDefaults) -> Library {
             guard let data = defaults.data(forKey: libraryKey),
-                  let library = try? JSONDecoder().decode(Library.self, from: data) else {
+                  let library = try? JSONDecoder().decode(Library.self, from: data)
+            else {
                 return Library(version: 1, presets: [], activePresetID: nil)
             }
             return library

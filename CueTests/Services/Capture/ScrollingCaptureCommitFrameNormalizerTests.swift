@@ -19,8 +19,8 @@ final class ScrollingCaptureCommitFrameNormalizerTests: XCTestCase {
                 logicalSize: CGSize(width: 100, height: 50),
                 sourceScaleFactor: 1,
                 minimumOutputScaleFactor: 2,
-                colorSpaceName: nil,
-            ),
+                colorSpaceName: nil
+            )
         )
 
         XCTAssertEqual(normalized.width, 200)
@@ -36,8 +36,8 @@ final class ScrollingCaptureCommitFrameNormalizerTests: XCTestCase {
                 logicalSize: CGSize(width: 100, height: 50),
                 sourceScaleFactor: 1,
                 minimumOutputScaleFactor: 2,
-                colorSpaceName: nil,
-            ),
+                colorSpaceName: nil
+            )
         )
 
         XCTAssertTrue((normalized as AnyObject) === (image as AnyObject))
