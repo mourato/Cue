@@ -411,9 +411,9 @@
         min(100, max(30, Int((min(max(quality, 0.1), 1.0) * 100).rounded())))
     }
 
+    // ponytail: sequential PNG staging + coarse progress; parallelize if slow.
     /// Preferred export: stage full-color PNGs via AVAssetReader, then gifski.
     /// Throws on any failure so the caller falls back to ImageIO.
-    // ponytail: sequential PNG staging + coarse progress; parallelize if slow.
     @MainActor
     private func exportViaGifski(
         binary: URL,
