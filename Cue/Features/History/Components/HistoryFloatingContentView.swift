@@ -20,9 +20,6 @@ struct HistoryFloatingContentView: View {
     @State private var expandedLastSelectedId: UUID?
     @State private var rowScrollOffset: CGFloat = 0
     @State private var selectionRevealTrigger = 0
-    @State private var dragTranslation: CGFloat = 0
-    @State private var isHoveringRow = false
-    @State private var isDraggingRow = false
     @State private var isRowReady = false
     @State private var rowWarmupTask: Task<Void, Never>?
     @StateObject private var searchViewModel: HistorySearchViewModel
@@ -297,7 +294,7 @@ struct HistoryFloatingContentView: View {
                 viewportWidth: geometry.size.width,
                 contentWidth: rowContentWidth
             )
-            let visibleOffset = clampedRowOffset(rowScrollOffset - dragTranslation, metrics: metrics)
+            let visibleOffset = clampedRowOffset(rowScrollOffset, metrics: metrics)
             let centeredOffset = max((metrics.viewportWidth - metrics.contentWidth) / 2, 0)
 
             LazyHStack(spacing: HistoryFloatingLayout.cardSpacing) {
@@ -326,7 +323,6 @@ struct HistoryFloatingContentView: View {
             .offset(x: metrics.isScrollable ? -visibleOffset : centeredOffset)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .contentShape(Rectangle())
-            .simultaneousGesture(rowDragGesture(metrics: metrics))
             .background(
                 HistoryRowTrackpadScrollObserver(isEnabled: metrics.isScrollable) { delta in
                     rowScrollOffset = clampedRowOffset(rowScrollOffset - delta, metrics: metrics)
@@ -335,25 +331,12 @@ struct HistoryFloatingContentView: View {
             .clipped()
             .onAppear {
                 clampRowScrollOffsetIfNeeded(metrics: metrics)
-                updateRowCursor(for: metrics)
-            }
-            .onDisappear {
-                isDraggingRow = false
-                isHoveringRow = false
-                dragTranslation = 0
-                NSCursor.arrow.set()
-            }
-            .onHover { hovering in
-                isHoveringRow = hovering
-                updateRowCursor(for: metrics)
             }
             .onChange(of: metrics.viewportWidth) { _ in
                 clampRowScrollOffsetIfNeeded(metrics: metrics)
-                updateRowCursor(for: metrics)
             }
             .onChange(of: metrics.contentWidth) { _ in
                 clampRowScrollOffsetIfNeeded(metrics: metrics)
-                updateRowCursor(for: metrics)
             }
             .onChange(of: expandedRecordIDs) { _ in
                 clampRowScrollOffsetIfNeeded(metrics: metrics)
@@ -419,29 +402,6 @@ struct HistoryFloatingContentView: View {
             + (HistoryFloatingLayout.rowHorizontalPadding * 2)
     }
 
-    private func rowDragGesture(metrics: RowMetrics) -> some Gesture {
-        DragGesture(minimumDistance: 6)
-            .onChanged { value in
-                guard metrics.isScrollable else { return }
-                dragTranslation = value.translation.width
-                isDraggingRow = true
-                updateRowCursor(for: metrics)
-            }
-            .onEnded { value in
-                guard metrics.isScrollable else {
-                    dragTranslation = 0
-                    isDraggingRow = false
-                    updateRowCursor(for: metrics)
-                    return
-                }
-
-                rowScrollOffset = clampedRowOffset(rowScrollOffset - value.translation.width, metrics: metrics)
-                dragTranslation = 0
-                isDraggingRow = false
-                updateRowCursor(for: metrics)
-            }
-    }
-
     private func revealSelectedRecordIfNeeded(metrics: RowMetrics) {
         guard metrics.isScrollable else {
             rowScrollOffset = 0
@@ -481,21 +441,6 @@ struct HistoryFloatingContentView: View {
 
     private func clampedRowOffset(_ offset: CGFloat, metrics: RowMetrics) -> CGFloat {
         min(max(offset, 0), metrics.maxScrollOffset)
-    }
-
-    private func updateRowCursor(for metrics: RowMetrics) {
-        guard metrics.isScrollable else {
-            NSCursor.arrow.set()
-            return
-        }
-
-        if isDraggingRow {
-            NSCursor.closedHand.set()
-        } else if isHoveringRow {
-            NSCursor.openHand.set()
-        } else {
-            NSCursor.arrow.set()
-        }
     }
 
     // MARK: - Styling

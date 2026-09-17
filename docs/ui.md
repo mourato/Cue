@@ -174,7 +174,8 @@ second canonical design-system document.
   backup/sync, and diagnostics only.
 - History preferences own the capture-history master enable (`history.enabled`)
   together with retention days and max count. Advanced must not duplicate those
-  controls.
+  controls. Floating history cards drag the underlying file into other apps;
+  the horizontal row scrolls with the trackpad only (no mouse drag-to-scroll).
 - Shortcuts settings remain a dense, product-owned surface (many recorders and
   conflict cues). Shared recorder chrome lives in
   `PreferencesShortcutsSupportViews.swift`. Secondary Shortcut blocks

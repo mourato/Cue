@@ -5,6 +5,7 @@
 //  Rich card for the expanded floating history browser
 //
 
+import AppKit
 import SwiftUI
 
 struct HistoryExpandedCaptureCardView: View, Equatable {
@@ -70,11 +71,27 @@ struct HistoryExpandedCaptureCardView: View, Equatable {
         )
         .shadow(color: cardShadowColor, radius: isSelected ? 14 : 3, x: 0, y: isSelected ? 8 : 2)
         .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .overlay {
+            if fileExists {
+                HistoryCardDraggableView(
+                    fileURL: record.fileURL,
+                    thumbnail: thumbnailImage ?? thumbnailOverride ?? NSImage(),
+                    isEnabled: true
+                )
+                .allowsHitTesting(false)
+            }
+        }
         .animation(.spring(response: 0.24, dampingFraction: 0.9), value: isSelected)
         .animation(.easeOut(duration: 0.16), value: isHovering)
         .onHover { hovering in
             isHovering = hovering
+            if hovering, fileExists {
+                NSCursor.openHand.set()
+            } else {
+                NSCursor.arrow.set()
+            }
         }
+        .help(fileExists ? L10n.AnnotateUI.dragToAppHelp : "")
         .onTapGesture {
             onTap()
         }

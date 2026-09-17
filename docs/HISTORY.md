@@ -12,10 +12,11 @@ Persistent history of screenshots, videos, and GIFs backed by GRDB SQLite, surfa
 
 - `HistoryFloatingManager` — panel state. Position `topCenter` / `bottomCenter` (`HistoryPanelPosition.center` exists for config import, not in UI); panel width is 90% of the active display's visible area, height is derived from shared layout constants (header + card row + content paddings) and clamped to the visible display, and the top position uses an 8pt top margin; background `HistoryBackgroundStyle` hud / solid.
 - `HistoryFloatingPanel` keyboard: ⌘C copy selection, ⌘A select all, ⌫ delete, Return open (all suppressed while text input active).
-- Single view: type pills + filename search (150ms debounce, `HistorySearchViewModel`) + time filters all / 24H / 7D / 30D (`HistoryFloatingTimeFilter`) + one horizontal card row (drag + trackpad scroll) + multi-select + selection bar.
+- Single view: type pills + filename search (150ms debounce, `HistorySearchViewModel`) + time filters all / 24H / 7D / 30D (`HistoryFloatingTimeFilter`) + one horizontal card row (trackpad scroll) + multi-select + selection bar.
 
 ## Card Actions
 
+- Drag any card with a present file into Finder, Figma, browsers, and other apps (`HistoryCardDraggableView` — file URL copy drag; scroll the row with the trackpad only).
 - Context menu (`HistoryContextMenu`): Open in Finder, Copy, Edit, Delete — destructive last. Cloud upload affordances were removed.
 - Double-click opens the editor; cards expose a Restore pill.
 - History remains local capture history; it no longer uploads captures.
