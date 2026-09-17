@@ -64,8 +64,9 @@ struct HistoryExpandedCaptureCardView: View, Equatable {
         .padding(HistoryFloatingLayout.cardChromePadding)
         .background(cardBackground, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(cardBorderColor, lineWidth: isSelected ? 1.8 : 1)
+            RoundedRectangle(cornerRadius: 20 + cardBorderWidth, style: .continuous)
+                .strokeBorder(cardBorderColor, lineWidth: cardBorderWidth)
+                .padding(-cardBorderWidth)
         )
         .shadow(color: cardShadowColor, radius: isSelected ? 14 : 3, x: 0, y: isSelected ? 8 : 2)
         .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
@@ -176,6 +177,10 @@ struct HistoryExpandedCaptureCardView: View, Equatable {
         return colorScheme == .dark
             ? AnyShapeStyle(Color.white.opacity(0.07))
             : AnyShapeStyle(Color.white.opacity(0.7))
+    }
+
+    private var cardBorderWidth: CGFloat {
+        isSelected ? 2 : 1
     }
 
     private var cardBorderColor: Color {

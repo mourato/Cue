@@ -24,9 +24,10 @@ struct HistoryGridView: View {
         ScrollView(.vertical, showsIndicators: false) {
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(records) { record in
+                    let isSelected = selectedIds.contains(record.id)
                     HistoryExpandedCaptureCardView(
                         record: record,
-                        isSelected: selectedIds.contains(record.id),
+                        isSelected: isSelected,
                         backgroundStyle: backgroundStyle,
                         onTap: {
                             handleTap(record: record)
@@ -34,6 +35,7 @@ struct HistoryGridView: View {
                         thumbnailOverride: thumbnailOverrides[record.id]
                     )
                     .equatable()
+                    .zIndex(isSelected ? 1 : 0)
                     .contextMenu {
                         HistoryContextMenu(record: record)
                     }

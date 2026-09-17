@@ -302,9 +302,10 @@ struct HistoryFloatingContentView: View {
 
             LazyHStack(spacing: HistoryFloatingLayout.cardSpacing) {
                 ForEach(expandedRecords) { record in
+                    let isSelected = expandedSelectedIds.contains(record.id)
                     HistoryExpandedCaptureCardView(
                         record: record,
-                        isSelected: expandedSelectedIds.contains(record.id),
+                        isSelected: isSelected,
                         backgroundStyle: backgroundStyle,
                         onTap: {
                             selectExpandedRecord(record)
@@ -314,7 +315,7 @@ struct HistoryFloatingContentView: View {
                     .equatable()
                     .frame(width: HistoryFloatingLayout.cardWidth)
                     .frame(height: HistoryFloatingLayout.cardHeight, alignment: .top)
-                    .clipped()
+                    .zIndex(isSelected ? 1 : 0)
                     .contextMenu {
                         HistoryContextMenu(record: record)
                     }
