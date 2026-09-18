@@ -1,0 +1,86 @@
+{
+  "$schema": "https://www.raycast.com/schemas/manifest.json",
+  "name": "cue",
+  "title": "Cue",
+  "description": "Launch Cue capture, annotation, OCR, history, and recording workflows.",
+  "icon": "extension-icon.png",
+  "author": "mourato",
+  "categories": ["Productivity", "Developer Tools"],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "capture-area",
+      "title": "Capture Area",
+      "description": "Start an area capture in Cue.",
+      "mode": "no-view",
+      "keywords": ["screenshot", "region", "capture"]
+    },
+    {
+      "name": "capture-active-window",
+      "title": "Capture Active Window",
+      "description": "Capture the focused application window in Cue.",
+      "mode": "no-view",
+      "keywords": ["screenshot", "window", "capture"]
+    },
+    {
+      "name": "capture-all-in-one",
+      "title": "Capture All-In-One",
+      "description": "Open Cue's All-In-One capture flow.",
+      "mode": "no-view",
+      "keywords": ["screenshot", "capture", "annotate", "ocr"]
+    },
+    {
+      "name": "capture-area-annotate",
+      "title": "Capture Area + Annotate",
+      "description": "Capture an area and open it in Cue Annotate.",
+      "mode": "no-view",
+      "keywords": ["screenshot", "capture", "annotate", "markup"]
+    },
+    {
+      "name": "capture-text",
+      "title": "Capture Text (OCR)",
+      "description": "Recognize text from a screen area with Cue.",
+      "mode": "no-view",
+      "keywords": ["ocr", "text", "capture", "copy"]
+    },
+    {
+      "name": "open-history",
+      "title": "Open History",
+      "description": "Open Cue's local capture history.",
+      "mode": "no-view",
+      "keywords": ["captures", "screenshots", "history"]
+    },
+    {
+      "name": "record-screen",
+      "title": "Record Screen",
+      "description": "Start Cue's screen recording flow.",
+      "mode": "no-view",
+      "keywords": ["record", "video", "gif", "screen"]
+    },
+    {
+      "name": "record-window",
+      "title": "Record Window",
+      "description": "Start Cue's application-window recording flow.",
+      "mode": "no-view",
+      "keywords": ["record", "video", "gif", "window"]
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.83.1"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^1.0.11",
+    "@types/node": "22.5.4",
+    "@types/react": "18.3.3",
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4"
+  },
+  "scripts": {
+    "build": "ray build --skip-types -e dist -o dist",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "typecheck": "tsc --noEmit"
+  }
+}
