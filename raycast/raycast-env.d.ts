@@ -49,3 +49,4 @@ declare namespace Arguments {
   /** Arguments passed to the `record-window` command */
   export type RecordWindow = {}
 }
+
