@@ -54,7 +54,7 @@ private struct OverlayTooltipModifier: ViewModifier {
 
     @State private var anchorBounds: CGRect = .zero
     @State private var owner = UUID()
-    @State private var showWorkItem: DispatchWorkItem?
+    @State private var showTask: Task<Void, Never>?
 
     func body(content viewContent: Content) -> some View {
         viewContent
@@ -81,25 +81,39 @@ private struct OverlayTooltipModifier: ViewModifier {
     }
 
     private func scheduleShow() {
-        showWorkItem?.cancel()
-        let work = DispatchWorkItem {
-            guard let frame = OverlayTooltipScreenCoordinates.screenFrame(fromSwiftUIGlobal: anchorBounds) else {
+        showTask?.cancel()
+        let anchorBounds = anchorBounds
+        let content = content
+        let edge = edge
+        let owner = owner
+        let token = OverlayTooltipPresenter.shared.presentationToken()
+        let delay = max(0, delay)
+        showTask = Task { @MainActor in
+            do {
+                try await Task.sleep(for: .seconds(delay))
+            } catch {
                 return
             }
+
+            guard !Task.isCancelled,
+                  let frame = OverlayTooltipScreenCoordinates.screenFrame(fromSwiftUIGlobal: anchorBounds)
+            else {
+                return
+            }
+
             OverlayTooltipPresenter.shared.show(
                 content,
                 anchorScreenFrame: frame,
                 preferred: edge,
-                owner: owner
+                owner: owner,
+                token: token
             )
         }
-        showWorkItem = work
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: work)
     }
 
     private func cancelAndHide() {
-        showWorkItem?.cancel()
-        showWorkItem = nil
+        showTask?.cancel()
+        showTask = nil
         OverlayTooltipPresenter.shared.hide(owner: owner)
     }
 }

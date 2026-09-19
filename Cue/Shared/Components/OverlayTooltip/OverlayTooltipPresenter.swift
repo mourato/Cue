@@ -8,6 +8,7 @@ final class OverlayTooltipPresenter {
     private var panel: NSPanel?
     private var hostingView: NSHostingView<OverlayTooltipBubbleView>?
     private var currentOwner: UUID?
+    private var presentationGeneration = 0
 
     #if DEBUG
         var testingSuppressPresentation = false
@@ -15,12 +16,19 @@ final class OverlayTooltipPresenter {
 
     private init() {}
 
+    func presentationToken() -> Int {
+        presentationGeneration
+    }
+
     func show(
         _ content: OverlayTooltipContent,
         anchorScreenFrame: CGRect,
         preferred: OverlayTooltipEdge,
-        owner: UUID
+        owner: UUID,
+        token: Int
     ) {
+        guard token == presentationGeneration else { return }
+
         let bubble = OverlayTooltipBubbleView(content: content)
         let host = hostingView ?? NSHostingView(rootView: bubble)
         host.rootView = bubble
@@ -33,6 +41,7 @@ final class OverlayTooltipPresenter {
 
         // Claim ownership only after show preconditions succeed, so a failed show
         // does not orphan the previous owner or leave a stuck currentOwner.
+        presentationGeneration += 1
         currentOwner = owner
 
         let frame = OverlayTooltipPlacement.frame(
@@ -52,6 +61,7 @@ final class OverlayTooltipPresenter {
         panel.contentView = host
         hostingView = host
         self.panel = panel
+        panel.alphaValue = 1
 
         if panel.isVisible {
             panel.setFrame(frame, display: true)
@@ -70,13 +80,24 @@ final class OverlayTooltipPresenter {
     func hide(owner: UUID) {
         guard currentOwner == owner else { return }
         currentOwner = nil
+        presentationGeneration += 1
+        let generation = presentationGeneration
         guard let panel, panel.isVisible else { return }
         NSAnimationContext.runAnimationGroup { context in
             context.duration = 0.10
             panel.animator().alphaValue = 0
         } completionHandler: {
+            guard self.presentationGeneration == generation, self.currentOwner == nil else { return }
             panel.orderOut(nil)
         }
+    }
+
+    /// Dismisses the shared panel independently of any SwiftUI view lifecycle.
+    func dismissImmediately() {
+        presentationGeneration += 1
+        currentOwner = nil
+        panel?.orderOut(nil)
+        panel?.alphaValue = 1
     }
 
     #if DEBUG
@@ -97,9 +118,9 @@ final class OverlayTooltipPresenter {
         panel.isOpaque = false
         panel.backgroundColor = .clear
         panel.hasShadow = true
-        panel.hidesOnDeactivate = false
+        panel.hidesOnDeactivate = true
         panel.ignoresMouseEvents = true
-        panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .transient]
+        panel.collectionBehavior = [.fullScreenAuxiliary, .transient]
         return panel
     }
 }

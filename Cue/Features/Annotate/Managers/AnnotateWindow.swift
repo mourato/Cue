@@ -223,6 +223,8 @@ class AnnotateWindow: NSWindow {
     }
 
     override func close() {
+        OverlayTooltipPresenter.shared.dismissImmediately()
+
         // Restore cursor if the window is closed during a space-hold pan gesture
         // (e.g., user presses ⌘W while Space is held). The keyUp event that would
         // normally restore the arrow cursor never fires after window closure.
