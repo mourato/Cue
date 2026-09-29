@@ -1,10 +1,3 @@
----
-kind: project-overlay
-extends: reference-apps
-project: Cue
-precedence: project
----
-
 # Cue reference catalog
 
 This is the operational catalog for the references summarized in
@@ -97,7 +90,7 @@ a bounded proposal:
 ## Maintenance rules
 
 - Keep the human summary and this catalog synchronized when adding or removing
-  a reference; the overlay is the source for operational metadata.
+  a reference; this file is the source for operational metadata.
 - Record the exact license name and a direct license URL. If the repository has
   no clear license, record inspiration/reimplementation only and do not copy
   code or assets.

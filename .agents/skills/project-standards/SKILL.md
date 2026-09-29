@@ -17,9 +17,9 @@ Canonical owner of project-level guidance governance for Cue.
 
 - Use this skill for AGENTS maintenance, policy updates, skill registry, and repository standards.
 - Implementation details stay in domain skills (`capture-annotate-export` and
-  the global `macos-app-engineering` skill, with its Cue overlay).
-- Delivery commands and merge gates stay in the global `delivery-workflow` skill
-  and its Cue overlay.
+  the global `macos-ui` skill).
+- Delivery commands and merge gates stay in the global `delivery` skill
+  and `docs/agents/delivery.md`.
 
 ## When to Use
 
@@ -39,9 +39,9 @@ Use when the user asks to update AGENTS, document project policy, track known li
 - **Reuse policy**: `reuse → extend → create` for Cue helpers before new types.
 - **Clean registry**: Periodically audit `.agents/skills` for stale guidance or Picker-era leakage.
 - **Command surface sync**: When `scripts/*` change, update `AGENTS.md` and the
-  global `delivery-workflow` overlay in the same change.
+  global `delivery` skill references in the same change.
 - **Preview standard**: Keep preview-related guidance in the global
-  `macos-app-engineering` skill and its overlay.
+  `macos-ui` skill.
 - **Fork awareness**: Preserve `Cue/Features/Cue/` across `upstream` merges; do not delete Cue modules during conflict resolution.
 
 ## Information Routing
@@ -74,7 +74,7 @@ Generated report artifacts: prefer `/tmp` or `.agents/reports/` (create only whe
 ## Related Skills
 
 - `../documentation/SKILL.md`
-- Global `delivery-workflow` and `.agents/overlays/delivery-workflow.md`
+- Global `delivery` and `docs/agents/delivery.md`
 - `../capture-annotate-export/SKILL.md`
 
 ## References

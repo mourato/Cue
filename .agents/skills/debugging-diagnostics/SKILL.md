@@ -37,6 +37,6 @@ Use for crashes, flaky capture/annotate, permission failures, wrong export outpu
 
 ## Related
 
-- AX / contrast → `swiftui-accessibility-audit`
-- Build/sign → `delivery-workflow`
+- AX / contrast → `better-accessibility`
+- Build/sign → `delivery`
 - Domain paths → `capture-annotate-export` (when present)

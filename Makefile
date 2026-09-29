@@ -80,6 +80,7 @@ validate-lane-command:
 
 guidance-check:
 	@./scripts/guidance-check.sh
+	@"$${AGENT_CONFIG_HOME:-$$HOME/.agents}/scripts/check-skill-references.sh" --project "$(CURDIR)"
 
 clean-build:
 	@rm -rf .build/xcode-derived-data build

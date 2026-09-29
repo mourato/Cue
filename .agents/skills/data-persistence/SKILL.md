@@ -28,6 +28,6 @@ Use when changing saved Cue notes, annotation session restore, UserDefaults keys
 
 ## Related
 
-- UI binding → `macos-app-engineering`
+- UI binding → `macos-ui`
 - Tests for encode/decode → `testing-xctest`
 - ImgBB upload flow → `capture-annotate-export` (when present)

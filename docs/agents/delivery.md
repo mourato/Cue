@@ -1,11 +1,4 @@
----
-kind: project-overlay
-extends: ship-ship
-project: Cue
-precedence: project
----
-
-# Cue ship-ship
+# Cue delivery
 
 Concrete commands for the global `ship-ship` loop. Load after the global
 skill. Do not weaken its safety or integrity rules.

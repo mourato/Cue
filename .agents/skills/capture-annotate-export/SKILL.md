@@ -12,15 +12,14 @@ Canonical owner for Cue visual-handoff behavior: capture an area, place numbered
 ## Scope Boundary
 
 - Own the Cue module (`Cue/Features/Cue/`) and its thin hooks into Capture/Annotate export/clipboard.
-- Delegate menu-bar shell details to the global `macos-app-engineering` skill
-  with the Cue overlay.
+- Delegate menu-bar shell details to the global `macos-ui` skill.
 - Delegate generic Swift style, concurrency, tests, and delivery commands to their skills.
 - Do **not** use this skill to grow broad screen recording, generic markup toolbelts, or unrelated cloud features unless the change directly serves the handoff loop.
 - Screen recording and Video Editor are **optional** inherited features, gated
   at compile time (`CUE_VIDEO_MODULE`) and runtime
   (`VideoModuleAvailability` / `videoModule.enabled`, default off). Cue
-  handoff work does not require them; see the global `delivery-workflow` skill
-  and its Cue overlay for build/test
+  handoff work does not require them; see the global `delivery` skill
+  and `docs/agents/delivery.md` for build/test
   with the Video module on.
 
 ## When to Use
@@ -85,8 +84,8 @@ Reject or narrow requests that primarily add: full recording suites, generic sha
 
 ## Related Skills
 
-- Global `delivery-workflow` — build/test/format commands
-- Global `macos-app-engineering` — SwiftUI/AppKit hosting
+- Global `delivery` — build/test/format commands
+- Global `macos-ui` — SwiftUI/AppKit hosting
 - `debugging-diagnostics` — permission/signing failures
 - `testing-xctest` — XCTest layout
 - `data-persistence` — session/API key keys

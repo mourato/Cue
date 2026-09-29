@@ -32,8 +32,9 @@ renaming, moving, or rewriting upstream code merely to match a new design.
 ## Skills
 
 Use the global routing, worktree, delivery, and validation policies. Project-
-specific skills remain under `.agents/skills/`; choose the narrowest one and
-load the matching project overlay after its global skill when present.
+specific skills remain under `.agents/skills/`; choose the narrowest one.
+Project facts for global skills live in this file and in the
+`docs/agents/` files linked below.
 
 Project-specific agent skills remain under `.agents/skills/`. Choose the
 narrowest relevant skill from its description; use `project-standards` for
@@ -50,8 +51,10 @@ unrelated product skills from other apps.
 
 The global `core/policies/worktrees.md` owns isolation, authorization, and the
 delivery order: `create → work → commit → review → remediation → merge →
-validate → push → cleanup`. Project skills and overlays add Cue facts,
+validate → push → cleanup`. Project skills and the `docs/agents/` files below add Cue facts,
 commands, and review gates without redefining that lifecycle.
+Before delivery, build, test, or release work, read [docs/agents/delivery.md](docs/agents/delivery.md).
+Before choosing or studying a reference app, read [docs/agents/reference-apps.md](docs/agents/reference-apps.md).
 
 ## Build, Test, and Run
 
@@ -66,6 +69,9 @@ commands, and review gates without redefining that lifecycle.
   preflight; use `--new-file <path>` when needed.
 - `./scripts/verify-local.sh --base <ref> [--plan-only|--execute] [--strict]`
   — changed-surface verification through `scripts/verification-map.tsv`.
+- `make build` and `make test` are the full default gate; the optional module
+  is covered by `make build-video` and `make test-video` using the `Cue Video`
+  / `Debug+Video` configuration.
 - `make validate` is the canonical focused local gate and delegates to
   `make agent-check`; use the full variants before merge.
 - `make validate-lane` wraps `make validate` with the global
@@ -101,11 +107,26 @@ requires that integration surface.
 
 Use Swift 6.2 conventions: `UpperCamelCase` types, `lowerCamelCase` members,
 descriptive file names, and `// MARK:` in large types. The project uses
-complete strict concurrency with nonisolated-by-default targets; keep SwiftUI,
+complete strict concurrency with nonisolated-by-default targets
+(`SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated`); keep SwiftUI,
 AppKit, and lifecycle entry points explicitly `@MainActor`, and move capture,
 file, and image processing off it through value snapshots or focused adapters.
+Fix compiler concurrency diagnostics or document them explicitly; never hide
+them with broad `@preconcurrency`, `@unchecked Sendable`, or
+`nonisolated(unsafe)` escapes. Any SDK boundary import or isolation
+exception must document the invariant and be covered by the relevant build
+or test gate.
 Add XCTest cases in the matching `CueTests/` area, named by behavior—for
 example, `testPinNoteExportKeepsMarkerOrder()`.
+Formatter/lint commands are `make format-check`, `make lint`, and
+`make lint-changed`; use `make format-fix` or `make lint-fix` only as
+explicit autofix commands, and verification must fail closed. Formatter and
+lint rules come from the global `swift-conventions` skill;
+`.swiftlint-baseline.json` records existing project debt when present.
+Keep SwiftUI `body` cheap and non-blocking. Never resolve Keychain/`securityd`,
+disk, or XPC synchronously in a `body` or in computed properties read during
+`body` (for example a credential `isConfigured`); cache presence as
+`@Published` and refresh only on mutation (init/save/clear/reload).
 
 Remaining `Snapzy` / `snapzy` and `Notinhas` / `notinhas` strings in source are
 **legacy compatibility** (readers, migration, or rejection tests) — do not

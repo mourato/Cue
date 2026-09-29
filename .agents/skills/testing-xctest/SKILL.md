@@ -56,5 +56,5 @@ Recording TCC). Opt into the live `CGWindowListCreateImage` path with
 
 ## Related
 
-- Delivery gate → `delivery-workflow`
+- Delivery gate → `delivery`
 - Domain behavior under test → `capture-annotate-export` (when present)

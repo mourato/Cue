@@ -21,7 +21,7 @@ handoff plans under `plans/`. Complements `/improve` (plan authoring) and
 - Owns: dispatch model choice, executor handoff, thermo review trigger, finding
   remediation gate, and sequential plan advancement.
 - Does **not** author new improve findings (that is `/improve`).
-- Does **not** replace `delivery-workflow` command tables — reuse them inside
+- Does **not** replace `delivery` command tables — reuse them inside
   plan gates and review fixes.
 
 ## When to Use
@@ -174,5 +174,5 @@ Plan authoring, finding tables, and `plans/` templates remain owned by
 
 - `/improve` — survey and write `plans/`
 - `/thermo-nuclear-code-quality-review` — pre-merge maintainability review
-- `delivery-workflow` — build/test/format commands
+- `delivery` — build/test/format commands
 - `project-standards` — skill registry and AGENTS alignment

@@ -33,4 +33,4 @@ Use when updating project docs, agent guidance, or in-source section markers.
 ## Related
 
 - Standards / routing → `AGENTS.md` + `project-standards` + the owning skill
-- Delivery commands → `delivery-workflow`
+- Delivery commands → `delivery`

@@ -95,7 +95,6 @@ Cue/Features/VideoEditor/**	video-module	CueTests/VideoEditorZoomAndAutoFocusTes
 scripts/**	shell		no	Bash syntax and help checks for touched scripts
 docs/**	docs		no	Documentation routing review
 .agents/skills/**	docs		no	Skill routing review
-.agents/overlays/**	docs		no	Overlay routing review
 AGENTS.md	docs		no	Repository guidance review
 .cursor/rules/agent-config.mdc	docs		no	Projected agent guidance review
 plans/**	docs		no	Plan metadata review
