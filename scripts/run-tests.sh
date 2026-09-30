@@ -43,7 +43,7 @@ export CUE_QUIET_TESTS="$QUIET_TESTS"
 export NOTINHAS_QUIET_TESTS="$QUIET_TESTS"
 SKIP_VISUAL_TESTS="${CUE_SKIP_VISUAL_TESTS:-${NOTINHAS_SKIP_VISUAL_TESTS:-1}}"
 # XCTest identifiers that flash fullscreen capture overlays, floating panels, or Dock policy.
-# Keep in sync with delivery-workflow / testing-xctest skills when adding new on-screen hosts.
+# Keep in sync with delivery / testing-xctest skills when adding new on-screen hosts.
 VISUAL_TEST_IDENTIFIERS=(
   CueTests/AreaSelectionSessionLifecycleTests
   CueTests/AreaSelectionMultiMonitorReconciliationTests

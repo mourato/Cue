@@ -61,7 +61,7 @@ flowchart TD
 ## Agent routing
 
 - Cue pins/export → `.agents/skills/capture-annotate-export/SKILL.md`
-- Build/test gates → `delivery-workflow`
+- Build/test gates → `delivery`
 - Repo policy → `project-standards` and root `AGENTS.md`
 
 ## Legacy compatibility note
