@@ -2654,6 +2654,11 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
             return
         }
 
+        if freezesAreaCapture {
+            startFrozenOCRSelection()
+            return
+        }
+
         // Set flag BEFORE delay to close the race window
         isAreaSelectionActive = true
         DiagnosticLogger.shared.log(.info, .ocr, "OCR capture flow started")
@@ -2732,98 +2737,12 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                             }
                             let captureDurationMs = Self.elapsedMilliseconds(since: captureStartTime)
 
-                            let processingStartTime = CFAbsoluteTimeGetCurrent()
-                            async let qrResultTask = self.detectQRCodes(in: image)
-                            async let recognizedTextTask = self.recognizeOCRText(in: image)
-                            let (qrResult, recognizedText) = await (qrResultTask, recognizedTextTask)
-                            let processingDurationMs = Self.elapsedMilliseconds(since: processingStartTime)
-                            let totalDurationMs = Self.elapsedMilliseconds(since: operationStartTime)
-
-                            let clipboardText = OCRQRPayloadComposer.compose(
-                                recognizedText: recognizedText,
-                                qrDetections: qrResult.detections,
-                                qrSectionTitle: L10n.OCR.qrCodesLabel
+                            await self.completeOCRCapture(
+                                image: image,
+                                captureDurationMs: captureDurationMs,
+                                operationStartTime: operationStartTime,
+                                processingToast: processingToast
                             )
-                            let performanceContext = [
-                                "captureMs": captureDurationMs,
-                                "processingMs": processingDurationMs,
-                                "totalMs": totalDurationMs
-                            ]
-
-                            AppStatusBarController.shared.setProcessing(false)
-
-                            guard let clipboardText else {
-                                if qrResult.unsupportedPayloadCount > 0 {
-                                    var context = performanceContext
-                                    context["unsupportedQRCount"] = "\(qrResult.unsupportedPayloadCount)"
-                                    DiagnosticLogger.shared.log(
-                                        .warning,
-                                        .ocr,
-                                        "OCR QR capture found unsupported QR payloads",
-                                        context: context
-                                    )
-                                    self.finishOCRProcessingFeedback(
-                                        processingToast,
-                                        message: L10n.OCR.qrTextOnlyUnsupported,
-                                        style: .warning
-                                    )
-                                } else {
-                                    DiagnosticLogger.shared.log(
-                                        .warning,
-                                        .ocr,
-                                        "OCR capture failed: no text or QR payload found",
-                                        context: performanceContext
-                                    )
-                                    self.finishOCRProcessingFeedback(
-                                        processingToast,
-                                        message: L10n.OCR.noTextFound,
-                                        style: .warning
-                                    )
-                                }
-                                QuickAccessSound.failed.play()
-                                return
-                            }
-
-                            let pasteboard = NSPasteboard.general
-                            pasteboard.clearContents()
-                            pasteboard.setString(clipboardText, forType: .string)
-
-                            var successContext = performanceContext
-                            successContext["chars"] = "\(clipboardText.count)"
-                            successContext["qrCount"] = "\(qrResult.detections.count)"
-                            successContext["unsupportedQRCount"] = "\(qrResult.unsupportedPayloadCount)"
-                            DiagnosticLogger.shared.log(
-                                .info,
-                                .ocr,
-                                "OCR text copied to clipboard",
-                                context: successContext
-                            )
-                            let showOCRNotification = UserDefaults.standard
-                                .object(forKey: PreferencesKeys.ocrSuccessNotificationEnabled) as? Bool ?? true
-                            if showOCRNotification {
-                                if let processingToast {
-                                    self.finishOCRProcessingFeedback(
-                                        processingToast,
-                                        message: L10n.Common.copiedToClipboard,
-                                        style: .success,
-                                        variant: .compact
-                                    )
-                                } else {
-                                    AppToastManager.shared.showCopiedToClipboard()
-                                }
-                                QuickAccessSound.complete.play()
-                            } else if let processingToast {
-                                AppToastManager.shared.dismiss(processingToast)
-                            }
-
-                            let linkDetectionEnabled = UserDefaults.standard
-                                .object(forKey: PreferencesKeys.ocrLinkDetectionEnabled) as? Bool ?? false
-                            if linkDetectionEnabled {
-                                let detectedLinks = OCRLinkDetector.detectWebLinks(in: clipboardText)
-                                if !detectedLinks.isEmpty {
-                                    OCRLinkPromptManager.shared.show(links: detectedLinks)
-                                }
-                            }
 
                         } catch {
                             // Error feedback
@@ -2839,6 +2758,64 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                     }
                 }
             }
+    }
+
+    private func startFrozenOCRSelection() {
+        isAreaSelectionActive = true
+        cancelLazyAreaSnapshotTasks()
+        let sessionID = UUID()
+        activeAreaSelectionSessionID = sessionID
+
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            let result = await prepareAllInOneFrozenSelectionSession()
+            guard activeAreaSelectionSessionID == sessionID else {
+                if case let .success(session) = result {
+                    session.invalidate()
+                }
+                return
+            }
+
+            switch result {
+            case let .failure(error):
+                isAreaSelectionActive = false
+                recordCaptureFailure(error)
+            case let .success(session):
+                AreaSelectionController.shared.startSelection(
+                    mode: .screenshot,
+                    backdrops: session.backdrops,
+                    applicationConfiguration: nil,
+                    onTransitionRecapture: { [weak self] in
+                        guard let self else { return }
+                        refreshFrozenDisplaysAfterTransition(
+                            sessionID: sessionID,
+                            frozenSession: session,
+                            showCursor: showsCursorInScreenshots,
+                            excludeDesktopIcons: DesktopIconManager.shared.isIconHidingEnabled,
+                            excludeDesktopWidgets: DesktopIconManager.shared.isWidgetHidingEnabled,
+                            excludeOwnApplication: !includesOwnAppInScreenshots
+                        )
+                    },
+                    completion: { [weak self] selection in
+                        guard let self else {
+                            session.invalidate()
+                            return
+                        }
+                        cancelLazyAreaSnapshotTasks()
+                        guard let selection else {
+                            isAreaSelectionActive = false
+                            session.invalidate()
+                            return
+                        }
+                        Task { @MainActor in
+                            defer { self.isAreaSelectionActive = false }
+                            await Task.yield()
+                            await self.performFrozenOCRCapture(at: selection.rect, from: session)
+                        }
+                    }
+                )
+            }
+        }
     }
 
     private func detectQRCodes(in image: CGImage) async -> QRCodeDetectionResult {
