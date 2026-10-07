@@ -64,7 +64,9 @@ enum FeedbackToastMetrics {
         maxWidth: CGFloat,
         variant: AppToastVariant
     ) -> CGSize {
-        let font = NSFont.systemFont(ofSize: variant.textFontSize, weight: variant.measurementWeight)
+        // Native caption baseline shared with AppToastView (.caption): AppKit
+        // sizing must use the same caption font the SwiftUI text renders with.
+        let font = NSFont.preferredFont(forTextStyle: .caption1, options: [:])
         let iconFrameWidth = variant.iconFontSize + 8
         let horizontalChrome = (variant.horizontalPadding * 2) + iconFrameWidth + variant.contentSpacing
         let maxTextWidth = max(minimumTextColumnWidth, maxWidth - horizontalChrome)

@@ -37,6 +37,8 @@ enum AppToastVariant: Equatable, CaseIterable {
         }
     }
 
+    /// Retained for API compatibility; toast text now follows the native
+    /// caption baseline shared with measurement (see FeedbackToastMetrics).
     var textFontSize: CGFloat {
         switch self {
         case .regular: 13
@@ -46,15 +48,15 @@ enum AppToastVariant: Equatable, CaseIterable {
 
     var horizontalPadding: CGFloat {
         switch self {
-        case .regular: 16
-        case .compact: 10
+        case .regular: 12
+        case .compact: 12
         }
     }
 
     var verticalPadding: CGFloat {
         switch self {
-        case .regular: 11
-        case .compact: 6
+        case .regular: 8
+        case .compact: 8
         }
     }
 
@@ -90,20 +92,6 @@ enum AppToastVariant: Equatable, CaseIterable {
         switch self {
         case .regular: 3
         case .compact: 2
-        }
-    }
-
-    var textWeight: Font.Weight {
-        switch self {
-        case .regular: .medium
-        case .compact: .semibold
-        }
-    }
-
-    var measurementWeight: NSFont.Weight {
-        switch self {
-        case .regular: .medium
-        case .compact: .semibold
         }
     }
 }
@@ -352,7 +340,6 @@ final class AppToastManager {
 
 private struct AppToastView: View {
     @ObservedObject var viewModel: AppToastViewModel
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var appeared = false
 
@@ -360,29 +347,25 @@ private struct AppToastView: View {
         let presentation = viewModel.presentation
         let feedbackStyle = presentation.style.feedbackStyle
         let variant = presentation.variant
-        let usesSolidFallback = FeedbackChromePolicy.usesSolidFallback(
-            reduceTransparency: reduceTransparency
-        )
         let isProgress = presentation.iconMode == .spinner
 
-        FeedbackSurface(cornerRadius: variant.cornerRadius, style: feedbackStyle) {
-            HStack(alignment: .center, spacing: variant.contentSpacing) {
-                FeedbackIconView(
-                    style: feedbackStyle,
-                    iconMode: presentation.iconMode == .symbol ? .symbol : .spinner,
-                    fontSize: variant.iconFontSize
-                )
+        HStack(alignment: .center, spacing: variant.contentSpacing) {
+            FeedbackIconView(
+                style: feedbackStyle,
+                iconMode: presentation.iconMode == .symbol ? .symbol : .spinner,
+                fontSize: variant.iconFontSize
+            )
 
-                Text(presentation.message)
-                    .font(.system(size: variant.textFontSize, weight: variant.textWeight))
-                    .foregroundColor(Color(nsColor: feedbackStyle.textColor(usesSolidFallback: usesSolidFallback)))
-                    .lineLimit(variant.lineLimit)
-                    .multilineTextAlignment(.leading)
-            }
-            .padding(.horizontal, variant.horizontalPadding)
-            .padding(.vertical, variant.verticalPadding)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            Text(presentation.message)
+                .font(.caption)
+                .foregroundStyle(.primary)
+                .lineLimit(variant.lineLimit)
+                .multilineTextAlignment(.leading)
         }
+        .padding(.horizontal, variant.horizontalPadding)
+        .padding(.vertical, variant.verticalPadding)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(nsColor: .windowBackgroundColor), in: Capsule())
         .accessibilityElement(children: .combine)
         .accessibilityLabel(
             FeedbackAccessibilityPolicy.toastAccessibilityLabel(
