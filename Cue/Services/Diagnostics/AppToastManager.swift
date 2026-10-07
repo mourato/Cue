@@ -37,27 +37,12 @@ enum AppToastVariant: Equatable, CaseIterable {
         }
     }
 
-    /// Retained for API compatibility; toast text now follows the native
-    /// caption baseline shared with measurement (see FeedbackToastMetrics).
-    var textFontSize: CGFloat {
-        switch self {
-        case .regular: 13
-        case .compact: 10
-        }
-    }
-
     var horizontalPadding: CGFloat {
-        switch self {
-        case .regular: 12
-        case .compact: 12
-        }
+        12
     }
 
     var verticalPadding: CGFloat {
-        switch self {
-        case .regular: 8
-        case .compact: 8
-        }
+        8
     }
 
     var contentSpacing: CGFloat {
@@ -78,13 +63,6 @@ enum AppToastVariant: Equatable, CaseIterable {
         switch self {
         case .regular: 44
         case .compact: 28
-        }
-    }
-
-    var cornerRadius: CGFloat {
-        switch self {
-        case .regular: 10
-        case .compact: 8
         }
     }
 

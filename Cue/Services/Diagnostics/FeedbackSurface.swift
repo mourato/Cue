@@ -76,7 +76,8 @@ enum FeedbackToastMetrics {
             options: [.usesLineFragmentOrigin, .usesFontLeading]
         )
         let width = min(maxWidth, max(variant.minWidth, ceil(textBounds.width + 2) + horizontalChrome))
-        let height = max(variant.minHeight, ceil(textBounds.height) + (variant.verticalPadding * 2))
+        let contentHeight = max(ceil(textBounds.height), iconFrameWidth)
+        let height = max(variant.minHeight, contentHeight + (variant.verticalPadding * 2))
         return CGSize(width: width, height: height)
     }
 }

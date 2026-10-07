@@ -26,13 +26,11 @@ final class FeedbackSurfaceTests: XCTestCase {
     func testEveryToastVariantHasPositiveDimensions() {
         for variant in AppToastVariant.allCases {
             XCTAssertGreaterThan(variant.iconFontSize, 0)
-            XCTAssertGreaterThan(variant.textFontSize, 0)
             XCTAssertGreaterThan(variant.horizontalPadding, 0)
             XCTAssertGreaterThan(variant.verticalPadding, 0)
             XCTAssertGreaterThan(variant.contentSpacing, 0)
             XCTAssertGreaterThan(variant.minWidth, 0)
             XCTAssertGreaterThan(variant.minHeight, 0)
-            XCTAssertGreaterThan(variant.cornerRadius, 0)
         }
     }
 
@@ -68,6 +66,17 @@ final class FeedbackSurfaceTests: XCTestCase {
 
         XCTAssertLessThanOrEqual(size.width, maxWidth)
         XCTAssertGreaterThanOrEqual(size.height, AppToastVariant.regular.minHeight)
+    }
+
+    func testCompactToastHeightFitsIconFrame() {
+        let size = FeedbackToastMetrics.measuredToastSize(
+            for: "OK",
+            maxWidth: 240,
+            variant: .compact
+        )
+
+        // Compact icon frame is 20pt with 8pt vertical padding on each side.
+        XCTAssertGreaterThanOrEqual(size.height, 36)
     }
 
     func testAppToastStyleCompatibilityShimsDelegateToFeedbackStyle() {
