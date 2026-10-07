@@ -760,7 +760,7 @@ nonisolated struct ArrowGeometry: Equatable {
             y: arrowheadBaseCenter.y - neckNormal.y * (wHead / 2)
         )
 
-        /// Smooth ease for shaft taper (matches solid presentation look, not a linear wedge).
+        // Smooth ease for shaft taper (matches solid presentation look, not a linear wedge).
         func shaftWidth(progress: CGFloat) -> CGFloat {
             let eased = progress * progress * (3 - 2 * progress) // smoothstep
             return wStart + (wEnd - wStart) * eased
