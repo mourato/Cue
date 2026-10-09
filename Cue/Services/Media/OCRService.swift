@@ -7,6 +7,7 @@
 
 import AppKit
 import CoreImage
+import CoreText
 import Vision
 
 /// Errors that can occur during OCR processing
@@ -27,9 +28,15 @@ enum OCRError: LocalizedError {
     }
 }
 
-/// Service for performing OCR text recognition on images
-@MainActor
-final class OCRService {
+/// Service for performing OCR text recognition on images.
+///
+/// Runs as an actor so bitmap normalization, contrast enhancement, Vision
+/// execution, and result scoring stay off the main actor. Serialization is
+/// per synchronous stretch: one Vision `perform`, one `CIContext` use, or any
+/// other synchronous access runs at a time on this actor's executor. Async
+/// methods may interleave with other work across their `await` points, so the
+/// recognition pipeline as a whole is not atomic.
+actor OCRService {
     static let shared = OCRService()
 
     private typealias OCRCandidate = (result: OCRResult, score: Float)
@@ -42,7 +49,9 @@ final class OCRService {
 
     private let ciContext = CIContext(options: [.cacheIntermediates: false])
 
-    private init() {}
+    private var hasPrewarmed = false
+
+    init() {}
 
     // MARK: - Image Normalization
 
@@ -236,8 +245,13 @@ final class OCRService {
     }
 
     /// Recognize text from an NSImage
+    ///
+    /// `@MainActor` keeps the AppKit `NSImage` to `CGImage` extraction on the
+    /// main actor; the heavy normalization and recognition then hop to this
+    /// OCR actor through the `CGImage` overload.
     /// - Parameter image: The NSImage to extract text from
     /// - Returns: Recognized text joined by newlines
+    @MainActor
     func recognizeText(
         from image: NSImage,
         preferredLanguageIdentifier: String? = nil,
@@ -254,6 +268,112 @@ final class OCRService {
             contentType: contentType,
             keepLineBreaks: keepLineBreaks
         )
+    }
+
+    // MARK: - Launch Prewarm
+
+    /// Outcome of a launch `prewarm(preferredLanguageIdentifier:)` call.
+    enum PrewarmOutcome: Equatable {
+        /// This process already started its single prewarm request.
+        case alreadyPrewarmed
+        /// One `.accurate` Vision request ran on the synthetic bitmap.
+        case succeeded
+        /// The prewarm request failed; real recognition is unaffected.
+        case failed
+    }
+
+    /// Warm the Vision/ANE OCR pipeline once per process with a single
+    /// `.accurate` request using the resolved normal interface profile over a
+    /// small synthetic bitmap (never screen or user content). Bypasses the
+    /// profile recovery loop on purpose: warmup only needs one request.
+    ///
+    /// Designed to be fired without awaiting at launch. Failure is fail-soft
+    /// with no retry and no clipboard, history, toast, or permission side
+    /// effects. Each synchronous Vision pass and shared-resource access on
+    /// this actor still runs one at a time, so a capture requested meanwhile
+    /// never overlaps prewarm's Vision `perform`; the two calls may interleave
+    /// across `await` points rather than queueing end-to-end.
+    @discardableResult
+    func prewarm(preferredLanguageIdentifier: String?) async -> PrewarmOutcome {
+        // Guard before any await so duplicate launches start no second request.
+        guard !hasPrewarmed else { return .alreadyPrewarmed }
+        hasPrewarmed = true
+
+        guard let image = Self.prewarmBitmap() else {
+            DiagnosticLogger.shared.log(.warning, .ocr, "OCR launch prewarm skipped: synthetic bitmap unavailable")
+            return .failed
+        }
+
+        let request = OCRRequest(
+            image: image,
+            preferredLanguageIdentifier: preferredLanguageIdentifier,
+            contentType: .interfaceText,
+            keepLineBreaks: true
+        )
+        let profile = VisionOCRProfile.resolve(for: request)
+
+        do {
+            _ = try await recognize(
+                request,
+                using: profile,
+                languageContext: request.preferredLanguageIdentifier ?? "auto",
+                isFallback: false
+            )
+            DiagnosticLogger.shared.log(
+                .info,
+                .ocr,
+                "OCR launch prewarm completed",
+                context: ["profile": profile.id]
+            )
+            return .succeeded
+        } catch {
+            DiagnosticLogger.shared.log(
+                .debug,
+                .ocr,
+                "OCR launch prewarm failed; continuing without warmup",
+                context: ["profile": profile.id, "reason": error.localizedDescription]
+            )
+            return .failed
+        }
+    }
+
+    /// Small synthetic text bitmap for prewarm; never screen or user content.
+    private static func prewarmBitmap() -> CGImage? {
+        let width = 480
+        let height = 100
+
+        guard let context = CGContext(
+            data: nil,
+            width: width,
+            height: height,
+            bitsPerComponent: 8,
+            bytesPerRow: 0,
+            space: CGColorSpace(name: CGColorSpace.sRGB) ?? CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ) else {
+            return nil
+        }
+
+        context.setFillColor(CGColor(red: 1, green: 1, blue: 1, alpha: 1))
+        context.fill(CGRect(x: 0, y: 0, width: CGFloat(width), height: CGFloat(height)))
+
+        let attributes = [
+            kCTFontAttributeName: CTFontCreateWithName("Helvetica" as CFString, 30, nil),
+            kCTForegroundColorAttributeName: CGColor(red: 0, green: 0, blue: 0, alpha: 1)
+        ] as CFDictionary
+        guard let attributedText = CFAttributedStringCreate(
+            nil,
+            "Cue OCR Prewarm 1234" as CFString,
+            attributes
+        ) else {
+            return nil
+        }
+
+        let line = CTLineCreateWithAttributedString(attributedText)
+        context.textPosition = CGPoint(x: 18, y: 30)
+        CTLineDraw(line, context)
+
+        return context.makeImage()
     }
 
     // MARK: - Vision Runtime
