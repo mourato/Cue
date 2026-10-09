@@ -29,6 +29,7 @@ swiftc -module-cache-path "$MODULE_CACHE_PATH" \
   -o "$BINARY_PATH" \
   scripts/swift-tools/ocr/ocr-readme-benchmark.swift \
   Cue/Services/Media/OCRService.swift \
+  Cue/Services/Media/OCRService/OCRTextProcessing.swift \
   Cue/Services/Media/OCR/VerticalCJKTextNormalizer.swift \
   Cue/Services/Media/OCR/VerticalCJKBitmapAnalysis.swift \
   Cue/Services/Media/OCR/OCRRequest.swift \

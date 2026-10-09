@@ -81,9 +81,9 @@ final class AppCoordinator {
         observeNotifications()
 
         // Warm the Vision/ANE OCR pipeline once per process, after the shell
-        // is up. The request runs on the OCR actor, so launch never waits on
-        // it and a capture requested meanwhile only queues behind one bounded
-        // synthetic request. OCRService itself guards duplicate prewarms.
+        // is up: launch schedules one synthetic request off the main actor,
+        // and the OCR actor serializes the synchronous Vision work. OCRService
+        // itself guards duplicate prewarms.
         let storedOCRLanguage = defaults.string(forKey: PreferencesKeys.ocrLanguage) ?? ""
         Task {
             await OCRService.shared.prewarm(
