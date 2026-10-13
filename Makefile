@@ -1,4 +1,4 @@
-.PHONY: help b build run dmg test build-video test-video format-check format-fix lint lint-changed lint-fix agent-check validate validate-lane validate-lane-command guidance-check clean-build
+.PHONY: help b build run dmg test build-video test-video format-check format-fix lint test-hygiene lint-changed lint-fix agent-check validate validate-lane validate-lane-command guidance-check clean-build
 
 help:
 	@echo "Cue commands:"
@@ -40,7 +40,12 @@ format-check:
 format-fix:
 	@swiftformat --config "$(STYLE_CONFIG_DIR)/.swiftformat" Cue CueTests
 
-lint:
+TEST_HYGIENE := $(or $(AGENT_CONFIG_HOME),$(HOME)/.agents)/skills/test-hygiene/scripts/check-swift-tests.py
+
+test-hygiene:
+	@python3 "$(TEST_HYGIENE)" --baseline .test-hygiene-baseline CueTests
+
+lint: test-hygiene
 	@if [ -f .swiftlint-baseline.json ]; then \
 		swiftlint lint --strict --config "$(STYLE_CONFIG_DIR)/.swiftlint.yml" --baseline .swiftlint-baseline.json Cue CueTests; \
 	else \

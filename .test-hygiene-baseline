@@ -1,0 +1,41 @@
+CueTests/Features/Annotate/AnnotateBlurCacheManagerTests.swift: existence-only: testGetCachedBlur_returnsImage only checks non-nil; assert the value
+CueTests/Features/Annotate/AnnotateShortcutManagerTests.swift: existence-only: testShortcutForAction_returnsConfig only checks non-nil; assert the value
+CueTests/Features/Annotate/PersistedCombineSessionTests.swift: sleep: inject a clock or await a confirmation instead of sleeping
+CueTests/Features/Capture/AllInOneTimerSchedulerTests.swift: sleep: inject a clock or await a confirmation instead of sleeping
+CueTests/Features/QuickAccess/QuickAccessCoreTests.swift: sleep: inject a clock or await a confirmation instead of sleeping
+CueTests/Features/QuickAccess/QuickAccessCoreTests.swift: tautology: assertion cannot fail
+CueTests/Features/QuickAccess/QuickAccessHistoryCleanupTests.swift: sleep: inject a clock or await a confirmation instead of sleeping
+CueTests/Features/QuickAccess/QuickAccessPanelControllerTests.swift: sleep: inject a clock or await a confirmation instead of sleeping
+CueTests/Features/QuickAccess/QuickAccessPanelControllerTests.swift: sleep: inject a clock or await a confirmation instead of sleeping
+CueTests/Features/QuickAccess/QuickAccessPanelControllerTests.swift: sleep: inject a clock or await a confirmation instead of sleeping
+CueTests/Features/QuickAccess/QuickAccessPanelControllerTests.swift: sleep: inject a clock or await a confirmation instead of sleeping
+CueTests/Features/QuickAccess/QuickAccessPanelControllerTests.swift: sleep: inject a clock or await a confirmation instead of sleeping
+CueTests/Features/QuickAccess/QuickAccessPanelControllerTests.swift: sleep: inject a clock or await a confirmation instead of sleeping
+CueTests/Features/QuickAccess/QuickAccessPanelControllerTests.swift: sleep: inject a clock or await a confirmation instead of sleeping
+CueTests/Features/Recording/RecordingAnnotationStateTests.swift: no-assertion: testStartStopCleanupTimer_noCrash has no assertion; name the regression it catches
+CueTests/Features/Recording/RecordingAnnotationStateTests.swift: sleep: inject a clock or await a confirmation instead of sleeping
+CueTests/Features/Recording/RecordingSessionTests.swift: no-assertion: testConfigureExpectedVideoDimensions_doesNotCrash has no assertion; name the regression it catches
+CueTests/Features/Recording/RecordingSessionTests.swift: no-assertion: testReset_clearsPauseOffset has no assertion; name the regression it catches
+CueTests/Features/Recording/RecordingSessionTests.swift: no-assertion: testSetAccumulatedPauseOffset_doesNotCrash has no assertion; name the regression it catches
+CueTests/Features/Recording/RecordingSessionTests.swift: no-assertion: testSetOnFirstVideoFrame_doesNotCrash has no assertion; name the regression it catches
+CueTests/Services/Capture/CaptureOutputNamingTests.swift: existence-only: testResolveBaseName_datetimeToken only checks non-nil; assert the value
+CueTests/Services/Capture/CaptureOutputNamingTests.swift: existence-only: testResolveBaseName_msToken only checks non-nil; assert the value
+CueTests/Services/Capture/MouseClickHighlightServiceTests.swift: no-assertion: testStartStop_lifecycleDoesNotCrash has no assertion; name the regression it catches
+CueTests/Services/Capture/MouseClickHighlightServiceTests.swift: no-assertion: testStart_whenAlreadyRunning_noOp has no assertion; name the regression it catches
+CueTests/Services/Capture/MouseClickHighlightServiceTests.swift: no-assertion: testStop_whenNotRunning_noOp has no assertion; name the regression it catches
+CueTests/Services/Capture/MouseClickHighlightServiceTests.swift: no-assertion: testUpdateRecordingRect_doesNotCrash has no assertion; name the regression it catches
+CueTests/Services/Capture/RecordingEncodingSettingsTests.swift: existence-only: testMakeVideoSettings_containsRequiredKeys only checks non-nil; assert the value
+CueTests/Services/Capture/RecordingEncodingSettingsTests.swift: existence-only: testMakeVideoSettings_h264IncludesProfile only checks non-nil; assert the value
+CueTests/Services/Capture/RecordingMetadataCleanupSchedulerTests.swift: no-assertion: testStartStopLifecycle has no assertion; name the regression it catches
+CueTests/Services/Capture/RecordingMetadataCleanupSchedulerTests.swift: no-assertion: testStart_createsTimer has no assertion; name the regression it catches
+CueTests/Services/Capture/RecordingMetadataCleanupSchedulerTests.swift: no-assertion: testStop_invalidatesTimer has no assertion; name the regression it catches
+CueTests/Services/Capture/TempCaptureManagerTests.swift: no-assertion: testDeleteTempFile_nonexistentFile_doesNotCrash has no assertion; name the regression it catches
+CueTests/Services/Clipboard/ClipboardHelperTests.swift: no-assertion: testCopyFileURLs_emptyArray_noOp has no assertion; name the regression it catches
+CueTests/Services/Clipboard/ClipboardHelperTests.swift: no-assertion: testCopyImageFromURL_missingFile_logsAndReturns has no assertion; name the regression it catches
+CueTests/Services/Configuration/CueSyncCoordinatorTests.swift: sleep: inject a clock or await a confirmation instead of sleeping
+CueTests/Services/Configuration/CueSyncCoordinatorTests.swift: sleep: inject a clock or await a confirmation instead of sleeping
+CueTests/Services/Configuration/CueSyncCoordinatorTests.swift: sleep: inject a clock or await a confirmation instead of sleeping
+CueTests/Services/History/CaptureHistoryRetentionServiceTests.swift: no-assertion: testStartStop_lifecycleDoesNotCrash has no assertion; name the regression it catches
+CueTests/Services/History/CaptureHistoryRetentionServiceTests.swift: no-assertion: testSweep_skipsWhenHistoryDisabled has no assertion; name the regression it catches
+CueTests/Services/Media/GIFProcessingTests.swift: no-assertion: testLocateGifskiBinary_returnsWithoutCrashing has no assertion; name the regression it catches
+CueTests/Services/Shortcuts/ShortcutCoreTests.swift: existence-only: testShortcutConfigMenuKeyEquivalent_mapsExtendedFunctionKeys only checks non-nil; assert the value
