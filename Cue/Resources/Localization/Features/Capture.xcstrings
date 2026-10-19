@@ -6502,72 +6502,70 @@
       }
     },
     "preferences-capture.remember-last-area-description": {
-      "extractionState": "stale",
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vorherigen Aufnahmebereich bei der nächsten Aufnahme wiederherstellen"
+            "value": "Vorherigen Bereich für Bildschirmfotos, Anmerkungen, Scrollen, Timer, OCR und Aufnahmen wiederherstellen"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Restore previous recording area on next capture"
+            "value": "Restore the previous area for screenshots, annotation, scrolling, timer, OCR, and recording."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Restaurar el área de grabación anterior en la siguiente captura"
+            "value": "Restaurar el área anterior para capturas de pantalla, anotaciones, desplazamiento, temporizador, OCR y grabación."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Restaurer la zone d'enregistrement précédente lors de la prochaine capture"
+            "value": "Restaurer la zone précédente pour les captures d'écran, l'annotation, le défilement, le minuteur, l'OCR et l'enregistrement."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "次のキャプチャ時に以前の記録領域を復元します"
+            "value": "スクリーンショット、注釈、スクロール、タイマー、OCR、録画で前回の領域を復元します。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "다음 캡처 시 이전 녹음 영역 복원"
+            "value": "화면 캡처, 주석, 스크롤, 타이머, OCR, 녹화에서 이전 영역을 복원합니다."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Восстановить предыдущую область записи при следующем захвате"
+            "value": "Восстанавливать предыдущую область для снимков экрана, аннотаций, прокрутки, таймера, OCR и записи."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Khôi phục vùng ghi trước đó ở lần chụp sau"
+            "value": "Khôi phục vùng trước đó cho ảnh chụp màn hình, chú thích, cuộn, hẹn giờ, OCR và ghi hình."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "下次截屏时沿用上次选择的区域"
+            "value": "为截屏、注释、滚动、定时、OCR 和录制恢复上次选择的区域。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "下次截圖時沿用上次選擇的區域"
+            "value": "為截圖、註釋、捲動、計時、OCR 和錄製恢復上次選擇的區域。"
           }
         }
       }
     },
     "preferences-capture.remember-last-area-title": {
-      "extractionState": "stale",
       "localizations": {
         "de": {
           "stringUnit": {

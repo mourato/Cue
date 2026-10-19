@@ -70,7 +70,11 @@ enum PreferencesKeys {
     static let screenshotShowSelectionAreaOverlay = "screenshot.showSelectionAreaOverlay"
     static let screenshotReverseMagnifierZoomDirection = "screenshot.reverseMagnifierZoomDirection"
     static let scrollingCaptureShowHints = "scrollingCapture.showHints"
+    /// Shared last confirmed area for All-In-One and individual area-based captures.
+    /// The All-In-One spelling is retained so existing stored areas still load.
     static let captureAllInOneLastAreaRect = "capture.allInOne.lastAreaRect"
+    /// Shared "remember last area" preference. The All-In-One spelling is retained so
+    /// existing preferences keep working; legacy Recording values act as fallback.
     static let captureAllInOneRememberLastSelection = "capture.allInOne.rememberLastSelection"
     static let captureAllInOneAspectRatioLocked = "capture.allInOne.aspectRatioLocked"
     static let captureAllInOneModeOrder = "capture.allInOne.modeOrder.v1"
@@ -139,6 +143,9 @@ enum PreferencesKeys {
     static let recordingCameraDeviceID = "recording.cameraDeviceID"
     static let recordingShowCameraPreviewDuringRecording = "recording.showCameraPreviewDuringRecording"
     static let recordingShortcut = "recordingShortcut"
+    /// Legacy recording area/preference keys. Read only while the shared capture-area
+    /// value is absent; new writes go to `captureAllInOneLastAreaRect` and
+    /// `captureAllInOneRememberLastSelection`.
     static let recordingLastAreaRect = "recording.lastAreaRect"
     static let recordingRememberLastArea = "recording.rememberLastArea"
     static let recordingOutputMode = "recording.outputMode"

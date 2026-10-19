@@ -325,11 +325,6 @@ nonisolated enum L10n {
             defaultValue: "Detect links",
             comment: "Advanced preferences OCR link detection toggle"
         )
-        static let rememberLastSelectionTitle = string(
-            "preferences-advanced.remember-last-selection-title",
-            defaultValue: "Remember last selection",
-            comment: "Advanced preferences All-In-One selection toggle"
-        )
         static let urlSchemeAPITitle = string(
             "preferences-advanced.url-scheme-api-title",
             defaultValue: "URL scheme API",
@@ -3299,7 +3294,7 @@ nonisolated enum L10n {
         )
         static let rememberLastAreaDescription = string(
             "preferences-capture.remember-last-area-description",
-            defaultValue: "Restore previous recording area on next capture",
+            defaultValue: "Restore the previous area for screenshots, annotation, scrolling, timer, OCR, and recording.",
             comment: "Capture preferences setting description"
         )
         static let hoverBarVisibleTitle = string(
@@ -3493,11 +3488,6 @@ nonisolated enum L10n {
         static let showControlsTitle = string(
             "preferences-recording.show-controls-title",
             defaultValue: "Show controls while recording",
-            comment: "Screen recording setting title"
-        )
-        static let rememberLastSelectionTitle = string(
-            "preferences-recording.remember-last-selection-title",
-            defaultValue: "Remember last selection",
             comment: "Screen recording setting title"
         )
         static let displayTimeInMenuBarTitle = string(

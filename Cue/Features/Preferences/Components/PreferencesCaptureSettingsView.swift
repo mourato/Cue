@@ -135,11 +135,12 @@ struct CaptureSettingsView: View {
                 }
 
                 SettingRow(
-                    title: L10n.PreferencesAdvanced.rememberLastSelectionTitle
+                    title: L10n.PreferencesCapture.rememberLastAreaTitle,
+                    description: L10n.PreferencesCapture.rememberLastAreaDescription
                 ) {
                     Toggle("", isOn: $rememberLastSelection)
                         .labelsHidden()
-                        .accessibilityLabel(L10n.PreferencesAdvanced.rememberLastSelectionTitle)
+                        .accessibilityLabel(L10n.PreferencesCapture.rememberLastAreaTitle)
                 }
             } header: {
                 Text(L10n.PreferencesCapture.captureSection)

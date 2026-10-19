@@ -111,6 +111,9 @@ final class AreaSelectionController: NSObject {
     private var requestedDisplayActivationIDs = Set<CGDirectDisplayID>()
     private var deferredBackdropDisplayIDs = Set<CGDirectDisplayID>()
     private var selectionStateMachine = CaptureSelectionStateMachine()
+    /// True while the state machine holds a remembered area instead of a user drag,
+    /// so Return only confirms that restored selection.
+    private var hasRestoredInitialSelection = false
     private var manualSelectionStartPoint: CGPoint?
     private var manualSelectionCurrentPoint: CGPoint?
     private weak var manualSelectionSourceWindow: AreaSelectionWindow?
@@ -347,17 +350,36 @@ final class AreaSelectionController: NSObject {
     // MARK: - Public API
 
     /// Start area selection mode (legacy - for screenshots)
+    /// - Parameter initialSelectionRect: Optional remembered area to preselect.
     /// - Parameter completion: Called with the selected rect, or nil if cancelled
-    func startSelection(completion: @escaping AreaSelectionCompletion) {
-        startSelectionSession(mode: .screenshot, backdrops: [:], completion: completion)
+    func startSelection(
+        initialSelectionRect: CGRect? = nil,
+        completion: @escaping AreaSelectionCompletion
+    ) {
+        startSelectionSession(
+            mode: .screenshot,
+            backdrops: [:],
+            initialSelectionRect: initialSelectionRect,
+            completion: completion
+        )
     }
 
     /// Start area selection with mode
     /// - Parameters:
     ///   - mode: The selection mode (screenshot or recording)
+    ///   - initialSelectionRect: Optional remembered area to preselect.
     ///   - completion: Called with the selected rect and mode, or nil if cancelled
-    func startSelection(mode: SelectionMode, completion: @escaping AreaSelectionCompletionWithMode) {
-        startSelectionSession(mode: mode, backdrops: [:], completionWithMode: completion)
+    func startSelection(
+        mode: SelectionMode,
+        initialSelectionRect: CGRect? = nil,
+        completion: @escaping AreaSelectionCompletionWithMode
+    ) {
+        startSelectionSession(
+            mode: mode,
+            backdrops: [:],
+            initialSelectionRect: initialSelectionRect,
+            completionWithMode: completion
+        )
     }
 
     func startSelection(
@@ -365,6 +387,7 @@ final class AreaSelectionController: NSObject {
         backdrops: [CGDirectDisplayID: AreaSelectionBackdrop],
         initialInteractionMode: AreaSelectionInteractionMode = .manualRegion,
         dismissesAfterSelection: Bool = true,
+        initialSelectionRect: CGRect? = nil,
         completion: @escaping AreaSelectionResultCompletion
     ) {
         startSelection(
@@ -373,6 +396,7 @@ final class AreaSelectionController: NSObject {
             applicationConfiguration: nil,
             initialInteractionMode: initialInteractionMode,
             dismissesAfterSelection: dismissesAfterSelection,
+            initialSelectionRect: initialSelectionRect,
             completion: completion
         )
     }
@@ -383,6 +407,7 @@ final class AreaSelectionController: NSObject {
         applicationConfiguration: AreaSelectionApplicationConfiguration?,
         initialInteractionMode: AreaSelectionInteractionMode = .manualRegion,
         dismissesAfterSelection: Bool = true,
+        initialSelectionRect: CGRect? = nil,
         onDisplayActivationRequested: AreaSelectionDisplayActivationHandler? = nil,
         onTransitionRecapture: AreaSelectionTransitionRecaptureHandler? = nil,
         completion: @escaping AreaSelectionResultCompletion
@@ -393,6 +418,7 @@ final class AreaSelectionController: NSObject {
             applicationConfiguration: applicationConfiguration,
             initialInteractionMode: initialInteractionMode,
             dismissesAfterSelection: dismissesAfterSelection,
+            initialSelectionRect: initialSelectionRect,
             completionWithResult: completion,
             onDisplayActivationRequested: onDisplayActivationRequested,
             onTransitionRecapture: onTransitionRecapture
@@ -405,6 +431,7 @@ final class AreaSelectionController: NSObject {
         applicationConfiguration: AreaSelectionApplicationConfiguration? = nil,
         initialInteractionMode: AreaSelectionInteractionMode = .manualRegion,
         dismissesAfterSelection: Bool = true,
+        initialSelectionRect: CGRect? = nil,
         completion: AreaSelectionCompletion? = nil,
         completionWithMode: AreaSelectionCompletionWithMode? = nil,
         completionWithResult: AreaSelectionResultCompletion? = nil,
@@ -511,6 +538,10 @@ final class AreaSelectionController: NSObject {
         // Activate pooled windows (instant show)
         activatePooledWindows()
         installManualSelectionGlobalMonitorIfNeeded()
+
+        // Adopt the remembered area before the overlay is interacted with so the user
+        // can confirm it with Return or replace it with a fresh drag.
+        restoreInitialSelectionIfNeeded(initialSelectionRect)
 
         // Keep live overlay sessions non-activating so foreground-window capture still observes the app
         // that was frontmost when the capture started. Cursor rect refresh plus pointer tracking gives
@@ -637,6 +668,7 @@ final class AreaSelectionController: NSObject {
 
     private func isSessionKeyEvent(_ event: NSEvent) -> Bool {
         event.keyCode == 53
+            || Self.isReturnKey(event)
             || Self.isSpaceWindowSelectionKey(
                 event,
                 selectionMode: selectionMode,
@@ -651,6 +683,10 @@ final class AreaSelectionController: NSObject {
             return true
         }
 
+        if Self.isReturnKey(event) {
+            return confirmRestoredSelectionIfNeeded()
+        }
+
         if Self.isSpaceWindowSelectionKey(
             event,
             selectionMode: selectionMode,
@@ -663,6 +699,10 @@ final class AreaSelectionController: NSObject {
         guard isApplicationToggleEvent(event) else { return false }
         toggleInteractionMode()
         return true
+    }
+
+    private static func isReturnKey(_ event: NSEvent) -> Bool {
+        event.type == .keyDown && (event.keyCode == 36 || event.keyCode == 76)
     }
 
     static func isSpaceWindowSelectionKey(
@@ -719,6 +759,7 @@ final class AreaSelectionController: NSObject {
             context: ["mode": nextMode == .manualRegion ? "manual" : "application"]
         )
         interactionMode = nextMode
+        hasRestoredInitialSelection = false
         refreshPooledWindowsForInteractionModeChange()
     }
 
@@ -1273,6 +1314,7 @@ final class AreaSelectionController: NSObject {
         }
 
         selectionStateMachine.startSelection(at: screenPoint)
+        hasRestoredInitialSelection = false
         manualSelectionStartPoint = screenPoint
         manualSelectionCurrentPoint = screenPoint
         manualSelectionSourceWindow = window
@@ -1437,6 +1479,7 @@ final class AreaSelectionController: NSObject {
     private func clearManualSelectionTracking(render: Bool) {
         removeManualSelectionMonitor()
         selectionStateMachine.reset()
+        hasRestoredInitialSelection = false
         manualSelectionStartPoint = nil
         manualSelectionCurrentPoint = nil
         manualSelectionSourceWindow = nil
@@ -1447,6 +1490,45 @@ final class AreaSelectionController: NSObject {
                 window.overlayView.resetSelection()
             }
         }
+    }
+
+    /// Adopt a remembered area into the selection state machine and render it on
+    /// the displays it intersects. No drag start point is set, so Return confirms
+    /// the restored selection while a new drag replaces it normally.
+    private func restoreInitialSelectionIfNeeded(_ rect: CGRect?) {
+        guard let rect else { return }
+        let normalized = CaptureSelectionGeometry.normalized(rect)
+        guard normalized.width > 0, normalized.height > 0 else { return }
+        selectionStateMachine.select(rect: normalized)
+        hasRestoredInitialSelection = true
+        renderManualSelectionIfNeeded()
+    }
+
+    /// Confirm the restored selection through the normal completion pipeline.
+    /// Returns false when no restored area is active or the user switched to
+    /// window selection.
+    @discardableResult
+    func confirmRestoredSelectionIfNeeded() -> Bool {
+        guard hasRestoredInitialSelection,
+              interactionMode == .manualRegion,
+              manualSelectionStartPoint == nil,
+              let rect = selectionStateMachine.currentRect,
+              !rect.isEmpty
+        else {
+            return false
+        }
+
+        let center = CGPoint(x: rect.midX, y: rect.midY)
+        guard let sourceWindow = window(containing: center)
+            ?? window(containing: rect.origin)
+            ?? activeWindow
+            ?? windowPool.values.first(where: { $0.displayID != nil })
+        else {
+            return false
+        }
+
+        completeSelection(target: .rect(rect), from: sourceWindow)
+        return true
     }
 
     private func applyDeferredBackdropsIfPossible() {

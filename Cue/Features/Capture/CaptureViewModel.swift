@@ -603,6 +603,26 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         AllInOneCaptureCoordinator.shared.cancel()
     }
 
+    /// The shared area to preselect when an area-based capture starts. Returns nil
+    /// when the preference is disabled or the stored rect no longer fits a screen.
+    private func restoredCaptureArea() -> CGRect? {
+        CaptureLastSelectionStore.restoredRect(
+            userDefaults: .standard,
+            screens: NSScreen.screens.map(\.frame)
+        )
+    }
+
+    /// Persist an area only after the user confirmed a rectangular selection.
+    /// Cancelled selections never reach this helper, and window targets are skipped.
+    private func rememberConfirmedArea(_ selection: AreaSelectionResult) {
+        guard case .rect = selection.target,
+              CaptureLastSelectionStore.isEnabled(userDefaults: .standard)
+        else {
+            return
+        }
+        CaptureLastSelectionStore.save(selection.rect, userDefaults: .standard)
+    }
+
     func captureArea(at rect: CGRect, afterCaptureAction: AfterCaptureAction? = nil) {
         if let afterCaptureAction {
             AfterCaptureActionOverride.arm(afterCaptureAction)
@@ -811,6 +831,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
 
         // Hide only normal-level app windows (not overlay panels) to avoid hiding pooled overlay windows
         let hiddenWindowSession = hideVisibleNormalWindowsIfNeeded(shouldHideOwnWindows)
+        let restoredSelectionRect = initialInteractionMode == .manualRegion ? restoredCaptureArea() : nil
 
         // Live mode: skip the frozen snapshot so on-screen content keeps playing during selection,
         // then capture the chosen region at completion time.
@@ -823,6 +844,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 excludeDesktopWidgets: excludeDesktopWidgets,
                 excludeOwnApplication: excludeOwnApplication,
                 initialInteractionMode: initialInteractionMode,
+                initialSelectionRect: restoredSelectionRect,
                 hiddenWindowSession: hiddenWindowSession,
                 context: captureContext
             )
@@ -848,6 +870,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 excludeDesktopWidgets: excludeDesktopWidgets,
                 excludeOwnApplication: excludeOwnApplication,
                 initialInteractionMode: initialInteractionMode,
+                initialSelectionRect: restoredSelectionRect,
                 hiddenWindowSession: hiddenWindowSession,
                 context: captureContext
             )
@@ -863,6 +886,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         excludeDesktopWidgets: Bool,
         excludeOwnApplication: Bool,
         initialInteractionMode: AreaSelectionInteractionMode,
+        initialSelectionRect: CGRect?,
         hiddenWindowSession: HiddenWindowSession,
         context: CaptureContext
     ) {
@@ -879,6 +903,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
             excludeDesktopWidgets: excludeDesktopWidgets,
             excludeOwnApplication: excludeOwnApplication,
             initialInteractionMode: initialInteractionMode,
+            initialSelectionRect: initialSelectionRect,
             hiddenWindowSession: hiddenWindowSession,
             context: context,
             frozenSessionProvider: { [weak self] in self?.activeParallelFrozenSession }
@@ -956,6 +981,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         initialScreenRect: CGRect? = nil,
         frozenSession providedSession: FrozenAreaCaptureSession? = nil
     ) {
+        let resolvedInitialScreenRect = initialScreenRect ?? restoredCaptureArea()
         cancelAllInOneSessionIfNeeded()
 
         if isAreaSelectionActive {
@@ -985,7 +1011,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 frozenSession: providedSession,
                 resolvedSaveDirectory: resolvedSaveDirectory,
                 captureContext: captureContext,
-                initialScreenRect: initialScreenRect,
+                initialScreenRect: resolvedInitialScreenRect,
                 hiddenWindowSession: HiddenWindowSession()
             )
             return
@@ -1073,7 +1099,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                     frozenSession: frozenSession,
                     resolvedSaveDirectory: resolvedSaveDirectory,
                     captureContext: captureContext,
-                    initialScreenRect: initialScreenRect,
+                    initialScreenRect: resolvedInitialScreenRect,
                     hiddenWindowSession: hiddenWindowSession,
                     screens: screens,
                     primaryDisplayID: primaryDisplayID
@@ -1148,6 +1174,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         excludeDesktopWidgets: Bool,
         excludeOwnApplication: Bool,
         initialInteractionMode: AreaSelectionInteractionMode = .manualRegion,
+        initialSelectionRect: CGRect? = nil,
         hiddenWindowSession: HiddenWindowSession,
         context: CaptureContext = .empty,
         frozenSessionProvider: (() -> FrozenAreaCaptureSession?)? = nil
@@ -1165,6 +1192,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 excludeOwnApplication: excludeOwnApplication
             ),
             initialInteractionMode: initialInteractionMode,
+            initialSelectionRect: initialSelectionRect,
             onDisplayActivationRequested: { [weak self] displayID in
                 let session = resolvedSession()
                 guard !session.displayIDs.isEmpty else { return }
@@ -1213,6 +1241,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 return
             }
 
+            rememberConfirmedArea(selection)
             let frozenSession = resolvedSession()
             guard !frozenSession.displayIDs.isEmpty else {
                 hiddenWindowSession.restore()
@@ -1381,6 +1410,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         excludeDesktopWidgets: Bool,
         excludeOwnApplication: Bool,
         initialInteractionMode: AreaSelectionInteractionMode,
+        initialSelectionRect: CGRect?,
         hiddenWindowSession: HiddenWindowSession,
         context: CaptureContext = .empty
     ) {
@@ -1398,7 +1428,8 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 excludeOwnApplication: excludeOwnApplication
             ),
             initialInteractionMode: initialInteractionMode,
-            dismissesAfterSelection: false
+            dismissesAfterSelection: false,
+            initialSelectionRect: initialSelectionRect
         ) { [weak self] selection in
             guard let self else {
                 hiddenWindowSession.restore()
@@ -1413,6 +1444,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                 return
             }
 
+            rememberConfirmedArea(selection)
             let selectionContext: CaptureContext = switch selection.target {
             case let .window(target):
                 CaptureContext.fromPID(target.ownerPID, windowTitle: target.title)
@@ -1851,7 +1883,10 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                     return
                 }
 
-                AreaSelectionController.shared.startSelection(mode: .scrollingCapture) { [weak self] rect, _ in
+                AreaSelectionController.shared.startSelection(
+                    mode: .scrollingCapture,
+                    initialSelectionRect: restoredCaptureArea()
+                ) { [weak self] rect, _ in
                     guard let self else {
                         DiagnosticLogger.shared.log(
                             .warning,
@@ -1871,6 +1906,10 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                         lastCaptureResult = .failure(.cancelled)
                         hiddenWindowSession.restore()
                         return
+                    }
+
+                    if CaptureLastSelectionStore.isEnabled(userDefaults: .standard) {
+                        CaptureLastSelectionStore.save(selectedRect, userDefaults: .standard)
                     }
 
                     let actualSaveDirectory = tempCaptureManager.resolveSaveDirectory(
@@ -2052,12 +2091,9 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                         return
                     }
 
-                    // Check for saved recording area - restore if enabled and available
-                    let rememberLastArea = UserDefaults.standard
-                        .object(forKey: PreferencesKeys.recordingRememberLastArea) as? Bool ?? true
+                    // Restore the shared remembered area before opening the recording selection.
                     if initialInteractionMode == .manualRegion,
-                       rememberLastArea,
-                       let savedRect = RecordingCoordinator.shared.loadLastAreaRect()
+                       let savedRect = restoredCaptureArea()
                     {
                         isAreaSelectionActive = false
                         DiagnosticLogger.shared.log(
@@ -2683,7 +2719,9 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                     return
                 }
 
-                AreaSelectionController.shared.startSelection { [weak self] rect in
+                AreaSelectionController.shared.startSelection(
+                    initialSelectionRect: restoredCaptureArea()
+                ) { [weak self] rect in
                     guard let self else {
                         DiagnosticLogger.shared.log(.warning, .ocr, "captureOCR completion: self deallocated")
                         hiddenWindowSession.restore()
@@ -2695,6 +2733,10 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                         hiddenWindowSession.restore()
                         DiagnosticLogger.shared.log(.info, .ocr, "OCR capture cancelled")
                         return
+                    }
+
+                    if CaptureLastSelectionStore.isEnabled(userDefaults: .standard) {
+                        CaptureLastSelectionStore.save(selectedRect, userDefaults: .standard)
                     }
 
                     DiagnosticLogger.shared.log(
@@ -2785,6 +2827,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                     mode: .screenshot,
                     backdrops: session.backdrops,
                     applicationConfiguration: nil,
+                    initialSelectionRect: restoredCaptureArea(),
                     onTransitionRecapture: { [weak self] in
                         guard let self else { return }
                         refreshFrozenDisplaysAfterTransition(
@@ -2807,6 +2850,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                             session.invalidate()
                             return
                         }
+                        rememberConfirmedArea(selection)
                         Task { @MainActor in
                             defer { self.isAreaSelectionActive = false }
                             await Task.yield()

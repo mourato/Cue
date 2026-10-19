@@ -108,46 +108,15 @@
 
         // MARK: - Recording Area Persistence
 
-        /// Save recording area rect to UserDefaults
-        private func saveLastAreaRect(_ rect: CGRect) {
-            let rectDict: [String: CGFloat] = [
-                "x": rect.origin.x,
-                "y": rect.origin.y,
-                "width": rect.width,
-                "height": rect.height
-            ]
-            UserDefaults.standard.set(rectDict, forKey: PreferencesKeys.recordingLastAreaRect)
-        }
-
-        /// Load last recording area rect from UserDefaults
-        func loadLastAreaRect() -> CGRect? {
-            guard let rectDict = UserDefaults.standard.dictionary(forKey: PreferencesKeys.recordingLastAreaRect),
-                  let x = rectDict["x"] as? CGFloat,
-                  let y = rectDict["y"] as? CGFloat,
-                  let width = rectDict["width"] as? CGFloat,
-                  let height = rectDict["height"] as? CGFloat
+        /// Persist only confirmed area selections. Window/fullscreen targets must not
+        /// overwrite the shared remembered area.
+        private func rememberArea(_ rect: CGRect, captureMode: RecordingCaptureMode) {
+            guard captureMode == .area,
+                  CaptureLastSelectionStore.isEnabled(userDefaults: .standard)
             else {
-                return nil
+                return
             }
-
-            let rect = CGRect(x: x, y: y, width: width, height: height)
-
-            // Validate rect is still visible on current screens
-            guard isRectVisibleOnScreen(rect) else {
-                return nil
-            }
-
-            return rect
-        }
-
-        /// Check if rect is visible on any connected screen
-        private func isRectVisibleOnScreen(_ rect: CGRect) -> Bool {
-            for screen in NSScreen.screens {
-                if screen.frame.intersects(rect) {
-                    return true
-                }
-            }
-            return false
+            CaptureLastSelectionStore.save(rect, userDefaults: .standard)
         }
 
         /// Whether the floating recording controls bar should be shown during recording.
@@ -431,7 +400,7 @@
         ) {
             selectedRect = rect
             selectedWindowTarget = windowTarget
-            saveLastAreaRect(rect)
+            rememberArea(rect, captureMode: captureMode)
 
             let interactionEnabled = captureMode != .application
             for overlay in regionOverlayWindows {
@@ -489,7 +458,9 @@
         /// Finalize a drag/resize: persist the rect and reposition the toolbar.
         private func finalizeDragOrResize() {
             guard let rect = selectedRect else { return }
-            saveLastAreaRect(rect)
+            if let captureMode = toolbarWindow?.captureMode {
+                rememberArea(rect, captureMode: captureMode)
+            }
             toolbarWindow?.updateAnchorRect(rect)
         }
 

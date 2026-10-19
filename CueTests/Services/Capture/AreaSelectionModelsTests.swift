@@ -351,6 +351,61 @@ final class AreaSelectionControllerTests: XCTestCase {
         XCTAssertLessThan(elapsedMs, 50.0, "100k isPresenting reads took \(elapsedMs)ms; Escape routing must be <50ms")
     }
 
+    func testStartSelection_adoptsRestoredSelectionRect() throws {
+        let screen = try XCTUnwrap(NSScreen.screens.first)
+        let restored = CaptureSelectionGeometry.normalized(
+            screen.frame.insetBy(dx: 40, dy: 40)
+        )
+        let controller = AreaSelectionController.shared
+
+        controller.startSelection(
+            mode: .screenshot,
+            backdrops: [:],
+            initialSelectionRect: restored
+        ) { _ in }
+
+        let stateMachine = Mirror(reflecting: controller).children
+            .first { $0.label == "selectionStateMachine" }?.value as? CaptureSelectionStateMachine
+        XCTAssertEqual(try XCTUnwrap(stateMachine).currentRect, restored)
+
+        controller.cancelSelection()
+    }
+
+    func testRestoredSelection_confirmsThroughNormalCompletion() throws {
+        let screen = try XCTUnwrap(NSScreen.screens.first)
+        let restored = CaptureSelectionGeometry.normalized(
+            screen.frame.insetBy(dx: 40, dy: 40)
+        )
+        let controller = AreaSelectionController.shared
+        let done = expectation(description: "restored selection completed")
+        var completedRect: CGRect?
+
+        controller.startSelection(
+            mode: .screenshot,
+            backdrops: [:],
+            initialSelectionRect: restored
+        ) { result in
+            completedRect = result?.rect
+            done.fulfill()
+        }
+
+        guard pooledWindow() != nil else {
+            controller.cancelSelection()
+            throw XCTSkip("no pooled AreaSelectionWindow (headless host with no screens)")
+        }
+
+        XCTAssertTrue(controller.confirmRestoredSelectionIfNeeded())
+        wait(for: [done], timeout: 1.0)
+        XCTAssertEqual(completedRect, restored)
+    }
+
+    func testConfirmRestoredSelection_withoutSelectionReturnsFalse() {
+        let controller = AreaSelectionController.shared
+        controller.cancelSelection()
+
+        XCTAssertFalse(controller.confirmRestoredSelectionIfNeeded())
+    }
+
     /// Resolve a real pooled overlay window (populated lazily by `startSelection`) to drive
     /// `completeSelection` on the success path. Returns nil on a headless host with no screens.
     private func pooledWindow() -> AreaSelectionWindow? {

@@ -160,6 +160,8 @@ final class InlineAreaAnnotateSession: ObservableObject {
         guard clampedRect.width > 5, clampedRect.height > 5,
               let crop = cropImage(for: clampedRect) else { return }
 
+        rememberConfirmedArea(screenRect(for: crop.localRect))
+
         selectionRect = crop.localRect
         state.loadImage(crop.image, url: nil)
         state.selectedTool = .selection
@@ -343,6 +345,11 @@ final class InlineAreaAnnotateSession: ObservableObject {
 
     private func screenRect(for localRect: CGRect) -> CGRect {
         Self.screenRect(for: localRect, in: desktopFrame)
+    }
+
+    private func rememberConfirmedArea(_ rect: CGRect) {
+        guard CaptureLastSelectionStore.isEnabled(userDefaults: .standard) else { return }
+        CaptureLastSelectionStore.save(rect, userDefaults: .standard)
     }
 
     private func clampedSelectionRect(_ rect: CGRect) -> CGRect {

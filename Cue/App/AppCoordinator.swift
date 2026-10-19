@@ -30,6 +30,7 @@ final class AppCoordinator {
         LegacyLicenseCleanupService.shared.runIfNeeded()
 
         let defaults = UserDefaults.standard
+        CaptureLastSelectionStore.migrateLegacyRecordingPreferenceIfNeeded(userDefaults: defaults)
         if defaults.object(forKey: PreferencesKeys.diagnosticsRetentionDays) == nil {
             defaults.set(LogCleanupScheduler.defaultRetentionDays, forKey: PreferencesKeys.diagnosticsRetentionDays)
         }

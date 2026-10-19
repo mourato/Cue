@@ -77,7 +77,7 @@ enum CueConfigurationExporter {
         writer.section("capture.all_in_one")
         writer.value(
             "remember_last_selection",
-            defaults.boolValue(PreferencesKeys.captureAllInOneRememberLastSelection, default: true)
+            CaptureLastSelectionStore.isEnabled(userDefaults: defaults)
         )
 
         writer.section("capture.screenshot")
@@ -164,7 +164,7 @@ enum CueConfigurationExporter {
             )
             writer.value(
                 "remember_last_area",
-                defaults.boolValue(PreferencesKeys.recordingRememberLastArea, default: true)
+                CaptureLastSelectionStore.isEnabled(userDefaults: defaults)
             )
             writer.value("include_own_app", defaults.boolValue(PreferencesKeys.recordingIncludeOwnApp, default: false))
             writer.value("show_cursor", RecordingToolbarPreferences.showCursor(defaults: defaults))

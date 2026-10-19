@@ -7,7 +7,7 @@ This doc covers the runtime path for screen recording: trigger, pre-record toolb
 ```mermaid
 flowchart TD
     A["Trigger: menu bar Record Screen / Application, shortcut ⇧⌘5 toggle, cue://record/screen|record/application"] --> B["ScreenCaptureViewModel.startRecordingFlow(initialInteractionMode:)"]
-    B --> C{"Remember last area (recordingRememberLastArea, default on) + saved rect still on-screen?"}
+    B --> C{"Remember last area (capture.allInOne.rememberLastSelection, legacy recording.rememberLastArea fallback, default on) + saved rect still on-screen?"}
     C -->|Yes| D["RecordingCoordinator.shared.showToolbar(for: savedRect)"]
     C -->|No| E["AreaSelectionController.startSelection(mode: .recording)"]
     E --> D
@@ -36,7 +36,7 @@ flowchart TD
 - Entry points: menu bar items (`AppStatusBarController` → `viewModel.startRecordingFlow()` / `startApplicationRecordingFlow()`), global shortcut `GlobalShortcutKind.recording` (default `⇧⌘5`, start/stop toggle via `toggleRecordingFromShortcut`), and deep links `cue://record/screen` / `cue://record/application`. Application mode enters the same flow with `.applicationWindow` as the initial interaction mode.
 - `ScreenCaptureViewModel.startRecordingFlow` (`Cue/Features/Capture/CaptureViewModel.swift`) hides own normal-level windows when own-app exclusion is on, then either restores the last area or runs an `AreaSelectionController` session in `.recording` mode.
 - `RecordingCoordinator` (`Cue/Features/Recording/RecordingCoordinator.swift`) owns toolbar/overlay UX and stop/GIF handoff. `ScreenRecordingManager` (`Cue/Services/Capture/ScreenRecordingManager.swift`) owns media capture, timing, and metadata persistence.
-- Remember-last-area: `RecordingCoordinator.saveLastAreaRect` persists the rect to `PreferencesKeys.recordingLastAreaRect` on selection/drag end; `loadLastAreaRect()` returns it only when it still intersects a connected `NSScreen`.
+- Remember-last-area: `CaptureLastSelectionStore` persists the confirmed `.area` rect to `PreferencesKeys.captureAllInOneLastAreaRect` on selection/drag end; `restoredRect(...)` returns it only when the shared preference is enabled and the rect still intersects a connected screen. Legacy `recording.lastAreaRect` / `recording.rememberLastArea` values are read only while the shared values are absent.
 
 ## Capture Modes
 

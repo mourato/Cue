@@ -140,9 +140,7 @@ final class AllInOneCaptureCoordinator {
         installModeShortcutMonitorsIfNeeded()
 
         let screenFrames = NSScreen.screens.map(\.frame)
-        if CaptureLastSelectionStore.isEnabled(userDefaults: .standard),
-           let lastRect = CaptureLastSelectionStore.load(userDefaults: .standard, screens: screenFrames)
-        {
+        if let lastRect = CaptureLastSelectionStore.restoredRect(userDefaults: .standard, screens: screenFrames) {
             showFrozenBackdropHostIfNeeded()
             beginRefinement(with: lastRect, generation: generation)
         } else {

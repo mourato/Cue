@@ -10686,7 +10686,6 @@
     "preferences-advanced.ocr-automatic-language": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Automatically Detect Language"}}}},
     "preferences-advanced.keep-line-breaks-title": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Keep line breaks"}}}},
     "preferences-advanced.detect-links-title": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Detect links"}}}},
-    "preferences-advanced.remember-last-selection-title": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Remember last selection"}}}},
     "preferences-advanced.url-scheme-api-title": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"URL scheme API"}}}},
     "preferences-advanced.url-scheme-api-description": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"The scheme used by external capture and automation links."}}}},
     "preferences-advanced.url-scheme-description-v2": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Allow external triggers via the URL scheme API"}}}},

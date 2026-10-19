@@ -14,7 +14,6 @@
         // MARK: - General
 
         @AppStorage(PreferencesKeys.recordingHoverBarVisible) private var showControlsWhileRecording = true
-        @AppStorage(PreferencesKeys.recordingRememberLastArea) private var rememberLastSelection = true
         @AppStorage(PreferencesKeys.recordingShowTimeOnMenuBar) private var displayTimeInMenuBar = true
         @AppStorage(PreferencesKeys.recordingDimScreenWhileRecording) private var dimScreenWhileRecording = true
         @AppStorage(PreferencesKeys.recordingShowCountdown) private var showCountdown = false
@@ -53,10 +52,6 @@
                     ScreenRecordingToggleRow(
                         title: L10n.PreferencesScreenRecording.showControlsTitle,
                         isOn: $showControlsWhileRecording
-                    )
-                    ScreenRecordingToggleRow(
-                        title: L10n.PreferencesScreenRecording.rememberLastSelectionTitle,
-                        isOn: $rememberLastSelection
                     )
                     ScreenRecordingToggleRow(
                         title: L10n.PreferencesScreenRecording.displayTimeInMenuBarTitle,
