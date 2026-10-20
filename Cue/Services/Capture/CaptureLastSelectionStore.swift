@@ -33,6 +33,8 @@ enum CaptureLastSelectionStore {
             "height": rect.height
         ]
         userDefaults.set(rectDict, forKey: PreferencesKeys.captureAllInOneLastAreaRect)
+        // The shared rect now wins over the legacy fallback, so drop the stale copy.
+        userDefaults.removeObject(forKey: PreferencesKeys.recordingLastAreaRect)
     }
 
     // MARK: - Load

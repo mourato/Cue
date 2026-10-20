@@ -56,7 +56,7 @@
                         isOn: $showControlsWhileRecording
                     )
                     ScreenRecordingToggleRow(
-                        title: L10n.PreferencesScreenRecording.rememberLastSelectionTitle,
+                        title: L10n.PreferencesCapture.rememberLastAreaTitle,
                         isOn: $rememberLastSelection
                     )
                     ScreenRecordingToggleRow(

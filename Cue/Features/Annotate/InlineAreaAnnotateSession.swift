@@ -160,8 +160,6 @@ final class InlineAreaAnnotateSession: ObservableObject {
         guard clampedRect.width > 5, clampedRect.height > 5,
               let crop = cropImage(for: clampedRect) else { return }
 
-        rememberConfirmedArea(screenRect(for: crop.localRect))
-
         selectionRect = crop.localRect
         state.loadImage(crop.image, url: nil)
         state.selectedTool = .selection
@@ -288,6 +286,9 @@ final class InlineAreaAnnotateSession: ObservableObject {
             SoundManager.playScreenshotCapture()
         }
         if case let .success(url) = result {
+            if let selectionRect {
+                rememberConfirmedArea(screenRect(for: selectionRect))
+            }
             persistCommittedSession(for: url)
         }
         complete(result)

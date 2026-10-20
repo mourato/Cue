@@ -98,6 +98,17 @@ final class CaptureLastSelectionStoreTests: XCTestCase {
         XCTAssertNil(defaults.dictionary(forKey: PreferencesKeys.recordingLastAreaRect))
     }
 
+    func testSave_removesStaleLegacyRecordingArea() {
+        defaults.set(
+            ["x": 10.0, "y": 20.0, "width": 300.0, "height": 200.0],
+            forKey: PreferencesKeys.recordingLastAreaRect
+        )
+
+        CaptureLastSelectionStore.save(CGRect(x: 0, y: 0, width: 100, height: 100), userDefaults: defaults)
+
+        XCTAssertNil(defaults.object(forKey: PreferencesKeys.recordingLastAreaRect))
+    }
+
     func testLoad_fallsBackToLegacyRecordingArea() {
         let rect = CGRect(x: 120, y: 240, width: 640, height: 360)
         let screens = [CGRect(x: 0, y: 0, width: 1440, height: 900)]

@@ -362,7 +362,9 @@ final class AllInOneCaptureCoordinator {
         let transferredSession = frozenSession
         frozenSession = nil
 
-        if let rect, mode.preservesSelectionRect {
+        // Annotate and recording keep the selection editable, so those flows save
+        // the area themselves once the user finishes or starts recording.
+        if let rect, mode.preservesSelectionRect, mode != .annotate, mode != .recording {
             if CaptureLastSelectionStore.isEnabled(userDefaults: .standard) {
                 CaptureLastSelectionStore.save(rect, userDefaults: .standard)
             }

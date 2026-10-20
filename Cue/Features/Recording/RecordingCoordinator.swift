@@ -108,7 +108,7 @@
 
         // MARK: - Recording Area Persistence
 
-        /// Persist only confirmed area selections. Window/fullscreen targets must not
+        /// Persist only area selections confirmed by starting a recording. Window/fullscreen targets must not
         /// overwrite the shared remembered area.
         private func rememberArea(_ rect: CGRect, captureMode: RecordingCaptureMode) {
             guard captureMode == .area,
@@ -400,7 +400,6 @@
         ) {
             selectedRect = rect
             selectedWindowTarget = windowTarget
-            rememberArea(rect, captureMode: captureMode)
 
             let interactionEnabled = captureMode != .application
             for overlay in regionOverlayWindows {
@@ -455,12 +454,9 @@
             toolbarWindow?.updateAnchorRect(rect)
         }
 
-        /// Finalize a drag/resize: persist the rect and reposition the toolbar.
+        /// Finalize a drag/resize: reposition the toolbar.
         private func finalizeDragOrResize() {
             guard let rect = selectedRect else { return }
-            if let captureMode = toolbarWindow?.captureMode {
-                rememberArea(rect, captureMode: captureMode)
-            }
             toolbarWindow?.updateAnchorRect(rect)
         }
 
@@ -796,6 +792,7 @@
                 return
             }
             guard beginRecordingStartAttempt(source: "toolbar") else { return }
+            rememberArea(rect, captureMode: window.captureMode)
             if !window.showCameraPreviewDuringRecording {
                 closeCameraPreview()
             }
