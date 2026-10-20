@@ -293,8 +293,11 @@ enum CueConfigurationImporter {
                 defaults.set($0, forKey: PreferencesKeys.recordingShowCameraPreviewDuringRecording)
             }
             // The legacy recording field now maps to the shared capture-area preference.
+            // However we also preserve it in the legacy key so the runtime fallback continues
+            // to work during the migration transition.
             collectBool(&reader, "recording", "remember_last_area", mutations: &mutations) {
                 defaults.set($0, forKey: PreferencesKeys.captureAllInOneRememberLastSelection)
+                defaults.set($0, forKey: PreferencesKeys.recordingRememberLastArea)
             }
             collectOwnAppBool(
                 &reader,

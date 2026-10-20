@@ -760,6 +760,7 @@ final class AreaSelectionController: NSObject {
         )
         interactionMode = nextMode
         hasRestoredInitialSelection = false
+        selectionStateMachine.reset()
         refreshPooledWindowsForInteractionModeChange()
     }
 

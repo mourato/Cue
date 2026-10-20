@@ -14,6 +14,8 @@
         // MARK: - General
 
         @AppStorage(PreferencesKeys.recordingHoverBarVisible) private var showControlsWhileRecording = true
+        // Mirrors the shared capture-area preference; the legacy recording key is only a migration fallback.
+        @AppStorage(PreferencesKeys.captureAllInOneRememberLastSelection) private var rememberLastSelection = true
         @AppStorage(PreferencesKeys.recordingShowTimeOnMenuBar) private var displayTimeInMenuBar = true
         @AppStorage(PreferencesKeys.recordingDimScreenWhileRecording) private var dimScreenWhileRecording = true
         @AppStorage(PreferencesKeys.recordingShowCountdown) private var showCountdown = false
@@ -52,6 +54,10 @@
                     ScreenRecordingToggleRow(
                         title: L10n.PreferencesScreenRecording.showControlsTitle,
                         isOn: $showControlsWhileRecording
+                    )
+                    ScreenRecordingToggleRow(
+                        title: L10n.PreferencesScreenRecording.rememberLastSelectionTitle,
+                        isOn: $rememberLastSelection
                     )
                     ScreenRecordingToggleRow(
                         title: L10n.PreferencesScreenRecording.displayTimeInMenuBarTitle,
