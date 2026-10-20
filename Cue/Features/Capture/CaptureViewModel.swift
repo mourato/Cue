@@ -581,6 +581,14 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
     /// Captures the shared remembered area instantly, without the selection overlay.
     /// Falls back to a normal area selection when no usable area is remembered.
     func capturePreviousArea() {
+        guard hasPermission else {
+            DiagnosticLogger.shared.log(.debug, .capture, "capturePreviousArea blocked: no permission")
+            return
+        }
+        if isCapturing || (isAreaSelectionActive && !AllInOneCaptureCoordinator.shared.isSessionActive) {
+            DiagnosticLogger.shared.log(.debug, .capture, "capturePreviousArea blocked: capture already active")
+            return
+        }
         cancelAllInOneSessionIfNeeded()
         guard let rect = restoredCaptureArea() else {
             DiagnosticLogger.shared.log(
