@@ -532,6 +532,7 @@ private struct ShortcutKeyEventSnapshot: Sendable {
 enum GlobalShortcutKind: String, CaseIterable, Codable {
     case fullscreen
     case area
+    case previousArea
     case allInOne
     case areaAnnotate
     case activeWindow
@@ -566,6 +567,8 @@ extension GlobalShortcutKind {
             L10n.Actions.captureFullscreen
         case .area:
             L10n.Actions.captureArea
+        case .previousArea:
+            L10n.Actions.capturePreviousArea
         case .allInOne:
             L10n.Actions.captureAllInOne
         case .areaAnnotate:
@@ -606,6 +609,7 @@ extension GlobalShortcutKind {
 enum ShortcutAction {
     case captureFullscreen
     case captureArea
+    case capturePreviousArea
     case captureAllInOne
     case captureAreaAnnotate
     case captureApplication
@@ -640,6 +644,8 @@ final class KeyboardShortcutManager {
 
     private(set) var fullscreenShortcut: ShortcutConfig
     private(set) var areaShortcut: ShortcutConfig
+    /// Ships unbound (in `clearedShortcuts`); resolve through `shortcut(for: .previousArea)`.
+    private(set) var previousAreaShortcut: ShortcutConfig
     private(set) var allInOneShortcut: ShortcutConfig
     private(set) var areaAnnotateShortcut: ShortcutConfig
     private(set) var scrollingCaptureShortcut: ShortcutConfig
@@ -667,6 +673,7 @@ final class KeyboardShortcutManager {
 
     private var fullscreenHotkeyRef: EventHotKeyRef?
     private var areaHotkeyRef: EventHotKeyRef?
+    private var previousAreaHotkeyRef: EventHotKeyRef?
     private var allInOneHotkeyRef: EventHotKeyRef?
     private var areaAnnotateHotkeyRef: EventHotKeyRef?
     private var scrollingCaptureHotkeyRef: EventHotKeyRef?
@@ -711,12 +718,14 @@ final class KeyboardShortcutManager {
     private let togglePenRecordingHotkeyID = EventHotKeyID(signature: OSType(0x5A53_4649), id: 18) // "ZSFI"
     private let restartRecordingHotkeyID = EventHotKeyID(signature: OSType(0x5A53_464A), id: 19) // "ZSFJ"
     private let deleteRecordingHotkeyID = EventHotKeyID(signature: OSType(0x5A53_464B), id: 20) // "ZSFK"
+    private let previousAreaHotkeyID = EventHotKeyID(signature: OSType(0x5A53_464D), id: 22) // "ZSFM"
 
     private var eventHandler: EventHandlerRef?
 
     // UserDefaults keys
     private let fullscreenShortcutKey = "fullscreenShortcut"
     private let areaShortcutKey = "areaShortcut"
+    private let previousAreaShortcutKey = "previousAreaShortcut"
     private let allInOneShortcutKey = "allInOneShortcut"
     private let areaAnnotateShortcutKey = "areaAnnotateShortcut"
     private let scrollingCaptureShortcutKey = "scrollingCaptureShortcut"
@@ -740,6 +749,7 @@ final class KeyboardShortcutManager {
     private init() {
         fullscreenShortcut = .defaultFullscreen
         areaShortcut = .defaultArea
+        previousAreaShortcut = ShortcutConfig(keyCode: 0, modifiers: 0)
         allInOneShortcut = .defaultAllInOne
         areaAnnotateShortcut = .defaultAreaAnnotate
         scrollingCaptureShortcut = .defaultScrollingCapture
@@ -873,6 +883,7 @@ final class KeyboardShortcutManager {
         switch kind {
         case .fullscreen: return fullscreenShortcut
         case .area: return areaShortcut
+        case .previousArea: return previousAreaShortcut
         case .allInOne: return allInOneShortcut
         case .areaAnnotate: return areaAnnotateShortcut
         case .activeWindow: return activeWindowShortcut
@@ -935,6 +946,17 @@ final class KeyboardShortcutManager {
         mutateShortcutRegistration {
             setShortcut(config, for: .area) {
                 areaShortcut = $0
+            }
+            saveShortcuts()
+            saveClearedShortcuts()
+        }
+    }
+
+    /// Update capture previous area shortcut. Ships unbound; nil means "None".
+    func setPreviousAreaShortcut(_ config: ShortcutConfig?) {
+        mutateShortcutRegistration {
+            setShortcut(config, for: .previousArea) {
+                previousAreaShortcut = $0
             }
             saveShortcuts()
             saveClearedShortcuts()
@@ -1153,6 +1175,11 @@ final class KeyboardShortcutManager {
         } else if let data = try? encoder.encode(togglePenRecordingShortcut) {
             UserDefaults.standard.set(data, forKey: togglePenRecordingShortcutKey)
         }
+        if clearedShortcuts.contains(.previousArea) {
+            UserDefaults.standard.removeObject(forKey: previousAreaShortcutKey)
+        } else if let data = try? encoder.encode(previousAreaShortcut) {
+            UserDefaults.standard.set(data, forKey: previousAreaShortcutKey)
+        }
         if clearedShortcuts.contains(.restartRecording) {
             UserDefaults.standard.removeObject(forKey: restartRecordingShortcutKey)
         } else if let data = try? encoder.encode(restartRecordingShortcut) {
@@ -1230,6 +1257,11 @@ final class KeyboardShortcutManager {
            let config = try? decoder.decode(ShortcutConfig.self, from: togglePenRecordingData)
         {
             togglePenRecordingShortcut = config
+        }
+        if let previousAreaData = UserDefaults.standard.data(forKey: previousAreaShortcutKey),
+           let config = try? decoder.decode(ShortcutConfig.self, from: previousAreaData)
+        {
+            previousAreaShortcut = config
         }
         if let restartRecordingData = UserDefaults.standard.data(forKey: restartRecordingShortcutKey),
            let config = try? decoder.decode(ShortcutConfig.self, from: restartRecordingData)
@@ -1326,6 +1358,12 @@ final class KeyboardShortcutManager {
             clearedShortcuts.insert(.togglePenRecording)
             didMutate = true
         }
+        if UserDefaults.standard.data(forKey: previousAreaShortcutKey) == nil,
+           !clearedShortcuts.contains(.previousArea)
+        {
+            clearedShortcuts.insert(.previousArea)
+            didMutate = true
+        }
         if UserDefaults.standard.data(forKey: restartRecordingShortcutKey) == nil,
            !clearedShortcuts.contains(.restartRecording)
         {
@@ -1405,6 +1443,9 @@ final class KeyboardShortcutManager {
         case areaHotkeyID.id:
             actionName = "area"
             action = .captureArea
+        case previousAreaHotkeyID.id:
+            actionName = "previous-area"
+            action = .capturePreviousArea
         case allInOneHotkeyID.id:
             actionName = "all-in-one"
             action = .captureAllInOne
@@ -1493,6 +1534,12 @@ final class KeyboardShortcutManager {
             config: shortcut(for: .area),
             hotkeyID: areaHotkeyID,
             ref: &areaHotkeyRef
+        )
+        registerShortcutIfNeeded(
+            kind: .previousArea,
+            config: shortcut(for: .previousArea),
+            hotkeyID: previousAreaHotkeyID,
+            ref: &previousAreaHotkeyRef
         )
         registerShortcutIfNeeded(
             kind: .allInOne,
@@ -1772,6 +1819,10 @@ final class KeyboardShortcutManager {
         if let ref = restartRecordingHotkeyRef {
             UnregisterEventHotKey(ref)
             restartRecordingHotkeyRef = nil
+        }
+        if let ref = previousAreaHotkeyRef {
+            UnregisterEventHotKey(ref)
+            previousAreaHotkeyRef = nil
         }
         if let ref = deleteRecordingHotkeyRef {
             UnregisterEventHotKey(ref)

@@ -85,6 +85,8 @@ struct CueDeepLinkHandler {
             screenCaptureViewModel.captureFullscreen()
         case let .captureArea(query):
             handleCaptureArea(query)
+        case .capturePreviousArea:
+            screenCaptureViewModel.capturePreviousArea()
         case .captureAllInOne:
             screenCaptureViewModel.captureAllInOne()
         case .captureApplication:
@@ -188,6 +190,7 @@ struct CueDeepLinkHandler {
 enum CueDeepLinkAction: Equatable {
     case captureFullscreen
     case captureArea(CaptureAreaDeepLinkQuery)
+    case capturePreviousArea
     case captureAllInOne
     case captureApplication
     case captureActiveWindow
@@ -219,6 +222,8 @@ enum CueDeepLinkAction: Equatable {
             self = .captureFullscreen
         case "capture/area", "capture-area", "area", "screenshot/area":
             self = .captureArea(Self.captureAreaQuery(from: components))
+        case "capture/previous-area", "capture-previous-area":
+            self = .capturePreviousArea
         case "capture/all-in-one", "capture-all-in-one", "all-in-one", "screenshot/all-in-one":
             self = .captureAllInOne
         case "capture/application", "capture/window", "application-capture", "window-capture", "screenshot/window":
@@ -268,6 +273,7 @@ enum CueDeepLinkAction: Equatable {
         case .captureFullscreen: "captureFullscreen"
         case let .captureArea(query):
             query == .empty ? "captureArea" : "captureArea(params)"
+        case .capturePreviousArea: "capturePreviousArea"
         case .captureAllInOne: "captureAllInOne"
         case .captureApplication: "captureApplication"
         case .captureActiveWindow: "captureActiveWindow"

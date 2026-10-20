@@ -781,6 +781,11 @@ nonisolated enum L10n {
             defaultValue: "Capture Area",
             comment: "Action title for area screenshot capture"
         )
+        static let capturePreviousArea = string(
+            "action.capture-previous-area",
+            defaultValue: "Capture Previous Area",
+            comment: "Action title for instantly capturing the last remembered area"
+        )
         static let captureAllInOne = string(
             "action.capture-all-in-one",
             defaultValue: "All-In-One Capture",
@@ -4220,6 +4225,11 @@ nonisolated enum L10n {
             "preferences-shortcuts.capture-area-description",
             defaultValue: "Select a region to capture",
             comment: "Description for area capture shortcut"
+        )
+        static let capturePreviousAreaDescription = string(
+            "preferences-shortcuts.capture-previous-area-description",
+            defaultValue: "Capture the last remembered area instantly",
+            comment: "Description for the optional capture previous area shortcut"
         )
         static let captureAreaAnnotateDescription = string(
             "preferences-shortcuts.capture-area-annotate-description",

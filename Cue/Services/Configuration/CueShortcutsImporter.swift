@@ -354,6 +354,8 @@ private extension KeyboardShortcutManager {
             setFullscreenShortcut(config)
         case .area:
             setAreaShortcut(config)
+        case .previousArea:
+            setPreviousAreaShortcut(config)
         case .allInOne:
             setAllInOneShortcut(config)
         case .areaAnnotate:

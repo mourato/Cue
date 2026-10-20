@@ -23,6 +23,7 @@ struct ShortcutsSettingsView: View {
     @State private var fullscreenShortcut: ShortcutConfig?
     @State private var allInOneShortcut: ShortcutConfig?
     @State private var areaShortcut: ShortcutConfig?
+    @State private var previousAreaShortcut: ShortcutConfig?
     @State private var areaAnnotateShortcut: ShortcutConfig?
     @State private var activeWindowShortcut: ShortcutConfig?
     @State private var allInOneModeShortcuts: [AllInOneCaptureMode: ModeShortcutState]
@@ -96,6 +97,9 @@ struct ShortcutsSettingsView: View {
         _fullscreenShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .fullscreen))
         _allInOneShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .allInOne))
         _areaShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .area))
+        _previousAreaShortcut = State(
+            initialValue: KeyboardShortcutManager.shared.shortcut(for: .previousArea)
+        )
         _areaAnnotateShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .areaAnnotate))
         _activeWindowShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .activeWindow))
         _allInOneModeShortcuts = State(
@@ -416,6 +420,16 @@ struct ShortcutsSettingsView: View {
                         isEnabled: globalEnabledBinding(for: .area),
                         validationIssue: globalValidationIssues[.area],
                         onShortcutChanged: { handleGlobalShortcutChange($0, for: .area) }
+                    )
+
+                    ShortcutRecorderView(
+                        label: L10n.Actions.capturePreviousArea,
+                        description: L10n.PreferencesShortcuts.capturePreviousAreaDescription,
+                        shortcut: $previousAreaShortcut,
+                        defaultShortcut: nil,
+                        isEnabled: globalEnabledBinding(for: .previousArea),
+                        validationIssue: globalValidationIssues[.previousArea],
+                        onShortcutChanged: { handleGlobalShortcutChange($0, for: .previousArea) }
                     )
 
                     ShortcutRecorderView(
@@ -841,6 +855,7 @@ struct ShortcutsSettingsView: View {
         fullscreenShortcut = .defaultFullscreen
         allInOneShortcut = .defaultAllInOne
         areaShortcut = .defaultArea
+        previousAreaShortcut = nil
         areaAnnotateShortcut = .defaultAreaAnnotate
         activeWindowShortcut = .defaultActiveWindowCapture
         scrollingCaptureShortcut = .defaultScrollingCapture
@@ -849,8 +864,8 @@ struct ShortcutsSettingsView: View {
         smartElementShortcut = .defaultSmartElement
 
         let captureKinds: [GlobalShortcutKind] = [
-            .fullscreen, .allInOne, .area, .areaAnnotate, .activeWindow, .scrollingCapture, .objectCutout, .ocr,
-            .smartElement
+            .fullscreen, .allInOne, .area, .previousArea, .areaAnnotate, .activeWindow, .scrollingCapture, .objectCutout,
+            .ocr, .smartElement
         ]
         for kind in captureKinds {
             globalShortcutEnabled[kind] = true
@@ -862,6 +877,7 @@ struct ShortcutsSettingsView: View {
         manager.setFullscreenShortcut(.defaultFullscreen)
         manager.setAllInOneShortcut(.defaultAllInOne)
         manager.setAreaShortcut(.defaultArea)
+        manager.setPreviousAreaShortcut(nil)
         manager.setAreaAnnotateShortcut(.defaultAreaAnnotate)
         manager.setActiveWindowShortcut(.defaultActiveWindowCapture)
         manager.setScrollingCaptureShortcut(.defaultScrollingCapture)
@@ -1124,6 +1140,9 @@ struct ShortcutsSettingsView: View {
             case .area:
                 areaShortcut = config
                 manager.setAreaShortcut(config)
+            case .previousArea:
+                previousAreaShortcut = config
+                manager.setPreviousAreaShortcut(config)
             case .areaAnnotate:
                 areaAnnotateShortcut = config
                 manager.setAreaAnnotateShortcut(config)

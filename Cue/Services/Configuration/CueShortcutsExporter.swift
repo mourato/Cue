@@ -131,6 +131,7 @@ extension GlobalShortcutKind {
         switch self {
         case .fullscreen: "fullscreen"
         case .area: "area"
+        case .previousArea: "previous_area"
         case .allInOne: "all_in_one"
         case .areaAnnotate: "area_annotate"
         case .activeWindow: "active_window"

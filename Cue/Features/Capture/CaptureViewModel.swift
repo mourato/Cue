@@ -387,6 +387,8 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
             captureFullscreen()
         case .captureArea:
             captureArea()
+        case .capturePreviousArea:
+            capturePreviousArea()
         case .captureAllInOne:
             captureAllInOne()
         case .captureAreaAnnotate:
@@ -574,6 +576,22 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
 
     func captureArea(afterCaptureAction: AfterCaptureAction? = nil) {
         startAreaCapture(initialInteractionMode: .manualRegion, afterCaptureAction: afterCaptureAction)
+    }
+
+    /// Captures the shared remembered area instantly, without the selection overlay.
+    /// Falls back to a normal area selection when no usable area is remembered.
+    func capturePreviousArea() {
+        cancelAllInOneSessionIfNeeded()
+        guard let rect = restoredCaptureArea() else {
+            DiagnosticLogger.shared.log(
+                .info,
+                .capture,
+                "Capture previous area unavailable; falling back to area selection"
+            )
+            captureArea()
+            return
+        }
+        captureArea(at: rect)
     }
 
     func captureAllInOne() {

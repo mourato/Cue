@@ -40,6 +40,7 @@ flowchart TD
 | All-In-One | Menu / optional `⇧⌘0` / `cue://capture/all-in-one` | `AllInOneCaptureCoordinator` + Plan 035 HUD + Plan 036 refinement | Each mode button dispatches its capture action |
 | Fullscreen | `⇧⌘3` | `ScreenCaptureViewModel.captureFullscreen()` → `ScreenCaptureManager.captureAllDisplays(targetDisplayIDs:)` | Image file per active display |
 | Area (manual region) | `⇧⌘4` | `startAreaCapture(.manualRegion)` → `AreaSelectionController` + `FrozenAreaCaptureSession` or live path | Cropped image file |
+| Previous area | Menu / optional shortcut (unbound) / `cue://capture/previous-area` | `capturePreviousArea()` → `restoredCaptureArea()` → `captureArea(at:)`; falls back to `captureArea()` when nothing usable is remembered | Cropped image file, no overlay |
 | Application window | Menu / shortcut / `cue://capture/application` | Same overlay, `.applicationWindow` mode → `ScreenCaptureManager.captureWindow(target:)` | Window image incl. shadow |
 | Active window | Menu / shortcut / `cue://capture/active-window` | `ActiveWindowResolver` (AX focused window) → `captureWindow` | Window image |
 | Area + inline annotate | `⇧⌘7` | `InlineAreaAnnotateCoordinator` (see [`ANNOTATE.md`](ANNOTATE.md)) | Annotated image file |

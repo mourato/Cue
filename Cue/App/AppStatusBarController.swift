@@ -488,6 +488,19 @@ final class AppStatusBarController: ObservableObject {
         captureAreaItem.isEnabled = viewModel.hasPermission
         menu?.addItem(captureAreaItem)
 
+        let capturePreviousAreaItem = NSMenuItem(
+            title: L10n.Actions.capturePreviousArea,
+            action: #selector(capturePreviousAreaAction),
+            keyEquivalent: ""
+        )
+        applyConfiguredShortcut(capturePreviousAreaItem, for: .previousArea, using: shortcutManager)
+        capturePreviousAreaItem.target = self
+        capturePreviousAreaItem.image = NSImage(
+            systemSymbolName: "arrow.counterclockwise", accessibilityDescription: nil
+        )
+        capturePreviousAreaItem.isEnabled = viewModel.hasPermission
+        menu?.addItem(capturePreviousAreaItem)
+
         if isVideoModuleEnabled {
             #if CUE_VIDEO_MODULE
                 let recordItem = NSMenuItem(
@@ -708,6 +721,11 @@ final class AppStatusBarController: ObservableObject {
     @objc private func captureAreaAction() {
         logMenuAction("captureArea")
         viewModel?.captureArea()
+    }
+
+    @objc private func capturePreviousAreaAction() {
+        logMenuAction("capturePreviousArea")
+        viewModel?.capturePreviousArea()
     }
 
     @objc private func captureAreaAnnotateAction() {

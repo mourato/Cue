@@ -54,6 +54,7 @@ All 19 `GlobalShortcutKind`s with shipping defaults (verified in `KeyboardShortc
 | `togglePenRecording` | Toggle pen overlay while recording | **unbound** |
 | `restartRecording` | Restart current recording | **unbound** |
 | `deleteRecording` | Delete in-progress recording | **unbound** |
+| `previousArea` | Capture Previous Area (remembered area, no overlay) | **unbound** |
 
 - The five unbound-by-default kinds are seeded into the cleared set on first launch (`seedDefaultClearedShortcutsOnFirstLaunchIfNeeded`) so they never shadow existing user config. `pauseResumeRecordingShortcut` and `allInOneShortcut` keep recommended combos as backing values, but resolve to `nil` via `shortcut(for:)` until the user binds them.
 - Editing UI: Settings → Shortcuts (see [PREFERENCES.md](PREFERENCES.md)).

@@ -285,6 +285,7 @@ enum CueConfigurationDefaultDocument {
         switch kind {
         case .fullscreen: .defaultFullscreen
         case .area: .defaultArea
+        case .previousArea: nil
         case .allInOne: nil
         case .areaAnnotate: .defaultAreaAnnotate
         case .activeWindow: .defaultActiveWindowCapture

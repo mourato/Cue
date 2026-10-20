@@ -15,6 +15,8 @@ final class CueDeepLinkHandlerTests: XCTestCase {
             ("cue://capture/fullscreen", .captureFullscreen),
             ("cue://capture/all-in-one", .captureAllInOne),
             ("cue://capture/area", .captureArea(.empty)),
+            ("cue://capture/previous-area", .capturePreviousArea),
+            ("cue://capture-previous-area", .capturePreviousArea),
             ("cue://capture/application", .captureApplication),
             ("cue://capture/area-annotate", .captureAreaAnnotate),
             ("cue://capture/scrolling", .captureScrolling),
