@@ -2091,29 +2091,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                         return
                     }
 
-                    // Restore the shared remembered area before opening the recording selection.
-                    if initialInteractionMode == .manualRegion,
-                       let savedRect = restoredCaptureArea()
-                    {
-                        isAreaSelectionActive = false
-                        DiagnosticLogger.shared.log(
-                            .info,
-                            .recording,
-                            "Using saved recording area",
-                            context: ["rect": "\(Int(savedRect.width))x\(Int(savedRect.height))"]
-                        )
-                        Task { @MainActor in
-                            RecordingCoordinator.shared.showToolbar(
-                                for: savedRect,
-                                onSessionEnded: {
-                                    hiddenWindowSession.restore()
-                                }
-                            )
-                        }
-                        return
-                    }
-
-                    // No saved rect or disabled - start area selection
+                    // Preselect the shared remembered area; the user still confirms it.
                     let applicationConfiguration = AreaSelectionApplicationConfiguration(
                         prefetchedContentTask: captureManager.prefetchShareableContent(),
                         excludeOwnApplication: !includesOwnAppInRecordings
@@ -2122,7 +2100,10 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                         mode: .recording,
                         backdrops: [:],
                         applicationConfiguration: applicationConfiguration,
-                        initialInteractionMode: initialInteractionMode
+                        initialInteractionMode: initialInteractionMode,
+                        initialSelectionRect: initialInteractionMode == .manualRegion
+                            ? restoredCaptureArea()
+                            : nil
                     ) { [weak self] selection in
                         guard let self else {
                             DiagnosticLogger.shared.log(
