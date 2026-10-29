@@ -76,6 +76,24 @@ final class AllInOneCaptureCursorArbiter {
     var hudExclusionFrames: () -> [CGRect] = { [] }
     var fallbackCursor: (() -> CaptureSelectionCursorKind?)?
     var overlayCandidate: ((CGPoint) -> CaptureSelectionCursorKind?)?
+    private var pollingTimer: Timer?
+
+    /// Reasserts the resolved cursor at 60 Hz; nonactivating panels lose cursor rects otherwise.
+    func startPolling() {
+        guard pollingTimer == nil else { return }
+        let timer = Timer(timeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
+            Task { @MainActor in
+                self?.commit(at: NSEvent.mouseLocation)
+            }
+        }
+        RunLoop.main.add(timer, forMode: .common)
+        pollingTimer = timer
+    }
+
+    func stopPolling() {
+        pollingTimer?.invalidate()
+        pollingTimer = nil
+    }
 
     func resolvedCursor(at location: CGPoint) -> CaptureSelectionCursorKind? {
         if CaptureFloatingCursorExclusion.contains(location, in: hudExclusionFrames()) {

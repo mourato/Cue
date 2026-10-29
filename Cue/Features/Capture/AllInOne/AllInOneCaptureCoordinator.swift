@@ -26,7 +26,6 @@ final class AllInOneCaptureCoordinator {
     private var isAwaitingInitialSelection = false
     private var sessionGeneration = UUID()
     private let cursorArbiter = AllInOneCaptureCursorArbiter()
-    private var cursorOwnershipTimer: Timer?
     private var localModeShortcutMonitor: Any?
 
     private init() {}
@@ -261,7 +260,6 @@ final class AllInOneCaptureCoordinator {
     }
 
     private func startCursorOwnershipIfNeeded() {
-        guard cursorOwnershipTimer == nil else { return }
         cursorArbiter.hudExclusionFrames = { [weak self] in
             self?.visibleHUDFrames() ?? []
         }
@@ -274,23 +272,11 @@ final class AllInOneCaptureCoordinator {
         AreaSelectionController.shared.cursorOwner = { [weak self] location in
             self?.cursorArbiter.resolvedCursor(at: location)
         }
-        let timer = Timer(timeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
-            Task { @MainActor in
-                self?.handleCursorOwnershipTick()
-            }
-        }
-        RunLoop.main.add(timer, forMode: .common)
-        cursorOwnershipTimer = timer
-    }
-
-    private func handleCursorOwnershipTick() {
-        guard isActive else { return }
-        cursorArbiter.commit(at: NSEvent.mouseLocation)
+        cursorArbiter.startPolling()
     }
 
     private func stopCursorOwnership() {
-        cursorOwnershipTimer?.invalidate()
-        cursorOwnershipTimer = nil
+        cursorArbiter.stopPolling()
         AreaSelectionController.shared.cursorOwner = nil
         cursorArbiter.fallbackCursor = nil
         cursorArbiter.overlayCandidate = nil
@@ -395,100 +381,12 @@ final class AllInOneCaptureCoordinator {
 
         tearDownSession(invalidateFrozenSession: false)
 
-        switch command {
-        case let .area(rect):
-            if freezeEnabled {
-                guard let transferredSession, let rect else {
-                    transferredSession?.invalidate()
-                    viewModel.recordCaptureFailure(.captureFailed(L10n.ScreenCapture.unableToCaptureSelectedArea))
-                    return
-                }
-                viewModel.captureArea(at: rect, from: transferredSession)
-            } else if let rect {
-                viewModel.captureArea(at: rect)
-            } else {
-                viewModel.captureArea()
-            }
-        case .fullscreen:
-            transferredSession?.invalidate()
-            viewModel.captureFullscreen()
-        case .window:
-            transferredSession?.invalidate()
-            viewModel.captureApplication()
-        case .activeWindow:
-            transferredSession?.invalidate()
-            viewModel.captureActiveWindow()
-        case let .annotate(rect):
-            if freezeEnabled {
-                guard let transferredSession, let rect else {
-                    transferredSession?.invalidate()
-                    viewModel.recordCaptureFailure(.captureFailed(L10n.ScreenCapture.unableToCaptureSelectedArea))
-                    return
-                }
-                viewModel.captureAreaAnnotate(at: rect, from: transferredSession)
-            } else if let rect {
-                viewModel.captureAreaAnnotate(at: rect)
-            } else {
-                viewModel.captureAreaAnnotate()
-            }
-        case let .scrolling(rect):
-            transferredSession?.invalidate()
-            if let rect {
-                viewModel.captureScrolling(at: rect)
-            } else {
-                viewModel.captureScrolling()
-            }
-        case let .ocr(rect):
-            if freezeEnabled {
-                guard let transferredSession, let rect else {
-                    transferredSession?.invalidate()
-                    viewModel.recordCaptureFailure(.captureFailed(L10n.ScreenCapture.unableToCaptureSelectedArea))
-                    return
-                }
-                viewModel.captureOCR(at: rect, from: transferredSession)
-            } else if let rect {
-                viewModel.captureOCR(at: rect)
-            } else {
-                viewModel.captureOCR()
-            }
-        case .timer:
-            transferredSession?.invalidate()
-        case .objectCutout:
-            transferredSession?.invalidate()
-            viewModel.captureObjectCutout()
-        case .smartElement:
-            transferredSession?.invalidate()
-            SmartElementCaptureController.shared.startCapture()
-        case let .recording(rect):
-            transferredSession?.invalidate()
-            #if CUE_VIDEO_MODULE
-                let capturedViewModel = viewModel
-                DiagnosticLogger.shared.log(
-                    .info,
-                    .recording,
-                    "All-In-One recording handoff queued",
-                    context: [
-                        "hasRect": "\(rect != nil)",
-                        "areaSelectionPresenting": "\(AreaSelectionController.shared.isPresenting)"
-                    ]
-                )
-                DispatchQueue.main.async { [weak capturedViewModel] in
-                    guard let capturedViewModel else {
-                        DiagnosticLogger.shared.log(
-                            .warning,
-                            .recording,
-                            "All-In-One recording handoff dropped: view model deallocated"
-                        )
-                        return
-                    }
-                    if let rect {
-                        capturedViewModel.startRecordingFlow(at: rect)
-                    } else {
-                        capturedViewModel.startRecordingFlow()
-                    }
-                }
-            #endif
-        }
+        AllInOneCaptureCommandDispatcher.dispatch(
+            command,
+            viewModel: viewModel,
+            frozenSession: transferredSession,
+            freezeEnabled: freezeEnabled
+        )
     }
 
     private static func rememberArea(_ rect: CGRect) {
@@ -571,8 +469,7 @@ final class AllInOneCaptureCoordinator {
             guard let self else { return event }
             return handleModeShortcut(event) ? nil : event
         }
-        // No global monitor: it cannot consume events, so keys meant for another app
-        // would both type there and trigger a capture. Cue overlays own key focus.
+        // No global monitor: it cannot consume keys, so other apps would also receive them.
     }
 
     private func removeModeShortcutMonitors() {
@@ -584,28 +481,20 @@ final class AllInOneCaptureCoordinator {
 
     @discardableResult
     private func handleModeShortcut(_ event: NSEvent) -> Bool {
-        guard isActive else { return false }
-        guard !isEditingTextInput else { return false }
+        // A focused dimensions field keeps its own keys (digits, Return).
+        guard isActive, let sessionState, !(NSApp.keyWindow?.firstResponder is NSText) else { return false }
 
         if Self.isSelectedModeActivationKey(event.keyCode) {
-            sessionState?.activateSelectedMode()
+            sessionState.activateSelectedMode()
             return true
         }
 
-        guard KeyboardShortcutManager.shared.isShortcutEnabled(for: .allInOne) else { return false }
-
-        let modes = sessionState?.availableModes
-            ?? AllInOneCaptureMode.availableModes(videoEnabled: VideoModuleAvailability.isEnabled)
-        guard let mode = AllInOneModeShortcutSettings.mode(matching: event, in: modes) else {
+        guard KeyboardShortcutManager.shared.isShortcutEnabled(for: .allInOne),
+              let mode = AllInOneModeShortcutSettings.mode(matching: event, in: sessionState.availableModes)
+        else {
             return false
         }
-
-        sessionState?.activateMode(mode)
+        sessionState.activateMode(mode)
         return true
-    }
-
-    private var isEditingTextInput: Bool {
-        guard let responder = NSApp.keyWindow?.firstResponder else { return false }
-        return responder is NSTextView || responder is NSText
     }
 }
