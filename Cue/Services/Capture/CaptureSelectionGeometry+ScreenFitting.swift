@@ -12,11 +12,17 @@ extension CaptureSelectionGeometry {
     /// overlaps most. Returns nil when `rect` overlaps no screen.
     static func fitted(_ rect: CGRect, toScreens screens: [CGRect]) -> CGRect? {
         let rect = rect.standardized
-        let best = screens
-            .map { (screen: $0, overlap: $0.intersection(rect)) }
-            .filter { $0.overlap.width > 0 && $0.overlap.height > 0 }
-            .max { $0.overlap.width * $0.overlap.height < $1.overlap.width * $1.overlap.height }
-        guard let screen = best?.screen else { return nil }
+        var screen: CGRect?
+        var bestArea: CGFloat = 0
+        for candidate in screens {
+            let overlap = candidate.intersection(rect)
+            let area = overlap.isNull ? 0 : overlap.width * overlap.height
+            if area > bestArea {
+                bestArea = area
+                screen = candidate
+            }
+        }
+        guard let screen else { return nil }
 
         let width = min(rect.width, screen.width)
         let height = min(rect.height, screen.height)
