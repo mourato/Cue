@@ -167,7 +167,7 @@ final class CaptureLastSelectionStoreTests: XCTestCase {
         XCTAssertNil(CaptureLastSelectionStore.load(userDefaults: defaults, screens: screens))
     }
 
-    func testLoad_acceptsRectThatPartiallyIntersectsAScreen() throws {
+    func testLoad_movesPartiallyVisibleRectFullyOntoScreen() {
         let rect = CGRect(x: 1400, y: 800, width: 200, height: 200)
         let screens = [CGRect(x: 0, y: 0, width: 1440, height: 900)]
 
@@ -175,16 +175,21 @@ final class CaptureLastSelectionStoreTests: XCTestCase {
 
         let loaded = CaptureLastSelectionStore.load(userDefaults: defaults, screens: screens)
 
-        XCTAssertNotNil(loaded)
-        XCTAssertTrue(try screens[0].intersects(XCTUnwrap(loaded)))
+        XCTAssertEqual(loaded, CGRect(x: 1240, y: 700, width: 200, height: 200))
     }
 
-    func testIsRectVisibleOnScreens_requiresIntersection() {
-        let onScreen = CGRect(x: 100, y: 100, width: 200, height: 200)
-        let offScreen = CGRect(x: 3000, y: 3000, width: 200, height: 200)
-        let screens = [CGRect(x: 0, y: 0, width: 1440, height: 900)]
+    func testLoad_fitsRectInsideScreenItOverlapsMost() {
+        // Mostly on the right display, wider than it.
+        let rect = CGRect(x: 1400, y: 100, width: 1200, height: 400)
+        let screens = [
+            CGRect(x: 0, y: 0, width: 1440, height: 900),
+            CGRect(x: 1440, y: 0, width: 1000, height: 800)
+        ]
 
-        XCTAssertTrue(CaptureLastSelectionStore.isRectVisibleOnScreens(onScreen, screens: screens))
-        XCTAssertFalse(CaptureLastSelectionStore.isRectVisibleOnScreens(offScreen, screens: screens))
+        CaptureLastSelectionStore.save(rect, userDefaults: defaults)
+
+        let loaded = CaptureLastSelectionStore.load(userDefaults: defaults, screens: screens)
+
+        XCTAssertEqual(loaded, CGRect(x: 1440, y: 100, width: 1000, height: 400))
     }
 }

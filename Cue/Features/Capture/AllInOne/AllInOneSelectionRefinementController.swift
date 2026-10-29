@@ -554,6 +554,11 @@ final class AllInOneSelectionRefinementController: NSObject {
         localEscapeMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
             guard event.keyCode == 53 else { return event }
             guard let self else { return event }
+            // Escape in a dimensions field leaves the field instead of cancelling the session.
+            if let keyWindow = NSApp.keyWindow, keyWindow.firstResponder is NSText {
+                keyWindow.makeFirstResponder(nil)
+                return nil
+            }
             return handleEscape() ? nil : event
         }
 

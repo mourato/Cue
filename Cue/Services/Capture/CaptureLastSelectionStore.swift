@@ -41,7 +41,9 @@ enum CaptureLastSelectionStore {
 
     /// Loads the shared area, falling back to the legacy recording area when the
     /// shared value has never been written. Returns nil when the stored rect is
-    /// invalid or no longer intersects a connected screen.
+    /// invalid or no longer intersects a connected screen; otherwise the rect is
+    /// fitted inside the screen it overlaps most, so display changes never
+    /// restore an area that hangs off-screen.
     static func load(userDefaults: UserDefaults, screens: [CGRect]) -> CGRect? {
         // A written-but-invalid shared rect is not replaced by an older recording
         // rect; the fallback only applies while the shared value is absent.
@@ -51,7 +53,7 @@ enum CaptureLastSelectionStore {
         guard let rect = decodeRect(forKey: key, userDefaults: userDefaults) else {
             return nil
         }
-        return isRectVisibleOnScreens(rect, screens: screens) ? rect : nil
+        return CaptureSelectionGeometry.fitted(rect, toScreens: screens)
     }
 
     /// Returns the area to restore for a new selection only when the shared
@@ -73,13 +75,6 @@ enum CaptureLastSelectionStore {
     }
 
     // MARK: - Validation
-
-    static func isRectVisibleOnScreens(_ rect: CGRect, screens: [CGRect]) -> Bool {
-        for screenFrame in screens where screenFrame.intersects(rect) {
-            return true
-        }
-        return false
-    }
 
     private static func decodeRect(forKey key: String, userDefaults: UserDefaults) -> CGRect? {
         guard let rectDict = userDefaults.dictionary(forKey: key),

@@ -28,7 +28,6 @@ final class AllInOneCaptureCoordinator {
     private let cursorArbiter = AllInOneCaptureCursorArbiter()
     private var cursorOwnershipTimer: Timer?
     private var localModeShortcutMonitor: Any?
-    private var globalModeShortcutMonitor: Any?
 
     private init() {}
 
@@ -221,10 +220,6 @@ final class AllInOneCaptureCoordinator {
         sessionState?.currentRect = normalized
         positionHUDs()
 
-        guard sessionState?.selectedMode.showsDimensionsBar == true else {
-            return
-        }
-
         let aspectLocked = UserDefaults.standard.bool(forKey: PreferencesKeys.captureAllInOneAspectRatioLocked)
         let aspectRatio = CaptureSelectionGeometry.aspectRatio(of: normalized)
 
@@ -313,7 +308,9 @@ final class AllInOneCaptureCoordinator {
     }
 
     private func applyRect(_ rect: CGRect) {
-        let normalized = CaptureSelectionGeometry.normalized(rect)
+        let screens = NSScreen.screens.map(\.frame)
+        let normalized = CaptureSelectionGeometry.fitted(CaptureSelectionGeometry.normalized(rect), toScreens: screens)
+            ?? CaptureSelectionGeometry.normalized(rect)
         sessionState?.currentRect = normalized
         refinementController?.applyRect(normalized)
         positionHUDs()
@@ -372,10 +369,9 @@ final class AllInOneCaptureCoordinator {
 
         // Annotate and recording keep the selection editable, so those flows save
         // the area themselves once the user finishes or starts recording.
-        if let rect, mode.preservesSelectionRect, mode != .annotate, mode != .recording {
-            if CaptureLastSelectionStore.isEnabled(userDefaults: .standard) {
-                CaptureLastSelectionStore.save(rect, userDefaults: .standard)
-            }
+        // Timer saves when the countdown fires, so a cancelled countdown keeps the old area.
+        if let rect, ![.annotate, .recording, .timer].contains(mode), mode.preservesSelectionRect {
+            Self.rememberArea(rect)
         }
 
         if case let .timer(rect) = command {
@@ -390,6 +386,7 @@ final class AllInOneCaptureCoordinator {
             let capturedRect = rect
             tearDownSession(invalidateFrozenSession: false)
             timerScheduler.scheduleAreaCapture { [capturedViewModel] in
+                Self.rememberArea(capturedRect)
                 capturedViewModel.captureAreaWithFreshFrozenSession(at: capturedRect)
             }
             DiagnosticLogger.shared.log(.info, .capture, "All-In-One timer capture scheduled")
@@ -494,6 +491,11 @@ final class AllInOneCaptureCoordinator {
         }
     }
 
+    private static func rememberArea(_ rect: CGRect) {
+        guard CaptureLastSelectionStore.isEnabled(userDefaults: .standard) else { return }
+        CaptureLastSelectionStore.save(rect, userDefaults: .standard)
+    }
+
     private func tearDownSession(invalidateFrozenSession: Bool) {
         guard !isTearingDown else { return }
         isTearingDown = true
@@ -569,22 +571,14 @@ final class AllInOneCaptureCoordinator {
             guard let self else { return event }
             return handleModeShortcut(event) ? nil : event
         }
-
-        globalModeShortcutMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
-            DispatchQueue.main.async {
-                _ = self?.handleModeShortcut(event)
-            }
-        }
+        // No global monitor: it cannot consume events, so keys meant for another app
+        // would both type there and trigger a capture. Cue overlays own key focus.
     }
 
     private func removeModeShortcutMonitors() {
         if let localModeShortcutMonitor {
             NSEvent.removeMonitor(localModeShortcutMonitor)
             self.localModeShortcutMonitor = nil
-        }
-        if let globalModeShortcutMonitor {
-            NSEvent.removeMonitor(globalModeShortcutMonitor)
-            self.globalModeShortcutMonitor = nil
         }
     }
 
