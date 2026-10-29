@@ -12,15 +12,21 @@ struct AllInOneDimensionsBarView: View {
 
     let rect: CGRect
     let onRectChanged: (CGRect) -> Void
+    let onAspectLockChanged: (Bool, CGFloat?) -> Void
 
     @AppStorage(PreferencesKeys.captureAllInOneAspectRatioLocked) private var aspectRatioLocked = false
     @State private var widthText: String
     @State private var heightText: String
     @State private var lockedAspectRatio: CGFloat?
 
-    init(rect: CGRect, onRectChanged: @escaping (CGRect) -> Void) {
+    init(
+        rect: CGRect,
+        onRectChanged: @escaping (CGRect) -> Void,
+        onAspectLockChanged: @escaping (Bool, CGFloat?) -> Void = { _, _ in }
+    ) {
         self.rect = rect
         self.onRectChanged = onRectChanged
+        self.onAspectLockChanged = onAspectLockChanged
         _widthText = State(initialValue: Self.formattedDimension(rect.width))
         _heightText = State(initialValue: Self.formattedDimension(rect.height))
         _lockedAspectRatio = State(initialValue: CaptureSelectionGeometry.aspectRatio(of: rect))
@@ -131,6 +137,10 @@ struct AllInOneDimensionsBarView: View {
         aspectRatioLocked.toggle()
         if aspectRatioLocked {
             lockedAspectRatio = CaptureSelectionGeometry.aspectRatio(of: rect) ?? activeAspectRatio()
+        }
+        // The refinement overlay owns drag-resize, so it must follow the toggle live.
+        onAspectLockChanged(aspectRatioLocked, lockedAspectRatio)
+        if aspectRatioLocked {
             guard let ratio = lockedAspectRatio else { return }
             let updated = CaptureSelectionGeometry.rectByLockingAspectRatio(rect, aspectRatio: ratio)
             onRectChanged(updated)

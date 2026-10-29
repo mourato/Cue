@@ -18,6 +18,7 @@ final class AllInOneCaptureSessionState: ObservableObject {
     var onModeActivated: (AllInOneCaptureMode) -> Void = { _ in }
     var onRectChanged: (CGRect) -> Void = { _ in }
     var onCancel: () -> Void = {}
+    var onAspectLockChanged: (Bool, CGFloat?) -> Void = { _, _ in }
 
     init(availableModes: [AllInOneCaptureMode]) {
         let modes = availableModes.isEmpty ? [.area] : availableModes
@@ -42,6 +43,10 @@ final class AllInOneCaptureSessionState: ObservableObject {
     func updateRect(_ rect: CGRect) {
         currentRect = rect
         onRectChanged(rect)
+    }
+
+    func updateAspectLock(_ locked: Bool, aspectRatio: CGFloat?) {
+        onAspectLockChanged(locked, aspectRatio)
     }
 
     func cancel() {

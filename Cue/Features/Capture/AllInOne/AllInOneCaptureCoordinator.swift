@@ -58,6 +58,9 @@ final class AllInOneCaptureCoordinator {
         let state = AllInOneCaptureSessionState(availableModes: configuredModes)
         state.onModeActivated = { [weak self] mode in
             guard let self, isActive, sessionGeneration == generation else { return }
+            // Area-based modes need a rect. Before the first drag finishes, keep the open
+            // selection instead of failing (freeze) or consuming the frozen session (timer).
+            guard !(isAwaitingInitialSelection && mode.preservesSelectionRect) else { return }
             activate(mode)
         }
         state.onRectChanged = { [weak self] rect in
@@ -67,6 +70,11 @@ final class AllInOneCaptureCoordinator {
         state.onCancel = { [weak self] in
             guard let self, isActive, sessionGeneration == generation else { return }
             cancel()
+        }
+        state.onAspectLockChanged = { [weak self] locked, ratio in
+            guard let self, isActive, sessionGeneration == generation else { return }
+            refinementController?.updateLockedAspectRatio(ratio)
+            refinementController?.updateAspectLock(locked)
         }
         sessionState = state
 
@@ -504,6 +512,7 @@ final class AllInOneCaptureCoordinator {
         sessionState?.onModeActivated = { _ in }
         sessionState?.onRectChanged = { _ in }
         sessionState?.onCancel = {}
+        sessionState?.onAspectLockChanged = { _, _ in }
 
         refinementController?.onCancel = nil
         refinementController?.onRectChanged = nil

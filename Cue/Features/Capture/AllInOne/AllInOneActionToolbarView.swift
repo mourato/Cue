@@ -12,9 +12,15 @@ struct AllInOneActionToolbarView: View {
 
     var body: some View {
         if session.selectedMode.showsDimensionsBar, let rect = session.currentRect {
-            AllInOneDimensionsBarView(rect: rect) { updated in
-                session.updateRect(updated)
-            }
+            AllInOneDimensionsBarView(
+                rect: rect,
+                onRectChanged: { updated in
+                    session.updateRect(updated)
+                },
+                onAspectLockChanged: { locked, ratio in
+                    session.updateAspectLock(locked, aspectRatio: ratio)
+                }
+            )
         }
     }
 }
