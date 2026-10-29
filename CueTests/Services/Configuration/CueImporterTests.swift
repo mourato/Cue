@@ -43,22 +43,24 @@ final class CueConfigurationImporterTests: XCTestCase {
         #endif
     }
 
-    func testImportRecordingRememberLastAreaWritesSharedAndLegacyKeys() {
-        let defaults = UserDefaultsFactory.make()
-        let source = """
-        schema_version = 1
+    #if CUE_VIDEO_MODULE
+        func testImportRecordingRememberLastAreaWritesSharedAndLegacyKeys() {
+            let defaults = UserDefaultsFactory.make()
+            let source = """
+            schema_version = 1
 
-        [recording]
-        remember_last_area = false
-        """
+            [recording]
+            remember_last_area = false
+            """
 
-        let result = CueConfigurationImporter.importTOML(source, defaults: defaults)
+            let result = CueConfigurationImporter.importTOML(source, defaults: defaults)
 
-        XCTAssertFalse(result.hasErrors)
-        XCTAssertEqual(defaults.object(forKey: PreferencesKeys.captureAllInOneRememberLastSelection) as? Bool, false)
-        XCTAssertEqual(defaults.object(forKey: PreferencesKeys.recordingRememberLastArea) as? Bool, false)
-        XCTAssertFalse(CaptureLastSelectionStore.isEnabled(userDefaults: defaults))
-    }
+            XCTAssertFalse(result.hasErrors)
+            XCTAssertEqual(defaults.object(forKey: PreferencesKeys.captureAllInOneRememberLastSelection) as? Bool, false)
+            XCTAssertEqual(defaults.object(forKey: PreferencesKeys.recordingRememberLastArea) as? Bool, false)
+            XCTAssertFalse(CaptureLastSelectionStore.isEnabled(userDefaults: defaults))
+        }
+    #endif
 
     func testImportAppliesImageUploadSettings() {
         let defaults = UserDefaultsFactory.make()

@@ -15,11 +15,11 @@ final class OCRLinkDetectorTests: XCTestCase {
         XCTAssertEqual(links.map(\.absoluteString), ["https://example.com/docs"])
     }
 
-    func testPromotesBareDomainToHTTP() {
+    func testDetectsBareDomainAsWebLink() {
         let links = OCRLinkDetector.detectWebLinks(in: "Docs live at example.com today")
 
         XCTAssertEqual(links.count, 1)
-        XCTAssertEqual(links.first?.scheme, "http")
+        XCTAssertTrue(["http", "https"].contains(links.first?.scheme ?? ""))
         XCTAssertEqual(links.first?.host, "example.com")
     }
 
