@@ -125,6 +125,57 @@ final class AllInOneCaptureCoordinatorTests: XCTestCase {
         XCTAssertFalse(activated)
     }
 
+    func testSessionState_awaitingInitialSelection_ignoresAreaBasedModes() {
+        let state = AllInOneCaptureSessionState(videoEnabled: false)
+        var activated: [AllInOneCaptureMode] = []
+        state.onModeActivated = { activated.append($0) }
+        state.isAwaitingInitialSelection = true
+
+        state.activateMode(.area)
+        state.activateMode(.timer)
+        state.activateMode(.ocr)
+        state.activateSelectedMode()
+        state.activateMode(.fullscreen)
+
+        XCTAssertEqual(activated, [.fullscreen])
+    }
+
+    func testSessionState_afterInitialSelection_activatesAreaBasedModes() {
+        let state = AllInOneCaptureSessionState(videoEnabled: false)
+        var activated: [AllInOneCaptureMode] = []
+        state.onModeActivated = { activated.append($0) }
+        state.isAwaitingInitialSelection = true
+        state.isAwaitingInitialSelection = false
+
+        state.activateMode(.timer)
+
+        XCTAssertEqual(activated, [.timer])
+    }
+
+    func testSessionState_updateAspectLockForwardsLockAndRatio() {
+        let state = AllInOneCaptureSessionState(videoEnabled: false)
+        var received: (Bool, CGFloat?)?
+        state.onAspectLockChanged = { received = ($0, $1) }
+
+        state.updateAspectLock(true, aspectRatio: 1.5)
+
+        XCTAssertEqual(received?.0, true)
+        XCTAssertEqual(received?.1, 1.5)
+    }
+
+    func testRefinementController_lockingAspectMidSessionReshapesRect() {
+        let controller = AllInOneSelectionRefinementController(
+            initialRect: CGRect(x: 0, y: 0, width: 400, height: 200),
+            aspectLocked: false
+        )
+        defer { controller.tearDown() }
+
+        controller.updateLockedAspectRatio(1)
+        controller.updateAspectLock(true)
+
+        XCTAssertEqual(CaptureSelectionGeometry.aspectRatio(of: controller.rect) ?? 0, 1, accuracy: 0.01)
+    }
+
     func testSelectedModeActivationKey_matchesReturnAndKeypadEnterOnly() {
         XCTAssertTrue(AllInOneCaptureCoordinator.isSelectedModeActivationKey(UInt16(kVK_Return)))
         XCTAssertTrue(AllInOneCaptureCoordinator.isSelectedModeActivationKey(UInt16(kVK_ANSI_KeypadEnter)))

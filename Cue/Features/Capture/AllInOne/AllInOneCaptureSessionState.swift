@@ -14,6 +14,9 @@ final class AllInOneCaptureSessionState: ObservableObject {
     @Published var selectedMode: AllInOneCaptureMode = .area
     @Published var currentRect: CGRect?
     @Published private(set) var availableModes: [AllInOneCaptureMode]
+    /// True until the first drag finishes. Area-based modes need that rect, so they
+    /// are ignored instead of failing or consuming the frozen session.
+    var isAwaitingInitialSelection = false
 
     var onModeActivated: (AllInOneCaptureMode) -> Void = { _ in }
     var onRectChanged: (CGRect) -> Void = { _ in }
@@ -31,7 +34,11 @@ final class AllInOneCaptureSessionState: ObservableObject {
     }
 
     func activateMode(_ mode: AllInOneCaptureMode) {
-        guard availableModes.contains(mode) else { return }
+        guard availableModes.contains(mode),
+              !(isAwaitingInitialSelection && mode.preservesSelectionRect)
+        else {
+            return
+        }
         selectedMode = mode
         onModeActivated(mode)
     }

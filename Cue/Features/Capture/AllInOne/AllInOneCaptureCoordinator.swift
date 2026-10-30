@@ -23,7 +23,10 @@ final class AllInOneCaptureCoordinator {
     private let timerScheduler = AllInOneTimerScheduler()
     private var isActive = false
     private var isTearingDown = false
-    private var isAwaitingInitialSelection = false
+    private var isAwaitingInitialSelection: Bool {
+        get { sessionState?.isAwaitingInitialSelection ?? false }
+        set { sessionState?.isAwaitingInitialSelection = newValue }
+    }
     private var sessionGeneration = UUID()
     private let cursorArbiter = AllInOneCaptureCursorArbiter()
     private var localModeShortcutMonitor: Any?
@@ -56,9 +59,6 @@ final class AllInOneCaptureCoordinator {
         let state = AllInOneCaptureSessionState(availableModes: configuredModes)
         state.onModeActivated = { [weak self] mode in
             guard let self, isActive, sessionGeneration == generation else { return }
-            // Area-based modes need a rect. Before the first drag finishes, keep the open
-            // selection instead of failing (freeze) or consuming the frozen session (timer).
-            guard !(isAwaitingInitialSelection && mode.preservesSelectionRect) else { return }
             activate(mode)
         }
         state.onRectChanged = { [weak self] rect in
