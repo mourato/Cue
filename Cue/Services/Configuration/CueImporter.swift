@@ -157,6 +157,14 @@ enum CueConfigurationImporter {
         ) {
             defaults.set($0, forKey: PreferencesKeys.clipboardCopyMode)
         }
+        // Legacy alias for the shared capture-area preference. Read in every build, since
+        // screenshot flows use it even without the video module, and before the canonical
+        // key so `capture.all_in_one.remember_last_selection` wins when both are present.
+        // The legacy key is kept so the runtime fallback works during the migration.
+        collectBool(&reader, "recording", "remember_last_area", mutations: &mutations) {
+            defaults.set($0, forKey: PreferencesKeys.captureAllInOneRememberLastSelection)
+            defaults.set($0, forKey: PreferencesKeys.recordingRememberLastArea)
+        }
         collectBool(&reader, "capture", "all_in_one", "remember_last_selection", mutations: &mutations) {
             defaults.set($0, forKey: PreferencesKeys.captureAllInOneRememberLastSelection)
         }
@@ -291,13 +299,6 @@ enum CueConfigurationImporter {
             }
             collectBool(&reader, "recording", "show_camera_preview_during_recording", mutations: &mutations) {
                 defaults.set($0, forKey: PreferencesKeys.recordingShowCameraPreviewDuringRecording)
-            }
-            // The legacy recording field now maps to the shared capture-area preference.
-            // However we also preserve it in the legacy key so the runtime fallback continues
-            // to work during the migration transition.
-            collectBool(&reader, "recording", "remember_last_area", mutations: &mutations) {
-                defaults.set($0, forKey: PreferencesKeys.captureAllInOneRememberLastSelection)
-                defaults.set($0, forKey: PreferencesKeys.recordingRememberLastArea)
             }
             collectOwnAppBool(
                 &reader,

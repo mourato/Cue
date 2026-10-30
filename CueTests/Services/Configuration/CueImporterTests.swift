@@ -43,24 +43,40 @@ final class CueConfigurationImporterTests: XCTestCase {
         #endif
     }
 
-    #if CUE_VIDEO_MODULE
-        func testImportRecordingRememberLastAreaWritesSharedAndLegacyKeys() {
-            let defaults = UserDefaultsFactory.make()
-            let source = """
-            schema_version = 1
+    func testImportRecordingRememberLastAreaWritesSharedAndLegacyKeys() {
+        let defaults = UserDefaultsFactory.make()
+        let source = """
+        schema_version = 1
 
-            [recording]
-            remember_last_area = false
-            """
+        [recording]
+        remember_last_area = false
+        """
 
-            let result = CueConfigurationImporter.importTOML(source, defaults: defaults)
+        let result = CueConfigurationImporter.importTOML(source, defaults: defaults)
 
-            XCTAssertFalse(result.hasErrors)
-            XCTAssertEqual(defaults.object(forKey: PreferencesKeys.captureAllInOneRememberLastSelection) as? Bool, false)
-            XCTAssertEqual(defaults.object(forKey: PreferencesKeys.recordingRememberLastArea) as? Bool, false)
-            XCTAssertFalse(CaptureLastSelectionStore.isEnabled(userDefaults: defaults))
-        }
-    #endif
+        XCTAssertFalse(result.hasErrors)
+        XCTAssertEqual(defaults.object(forKey: PreferencesKeys.captureAllInOneRememberLastSelection) as? Bool, false)
+        XCTAssertEqual(defaults.object(forKey: PreferencesKeys.recordingRememberLastArea) as? Bool, false)
+        XCTAssertFalse(CaptureLastSelectionStore.isEnabled(userDefaults: defaults))
+    }
+
+    func testImportCanonicalRememberSelectionWinsOverLegacyRecordingAlias() {
+        let defaults = UserDefaultsFactory.make()
+        let source = """
+        schema_version = 1
+
+        [capture.all_in_one]
+        remember_last_selection = true
+
+        [recording]
+        remember_last_area = false
+        """
+
+        let result = CueConfigurationImporter.importTOML(source, defaults: defaults)
+
+        XCTAssertFalse(result.hasErrors)
+        XCTAssertTrue(CaptureLastSelectionStore.isEnabled(userDefaults: defaults))
+    }
 
     func testImportAppliesImageUploadSettings() {
         let defaults = UserDefaultsFactory.make()
